@@ -13,9 +13,10 @@ pip install mkdocs-material
 mkdocs build
 ```
 
-编译结果保存在site目录下，文档属性设置见`mkdocs.yml`。
+编译结果保存在`site`目录下，文档属性设置见`mkdocs.yml`。
 
 **其它**
+
 mkdocs-material主题使用了google字体资源，可能导致加载缓慢。
 可以找到主题目录下的`base.html`，将相关代码注释掉即可:
 ```xml
