@@ -1,0 +1,63 @@
+
+OneFlow中使用任务函数(job function)联系用户的业务逻辑与OneFlow管理的计算资源。并且了解了如何配置oneflow.function为任务函数加载配置。
+本文中我们将具体学习：
+
+* 如何定义和调用任务函数
+
+* 如何获取任务函数的返回值
+
+## 任务函数的定义与调用
+任务函数分为定义和调用两个阶段。
+### 任务函数的定义
+我们将模型封装在Python中，再使用`oneflow.function`修饰符进行修饰。就完成了任务函数的定义。
+任务函数主要描述两方面的事情：
+
+* 模型结构
+
+* 训练过程中的优化目标
+
+以下代码示例中，我们构建了一个mlp模型。并且将由`flow.nn.sparse_softmax_cross_entropy_with_logits`计算得到交叉熵损失结果作为优化目标。
+```python
+@flow.function(get_train_config())
+def train_job(images=flow.FixedTensorDef((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+              labels=flow.FixedTensorDef((BATCH_SIZE, ), dtype=flow.int32)):
+  with flow.fixed_placement("cpu", "0:0"):
+    initializer = flow.truncated_normal(0.1)
+    reshape = flow.reshape(images, [images.shape[0], -1])
+    hidden = flow.layers.dense(reshape, 512, activation=flow.nn.relu, kernel_initializer=initializer)
+    logits = flow.layers.dense(hidden, 10, kernel_initializer=initializer)
+    
+    loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits, name="softmax_loss")
+  
+  flow.losses.add_loss(loss)
+  return loss
+```
+注意，以上的logtis、labels、loss等对象，它们的作用只是 **描述模型中的数据对象** ，起到 **占位符** 的作用。在定义函数时并 **没有** 真正的数据。在OneFlow中把这种对象类型统称为`blob`。
+任务函数的返回值 **必须是blob对象类型或者包含blob对象的容器** 。
+
+### 任务函数的调用
+OneFlow对任务函数的处理，对于用户而言是无感、透明的。
+我们可以像调用普通的Python函数一样调用任务函数。
+每一次调用，OneFlow都会在框架内部完成正向传播、反向传播、参数更新等一系列事情。
+以下代码，获取数据之后，会向`train_job`任务函数传递参数并调用，打印平均损失值。
+```python
+  #...
+  (train_images, train_labels), (test_images, test_labels) = load_data(BATCH_SIZE)
+  for epoch in range(50):
+    for i, (images, labels) in enumerate(zip(train_images, train_labels)):
+      loss = train_job(images, labels).get()
+      if i % 20 == 0: print(loss.mean())
+check_point.save('./mlp_models_1')
+```
+因为任务函数返回的是占位符`blob`类型，为了获取`blob`所对应的实际数据，我们需要调用`get`方法，获取对应的tensor数据。
+
+## 获取任务函数的返回值
+调用任务函数，返回的是`blob`类型的对象，并直接包含数据信息。为了获取与`blob`关联的`tensor`数据。
+我们可以调用该对象的`get`方法或者`async_get`，分别对应了同步以及异步两种方式。
+以下代码通过调用同步`get`方法，得到了train_job返回值关联的`tensor`对象，然后输出loss平均值。
+```python
+loss = train_job(images, labels).get()
+print(loss.mean())
+```
+
+我们将在下一篇文章种学习如何 **异步获取训练结果** 。
