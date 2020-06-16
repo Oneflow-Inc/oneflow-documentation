@@ -6,7 +6,96 @@
 
 严格来说，尚未训练好的模型的保存，称为保存检查点`checkpoint`或者快照`snapshot`。与将已经训练好的模型保存`model saving`，在概念上，略有不同。
 
-不过，无论模型是否训练完毕，我们都可以使用 **统一的接口 **将其保存，因此，我们在其它框架中看到的`model`、`checkpoint`、`snapshot`，在OneFlow的操作中不做区分。它们在OneFlow中，都通过`flow.train.CheckPoint`类作为接口操作。
+不过，无论模型是否训练完毕，我们都可以使用 **统一的接口** 将其保存，因此，我们在其它框架中看到的`model`、`checkpoint`、`snapshot`，在OneFlow的操作中不做区分。它们在OneFlow中，都通过`flow.train.CheckPoint`类作为接口操作。
+
+本文将介绍：
+
+* 如何创建模型参数
+
+* 如果保存/加载模型
+
+* OneFlow模型的存储结构
+
+* 模型的部分初始化技巧
+
+## 使用get_variable创建/获取模型参数对象
+
+我们可以使用`oneflow.get_variable`方法创造或者获取一个对象，该对象可以用于在全局任务函数中交互信息；当调用`OneFlow.CheckPoint`的对应接口时，该对象也会被自动地保存或从存储设备中恢复。
+
+因为这个特点，`get_variable`创建的对象，常用于存储模型参数。实际上，OneFlow中很多较高层接口（如`oneflow.layers.conv2d`），内部使用`get_variable`创建模型参数。
+
+### get_variable获取/创建对象的流程
+
+`get_variable`需要一个指定一个`name`参数，该参数作为创建对象的标识。
+
+如果`name`指定的值在当前上下文环境中已经存在，那么get_variable会取出已有对象，并返回。
+
+如果`name`指定的值不存在，则get_varialbe内部会创建一个blob对象，并返回。
+
+### 使用get_variable创建对象
+
+`oneflow.get_variable`的原型如下：
+
+```python
+def get_variable(
+    name,
+    shape=None,
+    dtype=None,
+    initializer=None,
+    regularizer=None,
+    trainable=None,
+    model_name=None,
+    random_seed=None,
+    distribute=distribute_util.broadcast(),
+)
+```
+
+以下是`oneflow.layers.conv2d`中，使用get_variable创造参数变量，并进一步构建网络的例子：
+
+```python
+    #...
+    weight = flow.get_variable(
+        weight_name if weight_name else name_prefix + "-weight",
+        shape=weight_shape,
+        dtype=inputs.dtype,
+        initializer=kernel_initializer
+        if kernel_initializer is not None
+        else flow.constant_initializer(0),
+        regularizer=kernel_regularizer,
+        trainable=trainable,
+        model_name="weight",
+    )
+
+    output = flow.nn.conv2d(
+        inputs, weight, strides, padding, data_format, dilation_rate, groups=groups, name=name
+    )
+    #...
+```
+
+### initializer设置初始化方式
+
+我们在上文中已经看到，在调用`get_variable`时，通过设置初始化器`initializer`来指定参数的初始化方式，OneFlow中提供了多种初始化器，它们在`oneflow/python/ops/initializer_util.py`中。
+
+以下列举部分常用的`initializer`：
+
+* constant_initializer
+
+* zeros_initializer
+
+* ones_initializer
+
+* random_uniform_initializer
+
+* random_normal_initializer
+
+* truncated_normal_initializer
+
+* glorot_uniform_initializer
+
+* variance_scaling_initializer
+
+* kaiming_initializer
+
 
 
 
