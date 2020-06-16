@@ -76,6 +76,8 @@ def get_variable(
 
 我们在上文中已经看到，在调用`get_variable`时，通过设置初始化器`initializer`来指定参数的初始化方式，OneFlow中提供了多种初始化器，它们在`oneflow/python/ops/initializer_util.py`中。
 
+设置`initializer`后，初始化工作由OneFlow框架完成，具体时机为：当用户调用下文中的`CheckPoint.init`时，OneFlow会根据`initializer`对所有get_variable创建的对象进行 **数据初始化**。
+
 以下列举部分常用的`initializer`：
 
 * constant_initializer
