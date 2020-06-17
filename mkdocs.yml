@@ -88,8 +88,8 @@ nav:
     - 首页: index.md
 
     - 快速上手:
-      - 新手10分钟入门: quick_start/quickstart_in_10_min.md
-      - 识别MNIST手写体数字: quick_start/minst_example.md
+      - 3分钟快速上手: quick_start/quickstart_in_3_min.md
+      - 识别MNIST手写体数字: quick_start/lenet_mnist.md
 
     - 基础专题:
       - tensor与blob: basics_topics/tensor_blob.md
