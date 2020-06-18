@@ -8,7 +8,11 @@
 
 * 如何将数据转化为OFRecord对象并序列化
 
-* OFRecord文件格式
+* OFRecord文件的写入
+
+* OFRecord文件的读取
+
+文末附有写入/读取OFRecord文件的完整代码。
 
 掌握它们后，有助于我们学习 **制作与导入OFRecord数据集**。
 
@@ -60,7 +64,7 @@ message OFRecord {
 
 * Feature: Feature可存储BytesList、FloatList、DoubleList、Int32List、Int64List各类型中的任意一种；
 
-* OFRecord、Feature、XXXList等类型，均由`Protocol Buffers`生成对应的同名接口，使得我们可以在Python层面构造对应对象。
+* OFRecord、Feature、XXXList等类型，均有`Protocol Buffers`生成对应的同名接口，使得我们可以在Python层面构造相关对象。
 
 ## 转化数据为Feature格式
 
@@ -152,7 +156,32 @@ f.write(struct.pack("q", length))
 f.write(serilizedBytes)
 ```
 
+## OFRecord格式的文件的读取
+我们已经知道，OneFlow的OFRecord文件的格式为头8字节为数据长度，之后为OFRecord对象序列化后的数据。因此，我们可以按照该约定，从`OFRecord`文件中加载数据：
+
+```python
+with open("example.ofrecords", "rb") as f:
+    length = struct.unpack("q", f.read(8))
+    serilizedBytes = f.read(length[0])
+    ofrecord_features = ofrecord.OFRecord.FromString(serilizedBytes)
+    f0 = ofrecord_features.feature["feature0"].int64_list.value
+    f1 = ofrecord_features.feature["feature1"].int64_list.value
+    f2 = ofrecord_features.feature["feature2"].bytes_list.value
+    f3 = ofrecord_features.feature["feature3"].float_list.value
+
+    print(f0)
+    print(f1)
+    print(f2)
+    print(f3)
+```
+以上，先通过`FromString`反序列化得到`OFRecord`类型的对象`ofrecord_features`。
+然后依次取出`OFRecord`中的各个feature。具体请参阅[Protocol Buffers](https://developers.google.com/protocol-buffers/)及`oneflow/core/record/record.proto`。
+
 ## 完整代码
+
+### 序列化数据并存文件
+本例代码，展示了如何将需要保存的数据转为`OFRecord`对象，并且序列化后存文件。
+
 ```python
 import oneflow.core.record.record_pb2 as ofrecord
 import six
@@ -214,5 +243,27 @@ f.write(serilizedBytes)
 f.close()
 ```
 
+### 从ofrecord文件中读取数据并反序列化
+以下代码与以上序列化OFrecord对象并写文件对应。
+我们读取文件内容，并反序列化得到f0~f3。
 
+```python
+import oneflow.core.record.record_pb2 as ofrecord
+import six
+import random
+import struct
 
+with open("example.ofrecords", "rb") as f:
+    length = struct.unpack("q", f.read(8))
+    serilizedBytes = f.read(length[0])
+    ofrecord_features = ofrecord.OFRecord.FromString(serilizedBytes)
+    f0 = ofrecord_features.feature["feature0"].int64_list.value
+    f1 = ofrecord_features.feature["feature1"].int64_list.value
+    f2 = ofrecord_features.feature["feature2"].bytes_list.value
+    f3 = ofrecord_features.feature["feature3"].float_list.value
+
+    print(f0)
+    print(f1)
+    print(f2)
+    print(f3)
+```
