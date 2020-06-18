@@ -129,17 +129,6 @@ nav:
       - 内存规划: extended_dev/mem_model.md
       - NDArray: extended_dev/ndarray.md
 
-    - 为OneFlow做贡献:
+    - OneFlow开源计划:
       - OneFlow开源计划: contribute/intro.md
 
-      - 开发者指南: contribute/developer-guide.md
-
-      - 贡献文档: contribute/doc.md
-
-      - 贡献测试案例: contribute/tests.md
-
-      - 编写WiKi: contribute/wiki.md
-
-      - review PR: contribute/review_pr.md
-
-      - 社区: contribute/community.md
