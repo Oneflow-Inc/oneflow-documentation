@@ -1,5 +1,7 @@
 OneFlow的开发环境为Linux，如果我们想使用在窗口环境下开发、调试OneFlow，可以采用`VS Code` + `Remote - SSH`插件的方案。
-如果对于vscode及其插件系统还不熟悉，可以参阅[官方文档](https://code.visualstudio.com/docs)
+
+如果对于vscode及其插件系统还不熟悉，可以参阅[官方文档](https://code.visualstudio.com/docs)。
+
 本文包括：
 
 * 如何编译`Debug`版本的OneFlow
@@ -46,7 +48,7 @@ VS Code的`Remote SSH`插件，可以通过`ssh`的方式连接远程服务器�
 
 安装完成`Remote - SSH`后，按F1，在弹出的搜索栏中选择`Remote-SSH: Connect to Host...`，即可设置ssh的连接信息，连接远程主机。
 
-`Remote - SSH`连接远程主机后，在插件一栏，会自动分类“远程”与“本地”，如果检测到需要在远程电脑上安装的插件，会显示为灰色，并带有 **Install in SSH:远程主机名**的按钮，点击即可将对应插件安装在远程主机。
+`Remote - SSH`连接远程主机后，在插件一栏，会自动分类“远程”与“本地”，如果检测到需要在远程电脑上安装的插件，会显示为灰色，并带有 **Install in SSH:远程主机名** 的按钮，点击即可将对应插件安装在远程主机。
 
 ![remotePlugin](imgs/plugin-remote-ssh-install.png)
 
