@@ -117,6 +117,7 @@ nav:
       - 常见问题: build_ship/troubleshooting.md
 
     - 二次开发专题:
+      - vscode调试OneFlow: extended_dev/debug_by_vscode.md
       - oneflow架构: extended_dev/framework.md
       - User Op: extended_dev/user_op.md
       - 算子描述符: extended_dev/op_desc.md
