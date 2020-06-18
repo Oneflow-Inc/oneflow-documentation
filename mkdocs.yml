@@ -93,11 +93,10 @@ nav:
 
     - 基础专题:
       - tensor与blob: basics_topics/tensor_blob.md
-      - get_varaible方法: basics_topics/get_variable.md
       - 任务函数及训练环境配置: basics_topics/job_function_config.md
       - 任务函数的定义与调用: basics_topics/job_function_define_call.md
       - 获取任务函数的结果: basics_topics/async_get.md
-      - OFRecord数据集的制作与导入: basics_topics/ofrecord.md
+      - OFRecord数据格式: basics_topics/ofrecord.md
       - 模型的加载与保存: basics_topics/model_load_save.md
       - 分布式训练: basics_topics/distributed_train.md
       - Consistent与Mirrored策略: basics_topics/consistent_mirrored.md
