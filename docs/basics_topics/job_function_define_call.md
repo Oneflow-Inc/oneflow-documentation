@@ -47,17 +47,6 @@ OneFlow对任务函数的处理，对于用户而言是无感、透明的。
     for i, (images, labels) in enumerate(zip(train_images, train_labels)):
       loss = train_job(images, labels).get()
       if i % 20 == 0: print(loss.mean())
-check_point.save('./mlp_models_1')
-```
-因为任务函数返回的是占位符`blob`类型，为了获取`blob`所对应的实际数据，我们需要调用`get`方法，获取对应的tensor数据。
-
-## 获取任务函数的返回值
-调用任务函数，返回的是`blob`类型的对象，并直接包含数据信息。为了获取与`blob`关联的`tensor`数据。
-我们可以调用该对象的`get`方法或者`async_get`，分别对应了同步以及异步两种方式。
-以下代码通过调用同步`get`方法，得到了train_job返回值关联的`tensor`对象，然后输出loss平均值。
-```python
-loss = train_job(images, labels).get()
-print(loss.mean())
 ```
 
-我们将在下一篇文章种学习如何 **异步获取训练结果** 。
+要注意，直接调用任务函数`tran_job`其实得到的是OneFlow的`blob`对象，需要进一步通过该对象的`get`或者`async_get`方法，来获取任务函数的返回结果。详情可以参阅专题[获取任务函数的结果](async_get.md)。
