@@ -92,8 +92,9 @@ nav:
       - 识别MNIST手写体数字: quick_start/lenet_mnist.md
 
     - 基础专题:
-      - tensor与blob: basics_topics/tensor_blob.md
-      - 任务函数及训练环境配置: basics_topics/job_function_config.md
+      - 数据输入: basics_topics/data_input.md
+      - 搭建神经网络: basics_topics/build_nn_with_op_and_layer.md
+      - 优化算法及超参配置: basics_topics/optimizer_in_function_config.md
       - 任务函数的定义与调用: basics_topics/job_function_define_call.md
       - 获取任务函数的结果: basics_topics/async_get.md
       - OFRecord数据格式: basics_topics/ofrecord.md
