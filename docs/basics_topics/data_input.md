@@ -1,6 +1,8 @@
 # 数据输入
-机器学习是一种数据驱动的技术，数据加载和预处理需要兼顾效率和可扩展性。OneFlow提供了两种加载数据的方法，
+机器学习是一种数据驱动的技术，数据加载和预处理需要兼顾效率和可扩展性。OneFlow提供了两种加载数据的方法：
+
 - 一种是非常灵活的，以numpy ndarray为接口的方法，也就是说OneFlow的训练或者预测任务能够接收一组numpy数据作为输入，这种方式有可能在准备numpy数据上成为瓶颈，推荐在项目初始阶段，数据结构没有确定的情况下采用；
+
 - 另外一种方法是OneFlow的`数据流水线`，数据流水线方式只能够接受特定格式的数据文件，OneFlow采用多线程和数据流水线等技术使得加载数据以及后面数据预处理、数据增强的效率更高，推荐成熟的项目使用。
 
 ## 使用Numpy作为数据输入
@@ -26,7 +28,7 @@ if __name__ == '__main__':
 
 将上面这段代码保存成`.py`文件（比如`feed_numpy.py`)，然后用python的方式执行该文件即可，如：
 ```bash
-> python feed_numpy.py
+python feed_numpy.py
 ```
 您将得到如下结果
 ```bash
@@ -56,16 +58,18 @@ def test_job(images=flow.FixedTensorDef((32, 1, 28, 28), dtype=flow.float),
 一般使用的地方都是在一个训练或者预测任务的循环中，这个简化的例子就使用了一次作业函数。
 
 有关作业函数参数的两点说明：
-1. 作业函数参数说明1 - 例子中`FixedTensorDef`返回的是一个`占位符`，类似tensorflow中placeholder的概念，OneFlow中还可以用`MirroredTensorDef`方式生成占位符，这两种方式的区别参考[TODO](fixed_mirrored_strategy.md);
-2. 作业函数参数说明2 - 作业函数支持多个参数，每个参数都必须是下面几种中的一种：
-- 一个`占位符`
-- 一个由`占位符`组成的列表（list）、元组（tuple）或者字典(dict)
 
-总结一下：在定义作业函数的时候把作业函数的输入定义成`占位符`的形式，当使用作业函数的时候输入相应的numpy数组对象，这样就实现了把numpy数据送入网络进行训练或者预测。
+* 作业函数参数说明1 - 例子中`FixedTensorDef`返回的是一个`占位符`，类似tensorflow中placeholder的概念，OneFlow中还可以用`MirroredTensorDef`方式生成占位符，这两种方式的区别参考[TODO](fixed_mirrored_strategy.md);
+
+* 作业函数参数说明2 - 作业函数支持多个参数，每个参数都必须是下面几种中的一种：1. 一个`占位符`  2. 一个由`占位符`组成的列表（list）、元组（tuple）或者字典(dict)
+
+总结：在定义作业函数的时候把作业函数的输入定义成`占位符`的形式，当使用作业函数的时候输入相应的numpy数组对象，这样就实现了把numpy数据送入网络进行训练或者预测。
 
 ## 使用OneFlow数据流水线
 OneFlow数据流水线解耦了数据的加载和数据预处理过程：
+
 - 数据的加载目前支持`data.ofrecord_reader`和`data.coco_reader`两种，分别支持OneFlow原生的`OFRecord`格式的文件和coco数据集，其他格式的reader可以通过自定义扩展；
+
 - 数据预处理过程采用的是流水线的方式，支持各种数据预处理算子的组合，数据预处理算子也可以自定义扩展。
 
 ### 运行一个例子
@@ -113,7 +117,9 @@ python of_data_pipeline.py
 ```
 ### 代码解析
 OneFlow的数据处理流水线分为两个阶段：数据加载和数据预处理。
+
 - 数据加载采用的是`ofrecord_reader`，需要指定ofrecord文件所在的目录，和一些其他参数，请参考[ofrecord_reader api](ofrecord_reader.api)
+
 - 数据预处理是一个系列过程，`OFRecordImageDecoderRandomCrop`负责图片解码并随机做了裁剪，`Resize`把裁剪后的图片调整成224x224的大小，`CropMirrorNormalize`把图片进行了正则化。标签部分只需要进行解码`CropMirrorNormalize`。
 
 OneFlow提供了一些数据加载和预处理的算子，详细请参考[数据流水线API](api)。未来会不断丰富和优化这些算子，用户也可以自己定义算子满足特定的需求。
