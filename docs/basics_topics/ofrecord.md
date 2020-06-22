@@ -10,7 +10,7 @@
 
 * OFRecord文件格式
 
-掌握它们后，有助于我们学习 **制作与导入OFRecord数据集**。
+掌握它们后，有助于我们学习[制作与导入OFRecord数据集](making_load_ofdataset.md)。
 
 ## OFRecord相关数据类型
 OneFlow内部采用[Protocol Buffers](https://developers.google.com/protocol-buffers/)描述`OFRecord`的序列化格式。相关的`.proto`文件在`oneflow/core/record/record.proto`中，具体定义如下：
@@ -104,24 +104,21 @@ def bytes_feature(value):
 
 ## 创建OFRecord对象并序列化
 
-在下例子中，我们将创建有4个feature的OFRecord对象，并且调用它的`SerializeToString`方法序列化。
+在下例子中，我们将创建有2个feature的OFRecord对象，并且调用它的`SerializeToString`方法序列化。
 
 ```python
-feature0 = [True, True, False, False, True]
-feature1 = [random.randint(1, 100) for x in range(0,5)]
-feature2 = [b'cat', b'dog', b'chicken', b'horse', b'goat']
-feature3 = [random.random() for x in range(0, 5)]
+    obserations = 28*28
+    #...
+    image = [random.random() for x in range(0,obserations)]
+    label = [random.randint(0,9)]
 
-topack = {
-      'feature0': int64_feature(feature0),
-      'feature1': int64_feature(feature1),
-      'feature2': bytes_feature(feature2),
-      'feature3': float_feature(feature3),
-}
+    topack = {
+        'images': float_feature(image),
+        'labels': int64_feature(label),
+    }
 
-ofrecord_features = ofrecord.OFRecord(feature=topack)
-
-serilizedBytes = ofrecord_features.SerializeToString()
+    ofrecord_features = ofrecord.OFRecord(feature=topack)
+    serilizedBytes = ofrecord_features.SerializeToString()
 ```
 
 通过以上例子，我们可以总结序列化数据的步骤：
@@ -137,7 +134,12 @@ serilizedBytes = ofrecord_features.SerializeToString()
 序列化的结果，可以存为ofrecord格式的文件。
 
 ## OFRecord格式的文件
-OneFlow约定，采用以下格式存储OFRecord对象的序列化结果：
+
+将OFRecord对象序列化后按OneFlow约定的格式存文件，就得到`OFRecord文件`。
+
+1个OFRecord文件中可存储多个OFRecord对象，OFRecord文件可用于`OneFlow数据流水线`，具体操作可见[制作与导入OFRecord数据集](making_load_ofdataset.md)
+
+OneFlow约定，对于 **每个** OFRecord对象，用以下格式存储：
 
 ```
 uint64 length
@@ -153,6 +155,13 @@ f.write(serilizedBytes)
 ```
 
 ## 完整代码
+以下完整代码展示如何生成OFRecord文件，并调用`protobuf`生成的`OFRecord`接口手工读取OFRecord文件中的数据。
+
+实际上，OneFlow提供了`flow.data.decode_ofrecord`等接口，可以更方便地提取OFRecord文件（数据集）中的内容。详细内容请参见[制作与导入OFRecord数据集](making_load_ofdataset.md)。
+
+### 将OFRecord对象写入文件
+以下代码，模拟了3个样本，每个样本为`28*28`的图片，并且包含对应标签。将三个样本转化为OFRecord对象后，按照OneFlow约定格式，存入文件。
+
 ```python
 import oneflow.core.record.record_pb2 as ofrecord
 import six
@@ -191,27 +200,46 @@ def bytes_feature(value):
             value = [x.encode() for x in value]
     return ofrecord.Feature(bytes_list=ofrecord.BytesList(value=value))
 
-feature0 = [True, True, False, False, True]
-feature1 = [random.randint(1, 100) for x in range(0,5)]
-feature2 = [b'cat', b'dog', b'chicken', b'horse', b'goat']
-feature3 = [random.random() for x in range(0, 5)]
+obserations = 28*28
 
-topack = {
-      'feature0': int64_feature(feature0),
-      'feature1': int64_feature(feature1),
-      'feature2': bytes_feature(feature2),
-      'feature3': float_feature(feature3),
-}
+f = open("./dataset/part-0", "wb")
 
-ofrecord_features = ofrecord.OFRecord(feature=topack)
+for loop in range(0, 3):
+    image = [random.random() for x in range(0,obserations)]
+    label = [random.randint(0,9)]
 
-serilizedBytes = ofrecord_features.SerializeToString()
+    topack = {
+        'images': float_feature(image),
+        'labels': int64_feature(label),
+    }
 
-f = open("example.ofrecords", "wb")
-length = ofrecord_features.ByteSize()
-f.write(struct.pack("q", length))
-f.write(serilizedBytes)
+    ofrecord_features = ofrecord.OFRecord(feature=topack)
+    serilizedBytes = ofrecord_features.SerializeToString()
+
+    length = ofrecord_features.ByteSize()
+
+    f.write(struct.pack("q", length))
+    f.write(serilizedBytes)
+
 f.close()
+```
+
+### 从OFRecord文件中读取数据
+以下代码，读取上例中生成的`OFRecord`文件，调用`FromString`方法反序列化得到`OFRecord`对象，并最终显示数据：
+```python
+import oneflow.core.record.record_pb2 as ofrecord
+import struct
+
+with open("./dataset/part-0", "rb") as f:
+    for loop in range(0,3):
+        length = struct.unpack("q", f.read(8))
+        serilizedBytes = f.read(length[0])
+        ofrecord_features = ofrecord.OFRecord.FromString(serilizedBytes)
+        
+        image = ofrecord_features.feature["images"].float_list.value
+        label = ofrecord_features.feature["labels"].int64_list.value
+
+        print(image, label, end="\n\n")
 ```
 
 
