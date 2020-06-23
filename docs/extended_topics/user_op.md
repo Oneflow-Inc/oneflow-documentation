@@ -3,21 +3,53 @@
 ## 背景
 本文档服务于那些需要自定义实现C++ Op的用户，通常来说，这来源于如下需求
 
-- 自定义Op难以通过OneFlow已有的Op在Python前端组合搭配生成。
-- 自定义Op可以通过OneFlow已有Op在Python前端组合搭配生成，但却满足不了性能需求。
+- 难以通过OneFlow已有的Op在Python前端组合搭配生成。
+- 可以通过OneFlow已有Op在Python前端组合搭配生成，但却满足不了性能需求。
 - 用户想要手动对kernel进行融合fuse，以满足某些特定的需求。
 
 除上述需求之外的需求，我们推荐您在Python前端使用现有Op组合得到想要的Op。
 
 
 
+在介绍自定义Op之前，我们简要描述下深度学习框架中的计算流程和对应的Op以及Kernel的关系。
+
+以激活函数Relu为例，神经网络输入至Relu激活后，得到激活值并输出，这一步操作流程就称为一个Op，这个Op比较简单，只需完成一个relu函数的计算即可，我们可以对此Op定义以下4种类型的Kernel实现:
+
+- gpu下的float类型的kernel
+
+- gpu下的int类型的kernel
+
+- cpu下的float类型的kernel
+
+- cpu下的int类型的kernel
+
+同样的道理，对于Batch Normal（BN)的实现，可能就复杂点，BN过程对于每个输入，有如下计算过程：
+
+![[公式]](https://www.zhihu.com/equation?tex=%5Cmu_j%3D%5Cfrac%7B1%7D%7Bm%7D%5Csum_%7Bi%3D1%7D%5Em+Z_j%5E%7B%28i%29%7D)
+
+![[公式]](https://www.zhihu.com/equation?tex=%5Csigma%5E2_j%3D%5Cfrac%7B1%7D%7Bm%7D%5Csum_%7Bi%3D1%7D%5Em%28Z_j%5E%7B%28i%29%7D-%5Cmu_j%29%5E2)
+
+![[公式]](https://www.zhihu.com/equation?tex=%5Chat%7BZ%7D_j%3D%5Cfrac%7BZ_j-%5Cmu_j%7D%7B%5Csqrt%7B%5Csigma_j%5E2%2B%5Cepsilon%7D%7D)
+
+可以看到，计算可分为3个步骤，如果每个步骤需要同之前Relu类似的kernel（支持cpu和gpu下的int、float类型），则总共需要3×4 = 12种kernel，而这还没考虑到前向和反向传播时BN计算方式的不同。
+
+
+
+由此可见，自定义Op的开发是比较复杂的一件事，因为其不仅是c++和python代码的开发，还涉及到深度学习的计算流程以及业务需求，如非必要，建议使用OneFlow已有的Op。
+
 对于的确需要手动实现C++ Op的用户，你需要如下步骤来让自定义Op正常工作：
 
-1. 注册Op的定义： Op的定义独立于Op的实现（即Kernel），用来描述Op的功能性。通常包括Op的名称，Op的输入和输出，Op的配置属性和一些必要的用于推导Tensor的shape和data type的函数。
-2. 用C++实现Op对应的Kernel： Kernel用来描述Op的详细计算过程。对于一个Op来说，可能会对应多个Kernel。
-3. 书写对应的Python前端：因为OneFlow的网络构建是基于Python去书写的，所以我们需要在Python前端去书写少量代码来封装前两步所写的C++的代码。
-4. （可选）注册Op对应的后向构图函数：如果训练网络中需要Op的反向，那么我们还需要去写一个函数来告诉OneFlow如何在去构建该Op对应的后向计算过程。
+1. 定义注册Op： Op的定义独立于Op的实现（即Kernel），用来描述Op的功能性。通常包括Op的名称，Op的输入和输出，Op的配置属性和一些必要的用于推导Tensor的shape和data type的函数。
+
+2. 实现Op对应的Kernel： 用C++代码实现Op对应的Kernel，Kernel通常用来描述Op的详细计算过程，对于一个Op来说，可能会对应多个Kernel，Kernel编写完成后需要注册至与其绑定的Op。
+
+3. 实现Op的Python调用代码：因为OneFlow的网络构建是基于Python去书写的，所以我们需要在Python前端去书写少量代码来封装前两步所写的C++的代码。
+
+4. （可选）注册Op对应的后向传播函数：如果训练网络中需要Op的后向传播，那么我们还需要去写一个函数来告诉OneFlow如何在去构建该Op对应的后向计算过程。
+
 5. 测试Op：上述步骤全部执行完毕后，我们还需要对Op进行测试以保证Op的正确性，具体步骤见后续。
+
+   
 
 
 ## 定义新的Op
@@ -416,23 +448,23 @@ REGISTER_USER_OP_GRAD("Relu").SetGenBackwardOpConfFn([](const user_op::UserOpWra
 ```
 - 可能用到的接口介绍：
   1. `UserOpWrapper`:
-    `.NeedGenGradTensor4OpInput(input_arg_name, index)` 返回一个bool值，判断前向op的输入是否需要生成后向的梯度
-    `.input(arg_name,index)` 得到输入的logical blob name
-    `.output(arg_name,index)` 得到输出的logical blob name
-    `.attr(attr_name)` 得到op的属性值
-    `.TensorDesc4ArgNameAndIndex(arg_name, index)` 返回前向op的输入/输出对应的TensorDesc，包含shape、dtype信息
-    `.GetGradTensorWithOpOutput(output_arg_name, index)` 返回前向op的输出对应的后向梯度blob的logical blob name
-    `.BindGradTensorWithOpInput(logical_blob_name, input_arg_name, index)` 将一个特定的logical blob name与该前向op的输入梯度blob绑定
+      `.NeedGenGradTensor4OpInput(input_arg_name, index)` 返回一个bool值，判断前向op的输入是否需要生成后向的梯度
+      `.input(arg_name,index)` 得到输入的logical blob name
+      `.output(arg_name,index)` 得到输出的logical blob name
+      `.attr(attr_name)` 得到op的属性值
+      `.TensorDesc4ArgNameAndIndex(arg_name, index)` 返回前向op的输入/输出对应的TensorDesc，包含shape、dtype信息
+      `.GetGradTensorWithOpOutput(output_arg_name, index)` 返回前向op的输出对应的后向梯度blob的logical blob name
+      `.BindGradTensorWithOpInput(logical_blob_name, input_arg_name, index)` 将一个特定的logical blob name与该前向op的输入梯度blob绑定
   2. `UserOpConfWrapperBuilder`:  （与python端的user_op_builder功能一致，接口类似）
-    `UserOpConfWrapperBuilder(your_op_name)`  构造函数需要输入新构建的op name
-    `.Op(op_type_name)`  指定这个op的type
-    `.Input(arg_name, logical_blob_name)`  可选项，可以调用多次，每次指定一个input_arg_name，同时传入一个logical_blob_name，表明这个input arg name对应的blob。如果该input_arg_name对应多个输入blob，则调用`.Input()`的顺序就是其对应的index顺序
-    `.Output(arg_name, num)`  可选项，可调用多次，每次指定一个`output_arg_name`实际对应的输出blob的数量，也可以调用 `.Output(arg_name)`，表示`num = 1`
-    `.Attr(attr_name, val)` 可选项，可调用多次，每次指定一个attr属性的属性名称和参数值，表示对这个attr赋值为val
-    `.Build()`  返回一个UserOpConfWrapper，表示你构建完毕的新op
+      `UserOpConfWrapperBuilder(your_op_name)`  构造函数需要输入新构建的op name
+      `.Op(op_type_name)`  指定这个op的type
+      `.Input(arg_name, logical_blob_name)`  可选项，可以调用多次，每次指定一个input_arg_name，同时传入一个logical_blob_name，表明这个input arg name对应的blob。如果该input_arg_name对应多个输入blob，则调用`.Input()`的顺序就是其对应的index顺序
+      `.Output(arg_name, num)`  可选项，可调用多次，每次指定一个`output_arg_name`实际对应的输出blob的数量，也可以调用 `.Output(arg_name)`，表示`num = 1`
+      `.Attr(attr_name, val)` 可选项，可调用多次，每次指定一个attr属性的属性名称和参数值，表示对这个attr赋值为val
+      `.Build()`  返回一个UserOpConfWrapper，表示你构建完毕的新op
   3. `UserOpConfWrapper`:
-    `.input(arg_name,index)` 得到输入的logical blob name
-    `.output(arg_name,index)` 得到输出的logical blob name
-    `.attr(attr_name)` 得到op的属性值
+      `.input(arg_name,index)` 得到输入的logical blob name
+      `.output(arg_name,index)` 得到输出的logical blob name
+      `.attr(attr_name)` 得到op的属性值
   4. `AddOp`: 
-    输入参数是一个UserOpConfWrapper
+      输入参数是一个UserOpConfWrapper
