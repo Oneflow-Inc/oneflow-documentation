@@ -25,11 +25,17 @@
 
 同样的道理，对于Batch Normal（BN)的实现，可能就复杂点，BN过程对于每个输入，有如下计算过程：
 
-![[公式]](https://www.zhihu.com/equation?tex=%5Cmu_j%3D%5Cfrac%7B1%7D%7Bm%7D%5Csum_%7Bi%3D1%7D%5Em+Z_j%5E%7B%28i%29%7D)
+$$
+\mu_{j}=\frac{1}{m} \sum_{i=1}^{m} Z_{j}^{(i)}
+$$
 
-![[公式]](https://www.zhihu.com/equation?tex=%5Csigma%5E2_j%3D%5Cfrac%7B1%7D%7Bm%7D%5Csum_%7Bi%3D1%7D%5Em%28Z_j%5E%7B%28i%29%7D-%5Cmu_j%29%5E2)
+$$
+\sigma_{j}^{2}=\frac{1}{m} \sum_{i=1}^{m}\left(Z_{j}^{(i)}-\mu_{j}\right)^{2}
+$$
 
-![[公式]](https://www.zhihu.com/equation?tex=%5Chat%7BZ%7D_j%3D%5Cfrac%7BZ_j-%5Cmu_j%7D%7B%5Csqrt%7B%5Csigma_j%5E2%2B%5Cepsilon%7D%7D)
+$$
+\hat{Z}_{j}=\frac{Z_{j}-\mu_{j}}{\sqrt{\sigma_{j}^{2}+\epsilon}}
+$$
 
 可以看到，计算可分为3个步骤，如果每个步骤需要同之前Relu类似的kernel（支持cpu和gpu下的int、float类型），则总共需要3×4 = 12种kernel，而这还没考虑到前向和反向传播时BN计算方式的不同。
 
