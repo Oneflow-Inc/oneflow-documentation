@@ -139,7 +139,7 @@ def test_job():
 ```
 `test_job`就是一个`OneFlow Function`，它能够被OneFlow框架识别，根据配置把函数里面定义的网络编译成适合计算图，放到设备上进行计算。
 
-任务函数包括两部分信息：使用算子搭建的网络（NN），以及使用这个网络需要的配置信息（config）。网络的搭建请参考[如何使用OneFlow搭建网络](build_nn.md)。本文专注介绍如何设置配置信息。
+任务函数包括两部分信息：使用算子搭建的网络（NN），以及使用这个网络需要的配置信息（config）。网络的搭建请参考[如何使用OneFlow搭建网络](build_nn_with_op_and_layer.md)。本文专注介绍如何设置配置信息。
 
 ### 函数配置（function_config）
 前面的例子中，你也可能注意到`@flow.global_function`装饰器接受一个参数`flow.function_config()`。这个参数`function_config`就是设置`OneFlow Function`配置信息的入口。比如下面这个略微复杂一点的例子：

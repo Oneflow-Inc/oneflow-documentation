@@ -1,28 +1,28 @@
-# ´´½¨ÐÂµÄOp
+# åˆ›å»ºæ–°çš„Op
 
-## ±³¾°
-±¾ÎÄµµ·þÎñÓÚÄÇÐ©ÐèÒª×Ô¶¨ÒåÊµÏÖC++ OpµÄÓÃ»§£¬Í¨³£À´Ëµ£¬ÕâÀ´Ô´ÓÚÈçÏÂÐèÇó
+## èƒŒæ™¯
+æœ¬æ–‡æ¡£æœåŠ¡äºŽé‚£äº›éœ€è¦è‡ªå®šä¹‰å®žçŽ°C++ Opçš„ç”¨æˆ·ï¼Œé€šå¸¸æ¥è¯´ï¼Œè¿™æ¥æºäºŽå¦‚ä¸‹éœ€æ±‚
 
-- ×Ô¶¨ÒåOpÄÑÒÔÍ¨¹ýOneFlowÒÑÓÐµÄOpÔÚPythonÇ°¶Ë×éºÏ´îÅäÉú³É¡£
-- ×Ô¶¨ÒåOp¿ÉÒÔÍ¨¹ýOneFlowÒÑÓÐOpÔÚPythonÇ°¶Ë×éºÏ´îÅäÉú³É£¬µ«È´Âú×ã²»ÁËÐÔÄÜÐèÇó¡£
-- ÓÃ»§ÏëÒªÊÖ¶¯¶Ôkernel½øÐÐÈÚºÏfuse£¬ÒÔÂú×ãÄ³Ð©ÌØ¶¨µÄÐèÇó¡£
+- è‡ªå®šä¹‰Opéš¾ä»¥é€šè¿‡OneFlowå·²æœ‰çš„Opåœ¨Pythonå‰ç«¯ç»„åˆæ­é…ç”Ÿæˆã€‚
+- è‡ªå®šä¹‰Opå¯ä»¥é€šè¿‡OneFlowå·²æœ‰Opåœ¨Pythonå‰ç«¯ç»„åˆæ­é…ç”Ÿæˆï¼Œä½†å´æ»¡è¶³ä¸äº†æ€§èƒ½éœ€æ±‚ã€‚
+- ç”¨æˆ·æƒ³è¦æ‰‹åŠ¨å¯¹kernelè¿›è¡Œèžåˆfuseï¼Œä»¥æ»¡è¶³æŸäº›ç‰¹å®šçš„éœ€æ±‚ã€‚
 
-³ýÉÏÊöÐèÇóÖ®ÍâµÄÐèÇó£¬ÎÒÃÇÍÆ¼öÄúÔÚPythonÇ°¶ËÊ¹ÓÃÏÖÓÐOp×éºÏµÃµ½ÏëÒªµÄOp¡£
-
-
-
-¶ÔÓÚµÄÈ·ÐèÒªÊÖ¶¯ÊµÏÖC++ OpµÄÓÃ»§£¬ÄãÐèÒªÈçÏÂ²½ÖèÀ´ÈÃ×Ô¶¨ÒåOpÕý³£¹¤×÷£º
-
-1. ×¢²áOpµÄ¶¨Òå£º OpµÄ¶¨Òå¶ÀÁ¢ÓÚOpµÄÊµÏÖ£¨¼´Kernel£©£¬ÓÃÀ´ÃèÊöOpµÄ¹¦ÄÜÐÔ¡£Í¨³£°üÀ¨OpµÄÃû³Æ£¬OpµÄÊäÈëºÍÊä³ö£¬OpµÄÅäÖÃÊôÐÔºÍÒ»Ð©±ØÒªµÄÓÃÓÚÍÆµ¼TensorµÄshapeºÍdata typeµÄº¯Êý¡£
-2. ÓÃC++ÊµÏÖOp¶ÔÓ¦µÄKernel£º KernelÓÃÀ´ÃèÊöOpµÄÏêÏ¸¼ÆËã¹ý³Ì¡£¶ÔÓÚÒ»¸öOpÀ´Ëµ£¬¿ÉÄÜ»á¶ÔÓ¦¶à¸öKernel¡£
-3. ÊéÐ´¶ÔÓ¦µÄPythonÇ°¶Ë£ºÒòÎªOneFlowµÄÍøÂç¹¹½¨ÊÇ»ùÓÚPythonÈ¥ÊéÐ´µÄ£¬ËùÒÔÎÒÃÇÐèÒªÔÚPythonÇ°¶ËÈ¥ÊéÐ´ÉÙÁ¿´úÂëÀ´·â×°Ç°Á½²½ËùÐ´µÄC++µÄ´úÂë¡£
-4. £¨¿ÉÑ¡£©×¢²áOp¶ÔÓ¦µÄºóÏò¹¹Í¼º¯Êý£ºÈç¹ûÑµÁ·ÍøÂçÖÐÐèÒªOpµÄ·´Ïò£¬ÄÇÃ´ÎÒÃÇ»¹ÐèÒªÈ¥Ð´Ò»¸öº¯ÊýÀ´¸æËßOneFlowÈçºÎÔÚÈ¥¹¹½¨¸ÃOp¶ÔÓ¦µÄºóÏò¼ÆËã¹ý³Ì¡£
-5. ²âÊÔOp£ºÉÏÊö²½ÖèÈ«²¿Ö´ÐÐÍê±Ïºó£¬ÎÒÃÇ»¹ÐèÒª¶ÔOp½øÐÐ²âÊÔÒÔ±£Ö¤OpµÄÕýÈ·ÐÔ£¬¾ßÌå²½Öè¼ûºóÐø¡£
+é™¤ä¸Šè¿°éœ€æ±‚ä¹‹å¤–çš„éœ€æ±‚ï¼Œæˆ‘ä»¬æŽ¨èæ‚¨åœ¨Pythonå‰ç«¯ä½¿ç”¨çŽ°æœ‰Opç»„åˆå¾—åˆ°æƒ³è¦çš„Opã€‚
 
 
-## ¶¨ÒåÐÂµÄOp
 
-ÎÒÃÇÒÔ`Relu`ÎªÀý£¬À´×ßÒ»±éOp×¢²áµÄÁ÷³Ì£¬¹¹½¨Ò»¸öcppÎÄ¼þ`relu.cpp`ÓÃÓÚ×¢²áOp¡£
+å¯¹äºŽçš„ç¡®éœ€è¦æ‰‹åŠ¨å®žçŽ°C++ Opçš„ç”¨æˆ·ï¼Œä½ éœ€è¦å¦‚ä¸‹æ­¥éª¤æ¥è®©è‡ªå®šä¹‰Opæ­£å¸¸å·¥ä½œï¼š
+
+1. æ³¨å†ŒOpçš„å®šä¹‰ï¼š Opçš„å®šä¹‰ç‹¬ç«‹äºŽOpçš„å®žçŽ°ï¼ˆå³Kernelï¼‰ï¼Œç”¨æ¥æè¿°Opçš„åŠŸèƒ½æ€§ã€‚é€šå¸¸åŒ…æ‹¬Opçš„åç§°ï¼ŒOpçš„è¾“å…¥å’Œè¾“å‡ºï¼ŒOpçš„é…ç½®å±žæ€§å’Œä¸€äº›å¿…è¦çš„ç”¨äºŽæŽ¨å¯¼Tensorçš„shapeå’Œdata typeçš„å‡½æ•°ã€‚
+2. ç”¨C++å®žçŽ°Opå¯¹åº”çš„Kernelï¼š Kernelç”¨æ¥æè¿°Opçš„è¯¦ç»†è®¡ç®—è¿‡ç¨‹ã€‚å¯¹äºŽä¸€ä¸ªOpæ¥è¯´ï¼Œå¯èƒ½ä¼šå¯¹åº”å¤šä¸ªKernelã€‚
+3. ä¹¦å†™å¯¹åº”çš„Pythonå‰ç«¯ï¼šå› ä¸ºOneFlowçš„ç½‘ç»œæž„å»ºæ˜¯åŸºäºŽPythonåŽ»ä¹¦å†™çš„ï¼Œæ‰€ä»¥æˆ‘ä»¬éœ€è¦åœ¨Pythonå‰ç«¯åŽ»ä¹¦å†™å°‘é‡ä»£ç æ¥å°è£…å‰ä¸¤æ­¥æ‰€å†™çš„C++çš„ä»£ç ã€‚
+4. ï¼ˆå¯é€‰ï¼‰æ³¨å†ŒOpå¯¹åº”çš„åŽå‘æž„å›¾å‡½æ•°ï¼šå¦‚æžœè®­ç»ƒç½‘ç»œä¸­éœ€è¦Opçš„åå‘ï¼Œé‚£ä¹ˆæˆ‘ä»¬è¿˜éœ€è¦åŽ»å†™ä¸€ä¸ªå‡½æ•°æ¥å‘Šè¯‰OneFlowå¦‚ä½•åœ¨åŽ»æž„å»ºè¯¥Opå¯¹åº”çš„åŽå‘è®¡ç®—è¿‡ç¨‹ã€‚
+5. æµ‹è¯•Opï¼šä¸Šè¿°æ­¥éª¤å…¨éƒ¨æ‰§è¡Œå®Œæ¯•åŽï¼Œæˆ‘ä»¬è¿˜éœ€è¦å¯¹Opè¿›è¡Œæµ‹è¯•ä»¥ä¿è¯Opçš„æ­£ç¡®æ€§ï¼Œå…·ä½“æ­¥éª¤è§åŽç»­ã€‚
+
+
+## å®šä¹‰æ–°çš„Op
+
+æˆ‘ä»¬ä»¥`Relu`ä¸ºä¾‹ï¼Œæ¥èµ°ä¸€éOpæ³¨å†Œçš„æµç¨‹ï¼Œæž„å»ºä¸€ä¸ªcppæ–‡ä»¶`relu.cpp`ç”¨äºŽæ³¨å†ŒOpã€‚
 
 ``` cpp
 #include "oneflow/core/framework/framework.h"
@@ -42,20 +42,20 @@ REGISTER_USER_OP("Relu")
 }
 ```
 
-·ÖÎöÏÂÉÏÊö´úÂë£º
+åˆ†æžä¸‹ä¸Šè¿°ä»£ç ï¼š
 
-Ê×ÏÈÊÇincludeÁË`oneflow/core/framework/framework.h`¡£`framework.h`ÖÐ°üÀ¨ÁËÎÒÃÇ´´½¨Ò»¸öOpÐèÒªµÄËùÓÐÍ·ÎÄ¼þ£¬ËùÒÔÎÒÃÇÖ»ÐèÒªincludeÕâÒ»¸öÍ·ÎÄ¼þ¾ÍÐÐ¡£
+é¦–å…ˆæ˜¯includeäº†`oneflow/core/framework/framework.h`ã€‚`framework.h`ä¸­åŒ…æ‹¬äº†æˆ‘ä»¬åˆ›å»ºä¸€ä¸ªOpéœ€è¦çš„æ‰€æœ‰å¤´æ–‡ä»¶ï¼Œæ‰€ä»¥æˆ‘ä»¬åªéœ€è¦includeè¿™ä¸€ä¸ªå¤´æ–‡ä»¶å°±è¡Œã€‚
 
-Æä´Î£¬ÎªÁË¼ò»¯ÀàÐÍÃû£¬ÎÒÃÇÔÚ`namespace oneflow`ÏÂÊéÐ´×¢²áOp¶¨ÒåµÄÏà¹Ø´úÂë¡£
+å…¶æ¬¡ï¼Œä¸ºäº†ç®€åŒ–ç±»åž‹åï¼Œæˆ‘ä»¬åœ¨`namespace oneflow`ä¸‹ä¹¦å†™æ³¨å†ŒOpå®šä¹‰çš„ç›¸å…³ä»£ç ã€‚
 
-×îºó£¬ÎÒÃÇÀ´¿´ÏÂ×¢²áµÄ´úÂë¡£`Relu`  opÖ»ÓÐÒ»¸öÊäÈë`in`£¬Ò²Ö»ÓÐÒ»¸öÊä³ö`out`£¬ÆäÍÆµ¼out tensorµÄÐÎ×´µÄ`ShapeInferFn`ÊÇÒ»¸ölambdaº¯Êý£¬²ÎÊýÎª`InferContext`£¬·µ»ØÖµÎª`Maybe<void>`ÀàÐÍ¶ÔÏó¡£
+æœ€åŽï¼Œæˆ‘ä»¬æ¥çœ‹ä¸‹æ³¨å†Œçš„ä»£ç ã€‚`Relu`  opåªæœ‰ä¸€ä¸ªè¾“å…¥`in`ï¼Œä¹Ÿåªæœ‰ä¸€ä¸ªè¾“å‡º`out`ï¼Œå…¶æŽ¨å¯¼out tensorçš„å½¢çŠ¶çš„`ShapeInferFn`æ˜¯ä¸€ä¸ªlambdaå‡½æ•°ï¼Œå‚æ•°ä¸º`InferContext`ï¼Œè¿”å›žå€¼ä¸º`Maybe<void>`ç±»åž‹å¯¹è±¡ã€‚
 
-¾ßÌåµ½`Relu` op¶ÔÓ¦µÄ`ShapeInferFn`£¬ÆäÊä³öµÄÐÎ×´ÓëÊäÈëÏàÍ¬£¬¼´ÈçÉÏÊö´úÂëËùÊ¾¡£
+å…·ä½“åˆ°`Relu` opå¯¹åº”çš„`ShapeInferFn`ï¼Œå…¶è¾“å‡ºçš„å½¢çŠ¶ä¸Žè¾“å…¥ç›¸åŒï¼Œå³å¦‚ä¸Šè¿°ä»£ç æ‰€ç¤ºã€‚
 
 
 
-## ÊµÏÖKernel
-ÔÚÐ´ÍêOpµÄ¶¨ÒåÖ®ºó£¬ÎÒÃÇÐèÒªÎªÆäÌá¹©Ò»¸ö»ò¶à¸öKernel×÷ÎªÊµÏÖ¡£´Ë´¦ÎÒÃÇÊµÏÖÒ»¸öÖ§³ÖÔÚgpuÉÏÖ´ÐÐfloatÊý¾ÝÀàÐÍµÄKernel£¬´æ·ÅÔÚ`relu_gpu.cu`ÎÄ¼þÖÐ¡£
+## å®žçŽ°Kernel
+åœ¨å†™å®ŒOpçš„å®šä¹‰ä¹‹åŽï¼Œæˆ‘ä»¬éœ€è¦ä¸ºå…¶æä¾›ä¸€ä¸ªæˆ–å¤šä¸ªKernelä½œä¸ºå®žçŽ°ã€‚æ­¤å¤„æˆ‘ä»¬å®žçŽ°ä¸€ä¸ªæ”¯æŒåœ¨gpuä¸Šæ‰§è¡Œfloatæ•°æ®ç±»åž‹çš„Kernelï¼Œå­˜æ”¾åœ¨`relu_gpu.cu`æ–‡ä»¶ä¸­ã€‚
 
 ``` cpp
 #include <cuda.h>
@@ -94,23 +94,23 @@ REGISTER_USER_KERNEL("Relu")
     });
 ```
 
-ÉÏÊö´úÂëÖÐ£¬ÎÒÃÇ¶¨ÒåÁËÒ»¸öÀà`ReluGpuFloatKernel`£¬¼Ì³Ð×Ô`oneflow::user_op::OpKernel`£¬¹¹Ôìº¯Êý²ÎÊýÎª`oneflow::user_op::KernelInitContext`£¬ÇÒ`override`ÁË`Compute(KernelContext*)`º¯Êý¡£
+ä¸Šè¿°ä»£ç ä¸­ï¼Œæˆ‘ä»¬å®šä¹‰äº†ä¸€ä¸ªç±»`ReluGpuFloatKernel`ï¼Œç»§æ‰¿è‡ª`oneflow::user_op::OpKernel`ï¼Œæž„é€ å‡½æ•°å‚æ•°ä¸º`oneflow::user_op::KernelInitContext`ï¼Œä¸”`override`äº†`Compute(KernelContext*)`å‡½æ•°ã€‚
 
-ÔÚ`Compute()`ÖÐ£¬µ÷ÓÃÁË`ReluForwardGpu()`Õâ¸öCUDA KernelÀ´ÔÚGPUÉÏÖ´ÐÐReluµÄÂß¼­¡£
+åœ¨`Compute()`ä¸­ï¼Œè°ƒç”¨äº†`ReluForwardGpu()`è¿™ä¸ªCUDA Kernelæ¥åœ¨GPUä¸Šæ‰§è¡ŒReluçš„é€»è¾‘ã€‚
 
-³ýÁËÊéÐ´`ReluGpuFloatKernel`Àà£¬ÎÒÃÇ»¹ÐèÒª°Ñ`ReluGpuFloatKernel`×¢²áµ½OneFlowÖÐÈ¥¡£¾ßÌå¶øÑÔ£¬¾ÍÊÇÊéÐ´Á½¸ölambdaº¯Êý£¬·Ö±ðÊÇ£º
+é™¤äº†ä¹¦å†™`ReluGpuFloatKernel`ç±»ï¼Œæˆ‘ä»¬è¿˜éœ€è¦æŠŠ`ReluGpuFloatKernel`æ³¨å†Œåˆ°OneFlowä¸­åŽ»ã€‚å…·ä½“è€Œè¨€ï¼Œå°±æ˜¯ä¹¦å†™ä¸¤ä¸ªlambdaå‡½æ•°ï¼Œåˆ†åˆ«æ˜¯ï¼š
 
-- `CreateFn`£ºÊäÈë`KernelInitContext`£¬·µ»ØÒª´´½¨µÄKernel¼´`ReluGpuFloatKernel`µÄÖ¸Õë¡£
-- `IsMatchPred`£ºÊäÈë`KernelRegContext`£¬·µ»Ø`bool`Öµ£¬´ú±í`Relu` opÔÚÊ²Ã´Çé¿öÏÂ»áÑ¡Ôñ`ReluGpuFloatKernel`¡£ÉÏÊö´úÂëÖÐ£¬µ±Éè±¸ÀàÐÍÎª`GPU`ÇÒÊý¾ÝÀàÐÍÎª`float`Ê±£¬¾ÍÑ¡Ôñ`ReluGpuFloatKernel`¡£
-
-
-
-¶ÔÓÚÆäËûÉè±¸ÀàÐÍ£¨Èç`CPU`£©»òÕâÆäËûÊý¾ÝÀàÐÍ£¨Èç`double`, `int`£©£¬ÆäÊéÐ´ºÍ×¢²áKernelµÄ·½Ê½Ò²ÊÇÀàËÆµÄ¡£
+- `CreateFn`ï¼šè¾“å…¥`KernelInitContext`ï¼Œè¿”å›žè¦åˆ›å»ºçš„Kernelå³`ReluGpuFloatKernel`çš„æŒ‡é’ˆã€‚
+- `IsMatchPred`ï¼šè¾“å…¥`KernelRegContext`ï¼Œè¿”å›ž`bool`å€¼ï¼Œä»£è¡¨`Relu` opåœ¨ä»€ä¹ˆæƒ…å†µä¸‹ä¼šé€‰æ‹©`ReluGpuFloatKernel`ã€‚ä¸Šè¿°ä»£ç ä¸­ï¼Œå½“è®¾å¤‡ç±»åž‹ä¸º`GPU`ä¸”æ•°æ®ç±»åž‹ä¸º`float`æ—¶ï¼Œå°±é€‰æ‹©`ReluGpuFloatKernel`ã€‚
 
 
 
-## ±àÒëOpµÄlibrary (chengcheng)
-  Äã¿ÉÒÔÍ¨¹ý`C++`µÄ±àÒëÆ÷(Èç `g++`)±àÒëÄãµÄ×Ô¶¨Òåop´úÂë£¨`relu.cpp`£©¡£OneflowµÄPIP°üÖÐ°üº¬ÁËÐèÒªincludeµÄÍ·ÎÄ¼þÄ¿Â¼ÒÔ¼°¿âÎÄ¼þ£¬ÕâÐ©ÎÄ¼þµÄÂ·¾¶ÓëÄã±¾µØµÄ²Ù×÷ÏµÍ³ºÍ»úÆ÷ÓÐ¹Ø¡£Äã¿ÉÒÔÊ¹ÓÃOneflowµÄpython¿âÖÐµÄsysconfigÄ£¿éµÃµ½ËüÃÇ£¨oneflowÊ¹ÓÃpython3£©¡£ÆäÖÐ£¬ `get_include()`¿ÉÒÔµÃµ½±¾»úµÄÍ·ÎÄ¼þÄ¿Â¼Â·¾¶£¬`get_lib()`¿ÉÒÔµÃµ½±¾»úµÄ¶¯Ì¬Á´½Ó¿âÂ·¾¶£¬ÏÂÃæÊÇÔÚLinux»úÆ÷ÉÏµÄÊä³ö½á¹û£º
+å¯¹äºŽå…¶ä»–è®¾å¤‡ç±»åž‹ï¼ˆå¦‚`CPU`ï¼‰æˆ–è¿™å…¶ä»–æ•°æ®ç±»åž‹ï¼ˆå¦‚`double`, `int`ï¼‰ï¼Œå…¶ä¹¦å†™å’Œæ³¨å†ŒKernelçš„æ–¹å¼ä¹Ÿæ˜¯ç±»ä¼¼çš„ã€‚
+
+
+
+## ç¼–è¯‘Opçš„library (chengcheng)
+  ä½ å¯ä»¥é€šè¿‡`C++`çš„ç¼–è¯‘å™¨(å¦‚ `g++`)ç¼–è¯‘ä½ çš„è‡ªå®šä¹‰opä»£ç ï¼ˆ`relu.cpp`ï¼‰ã€‚Oneflowçš„PIPåŒ…ä¸­åŒ…å«äº†éœ€è¦includeçš„å¤´æ–‡ä»¶ç›®å½•ä»¥åŠåº“æ–‡ä»¶ï¼Œè¿™äº›æ–‡ä»¶çš„è·¯å¾„ä¸Žä½ æœ¬åœ°çš„æ“ä½œç³»ç»Ÿå’Œæœºå™¨æœ‰å…³ã€‚ä½ å¯ä»¥ä½¿ç”¨Oneflowçš„pythonåº“ä¸­çš„sysconfigæ¨¡å—å¾—åˆ°å®ƒä»¬ï¼ˆoneflowä½¿ç”¨python3ï¼‰ã€‚å…¶ä¸­ï¼Œ `get_include()`å¯ä»¥å¾—åˆ°æœ¬æœºçš„å¤´æ–‡ä»¶ç›®å½•è·¯å¾„ï¼Œ`get_lib()`å¯ä»¥å¾—åˆ°æœ¬æœºçš„åŠ¨æ€é“¾æŽ¥åº“è·¯å¾„ï¼Œä¸‹é¢æ˜¯åœ¨Linuxæœºå™¨ä¸Šçš„è¾“å‡ºç»“æžœï¼š
 ```bash
 $ python3
 >>> import oneflow
@@ -119,91 +119,91 @@ $ python3
 >>> oneflow.sysconfig.get_lib()
 '/usr/local/lib/python3.6/site-packages/oneflow'
 ```
-  oneflow.sysconfig¿â»¹°üº¬±àÒëÑ¡ÏîºÍÁ´½ÓÑ¡Ïî£¬¿ÉÒÔ°ïÖúÄã±àÒëÉú³ÉÄãµÄ×Ô¶¨Òåop¶¯Ì¬¿â¡£¼ÙÉèÄãµÄUbuntuÏµÍ³ÉÏÒÑ¾­°²×°ÁË`g++`£¬Äã¿ÉÒÔÊ¹ÓÃÏÂÃæµÄ¼¸ÐÐÃüÁîÀ´Éú³ÉÄã×Ô¼ºµÄ¶¯Ì¬¿â£º
+  oneflow.sysconfigåº“è¿˜åŒ…å«ç¼–è¯‘é€‰é¡¹å’Œé“¾æŽ¥é€‰é¡¹ï¼Œå¯ä»¥å¸®åŠ©ä½ ç¼–è¯‘ç”Ÿæˆä½ çš„è‡ªå®šä¹‰opåŠ¨æ€åº“ã€‚å‡è®¾ä½ çš„Ubuntuç³»ç»Ÿä¸Šå·²ç»å®‰è£…äº†`g++`ï¼Œä½ å¯ä»¥ä½¿ç”¨ä¸‹é¢çš„å‡ è¡Œå‘½ä»¤æ¥ç”Ÿæˆä½ è‡ªå·±çš„åŠ¨æ€åº“ï¼š
 ```bash
 OF_CFLAGS=( $(python3 -c 'import oneflow; print(" ".join(oneflow.sysconfig.get_compile_flags()))') )
 OF_LFLAGS=( $(python3 -c 'import oneflow; print(" ".join(oneflow.sysconfig.get_link_flags()))') )
 g++ -std=c++11 -shared relu.cpp -o relu.so -fPIC ${OF_CFLAGS[@]} ${OF_LFLAGS[@]} -O2
 ```
-### ±àÒëÖ§³ÖGPUµÄOp library
-  ÔÚÉÏÊöµÄrelu opµÄ¹¹½¨ÖÐ£¬relu.cppÎÄ¼þÊµÏÖÁË`relu op`µÄ×¢²á£¬ÄãÒ²¿ÉÒÔÔÚ¸ÃÎÄ¼þÖÐÌí¼Órelu kernelµÄCPU°æ±¾£»`relu_gpu.cu`ÖÐÊµÏÖÁËrelu kernelµÄGPU-float°æ±¾¡£Äã¿ÉÒÔÊ¹ÓÃÒÔÏÂÃüÁî±àÒëÄãµÄgpu kernelµÄ´úÂë£¬²¢Á´½Ó½øÄãµÄ×Ô¶¨Òå¶¯Ì¬¿âÖÐ£º
+### ç¼–è¯‘æ”¯æŒGPUçš„Op library
+  åœ¨ä¸Šè¿°çš„relu opçš„æž„å»ºä¸­ï¼Œrelu.cppæ–‡ä»¶å®žçŽ°äº†`relu op`çš„æ³¨å†Œï¼Œä½ ä¹Ÿå¯ä»¥åœ¨è¯¥æ–‡ä»¶ä¸­æ·»åŠ relu kernelçš„CPUç‰ˆæœ¬ï¼›`relu_gpu.cu`ä¸­å®žçŽ°äº†relu kernelçš„GPU-floatç‰ˆæœ¬ã€‚ä½ å¯ä»¥ä½¿ç”¨ä»¥ä¸‹å‘½ä»¤ç¼–è¯‘ä½ çš„gpu kernelçš„ä»£ç ï¼Œå¹¶é“¾æŽ¥è¿›ä½ çš„è‡ªå®šä¹‰åŠ¨æ€åº“ä¸­ï¼š
 ```bash
 nvcc -std=c++11 -c -o relu_gpu.cu.o relu_gpu.cu ${OF_CFLAGS[@]}  -x cu -Xcompiler -fPIC
 
 g++ -std=c++11 -shared -o cuda_relu.so relu.cpp relu_gpu.cu.o  \
   ${OF_CFLAGS[@]} -fPIC -L/usr/local/cuda-10.0/lib64 -lcudart ${OF_LFLAGS[@]}
 ```
-×¢Òâ£º µ±ÄãµÄ»·¾³ÖÐµÄCUDA**²»ÊÇ**°²×°ÔÚ`/usr/local/lib64`Ä¿Â¼ÏÂÊ±£¬ÄãÐèÒªÔÚµÚ¶þÐÐg++µÄ±àÒëÃüÁîÖÐÖ¸¶¨CUDAµÄlibraryÄ¿Â¼¡£¾Ù¸öÀý×Ó£º Ìí¼Ó`-L /usr/local/cuda-10.0/lib64/`£¬ Èç¹ûÄãµÄCUDAµÄ°²×°Ä¿Â¼ÊÇÔÚ`/usr/local/cuda-10.0/`¡£
+æ³¨æ„ï¼š å½“ä½ çš„çŽ¯å¢ƒä¸­çš„CUDA**ä¸æ˜¯**å®‰è£…åœ¨`/usr/local/lib64`ç›®å½•ä¸‹æ—¶ï¼Œä½ éœ€è¦åœ¨ç¬¬äºŒè¡Œg++çš„ç¼–è¯‘å‘½ä»¤ä¸­æŒ‡å®šCUDAçš„libraryç›®å½•ã€‚ä¸¾ä¸ªä¾‹å­ï¼š æ·»åŠ `-L /usr/local/cuda-10.0/lib64/`ï¼Œ å¦‚æžœä½ çš„CUDAçš„å®‰è£…ç›®å½•æ˜¯åœ¨`/usr/local/cuda-10.0/`ã€‚
 
-## ÔÚPythonÊ¹ÓÃOp (chengcheng)
+## åœ¨Pythonä½¿ç”¨Op (chengcheng)
 
-- python¼ÓÔØ×Ô¶¨Òåop
-OneflowµÄpython¿âÌá¹©`oneflow.config.load_library`º¯ÊýÀ´¼ÓÔØÓÃ»§×Ô¶¨ÒåµÄop¶¯Ì¬¿â¡£¸Ãº¯ÊýÃ»ÓÐ·µ»ØÖµ¡£Í¬Ê±ÄãÐèÒª±àÐ´Ò»¸öº¯Êý±íÊ¾¸ÃOpµÄpython wrapper¡£OneflowµÄpython¿âÌá¹©ÁË`user_op_builder`µÄÀà£¬ÓÃÓÚÉú³ÉÒ»¸öopµÄwrapper¡£`user_op_builder`µÄÊ¹ÓÃ·½·¨¼ûºóÐøËµÃ÷£¬¶ÔÓÚ¼òµ¥µÄ×Ô¶¨Òåmy_op£¬¿ÉÒÔ²Î¿¼ÏÂÁÐpython½Å±¾Ê¹ÓÃºÍ²âÊÔÆäÕýÈ·ÐÔ¡£
+- pythonåŠ è½½è‡ªå®šä¹‰op
+Oneflowçš„pythonåº“æä¾›`oneflow.config.load_library`å‡½æ•°æ¥åŠ è½½ç”¨æˆ·è‡ªå®šä¹‰çš„opåŠ¨æ€åº“ã€‚è¯¥å‡½æ•°æ²¡æœ‰è¿”å›žå€¼ã€‚åŒæ—¶ä½ éœ€è¦ç¼–å†™ä¸€ä¸ªå‡½æ•°è¡¨ç¤ºè¯¥Opçš„python wrapperã€‚Oneflowçš„pythonåº“æä¾›äº†`user_op_builder`çš„ç±»ï¼Œç”¨äºŽç”Ÿæˆä¸€ä¸ªopçš„wrapperã€‚`user_op_builder`çš„ä½¿ç”¨æ–¹æ³•è§åŽç»­è¯´æ˜Žï¼Œå¯¹äºŽç®€å•çš„è‡ªå®šä¹‰my_opï¼Œå¯ä»¥å‚è€ƒä¸‹åˆ—pythonè„šæœ¬ä½¿ç”¨å’Œæµ‹è¯•å…¶æ­£ç¡®æ€§ã€‚
 ```python
 import oneflow as flow
 import numpy as np
-# Ä¬ÈÏÅäÖÃ
+# é»˜è®¤é…ç½®
 flow.config.gpu_device_num(1)
-# ¼ÓÔØÄ£¿é
+# åŠ è½½æ¨¡å—
 flow.config.load_library("relu.so")
 # python op wrapper function
 def relu(input_blob, op_name):
   return flow.user_op_builder(op_name).Op("Relu").Input("in", [input_blob]).Build().RemoteBlobList()[0]
 
-# ¶¨ÒåÄãµÄJobµÄÅäÖÃ
+# å®šä¹‰ä½ çš„Jobçš„é…ç½®
 my_func_config = flow.FunctionConfig()                                                                 
 my_func_config.default_distribute_strategy(flow.distribute.consistent_strategy())                      
 my_func_config.default_data_type(flow.float) 
-# ÍøÂç´úÂë
+# ç½‘ç»œä»£ç 
 @flow.function(my_func_config)
 def MyJob(x = flow.FixedTensorDef((5,))):
   return relu(x, "my_relu_op_name")
 
-# Ö´ÐÐ
+# æ‰§è¡Œ
 input_data = [-2,-1,0,1,2]
 output_data = MyJob(np.array(input_data, dtype=np.float32)).get().ndarray()
 print(output_data)
 
-# ÆÚÍûÖ´ÐÐ½á¹û
+# æœŸæœ›æ‰§è¡Œç»“æžœ
 [0. 0. 0. 1. 2.]
 ```
-- ÆäËû²âÊÔÊ¾Àý
-¶ÔÓÚ¸´ÔÓµÄ×Ô¶¨Òåopµ¥Ôª²âÊÔ»òÕßÍøÂ·²âÊÔ£¬¿ÉÒÔ²Î¿¼oneflow´úÂë²Ö¿âÖÐµÄ`oneflow/python/test/ops`Ä¿Â¼ÏÂµÄÑùÀý½øÐÐ±àÐ´¡£
+- å…¶ä»–æµ‹è¯•ç¤ºä¾‹
+å¯¹äºŽå¤æ‚çš„è‡ªå®šä¹‰opå•å…ƒæµ‹è¯•æˆ–è€…ç½‘è·¯æµ‹è¯•ï¼Œå¯ä»¥å‚è€ƒoneflowä»£ç ä»“åº“ä¸­çš„`oneflow/python/test/ops`ç›®å½•ä¸‹çš„æ ·ä¾‹è¿›è¡Œç¼–å†™ã€‚
 - python op wrapper
-Äã¿ÉÒÔÊ¹ÓÃ`oneflow.user_op_builder`À´Éú³ÉÄã×Ô¶¨ÒåopµÄpython wrapper¡£`user_op_builder` ÓÐÒ»Ð©ÌØ¶¨¹æÔòÀ´µÃµ½×îÖÕµÄÊä³öblob£º
-  1. `user_op_builder("your_op_name")` ¹¹Ôìº¯Êý£¬²ÎÊýÎªÕâ¸öopµÄÊµ¼ÊÃû×Ö
-  2. `.Op("op_type_name")` Ö¸¶¨Õâ¸öopµÄtype  ±ØÑ¡Ïî£¬Ö»¿Éµ÷ÓÃÒ»´Î
-  3. `.Input("input_arg_name", input_blob_list)`  ¿ÉÑ¡Ïî£¬¿ÉÒÔµ÷ÓÃ¶à´Î£¬Ã¿´ÎÖ¸¶¨Ò»¸ö`input_arg_name`£¬Í¬Ê±´«ÈëÒ»¸öÊäÈëµÄblobÁÐ±í£¬±íÊ¾Õâ¸öÊäÈë²ÎÊýÃû×Ö¶ÔÓ¦µÄ¶à¸öÊäÈëblob
-  4. `.Output("output_arg_name", num)` ¿ÉÑ¡Ïî£¬¿Éµ÷ÓÃ¶à´Î£¬Ã¿´ÎÖ¸¶¨Ò»¸ö`output_arg_name`Êµ¼Ê¶ÔÓ¦µÄÊä³öblobµÄÊýÁ¿£¬Ä¬ÈÏ`num=1`¡£
-  5. `.SetAttr("attr_name", attr_value, attr_type)`  ¿ÉÑ¡Ïî£¬¿Éµ÷ÓÃ¶à´Î£¬Ã¿´ÎÖ¸¶¨Ò»¸öattrÊôÐÔµÄ²ÎÊýÈ¡ÖµºÍ²ÎÊýÀàÐÍ£¬²ÎÊýÈ¡ÖµºÍÀàÐÍµÄºÏ·¨ÐÔÓÉ¸Ãop_defµÄattrÊôÐÔÅÐ¶Ï¡£
-  6. `.Build()` Ö»¿Éµ÷ÓÃÒ»´Î£¬²¢ÇÒÔÚÉÏÊöÊôÐÔÖ¸¶¨½áÊøºó£¬¸Ã·½·¨·µ»ØÒ»¸öopµÄpython wrapper
-  7. `.RemoteBlobList()` ¸Ã·½·¨ÊÇpython op wrapperµÄ½Ó¿Ú£¬ÓÃÓÚ·µ»Ø¸ÃopµÄÊä³öblobµÄÁÐ±í£¬ÁÐ±íÖÐµÄÃ¿¸öblobÖÐµÄ`logical_blob_name`±íÊ¾¸ÃblobÊÇ¸ÃopµÄÄÄ¸öÊä³öblob¡£ÁÐ±íµÄË³ÐòÊÇÄãÔÚpython wrapperÖÐ¶¨ÒåµÄOutput()²ÎÊýµÄË³Ðò¡£µ±ÄãÓÐ¶à¸öoutput_arg_nameÊ±£¬¼ÙÉèÄã¶¨ÒåµÄÊä³öÊÇ`.Output("a", 2).Output("b",3)`£¬ÔòRemoteBlobList()·µ»ØµÄÁÐ±í³¤¶ÈÎª5£¬·Ö±ð±íÊ¾`[("a",0),("a",1),("b",0),("b",1),("b",2)]` ¡£
+ä½ å¯ä»¥ä½¿ç”¨`oneflow.user_op_builder`æ¥ç”Ÿæˆä½ è‡ªå®šä¹‰opçš„python wrapperã€‚`user_op_builder` æœ‰ä¸€äº›ç‰¹å®šè§„åˆ™æ¥å¾—åˆ°æœ€ç»ˆçš„è¾“å‡ºblobï¼š
+  1. `user_op_builder("your_op_name")` æž„é€ å‡½æ•°ï¼Œå‚æ•°ä¸ºè¿™ä¸ªopçš„å®žé™…åå­—
+  2. `.Op("op_type_name")` æŒ‡å®šè¿™ä¸ªopçš„type  å¿…é€‰é¡¹ï¼Œåªå¯è°ƒç”¨ä¸€æ¬¡
+  3. `.Input("input_arg_name", input_blob_list)`  å¯é€‰é¡¹ï¼Œå¯ä»¥è°ƒç”¨å¤šæ¬¡ï¼Œæ¯æ¬¡æŒ‡å®šä¸€ä¸ª`input_arg_name`ï¼ŒåŒæ—¶ä¼ å…¥ä¸€ä¸ªè¾“å…¥çš„blobåˆ—è¡¨ï¼Œè¡¨ç¤ºè¿™ä¸ªè¾“å…¥å‚æ•°åå­—å¯¹åº”çš„å¤šä¸ªè¾“å…¥blob
+  4. `.Output("output_arg_name", num)` å¯é€‰é¡¹ï¼Œå¯è°ƒç”¨å¤šæ¬¡ï¼Œæ¯æ¬¡æŒ‡å®šä¸€ä¸ª`output_arg_name`å®žé™…å¯¹åº”çš„è¾“å‡ºblobçš„æ•°é‡ï¼Œé»˜è®¤`num=1`ã€‚
+  5. `.SetAttr("attr_name", attr_value, attr_type)`  å¯é€‰é¡¹ï¼Œå¯è°ƒç”¨å¤šæ¬¡ï¼Œæ¯æ¬¡æŒ‡å®šä¸€ä¸ªattrå±žæ€§çš„å‚æ•°å–å€¼å’Œå‚æ•°ç±»åž‹ï¼Œå‚æ•°å–å€¼å’Œç±»åž‹çš„åˆæ³•æ€§ç”±è¯¥op_defçš„attrå±žæ€§åˆ¤æ–­ã€‚
+  6. `.Build()` åªå¯è°ƒç”¨ä¸€æ¬¡ï¼Œå¹¶ä¸”åœ¨ä¸Šè¿°å±žæ€§æŒ‡å®šç»“æŸåŽï¼Œè¯¥æ–¹æ³•è¿”å›žä¸€ä¸ªopçš„python wrapper
+  7. `.RemoteBlobList()` è¯¥æ–¹æ³•æ˜¯python op wrapperçš„æŽ¥å£ï¼Œç”¨äºŽè¿”å›žè¯¥opçš„è¾“å‡ºblobçš„åˆ—è¡¨ï¼Œåˆ—è¡¨ä¸­çš„æ¯ä¸ªblobä¸­çš„`logical_blob_name`è¡¨ç¤ºè¯¥blobæ˜¯è¯¥opçš„å“ªä¸ªè¾“å‡ºblobã€‚åˆ—è¡¨çš„é¡ºåºæ˜¯ä½ åœ¨python wrapperä¸­å®šä¹‰çš„Output()å‚æ•°çš„é¡ºåºã€‚å½“ä½ æœ‰å¤šä¸ªoutput_arg_nameæ—¶ï¼Œå‡è®¾ä½ å®šä¹‰çš„è¾“å‡ºæ˜¯`.Output("a", 2).Output("b",3)`ï¼Œåˆ™RemoteBlobList()è¿”å›žçš„åˆ—è¡¨é•¿åº¦ä¸º5ï¼Œåˆ†åˆ«è¡¨ç¤º`[("a",0),("a",1),("b",0),("b",1),("b",2)]` ã€‚
 
-¶ÔÓÚÉÏÊöpythonÊ¾ÀýÖÐµÄreluº¯ÊýµÄ¶¨Òå£¬¿ÉÒÔÓÐÈçÏÂ½âÊÍ£º
+å¯¹äºŽä¸Šè¿°pythonç¤ºä¾‹ä¸­çš„reluå‡½æ•°çš„å®šä¹‰ï¼Œå¯ä»¥æœ‰å¦‚ä¸‹è§£é‡Šï¼š
 ```python
 def relu(input_blob, op_name):
   return flow.user_op_builder(op_name).Op("Relu") \
            .Input("in", [input_blob]) \
            .Output("out") \
            .Build().RemoteBlobList()[0]
-# flow.user_op_builder(op_name)  -- Éú³ÉÒ»¸ö op_name ×÷ÎªÆäopµÄÃû³ÆµÄop
-#     .Op("Relu")             -- Õâ¸öopµÄÀàÐÍÊÇRelu
-#     .Input("in", [input_blob]) -- Õâ¸öopÓÐÒ»¸öinput_arg_name Îª "in"£¬²¢ÇÒ¶ÔÓ¦µÄÊäÈëblobÁÐ±íÊÇ[input_blob]£¬±íÊ¾inÖ»¶ÔÓ¦Ò»¸öblob
-#     .Output("out")             -- Õâ¸öopÓÐÒ»¸öoutput_arg_name Îª "out"£¬Ä¬ÈÏout¶ÔÓ¦µÄblobÊýÁ¿ÊÇ1
-#     .Build()                   -- Éú³É¸ÃopµÄpython wrapper
-#     .RemoteBlobList()[0]       -- ·µ»Ø¸ÃopµÄÎ¨Ò»Êä³öblob
+# flow.user_op_builder(op_name)  -- ç”Ÿæˆä¸€ä¸ª op_name ä½œä¸ºå…¶opçš„åç§°çš„op
+#     .Op("Relu")             -- è¿™ä¸ªopçš„ç±»åž‹æ˜¯Relu
+#     .Input("in", [input_blob]) -- è¿™ä¸ªopæœ‰ä¸€ä¸ªinput_arg_name ä¸º "in"ï¼Œå¹¶ä¸”å¯¹åº”çš„è¾“å…¥blobåˆ—è¡¨æ˜¯[input_blob]ï¼Œè¡¨ç¤ºinåªå¯¹åº”ä¸€ä¸ªblob
+#     .Output("out")             -- è¿™ä¸ªopæœ‰ä¸€ä¸ªoutput_arg_name ä¸º "out"ï¼Œé»˜è®¤outå¯¹åº”çš„blobæ•°é‡æ˜¯1
+#     .Build()                   -- ç”Ÿæˆè¯¥opçš„python wrapper
+#     .RemoteBlobList()[0]       -- è¿”å›žè¯¥opçš„å”¯ä¸€è¾“å‡ºblob
 ```
 
-## ¸ß¼¶ÌØÐÔ
-µ½ÏÖÔÚÎªÖ¹£¬ÎÒÃÇÒÑ¾­Íê³É`Relu` opµÄ¹¹½¨¡£µ±È»£¬Relu OpÊÇÒ»¸ö±È½Ï¼òµ¥µÄOp£¬Èç¹ûÎÒÃÇÐèÒª¹¹½¨Ò»¸ö±È½Ï¸´ÔÓµÄOp£¬¾ÍÐèÒªÊ¹ÓÃÒ»Ð©¶îÍâµÄ¸ß¼¶ÌØÐÔÀ´Ð­ÖúÎÒÃÇ¡£
+## é«˜çº§ç‰¹æ€§
+åˆ°çŽ°åœ¨ä¸ºæ­¢ï¼Œæˆ‘ä»¬å·²ç»å®Œæˆ`Relu` opçš„æž„å»ºã€‚å½“ç„¶ï¼ŒRelu Opæ˜¯ä¸€ä¸ªæ¯”è¾ƒç®€å•çš„Opï¼Œå¦‚æžœæˆ‘ä»¬éœ€è¦æž„å»ºä¸€ä¸ªæ¯”è¾ƒå¤æ‚çš„Opï¼Œå°±éœ€è¦ä½¿ç”¨ä¸€äº›é¢å¤–çš„é«˜çº§ç‰¹æ€§æ¥ååŠ©æˆ‘ä»¬ã€‚
 
 ### Op Registration
 
 #### Attribute
 
-ÓÐµÄOpÐèÒªÓÐÅäÖÃÊôÐÔ£¬ÀýÈç`Conv` opÐèÒªÅäÖÃÆä`padding`µÄ·½Ê½¡¢`Reshape` opÐèÒªÅäÖÃÒ»¸ö`tensor shape`¡£µ±Op±»Ìí¼Óµ½GraphÖÐÊ±£¬ÎÒÃÇ¾ÍÐèÒª¸øÕâÐ©ÊôÐÔÉèÖÃºÏÀíµÄÖµÁË¡£
+æœ‰çš„Opéœ€è¦æœ‰é…ç½®å±žæ€§ï¼Œä¾‹å¦‚`Conv` opéœ€è¦é…ç½®å…¶`padding`çš„æ–¹å¼ã€`Reshape` opéœ€è¦é…ç½®ä¸€ä¸ª`tensor shape`ã€‚å½“Opè¢«æ·»åŠ åˆ°Graphä¸­æ—¶ï¼Œæˆ‘ä»¬å°±éœ€è¦ç»™è¿™äº›å±žæ€§è®¾ç½®åˆç†çš„å€¼äº†ã€‚
 
-ÔÚOneFlowÖÐ£¬Äã¿ÉÒÔÔÚ×¢²áOpÊ±Ö¸Ã÷ÆäÐèÒªµÄÊôÐÔAttr£¬´Ë´¦ÎÒÃÇÒÔ`Reshape`  opÎªÀý£º
+åœ¨OneFlowä¸­ï¼Œä½ å¯ä»¥åœ¨æ³¨å†ŒOpæ—¶æŒ‡æ˜Žå…¶éœ€è¦çš„å±žæ€§Attrï¼Œæ­¤å¤„æˆ‘ä»¬ä»¥`Reshape`  opä¸ºä¾‹ï¼š
 
 ```cpp
 REGISTER_USER_OP("Reshape")
@@ -220,11 +220,11 @@ REGISTER_USER_OP("Reshape")
     });
 ```
 
-ÉÏÊö´úÂëÖÐ£¬ÎÒÃÇÎª`Reshape` opÅäÖÃÁËÒ»¸öattribute£¬Ãû×ÖÎª`shape`£¬ÆäÀàÐÍÊÇ`UserOpAttrType::kAtShape`¡£
+ä¸Šè¿°ä»£ç ä¸­ï¼Œæˆ‘ä»¬ä¸º`Reshape` opé…ç½®äº†ä¸€ä¸ªattributeï¼Œåå­—ä¸º`shape`ï¼Œå…¶ç±»åž‹æ˜¯`UserOpAttrType::kAtShape`ã€‚
 
-ÔÚOneFlowÖÐ£¬ÎÒÃÇÄ¿Ç°Ö§³ÖÁËÈçÏÂ¼¸ÖÖAttrType£º
+åœ¨OneFlowä¸­ï¼Œæˆ‘ä»¬ç›®å‰æ”¯æŒäº†å¦‚ä¸‹å‡ ç§AttrTypeï¼š
 
-| UserOpAttrType | ¶ÔÓ¦µÄC++Êý¾ÝÀàÐÍ    |
+| UserOpAttrType | å¯¹åº”çš„C++æ•°æ®ç±»åž‹    |
 | -------------- | -------------------- |
 | kAtInt32       | int32_t              |
 | kAtInt64       | int64_t              |
@@ -236,11 +236,11 @@ REGISTER_USER_OP("Reshape")
 | kAtListInt64   | std::vector<int64_t> |
 | kAtListFloat   | std::vector< float >   |
 
-ÔÚ`Reshape` op×¢²áµÄ`ShapeInferFn`ÖÐ£¬Æä¾Í°Ñ`shape`¶ÔÓ¦µÄAttrµÄÖµ£¨`oneflow::Shape`ÀàÐÍ£©¸³¸øÁË`out` tensor¶ÔÓ¦µÄ`out_shape`¡£
+åœ¨`Reshape` opæ³¨å†Œçš„`ShapeInferFn`ä¸­ï¼Œå…¶å°±æŠŠ`shape`å¯¹åº”çš„Attrçš„å€¼ï¼ˆ`oneflow::Shape`ç±»åž‹ï¼‰èµ‹ç»™äº†`out` tensorå¯¹åº”çš„`out_shape`ã€‚
 
 
 
-³ýÁËÖ¸¶¨AttrµÄÀàÐÍ£¬ÎÒÃÇ»¹¿ÉÒÔÎªÆäÅäÖÃÒ»¸öÄ¬ÈÏÖµ£¬Ä¬ÈÏÖµµÄÀàÐÍ¼´±í¸ñÖÐ¶ÔÓ¦µÄC++Êý¾ÝÀàÐÍ£¬Èç£º
+é™¤äº†æŒ‡å®šAttrçš„ç±»åž‹ï¼Œæˆ‘ä»¬è¿˜å¯ä»¥ä¸ºå…¶é…ç½®ä¸€ä¸ªé»˜è®¤å€¼ï¼Œé»˜è®¤å€¼çš„ç±»åž‹å³è¡¨æ ¼ä¸­å¯¹åº”çš„C++æ•°æ®ç±»åž‹ï¼Œå¦‚ï¼š
 
 ``` cpp
 .Attr("is_transpose", UserOpAttrType::kAtBool, false)
@@ -254,9 +254,9 @@ REGISTER_USER_OP("Reshape")
 
 #### Check Attribute Function
 
-¶ÔÓÚÄ³Ð©AttributeÀ´Ëµ£¬ÆäÐèÒª¸üÏêÏ¸µÄ»®¶¨È¡Öµ·¶Î§£¬ÕâÊ±¾ÍÐèÒªÔÚ×¢²áOpÊ±Í¨¹ý`CheckAttrFn`À´Ö¸¶¨ÆäÈ¡Öµ·¶Î§¡£
+å¯¹äºŽæŸäº›Attributeæ¥è¯´ï¼Œå…¶éœ€è¦æ›´è¯¦ç»†çš„åˆ’å®šå–å€¼èŒƒå›´ï¼Œè¿™æ—¶å°±éœ€è¦åœ¨æ³¨å†ŒOpæ—¶é€šè¿‡`CheckAttrFn`æ¥æŒ‡å®šå…¶å–å€¼èŒƒå›´ã€‚
 
-ÀýÈç£¬¶ÔÓÚ`Conv` opÀ´Ëµ£¬ÆäÓÐÒ»¸öÅäÖÃÑ¡Ïî`data_format`£¬ÆäÀàÐÍÊÇstring×Ö·û´®£¬µ«È¡ÖµÖ»ÄÜÊÇ`channels_first`»ò`channels_last`ÕâÁ½¸ö£¬³ý´ËÖ®Íâ¶¼²»ºÏ·¨£¬ËùÒÔÎÒÃÇÐèÒªÖ¸¶¨Æä·¶Î§£¬×¢²áOpÊ±¾ÍÐèÒªÈçÏÂÖ¸¶¨£º
+ä¾‹å¦‚ï¼Œå¯¹äºŽ`Conv` opæ¥è¯´ï¼Œå…¶æœ‰ä¸€ä¸ªé…ç½®é€‰é¡¹`data_format`ï¼Œå…¶ç±»åž‹æ˜¯stringå­—ç¬¦ä¸²ï¼Œä½†å–å€¼åªèƒ½æ˜¯`channels_first`æˆ–`channels_last`è¿™ä¸¤ä¸ªï¼Œé™¤æ­¤ä¹‹å¤–éƒ½ä¸åˆæ³•ï¼Œæ‰€ä»¥æˆ‘ä»¬éœ€è¦æŒ‡å®šå…¶èŒƒå›´ï¼Œæ³¨å†ŒOpæ—¶å°±éœ€è¦å¦‚ä¸‹æŒ‡å®šï¼š
 
 ```cpp
 .Attr("data_format", UserOpAttrType::kAtString, std::string("NCHW"))
@@ -273,32 +273,32 @@ REGISTER_USER_OP("Reshape")
 
 #### Multiple In/Out
 
-¶ÔÓÚÓÐÐ©OpÀ´Ëµ£¬Æä¹²ÏíÍ¬Ò»¸önameµÄ in/out tensor¿ÉÄÜÓÐ¶à¸ö£¬ÀýÈç¶ÔÓÚ`Add` opÀ´Ëµ£¬Æä`input`Õâ¸ö nameÏÂ¿ÉÄÜ¶ÔÓ¦ÓÐ¶à¸ötensor£¬ÕâÊ±ÎÒÃÇ¾ÍÐèÒªÔÚ×¢²áOpÊ±Ö¸¶¨Æä¶ÔÓ¦µÄÊäÈëÊä³öµÄ¸öÊý¡£
+å¯¹äºŽæœ‰äº›Opæ¥è¯´ï¼Œå…¶å…±äº«åŒä¸€ä¸ªnameçš„ in/out tensorå¯èƒ½æœ‰å¤šä¸ªï¼Œä¾‹å¦‚å¯¹äºŽ`Add` opæ¥è¯´ï¼Œå…¶`input`è¿™ä¸ª nameä¸‹å¯èƒ½å¯¹åº”æœ‰å¤šä¸ªtensorï¼Œè¿™æ—¶æˆ‘ä»¬å°±éœ€è¦åœ¨æ³¨å†ŒOpæ—¶æŒ‡å®šå…¶å¯¹åº”çš„è¾“å…¥è¾“å‡ºçš„ä¸ªæ•°ã€‚
 
-OneFlow¿ò¼ÜÖ§³Ö¶ÔOpµÄInput/Output×öÈçÏÂÅäÖÃ£º
+OneFlowæ¡†æž¶æ”¯æŒå¯¹Opçš„Input/Outputåšå¦‚ä¸‹é…ç½®ï¼š
 
 ```cpp
-.Input("input") // input ±ØÐë¶ÔÓ¦ÓÐ1¸ötensor
+.Input("input") // input å¿…é¡»å¯¹åº”æœ‰1ä¸ªtensor
 
-.Input("input", 5) // input ±ØÐë¶ÔÓ¦ÓÐ5¸ötensor
+.Input("input", 5) // input å¿…é¡»å¯¹åº”æœ‰5ä¸ªtensor
     
-.InputWithMinimum("input", 5) // input ±ØÐë¶ÔÓ¦ÖÁÉÙ5¸ötensor
+.InputWithMinimum("input", 5) // input å¿…é¡»å¯¹åº”è‡³å°‘5ä¸ªtensor
     
-.OptionalInput("input") // input ¿ÉÄÜÃ»ÓÐ¶ÔÓ¦µÄtensor£¬ÈôÓÐÔòÐë¶ÔÓ¦1¸ötensor
+.OptionalInput("input") // input å¯èƒ½æ²¡æœ‰å¯¹åº”çš„tensorï¼Œè‹¥æœ‰åˆ™é¡»å¯¹åº”1ä¸ªtensor
     
-.OptionalInput("input", 5) // input ¿ÉÄÜÃ»ÓÐ¶ÔÓ¦µÄtensor£¬ÈôÓÐÔòÐë¶ÔÓ¦5¸ötensor
+.OptionalInput("input", 5) // input å¯èƒ½æ²¡æœ‰å¯¹åº”çš„tensorï¼Œè‹¥æœ‰åˆ™é¡»å¯¹åº”5ä¸ªtensor
     
-.OptionalInputWithMininum("input", 5) // input ¿ÉÄÜÃ»ÓÐ¶ÔÓ¦µÄtensor£¬ÈôÓÐÔòÐë¶ÔÓ¦ÖÁÉÙ5¸ötensor
+.OptionalInputWithMininum("input", 5) // input å¯èƒ½æ²¡æœ‰å¯¹åº”çš„tensorï¼Œè‹¥æœ‰åˆ™é¡»å¯¹åº”è‡³å°‘5ä¸ªtensor
     
     
-// OutputÓëInputÓÃ·¨ÏàÍ¬
+// Outputä¸ŽInputç”¨æ³•ç›¸åŒ
 ```
 
 
 
 #### DataType Infer Function
 
-¶àÊýOpµÄinput tensorºÍoutput tensorµÄÀàÐÍÏàÍ¬£¬µ«¶ÔÓÚÒ»Ð©ÌØÊâOp£¨Èç`Cast` op£©À´Ëµ£¬ÆäÐèÒª´«ÈëÒ»¸ödata_type infer functionÀ´ÍÆµ¼output tensorµÄÀàÐÍ¡£
+å¤šæ•°Opçš„input tensorå’Œoutput tensorçš„ç±»åž‹ç›¸åŒï¼Œä½†å¯¹äºŽä¸€äº›ç‰¹æ®ŠOpï¼ˆå¦‚`Cast` opï¼‰æ¥è¯´ï¼Œå…¶éœ€è¦ä¼ å…¥ä¸€ä¸ªdata_type infer functionæ¥æŽ¨å¯¼output tensorçš„ç±»åž‹ã€‚
 
 ``` cpp
 .SetDataTypeInferFn([](user_op::InferContext* ctx) {
@@ -308,22 +308,22 @@ OneFlow¿ò¼ÜÖ§³Ö¶ÔOpµÄInput/Output×öÈçÏÂÅäÖÃ£º
     })
 ```
 
-ÉÏÊö´úÂë¾ÍÊÇ°Ñout tensorµÄÊý¾ÝÀàÐÍÉèÖÃÎª`double`¡£
+ä¸Šè¿°ä»£ç å°±æ˜¯æŠŠout tensorçš„æ•°æ®ç±»åž‹è®¾ç½®ä¸º`double`ã€‚
 
-¶ÔÓÚÎÞÐè¸ü¸ÄÊý¾ÝÀàÐÍµÄOp£¬Ò²ÎÞÐèÔÚ×¢²áOpÊ±Ö¸¶¨`SetDataTypeInferFn()`£¬ÒòÎªOneFlow¿ò¼ÜÌá¹©µÄÄ¬ÈÏÊµÏÖ¾ÍÊÇÈÃoutput tensors ºÍ input tensors µÄÊý¾ÝÀàÐÍÒ»ÖÂ¡£
+å¯¹äºŽæ— éœ€æ›´æ”¹æ•°æ®ç±»åž‹çš„Opï¼Œä¹Ÿæ— éœ€åœ¨æ³¨å†ŒOpæ—¶æŒ‡å®š`SetDataTypeInferFn()`ï¼Œå› ä¸ºOneFlowæ¡†æž¶æä¾›çš„é»˜è®¤å®žçŽ°å°±æ˜¯è®©output tensors å’Œ input tensors çš„æ•°æ®ç±»åž‹ä¸€è‡´ã€‚
 
 
 
-#### Sbp Function¡¢BatchAxis
+#### Sbp Functionã€BatchAxis
 
-Sbp¡¢BatchAxisÊÇOneFlow¿ò¼ÜÌØÓÐµÄ¸ÅÄî£¬¾ßÌåµÄÇë²Î¼ûOneFlowÎÄµµ¡£
+Sbpã€BatchAxisæ˜¯OneFlowæ¡†æž¶ç‰¹æœ‰çš„æ¦‚å¿µï¼Œå…·ä½“çš„è¯·å‚è§OneFlowæ–‡æ¡£ã€‚
 `TODO()`
 
-#### ÐÔÄÜÓÅ»¯£º Inplace¡¢KeepHeaderOnly
+#### æ€§èƒ½ä¼˜åŒ–ï¼š Inplaceã€KeepHeaderOnly
 `TODO()`
-#### is_mutable   mutÏû·Ñinput
+#### is_mutable   mutæ¶ˆè´¹input
 `TODO()`
-#### required_grad  ¶¨ÒåinputÊÇ·ñÐèÒª×¢²ágrad
+#### required_grad  å®šä¹‰inputæ˜¯å¦éœ€è¦æ³¨å†Œgrad
 `TODO()`
 #### TODO...
 
@@ -331,25 +331,25 @@ Sbp¡¢BatchAxisÊÇOneFlow¿ò¼ÜÌØÓÐµÄ¸ÅÄî£¬¾ßÌåµÄÇë²Î¼ûOneFlowÎÄµµ¡£
 
 #### Temporary Buffer Size Infer Function
 
-¶ÔÓÚÒ»Ð©OpÀ´Ëµ£¬ÆäÄ³ÖÖÊµÏÖ£¨¼´Kernel£©¿ÉÄÜ»áÐèÒªÒ»Ð©¶îÍâµÄbufferÀ´´æ´¢Ò»Ð©ÁÙÊ±Êý¾Ý¡£
+å¯¹äºŽä¸€äº›Opæ¥è¯´ï¼Œå…¶æŸç§å®žçŽ°ï¼ˆå³Kernelï¼‰å¯èƒ½ä¼šéœ€è¦ä¸€äº›é¢å¤–çš„bufferæ¥å­˜å‚¨ä¸€äº›ä¸´æ—¶æ•°æ®ã€‚
 
-ÔÚOneFlow¿ò¼ÜÖÐ£¬ÕâÐ©ÁÙÊ±µÄbufferÒ²ÊÇ×÷ÎªtensorÀ´ÔÚ`Compute`º¯ÊýÖÐÊ¹ÓÃµÄ¡£
+åœ¨OneFlowæ¡†æž¶ä¸­ï¼Œè¿™äº›ä¸´æ—¶çš„bufferä¹Ÿæ˜¯ä½œä¸ºtensoræ¥åœ¨`Compute`å‡½æ•°ä¸­ä½¿ç”¨çš„ã€‚
 
-¶øÐèÒª¶à´óµÄÁÙÊ±buffer£¬¾ÍµÃÎÒÃÇÔÚ×¢²áKernelÊ±Ö¸¶¨ÁË¡£
+è€Œéœ€è¦å¤šå¤§çš„ä¸´æ—¶bufferï¼Œå°±å¾—æˆ‘ä»¬åœ¨æ³¨å†ŒKernelæ—¶æŒ‡å®šäº†ã€‚
 
 ``` cpp
 REGISTER_USER_KERNEL("XOp")
     .SetCreateFn([](const oneflow::user_op::KernelInitContext& ctx) { return new XKernel(ctx); })
     .SetIsMatchedPred(...)
     .SetInferTmpSizeFn([](const oneflow::user_op::InferContext*) { return 1024; });
-// XOp ¶ÔÓ¦µÄ XKernel ÐèÒª1024Byte´óÐ¡µÄbuffer
+// XOp å¯¹åº”çš„ XKernel éœ€è¦1024Byteå¤§å°çš„buffer
 
 class XKernel final : public oneflow::user_op::OpKernel {
 ...
   void Compute(oneflow::user_op::KernelContext* ctx) override {
     ...
     oneflow::user_op::Tensor* tmp = ctx->Tensor4ArgNameAndIndex("tmp_buffer", 0);
-    // ·ÃÎÊ1024ByteµÄtensor
+    // è®¿é—®1024Byteçš„tensor
     ...
   }
 };
@@ -359,11 +359,11 @@ class XKernel final : public oneflow::user_op::OpKernel {
 
 
 
-### ×¢²áOpµÄGrad (chengcheng)
+### æ³¨å†ŒOpçš„Grad (chengcheng)
 
-- ËµÃ÷¼°Ê¾Àý
-OneflowÊ¹ÓÃ×Ô¶¯Çóµ¼µÄ·½Ê½½øÐÐºóÏò¼ÆËãÍ¼Õ¹¿ª£¬ÎªÁË¶Ô×Ô¶¨ÒåµÄop½øÐÐºóÏòÇóµ¼£¬ÐèÒªÄã×¢²áÒ»¸öºóÏòÉú³Éº¯ÊýÀ´¸ù¾ÝÕâ¸öopµÄÊä³öblobµÄµ¼Êý¼ÆËãÊäÈëblobµÄµ¼Êý¡£Äã¿ÉÒÔÍ¨¹ýÒÑÓÐµÄÆäËûopÀ´¹¹½¨Õâ¸öºóÏòÕ¹¿ªµÄ×ÓÍ¼£¬µ±ÎÞ·¨ÓÃÒÑÓÐopÀ´ÃèÊöºóÏòÊ±£¬ÄãÐèÒª×Ô¼ºÊµÏÖÒ»¸öºóÏògrad_opÀ´±íÊ¾¡£
-ºóÏòÉú³Éº¯ÊýÔÚc++¶Ë×¢²á¡£¶ÔÓÚrelu op£¬ÆäºóÏòÉú³Éº¯ÊýµÄÊ¾ÀýÈçÏÂ£º
+- è¯´æ˜ŽåŠç¤ºä¾‹
+Oneflowä½¿ç”¨è‡ªåŠ¨æ±‚å¯¼çš„æ–¹å¼è¿›è¡ŒåŽå‘è®¡ç®—å›¾å±•å¼€ï¼Œä¸ºäº†å¯¹è‡ªå®šä¹‰çš„opè¿›è¡ŒåŽå‘æ±‚å¯¼ï¼Œéœ€è¦ä½ æ³¨å†Œä¸€ä¸ªåŽå‘ç”Ÿæˆå‡½æ•°æ¥æ ¹æ®è¿™ä¸ªopçš„è¾“å‡ºblobçš„å¯¼æ•°è®¡ç®—è¾“å…¥blobçš„å¯¼æ•°ã€‚ä½ å¯ä»¥é€šè¿‡å·²æœ‰çš„å…¶ä»–opæ¥æž„å»ºè¿™ä¸ªåŽå‘å±•å¼€çš„å­å›¾ï¼Œå½“æ— æ³•ç”¨å·²æœ‰opæ¥æè¿°åŽå‘æ—¶ï¼Œä½ éœ€è¦è‡ªå·±å®žçŽ°ä¸€ä¸ªåŽå‘grad_opæ¥è¡¨ç¤ºã€‚
+åŽå‘ç”Ÿæˆå‡½æ•°åœ¨c++ç«¯æ³¨å†Œã€‚å¯¹äºŽrelu opï¼Œå…¶åŽå‘ç”Ÿæˆå‡½æ•°çš„ç¤ºä¾‹å¦‚ä¸‹ï¼š
 ```cpp
 #include "oneflow/core/framework/framework.h"
 
@@ -386,53 +386,53 @@ REGISTER_USER_OP_GRAD("Relu").SetGenBackwardOpConfFn([](const user_op::UserOpWra
 
 }  // namespace oneflow
 ```
-- ºóÏòÉú³Éº¯ÊýµÄ²½Öè£º
+- åŽå‘ç”Ÿæˆå‡½æ•°çš„æ­¥éª¤ï¼š
 
-ºê`REGISTER_USER_OP_GRAD(op_type_name).SetGenBackwardOpConfFn(fn);`ÓÃÀ´×¢²áÄãµÄ×Ô¶¨ÒåopµÄºóÏòÉú³Éº¯Êý£¬ÆäÖÐfnº¯Êý¾ßÓÐÁ½¸ö²ÎÊý£¬`UserOpWrapper op`ºÍ`AddOpFn AddOp`£¬ÆäÖÐop±íÊ¾ÄãµÄ×Ô¶¨Òåop£¬AddOp±íÊ¾ÏòÕû¸ö¼ÆËãÍ¼ÖÐÌí¼ÓÒ»¸öÐÂµÄop£¨ÓÃÓÚºóÏòÍ¼Õ¹¿ª£©¡£
-ÔÚÉú³ÉºóÏòÍ¼µÄº¯ÊýÖÐ£¬Í¼ÀïµÄblobÊÇÓÉÒ»¸ö½Ðlogical blob nameµÄ×Ö·û´®±íÊ¾µÄ£¬ÆäÖÐ°üº¬ÁË²úÉúÕâ¸öblobµÄopµÄname£¬ÒÔ¼°Õâ¸öblobÔÚÕâ¸öopÀïµÄname¡£ºóÏòÉú³Éº¯ÊýµÄÈÎÎñÊÇ¶ÔÇ°ÏòopµÄÊäÈëblob£¬Éú³ÉÒ»¸öopµÄ×ÓÍ¼£¬Õâ¸ö×ÓÍ¼½ÓÊÕÇ°ÏòopµÄÊäÈëÊä³öblobÒÔ¼°Êä³öblobµÄµ¼Êý£¨ÌÝ¶È/grad£©blob£¬×ÓÍ¼µÄ×îÖÕÊä³öÊÇÇ°ÏòopÊäÈëblob¶ÔÓ¦µÄµ¼Êý£¨ÌÝ¶È£©blob£¬Òò´ËÕë¶ÔÃ¿¸ö£¨¿ÉÄÜ£©ÐèÒªÉú³ÉÌÝ¶ÈµÄblob£¬¶¼ÐèÒª¹¹½¨Ò»¸öÓÉÆäËûop×é³ÉµÄ×ÓÍ¼£¬²¢½«×ÓÍ¼µÄÊä³öblobÓëÕâ¸öÐèÒªÉú³ÉÌÝ¶ÈµÄblob°ó¶¨¡£±àÐ´Õâ¸öÉú³É×ÓÍ¼µÄ¹ý³ÌÍ¨³£°üº¬ÏÂÃæ¼¸²½£º
-  1. ÅÐ¶ÏÇ°ÏòopµÄÄ³Ò»¸öinput blobÊÇ·ñÐèÒªÉú³ÉºóÏòµÄÌÝ¶Èblob¡££¨ÎÒÃÇÇ¿ÁÒ½¨Òé½øÐÐÕâ¸öÅÐ¶Ï£¬¼´Ê¹ÄãÈÏÎªÕâ¸öopµÄinputÒ»¶¨»áÓÐÌÝ¶È¡£ÒòÎªoneflowÔÚÏµÍ³µÄ¹¹Í¼ÓÅ»¯ºó£¬¿ÉÄÜ»á·ÖÎöµÃµ½Õâ¸öinputµÄÌÝ¶È¼ÆËãÊÇÃ»ÓÐÒâÒåµÄ£¬Ôò¿ÉÒÔÖªµÀ²»ÐèÒª¹¹½¨Õâ¸ö¶îÍâµÄºóÏò×ÓÍ¼¡££©
-  2. Ê¹ÓÃUserOpConfWrapperBuilderÀ´¹¹½¨Õâ¸ö×ÓÍ¼ÖÐµÄnew_op£¬Í¨³£ÕâÐ©new_opµÄÊäÈëÊÇÇ°ÏòopµÄin/out»òÕßout¶ÔÓ¦µÄout_grad¡£
-  3. ½«¹¹½¨ºÃµÄ×ÓÍ¼µÄÊä³öblobµÄlogical blob nameÓëÇ°ÏòopµÄÊäÈëblob°ó¶¨
-  4. Ê¹ÓÃAddOpº¯Êý½«µÚ2²½ÖÐ¹¹½¨µÄnew_opÌí¼Óµ½¼ÆËãÍ¼ÖÐ
+å®`REGISTER_USER_OP_GRAD(op_type_name).SetGenBackwardOpConfFn(fn);`ç”¨æ¥æ³¨å†Œä½ çš„è‡ªå®šä¹‰opçš„åŽå‘ç”Ÿæˆå‡½æ•°ï¼Œå…¶ä¸­fnå‡½æ•°å…·æœ‰ä¸¤ä¸ªå‚æ•°ï¼Œ`UserOpWrapper op`å’Œ`AddOpFn AddOp`ï¼Œå…¶ä¸­opè¡¨ç¤ºä½ çš„è‡ªå®šä¹‰opï¼ŒAddOpè¡¨ç¤ºå‘æ•´ä¸ªè®¡ç®—å›¾ä¸­æ·»åŠ ä¸€ä¸ªæ–°çš„opï¼ˆç”¨äºŽåŽå‘å›¾å±•å¼€ï¼‰ã€‚
+åœ¨ç”ŸæˆåŽå‘å›¾çš„å‡½æ•°ä¸­ï¼Œå›¾é‡Œçš„blobæ˜¯ç”±ä¸€ä¸ªå«logical blob nameçš„å­—ç¬¦ä¸²è¡¨ç¤ºçš„ï¼Œå…¶ä¸­åŒ…å«äº†äº§ç”Ÿè¿™ä¸ªblobçš„opçš„nameï¼Œä»¥åŠè¿™ä¸ªblobåœ¨è¿™ä¸ªopé‡Œçš„nameã€‚åŽå‘ç”Ÿæˆå‡½æ•°çš„ä»»åŠ¡æ˜¯å¯¹å‰å‘opçš„è¾“å…¥blobï¼Œç”Ÿæˆä¸€ä¸ªopçš„å­å›¾ï¼Œè¿™ä¸ªå­å›¾æŽ¥æ”¶å‰å‘opçš„è¾“å…¥è¾“å‡ºblobä»¥åŠè¾“å‡ºblobçš„å¯¼æ•°ï¼ˆæ¢¯åº¦/gradï¼‰blobï¼Œå­å›¾çš„æœ€ç»ˆè¾“å‡ºæ˜¯å‰å‘opè¾“å…¥blobå¯¹åº”çš„å¯¼æ•°ï¼ˆæ¢¯åº¦ï¼‰blobï¼Œå› æ­¤é’ˆå¯¹æ¯ä¸ªï¼ˆå¯èƒ½ï¼‰éœ€è¦ç”Ÿæˆæ¢¯åº¦çš„blobï¼Œéƒ½éœ€è¦æž„å»ºä¸€ä¸ªç”±å…¶ä»–opç»„æˆçš„å­å›¾ï¼Œå¹¶å°†å­å›¾çš„è¾“å‡ºblobä¸Žè¿™ä¸ªéœ€è¦ç”Ÿæˆæ¢¯åº¦çš„blobç»‘å®šã€‚ç¼–å†™è¿™ä¸ªç”Ÿæˆå­å›¾çš„è¿‡ç¨‹é€šå¸¸åŒ…å«ä¸‹é¢å‡ æ­¥ï¼š
+  1. åˆ¤æ–­å‰å‘opçš„æŸä¸€ä¸ªinput blobæ˜¯å¦éœ€è¦ç”ŸæˆåŽå‘çš„æ¢¯åº¦blobã€‚ï¼ˆæˆ‘ä»¬å¼ºçƒˆå»ºè®®è¿›è¡Œè¿™ä¸ªåˆ¤æ–­ï¼Œå³ä½¿ä½ è®¤ä¸ºè¿™ä¸ªopçš„inputä¸€å®šä¼šæœ‰æ¢¯åº¦ã€‚å› ä¸ºoneflowåœ¨ç³»ç»Ÿçš„æž„å›¾ä¼˜åŒ–åŽï¼Œå¯èƒ½ä¼šåˆ†æžå¾—åˆ°è¿™ä¸ªinputçš„æ¢¯åº¦è®¡ç®—æ˜¯æ²¡æœ‰æ„ä¹‰çš„ï¼Œåˆ™å¯ä»¥çŸ¥é“ä¸éœ€è¦æž„å»ºè¿™ä¸ªé¢å¤–çš„åŽå‘å­å›¾ã€‚ï¼‰
+  2. ä½¿ç”¨UserOpConfWrapperBuilderæ¥æž„å»ºè¿™ä¸ªå­å›¾ä¸­çš„new_opï¼Œé€šå¸¸è¿™äº›new_opçš„è¾“å…¥æ˜¯å‰å‘opçš„in/outæˆ–è€…outå¯¹åº”çš„out_gradã€‚
+  3. å°†æž„å»ºå¥½çš„å­å›¾çš„è¾“å‡ºblobçš„logical blob nameä¸Žå‰å‘opçš„è¾“å…¥blobç»‘å®š
+  4. ä½¿ç”¨AddOpå‡½æ•°å°†ç¬¬2æ­¥ä¸­æž„å»ºçš„new_opæ·»åŠ åˆ°è®¡ç®—å›¾ä¸­
 
-Õë¶ÔÉÏÍ¼ÖÐµÄrelu_opµÄÀý×Ó£¬ÎÒÃÇ¶ÔÓ¦Ò»ÏÂÃ¿¸ö²½Öè£º
+é’ˆå¯¹ä¸Šå›¾ä¸­çš„relu_opçš„ä¾‹å­ï¼Œæˆ‘ä»¬å¯¹åº”ä¸€ä¸‹æ¯ä¸ªæ­¥éª¤ï¼š
 ```cpp
 REGISTER_USER_OP_GRAD("Relu").SetGenBackwardOpConfFn([](const user_op::UserOpWrapper& op,
                                                           user_op::AddOpFn AddOp) {
-  if (op.NeedGenGradTensor4OpInput("in", 0)) {   /* step 1. ÅÐ¶Ïrelu_op.in(0) ÊÇ·ñÐèÒª¹¹½¨ºóÏò×ÓÍ¼*/
+  if (op.NeedGenGradTensor4OpInput("in", 0)) {   /* step 1. åˆ¤æ–­relu_op.in(0) æ˜¯å¦éœ€è¦æž„å»ºåŽå‘å­å›¾*/
     user_op::UserOpConfWrapperBuilder builder(op.op_name() + "_grad");
-    /* step 2. Ê¹ÓÃUserOpConfWrapperBuilderÀ´¹¹½¨×ÓÍ¼£¬¸Ã×ÓÍ¼ÖÐ°üº¬Ò»¸ö relu_grad_op */
+    /* step 2. ä½¿ç”¨UserOpConfWrapperBuilderæ¥æž„å»ºå­å›¾ï¼Œè¯¥å­å›¾ä¸­åŒ…å«ä¸€ä¸ª relu_grad_op */
     user_op::UserOpConfWrapper relu_grad_op =
         builder.Op("relu_grad")
-            .Input("y", op.output("out", 0)) /* relu grad op µÄÒ»¸öÊäÈëÊÇy£¬¶ÔÓ¦µÄblobÎªÇ°ÏòopµÄout(0) */
-            .Input("dy", op.GetGradTensorWithOpOutput("out", 0))  /* ÁíÒ»¸öÊäÈëdy¶ÔÓ¦µÄblobÎªout_grad */
+            .Input("y", op.output("out", 0)) /* relu grad op çš„ä¸€ä¸ªè¾“å…¥æ˜¯yï¼Œå¯¹åº”çš„blobä¸ºå‰å‘opçš„out(0) */
+            .Input("dy", op.GetGradTensorWithOpOutput("out", 0))  /* å¦ä¸€ä¸ªè¾“å…¥dyå¯¹åº”çš„blobä¸ºout_grad */
             .Output("dx")
             .Build();
-    /* step 3. °ó¶¨×ÓÍ¼µÄÊä³öblob£¨relu_grad.out("dx")£©Óë Ç°ÏòopµÄinput grad blob */
+    /* step 3. ç»‘å®šå­å›¾çš„è¾“å‡ºblobï¼ˆrelu_grad.out("dx")ï¼‰ä¸Ž å‰å‘opçš„input grad blob */
     op.BindGradTensorWithOpInput(relu_grad_op.output("dx", 0), "in", 0);
-    AddOp(relu_grad_op);  /* step 4. ½«×ÓÍ¼ÖÐÐÂ´´½¨µÄopÌí¼Óµ½¼ÆËãÍ¼ÖÐ */
+    AddOp(relu_grad_op);  /* step 4. å°†å­å›¾ä¸­æ–°åˆ›å»ºçš„opæ·»åŠ åˆ°è®¡ç®—å›¾ä¸­ */
   }
 });
 ```
-- ¿ÉÄÜÓÃµ½µÄ½Ó¿Ú½éÉÜ£º
+- å¯èƒ½ç”¨åˆ°çš„æŽ¥å£ä»‹ç»ï¼š
   1. `UserOpWrapper`:
-    `.NeedGenGradTensor4OpInput(input_arg_name, index)` ·µ»ØÒ»¸öboolÖµ£¬ÅÐ¶ÏÇ°ÏòopµÄÊäÈëÊÇ·ñÐèÒªÉú³ÉºóÏòµÄÌÝ¶È
-    `.input(arg_name,index)` µÃµ½ÊäÈëµÄlogical blob name
-    `.output(arg_name,index)` µÃµ½Êä³öµÄlogical blob name
-    `.attr(attr_name)` µÃµ½opµÄÊôÐÔÖµ
-    `.TensorDesc4ArgNameAndIndex(arg_name, index)` ·µ»ØÇ°ÏòopµÄÊäÈë/Êä³ö¶ÔÓ¦µÄTensorDesc£¬°üº¬shape¡¢dtypeÐÅÏ¢
-    `.GetGradTensorWithOpOutput(output_arg_name, index)` ·µ»ØÇ°ÏòopµÄÊä³ö¶ÔÓ¦µÄºóÏòÌÝ¶ÈblobµÄlogical blob name
-    `.BindGradTensorWithOpInput(logical_blob_name, input_arg_name, index)` ½«Ò»¸öÌØ¶¨µÄlogical blob nameÓë¸ÃÇ°ÏòopµÄÊäÈëÌÝ¶Èblob°ó¶¨
-  2. `UserOpConfWrapperBuilder`:  £¨Óëpython¶ËµÄuser_op_builder¹¦ÄÜÒ»ÖÂ£¬½Ó¿ÚÀàËÆ£©
-    `UserOpConfWrapperBuilder(your_op_name)`  ¹¹Ôìº¯ÊýÐèÒªÊäÈëÐÂ¹¹½¨µÄop name
-    `.Op(op_type_name)`  Ö¸¶¨Õâ¸öopµÄtype
-    `.Input(arg_name, logical_blob_name)`  ¿ÉÑ¡Ïî£¬¿ÉÒÔµ÷ÓÃ¶à´Î£¬Ã¿´ÎÖ¸¶¨Ò»¸öinput_arg_name£¬Í¬Ê±´«ÈëÒ»¸ölogical_blob_name£¬±íÃ÷Õâ¸öinput arg name¶ÔÓ¦µÄblob¡£Èç¹û¸Ãinput_arg_name¶ÔÓ¦¶à¸öÊäÈëblob£¬Ôòµ÷ÓÃ`.Input()`µÄË³Ðò¾ÍÊÇÆä¶ÔÓ¦µÄindexË³Ðò
-    `.Output(arg_name, num)`  ¿ÉÑ¡Ïî£¬¿Éµ÷ÓÃ¶à´Î£¬Ã¿´ÎÖ¸¶¨Ò»¸ö`output_arg_name`Êµ¼Ê¶ÔÓ¦µÄÊä³öblobµÄÊýÁ¿£¬Ò²¿ÉÒÔµ÷ÓÃ `.Output(arg_name)`£¬±íÊ¾`num = 1`
-    `.Attr(attr_name, val)` ¿ÉÑ¡Ïî£¬¿Éµ÷ÓÃ¶à´Î£¬Ã¿´ÎÖ¸¶¨Ò»¸öattrÊôÐÔµÄÊôÐÔÃû³ÆºÍ²ÎÊýÖµ£¬±íÊ¾¶ÔÕâ¸öattr¸³ÖµÎªval
-    `.Build()`  ·µ»ØÒ»¸öUserOpConfWrapper£¬±íÊ¾Äã¹¹½¨Íê±ÏµÄÐÂop
+    `.NeedGenGradTensor4OpInput(input_arg_name, index)` è¿”å›žä¸€ä¸ªboolå€¼ï¼Œåˆ¤æ–­å‰å‘opçš„è¾“å…¥æ˜¯å¦éœ€è¦ç”ŸæˆåŽå‘çš„æ¢¯åº¦
+    `.input(arg_name,index)` å¾—åˆ°è¾“å…¥çš„logical blob name
+    `.output(arg_name,index)` å¾—åˆ°è¾“å‡ºçš„logical blob name
+    `.attr(attr_name)` å¾—åˆ°opçš„å±žæ€§å€¼
+    `.TensorDesc4ArgNameAndIndex(arg_name, index)` è¿”å›žå‰å‘opçš„è¾“å…¥/è¾“å‡ºå¯¹åº”çš„TensorDescï¼ŒåŒ…å«shapeã€dtypeä¿¡æ¯
+    `.GetGradTensorWithOpOutput(output_arg_name, index)` è¿”å›žå‰å‘opçš„è¾“å‡ºå¯¹åº”çš„åŽå‘æ¢¯åº¦blobçš„logical blob name
+    `.BindGradTensorWithOpInput(logical_blob_name, input_arg_name, index)` å°†ä¸€ä¸ªç‰¹å®šçš„logical blob nameä¸Žè¯¥å‰å‘opçš„è¾“å…¥æ¢¯åº¦blobç»‘å®š
+  2. `UserOpConfWrapperBuilder`:  ï¼ˆä¸Žpythonç«¯çš„user_op_builderåŠŸèƒ½ä¸€è‡´ï¼ŒæŽ¥å£ç±»ä¼¼ï¼‰
+    `UserOpConfWrapperBuilder(your_op_name)`  æž„é€ å‡½æ•°éœ€è¦è¾“å…¥æ–°æž„å»ºçš„op name
+    `.Op(op_type_name)`  æŒ‡å®šè¿™ä¸ªopçš„type
+    `.Input(arg_name, logical_blob_name)`  å¯é€‰é¡¹ï¼Œå¯ä»¥è°ƒç”¨å¤šæ¬¡ï¼Œæ¯æ¬¡æŒ‡å®šä¸€ä¸ªinput_arg_nameï¼ŒåŒæ—¶ä¼ å…¥ä¸€ä¸ªlogical_blob_nameï¼Œè¡¨æ˜Žè¿™ä¸ªinput arg nameå¯¹åº”çš„blobã€‚å¦‚æžœè¯¥input_arg_nameå¯¹åº”å¤šä¸ªè¾“å…¥blobï¼Œåˆ™è°ƒç”¨`.Input()`çš„é¡ºåºå°±æ˜¯å…¶å¯¹åº”çš„indexé¡ºåº
+    `.Output(arg_name, num)`  å¯é€‰é¡¹ï¼Œå¯è°ƒç”¨å¤šæ¬¡ï¼Œæ¯æ¬¡æŒ‡å®šä¸€ä¸ª`output_arg_name`å®žé™…å¯¹åº”çš„è¾“å‡ºblobçš„æ•°é‡ï¼Œä¹Ÿå¯ä»¥è°ƒç”¨ `.Output(arg_name)`ï¼Œè¡¨ç¤º`num = 1`
+    `.Attr(attr_name, val)` å¯é€‰é¡¹ï¼Œå¯è°ƒç”¨å¤šæ¬¡ï¼Œæ¯æ¬¡æŒ‡å®šä¸€ä¸ªattrå±žæ€§çš„å±žæ€§åç§°å’Œå‚æ•°å€¼ï¼Œè¡¨ç¤ºå¯¹è¿™ä¸ªattrèµ‹å€¼ä¸ºval
+    `.Build()`  è¿”å›žä¸€ä¸ªUserOpConfWrapperï¼Œè¡¨ç¤ºä½ æž„å»ºå®Œæ¯•çš„æ–°op
   3. `UserOpConfWrapper`:
-    `.input(arg_name,index)` µÃµ½ÊäÈëµÄlogical blob name
-    `.output(arg_name,index)` µÃµ½Êä³öµÄlogical blob name
-    `.attr(attr_name)` µÃµ½opµÄÊôÐÔÖµ
+    `.input(arg_name,index)` å¾—åˆ°è¾“å…¥çš„logical blob name
+    `.output(arg_name,index)` å¾—åˆ°è¾“å‡ºçš„logical blob name
+    `.attr(attr_name)` å¾—åˆ°opçš„å±žæ€§å€¼
   4. `AddOp`: 
-    ÊäÈë²ÎÊýÊÇÒ»¸öUserOpConfWrapper
+    è¾“å…¥å‚æ•°æ˜¯ä¸€ä¸ªUserOpConfWrapper
