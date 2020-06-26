@@ -104,7 +104,8 @@ nav:
       - 任务函数的定义与调用: extended_topics/job_function_define_call.md
       - Consistent与Mirrored策略: extended_topics/consistent_mirrored.md
       - OneFlow的并行特色: extended_topics/model_mixed_parallel.md
-      - OFrecord数据格式: extended_topics/ofrecord.md
+      - OFRecord数据格式: extended_topics/ofrecord.md
+      - 加载与准备OFRecord数据集: extended_topics/how_to_make_ofdataset.md
       - 使用VSCode调试OneFlow: extended_topics/debug_by_vscode.md
       - 用户自定义op: extended_topics/user_op.md
       - Watch与Watch Diff: extended_topics/watch_watch_diff.md
@@ -119,7 +120,6 @@ nav:
 
     - 二次开发:
       - oneflow架构: extended_dev/framework.md
-      - User Op: extended_dev/user_op.md
       - 算子描述符: extended_dev/op_desc.md
       - 自动梯度求导: extended_dev/auto_grad.md
       - 图优化: extended_dev/graph_optimize.md
