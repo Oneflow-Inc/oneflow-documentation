@@ -96,6 +96,8 @@ def decode_ofrecord(
 
 * shuffle：数据获取时顺序是否随机打乱
 
+* buffer_size： 数据流水线中样本的数量，比如，若设置为1024表示缓冲区中一共1024个样本，则上参数shuffle为True时，是针对缓冲区中的1024个样本进行打乱
+
 其中必需参数`ofrecord_dir`为数据集目录的路径，`blobs`为一个tuple，tuple中存有需要读取数据集中的`Feature`(参考[OFrecord数据格式](ofrecord.md))，我们将在下文结合实例，介绍如何定义`blobs`参数。
 
 ```python
@@ -180,6 +182,8 @@ if __name__ == '__main__':
 * 通过`BlobConf`定义占位符，用于提取数据集中的`Feature`
 
 * 调用`decode_ofrecord`，将上一步定义的占位符传递给`decode_ofrecord`，并设置相关参数，获取数据集中的数据
+
+使用`decode_ofrecord`的方式提取数据中的`Feature`虽然方便，但是支持的预处理方式和解码器种类有限。如果需要更灵活的数据预处理方式，包括自定义用户op，推荐使用`ofrecord_reader`。
 
 ### `ofrecord_reader`
 在[数据输入](../basics_topics/data_input.md)一文中，我们已经展示了如何使用`ofrecord_reader`接口加载OFRecord数据，并进行数据预处理：
