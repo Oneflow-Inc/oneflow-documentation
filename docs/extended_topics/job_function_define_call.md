@@ -49,4 +49,4 @@ OneFlow对任务函数的处理，对于用户而言是无感、透明的。
       if i % 20 == 0: print(loss.mean())
 ```
 
-要注意，直接调用任务函数`tran_job`其实得到的是OneFlow的`blob`对象，需要进一步通过该对象的`get`或者`async_get`方法，来获取任务函数的返回结果。详情可以参阅专题[获取任务函数的结果](async_get.md)。
+要注意，直接调用任务函数`tran_job`其实得到的是OneFlow的`blob`对象，需要进一步通过该对象的`get`或者`async_get`方法，来获取任务函数的返回结果。详情可以参阅专题[获取任务函数的结果](../basics_topics/async_get.md)。
