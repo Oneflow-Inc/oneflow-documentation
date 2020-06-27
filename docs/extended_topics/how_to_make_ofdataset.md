@@ -96,7 +96,7 @@ def decode_ofrecord(
 
 * shuffle：数据获取时顺序是否随机打乱
 
-* buffer_size： 数据流水线中样本的数量，比如，若设置为1024表示缓冲区中一共1024个样本，则上参数shuffle为True时，是针对缓冲区中的1024个样本进行打乱
+* buffer_size： 数据流水线中样本的数量，比如，若设置为1024表示缓冲区中一共1024个样本，则以上参数shuffle为True时，是针对缓冲区中的1024个样本进行打乱
 
 其中必需参数`ofrecord_dir`为数据集目录的路径，`blobs`为一个tuple，tuple中存有需要读取数据集中的`Feature`(参考[OFrecord数据格式](ofrecord.md))，我们将在下文结合实例，介绍如何定义`blobs`参数。
 
