@@ -97,7 +97,7 @@ from mnist_util import load_data
 
 BATCH_SIZE = 100
 GPU_NUM = 2
-BATCH_EACH = int(BATCH_SIZE/GPU_NUM)
+BATCH_SIZE_PER_GPU  = int(BATCH_SIZE/GPU_NUM)
 
 def get_train_config():
   config = flow.function_config()
@@ -108,8 +108,8 @@ def get_train_config():
 
 
 @flow.global_function(get_train_config())
-def train_job(images=flow.MirroredTensorDef((BATCH_EACH, 1, 28, 28), dtype=flow.float),
-              labels=flow.MirroredTensorDef((BATCH_EACH, ), dtype=flow.int32)):
+def train_job(images=flow.MirroredTensorDef((BATCH_SIZE_PER_GPU, 1, 28, 28), dtype=flow.float),
+              labels=flow.MirroredTensorDef((BATCH_SIZE_PER_GPU, ), dtype=flow.int32)):
   initializer = flow.truncated_normal(0.1)
   reshape = flow.reshape(images, [images.shape[0], -1])
   hidden = flow.layers.dense(reshape, 512, activation=flow.nn.relu, kernel_initializer=initializer)
@@ -126,10 +126,10 @@ if __name__ == '__main__':
   (train_images, train_labels), (test_images, test_labels) = load_data(BATCH_SIZE)
   
   for i, (images, labels) in enumerate(zip(train_images, train_labels)):
-    images1 = images[:BATCH_EACH]
-    images2 = images[BATCH_EACH:]
-    labels1 = labels[:BATCH_EACH]
-    labels2 = labels[BATCH_EACH:]
+    images1 = images[:BATCH_SIZE_PER_GPU]
+    images2 = images[BATCH_SIZE_PER_GPU:]
+    labels1 = labels[:BATCH_SIZE_PER_GPU]
+    labels2 = labels[BATCH_SIZE_PER_GPU:]
 
     imgs_list = [images1, images2]
     labels_list = [labels1, labels2]
@@ -147,18 +147,18 @@ if __name__ == '__main__':
 flow.config.gpu_device_num(2)
 ```
 
-* MirroredTensorDef定义的样本数目，是被切分后的数目，即代码中的`BATCH_EACH`与总样本数`BATCH_SIZE`的关系为：`BATCH_SIZE=BATCH_EACH×GPU_NUM`
+* MirroredTensorDef定义的样本数目，是被切分后的数目，即代码中的`BATCH_SIZE_PER_GPU`与总样本数`BATCH_SIZE`的关系为：`BATCH_SIZE=BATCH_SIZE_PER_GPU×GPU_NUM`
 ```python
-def train_job(images=flow.MirroredTensorDef((BATCH_EACH, 1, 28, 28),       dtype=flow.float),
-        labels=flow.MirroredTensorDef((BATCH_EACH, ), dtype=flow.int32))
+def train_job(images=flow.MirroredTensorDef((BATCH_SIZE_PER_GPU, 1, 28, 28),       dtype=flow.float),
+        labels=flow.MirroredTensorDef((BATCH_SIZE_PER_GPU, ), dtype=flow.int32))
 ```
 
-* 切分后的数据，需要保存至`list`中，传入训练函数：
+* 切分后的数据，需要保存至`list`中传入训练函数；`list`中元素的个数与 **参与训练的GPU数目** 一致；OneFlow将按照`list`中元素顺序，向各卡传递数据(`list`中第i个元素对应第i张卡)：
 ```python
-    images1 = images[:BATCH_EACH]
-    images2 = images[BATCH_EACH:]
-    labels1 = labels[:BATCH_EACH]
-    labels2 = labels[BATCH_EACH:]
+    images1 = images[:BATCH_SIZE_PER_GPU]
+    images2 = images[BATCH_SIZE_PER_GPU:]
+    labels1 = labels[:BATCH_SIZE_PER_GPU]
+    labels2 = labels[BATCH_SIZE_PER_GPU:]
 
     imgs_list = [images1, images2]
     labels_list = [labels1, labels2]
@@ -166,7 +166,7 @@ def train_job(images=flow.MirroredTensorDef((BATCH_EACH, 1, 28, 28),       dtype
     loss = train_job(imgs_list, labels_list).get().ndarray_list()
 ```
 
-* 返回的结果，通过`ndarray_list`转为numpy数据，也是一个`list`，我们做了拼接后，计算并打印了`total_loss`
+* 返回的结果，通过`ndarray_list`转为numpy数据，也是一个`list`，该`list`中元素个数与 **参与训练的GPU数目** 一致；`list`中的第i个元素对应了第i张GPU卡上的运算结果。我们做了拼接后，计算并打印了`total_loss`
 ```python
     loss = train_job(imgs_list, labels_list).get().ndarray_list()
     total_loss = np.array([*loss[0], *loss[1]])
@@ -186,12 +186,12 @@ def train_job(images=flow.MirroredTensorDef((BATCH_EACH, 1, 28, 28),       dtype
   config.default_distribute_strategy(flow.distribute.consistent_strategy())
 ```
 
-之所以说consistent策略是OneFlow的一大特色，是因为在OneFlow的设计中，若采用`consistent_strategy`，那么从用户的视角看，所使用的op、blob将获得 **逻辑上的统一**，同样以本文开头的矩阵乘法为例，我们只需要关注[矩阵乘法](#mat_mul_op)本身数学计算上的意义；而在工程上到底如何配置，采用模型并行还是数据并行，可以很方便地使用OneFlow提供的接口进行配置，由OneFlow内部来解决 **数据并行中的数据切分** 、**模型并行中的模型切分** 、**串行逻辑** 等问题。
+之所以说consistent策略是OneFlow的一大特色，是因为在OneFlow的设计中，若采用`consistent_strategy`，那么从用户的视角看，所使用的op、blob将获得 **逻辑上的统一**，同样以本文开头的矩阵乘法为例，我们只需要关注[矩阵乘法](#mat_mul_op)本身数学计算上的意义；而在工程上到底如何配置、采用模型并行还是数据并行等细节问题，可以使用OneFlow的接口轻松完成；OneFlow内部会高效可靠地解决 **数据并行中的数据切分** 、**模型并行中的模型切分** 、**串行逻辑** 等问题。
 
 在OneFlow的consistent策略下，可以自由选择模型并行、数据并行或者两者共存的混合并行。
 
 ### 代码示例
-以下代码，我们采用consistent策略，使用2个GPU进行训练，consistent策略下默认的并行方式仍然是 **数据并行**。关于如何在consistent策略下设置 **模型并行** 及**混合并行**不在本文讨论范围，我们在[OneFlow的并行特色](model_mixed_parallel.md)中有转么的介绍与示例。
+以下代码，我们采用consistent策略，使用2个GPU进行训练，consistent策略下默认的并行方式仍然是 **数据并行**。关于如何在consistent策略下设置 **模型并行** 及 **混合并行** 不在本文讨论范围，我们在[OneFlow的并行特色](model_mixed_parallel.md)中有专门的介绍与示例。
 
 ```python
 import numpy as np
