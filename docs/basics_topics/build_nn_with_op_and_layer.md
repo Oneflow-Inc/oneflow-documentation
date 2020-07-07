@@ -18,7 +18,9 @@ def lenet(data):
   hidden = flow.layers.dense(reshape, 512, activation=flow.nn.relu, kernel_initializer=initializer)
   return flow.layers.dense(hidden, 10, kernel_initializer=initializer)
 ```
-![image](E07492F444294C4DA1AB4DB81C606326)
+![image](imgs/lenet.png)
+
+![](/imgs/lenet.png)
 
 上图中有两类元素，一类是方框代表的运算单元，包括`op`和`layer`两类，比如conv2d、dense、max_pool2d等；一类是箭头代表的数据块定义（`BlobDef`）。
 
