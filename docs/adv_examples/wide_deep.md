@@ -14,12 +14,12 @@ OneFlow¶Ô±êHugeCTR´î½¨ÁËWide & Deep Ñ§Ï°ÍøÂç£¨WDL)¡£OneFlow-WDLÍøÂçÊµÏÖÁËÄ£ĞÍ²¢Ğ
 - scikit-learn
 
 ### Êı¾İ×¼±¸
-ÎÒÃÇ×¼±¸ÁËÒ»¸öĞ¡µÄ[Ñù±¾Êı¾İ¼¯](ofrecord-todo)£¬¿ÉÒÔÏÂÔØ½øĞĞ¼òµ¥²âÊÔ¡£
+ÎÒÃÇ×¼±¸ÁËÒ»¸öĞ¡µÄ[Ñù±¾Êı¾İ¼¯](https://oneflow-public.oss-cn-beijing.aliyuncs.com/datasets/wdl_ofrecord_examples.tgz)£¬¿ÉÒÔÏÂÔØ½øĞĞ¼òµ¥²âÊÔ¡£
 
-»òÕß²Î¿¼[¡¶Ê¹ÓÃSpark´´½¨WDLÊı¾İ¼¯¡·](create_WDL_ofrecord_with_spark.md)ÖĞµÄ²½Öè£¬´ÓCriteoLabs¹ÙÍøÏÂÔØÔ­Ê¼Êı¾İ¼¯²¢ÖÆ×÷³ÉOneFlowËùĞèÒªµÄOFRecord¸ñÊ½µÄÊı¾İ¼¯¡£
+»òÕß²Î¿¼[¡¶Ê¹ÓÃSpark´´½¨WDLÊı¾İ¼¯¡·](https://github.com/Oneflow-Inc/OneFlow-Benchmark/blob/of_develop_py3/ClickThroughRate/WideDeepLearning/how_to_make_ofrecord_for_wdl.md)ÖĞµÄ²½Öè£¬´ÓCriteoLabs¹ÙÍøÏÂÔØÔ­Ê¼Êı¾İ¼¯²¢ÖÆ×÷³ÉOneFlowËùĞèÒªµÄOFRecord¸ñÊ½µÄÊı¾İ¼¯¡£
 
 ### OneFlow-WDL½Å±¾
-OneFlow-WDL½Å±¾Ö»ÓĞÒ»¸öÎÄ¼ş`wdl_train_eval.py`£¬Çë´Ó[ÕâÀï](wdl_train_eval.py)ÏÂÔØ¡£
+OneFlow-WDL½Å±¾Ö»ÓĞÒ»¸öÎÄ¼ş`wdl_train_eval.py`£¬Çë´Ó[ÕâÀï](https://github.com/Oneflow-Inc/OneFlow-Benchmark/blob/of_develop_py3/ClickThroughRate/WideDeepLearning/wdl_train_eval.py)ÏÂÔØ¡£
 
 ## ÔËĞĞOneFlow-WDL½Å±¾
 ```
