@@ -87,7 +87,7 @@ python3 wdl_train_eval.py \
 
 结果如下图：
 
-![image](imgs/fixed_batch_size_latency_1gpu.png)
+![image](imgs/scaled_batch_size_latency_1gpu.png)
 
 ### 超大词表测试
 OneFlow-WDL中配置了两个Embedding Table：
