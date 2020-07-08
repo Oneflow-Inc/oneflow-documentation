@@ -127,7 +127,7 @@ average speed: 0.556(sentences/sec)
 |run_squad.py|用于启动SQuAD的训练|SQuAD|
 |run_squad_predict.py|使用训练好的SQuAD模型进行预测|SQuAD|
 |npy2json.py|将OneFlow的预测结果转化为prediction json格式的必要脚本|SQuAD|
-|evaluate-v1.1.py|[SQuAD Explorer](https://rajpurkar.github.io/SQuAD-explorer/)提供的对预测结果打分的脚本|SQuAD|
+|convert_tf_ckpt_to_of.py|将TensorFlow模型转为OneFlow个模型格式|BERT/SQuAD|
 
 
 
@@ -196,10 +196,53 @@ average speed: 0.556(sentences/sec)
 
 如果感兴趣，可以通过[google-research BERT](https://github.com/google-research/bert)的页面，下载tfrecord格式的数据集。再根据[加载与准备OFRecord数据集](../extended_topics/how_to_make_ofdataset.md)中的方法，将TFRecord数据转为OFRecord数据集使用。
 
+### 将Tensorflow的BERT模型转为OneFlow模型格式
+如果想直接使用已经训练好的pretrained模型做fine-tune任务（如以下将展示的SQuAD），可以考虑直接从[google-research BERT](https://github.com/google-research/bert)页面下载已经训练好的BERT模型。
+
+再利用我们提供的`convert_tf_ckpt_to_of.py`脚本，将其转为OneFlow模型格式。转换过程如下：
+
+首先，下载并解压某个版本的BERT模型，如`uncased_L-12_H-768_A-12`。
+```shell
+wget https://storage.googleapis.com/bert_models/2020_02_20/uncased_L-12_H-768_A-12.zip
+unzip uncased_L-12_H-768_A-12.zip -d uncased_L-12_H-768_A-12
+```
+
+然后，运行以下命令：
+```shell
+cd uncased_L-12_H-768_A-12/
+cat > checkpoint <<ONEFLOW
+model_checkpoint_path: "bert_model.ckpt" 
+all_model_checkpoint_paths: "bert_model.ckpt" 
+ONEFLOW
+```
+
+该命令将在解压目录下创建一个`checkpoint`文件，并写入以下内容：
+```
+model_checkpoint_path: "bert_model.ckpt" 
+all_model_checkpoint_paths: "bert_model.ckpt" 
+```
+
+此时，已经准备好待转化的tensorflow模型目录，整个模型目录的结构如下：
+```shell
+uncased_L-12_H-768_A-12
+├── bert_config.json
+├── bert_model.ckpt.data-00000-of-00001
+├── bert_model.ckpt.index
+├── checkpoint
+└── vocab.txt
+```
+
+我们接着使用`convert_tf_ckpt_to_of.py`将tensorflow模型转为OneFlow模型：
+```bash
+python convert_tf_ckpt_to_of.py \
+  --tf_checkpoint_path ./uncased_L-12_H-768_A-12 \
+  --of_dump_path ./uncased_L-12_H-768_A-12-oneflow
+```
+以上命令，将转化好的OneFlow格式的模型保存在`./uncased_L-12_H-768_A-12-oneflow`目录下，供后续微调训练(如SQuAD)使用。
 
 ## 微调：SQuAD问答任务
 ### 将pretrained模型修改为SQuAD模型
-我们只需要再BERT的backbone基础上，加上一层`output`层，并修改loss的表达即可，完整的代码可以查看`squad.py`脚本，以下是几处关键修改：
+我们只需要再BERT的backbone基础上，加上一层`output`层，并修改loss的表达式即可，完整的代码可以查看`squad.py`脚本，以下是几处关键修改：
 ```python
 def SQuADTrain():
     #...
@@ -266,7 +309,18 @@ cp -R ./bert_regresssioin_test/of/last_snapshot ./squadModel
 cp -R --remove-destination ./dataset/uncased_L-12_H-768_A-12_oneflow/* ./squadModel/
 ```
 
+### OneFlow预训练模型的训练次数问题
+OneFlow生成的模型目录中，会有一个名为`System-Train-TrainStep-xxx`的子目录(xxx为任务函数的函数名)，该子目录下的out文件中，保存有训练总迭代数，并且这个迭代数会用于动态调节训练过程的`learning rate`。
 
+为了防止保存的迭代数影响到微调的训练，应该将out文件中的二进制数据清零：
+```shell
+cd System-Train-TrainStep-xxx
+xxd -r > out <<ONEFLOW
+00000000: 0000 0000 0000 0000
+ONEFLOW
+```
+
+如果你使用的是由TensorFlow转过来的预训练模型，则可以省去这个步骤。
 
 ### 开始SQuAD训练
 通过`run_suqad.py`脚本，开始训练SQuAD模型，主要配置如下：
@@ -350,7 +404,7 @@ python npy2json.py\
 
 注意将`all_results_file`修改为上一步得到的`all_results.npy`的路径。
 
-最终，得到`predictions.json`文件，可以使用`evaluate-v1.1.py`进行打分。
+最终，得到`predictions.json`文件，可以使用[evaluate-v1.1.py](https://rajpurkar.github.io/SQuAD-explorer/)进行打分。
 
 ```bash
 python evaluate-v1.1.py \
