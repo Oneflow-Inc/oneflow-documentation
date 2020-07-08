@@ -242,7 +242,7 @@ python convert_tf_ckpt_to_of.py \
 
 ## 微调：SQuAD问答任务
 ### 将pretrained模型修改为SQuAD模型
-我们只需要再BERT的backbone基础上，加上一层`output`层，并修改loss的表达式即可，完整的代码可以查看`squad.py`脚本，以下是几处关键修改：
+我们只需要在BERT的backbone基础上，加上一层`output`层，并修改loss的表达式即可，完整的代码可以查看`squad.py`脚本，以下是几处关键修改：
 ```python
 def SQuADTrain():
     #...
