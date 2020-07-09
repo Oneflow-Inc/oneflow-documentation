@@ -50,10 +50,11 @@ def acc(labels, logits):
 
 
 if __name__ == '__main__':
+
     check_point = flow.train.CheckPoint()
     check_point.load("./lenet_models_1")
-    (train_images, train_labels), (test_images, test_labels) = load_data(BATCH_SIZE, BATCH_SIZE)
 
+    (train_images, train_labels), (test_images, test_labels) = load_data(BATCH_SIZE, BATCH_SIZE)
     for epoch in range(1):
         for i, (images, labels) in enumerate(zip(train_images, train_labels)):
             labels, logits = eval_job(images, labels).get()

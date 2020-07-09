@@ -41,6 +41,7 @@ def main_train():
     # flow.config.enable_debug_mode(True)
     check_point = flow.train.CheckPoint()
     check_point.init()
+
     (train_images, train_labels), (test_images, test_labels) = load_data(BATCH_SIZE)
     for epoch in range(50):
         for i, (images, labels) in enumerate(zip(train_images, train_labels)):
@@ -51,3 +52,6 @@ def main_train():
 
 if __name__ == '__main__':
     main_train()
+
+
+

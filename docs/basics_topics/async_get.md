@@ -36,7 +36,7 @@
 def train_job(images=flow.FixedTensorDef((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
               labels=flow.FixedTensorDef((BATCH_SIZE,), dtype=flow.int32)):
     with flow.fixed_placement("cpu", "0:0"):
-        logits = mlp(images)
+        logits = lenet(images, train=True)
         loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits, name="softmax_loss")
     flow.losses.add_loss(loss)
     return loss
@@ -158,6 +158,20 @@ from mnist_util import load_data
 BATCH_SIZE = 100
 
 
+def lenet(data, train=False):
+    initializer = flow.truncated_normal(0.1)
+    conv1 = flow.layers.conv2d(data, 32, 5, padding='SAME', activation=flow.nn.relu,
+                               kernel_initializer=initializer, name="conv1")
+    pool1 = flow.nn.max_pool2d(conv1, ksize=2, strides=2, padding='SAME', name="pool1")
+    conv2 = flow.layers.conv2d(pool1, 64, 5, padding='SAME', activation=flow.nn.relu,
+                               kernel_initializer=initializer, name="conv2")
+    pool2 = flow.nn.max_pool2d(conv2, ksize=2, strides=2, padding='SAME', name="pool2")
+    reshape = flow.reshape(pool2, [pool2.shape[0], -1])
+    hidden = flow.layers.dense(reshape, 512, activation=flow.nn.relu, kernel_initializer=initializer, name="hidden")
+    if train: hidden = flow.nn.dropout(hidden, rate=0.5)
+    return flow.layers.dense(hidden, 10, kernel_initializer=initializer, name="outlayer")
+
+
 def get_train_config():
     config = flow.function_config()
     config.default_data_type(flow.float)
@@ -169,42 +183,24 @@ def get_train_config():
 @flow.global_function(get_train_config())
 def train_job(images=flow.FixedTensorDef((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
               labels=flow.FixedTensorDef((BATCH_SIZE,), dtype=flow.int32)):
-    # mlp
-    initializer = flow.truncated_normal(0.1)
-    reshape = flow.reshape(images, [images.shape[0], -1])
-    hidden = flow.layers.dense(reshape, 512, activation=flow.nn.relu, kernel_initializer=initializer)
-    logits = flow.layers.dense(hidden, 10, kernel_initializer=initializer)
-
-    loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits, name="softmax_loss")
-
+    with flow.fixed_placement("gpu", "0:0"):
+        logits = lenet(images, train=True)
+        loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits, name="softmax_loss")
     flow.losses.add_loss(loss)
     return loss
 
 
-g_i = 0
+if __name__ == '__main__':
 
-
-def cb_print_loss(result):
-    global g_i
-    if g_i % 20 == 0:
-        print(result.mean())
-    g_i += 1
-
-
-def main_train():
-    # flow.config.enable_debug_mode(True)
+    flow.config.enable_debug_mode(True)
     check_point = flow.train.CheckPoint()
     check_point.init()
     (train_images, train_labels), (test_images, test_labels) = load_data(BATCH_SIZE)
-    for epoch in range(50):
+    for epoch in range(1):
         for i, (images, labels) in enumerate(zip(train_images, train_labels)):
-            train_job(images, labels).async_get(cb_print_loss)
-
-    check_point.save('./mlp_models_1')  # need remove the existed folder
-
-
-if __name__ == '__main__':
-    main_train()
+            loss = train_job(images, labels).get().mean()
+            if i % 20 == 0: print(loss)
+    check_point.save('./lenet_models_1')  # need remove the existed folder
 ```
 
 ### 同步获取多个返回结果
@@ -263,10 +259,11 @@ def acc(labels, logits):
 
 
 if __name__ == '__main__':
+
     check_point = flow.train.CheckPoint()
     check_point.load("./lenet_models_1")
-    (train_images, train_labels), (test_images, test_labels) = load_data(BATCH_SIZE, BATCH_SIZE)
 
+    (train_images, train_labels), (test_images, test_labels) = load_data(BATCH_SIZE, BATCH_SIZE)
     for epoch in range(1):
         for i, (images, labels) in enumerate(zip(train_images, train_labels)):
             labels, logits = eval_job(images, labels).get()
@@ -325,6 +322,7 @@ def main_train():
     # flow.config.enable_debug_mode(True)
     check_point = flow.train.CheckPoint()
     check_point.init()
+
     (train_images, train_labels), (test_images, test_labels) = load_data(BATCH_SIZE)
     for epoch in range(50):
         for i, (images, labels) in enumerate(zip(train_images, train_labels)):

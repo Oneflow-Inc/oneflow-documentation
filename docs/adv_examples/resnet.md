@@ -16,7 +16,7 @@ ImageNet大规模视觉识别挑战赛（ILSVRC），常称为ImageNet竞赛，�
 
 [OneFlow-Benchmark](xxx)中，提供ResNet50 v1.5的OneFlow实现。我们在ImageNet-2012数据集上训练90轮后，验证集上的准确率能够达到：77.318%(top1)，93.622%(top5)。
 
-![resnet50_validation_acuracy](docs/resnet50_validation_acuracy.png)
+![resnet50_validation_acuracy](imgs/resnet50_validation_acuracy.png)
 
 
 

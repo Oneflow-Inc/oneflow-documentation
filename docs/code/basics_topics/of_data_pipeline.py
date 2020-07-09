@@ -7,12 +7,12 @@ def test_job():
     batch_size = 64
     color_space = 'RGB'
     with flow.fixed_placement("cpu", "0:0"):
-        ofrecord = flow.data.obuild_nn_with_op_and_layerfrecord_reader('/path/to/ImageNet/ofrecord',
-                                                                       batch_size=batch_size,
-                                                                       data_part_num=1,
-                                                                       part_name_suffix_length=5,
-                                                                       random_shuffle=True,
-                                                                       shuffle_after_epoch=True)
+        ofrecord = flow.data.ofrecord_reader('/path/to/ImageNet/ofrecord',
+                                             batch_size=batch_size,
+                                             data_part_num=1,
+                                             part_name_suffix_length=5,
+                                             random_shuffle=True,
+                                             shuffle_after_epoch=True)
         image = flow.data.OFRecordImageDecoderRandomCrop(ofrecord, "encoded",
                                                          color_space=color_space)
         label = flow.data.OFRecordRawDecoder(ofrecord, "class/label", shape=(), dtype=flow.int32)
