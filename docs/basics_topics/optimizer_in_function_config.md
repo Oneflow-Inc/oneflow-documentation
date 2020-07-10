@@ -23,7 +23,7 @@ def eval_job():
 当然，上面的`get_eval_config`中只配置了网络的基本参数。在下面的例子中，我们将介绍一个训练任务，并配置学习率lr和sgd优化器等参数。
 
 ## 训练配置
-同样，只要按照下面的方式给`train_job`函数配上一个装饰器`@flow.function(get_train_config())`就能够实现一个用于训练任务的网络。
+同样，只要按照下面的方式给`train_job`函数配上一个装饰器`@flow.global_function(get_train_config())`就能够实现一个用于训练任务的网络。
 ```python
 def get_train_config():
   config = flow.function_config()
@@ -78,7 +78,7 @@ config.train.model_update_conf({"naive_conf": {}})
 ```
 config.train.model_update_conf({"momentum_conf": {'beta': 0.875}})
 ```
-这里不对每个优化器做详细说明，详细请参考[optimizer api](optimizer api)
+这里不对每个优化器做详细说明，详细请参考[optimizer api](http://183.81.182.202:8000/html/train.html#)
 ### 其他优化选项
 前面的定义中还有4个可选的优化选项：
 - `learning_rate_decay` - 学习率的衰减方式
@@ -86,7 +86,7 @@ config.train.model_update_conf({"momentum_conf": {'beta': 0.875}})
 - `clip_conf` - 梯度截取
 - `weight_decay_conf` - 权重衰减
 
-这4个选项可以不选或多选，配置方式就是在python字典中加入新的key-value项，详细请参考[optimizer api](optimizer api)，下面仅举出两种形式的例子供参考。
+这4个选项可以不选或多选，配置方式就是在python字典中加入新的key-value项，详细请参考[optimizer api](http://183.81.182.202:8000/html/train.html#)，下面仅举出两种形式的例子供参考。
 ```
 # example 1
 model_update_conf = {
@@ -161,7 +161,7 @@ def test_job():
 ```
 上面的例子中，通过`function_config`设置了网络的缺省数据类型为float；将被用于训练；学习率是0.1；采用了`naive_conv`优化算法，也就是`SGD`。
 
-function_config中还包含哪些配置请参考[function_config API](api).
+function_config中还包含哪些配置请参考[function_config API](http://183.81.182.202:8000/html/oneflow.html).
 
 ### train or not
 function_config里面有好多可以设置的属性，这里着重介绍`train`。通常`train`不会被设置，这种情况下`job function`只能做预测任务。一旦`train`被设置，`job function`就是一个训练任务了，如下面代码所示设置了学习率和模型更新的策略（优化算法）：

@@ -6,21 +6,22 @@
 `data`是维度是100x1×28×28的`Blob`，`data`首先作为`conv2d`的输入参与卷积计算，计算结果传给conv1，然后conv1作为输入传给`max_pool2d`，依次类推。（注：这里的说法不准确，只是方便理解这么描述）
 
 ```python
-def lenet(data):
-  initializer = flow.truncated_normal(0.1)
-  conv1 = flow.layers.conv2d(data, 32, 5, padding='SAME', activation=flow.nn.relu,
-                             kernel_initializer=initializer)
-  pool1 = flow.nn.max_pool2d(conv1, ksize=2, strides=2, padding='SAME', data_format='NCHW')
-  conv2 = flow.layers.conv2d(pool1, 64, 5, padding='SAME', activation=flow.nn.relu,
-                             kernel_initializer=initializer)
-  pool2 = flow.nn.max_pool2d(conv2, ksize=2, strides=2, padding='SAME', data_format='NCHW')
-  reshape = flow.reshape(pool2, [pool2.shape[0], -1])
-  hidden = flow.layers.dense(reshape, 512, activation=flow.nn.relu, kernel_initializer=initializer)
-  return flow.layers.dense(hidden, 10, kernel_initializer=initializer)
+def lenet(data, train=False):
+    initializer = flow.truncated_normal(0.1)
+    conv1 = flow.layers.conv2d(data, 32, 5, padding='SAME', activation=flow.nn.relu, name='conv1',
+                               kernel_initializer=initializer)
+    pool1 = flow.nn.max_pool2d(conv1, ksize=2, strides=2, padding='SAME', name='pool1')
+    conv2 = flow.layers.conv2d(pool1, 64, 5, padding='SAME', activation=flow.nn.relu, name='conv2',
+                               kernel_initializer=initializer)
+    pool2 = flow.nn.max_pool2d(conv2, ksize=2, strides=2, padding='SAME', name='pool2', )
+    reshape = flow.reshape(pool2, [pool2.shape[0], -1])
+    hidden = flow.layers.dense(reshape, 512, activation=flow.nn.relu, kernel_initializer=initializer, name='dense1')
+    if train: hidden = flow.nn.dropout(hidden, rate=0.5)
+    return flow.layers.dense(hidden, 10, kernel_initializer=initializer, name='dense2')
 ```
-![image](imgs/lenet.png)
+![](imgs/lenet.png)
 
-![](/imgs/lenet.png)
+
 
 上图中有两类元素，一类是方框代表的运算单元，包括`op`和`layer`两类，比如conv2d、dense、max_pool2d等；一类是箭头代表的数据块定义（`BlobDef`）。
 

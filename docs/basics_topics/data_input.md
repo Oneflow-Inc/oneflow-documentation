@@ -41,7 +41,7 @@ if __name__ == '__main__':
 
 在上面的代码中，我们用@flow.global_function定义了一个预测任务—test_job()，其输入为images和labels，我们可以直接通过numpy格式的images和labels作为其数据输入。
 
-将上面的代码保存成`.py`文件（比如`feed_numpy.py`)，然后用python执行该脚本即可，如：
+你可以下载完整代码：[feed_numpy.py](../code/basics_topics/feed_numpy.py)，然后用python执行即可，如：
 
 ```bash
 python feed_numpy.py
@@ -89,7 +89,8 @@ OneFlow数据流水线解耦了数据的加载和数据预处理过程：
 - 数据预处理过程采用的是流水线的方式，支持各种数据预处理算子的组合，数据预处理算子也可以自定义扩展。
 
 ### 运行一个例子
-下面就给一个完整的例子，这个例子读取的是`OFRecord`数据格式文件，处理的是ImageNet数据集中的图片。
+下面就给一个完整的例子，这个例子读取的是`OFRecord`数据格式文件，处理的是ImageNet数据集中的图片。完整代码可以点此下载：[of_data_pipeline.py](../code/basics_topics/of_data_pipeline.py)
+
 ```python
 # of_data_pipeline.py
 import oneflow as flow
@@ -123,9 +124,9 @@ if __name__ == '__main__':
     images, labels = test_job().get()
     print(images.shape, labels.shape)
 ```
-为了运行上面这段脚本，需要一个ofrecord数据集，您可以[加载与准备OFRecord数据集](../extended_topics/how_to_make_ofdataset.md)或者下载我们准备的一个包含64张图片的ofrecord文件[part-00000](/home/xiexuan/imagenet_64pics/part-00000)。
+为了运行上面这段脚本，需要一个ofrecord数据集，您可以[加载与准备OFRecord数据集](../extended_topics/how_to_make_ofdataset.md)或者下载我们准备的一个包含64张图片的ofrecord文件[part-00000](https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/basics_topics/part-00001)。完整代码：
 
-上面这段脚本中`/path/to/ImageNet/ofrecord`替换为保存`part-00000`文件的目录，保存成文件（如`of_data_pipeline.py`），然后运行
+上面这段脚本中`/path/to/ImageNet/ofrecord`替换为保存`part-00000`文件的目录，然后运行
 ```
 python of_data_pipeline.py
 ```
@@ -140,3 +141,4 @@ OneFlow的数据处理流水线分为两个阶段：**数据加载**和**数据�
 - 数据预处理是一个系列过程，`OFRecordImageDecoderRandomCrop`负责图片解码并随机做了裁剪，`Resize`把裁剪后的图片调整成224x224的大小，`CropMirrorNormalize`把图片进行了正则化。标签部分只需要进行解码`CropMirrorNormalize`。
 
 OneFlow提供了一些数据加载和预处理的算子，详细请参考[数据流水线API](api)。未来会不断丰富和优化这些算子，用户也可以自己定义算子满足特定的需求。
+

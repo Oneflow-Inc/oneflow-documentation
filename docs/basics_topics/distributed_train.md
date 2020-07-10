@@ -121,7 +121,9 @@ def config_distributed():
 ### 分布式训练完整脚本
 单机程序加入OneFlow的分布式配置代码后，就成为了分布式程序，在所有的节点运行一样的程序即可。
 
-以下是完整代码，我们可以与上文的 **单机训练程序** 比较，会发现仅仅只是增加了`config_distributed`函数并调用，我们之前的单机训练脚本，就成为了分布式训练脚本。
+我们可以将分布式训练程序与上文的 **单机训练程序** 比较，会发现仅仅只是增加了`config_distributed`函数并调用，我们之前的单机训练脚本，就成为了分布式训练脚本。
+
+以下是完整代码：[distributed_train.py](../code/basics_topics/distributed_train.py)
 
 ```python
 import numpy as np

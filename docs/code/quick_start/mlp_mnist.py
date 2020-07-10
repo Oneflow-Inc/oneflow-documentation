@@ -23,15 +23,16 @@ def train_job(images=flow.FixedTensorDef((BATCH_SIZE, 1, 28, 28), dtype=flow.flo
         logits = flow.layers.dense(hidden, 10, kernel_initializer=initializer)
         loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits)
     flow.losses.add_loss(loss)
+
     return loss
 
 
 if __name__ == '__main__':
-
     check_point = flow.train.CheckPoint()
     check_point.init()
 
     (train_images, train_labels), (test_images, test_labels) = load_data(BATCH_SIZE)
     for i, (images, labels) in enumerate(zip(train_images, train_labels)):
         loss = train_job(images, labels).get().mean()
-        if i % 20 == 0: print(loss)
+        if i % 20 == 0:
+            print(loss)
