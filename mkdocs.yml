@@ -112,6 +112,7 @@ nav:
 
     - 高级应用实例:
       - 图像处理:
+        - ResNet: adv_examples/resnet.md
         - AlexNet: adv_examples/alexnet.md
         - MaskRCNN: adv_examples/mask_rcnn.md
       - 文本处理-BERT: adv_examples/bert.md
