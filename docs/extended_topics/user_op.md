@@ -109,7 +109,7 @@ REGISTER_USER_KERNEL("Relu")
 
 
 
-## 编译Op的library (chengcheng)
+## 编译Op的library 
   你可以通过`C++`的编译器(如 `g++`)编译你的自定义op代码（`relu.cpp`）。Oneflow的PIP包中包含了需要include的头文件目录以及库文件，这些文件的路径与你本地的操作系统和机器有关。你可以使用Oneflow的python库中的sysconfig模块得到它们（oneflow使用python3）。其中， `get_include()`可以得到本机的头文件目录路径，`get_lib()`可以得到本机的动态链接库路径，下面是在Linux机器上的输出结果：
 ```bash
 $ python3
