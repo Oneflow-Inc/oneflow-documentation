@@ -34,9 +34,9 @@
 
 ### 纯数据并行
 
-我们已经知道，consistent策略下，默认的并行方式是数据并行；而如果选择mirrored策略，则只能采用数据并行；两者的区别在于：
+我们已经知道，consistent策略下，默认的并行方式是数据并行；而如果选择mirrored策略，则只能采用数据并行；若在调用任务函数时直接传递数据(而不是使用OneFlow的`flow.data.xxx_reader`接口)，两者的区别在于：
 
-* mirroed策略下，需要自己根据参与训练的卡数对数据进行切分、重组，使用`list`传递和接受数据；
+* mirrored策略下，采用纯数据并行，需要自己根据参与训练的卡数对数据进行切分、重组，使用`list`传递和接收数据；
 
 * 而consistent策略下提供了统一的视角，数据的切分和重组交给了OneFlow框架完成。
 
@@ -44,7 +44,7 @@
 
 ![纯数据并行](imgs/para_consistent_data.png)
 
-在纯数据并行中，采用了2张显卡进行并行训练，因为采用了 **纯数据并行** ，可以看到，对于原逻辑模型中的每一层，样本数据都被分配到了各个卡上，每张卡上都拥有 **完整的模型**，与切分的数据进行`op`运算，最后组合各个卡上的样本，得到完整的输出。
+在纯数据并行中，采用了2张显卡进行并行训练，因为采用了 **纯数据并行** ，可以看到，对于原逻辑模型中的每一层，样本数据都被平均分配到了各个卡上，每张卡上都拥有 **完整的模型**，与切分的数据进行`op`运算，最后组合各个卡上的样本，得到完整的输出。
 
 ### 纯模型并行
 在`consistent`策略下，也可以通过选择纯模型并行（设置方式在下文实例中会介绍），其流程示意图为：
@@ -53,7 +53,9 @@
 
 在纯模型并行中，同样是2张显卡进行并行训练，原逻辑模型中的每一层中，都是 **部分模型** 与 **完整的数据** 进行`op`运算，最后组合得到完整的输出。
 
-值得一提的是，从上图可以看出，各个卡上第0层的输出，并 **不能** 直接作为第1层的输入：因为模型并行中，为完成`op`操作，需要部分的模型与 **完整的** 数据； 为了解决这个问题，OneFlow中使用了`boxing`机制，它会统筹分布式训练中各个节点的数据，并合理切分、合并到对应的卡上。
+值得一提的是，从上图可以看出，各个卡上第0层的输出，并 **不能** 直接作为第1层的输入：因为模型并行中，为完成`op`操作，需要部分的模型与 **完整的** 数据； 为了解决这个问题，OneFlow中使用了`boxing`机制。
+
+`boxing`机制会统筹分布式训练中各个节点的数据，并合理切分、合并到对应的卡上，除了模型并行过程中的数据重组问题外，数据并行中的反向梯度同步，也使用`boxing`机制解决。
 
 `boxing`的内部机制虽然复杂，但是对于用户而言是透明的，我们仅仅是防止读者产生迷惑才加入了`boxing`的图示，对于本文而言，我们只需要了解：OneFlow会自动协调好分布式中数据的同步问题。
 
@@ -70,7 +72,7 @@
 
 ![混合并行](imgs/para_consistent_mixed.png)
 
-目前，其它的主流框架对于混合并行或者不支持，或者需要深度定制，而OneFlow中可以通过简单的设置，配置混合并行的分布式训练。
+目前，其它的主流框架对于混合并行或者不支持，或者需要深度定制，而OneFlow中可以通过简单的设置，配置混合并行的分布式训练，还可以用自由度超高的“网络接力”的并行模式，深度优化分布式系统。
 
 ## 混合并行实例
 ### 代码示例
@@ -91,7 +93,7 @@ def mlp(data):
   return flow.layers.dense(hidden, 
         10, 
         kernel_initializer=initializer,
-        #模型并行，按列切分
+        #dense为列存储，进行split(0)切分
         model_distribute=flow.distribute.split(axis=0)
         )
 
@@ -154,12 +156,102 @@ def mlp(data):
   return flow.layers.dense(hidden, 
         10, 
         kernel_initializer=initializer,
-        #模型并行，按列切分
+        #dense为列存储，进行split(0)切分
         model_distribute=flow.distribute.split(axis=0)
         )
 ```
-需要说明的是，为了与其它主流框架的数据处理方式一致，OneFlow内部对数据进行了转置，因此以上代码的`flow.distribute.split(axis=0)`确实是在做列切分。
+需要说明的是，OneFlow中的`dense`内部采用列存储，因此以上代码的`flow.distribute.split(axis=0)`确实是在做列切分。
 
 此外，`flow.layers.dense`使用`model_distribute`形参设置并行方式，其内部调用了底层更通用的`get_variable`接口创建`blob`，`get_variable`接口设置并行方式的形参名为`distribute`。
 
 可以看到，我们通过极少量的修改，就能将单机训练程序改为分布式、混合并行的程序，这是OneFlow区别于其它框架的一大特色。
+
+## 网络接力并行实例
+在模型并行之外，OneFlow还提供了一种灵活度更高的“网络接力”的并行方式，可以让用户使用`fixed_placement`接口显式指定用来运行逻辑`op`的 **物理硬件**。
+
+在以下示例中，我们对[Consistent与Mirrored策略](consistent_mirrored.md)中的“在OneFlow中使用consistent策略”代码进行简单修改，展示了“网络接力”并行模式。
+
+更详细的讨论可见后文的“代码解析”。
+
+### 代码示例
+```python
+import numpy as np
+import oneflow as flow
+from mnist_util import load_data
+
+
+BATCH_SIZE = 100
+
+def lenet(data, train=False):
+  initializer = flow.truncated_normal(0.1)
+  conv1 = flow.layers.conv2d(data, 32, 5, padding='SAME', activation=flow.nn.relu,
+                             kernel_initializer=initializer, name="conv1")
+  pool1 = flow.nn.max_pool2d(conv1, ksize=2, strides=2, padding='SAME', name="pool1")
+  conv2 = flow.layers.conv2d(pool1, 64, 5, padding='SAME', activation=flow.nn.relu,
+                             kernel_initializer=initializer, name="conv2")
+  pool2 = flow.nn.max_pool2d(conv2, ksize=2, strides=2, padding='SAME', name="pool2")
+  reshape = flow.reshape(pool2, [pool2.shape[0], -1])
+  with flow.fixed_placement("gpu", "0:0"):
+    hidden = flow.layers.dense(reshape, 512, activation=flow.nn.relu, kernel_initializer=initializer, name="hidden")
+  if train: hidden = flow.nn.dropout(hidden, rate=0.5)
+  
+  with flow.fixed_placement("gpu", "0:1"):
+    output = flow.layers.dense(hidden, 10, kernel_initializer=initializer, name="outlayer")
+  return output
+
+
+def get_train_config():
+  config = flow.function_config()
+  config.default_distribute_strategy(flow.distribute.consistent_strategy())
+  config.default_data_type(flow.float)
+  config.train.primary_lr(0.1)
+  config.train.model_update_conf({"naive_conf": {}})
+  return config
+
+
+@flow.global_function(get_train_config())
+def train_job(images=flow.FixedTensorDef((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+              labels=flow.FixedTensorDef((BATCH_SIZE, ), dtype=flow.int32)):
+  logits = lenet(images, train=True)
+  loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits, name="softmax_loss")
+  flow.losses.add_loss(loss)
+  return loss
+
+
+if __name__ == '__main__':
+  flow.config.gpu_device_num(2)
+  check_point = flow.train.CheckPoint()
+  check_point.init()
+  (train_images, train_labels), (test_images, test_labels) = load_data(BATCH_SIZE)
+  
+  for epoch in range(50):
+    for i, (images, labels) in enumerate(zip(train_images, train_labels)):
+      loss = train_job(images, labels).get().ndarray()
+
+      if i % 20 == 0: 
+        print(loss.mean())
+```
+### 代码解析
+
+以上关键的代码只有2行，且他们的本质作用是类似的：
+
+* 通过`oneflow.fixed_placement`，指定`hidden`层的op计算运行在0号GPU上
+```python
+  with flow.fixed_placement("gpu", "0:0"):
+    hidden = flow.layers.dense(reshape, 512, activation=flow.nn.relu, kernel_initializer=initializer, name="hidden")
+```
+
+* 通过`oneflow.fixed_placement`，指定`output`层的op计算运行在1号GPU上
+```python
+  with flow.fixed_placement("gpu", "0:1"):
+    output = flow.layers.dense(hidden, 10, kernel_initializer=initializer, name="outlayer")
+```
+
+其中`fixed_placement`的第一个参数指定`cpu`还是`gpu`，第二个参数指定机器及运算设备编号，如，“使用第1号机器的第2个GPU”，则应该写：
+```python
+  with flow.fixed_placement("gpu", "1:2"):
+    # ...
+```
+
+网络接力的并行方式，使得用户可以为每个op指定物理设备，非常适合对网络模型及分布式情况都很熟悉的用户进行 **深度优化** 。
+
