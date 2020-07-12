@@ -100,7 +100,7 @@ nav:
       - 分布式训练: basics_topics/distributed_train.md
 
     
-    - 高级专题:
+    - 扩展专题:
       - 任务函数的定义与调用: extended_topics/job_function_define_call.md
       - Consistent与Mirrored策略: extended_topics/consistent_mirrored.md
       - OneFlow的并行特色: extended_topics/model_mixed_parallel.md
@@ -115,21 +115,22 @@ nav:
         - ResNet: adv_examples/resnet.md
         - AlexNet: adv_examples/alexnet.md
         - MaskRCNN: adv_examples/mask_rcnn.md
-      - 文本处理-BERT: adv_examples/bert.md
+      - NLP处理-BERT: adv_examples/bert.md
       - 推荐系统-Wide&Deep: adv_examples/wide_deep.md
       - 深度伪造-生成对抗网络: adv_examples/dcgan.md
-
-    - 二次开发:
-      - oneflow架构: extended_dev/framework.md
-      - 算子描述符: extended_dev/op_desc.md
-      - 自动梯度求导: extended_dev/auto_grad.md
-      - 图优化: extended_dev/graph_optimize.md
-      - 自动并行: extended_dev/auto_parallel.md
-      - 代价模型: extended_dev/loss_model.md
-      - 自动放置: extended_dev/auto_placement.md
-      - 数据路由: extended_dev/data_router.md
-      - 内存规划: extended_dev/mem_model.md
-      - NDArray: extended_dev/ndarray.md
+    - API: 
+      - API: api/
+    # - 二次开发:
+    #   - oneflow架构: extended_dev/framework.md
+    #   - 算子描述符: extended_dev/op_desc.md
+    #   - 自动梯度求导: extended_dev/auto_grad.md
+    #   - 图优化: extended_dev/graph_optimize.md
+    #   - 自动并行: extended_dev/auto_parallel.md
+    #   - 代价模型: extended_dev/loss_model.md
+    #   - 自动放置: extended_dev/auto_placement.md
+    #   - 数据路由: extended_dev/data_router.md
+    #   - 内存规划: extended_dev/mem_model.md
+    #   - NDArray: extended_dev/ndarray.md
 
     - 编译与部署:
       - 编译: 
