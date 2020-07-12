@@ -1,9 +1,19 @@
 import numpy as np
 import oneflow as flow
 from PIL import Image
+import sys
+import os
 
 BATCH_SIZE = 1
 
+def usage():
+    usageHint = '''
+usage:
+        python {0} <image file>
+    eg: 
+        python {0} {1}
+    '''.format(os.path.basename(sys.argv[0]), os.path.join(".", "9.png"))
+    print(usageHint)
 
 def lenet(data, train=False):
     initializer = flow.truncated_normal(0.1)
@@ -41,14 +51,21 @@ def load_image(file):
     im.reshape((-1, 1, 1, im.shape[1], im.shape[2]))
     return im
 
-
-if __name__ == '__main__':
-
+def main():
+    if len(sys.argv) != 2:
+        usage()
+        return
+    
     check_point = flow.train.CheckPoint()
     check_point.load("./lenet_models_1")
 
-    image = load_image("./9.png")
+    image = load_image(sys.argv[1])
     logits = eval_job(image, np.zeros((1,)).astype(np.int32)).get()
 
     prediction = np.argmax(logits.ndarray(), 1)
     print("predict:{}".format(prediction[0]))
+
+if __name__ == '__main__':
+    main()
+
+
