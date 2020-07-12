@@ -85,6 +85,11 @@ flow.config.gpu_device_num(1)
 flow.env.ctrl_port(9988)
 ```
 
+注意，即使是单机的训练，只要有多张GPU卡，我们也可以通过`flow.config.gpu_device_num`将单机程序，设置为单机多卡的分布式程序，如以下代码，设置1台(每台)机器上，2张GPU卡参与分布式训练：
+```python
+flow.config.gpu_device_num(2)
+```
+
 ### 节点配置
 
 接着，我们需要配置网络中的主机关系，需要提前说明的是，OneFlow中，将分布式中的主机称为节点(`node`)。
