@@ -1,5 +1,5 @@
 
-OneFlow中使用任务函数(job function)联系用户的业务逻辑与OneFlow管理的计算资源。并且了解了如何配置oneflow.function为任务函数加载配置。
+OneFlow中使用任务函数(job function)联系用户的业务逻辑与OneFlow管理的计算资源。并且了解了如何配置oneflow.global_function为任务函数加载配置。
 本文中我们将具体学习：
 
 * 如何定义和调用任务函数
@@ -9,7 +9,7 @@ OneFlow中使用任务函数(job function)联系用户的业务逻辑与OneFlow�
 ## 任务函数的定义与调用
 任务函数分为定义和调用两个阶段。
 ### 任务函数的定义
-我们将模型封装在Python中，再使用`oneflow.function`修饰符进行修饰。就完成了任务函数的定义。
+我们将模型封装在Python中，再使用`oneflow.global_function`修饰符进行修饰。就完成了任务函数的定义。
 任务函数主要描述两方面的事情：
 
 * 模型结构
@@ -18,7 +18,7 @@ OneFlow中使用任务函数(job function)联系用户的业务逻辑与OneFlow�
 
 以下代码示例中，我们构建了一个mlp模型。并且将由`flow.nn.sparse_softmax_cross_entropy_with_logits`计算得到交叉熵损失结果作为优化目标。
 ```python
-@flow.function(get_train_config())
+@flow.global_function(get_train_config())
 def train_job(images=flow.FixedTensorDef((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
               labels=flow.FixedTensorDef((BATCH_SIZE, ), dtype=flow.int32)):
   with flow.fixed_placement("cpu", "0:0"):
