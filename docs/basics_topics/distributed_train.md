@@ -50,7 +50,7 @@ def get_train_config():
     #配置训练环境
 
 
-@flow.function(get_train_config())
+@flow.global_function(get_train_config())
 def train_job():
     #任务函数的实现
 
@@ -166,7 +166,7 @@ def get_train_config():
   config.train.model_update_conf({"naive_conf": {}})
   return config
 
-@flow.function(get_train_config())
+@flow.global_function(get_train_config())
 def train_job():
   (labels, images) = _data_load_layer(arg_data_part_num=60)
 
