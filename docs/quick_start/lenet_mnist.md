@@ -211,7 +211,7 @@ def get_eval_config():
 ### 校验任务函数的编写
 
 ```python
-@flow.function(get_eval_config())
+@flow.global_function(get_eval_config())
 def eval_job(images=flow.FixedTensorDef((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
               labels=flow.FixedTensorDef((BATCH_SIZE, ), dtype=flow.int32)):
   with flow.fixed_placement("gpu", "0:0"):
