@@ -84,7 +84,7 @@ def train_job(images=flow.FixedTensorDef((BATCH_SIZE, 1, 28, 28), dtype=flow.flo
 
 - `load_data(BATCH_SIZE)`: 准备并加载训练数据；
 
-- `job(images, labels).get().mean()`: 返回每一次训练的损失值；
+- `train_job(images, labels).get().mean()`: 返回每一次训练的损失值；
 
 - `if i % 20 == 0: print(loss)`: 每训练20次，打印一次损失值。
 
