@@ -1,3 +1,4 @@
+#lenet_eval.py
 import numpy as np
 import oneflow as flow
 from mnist_util import load_data

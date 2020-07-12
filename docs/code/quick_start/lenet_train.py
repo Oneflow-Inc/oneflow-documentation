@@ -1,3 +1,4 @@
+#lenet_train.py
 import numpy as np
 import oneflow as flow
 from mnist_util import load_data
@@ -50,20 +51,8 @@ def eval_job(images=flow.FixedTensorDef((1, 1, 28, 28), dtype=flow.float),
         logits = lenet(images, train=False)
     return logits
 
-
-def load_image(file):
-    im = Image.open(file).convert('L')
-    im = im.resize((28, 28), Image.ANTIALIAS)
-    im = np.array(im).reshape(1, 1, 28, 28).astype(np.float32)
-    im = (im - 128.0) / 255.0
-    im.reshape((-1, 1, 1, im.shape[1], im.shape[2]))
-    print('im.shape >>>>>>>>>>>>>>>>>>>>>', im.shape)
-    return im
-
-
 if __name__ == '__main__':
     flow.config.gpu_device_num(1)
-    flow.config.enable_debug_mode(True)
     check_point = flow.train.CheckPoint()
     check_point.init()
 
@@ -77,4 +66,3 @@ if __name__ == '__main__':
                 break
     check_point.save('./lenet_models_1')  # need remove the existed folder
     print("model saved")
-
