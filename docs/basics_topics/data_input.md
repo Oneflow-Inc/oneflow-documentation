@@ -75,7 +75,7 @@ def test_job(images=flow.FixedTensorDef((32, 1, 28, 28), dtype=flow.float),
 
 有关Job函数参数的两点说明：
 
-* 1 - 例子中`FixedTensorDef`返回的是一个`占位符`，类似tensorflow中placeholder的概念，OneFlow中还可以用`MirroredTensorDef`方式生成占位符，这两种方式的区别参考[TODO](fixed_mirrored_strategy.md);
+* 1 - 例子中`FixedTensorDef`返回的是一个`占位符`，类似tensorflow中placeholder的概念，OneFlow中还可以用`MirroredTensorDef`方式生成占位符，这两种方式的区别参考[两类blob](https://github.com/Oneflow-Inc/oneflow-documentation/blob/model_mixed_parallel/docs/extended_topics/consistent_mirrored.md#%E4%B8%A4%E7%B1%BBblob);
 
 * 2 - 作业函数支持多个参数，每个参数都必须是下面几种中的一种：1. 一个`占位符`  2. 一个由`占位符`组成的列表（list）、元组（tuple）或者字典(dict)
 
