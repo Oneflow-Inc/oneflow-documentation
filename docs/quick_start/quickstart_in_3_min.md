@@ -1,12 +1,16 @@
 这篇文章介绍了如何快速上手OneFlow，我们可以在3分钟内完成一个完整的神经网络训练过程。
 
 ## 运行一个例子
-如果已经安装好了OneFlow，可以从[这里](../code/quick_start/mlp_mnist.py)下载神经网络训练脚本，或者将下文的完整代码拷贝到python文件中，并命名为`mlp_mnist.py`。
+如果已经安装好了OneFlow，可以使用以下命令同步我们的[文档仓库](https://github.com/Oneflow-Inc/oneflow-documentation.git)，并运行其中的[mlp_mnist.py](https://github.com/Oneflow-Inc/oneflow-documentation/blob/master/docs/code/quick_start/mlp_mnist.py)脚本。
 
-然后在文件所在目录运行：
-
+```shell
+git clone https://github.com/Oneflow-Inc/oneflow-documentation.git #同步仓库
+cd oneflow-documentation/docs/code/quick_start/ #切换到示例代码路径
 ```
-python mlp_mnist.py
+
+然后，运行神经网络训练脚本：
+```shell
+pytho mlp_mnist.py
 ```
 
 这样您将得到下面的输出：
@@ -62,7 +66,7 @@ if __name__ == '__main__':
     if i % 20 == 0: print(loss)
 ```
 
-后面章节是是对这段代码的简单介绍。
+后面章节是对这段代码的简单介绍。
 
 OneFlow相对其他深度学习框架较特殊的地方是这里：
 ```
@@ -92,7 +96,7 @@ def train_job(images=flow.FixedTensorDef((BATCH_SIZE, 1, 28, 28), dtype=flow.flo
   
 
 以上只是一个简单网络的示例，在[使用卷积神经网络进行手写体识别](lenet_mnist.md)中，我们对使用OneFlow的流程进行了更加全面和具体的介绍。
-另外，还可参考OneFlow[基础专题](data_input.md)中对于训练中各类问题的详细介绍。
+另外，还可参考OneFlow[基础专题](../basics_topics/data_input.md)中对于训练中各类问题的详细介绍。
 
 
 我们同时还提供了一些经典网络的[样例代码](https://github.com/Oneflow-Inc/OneFlow-Benchmark)及数据供参考。

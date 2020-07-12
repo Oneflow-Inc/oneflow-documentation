@@ -15,39 +15,42 @@
 
 在学习之前，也可以通过以下命令查看各脚本功能。
 
-代码下载：[lenet_train.py](../code/quick_start/lenet_train.py)
+首先，同步本文档仓库并切换到对应路径：
+```shell
+git clone https://github.com/Oneflow-Inc/oneflow-documentation.git
+cd oneflow-documentation/docs/code/quick_start/
+```
 
+* 模型训练
 ```shell
 python lenet_train.py
 ```
-
 以上命令将对MNIST数据集进行训练，并保存模型。
 
-代码下载：[lenet_eval.py](../code/quick_start/lenet_eval.py)
+训练模型是以下`lenet_eval.py`与`lenet_test.py`的前提条件，你也可以直接下载使用我们已经训练好的模型，略过训练步骤：
+```shell
+#在仓库docs/code/quick_start/目录下
+wget https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/quick_start/lenet_models_1.zip
+unzip lenet_models_1.zip
+```
 
+* 模型校验
 ```shell
 python lenet_eval.py
 ```
+以上命令，使用MNIST测试集对刚刚生成的模型进行校验，并给出准确率。
 
-以上命令将对MNIST集进行校验，并给出准确率。
-
-代码下载：[lenet_test.py](../code/quick_start/test.py)
+* 图像识别
 
 ```shell
-python lenet_test.py <png图片路径>
+python lenet_test.py ./9.png
 ```
-
-以上命令将使用模型对图片内容进行预测。
+以上命令将使用之前训练的模型对我们准备好的“9.png”图片中的内容进行预测。
+你也可以下载我们[提取好的mnist图片](https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/quick_start/mnist_raw_images.zip)，自行验证自己训练模型的预测效果。
 
 ## MNIST数据集介绍
 
 MNIST是一个手写数字的数据库。包括了训练集与测试集；训练集包含了60000张图片以及图片对应的标签，测试集包含了60000张图片以及图片测试的标签。Yann LeCun等已经将图片进行了大小归一化及居中处理，并且打包为二进制文件供下载。http://yann.lecun.com/exdb/mnist/
-
-使用`oneflow.mnist.data_load`可以自动完成mnist数据的加载。
-
-也可以直接下载提取后的原始图片[mnist_images.zip](https://oneflow-public.oss-cn-beijing.aliyuncs.com/datasets/mnist_images.zip)
-
-
 
 ## 配置训练的软硬件环境
 
@@ -97,11 +100,11 @@ def lenet(data, train=False):
 
 ## 实现训练任务函数
 
-OneFlow中提供了`oneflow.function`装饰器，通过它，可以将一个Python函数转变为训练任务函数（job function）。
+OneFlow中提供了`oneflow.global_function`装饰器，通过它，可以将一个Python函数转变为训练任务函数（job function）。
 
 ### function装饰器
 
-oneflow.function装饰器接收一个`function_config`对象作为参数。
+`oneflow.global_function`装饰器接收一个`function_config`对象作为参数。
 它可以将一个普通Python函数转变为OneFlow的训练任务函数，并将前文所述的`function_config`所做的配置应用到其中。
 
 ```python
@@ -211,7 +214,7 @@ def get_eval_config():
 ### 校验任务函数的编写
 
 ```python
-@flow.function(get_eval_config())
+@flow.global_function(get_eval_config())
 def eval_job(images=flow.FixedTensorDef((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
               labels=flow.FixedTensorDef((BATCH_SIZE, ), dtype=flow.int32)):
   with flow.fixed_placement("gpu", "0:0"):
@@ -279,7 +282,7 @@ if __name__ == '__main__':
     check_point = flow.train.CheckPoint()
     check_point.load("./lenet_models_1")
 
-    image = load_image("./00000001_2.png")
+    image = load_image(sys.argv[1])
     logits = eval_job(image, np.zeros((1,)).astype(np.int32)).get()
     
     prediction = np.argmax(logits.ndarray(), 1)
@@ -290,9 +293,10 @@ if __name__ == '__main__':
 
 ### 训练模型
 
-代码：[lenet_train.py](../code/quick_start/lenet_train.py)
+代码：[lenet_train.py](https://github.com/Oneflow-Inc/oneflow-documentation/blob/master/docs/code/quick_start/lenet_train.py)
 
 ```python
+#lenet_train.py
 import numpy as np
 import oneflow as flow
 from mnist_util import load_data
@@ -345,20 +349,8 @@ def eval_job(images=flow.FixedTensorDef((1, 1, 28, 28), dtype=flow.float),
         logits = lenet(images, train=False)
     return logits
 
-
-def load_image(file):
-    im = Image.open(file).convert('L')
-    im = im.resize((28, 28), Image.ANTIALIAS)
-    im = np.array(im).reshape(1, 1, 28, 28).astype(np.float32)
-    im = (im - 128.0) / 255.0
-    im.reshape((-1, 1, 1, im.shape[1], im.shape[2]))
-    print('im.shape >>>>>>>>>>>>>>>>>>>>>', im.shape)
-    return im
-
-
 if __name__ == '__main__':
     flow.config.gpu_device_num(1)
-    flow.config.enable_debug_mode(True)
     check_point = flow.train.CheckPoint()
     check_point.init()
 
@@ -376,11 +368,12 @@ if __name__ == '__main__':
 
 ### 校验模型
 
-代码：[lenet_eval.py](../code/quick_start/lenet_eval.py)
+代码：[lenet_eval.py](https://github.com/Oneflow-Inc/oneflow-documentation/blob/master/docs/code/quick_start/lenet_eval.py)
 
 预训练模型：[lenet_models_1.zip](https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/quick_start/lenet_models_1.zip)
 
 ```python
+#lenet_eval.py
 import numpy as np
 import oneflow as flow
 from mnist_util import load_data
@@ -450,9 +443,11 @@ if __name__ == '__main__':
 
 ### 数字预测
 
-代码：[lenet_test.py](../code/quick_start/lenet_test.py)
+代码：[lenet_test.py](https://github.com/Oneflow-Inc/oneflow-documentation/blob/master/docs/code/quick_start/lenet_test.py)
 
 预训练模型：[lenet_models_1.zip](https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/quick_start/lenet_models_1.zip)
+
+MNIST数据集图片[mnist_raw_images.zip](https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/quick_start/mnist_raw_images.zip)
 
 ```python
 import numpy as np
