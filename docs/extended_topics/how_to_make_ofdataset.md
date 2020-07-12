@@ -191,7 +191,7 @@ if __name__ == '__main__':
 ```python
 import oneflow as flow
 
-@flow.function(flow.function_config())
+@flow.global_function(flow.function_config())
 def test_job():
   batch_size = 64
   color_space = 'RGB'

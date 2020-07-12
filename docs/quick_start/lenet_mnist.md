@@ -15,34 +15,37 @@
 
 在学习之前，也可以通过以下命令查看各脚本功能。
 
+代码下载：[lenet_train.py](../code/quick_start/lenet_train.py)
+
 ```shell
-wget 【lenet_train.py网址】
 python lenet_train.py
 ```
 
 以上命令将对MNIST数据集进行训练，并保存模型。
 
+代码下载：[lenet_eval.py](../code/quick_start/lenet_eval.py)
+
 ```shell
-wget 【lenet_eval.py网址】
 python lenet_eval.py
 ```
 
 以上命令将对MNIST集进行校验，并给出准确率。
 
+代码下载：[lenet_test.py](../code/quick_start/test.py)
+
 ```shell
-wget 【lenet_predict.py网址】
-python lenet_predict.py <png图片路径>
+python lenet_test.py <png图片路径>
 ```
 
 以上命令将使用模型对图片内容进行预测。
 
 ## MNIST数据集介绍
 
-MNIST是一个手写数字的数据库。包括了训练集与测试集；训练集包含了60000张图片以及图片对应的标签，测试集包含了60000张图片以及图片测试的标签。
-Yann LeCun等已经将图片进行了大小归一化及居中处理，并且打包为二进制文件供下载。
-http://yann.lecun.com/exdb/mnist/
+MNIST是一个手写数字的数据库。包括了训练集与测试集；训练集包含了60000张图片以及图片对应的标签，测试集包含了60000张图片以及图片测试的标签。Yann LeCun等已经将图片进行了大小归一化及居中处理，并且打包为二进制文件供下载。http://yann.lecun.com/exdb/mnist/
+
 使用`oneflow.mnist.data_load`可以自动完成mnist数据的加载。
-也可以通过【xxx网址】下载提取后的原始图片：
+
+也可以直接下载提取后的原始图片[mnist_images.zip](https://oneflow-public.oss-cn-beijing.aliyuncs.com/datasets/mnist_images.zip)
 
 
 
@@ -102,7 +105,7 @@ oneflow.function装饰器接收一个`function_config`对象作为参数。
 它可以将一个普通Python函数转变为OneFlow的训练任务函数，并将前文所述的`function_config`所做的配置应用到其中。
 
 ```python
-@flow.function(get_train_config())
+@flow.global_function(get_train_config())
 def train_job(images=flow.FixedTensorDef((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
               labels=flow.FixedTensorDef((BATCH_SIZE, ), dtype=flow.int32)):
     #任务函数实现 ...
@@ -112,7 +115,7 @@ def train_job(images=flow.FixedTensorDef((BATCH_SIZE, 1, 28, 28), dtype=flow.flo
 我们可以通过`oneflow.losses.add_loss`接口指定待优化参数。这样，OneFlow在每次迭代训练任务的过程中，将以该参数的最优化作为目标。
 
 ```python
-@flow.function(get_train_config())
+@flow.global_function(get_train_config())
 def train_job(images=flow.FixedTensorDef((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
               labels=flow.FixedTensorDef((BATCH_SIZE, ), dtype=flow.int32)):
   with flow.fixed_placement("gpu", "0:0"):
@@ -287,179 +290,223 @@ if __name__ == '__main__':
 
 ### 训练模型
 
-```python
-import numpy as np
-import oneflow as flow
-from mnist_util import load_data
-
-
-BATCH_SIZE = 100
-
-def lenet(data, train=False):
-  initializer = flow.truncated_normal(0.1)
-  conv1 = flow.layers.conv2d(data, 32, 5, padding='SAME', activation=flow.nn.relu,
-                             kernel_initializer=initializer)
-  pool1 = flow.nn.max_pool2d(conv1, ksize=2, strides=2, padding='SAME')
-  conv2 = flow.layers.conv2d(pool1, 64, 5, padding='SAME', activation=flow.nn.relu,
-                             kernel_initializer=initializer)
-  pool2 = flow.nn.max_pool2d(conv2, ksize=2, strides=2, padding='SAME')
-  reshape = flow.reshape(pool2, [pool2.shape[0], -1])
-  hidden = flow.layers.dense(reshape, 512, activation=flow.nn.relu, kernel_initializer=initializer)
-  if train: hidden = flow.nn.dropout(hidden, rate=0.5)
-  return flow.layers.dense(hidden, 10, kernel_initializer=initializer)
-
-
-def get_train_config():
-  config = flow.function_config()
-  config.default_data_type(flow.float)
-  config.train.primary_lr(0.1)
-  config.train.model_update_conf({"naive_conf": {}})
-  return config
-
-
-@flow.function(get_train_config())
-def train_job(images=flow.FixedTensorDef((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-              labels=flow.FixedTensorDef((BATCH_SIZE, ), dtype=flow.int32)):
-  with flow.fixed_placement("gpu", "0:0"):
-    logits = lenet(images, train=True)
-    loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits)
-  flow.losses.add_loss(loss)
-  return loss
-
-if __name__ == '__main__':
-  #flow.config.gpu_device_num(1)
-  flow.config.enable_debug_mode(True)
-  check_point = flow.train.CheckPoint()
-  check_point.init()
-  (train_images, train_labels), (test_images, test_labels) = load_data(BATCH_SIZE)
-  for epoch in range(50):
-    for i, (images, labels) in enumerate(zip(train_images, train_labels)):
-      loss = train_job(images, labels).get().mean()
-      if i % 20 == 0: print(loss)
-      if loss < 0.01:
-        break
-  
-  check_point.save('./lenet_models_1') # need remove the existed folder
-  print("model saved")
-```
-
-### 校验模型
-
-```python
-import numpy as np
-import oneflow as flow
-from mnist_util import load_data
-
-BATCH_SIZE = 100
-
-def lenet(data, train=False):
-  initializer = flow.truncated_normal(0.1)
-  conv1 = flow.layers.conv2d(data, 32, 5, padding='SAME', activation=flow.nn.relu,
-                             kernel_initializer=initializer)
-  pool1 = flow.nn.max_pool2d(conv1, ksize=2, strides=2, padding='SAME')
-  conv2 = flow.layers.conv2d(pool1, 64, 5, padding='SAME', activation=flow.nn.relu,
-                             kernel_initializer=initializer)
-  pool2 = flow.nn.max_pool2d(conv2, ksize=2, strides=2, padding='SAME')
-  reshape = flow.reshape(pool2, [pool2.shape[0], -1])
-  hidden = flow.layers.dense(reshape, 512, activation=flow.nn.relu, kernel_initializer=initializer)
-  if train: hidden = flow.nn.dropout(hidden, rate=0.5)
-  return flow.layers.dense(hidden, 10, kernel_initializer=initializer)
-
-
-def get_eval_config():
-  config = flow.function_config()
-  config.default_data_type(flow.float)
-  return config
-
-
-@flow.function(get_eval_config())
-def eval_job(images=flow.FixedTensorDef((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-              labels=flow.FixedTensorDef((BATCH_SIZE, ), dtype=flow.int32)):
-  with flow.fixed_placement("gpu", "0:0"):
-    logits = lenet(images, train=True)
-    loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits, name="softmax_loss")
-
-  return {"labels":labels, "logits":logits}
-
-g_total = 0
-g_correct = 0
-
-def acc(eval_result):
-  global g_total
-  global g_correct
-
-  labels = eval_result["labels"]
-  logits = eval_result["logits"]
-
-  predictions = np.argmax(logits.ndarray(), 1)
-  right_count = np.sum(predictions == labels)
-  g_total += labels.shape[0]
-  g_correct += right_count
-
-if __name__ == '__main__':
-  check_point = flow.train.CheckPoint()
-  check_point.load("./lenet_models_1")
-  (train_images, train_labels), (test_images, test_labels) = load_data(BATCH_SIZE, BATCH_SIZE)
-  
-  for epoch in range(1):
-    for i, (images, labels) in enumerate(zip(train_images, train_labels)):
-      eval_job(images, labels).async_get(acc)
-
-  print("accuracy: {0:.1f}%".format(g_correct*100 / g_total))
-```
-
-### 数字预测
+代码：[lenet_train.py](../code/quick_start/lenet_train.py)
 
 ```python
 import numpy as np
 import oneflow as flow
 from mnist_util import load_data
 from PIL import Image
+BATCH_SIZE = 100
 
-BATCH_SIZE = 1
 
 def lenet(data, train=False):
-  initializer = flow.truncated_normal(0.1)
-  conv1 = flow.layers.conv2d(data, 32, 5, padding='SAME', activation=flow.nn.relu,
-                             kernel_initializer=initializer)
-  pool1 = flow.nn.max_pool2d(conv1, ksize=2, strides=2, padding='SAME')
-  conv2 = flow.layers.conv2d(pool1, 64, 5, padding='SAME', activation=flow.nn.relu,
-                             kernel_initializer=initializer)
-  pool2 = flow.nn.max_pool2d(conv2, ksize=2, strides=2, padding='SAME')
-  reshape = flow.reshape(pool2, [pool2.shape[0], -1])
-  hidden = flow.layers.dense(reshape, 512, activation=flow.nn.relu, kernel_initializer=initializer)
-  if train: hidden = flow.nn.dropout(hidden, rate=0.5)
-  return flow.layers.dense(hidden, 10, kernel_initializer=initializer)
+    initializer = flow.truncated_normal(0.1)
+    conv1 = flow.layers.conv2d(data, 32, 5, padding='SAME', activation=flow.nn.relu, name='conv1',
+                               kernel_initializer=initializer)
+    pool1 = flow.nn.max_pool2d(conv1, ksize=2, strides=2, padding='SAME', name='pool1')
+    conv2 = flow.layers.conv2d(pool1, 64, 5, padding='SAME', activation=flow.nn.relu, name='conv2',
+                               kernel_initializer=initializer)
+    pool2 = flow.nn.max_pool2d(conv2, ksize=2, strides=2, padding='SAME', name='pool2', )
+    reshape = flow.reshape(pool2, [pool2.shape[0], -1])
+    hidden = flow.layers.dense(reshape, 512, activation=flow.nn.relu, kernel_initializer=initializer, name='dense1')
+    if train: hidden = flow.nn.dropout(hidden, rate=0.5)
+    return flow.layers.dense(hidden, 10, kernel_initializer=initializer, name='dense2')
+
+
+def get_train_config():
+    config = flow.function_config()
+    config.default_data_type(flow.float)
+    config.train.primary_lr(0.1)
+    config.train.model_update_conf({"naive_conf": {}})
+    return config
+
+
+@flow.global_function(get_train_config())
+def train_job(images=flow.FixedTensorDef((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+              labels=flow.FixedTensorDef((BATCH_SIZE,), dtype=flow.int32)):
+    with flow.fixed_placement("gpu", "0:0"):
+        logits = lenet(images, train=False)
+        loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits, name="softmax_loss")
+    flow.losses.add_loss(loss)
+    return loss
 
 
 def get_eval_config():
-  config = flow.function_config()
-  config.default_data_type(flow.float)
-  return config
+    config = flow.function_config()
+    config.default_data_type(flow.float)
+    return config
 
 
-@flow.function(get_eval_config())
-def eval_job(images=flow.FixedTensorDef((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-             labels=flow.FixedTensorDef((BATCH_SIZE, ), dtype=flow.int32)):
-  with flow.fixed_placement("gpu", "0:0"):
-    logits = lenet(images, train=True)
-  return logits
+@flow.global_function(get_eval_config())
+def eval_job(images=flow.FixedTensorDef((1, 1, 28, 28), dtype=flow.float),
+             labels=flow.FixedTensorDef((1,), dtype=flow.int32)):
+    with flow.fixed_placement("gpu", "0:0"):
+        logits = lenet(images, train=False)
+    return logits
+
 
 def load_image(file):
     im = Image.open(file).convert('L')
     im = im.resize((28, 28), Image.ANTIALIAS)
     im = np.array(im).reshape(1, 1, 28, 28).astype(np.float32)
-    im = (im -128.0)/ 255.0
+    im = (im - 128.0) / 255.0
+    im.reshape((-1, 1, 1, im.shape[1], im.shape[2]))
+    print('im.shape >>>>>>>>>>>>>>>>>>>>>', im.shape)
+    return im
+
+
+if __name__ == '__main__':
+    flow.config.gpu_device_num(1)
+    flow.config.enable_debug_mode(True)
+    check_point = flow.train.CheckPoint()
+    check_point.init()
+
+    (train_images, train_labels), (test_images, test_labels) = load_data(BATCH_SIZE)
+
+    for epoch in range(50):
+        for i, (images, labels) in enumerate(zip(train_images, train_labels)):
+            loss = train_job(images, labels).get().mean()
+            if i % 20 == 0: print(loss)
+            if loss < 0.01:
+                break
+    check_point.save('./lenet_models_1')  # need remove the existed folder
+    print("model saved")
+```
+
+### 校验模型
+
+代码：[lenet_eval.py](../code/quick_start/lenet_eval.py)
+
+预训练模型：[lenet_models_1.zip](https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/quick_start/lenet_models_1.zip)
+
+```python
+import numpy as np
+import oneflow as flow
+from mnist_util import load_data
+
+BATCH_SIZE = 100
+
+
+def lenet(data, train=False):
+    initializer = flow.truncated_normal(0.1)
+    conv1 = flow.layers.conv2d(data, 32, 5, padding='SAME', activation=flow.nn.relu, name='conv1',
+                               kernel_initializer=initializer)
+    pool1 = flow.nn.max_pool2d(conv1, ksize=2, strides=2, padding='SAME', name='pool1')
+    conv2 = flow.layers.conv2d(pool1, 64, 5, padding='SAME', activation=flow.nn.relu, name='conv2',
+                               kernel_initializer=initializer)
+    pool2 = flow.nn.max_pool2d(conv2, ksize=2, strides=2, padding='SAME', name='pool2', )
+    reshape = flow.reshape(pool2, [pool2.shape[0], -1])
+    hidden = flow.layers.dense(reshape, 512, activation=flow.nn.relu, kernel_initializer=initializer, name='dense1')
+    if train: hidden = flow.nn.dropout(hidden, rate=0.5)
+    return flow.layers.dense(hidden, 10, kernel_initializer=initializer, name='dense2')
+
+
+def get_eval_config():
+    config = flow.function_config()
+    config.default_data_type(flow.float)
+    return config
+
+
+@flow.global_function(get_eval_config())
+def eval_job(images=flow.FixedTensorDef((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+             labels=flow.FixedTensorDef((BATCH_SIZE,), dtype=flow.int32)):
+    with flow.fixed_placement("gpu", "0:0"):
+        logits = lenet(images, train=True)
+        loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits, name="softmax_loss")
+
+    return {"labels": labels, "logits": logits}
+
+
+g_total = 0
+g_correct = 0
+
+
+def acc(eval_result):
+    global g_total
+    global g_correct
+
+    labels = eval_result["labels"]
+    logits = eval_result["logits"]
+
+    predictions = np.argmax(logits.ndarray(), 1)
+    right_count = np.sum(predictions == labels)
+    g_total += labels.shape[0]
+    g_correct += right_count
+
+
+if __name__ == '__main__':
+
+    check_point = flow.train.CheckPoint()
+    check_point.load("./lenet_models_1")
+    (train_images, train_labels), (test_images, test_labels) = load_data(BATCH_SIZE, BATCH_SIZE)
+
+    for epoch in range(1):
+        for i, (images, labels) in enumerate(zip(train_images, train_labels)):
+            eval_job(images, labels).async_get(acc)
+
+    print("accuracy: {0:.1f}%".format(g_correct * 100 / g_total))
+```
+
+### 数字预测
+
+代码：[lenet_test.py](../code/quick_start/lenet_test.py)
+
+预训练模型：[lenet_models_1.zip](https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/quick_start/lenet_models_1.zip)
+
+```python
+import numpy as np
+import oneflow as flow
+from PIL import Image
+
+BATCH_SIZE = 1
+
+
+def lenet(data, train=False):
+    initializer = flow.truncated_normal(0.1)
+    conv1 = flow.layers.conv2d(data, 32, 5, padding='SAME', activation=flow.nn.relu, name='conv1',
+                               kernel_initializer=initializer)
+    pool1 = flow.nn.max_pool2d(conv1, ksize=2, strides=2, padding='SAME', name='pool1')
+    conv2 = flow.layers.conv2d(pool1, 64, 5, padding='SAME', activation=flow.nn.relu, name='conv2',
+                               kernel_initializer=initializer)
+    pool2 = flow.nn.max_pool2d(conv2, ksize=2, strides=2, padding='SAME', name='pool2', )
+    reshape = flow.reshape(pool2, [pool2.shape[0], -1])
+    hidden = flow.layers.dense(reshape, 512, activation=flow.nn.relu, kernel_initializer=initializer, name='dense1')
+    if train: hidden = flow.nn.dropout(hidden, rate=0.5)
+    return flow.layers.dense(hidden, 10, kernel_initializer=initializer, name='dense2')
+
+
+def get_eval_config():
+    config = flow.function_config()
+    config.default_data_type(flow.float)
+    return config
+
+
+@flow.global_function(get_eval_config())
+def eval_job(images=flow.FixedTensorDef((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+             labels=flow.FixedTensorDef((BATCH_SIZE,), dtype=flow.int32)):
+    with flow.fixed_placement("gpu", "0:0"):
+        logits = lenet(images, train=False)
+    return logits
+
+
+def load_image(file):
+    im = Image.open(file).convert('L')
+    im = im.resize((28, 28), Image.ANTIALIAS)
+    im = np.array(im).reshape(1, 1, 28, 28).astype(np.float32)
+    im = (im - 128.0) / 255.0
     im.reshape((-1, 1, 1, im.shape[1], im.shape[2]))
     return im
 
+
 if __name__ == '__main__':
+
     check_point = flow.train.CheckPoint()
     check_point.load("./lenet_models_1")
 
     image = load_image("./9.png")
     logits = eval_job(image, np.zeros((1,)).astype(np.int32)).get()
-    
+
     prediction = np.argmax(logits.ndarray(), 1)
     print("predict:{}".format(prediction[0]))
 ```

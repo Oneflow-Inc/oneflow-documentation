@@ -1,3 +1,7 @@
+# 分布式训练
+
+在OneFlow中您只需要简单的几行配置，OneFlow框架内部会自动处理任务调度、资源并行等问题，因此，您并不需要特别改动网络结构和业务逻辑代码，就可以方便地使用分布式训练。
+
 OneFlow的分布式训练能力独树一帜，是OneFlow区别于其它框架的 **最重要特性**。
 
 本文将介绍：
@@ -18,14 +22,15 @@ OneFlow的分布式训练能力独树一帜，是OneFlow区别于其它框架的
 
 ## 配置分布式训练网络
 
-我们通过调用OneFlow的接口进行分布式配置。OneFlow框架内部，会处理任务调度、资源并行等问题。
+通过OneFlow提供的分布式配置的接口，您只需要简单的几行配置(指定分布式计算的节点ip以及每个节点使用gpu的数量)即可实现分布式的训练网络。
 
-这使得单机训练程序与分布式训练程序几乎是一样的，作为OneFlow用户，只需要专注于程序的 **业务逻辑** 及 **模型结构本身** ，而不用操心分布式执行问题。
+换句话说，这使得单机训练程序与分布式训练程序几乎是一样的，作为OneFlow用户，只需要专注于程序的 **业务逻辑** 及 **模型结构本身** ，而不用操心分布式执行问题。**OneFlow框架会自动帮您处理复杂的任务调度、资源并行等问题。**
+
+下面，我们会介绍一个例子：将单机版的训练任务，通过添加几行配置代码后将其改造为分布式训练任务。
 
 ### 单机训练程序
 以下是单机训练程序的框架，因为各个函数的代码会在下文分布式程序中呈现，在此就未呈现。
 ```python
-
 import numpy as np
 import oneflow as flow
 
@@ -45,7 +50,7 @@ def get_train_config():
     #配置训练环境
 
 
-@flow.function(get_train_config())
+@flow.global_function(get_train_config())
 def train_job():
     #任务函数的实现
 
@@ -116,7 +121,9 @@ def config_distributed():
 ### 分布式训练完整脚本
 单机程序加入OneFlow的分布式配置代码后，就成为了分布式程序，在所有的节点运行一样的程序即可。
 
-以下是完整代码，我们可以与上文的 **单机训练程序** 比较，会发现仅仅只是增加了`config_distributed`函数并调用，我们之前的单机训练脚本，就成为了分布式训练脚本。
+我们可以将分布式训练程序与上文的 **单机训练程序** 比较，会发现仅仅只是增加了`config_distributed`函数并调用，我们之前的单机训练脚本，就成为了分布式训练脚本。
+
+以下是完整代码：[distributed_train.py](../code/basics_topics/distributed_train.py)
 
 ```python
 import numpy as np
@@ -159,7 +166,7 @@ def get_train_config():
   config.train.model_update_conf({"naive_conf": {}})
   return config
 
-@flow.function(get_train_config())
+@flow.global_function(get_train_config())
 def train_job():
   (labels, images) = _data_load_layer(arg_data_part_num=60)
 
