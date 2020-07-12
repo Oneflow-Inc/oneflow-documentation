@@ -40,7 +40,7 @@ def get_train_config():
   return config
 
 
-@flow.function(get_train_config())
+@flow.global_function(get_train_config())
 def train_job(images=flow.FixedTensorDef((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
               labels=flow.FixedTensorDef((BATCH_SIZE, ), dtype=flow.int32)):
   with flow.fixed_placement("cpu", "0:0"):
@@ -66,17 +66,17 @@ if __name__ == '__main__':
 
 OneFlow相对其他深度学习框架较特殊的地方是这里：
 ```
-@flow.function(get_train_config())
+@flow.global_function(get_train_config())
 def train_job(images=flow.FixedTensorDef((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
               labels=flow.FixedTensorDef((BATCH_SIZE, ), dtype=flow.int32)):
 ```
-`train_job`是一个被`@flow.function`修饰的函数，通常被称作任务函数。只有被`@flow.function`修饰的任务函数才能够被OneFlow识别成一个神经网络训练或者预测任务。
+`train_job`是一个被`@flow.global_function`修饰的函数，通常被称作任务函数。只有被`@flow.global_function`修饰的任务函数才能够被OneFlow识别成一个神经网络训练或者预测任务。
 
 在OneFlow中一个神经网络的训练或者预测任务需要两部分信息：
 
 * 一部分是这个神经网络本身的结构和相关参数，这些在上文提到的任务函数里定义；
 
-* 另外一部分是使用什么样的配置去训练这个网络，比如`learning rate`、模型优化更新的方法。这些在`@flow.function(get_train_config())`中的`get_train_config()`配置。
+* 另外一部分是使用什么样的配置去训练这个网络，比如`learning rate`、模型优化更新的方法。这些在`@flow.global_function(get_train_config())`中的`get_train_config()`配置。
 
 这段代码里包含了训练一个神经网络的所有元素，除了上面说的任务函数及其配置之外：
 
