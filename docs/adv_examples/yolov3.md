@@ -63,12 +63,16 @@ sh yolo_predict_python_data_preprocess.sh
 
 参数说明
 - --pretrained_model    预训练模型路径
-- --label_path                  coco类别标签路径(coco.name)
-- --input_dir                    待检测图片文件夹路径
-- --output_dir	              检测结构输出路径
-- --image_paths              单个/多个待检测图片路径
 
-# 如：--image_paths  'data/images/000002.jpg'  'data/images/000004.jpg' 
+- --label_path                  coco类别标签路径(coco.name)
+
+- --input_dir                    待检测图片文件夹路径
+
+- --output_dir	              检测结构输出路径
+
+- --image_paths              单个/多个待检测图片路径，如：
+
+  --image_paths  'data/images/000002.jpg'  'data/images/000004.jpg' 
 
 训练同样很简单，准备好数据集后，只需要执行：`sh yolo_train.sh`即可，数据集制作过程见下文【数据集制作】部分。
 
