@@ -135,7 +135,7 @@ python of_data_pipeline.py
 (64, 3, 224, 224) (64,)
 ```
 ### 代码解析
-OneFlow的数据处理流水线分为两个阶段：**数据加载**和**数据预处理**。
+OneFlow的数据处理流水线分为两个阶段： **数据加载** 和 **数据预处理** 。
 
 - 数据加载采用的是`ofrecord_reader`，需要指定ofrecord文件所在的目录，和一些其他参数，请参考[ofrecord_reader api](ofrecord_reader.api)
 - 数据预处理是一个系列过程，`OFRecordImageDecoderRandomCrop`负责图片解码并随机做了裁剪，`Resize`把裁剪后的图片调整成224x224的大小，`CropMirrorNormalize`把图片进行了正则化。标签部分只需要进行解码`CropMirrorNormalize`。
