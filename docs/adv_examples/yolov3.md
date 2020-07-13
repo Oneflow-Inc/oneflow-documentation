@@ -64,10 +64,10 @@ sh yolo_predict_python_data_preprocess.sh
 参数说明
 ```shell
 --pretrained_model    预训练模型路径
---label_path                    coco类别标签路径(coco.name)
---input_dir 					  待检测图片文件夹路径
---output_dir					检测结构输出路径
---image_paths                单个/多个待检测图片路径
+--label_path          coco类别标签路径(coco.name)
+--input_dir           待检测图片文件夹路径
+--output_dir	      检测结构输出路径
+--image_paths         单个/多个待检测图片路径
 # 如：--image_paths  'data/images/000002.jpg'  'data/images/000004.jpg' 
 ```
 
@@ -127,16 +127,15 @@ sh yolo_train.sh
 即可开始训练过程，更详细的参数介绍如下：
 
 ```shell
---gpu_num_per_node  每台机器使用的gpu数量
---batch_size  batch         批大小
---base_lr 							   初始学习率
---classes							    目标类别数量（COCO 80；VOC 20）
---model_save_dir            模型存放文件夹路径
---dataset_dir                      训练/验证集文件夹路径
---num_epoch					   迭代总轮数
---save_frequency            指定模型保存的epoch间隔
+--gpu_num_per_node    每台机器使用的gpu数量
+--batch_size  batch   批大小
+--base_lr             初始学习率
+--classes             目标类别数量（COCO 80；VOC 20）
+--model_save_dir      模型存放文件夹路径
+--dataset_dir         训练/验证集文件夹路径
+--num_epoch           迭代总轮数
+--save_frequency      指定模型保存的epoch间隔
 ```
-
 
 
 ## 说明
