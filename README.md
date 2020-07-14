@@ -3,8 +3,7 @@
 **安装mkdocs与material**
 
 ```shell
-pip install mkdocs
-pip install mkdocs-material
+pip3 install mkdocs mkdocs-material --user
 ```
 
 **编译为html**
