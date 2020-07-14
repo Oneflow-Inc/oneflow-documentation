@@ -6,7 +6,7 @@
 
 * 在分布式任务中采用`mirrored`策略及其特点
 
-* 在分布式任务中采用`consistent`及其特点
+* 在分布式任务中采用`consistent`策略及其特点
 
 ## 数据并行与模型并行
 为了更好地理解OneFlow中的`consistent`和`mirrored`策略，我们需要了解分布式任务中的 **数据并行** 、**模型并行** 两种并行方式的区别。
@@ -87,7 +87,11 @@
 以上提及的`list`中的所有元素 **拼接在一起** ，才是一个完整的BATCH。
 
 ### 代码示例
-在以下的代码中，我们使用采用默认的`mirrored_strategy`策略，使用2个GPU进行训练。重点部分的说明请见后文“代码解析”部分。
+在以下的代码中，我们使用采用默认的`mirrored_strategy`策略，使用2个GPU进行训练。
+
+完整代码：[mirrored_strategy.py](../code/adv_examples/mirrored_strategy.py)
+
+重点部分的说明请见后文“代码解析”部分。
 
 ```python
 import numpy as np
@@ -142,7 +146,7 @@ if __name__ == '__main__':
 ### 代码解析
 以上代码中：
 
-* 使用`flow.config.gpu_device_num`设置GPU数目
+* 使用`flow.config.gpu_device_num`设置GPU数目为2 (注意：如果GPU数量<2会报错)
 ```python
 flow.config.gpu_device_num(2)
 ```
@@ -178,7 +182,7 @@ def train_job(images=flow.MirroredTensorDef((BATCH_SIZE_PER_GPU, 1, 28, 28),    
 ## 在OneFlow中使用consistent策略
 我们已经了解了mirrored策略，知道在`mirrored_strategy`配置下，样本会被平均分配到多个完全一样的模型上进行分布式训练，各个训练节点上的结果，需要组装才能得到真正完整的BATCH。
 
-除了mirroed策略外，OneFlow还提供了consistent策略。consistent策略是OneFlow的一大特色，与mirrored策略相比有很大的优势。
+除了mirroed策略外，OneFlow还提供了consistent策略。 **consistent策略是OneFlow的一大特色，与mirrored策略相比有很大的优势。** 
 
 默认情况下OneFlow采取的是mirrored策略，使用consistent策略需要通过`flow.function_config()`的`default_distribute_strategy`接口显式设置：
 ```python
@@ -186,12 +190,14 @@ def train_job(images=flow.MirroredTensorDef((BATCH_SIZE_PER_GPU, 1, 28, 28),    
   config.default_distribute_strategy(flow.distribute.consistent_strategy())
 ```
 
-之所以说consistent策略是OneFlow的一大特色，是因为在OneFlow的设计中，若采用`consistent_strategy`，那么从用户的视角看，所使用的op、blob将获得 **逻辑上的统一**，同样以本文开头的矩阵乘法为例，我们只需要关注[矩阵乘法](#mat_mul_op)本身数学计算上的意义；而在工程上到底如何配置、采用模型并行还是数据并行等细节问题，可以使用OneFlow的接口轻松完成；OneFlow内部会高效可靠地解决 **数据并行中的数据切分** 、**模型并行中的模型切分** 、**串行逻辑** 等问题。
+之所以说consistent策略是OneFlow的一大特色，是因为在OneFlow的设计中，若采用`consistent_strategy`，那么从用户的视角看，所使用的op、blob将获得 **逻辑上的统一**，同样以本文开头的矩阵乘法为例，我们只需要关注[矩阵乘法](#mat_mul_op)本身数学计算上的意义；而在工程上到底如何配置、采用模型并行还是数据并行等细节问题，可以使用OneFlow的接口轻松完成。OneFlow内部会高效可靠地解决 **数据并行中的数据切分** 、**模型并行中的模型切分** 、**串行逻辑** 等问题。
 
-在OneFlow的consistent策略下，可以自由选择模型并行、数据并行或者两者共存的混合并行。
+ **在OneFlow的consistent策略下，可以自由选择模型并行、数据并行或者两者共存的混合并行。** 
 
 ### 代码示例
 以下代码，我们采用consistent策略，使用2个GPU进行训练，consistent策略下默认的并行方式仍然是 **数据并行**。关于如何在consistent策略下设置 **模型并行** 及 **混合并行** 不在本文讨论范围，我们在[OneFlow的并行特色](model_mixed_parallel.md)中有专门的介绍与示例。
+
+完整代码：[consistent_strategy.py](../code/adv_examples/consistent_strategy.py)
 
 ```python
 import numpy as np
