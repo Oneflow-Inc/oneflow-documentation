@@ -1,5 +1,7 @@
+在OneFlow中，我们将训练、预测/推理等任务统称为任务函数(job function)，任务函数联系用户的业务逻辑与OneFlow管理的计算资源。
 
-OneFlow中使用任务函数(job function)联系用户的业务逻辑与OneFlow管理的计算资源。并且了解了如何配置oneflow.global_function为任务函数加载配置。
+在OneFlow中，任何被定义为任务函数的方法体都需要用@oneflow.global_function修饰，通过此注解，我们不仅能定义任务的模型结构，优化方式等业务逻辑，同时可以将任务运行时所需的配置当做参数传递给任务函数(如:下面例子中的：get_train_config())，使得OneFlow能方便地为我们管理内存、GPU等计算资源。
+
 本文中我们将具体学习：
 
 * 如何定义和调用任务函数
@@ -36,12 +38,12 @@ def train_job(images=flow.FixedTensorDef((BATCH_SIZE, 1, 28, 28), dtype=flow.flo
 任务函数的返回值 **必须是blob对象类型或者包含blob对象的容器** 。
 
 ### 任务函数的调用
-OneFlow对任务函数的处理，对于用户而言是无感、透明的。
-我们可以像调用普通的Python函数一样调用任务函数。
-每一次调用，OneFlow都会在框架内部完成正向传播、反向传播、参数更新等一系列事情。
+OneFlow对任务函数的处理，对于用户而言是无感、透明的，我们可以像调用普通的Python函数一样调用任务函数。每一次调用，OneFlow都会在框架内部完成正向传播、反向传播、参数更新等一系列事情。
+
 以下代码，获取数据之后，会向`train_job`任务函数传递参数并调用，打印平均损失值。
+
 ```python
-  #...
+  # 简单的共50epochs的训练任务
   (train_images, train_labels), (test_images, test_labels) = load_data(BATCH_SIZE)
   for epoch in range(50):
     for i, (images, labels) in enumerate(zip(train_images, train_labels)):
@@ -50,3 +52,4 @@ OneFlow对任务函数的处理，对于用户而言是无感、透明的。
 ```
 
 要注意，直接调用任务函数`tran_job`其实得到的是OneFlow的`blob`对象，需要进一步通过该对象的`get`或者`async_get`方法，来获取任务函数的返回结果。详情可以参阅专题[获取任务函数的结果](../basics_topics/async_get.md)。
+

@@ -130,7 +130,7 @@ if __name__ == '__main__':
 ```
 
 ### 代码解析
-以上代码修改自[3分钟快速上手](../quick_start/quick_start_in_3_min.d)中的示例代码，比较两份代码，也可以体会到在OneFlow的`consistent_strategy`下进行各种并行方案的配置是多么的简单，只需要在单机的程序上稍加修改即可。
+以上代码修改自[3分钟快速上手](../quick_start/quick_start_in_3_min.md)中的示例代码，比较两份代码，也可以体会到在OneFlow的`consistent_strategy`下进行各种并行方案的配置是多么的简单，只需要在单机的程序上稍加修改即可。
 
 以上程序的关键部分有：
 
