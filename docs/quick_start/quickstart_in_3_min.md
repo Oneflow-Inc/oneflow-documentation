@@ -10,7 +10,7 @@ cd oneflow-documentation/docs/code/quick_start/ #切换到示例代码路径
 
 然后，运行神经网络训练脚本：
 ```shell
-pytho mlp_mnist.py
+python mlp_mnist.py
 ```
 
 这样您将得到下面的输出：
