@@ -162,6 +162,8 @@ f.write(serilizedBytes)
 ### 将OFRecord对象写入文件
 以下代码，模拟了3个样本，每个样本为`28*28`的图片，并且包含对应标签。将三个样本转化为OFRecord对象后，按照OneFlow约定格式，存入文件。
 
+完整代码：[ofrecord_to_string.py](../code/extended_topics/ofrecord_to_string.py)
+
 ```python
 import oneflow.core.record.record_pb2 as ofrecord
 import six
@@ -221,11 +223,15 @@ for loop in range(0, 3):
     f.write(struct.pack("q", length))
     f.write(serilizedBytes)
 
+print('Done!')
 f.close()
 ```
 
 ### 从OFRecord文件中读取数据
 以下代码，读取上例中生成的`OFRecord`文件，调用`FromString`方法反序列化得到`OFRecord`对象，并最终显示数据：
+
+完整代码：[ofrecord_from_string.py](../code/extended_topics/ofrecord_from_string.py)
+
 ```python
 import oneflow.core.record.record_pb2 as ofrecord
 import struct
