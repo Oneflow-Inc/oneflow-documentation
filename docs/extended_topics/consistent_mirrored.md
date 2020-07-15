@@ -89,7 +89,7 @@
 ### 代码示例
 在以下的代码中，我们使用采用默认的`mirrored_strategy`策略，使用2个GPU进行训练。
 
-完整代码：[mirrored_strategy.py](../code/adv_examples/mirrored_strategy.py)
+完整代码：[mirrored_strategy.py](../code/extended_topics/mirrored_strategy.py)
 
 重点部分的说明请见后文“代码解析”部分。
 
@@ -197,7 +197,7 @@ def train_job(images=flow.MirroredTensorDef((BATCH_SIZE_PER_GPU, 1, 28, 28),    
 ### 代码示例
 以下代码，我们采用consistent策略，使用2个GPU进行训练，consistent策略下默认的并行方式仍然是 **数据并行**。关于如何在consistent策略下设置 **模型并行** 及 **混合并行** 不在本文讨论范围，我们在[OneFlow的并行特色](model_mixed_parallel.md)中有专门的介绍与示例。
 
-完整代码：[consistent_strategy.py](../code/adv_examples/consistent_strategy.py)
+完整代码：[consistent_strategy.py](../code/extended_topics/consistent_strategy.py)
 
 ```python
 import numpy as np
