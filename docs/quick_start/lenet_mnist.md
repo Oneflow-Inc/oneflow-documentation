@@ -83,17 +83,18 @@ config对象，其使用场景，将在后文 **实现训练任务函数** 中�
 
 ```python
 def lenet(data, train=False):
-  initializer = flow.truncated_normal(0.1)
-  conv1 = flow.layers.conv2d(data, 32, 5, padding='SAME', activation=flow.nn.relu,
-                             kernel_initializer=initializer)
-  pool1 = flow.nn.max_pool2d(conv1, ksize=2, strides=2, padding='SAME')
-  conv2 = flow.layers.conv2d(pool1, 64, 5, padding='SAME', activation=flow.nn.relu,
-                             kernel_initializer=initializer)
-  pool2 = flow.nn.max_pool2d(conv2, ksize=2, strides=2, padding='SAME')
-  reshape = flow.reshape(pool2, [pool2.shape[0], -1])
-  hidden = flow.layers.dense(reshape, 512, activation=flow.nn.relu, kernel_initializer=initializer)
-  if train: hidden = flow.nn.dropout(hidden, rate=0.5)
-  return flow.layers.dense(hidden, 10, kernel_initializer=initializer)
+    initializer = flow.truncated_normal(0.1)
+    conv1 = flow.layers.conv2d(data, 32, 5, padding='SAME', activation=flow.nn.relu, name='conv1',
+                               kernel_initializer=initializer)
+    pool1 = flow.nn.max_pool2d(conv1, ksize=2, strides=2, padding='SAME', name='pool1')
+    conv2 = flow.layers.conv2d(pool1, 64, 5, padding='SAME', activation=flow.nn.relu, name='conv2',
+                               kernel_initializer=initializer)
+    pool2 = flow.nn.max_pool2d(conv2, ksize=2, strides=2, padding='SAME', name='pool2', )
+    reshape = flow.reshape(pool2, [pool2.shape[0], -1])
+    hidden = flow.layers.dense(reshape, 512, activation=flow.nn.relu, kernel_initializer=initializer, name='dense1')
+    if train: hidden = flow.nn.dropout(hidden, rate=0.5, name="dropout")
+    return flow.layers.dense(hidden, 10, kernel_initializer=initializer, name='dense2')
+
 ```
 
 以上代码中，我们搭建了一个LeNet网络模型。
@@ -314,7 +315,7 @@ def lenet(data, train=False):
     pool2 = flow.nn.max_pool2d(conv2, ksize=2, strides=2, padding='SAME', name='pool2', )
     reshape = flow.reshape(pool2, [pool2.shape[0], -1])
     hidden = flow.layers.dense(reshape, 512, activation=flow.nn.relu, kernel_initializer=initializer, name='dense1')
-    if train: hidden = flow.nn.dropout(hidden, rate=0.5)
+    if train: hidden = flow.nn.dropout(hidden, rate=0.5, name="dropout")
     return flow.layers.dense(hidden, 10, kernel_initializer=initializer, name='dense2')
 
 
