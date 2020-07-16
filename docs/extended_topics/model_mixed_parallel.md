@@ -78,6 +78,8 @@
 ### 代码示例
 以下，在`consistent`策略下，我们对MLP模型采用了混合并行方案：输入层与隐藏层采用（默认的）数据并行；输出层采用模型并行并进行列切分。
 
+完整代码：[mixed_parallel_mlp.py](../code/extended_topics/mixed_parallel_mlp.py)
+
 更具体的解析在后文“代码解析”可见。
 
 ```python
@@ -171,9 +173,12 @@ def mlp(data):
 
 在以下示例中，我们对[Consistent与Mirrored策略](consistent_mirrored.md)中的“在OneFlow中使用consistent策略”代码进行简单修改，展示了“网络接力”并行模式。
 
+### 代码示例
+
+完整代码：[mixed_parallel_lenet.py](../code/extended_topics/mixed_parallel_lenet.py)
+
 更详细的讨论可见后文的“代码解析”。
 
-### 代码示例
 ```python
 import numpy as np
 import oneflow as flow
