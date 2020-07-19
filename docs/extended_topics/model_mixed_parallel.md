@@ -169,7 +169,7 @@ def mlp(data):
 可以看到，我们通过极少量的修改，就能将单机训练程序改为分布式、混合并行的程序，这是OneFlow区别于其它框架的一大特色。
 
 ## 网络接力并行实例
-在模型并行之外，OneFlow还提供了一种灵活度更高的“网络接力”的并行方式，可以让用户使用`fixed_placement`接口显式指定用来运行逻辑`op`的 **物理硬件**。
+在模型并行之外，OneFlow还提供了一种灵活度更高的“网络接力”的并行方式，可以让用户使用`scope.placement`接口显式指定用来运行逻辑`op`的 **物理硬件**。
 
 在以下示例中，我们对[Consistent与Mirrored策略](consistent_mirrored.md)中的“在OneFlow中使用consistent策略”代码进行简单修改，展示了“网络接力”并行模式。
 
@@ -196,11 +196,11 @@ def lenet(data, train=False):
                              kernel_initializer=initializer, name="conv2")
   pool2 = flow.nn.max_pool2d(conv2, ksize=2, strides=2, padding='SAME', name="pool2")
   reshape = flow.reshape(pool2, [pool2.shape[0], -1])
-  with flow.fixed_placement("gpu", "0:0"):
+  with flow.scope.placement("gpu", "0:0"):
     hidden = flow.layers.dense(reshape, 512, activation=flow.nn.relu, kernel_initializer=initializer, name="hidden")
   if train: hidden = flow.nn.dropout(hidden, rate=0.5)
   
-  with flow.fixed_placement("gpu", "0:1"):
+  with flow.scope.placement("gpu", "0:1"):
     output = flow.layers.dense(hidden, 10, kernel_initializer=initializer, name="outlayer")
   return output
 
@@ -240,21 +240,21 @@ if __name__ == '__main__':
 
 以上关键的代码只有2行，且他们的本质作用是类似的：
 
-* 通过`oneflow.fixed_placement`，指定`hidden`层的op计算运行在0号GPU上
+* 通过`oneflow.scope.placement`，指定`hidden`层的op计算运行在0号GPU上
 ```python
-  with flow.fixed_placement("gpu", "0:0"):
+  with flow.scope.placement("gpu", "0:0"):
     hidden = flow.layers.dense(reshape, 512, activation=flow.nn.relu, kernel_initializer=initializer, name="hidden")
 ```
 
-* 通过`oneflow.fixed_placement`，指定`output`层的op计算运行在1号GPU上
+* 通过`oneflow.scope.placement`，指定`output`层的op计算运行在1号GPU上
 ```python
-  with flow.fixed_placement("gpu", "0:1"):
+  with flow.scope.placement("gpu", "0:1"):
     output = flow.layers.dense(hidden, 10, kernel_initializer=initializer, name="outlayer")
 ```
 
-其中`fixed_placement`的第一个参数指定`cpu`还是`gpu`，第二个参数指定机器及运算设备编号，如，“使用第1号机器的第2个GPU”，则应该写：
+其中`scope.placement`的第一个参数指定`cpu`还是`gpu`，第二个参数指定机器及运算设备编号，如，“使用第1号机器的第2个GPU”，则应该写：
 ```python
-  with flow.fixed_placement("gpu", "1:2"):
+  with flow.scope.placement("gpu", "1:2"):
     # ...
 ```
 

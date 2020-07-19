@@ -13,11 +13,11 @@ def lenet(data, train=False):
                                kernel_initializer=initializer, name="conv2")
     pool2 = flow.nn.max_pool2d(conv2, ksize=2, strides=2, padding='SAME', name="pool2")
     reshape = flow.reshape(pool2, [pool2.shape[0], -1])
-    with flow.fixed_placement("gpu", "0:0"):
+    with flow.scope.placement("gpu", "0:0"):
         hidden = flow.layers.dense(reshape, 512, activation=flow.nn.relu, kernel_initializer=initializer, name="hidden")
     if train: hidden = flow.nn.dropout(hidden, rate=0.5)
 
-    with flow.fixed_placement("gpu", "0:1"):
+    with flow.scope.placement("gpu", "0:1"):
         output = flow.layers.dense(hidden, 10, kernel_initializer=initializer, name="outlayer")
     return output
 
