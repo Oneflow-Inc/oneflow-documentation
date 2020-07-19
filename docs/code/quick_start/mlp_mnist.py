@@ -16,7 +16,7 @@ def get_train_config():
 @flow.global_function(get_train_config())
 def train_job(images=flow.FixedTensorDef((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
               labels=flow.FixedTensorDef((BATCH_SIZE,), dtype=flow.int32)):
-    with flow.fixed_placement("cpu", "0:0"):
+    with flow.scope.placement("cpu", "0:0"):
         initializer = flow.truncated_normal(0.1)
         reshape = flow.reshape(images, [images.shape[0], -1])
         hidden = flow.layers.dense(reshape, 512, activation=flow.nn.relu, kernel_initializer=initializer)

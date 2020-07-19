@@ -6,7 +6,7 @@ import oneflow as flow
 def test_job():
     batch_size = 64
     color_space = 'RGB'
-    with flow.fixed_placement("cpu", "0:0"):
+    with flow.scope.placement("cpu", "0:0"):
         ofrecord = flow.data.ofrecord_reader('/path/to/ImageNet/ofrecord',
                                              batch_size=batch_size,
                                              data_part_num=1,

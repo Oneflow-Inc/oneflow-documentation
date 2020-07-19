@@ -122,7 +122,7 @@ def train_job(images=flow.FixedTensorDef((BATCH_SIZE, 1, 28, 28), dtype=flow.flo
 @flow.global_function(get_train_config())
 def train_job(images=flow.FixedTensorDef((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
               labels=flow.FixedTensorDef((BATCH_SIZE, ), dtype=flow.int32)):
-  with flow.fixed_placement("gpu", "0:0"):
+  with flow.scope.placement("gpu", "0:0"):
     logits = lenet(images, train=True)
     loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits)
   flow.losses.add_loss(loss)
@@ -218,7 +218,7 @@ def get_eval_config():
 @flow.global_function(get_eval_config())
 def eval_job(images=flow.FixedTensorDef((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
               labels=flow.FixedTensorDef((BATCH_SIZE, ), dtype=flow.int32)):
-  with flow.fixed_placement("gpu", "0:0"):
+  with flow.scope.placement("gpu", "0:0"):
     logits = lenet(images, train=True)
     loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits, name="softmax_loss")
 
@@ -330,7 +330,7 @@ def get_train_config():
 @flow.global_function(get_train_config())
 def train_job(images=flow.FixedTensorDef((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
               labels=flow.FixedTensorDef((BATCH_SIZE,), dtype=flow.int32)):
-    with flow.fixed_placement("gpu", "0:0"):
+    with flow.scope.placement("gpu", "0:0"):
         logits = lenet(images, train=False)
         loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits, name="softmax_loss")
     flow.losses.add_loss(loss)
@@ -346,7 +346,7 @@ def get_eval_config():
 @flow.global_function(get_eval_config())
 def eval_job(images=flow.FixedTensorDef((1, 1, 28, 28), dtype=flow.float),
              labels=flow.FixedTensorDef((1,), dtype=flow.int32)):
-    with flow.fixed_placement("gpu", "0:0"):
+    with flow.scope.placement("gpu", "0:0"):
         logits = lenet(images, train=False)
     return logits
 
@@ -405,7 +405,7 @@ def get_eval_config():
 @flow.global_function(get_eval_config())
 def eval_job(images=flow.FixedTensorDef((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
              labels=flow.FixedTensorDef((BATCH_SIZE,), dtype=flow.int32)):
-    with flow.fixed_placement("gpu", "0:0"):
+    with flow.scope.placement("gpu", "0:0"):
         logits = lenet(images, train=True)
         loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits, name="softmax_loss")
 
@@ -481,7 +481,7 @@ def get_eval_config():
 @flow.global_function(get_eval_config())
 def eval_job(images=flow.FixedTensorDef((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
              labels=flow.FixedTensorDef((BATCH_SIZE,), dtype=flow.int32)):
-    with flow.fixed_placement("gpu", "0:0"):
+    with flow.scope.placement("gpu", "0:0"):
         logits = lenet(images, train=False)
     return logits
 
