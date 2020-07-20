@@ -41,7 +41,7 @@ bash scripts/test.sh
 
 ### 预训练模型
 
-我们使用了yolov3原作者提供的预训练模型—[yolov3.weight](https://pjreddie.com/media/files/yolov3.weights) ，经转换后生成了OneFlow格式的模型。下载预训练模型：[of_model_yolov3.zip](https://oneflow-public.oss-cn-beijing.aliyuncs.com/model_zoo/of_model_yolov3.zip)  ，并将解压后的of_model文件夹放置在项目root目录下，即可使用。
+我们使用了yolov3原作者提供的预训练模型—[yolov3.weight](https://pjreddie.com/media/files/yolov3.weights) ，经转换后生成了OneFlow格式的模型。下载预训练模型：[of_model_yolov3.zip](https://oneflow-public.oss-cn-beijing.aliyuncs.com/model_zoo/of_model_yolov3.zip)  ，并将解压后的of_model文件夹放置在项目root目录下，即可使用。下载预训练模型：[of_model_yolov3.zip](https://oneflow-public.oss-cn-beijing.aliyuncs.com/model_zoo/of_model_yolov3.zip)  ，并将解压后的of_model文件夹放置在项目root目录下，即可使用。
 
 
 
