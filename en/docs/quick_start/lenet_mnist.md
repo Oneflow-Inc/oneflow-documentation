@@ -162,35 +162,35 @@ More details example will be demonstrated in **Model evaluation**.
 
 ### Initialization and saving model
 
-`oneflow.train.CheckPoint`类构造的对象，可以用于模型的初始化、保存与加载。 在训练过程中，我们可以通过`init`方法初始化模型，通过`save`方法保存模型。如下例：
+The object structured by `oneflow.train.CheckPoint` can use for initialization, saving and loading models. During the training process, we can use `init` to initialize model and use `save` to save model.For example:
 
 ```python
 if __name__ == '__main__':
   check_point = flow.train.CheckPoint()
   check_point.init()
-  #加载数据及训练 ...  
+  #load data and training ...  
   check_point.save('./lenet_models_1') 
 ```
 
-保存成功后，我们将得到名为"lenet_models_1"的 **目录** ，该目录中包含了与模型参数对应的子目录及文件。
+When save successfully, we will get a ** directory** called "lenet_models_1". This directory included directories and files corresponding with the model parameters.
 
-### 模型的加载
+### Loading models
 
-在校验或者预测过程中，我们可以通过`oneflow.train.CheckPoint.load`方法加载现有的模型参数。如下例：
+During the evaluation or prediction, we can use `oneflow.train.CheckPoint.load` to load the existing model parameters.For example:
 
 ```python
 if __name__ == '__main__':
   check_point = flow.train.CheckPoint()
   check_point.load("./lenet_models_1")
-  #校验过程 ...
+  #evaluation process  ...
 ```
 
-load自动读取之前保存的模型，并加载。
+Automatically load the model we saved previously.
 
-## 模型的校验
-校验任务函数与训练任务函数 **几乎没有区别** ，不同之处在于校验过程中的模型参数来自于已经保存好的模型，因此不需要初始化，也不需要在迭代过程中更新模型参数。
+## Evaluation of models
+Evaluation job function **basically is same as** train job function. The difference is in evaluation process, the model we use is already saved. Thus, do not require initialize and update model during Iteration.
 
-### 配置校验的软硬件环境
+### Configure the hardware and software environment of evaluation
 
 ```python
 def get_eval_config():
@@ -199,9 +199,9 @@ def get_eval_config():
   return config
 ```
 
-以上是校验过程的function_config配置，与训练过程相比，去掉了learning rate的选择，以及更新模型参数的设置。
+Above code is the configuration of function_config during the evaluation. Compare with the training process, cut of the option in learning rate and the settings of update model parameters.
 
-### 校验任务函数的编写
+### Coding of evaluation job function
 
 ```python
 @flow.global_function(get_eval_config())
@@ -214,11 +214,11 @@ def eval_job(images=flow.FixedTensorDef((BATCH_SIZE, 1, 28, 28), dtype=flow.floa
   return {"labels":labels, "logits":logits}
 ```
 
-以上是校验训练任务函数的编写，返回了一个字典。我们将调用训练任务函数，并展示如何使用异步方式获取返回值。
+Above is the coding of evolution job function and return object is a dictionary.We will call train job function and demonstrated how to use asynchronous method to obtain return value.
 
-### 迭代校验
+### Iteration evaluation
 
-准备回调函数：
+Prepare callbcak function:
 ```python
 g_total = 0
 g_correct = 0
@@ -236,9 +236,9 @@ def acc(eval_result):
   g_correct += right_count
 ```
 
-以上的回调函数`acc`，将被OneFlow框架调用，所得到的参数(`eval_result`)，就是训练任务函数的返回值。 我们在该函数中统计样本的总数目，以及校验正确的总数目。
+The callbcak function above is `acc`. It will be call by OneFlow frame. All the parameters obtained(`eval_result`) is the return value of train job function. We record the total number of sample and total correct results number of sample in this function.
 
-调用校验任务函数：
+Called evacuation job function:
 
 ```python
 if __name__ == '__main__':
@@ -252,11 +252,11 @@ if __name__ == '__main__':
   print("accuracy: {0:.1f}%".format(g_correct*100 / g_total))
 ```
 
-以上，循环调用校验函数，并且最终输出对于测试集的判断准确率。
+So far, Cycle call the evaluation function and output the accuracy of result of testing set.
 
-## 预测图片
+## Image prediction
 
-将以上校验代码修改，使得校验数据来自于原始的图片而不是现成的数据集，我们就可以使用模型进行图片预测。
+Modify the above evaluation code, change the evaluate date to raw images rather than the existing dataset. Then we can use model to predict the content in the image.
 
 ```python
 def load_image(file):
@@ -278,11 +278,11 @@ if __name__ == '__main__':
     print("predict:{}".format(prediction))
 ```
 
-## 完整代码
+## Complete code
 
-### 训练模型
+### Training model
 
-代码：[lenet_train.py](https://github.com/Oneflow-Inc/oneflow-documentation/blob/master/docs/code/quick_start/lenet_train.py)
+Name: [lenet_train.py](https://github.com/Oneflow-Inc/oneflow-documentation/blob/master/docs/code/quick_start/lenet_train.py)
 
 ```python
 #lenet_train.py
@@ -355,11 +355,11 @@ if __name__ == '__main__':
     print("model saved")
 ```
 
-### 校验模型
+### Evaluate model
 
-代码：[lenet_eval.py](https://github.com/Oneflow-Inc/oneflow-documentation/blob/master/docs/code/quick_start/lenet_eval.py)
+Name: [lenet_eval.py](https://github.com/Oneflow-Inc/oneflow-documentation/blob/master/docs/code/quick_start/lenet_eval.py)
 
-预训练模型：[lenet_models_1.zip](https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/quick_start/lenet_models_1.zip)
+Saved model: [lenet_models_1.zip](https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/quick_start/lenet_models_1.zip)
 
 ```python
 #lenet_eval.py
@@ -430,13 +430,13 @@ if __name__ == '__main__':
     print("accuracy: {0:.1f}%".format(g_correct * 100 / g_total))
 ```
 
-### 数字预测
+### Number prediction
 
-代码：[lenet_test.py](https://github.com/Oneflow-Inc/oneflow-documentation/blob/master/docs/code/quick_start/lenet_test.py)
+Name: [lenet_test.py](https://github.com/Oneflow-Inc/oneflow-documentation/blob/master/docs/code/quick_start/lenet_test.py)
 
-预训练模型：[lenet_models_1.zip](https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/quick_start/lenet_models_1.zip)
+Saved model: [lenet_models_1.zip](https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/quick_start/lenet_models_1.zip)
 
-MNIST数据集图片[mnist_raw_images.zip](https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/quick_start/mnist_raw_images.zip)
+MNIST image dataset [mnist_raw_images.zip](https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/quick_start/mnist_raw_images.zip)
 
 ```python
 import numpy as np
