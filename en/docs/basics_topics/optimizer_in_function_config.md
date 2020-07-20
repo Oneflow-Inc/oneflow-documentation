@@ -87,7 +87,7 @@ config.train.model_update_conf({"momentum_conf": {'beta': 0.875}})
 - `weight_decay_conf` - 权重衰减
 
 这4个选项可以不选或多选，配置方式就是在python字典中加入新的key-value项，详细请参考[optimizer api](http://183.81.182.202:8000/html/train.html#)，下面仅举出两种形式的例子供参考。
-```
+```python
 # example 1
 model_update_conf = {
     'momentum_conf': {
@@ -107,7 +107,7 @@ model_update_conf = {
 }
 ```
 
-```
+```python
 # example 2
 model_update_conf = dict(
     adam_conf=dict(
