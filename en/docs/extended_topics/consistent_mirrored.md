@@ -27,7 +27,7 @@
 
 * O是预测结果或者label，如果是预测任务，那么就是由I、W求解O，得到分类结果的过程；如果是训练任务，那么就是由I与O求解W的过程
 
-当以上I矩阵的行N很大，说明样本很多；如果W矩阵的列C2很大，说明模型复杂；当样本数目、模型复杂程度复杂到一定程度时，单机单卡的硬件条件已经无法承载训练任务，就需要考虑分布式的方式训练。而在分布式系统中，我们可以选择 **数据并行** 和 **模型并行**。
+当以上I矩阵的行N很大，说明样本很多；如果W矩阵的列C2很大，说明模型复杂；当样本数目、模型复杂程度复杂到一定程度时，单机单卡的硬件条件已经无法承载训练任务，就需要考虑分布式的方式训练。而在分布式系统中，我们可以选择 **数据并行** 和 **模型并行**。而在分布式系统中，我们可以选择 **数据并行** 和 **模型并行**。
 
 <a id="mat_mul_op"></a>
 为了便于理解数据并行与模型并行，我们先用下图作为矩阵相乘op的示例：
@@ -170,7 +170,7 @@ def train_job(images=flow.MirroredTensorDef((BATCH_SIZE_PER_GPU, 1, 28, 28),    
     loss = train_job(imgs_list, labels_list).get().ndarray_list()
 ```
 
-* 返回的结果，通过`ndarray_list`转为numpy数据，也是一个`list`，该`list`中元素个数与 **参与训练的GPU数目** 一致；`list`中的第i个元素对应了第i张GPU卡上的运算结果。我们做了拼接后，计算并打印了`total_loss`
+* 返回的结果，通过`ndarray_list`转为numpy数据，也是一个`list`，该`list`中元素个数与 **参与训练的GPU数目** 一致；`list`中的第i个元素对应了第i张GPU卡上的运算结果。我们做了拼接后，计算并打印了`total_loss`我们做了拼接后，计算并打印了`total_loss`
 ```python
     loss = train_job(imgs_list, labels_list).get().ndarray_list()
     total_loss = np.array([*loss[0], *loss[1]])
@@ -182,7 +182,7 @@ def train_job(images=flow.MirroredTensorDef((BATCH_SIZE_PER_GPU, 1, 28, 28),    
 ## 在OneFlow中使用consistent策略
 我们已经了解了mirrored策略，知道在`mirrored_strategy`配置下，样本会被平均分配到多个完全一样的模型上进行分布式训练，各个训练节点上的结果，需要组装才能得到真正完整的BATCH。
 
-除了mirroed策略外，OneFlow还提供了consistent策略。 **consistent策略是OneFlow的一大特色，与mirrored策略相比有很大的优势。**
+除了mirroed策略外，OneFlow还提供了consistent策略。 除了mirroed策略外，OneFlow还提供了consistent策略。 **consistent策略是OneFlow的一大特色，与mirrored策略相比有很大的优势。**</strong>
 
 默认情况下OneFlow采取的是mirrored策略，使用consistent策略需要通过`flow.function_config()`的`default_distribute_strategy`接口显式设置：
 ```python
@@ -190,12 +190,12 @@ def train_job(images=flow.MirroredTensorDef((BATCH_SIZE_PER_GPU, 1, 28, 28),    
   config.default_distribute_strategy(flow.distribute.consistent_strategy())
 ```
 
-之所以说consistent策略是OneFlow的一大特色，是因为在OneFlow的设计中，若采用`consistent_strategy`，那么从用户的视角看，所使用的op、blob将获得 **逻辑上的统一**，同样以本文开头的矩阵乘法为例，我们只需要关注[矩阵乘法](#mat_mul_op)本身数学计算上的意义；而在工程上到底如何配置、采用模型并行还是数据并行等细节问题，可以使用OneFlow的接口轻松完成。OneFlow内部会高效可靠地解决 **数据并行中的数据切分** 、**模型并行中的模型切分** 、**串行逻辑** 等问题。
+之所以说consistent策略是OneFlow的一大特色，是因为在OneFlow的设计中，若采用`consistent_strategy`，那么从用户的视角看，所使用的op、blob将获得 **逻辑上的统一**，同样以本文开头的矩阵乘法为例，我们只需要关注[矩阵乘法](#mat_mul_op)本身数学计算上的意义；而在工程上到底如何配置、采用模型并行还是数据并行等细节问题，可以使用OneFlow的接口轻松完成。OneFlow内部会高效可靠地解决 **数据并行中的数据切分** 、**模型并行中的模型切分** 、**串行逻辑** 等问题。OneFlow内部会高效可靠地解决 **数据并行中的数据切分** 、**模型并行中的模型切分** 、**串行逻辑** 等问题。
 
  **在OneFlow的consistent策略下，可以自由选择模型并行、数据并行或者两者共存的混合并行。**
 
 ### 代码示例
-以下代码，我们采用consistent策略，使用2个GPU进行训练，consistent策略下默认的并行方式仍然是 **数据并行**。关于如何在consistent策略下设置 **模型并行** 及 **混合并行** 不在本文讨论范围，我们在[OneFlow的并行特色](model_mixed_parallel.md)中有专门的介绍与示例。
+以下代码，我们采用consistent策略，使用2个GPU进行训练，consistent策略下默认的并行方式仍然是 **数据并行**。关于如何在consistent策略下设置 **模型并行** 及 **混合并行** 不在本文讨论范围，我们在[OneFlow的并行特色](model_mixed_parallel.md)中有专门的介绍与示例。关于如何在consistent策略下设置 **模型并行** 及 **混合并行** 不在本文讨论范围，我们在[OneFlow的并行特色](model_mixed_parallel.md)中有专门的介绍与示例。
 
 完整代码：[consistent_strategy.py](../code/extended_topics/consistent_strategy.py)
 
@@ -267,7 +267,7 @@ def train_job(images=flow.FixedTensorDef((BATCH_SIZE, 1, 28, 28), dtype=flow.flo
             labels=flow.FixedTensorDef((BATCH_SIZE, ), dtype=flow.int32))
 ```
 
-* 训练结果通过`ndarray`转化为numpy数据，直接是一个统一的结果，OneFlow完成分布式过程中切分与合并的工作。在consistent模式下，多卡的分布式训练与单卡的训练，代码差别极少，上手体验几乎一样
+* 训练结果通过`ndarray`转化为numpy数据，直接是一个统一的结果，OneFlow完成分布式过程中切分与合并的工作。在consistent模式下，多卡的分布式训练与单卡的训练，代码差别极少，上手体验几乎一样在consistent模式下，多卡的分布式训练与单卡的训练，代码差别极少，上手体验几乎一样
 ```python
       loss = train_job(images, labels).get().ndarray()
       if i % 20 == 0: 
