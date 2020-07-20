@@ -1,6 +1,6 @@
 
 ## 模型概述
-BERT(Bidirectional Encoder Representations from Transformers)是NLP领域的一种新型预训练模型。本案例中，基于论文[BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding](https://arxiv.org/abs/1810.04805)实现了BERT模型的OneFlow版本。
+BERT(Bidirectional Encoder Representations from Transformers)是NLP领域的一种新型预训练模型。本案例中，基于论文[BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding](https://arxiv.org/abs/1810.04805)实现了BERT模型的OneFlow版本。本案例中，基于论文[BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding](https://arxiv.org/abs/1810.04805)实现了BERT模型的OneFlow版本。
 
 ### 模型架构
 | **Model** | **Hidden layers** | **Hidden unit size** | **Attention heads** | **Feedforward filter size** | **Max sequence length** | **Parameters** |
@@ -72,8 +72,7 @@ python ./run_pretraining.py\
 我们将获得类似以下输出：
 ```text
 ==================================================================
-Running bert: num_gpu_per_node = 1, num_nodes = 1.
-==================================================================
+Running bert: num_gpu_per_node = 1, num_nodes = 1. ==================================================================
 gpu_num_per_node = 1
 node_num = 1
 node_list = None
@@ -111,8 +110,7 @@ iter 4, total_loss: 11.032, mlm_loss: 10.281, nsp_loss: 0.751, speed: 33.086(sec
 iter 9, total_loss: 11.548, mlm_loss: 10.584, nsp_loss: 0.965, speed: 0.861(sec/batch), 5.806(sentences/sec)
 iter 14, total_loss: 10.697, mlm_loss: 10.249, nsp_loss: 0.448, speed: 0.915(sec/batch), 5.463(sentences/sec)
 iter 19, total_loss: 10.685, mlm_loss: 10.266, nsp_loss: 0.419, speed: 1.087(sec/batch), 4.602(sentences/sec)
-Saving model to ./bert_regresssioin_test/of/last_snapshot.
-------------------------------------------------------------------
+Saving model to ./bert_regresssioin_test/of/last_snapshot. ------------------------------------------------------------------
 average speed: 0.556(sentences/sec)
 ------------------------------------------------------------------
 ```
@@ -193,12 +191,12 @@ average speed: 0.556(sentences/sec)
 ### 使用完整的Wikipedia + BookCorpus数据集
 如果需要无到有进行BERT的pretrain训练，则需要使用较大的训练集。
 
-如果感兴趣，可以通过[google-research BERT](https://github.com/google-research/bert)的页面，下载tfrecord格式的数据集。再根据[加载与准备OFRecord数据集](../extended_topics/how_to_make_ofdataset.md)中的方法，将TFRecord数据转为OFRecord数据集使用。
+如果感兴趣，可以通过[google-research BERT](https://github.com/google-research/bert)的页面，下载tfrecord格式的数据集。再根据[加载与准备OFRecord数据集](../extended_topics/how_to_make_ofdataset.md)中的方法，将TFRecord数据转为OFRecord数据集使用。再根据[加载与准备OFRecord数据集](../extended_topics/how_to_make_ofdataset.md)中的方法，将TFRecord数据转为OFRecord数据集使用。
 
 ### 将Tensorflow的BERT模型转为OneFlow模型格式
 如果想直接使用已经训练好的pretrained模型做fine-tune任务（如以下将展示的SQuAD），可以考虑直接从[google-research BERT](https://github.com/google-research/bert)页面下载已经训练好的BERT模型。
 
-再利用我们提供的`convert_tf_ckpt_to_of.py`脚本，将其转为OneFlow模型格式。转换过程如下：
+再利用我们提供的`convert_tf_ckpt_to_of.py`脚本，将其转为OneFlow模型格式。转换过程如下：转换过程如下：
 
 首先，下载并解压某个版本的BERT模型，如`uncased_L-12_H-768_A-12`。
 ```shell
@@ -244,8 +242,7 @@ python convert_tf_ckpt_to_of.py \
 我们只需要在BERT的backbone基础上，加上一层`output`层，并修改loss的表达式即可，完整的代码可以查看`squad.py`脚本，以下是几处关键修改：
 ```python
 def SQuADTrain():
-    #...
-    backbone = bert_util.BertBackbone()
+    #... backbone = bert_util.BertBackbone()
 
     #在BERT的基础上加上一个全连接层
     with flow.name_scope("cls-squad"):
