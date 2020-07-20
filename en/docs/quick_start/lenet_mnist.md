@@ -110,8 +110,8 @@ def train_job(images=flow.FixedTensorDef((BATCH_SIZE, 1, 28, 28), dtype=flow.flo
     #job function achieved ...
 ```
 
-### 指定优化特征
-我们可以通过`oneflow.losses.add_loss`接口指定待优化参数。这样，OneFlow在每次迭代训练任务的过程中，将以该参数的最优化作为目标。
+### Specify the optimization feature
+We can using `oneflow.losses.add_loss`'s port to specify the parameters which need to optimization.In this way, OneFlow will trade optimise the parameter as target when each iteration training mission.
 
 ```python
 @flow.global_function(get_train_config())
@@ -124,17 +124,17 @@ def train_job(images=flow.FixedTensorDef((BATCH_SIZE, 1, 28, 28), dtype=flow.flo
   return loss
 ```
 
-以上，我们通过`flow.nn.sparse_softmax_cross_entropy_with_logits`求得loss，并且将优化loss作为目标参数。
+So Far, we using `flow.nn.sparse_softmax_cross_entropy_with_logits` to calculate the loss and trade optimize loss as target parameter.
 
-**注意** ：训练函数通过add_loss指定优化参数，与返回值并无关系。 以上示例中返回值是loss，但并不是必须，实际上训练函数的返回值主要用于训练过程中与外界交互。在下文中的 **调用任务函数并交互** 会详细介绍。
+** Attention **: The training function use add_loss to specified optimize parameters. It is irrelevant with return value. The return value in the demonstration above is loss but not necessary. In fact, the reture value of training function is for Interactive with external environment during the training. We will introduce that in more details in **Call the job function and interaction**below.
 
-## 调用任务函数并交互
+## Call the jon function and interaction
 
-调用任务函数就可以开始训练。因为任务函数是经过OneFlow装饰器处理过的，因此返回的是OneFlow封装的对象，而 **不是** 之前定义任务函数时的返回值。 这涉及到了 **定义时的** 任务函数与 **调用时的** 任务函数如何交互问题。 方法很简单，**调用时** 返回的对象中，包括了`get`以及`async_get`方法，它们分别对应同步和异步。通过它们，我们可以获取 **定义时** 函数的返回值。
+We can start training when called the job function.Because job function has been progress by OneFlow decorator. Thus, the return value is OneFlow encapsulated object **rather than **previously defined job function's return values. This involved a issue which how to interact **previous defined** job function and **previous called** job function. The solution is sample, when **called **the return object. It included ` get `and `async_ge` method. They corresponding to synchronous and asynchronous.Through them, we can obtained return value of function when **defined them**.
 
-### 同步方式获取训练任务返回值
+### Synchronously method obtained the return value when training task
 
-采用get方法，可以同步获取返回值数据。
+By using get method, we can synchronous obtain the return value.
 
 ```python
   for epoch in range(50):
@@ -143,11 +143,11 @@ def train_job(images=flow.FixedTensorDef((BATCH_SIZE, 1, 28, 28), dtype=flow.flo
       if i % 20 == 0: print(loss)
 ```
 
-以上代码中，使用`get`方法获取loss向量，然后计算平均值并打印。
+The code above, using `get` method to obtain the loss vector and calculated the average then print it.
 
-### 异步方式获取训练任务返回值
+### Asynchronous method obtained the return value when training task
 
-`async_get`用于异步获取 **定义时** 训练任务函数的返回结果。 它需要我们准备一个回调函数，当OneFlow迭代完成训练任务函数时，会调用我们的回调函数，并且将训练任务函数的返回值作为参数传递给我们的回调函数。 代码示意：
+` async_get` is use for asynchronous get the train job function's return value when **defined it**. It need us to prepare a callback function. When OneFlow finish iterate thire train job function, it will call our callback function and sned the return value of train job function as parameter to our callback function. Sample code:
 
 ```python
 cb_handle_result(result):
@@ -156,11 +156,11 @@ cb_handle_result(result):
 job_func(images, labels).async_get(cb_handle_result)
 ```
 
-具体的例子我们会在后文 **模型的校验** 中展示。
+More details example will be demonstrated in **Model evaluation**.
 
-## 模型的初始化、保存与加载
+## Initialization, saving and loading models
 
-### 模型的初始化与保存
+### Initialization and saving model
 
 `oneflow.train.CheckPoint`类构造的对象，可以用于模型的初始化、保存与加载。 在训练过程中，我们可以通过`init`方法初始化模型，通过`save`方法保存模型。如下例：
 
