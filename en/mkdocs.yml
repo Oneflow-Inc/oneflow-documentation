@@ -27,7 +27,7 @@ theme:
   search_index_only: true
 
   # Default values, taken from mkdocs_theme.yml
-  language: zh
+  language: en
   features:
     - tabs
     #- instant
@@ -119,7 +119,7 @@ nav:
       - 推荐系统-Wide&Deep: adv_examples/wide_deep.md
       - 深度伪造-生成对抗网络: adv_examples/dcgan.md
     - API: 
-      - API: api/
+      - API: ../api/
     # - 二次开发:
     #   - oneflow 架构: extended_dev/framework.md
     #   - 算子描述符: extended_dev/op_desc.md
