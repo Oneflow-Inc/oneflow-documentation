@@ -69,7 +69,7 @@ if __name__ == '__main__':
 后面章节是对这段代码的简单介绍。
 
 OneFlow相对其他深度学习框架较特殊的地方是这里：
-```
+```python
 @flow.global_function(get_train_config())
 def train_job(images=flow.FixedTensorDef((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
               labels=flow.FixedTensorDef((BATCH_SIZE, ), dtype=flow.int32)):

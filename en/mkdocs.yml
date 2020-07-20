@@ -21,7 +21,7 @@ theme:
   include_search_page: false
   search_index_only: true
   #Default values, taken from mkdocs_theme.yml
-  language: zh
+  language: en
   features:
     - tabs
   #- instant

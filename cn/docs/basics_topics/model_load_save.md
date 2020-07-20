@@ -144,7 +144,7 @@ check_point.init() #初始化网络参数
 ### 调用save保存模型
 
 训练过程的任意阶段，都可以通过调用`CheckPoint`对象的`save`方法来保存模型。
-```py
+```python
 check_point.save('./path_to_save')
 ```
 注意：
