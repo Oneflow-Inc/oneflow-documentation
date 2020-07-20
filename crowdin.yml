@@ -1,3 +1,0 @@
-files:
-  - source: docs/**/*
-    translation: '%original_path%/%original_file_name%'
