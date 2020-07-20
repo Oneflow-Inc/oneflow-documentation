@@ -24,7 +24,7 @@ OneFlow的分布式训练能力独树一帜，是OneFlow区别于其它框架的
 
 通过OneFlow提供的分布式配置的接口，您只需要简单的几行配置(指定分布式计算的节点ip以及每个节点使用gpu的数量)即可实现分布式的训练网络。
 
-换句话说，这使得单机训练程序与分布式训练程序几乎是一样的，作为OneFlow用户，只需要专注于程序的 **业务逻辑** 及 **模型结构本身** ，而不用操心分布式执行问题。**OneFlow框架会自动帮您处理复杂的任务调度、资源并行等问题。**
+换句话说，这使得单机训练程序与分布式训练程序几乎是一样的，作为OneFlow用户，只需要专注于程序的 **业务逻辑** 及 **模型结构本身** ，而不用操心分布式执行问题。**OneFlow框架会自动帮您处理复杂的任务调度、资源并行等问题。****OneFlow框架会自动帮您处理复杂的任务调度、资源并行等问题。**
 
 下面，我们会介绍一个例子：将单机版的训练任务，通过添加几行配置代码后将其改造为分布式训练任务。
 
@@ -40,13 +40,8 @@ IMG_SIZE = 28
 NUM_CHANNELS = 1
 
 def _data_load_layer(data_dir=DATA_DIRECTORY, arg_data_part_num=1, fromat="NHWC"):
-    #加载数据 ...
-
-def lenet(data, train=False):
-    #构建网络 ...
-
-
-def get_train_config():
+    #加载数据 ... def lenet(data, train=False):
+    #构建网络 ... def get_train_config():
     #配置训练环境
 
 
@@ -77,7 +72,7 @@ if __name__ == '__main__':
 
 * `oneflow.config.ctrl_port` : 设置用于通信的端口号，所有机器上都将使用相同的端口号进行通信。
 
-以下代码中，我们设置每台主机使用的GPU数目为1，采用9988端口通信。大家可以根据自身环境的具体情况进行修改。
+以下代码中，我们设置每台主机使用的GPU数目为1，采用9988端口通信。大家可以根据自身环境的具体情况进行修改。大家可以根据自身环境的具体情况进行修改。
 ```python
 #每个节点的gpu使用数目
 flow.config.gpu_device_num(1)
@@ -94,7 +89,7 @@ flow.config.gpu_device_num(2)
 
 接着，我们需要配置网络中的主机关系，需要提前说明的是，OneFlow中，将分布式中的主机称为节点(`node`)。
 
-每个节点的组网信息，由一个`dict`类型存放，其中的“addr”这个key对应了节点的IP。 所有的节点放置在一个`list`中，经接口`flow.env.machine`告之OneFlow，OneFlow内部会自动建立各个节点之间的连接。
+每个节点的组网信息，由一个`dict`类型存放，其中的“addr”这个key对应了节点的IP。 每个节点的组网信息，由一个`dict`类型存放，其中的“addr”这个key对应了节点的IP。 所有的节点放置在一个`list`中，经接口`flow.env.machine`告之OneFlow，OneFlow内部会自动建立各个节点之间的连接。
 
 ```python
 nodes = [{"addr":"192.168.1.12"}, {"addr":"192.168.1.11"}]
