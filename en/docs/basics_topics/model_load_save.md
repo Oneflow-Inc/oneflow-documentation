@@ -6,9 +6,9 @@
 
 * 将训练好的模型保存，方便后续直接部署使用
 
-严格来说，尚未训练好的模型的保存，称为保存检查点`checkpoint`或者快照`snapshot`。与将已经训练好的模型保存`model saving`，在概念上，略有不同。
+严格来说，尚未训练好的模型的保存，称为保存检查点`checkpoint`或者快照`snapshot`。与将已经训练好的模型保存`model saving`，在概念上，略有不同。与将已经训练好的模型保存`model saving`，在概念上，略有不同。
 
-不过，无论模型是否训练完毕，我们都可以使用 **统一的接口** 将其保存，因此，我们在其它框架中看到的`model`、`checkpoint`、`snapshot`，在OneFlow的操作中不做区分。它们在OneFlow中，都通过`flow.train.CheckPoint`类作为接口操作。
+不过，无论模型是否训练完毕，我们都可以使用 **统一的接口** 将其保存，因此，我们在其它框架中看到的`model`、`checkpoint`、`snapshot`，在OneFlow的操作中不做区分。它们在OneFlow中，都通过`flow.train.CheckPoint`类作为接口操作。它们在OneFlow中，都通过`flow.train.CheckPoint`类作为接口操作。
 
 本文将介绍：
 
@@ -24,7 +24,7 @@
 
 我们可以使用`oneflow.get_variable`方法创造或者获取一个对象，该对象可以用于在全局任务函数中交互信息；当调用`OneFlow.CheckPoint`的对应接口时，该对象也会被自动地保存或从存储设备中恢复。
 
-因为这个特点，`get_variable`创建的对象，常用于存储模型参数。实际上，OneFlow中很多较高层接口（如`oneflow.layers.conv2d`），内部使用`get_variable`创建模型参数。
+因为这个特点，`get_variable`创建的对象，常用于存储模型参数。因为这个特点，`get_variable`创建的对象，常用于存储模型参数。实际上，OneFlow中很多较高层接口（如`oneflow.layers.conv2d`），内部使用`get_variable`创建模型参数。
 
 ### get_variable获取/创建对象的流程
 
@@ -55,8 +55,7 @@ def get_variable(
 以下是`oneflow.layers.conv2d`中，使用get_variable创造参数变量，并进一步构建网络的例子：
 
 ```python
-    #...
-    weight = flow.get_variable(
+    #... weight = flow.get_variable(
         weight_name if weight_name else name_prefix + "-weight",
         shape=weight_shape,
         dtype=inputs.dtype,
@@ -105,7 +104,7 @@ def get_variable(
 
 ## OneFlow模型的python接口
 
-我们通过`oneflow.train.CheckPoint()`实例化得到CheckPoint对象。 在`CheckPoint`类有三个关键方法：
+我们通过`oneflow.train.CheckPoint()`实例化得到CheckPoint对象。 在`CheckPoint`类有三个关键方法： 在`CheckPoint`类有三个关键方法：
 
 * `init` : 根据缺省的初始化方式，初始化参数变量；
 
@@ -130,7 +129,7 @@ def load(self, path)
 ```
 
 ### 调用init初始化模型
-在训练开始前，我们需要先获取`CheckPoint`对象，再调用其中的`init`方法初始其中的网络参数。 如以下示例:
+在训练开始前，我们需要先获取`CheckPoint`对象，再调用其中的`init`方法初始其中的网络参数。 如以下示例: 如以下示例:
 
 ```python
 check_point = flow.train.CheckPoint() #构造CheckPoint对象
@@ -154,7 +153,7 @@ check_point.save('./path_to_save')
 * OneFlow模型以一定的组织形式保存在指定的路径中，具体结构参见下文中的`OneFlow模型的存储结构`
 
 ### 调用load加载模型
-通过调用`CheckPoint`对象的`load`方法，可以从指定的路径中加载模型。 注意，从磁盘中加载的模型需要与当前任务函数中使用使用的网络模型匹配，否则会出错。
+通过调用`CheckPoint`对象的`load`方法，可以从指定的路径中加载模型。 注意，从磁盘中加载的模型需要与当前任务函数中使用使用的网络模型匹配，否则会出错。 注意，从磁盘中加载的模型需要与当前任务函数中使用使用的网络模型匹配，否则会出错。
 
 以下代码，构造`CheckPoint对象`并从指定路径加载模型：
 ```python
@@ -164,7 +163,7 @@ check_point.load("./path_to_model") #加载先前保存的模型
 
 
 ## OneFlow模型的存储结构
-OneFlow模型是一组已经被训练好的网络的`参数值`，目前OneFlow的模型中没有包括网络的元图信息（Meta Graph）。 模型所保存的路径下，有多个子目录，每个子目录对应了`任务函数`中模型的`name`。 比如，我们先通过代码定义以下的模型：
+OneFlow模型是一组已经被训练好的网络的`参数值`，目前OneFlow的模型中没有包括网络的元图信息（Meta Graph）。 模型所保存的路径下，有多个子目录，每个子目录对应了`任务函数`中模型的`name`。 比如，我们先通过代码定义以下的模型： 模型所保存的路径下，有多个子目录，每个子目录对应了`任务函数`中模型的`name`。 比如，我们先通过代码定义以下的模型：
 
 ```python
 def lenet(data, train=False):
@@ -213,7 +212,7 @@ lenet_models_name
 
 * 任务函数中的网络模型，每个变量对应一个子目录
 
-* 以上每个子目录中，都有一个`out`文件，它是以二进制的方式存储的网络参数信息。`out`是默认文件名，可以通过设置网络中的`variable op`修改。
+* 以上每个子目录中，都有一个`out`文件，它是以二进制的方式存储的网络参数信息。`out`是默认文件名，可以通过设置网络中的`variable op`修改。`out`是默认文件名，可以通过设置网络中的`variable op`修改。
 
 * `snapshot_done`是一个空文件，如果它存在，表示网络已经训练完成
 
