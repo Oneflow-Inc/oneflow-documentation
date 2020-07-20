@@ -13,7 +13,7 @@
 掌握它们后，有助于我们学习[加载与准备OFRecord数据集](how_to_make_ofdataset.md)。
 
 ## OFRecord相关数据类型
-OneFlow内部采用[Protocol Buffers](https://developers.google.com/protocol-buffers/)描述`OFRecord`的序列化格式。相关的`.proto`文件在`oneflow/core/record/record.proto`中，具体定义如下：
+OneFlow内部采用[Protocol Buffers](https://developers.google.com/protocol-buffers/)描述`OFRecord`的序列化格式。相关的`.proto`文件在`oneflow/core/record/record.proto`中，具体定义如下：相关的`.proto`文件在`oneflow/core/record/record.proto`中，具体定义如下：
 
 ```
 syntax = "proto2";
@@ -56,7 +56,7 @@ message OFRecord {
 
 我们先对以上的重要数据类型进行解释：
 
-* OFRecord: OFRecord的实例化对象，可用于存储所有需要序列化的数据。它由任意多个string->Feature的键值对组成；
+* OFRecord: OFRecord的实例化对象，可用于存储所有需要序列化的数据。它由任意多个string->Feature的键值对组成；它由任意多个string->Feature的键值对组成；
 
 * Feature: Feature可存储BytesList、FloatList、DoubleList、Int32List、Int64List各类型中的任意一种；
 
@@ -108,8 +108,7 @@ def bytes_feature(value):
 
 ```python
     obserations = 28*28
-    #...
-    image = [random.random() for x in range(0,obserations)]
+    #... image = [random.random() for x in range(0,obserations)]
     label = [random.randint(0,9)]
 
     topack = {
@@ -157,10 +156,10 @@ f.write(serilizedBytes)
 ## 完整代码
 以下完整代码展示如何生成OFRecord文件，并调用`protobuf`生成的`OFRecord`接口手工读取OFRecord文件中的数据。
 
-实际上，OneFlow提供了`flow.data.decode_ofrecord`等接口，可以更方便地提取OFRecord文件（数据集）中的内容。详细内容请参见[加载与准备OFRecord数据集](how_to_make_ofdataset.md)。
+实际上，OneFlow提供了`flow.data.decode_ofrecord`等接口，可以更方便地提取OFRecord文件（数据集）中的内容。详细内容请参见[加载与准备OFRecord数据集](how_to_make_ofdataset.md)。详细内容请参见[加载与准备OFRecord数据集](how_to_make_ofdataset.md)。
 
 ### 将OFRecord对象写入文件
-以下代码，模拟了3个样本，每个样本为`28*28`的图片，并且包含对应标签。将三个样本转化为OFRecord对象后，按照OneFlow约定格式，存入文件。
+以下代码，模拟了3个样本，每个样本为`28*28`的图片，并且包含对应标签。将三个样本转化为OFRecord对象后，按照OneFlow约定格式，存入文件。将三个样本转化为OFRecord对象后，按照OneFlow约定格式，存入文件。
 
 完整代码：[ofrecord_to_string.py](../code/extended_topics/ofrecord_to_string.py)
 
@@ -223,8 +222,7 @@ for loop in range(0, 3):
     f.write(struct.pack("q", length))
     f.write(serilizedBytes)
 
-print('Done!')
-f.close()
+print('Done!') f.close()
 ```
 
 ### 从OFRecord文件中读取数据
