@@ -270,7 +270,7 @@ def SQuADTrain():
 
 为了得到一个初始化的squad模型，我们通过以下脚本启动squad训练，并保存模型。
 
-```python
+```shell
 python ./run_squad.py\
     --gpu_num_per_node=1\
     --learning_rate=3e-5\
@@ -298,7 +298,7 @@ python ./run_squad.py\
 完成训练后，在`./bert_regresssioin_test/of/last_snapshot`中保存有初始化的SQuAD模型，我们将其与训练好的SQuAD合并后，进行微调（fine-tune）训练。
 
 ### 合并pretrained模型为SQuAD模型
-SQuAD模型是在pretrained模型基础上的扩充，我们需要参照[模型的加载与保存](../basic_topics/model_load_save.md)中的“模型部分初始化和部分导入”方法，将训练好的BERT pretrained模型与初始化的SQuAD模型合并。
+SQuAD模型是在pretrained模型基础上的扩充，我们需要参照[模型的加载与保存](../basics_topics/model_load_save.md)中的“模型部分初始化和部分导入”方法，将训练好的BERT pretrained模型与初始化的SQuAD模型合并。
 
 ```shell
 cp -R ./bert_regresssioin_test/of/last_snapshot ./squadModel
@@ -385,7 +385,7 @@ python run_squad_predict.py \
 注意将以上`model_load_dir`修改为 **训练好的** squadModel。
 
 得到`all_results.npy`文件后，在[google bert](https://github.com/google-research/bert/)仓库目录下（注意该仓库的tensorflow版本为 **tensorflow v1** ），运行我们提供的`npy2json.py`(由google bert中的run_squand.py修改得来)：
-```python
+```shell
 python npy2json.py\
   --vocab_file=./dataset/vocab.txt \
   --bert_config_file=./dataset/bert_config.json \
