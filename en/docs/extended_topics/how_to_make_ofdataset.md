@@ -13,7 +13,7 @@
 ## 什么是OFRecord数据集
 在[OFrecord数据格式](ofrecord.md)中我们已经介绍过`OFRecord文件`的存储格式，知道了什么是`OFRecord文件`。
 
-OFRecord数据集是 **OFRecord文件的集合** 。将多个`OFRecord文件`，按照OneFlow约定的文件名格式，存放在同一个目录中，就得到了OFRecord数据集。
+OFRecord数据集是 **OFRecord文件的集合** 。将多个`OFRecord文件`，按照OneFlow约定的文件名格式，存放在同一个目录中，就得到了OFRecord数据集。将多个`OFRecord文件`，按照OneFlow约定的文件名格式，存放在同一个目录中，就得到了OFRecord数据集。
 
 默认情况下，OFRecord数据集目录中的文件，统一以`part-xxx`的方式命名，其中的“xxx”是从0开始的文件编号，可以有补齐和不补齐两种选择。
 
@@ -68,7 +68,7 @@ OneFlow提供了加载OFRecord数据集的接口，使得我们只要指定数�
 我们常常使用`decode_ofrecord`加载并解码数据集；或者使用`ofrecord_reader`加载并预处理数据集。
 
 ### `decode_ofrecord`
-我们可以使用`flow.data.decode_ofrecord`加载数据集并同时解码数据。 `decode_ofrecord`的调用接口如下：
+我们可以使用`flow.data.decode_ofrecord`加载数据集并同时解码数据。 `decode_ofrecord`的调用接口如下： `decode_ofrecord`的调用接口如下：
 ```python
 def decode_ofrecord(
     ofrecord_dir,
@@ -142,13 +142,10 @@ if __name__ == '__main__':
 
 运行后得到类似如下结果：
 ```text
-...
-
-  [[0.5941235 ]
+... [[0.5941235 ]
    [0.27485612]
    [0.4714867 ]
-   ...
-   [0.21632855]
+   ... [0.21632855]
    [0.15881447]
    [0.65982276]]]] [[[2]]
 
@@ -165,11 +162,11 @@ if __name__ == '__main__':
 
 * name：在制作OFRecord文件时，Feature所对应的Key；
 
-* shape：数据对应的形状，需要与Feature中元素个数一致。如上文中的`(28, 28, 1)`修改为`(14, 28*2, 1)`或者`(28, 28)`均可；
+* shape：数据对应的形状，需要与Feature中元素个数一致。如上文中的`(28, 28, 1)`修改为`(14, 28*2, 1)`或者`(28, 28)`均可；如上文中的`(28, 28, 1)`修改为`(14, 28*2, 1)`或者`(28, 28)`均可；
 
 * dtype：数据类型，需要与写入数据集中的Feature数据类型一致；
 
-* codec： 解码器，OneFlow内置了诸如`RawCodec`、`ImageCodec`、`BytesListCodec`等解码器。上例中我们使用`RawCodec`。
+* codec： 解码器，OneFlow内置了诸如`RawCodec`、`ImageCodec`、`BytesListCodec`等解码器。上例中我们使用`RawCodec`。上例中我们使用`RawCodec`。
 
 使用`BlobConf`得到占位符后，我们可以使用`decode_ofrecord`方法，从数据集中获取数据。
 ```python
@@ -184,7 +181,7 @@ if __name__ == '__main__':
 
 * 调用`decode_ofrecord`，将上一步定义的占位符传递给`decode_ofrecord`，并设置相关参数，获取数据集中的数据
 
-使用`decode_ofrecord`的方式提取数据中的`Feature`虽然方便，但是支持的预处理方式和解码器种类有限。如果需要更灵活的数据预处理方式，包括自定义用户op，推荐使用`ofrecord_reader`。
+使用`decode_ofrecord`的方式提取数据中的`Feature`虽然方便，但是支持的预处理方式和解码器种类有限。如果需要更灵活的数据预处理方式，包括自定义用户op，推荐使用`ofrecord_reader`。如果需要更灵活的数据预处理方式，包括自定义用户op，推荐使用`ofrecord_reader`。
 
 ### `ofrecord_reader`
 在[数据输入](../basics_topics/data_input.md)一文中，我们已经展示了如何使用`ofrecord_reader`接口加载OFRecord数据，并进行数据预处理：
@@ -268,8 +265,7 @@ pyspark --master "local[*]"\
 ```
 
 ```text
-...
-Welcome to
+... Welcome to
       ____              __
      / __/__  ___ _____/ /__
     _\ \/ _ \/ _ `/ __/  '_/
@@ -277,8 +273,7 @@ Welcome to
       /_/
 
 Using Python version 3.6.10 (default, May  8 2020 02:54:21)
-SparkSession available as 'spark'.
->>> 
+SparkSession available as 'spark'. >>> 
 ```
 
 在启动的pyspark shell中，我们可以完成OFRecord数据集与其它数据格式的相互转化。
@@ -327,7 +322,7 @@ dataframe = reader.load("file:///path/to/tfrecord_file")
 writer = dataframe.write.format("ofrecord")
 writer.save("file:///path/to/outputdir")
 ```
-以上代码中的`outputdir`目录会被自动创建，并在其中保存ofrecord文件。在执行命令前应保证outputdir目录不存在。
+以上代码中的`outputdir`目录会被自动创建，并在其中保存ofrecord文件。在执行命令前应保证outputdir目录不存在。在执行命令前应保证outputdir目录不存在。
 
 此外，还可以使用以下命令，在转化的同时，将数据切分为多个ofrecord文件：
 ```python
