@@ -16,7 +16,7 @@ mkdocs build
 
 **其它**
 
-mkdocs-material主题使用了google字体资源，可能导致加载缓慢。 可以找到主题目录下的`base.html`，将相关代码注释掉即可:
+mkdocs-material主题使用了google字体资源，可能导致加载缓慢。 可以找到主题目录下的`base.html`，将相关代码注释掉即可: 可以找到主题目录下的`base.html`，将相关代码注释掉即可:
 ```xml
 <!--
 <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
