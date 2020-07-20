@@ -6,7 +6,7 @@ site_description: >-
 # Repository
 repo_name: OneFlow
 repo_url: https://github.com/OneFlow-Inc/oneflow-documentation
-edit_uri: "blob/master/docs/"
+edit_uri: "blob/master/cn/docs/"
 
 # Copyright
 copyright: Copyright &copy; 2017 - 2020 OneFlow
