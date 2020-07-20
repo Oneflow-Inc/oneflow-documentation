@@ -1,6 +1,6 @@
-在这篇文章中，我们将学习：
+In this article, we will learn:
 
-* 使用oneflow接口配置软硬件环境
+* Using OneFlow'port to configure software and hardware environment.
 
 * 使用oneflow的接口定义训练模型
 
