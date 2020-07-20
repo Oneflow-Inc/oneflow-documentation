@@ -1,0 +1,3 @@
+files:
+  - source: /cn/**/*
+    translation: '**/%original_file_name%'
