@@ -1,19 +1,20 @@
-这篇文章介绍了如何快速上手OneFlow，我们可以在3分钟内完成一个完整的神经网络训练过程。
+This article introduces how to quickly get started with OneFlow. We can complete a full neural network training process just in 3 minutes.
 
-## 运行一个例子
-如果已经安装好了OneFlow，可以使用以下命令同步我们的[文档仓库](https://github.com/Oneflow-Inc/oneflow-documentation.git)，并运行其中的[mlp_mnist.py](https://github.com/Oneflow-Inc/oneflow-documentation/blob/master/docs/code/quick_start/mlp_mnist.py)脚本。
+## Example
+If you already have one flow installed, you can run the following command to clone our [repository](https://github.com/Oneflow-Inc/oneflow-documentation.git) and run the script called [mlp_mnist.py](https://github.com/Oneflow-Inc/oneflow-documentation/blob/master/docs/code/quick_start/mlp_mnist.py).
 
 ```shell
-git clone https://github.com/Oneflow-Inc/oneflow-documentation.git #同步仓库
-cd oneflow-documentation/docs/code/quick_start/ #切换到示例代码路径
+git clone https://github.com/Oneflow-Inc/oneflow-documentation.git #clone repository
+cd oneflow-documentation/docs/code/quick_start/ #Switch to the sample code path
+
 ```
 
-然后，运行神经网络训练脚本：
+Then run the neural network training script:
 ```shell
 python mlp_mnist.py
 ```
 
-这样您将得到下面的输出：
+We will get following output:
 ```
 2.7290366
 0.81281316
@@ -23,10 +24,10 @@ python mlp_mnist.py
 ...
 ```
 
-输出的是一串数字，每个数字代表了每一轮训练后的损失值，训练的目标是损失值越小越好。到此您已经用OneFlow完成了一个完整的神经网络的训练。
+The output is a string of number, each number represents the loss value of each round of training. The target of training is make loss value as small as possibleThus far, you have completed a full neural network training by using OneFlow.
 
-## 代码解读
-下面是完整代码。
+## Code interpretation
+The following is the full code
 ```python
 #mlp_mnist.py
 import numpy as np
@@ -66,39 +67,39 @@ if __name__ == '__main__':
     if i % 20 == 0: print(loss)
 ```
 
-后面章节是对这段代码的简单介绍。
+The next chapter is a brief description of this code.
 
-OneFlow相对其他深度学习框架较特殊的地方是这里：
+The special feature of OneFlow compare to other deep learning framework:
 ```
 @flow.global_function(get_train_config())
 def train_job(images=flow.FixedTensorDef((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
               labels=flow.FixedTensorDef((BATCH_SIZE, ), dtype=flow.int32)):
 ```
-`train_job`是一个被`@flow.global_function`修饰的函数，通常被称作任务函数。只有被`@flow.global_function`修饰的任务函数才能够被OneFlow识别成一个神经网络训练或者预测任务。
+`train_job `function which decorated by `@flow.global_function`is called "job function". Only the job function can be identified by OneFlow as a neural network training or forecasting task.
 
-在OneFlow中一个神经网络的训练或者预测任务需要两部分信息：
+In OneFlow, a neural network training or prediction tasks need two pieces of information:
 
-* 一部分是这个神经网络本身的结构和相关参数，这些在上文提到的任务函数里定义；
+* One part is structure related parameters of the neural network itself. These is define in the job function which mentioned above.
 
-* 另外一部分是使用什么样的配置去训练这个网络，比如`learning rate`、模型优化更新的方法。这些在`@flow.global_function(get_train_config())`中的`get_train_config()`配置。
+* Another part is using what kind of configuration to train the network. For example, `learning rate` and method of update model optimization. The configuration of `get_train_config()` in `@flow.global_function(get_train_config())`.
 
-这段代码里包含了训练一个神经网络的所有元素，除了上面说的任务函数及其配置之外：
+This part of code contains all the elements of training a neural network besides the job function and its configuration which mentioned above.
 
-- `check_point.init()`: 初始化网络模型参数；
+- `check_point.init()`: Initializes the network model parameters;
 
-- `load_data(BATCH_SIZE)`: 准备并加载训练数据；
+- `load_data(BATCH_SIZE)`: Prepare and load training data;
 
-- `train_job(images, labels).get().mean()`: 返回每一次训练的损失值；
+- `train_job(images, labels).get().mean()`: Returns the loss value of each training;
 
-- `if i % 20 == 0: print(loss)`: 每训练20次，打印一次损失值。
-
-
+- `if i % 20 == 0: print(loss)`: Print a loss value for each 20 times of training;
 
 
-以上只是一个简单网络的示例，在[使用卷积神经网络进行手写体识别](lenet_mnist.md)中，我们对使用OneFlow的流程进行了更加全面和具体的介绍。 另外，还可参考OneFlow[基础专题](../basics_topics/data_input.md)中对于训练中各类问题的详细介绍。
 
 
-我们同时还提供了一些经典网络的[样例代码](https://github.com/Oneflow-Inc/OneFlow-Benchmark)及数据供参考。
+This page is a demonstration of a simple network. In Using [convolution neural network for handwriting recognition](lenet_mnist.md), we will give a more comprehensive and detailed introduction of using OneFlow process. In addition, you can reference to the training of all kinds of problems in detail in [Based topics](../basics_topics/data_input.md) of OneFlow.
+
+
+We also provide some of the prevalent network and the data for your reference The [sample code](https://github.com/Oneflow-Inc/OneFlow-Benchmark).
 
 
 
