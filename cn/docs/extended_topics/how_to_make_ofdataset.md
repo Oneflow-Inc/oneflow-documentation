@@ -349,7 +349,7 @@ writer.save("file:///path/to/outputdir")
 
 ### 与JSON格式的相互转化
 以下命令可以将JSON格式数据转为OFRecord数据集:
-```
+```python
 dataframe = spark.read.json("file:///path/to/json_file")
 writer = dataframe.write.format("ofrecord")
 writer.save("file:///path/to/outputdir")

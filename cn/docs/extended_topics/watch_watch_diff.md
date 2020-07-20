@@ -1,5 +1,4 @@
 # 如何从网络中获取中间层的数据
-[TOC]
 
 OneFlow提供了`watch`, `watch_diff`接口，帮助获取网络运行过程中指定tensor的数据或梯度。
 
@@ -25,7 +24,7 @@ print("in: ", data)
 ReluJob(data)
 ```
 ### 运行`test_watch.py`
-您可以用python的方式运行上面[这段代码](test_watch.py)，比如
+您可以用python的方式运行上面[这段代码](../code/extended_topics/test_watch.py)，比如
 ```
 python3 test_watch.py
 ```
@@ -47,7 +46,7 @@ out [0.         0.27108115 0.08992404 0.5222855  0.         0.32096234
 ## `watch_diff` - 获取中间层的梯度
 ### `test_watch_diff.py`
 下面是一段完整的例子，用于展示如何使用OneFlow的`watch_diff`功能获取网络中间层的梯度。
-```
+```python
 import numpy as np
 import oneflow as flow
 
@@ -86,7 +85,7 @@ labels = np.random.randint(-10, 10, (8,)).astype(np.int32)
 loss = train_job(images, labels).get().mean()
 ```
 ### 运行`test_watch_diff.py`
-您可以用python的方式运行上面[这段代码](test_watch_diff.py)，比如:
+您可以用python的方式运行上面[这段代码](../code/extended_topics/test_watch_diff.py)，比如:
 ```
 python3 test_watch_diff.py
 ```
@@ -105,7 +104,7 @@ logits_grad (8, 10) float32
 - 第二个参数也是一个回调函数，需用户自定义处理数据的方式。
 
 这个例子中演示了一个略微复杂一点的回调函数：
-```
+```python
 def get_cb(bn):
     def cb(x):
         blob = x.ndarray()
