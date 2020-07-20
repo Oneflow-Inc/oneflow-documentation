@@ -2,57 +2,57 @@ In this article, we will learn:
 
 * Using OneFlow'port to configure software and hardware environment.
 
-* 使用oneflow的接口定义训练模型
+* Using OneFlow'port to define training model.
 
-* 实现oneflow的训练作业函数
+* Achieved OneFlow's training job function.
 
-* 保存/加载模型训练结果
+* Save/load the result of training model.
 
-* 实现oneflow的校验作业函数
+* Achieved OneFlow's evaluation of job function.
 
-本文通过使用LeNet模型，训练MNIST数据集向大家介绍使用OneFlow的各个核心环节。 在文末附有完整的示例代码。
+This article demonstrated the core step of OneFlow by using the LeNet model to training MNIST dataset. The full example code is attached in the end.
 
-在学习之前，也可以通过以下命令查看各脚本功能。
+Before learning, you can check the function of each script by running the following command.
 
-首先，同步本文档仓库并切换到对应路径：
+First of all, clone the documentation repository and switch to the corresponding path:
 ```shell
 git clone https://github.com/Oneflow-Inc/oneflow-documentation.git
 cd oneflow-documentation/docs/code/quick_start/
 ```
 
-* 模型训练
+* Training model
 ```shell
 python lenet_train.py
 ```
-以上命令将对MNIST数据集进行训练，并保存模型。
+The command above will perform traning of MNIST dataset and saving the model.
 
-训练模型是以下`lenet_eval.py`与`lenet_test.py`的前提条件，你也可以直接下载使用我们已经训练好的模型，略过训练步骤：
+Training model is the precondition of `lenet_eval.py` and `lenet_test.py`. Or we can directly download and use our model which is already been trained and skip the training progress:
 ```shell
-#在仓库docs/code/quick_start/目录下
+#Repository location: docs/code/quick_start/ 
 wget https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/quick_start/lenet_models_1.zip
 unzip lenet_models_1.zip
 ```
 
-* 模型校验
+* Model evaluation
 ```shell
 python lenet_eval.py
 ```
-以上命令，使用MNIST测试集对刚刚生成的模型进行校验，并给出准确率。
+The command above using the MNIST's testing set to evaluate the training model and print the accuracy.
 
-* 图像识别
+* Image recognition
 
 ```shell
 python lenet_test.py ./9.png
 ```
-以上命令将使用之前训练的模型对我们准备好的“9.png”图片中的内容进行预测。 你也可以下载我们[提取好的mnist图片](https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/quick_start/mnist_raw_images.zip)，自行验证自己训练模型的预测效果。
+The above command will using the training model we just saved to predicting the content of "9.png". Or we can download our [ prepared image](https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/quick_start/mnist_raw_images.zip)to verify their training model prediction result.
 
-## MNIST数据集介绍
+## MNIST dataset introdaction
 
-MNIST是一个手写数字的数据库。包括了训练集与测试集；训练集包含了60000张图片以及图片对应的标签，测试集包含了60000张图片以及图片测试的标签。Yann LeCun等已经将图片进行了大小归一化及居中处理，并且打包为二进制文件供下载。http://yann.lecun.com/exdb/mnist/
+MNIST is a handwritten number database which including training set and testing set. Training set include 60000 pictures and the corresponding label. Testing set include 60000 pictures and the testing labal.Yann LeCun and etc... has normalise the image size and pack them to binary file for download.http://yann.lecun.com/exdb/mnist/
 
-## 配置训练的软硬件环境
+## Configuration of hardware and software training environment
 
-使用oneflow.function_config()可以构造一个配置对象，使用该对象，可以对训练相关的诸多软硬件参数进行配置。 与训练直接相关参数，被打包放置在`function_config`的train成员中，其余的配置直接作为`function_config`的成员。 以下是我们训练的基本配置：
+Using oneflow.function_config() can construct a configuration object. By using that object, we can configure many hardware and software parameters relevant to training. The parameters directly relating to the training is been packed and store in ` function_config`'s train members. The rest of configuration directly set as the members of ` function_config`. Following is our basic configuration of training:
 
 ```python
 def get_train_config():
@@ -63,19 +63,19 @@ def get_train_config():
   return config
 ```
 
-在以上代码中，我们：
+In the code above:
 
-* 将训练的默认类型设置为float
+* We put the default type of training as float
 
-* 设置learning rate为0.1
+* We set learning rate as 0.1
 
-* 训练过程中的模型更新策略为"naive_conf"
+* We set update strategy as "naive_conf" during the training
 
-config对象，其使用场景，将在后文 **实现训练任务函数** 中介绍。
+config object and it's usage scenarios will be introduce in **Implement training function** later.
 
-## 定义训练模型
+## Define training model
 
-在oneflow.nn及oneflow.layers提供了用于构建模型的算子。
+In oneflow.nn and oneflow.layers, provide the operator to used to construct the model.
 
 ```python
 def lenet(data, train=False):
@@ -93,21 +93,21 @@ def lenet(data, train=False):
 
 ```
 
-以上代码中，我们搭建了一个LeNet网络模型。
+In the code above, we build up a LeNet network model.
 
-## 实现训练任务函数
+## Implement training function
 
-OneFlow中提供了`oneflow.global_function`装饰器，通过它，可以将一个Python函数转变为训练任务函数（job function）。
+OneFlow provide a decorator called `oneflow.global_function`. By using it, we can covert a Python function to job function.
 
-### function装饰器
+### Function decorator
 
-`oneflow.global_function`装饰器接收一个`function_config`对象作为参数。 它可以将一个普通Python函数转变为OneFlow的训练任务函数，并将前文所述的`function_config`所做的配置应用到其中。
+`oneflow.global_function` decorator receive a ` function_config` object as parameter. It can can covert a normal Python function to job function of OneFlow and use the configuration we just done for ` function_config`.
 
 ```python
 @flow.global_function(get_train_config())
 def train_job(images=flow.FixedTensorDef((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
               labels=flow.FixedTensorDef((BATCH_SIZE, ), dtype=flow.int32)):
-    #任务函数实现 ...
+    #job function achieved ...
 ```
 
 ### 指定优化特征
