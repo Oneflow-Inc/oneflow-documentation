@@ -105,9 +105,9 @@ OneFlow provide a decorator called `oneflow.global_function`. By using it, we ca
 
 ```python
 @flow.global_function(get_train_config())
-def train_job(images=flow.FixedTensorDef((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-              labels=flow.FixedTensorDef((BATCH_SIZE, ), dtype=flow.int32)):
-    #job function achieved ...
+def train_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+              labels:oft.Numpy.Placeholder((BATCH_SIZE, ), dtype=flow.int32)):
+    #任务函数实现 ...
 ```
 
 ### Specify the optimization feature
@@ -115,8 +115,8 @@ We can using `oneflow.losses.add_loss`'s port to specify the parameters which ne
 
 ```python
 @flow.global_function(get_train_config())
-def train_job(images=flow.FixedTensorDef((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-              labels=flow.FixedTensorDef((BATCH_SIZE, ), dtype=flow.int32)):
+def train_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+              labels:oft.Numpy.Placeholder((BATCH_SIZE, ), dtype=flow.int32)):
   with flow.scope.placement("gpu", "0:0"):
     logits = lenet(images, train=True)
     loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits)
@@ -203,8 +203,8 @@ Above code is the configuration of function_config during the evaluation. Compar
 
 ```python
 @flow.global_function(get_eval_config())
-def eval_job(images=flow.FixedTensorDef((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-              labels=flow.FixedTensorDef((BATCH_SIZE, ), dtype=flow.int32)):
+def eval_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+              labels:oft.Numpy.Placeholder((BATCH_SIZE, ), dtype=flow.int32)):
   with flow.scope.placement("gpu", "0:0"):
     logits = lenet(images, train=True)
     loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits, name="softmax_loss")
@@ -314,8 +314,8 @@ def get_train_config():
 
 
 @flow.global_function(get_train_config())
-def train_job(images=flow.FixedTensorDef((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-              labels=flow.FixedTensorDef((BATCH_SIZE,), dtype=flow.int32)):
+def train_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+              labels:oft.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32)):
     with flow.scope.placement("gpu", "0:0"):
         logits = lenet(images, train=False)
         loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits, name="softmax_loss")
@@ -330,8 +330,8 @@ def get_eval_config():
 
 
 @flow.global_function(get_eval_config())
-def eval_job(images=flow.FixedTensorDef((1, 1, 28, 28), dtype=flow.float),
-             labels=flow.FixedTensorDef((1,), dtype=flow.int32)):
+def eval_job(images:oft.Numpy.Placeholder((1, 1, 28, 28), dtype=flow.float),
+             labels:oft.Numpy.Placeholder((1,), dtype=flow.int32)):
     with flow.scope.placement("gpu", "0:0"):
         logits = lenet(images, train=False)
     return logits
@@ -389,8 +389,8 @@ def get_eval_config():
 
 
 @flow.global_function(get_eval_config())
-def eval_job(images=flow.FixedTensorDef((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-             labels=flow.FixedTensorDef((BATCH_SIZE,), dtype=flow.int32)):
+def eval_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+             labels:oft.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32)):
     with flow.scope.placement("gpu", "0:0"):
         logits = lenet(images, train=True)
         loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits, name="softmax_loss")
@@ -465,8 +465,8 @@ def get_eval_config():
 
 
 @flow.global_function(get_eval_config())
-def eval_job(images=flow.FixedTensorDef((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-             labels=flow.FixedTensorDef((BATCH_SIZE,), dtype=flow.int32)):
+def eval_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+             labels:oft.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32)):
     with flow.scope.placement("gpu", "0:0"):
         logits = lenet(images, train=False)
     return logits
