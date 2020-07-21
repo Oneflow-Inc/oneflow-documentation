@@ -1,4 +1,4 @@
-文档采用markdown编写，采用`mkdocs`文档生成工具及`material`主题。
+The document is written in markdown, using `mkdocs` document generation tool and `material` theme
 
 **安装mkdocs与material**
 
