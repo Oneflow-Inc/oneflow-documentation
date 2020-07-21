@@ -21,8 +21,8 @@
 以下代码示例中，我们构建了一个mlp模型。并且将由`flow.nn.sparse_softmax_cross_entropy_with_logits`计算得到交叉熵损失结果作为优化目标。
 ```python
 @flow.global_function(get_train_config())
-def train_job(images=flow.FixedTensorDef((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-              labels=flow.FixedTensorDef((BATCH_SIZE, ), dtype=flow.int32)):
+def train_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+              labels:oft.Numpy.Placeholder((BATCH_SIZE, ), dtype=flow.int32)):
   with flow.scope.placement("cpu", "0:0"):
     initializer = flow.truncated_normal(0.1)
     reshape = flow.reshape(images, [images.shape[0], -1])

@@ -1,6 +1,7 @@
 import numpy as np
 import oneflow as flow
 from mnist_util import load_data
+import oneflow.typing as oft
 
 BATCH_SIZE = 100
 
@@ -19,8 +20,8 @@ def get_eval_config():
 
 
 @flow.global_function(get_eval_config())
-def eval_job(images=flow.FixedTensorDef((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-             labels=flow.FixedTensorDef((BATCH_SIZE,), dtype=flow.int32)):
+def eval_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+             labels:oft.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32)):
     with flow.scope.placement("cpu", "0:0"):
         logits = mlp(images)
         loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits, name="softmax_loss")

@@ -59,10 +59,10 @@
 
 接下来我们将介绍OneFlow中的两种并行策略（`mirrored`策略与`consistent`策略），学习在不同的策略如何选择并行方式。
 
-### 两类blob
-在[使用OneFlow搭建神经网络](../basics_topics/build_nn_with_op_and_layer.md)中已经介绍了`blob`(BlobDef)的概念，它是数据占位符。
+### 两类占位符
+在[使用OneFlow搭建神经网络](../basics_topics/build_nn_with_op_and_layer.md)中已经介绍了 `Placeholder` 的概念，它是数据占位符。
 
-实际上，针对并行，OneFlow的`blob`还可以细分为两类：`MirroredBlob`与`ConsistentBlob`，它们可分别通过接口`flow.MirroredTensorDef`和`flow.FixedTensorDef`构造。
+实际上，针对并行，OneFlow的 `Placeholder` 还可以细分为两类：分别通过接口 `oneflow.typing.Numpy.Placeholder` 和 `oneflow.typing.ListNumpy.Placeholder` 构造的占位符，分别对应 `Mirrored` 与 `Consistent` 情况。
 
 我们将在下文中看到它们的具体应用。
 
@@ -231,8 +231,8 @@ def get_train_config():
 
 
 @flow.global_function(get_train_config())
-def train_job(images=flow.FixedTensorDef((BATCH_SIZE, 1, 28, 28), dtype=flow.float, name="myimages"),
-              labels=flow.FixedTensorDef((BATCH_SIZE, ), dtype=flow.int32, name="mylabels")):
+def train_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float, name="myimages"),
+              labels:oft.Numpy.Placeholder((BATCH_SIZE, ), dtype=flow.int32, name="mylabels")):
   logits = lenet(images, train=True)
   loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits, name="softmax_loss")
   flow.losses.add_loss(loss)
@@ -261,10 +261,10 @@ if __name__ == '__main__':
 flow.config.gpu_device_num(2)
 ```
 
-* 使用`FixedTensorDef`定义consistent策略下的blob，因为`FixedTensorDef`产出的blob代表逻辑上的op及数据占位符，因此此处的BATCH_SIZE就是整个分布式训练的样本总和，不需要人为切分或者组合
+* 使用`oft.Numpy.Placeholder`定义consistent策略下的占位符，因为`Numpy.Placeholder`产出的blob代表逻辑上的op及数据占位符，因此此处的BATCH_SIZE就是整个分布式训练的样本总和，不需要人为切分或者组合
 ```python
-def train_job(images=flow.FixedTensorDef((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-            labels=flow.FixedTensorDef((BATCH_SIZE, ), dtype=flow.int32))
+def train_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+            labels:oft.Numpy.Placeholder((BATCH_SIZE, ), dtype=flow.int32))
 ```
 
 * 训练结果通过`ndarray`转化为numpy数据，直接是一个统一的结果，OneFlow完成分布式过程中切分与合并的工作。在consistent模式下，多卡的分布式训练与单卡的训练，代码差别极少，上手体验几乎一样
