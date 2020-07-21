@@ -1,8 +1,8 @@
 In this article, we will learn:
 
-* Using OneFlow'port to configure software and hardware environment.
+* Using OneFlow's port to configure software and hardware environment.
 
-* Using OneFlow'port to define training model.
+* Using OneFlow's port to define training model.
 
 * Achieved OneFlow's training job function.
 
