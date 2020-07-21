@@ -26,8 +26,8 @@ import oneflow as flow
 
 
 @flow.global_function(flow.function_config())
-def test_job(images=flow.FixedTensorDef((32, 1, 28, 28), dtype=flow.float),
-             labels=flow.FixedTensorDef((32,), dtype=flow.int32)):
+def test_job(images:oft.Numpy.Placeholder((32, 1, 28, 28), dtype=flow.float),
+             labels:oft.Numpy.Placeholder((32,), dtype=flow.int32)):
     # do something with images or labels
     return images, labels
 
@@ -56,8 +56,8 @@ python feed_numpy.py
 #### 定义
 定义的地方需要声明一下有哪些输入，以及这些输入的形状和数据类型等信息。下面这段代码就是定义Job函数的地方。定义的地方需要声明一下有哪些输入，以及这些输入的形状和数据类型等信息。下面这段代码就是定义Job函数的地方。`test_job`是Job函数的函数名，例子中它有两个输入：`images`和`labels`，而且分别有自己的形状和数据类型。
 ```python
-def test_job(images=flow.FixedTensorDef((32, 1, 28, 28), dtype=flow.float),
-             labels=flow.FixedTensorDef((32, ), dtype=flow.int32)):
+def test_job(images:oft.Numpy.Placeholder((32, 1, 28, 28), dtype=flow.float),
+             labels:oft.Numpy.Placeholder((32, ), dtype=flow.int32)):
 ```
 #### 使用
 在使用之前需要先准备好需要被输入的numpy的ndarray，例子中按照输入的形状和数据类型的要求随机生成了输入：`images_in`和`labels_in`。
@@ -75,7 +75,7 @@ def test_job(images=flow.FixedTensorDef((32, 1, 28, 28), dtype=flow.float),
 
 有关Job函数参数的两点说明：
 
-* 1 - 例子中`FixedTensorDef`返回的是一个`占位符`，类似tensorflow中placeholder的概念，OneFlow中还可以用`MirroredTensorDef`方式生成占位符，这两种方式的区别参考[两类blob](https://github.com/Oneflow-Inc/oneflow-documentation/blob/model_mixed_parallel/docs/extended_topics/consistent_mirrored.md#%E4%B8%A4%E7%B1%BBblob);
+* 1 - 例子中`oft.Numpy.Placeholder`返回的是一个`占位符`，类似tensorflow中placeholder的概念，OneFlow中还可以用`oft.ListNumpy.Placeholder`方式生成占位符，这两种方式的区别参考[两类blob](https://github.com/Oneflow-Inc/oneflow-documentation/blob/model_mixed_parallel/docs/extended_topics/consistent_mirrored.md#%E4%B8%A4%E7%B1%BBblob);
 
 * 2 - 作业函数支持多个参数，每个参数都必须是下面几种中的一种：1. 一个`占位符`  2. 一个由`占位符`组成的列表（list）、元组（tuple）或者字典(dict)
 
