@@ -3,6 +3,7 @@ import oneflow as flow
 from PIL import Image
 import sys
 import os
+import oneflow.typing as oft
 
 BATCH_SIZE = 1
 
@@ -36,8 +37,8 @@ def get_eval_config():
 
 
 @flow.global_function(get_eval_config())
-def eval_job(images=flow.FixedTensorDef((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-             labels=flow.FixedTensorDef((BATCH_SIZE,), dtype=flow.int32)):
+def eval_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+             labels:oft.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32)):
     with flow.scope.placement("gpu", "0:0"):
         logits = lenet(images, train=False)
     return logits

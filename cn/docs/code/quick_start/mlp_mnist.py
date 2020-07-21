@@ -1,6 +1,7 @@
 # mlp_mnist.py
 import oneflow as flow
 from mnist_util import load_data
+import oneflow.typing as oft
 
 BATCH_SIZE = 100
 
@@ -14,8 +15,8 @@ def get_train_config():
 
 
 @flow.global_function(get_train_config())
-def train_job(images=flow.FixedTensorDef((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-              labels=flow.FixedTensorDef((BATCH_SIZE,), dtype=flow.int32)):
+def train_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+              labels:oft.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32)):
     with flow.scope.placement("cpu", "0:0"):
         initializer = flow.truncated_normal(0.1)
         reshape = flow.reshape(images, [images.shape[0], -1])

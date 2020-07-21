@@ -33,8 +33,8 @@
 比如，如果我们定义了如下的任务函数：
 ```python
 @flow.global_function(get_train_config())
-def train_job(images=flow.FixedTensorDef((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-              labels=flow.FixedTensorDef((BATCH_SIZE,), dtype=flow.int32)):
+def train_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+              labels:oft.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32)):
     with flow.scope.placement("cpu", "0:0"):
         logits = lenet(images, train=True)
         loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits, name="softmax_loss")
@@ -83,8 +83,8 @@ def cb_func(result):
 
 ```python
 @flow.global_function(get_train_config())
-def train_job(images=flow.FixedTensorDef((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-              labels=flow.FixedTensorDef((BATCH_SIZE, ), dtype=flow.int32)):
+def train_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+              labels:oft.Numpy.Placeholder((BATCH_SIZE, ), dtype=flow.int32)):
   #mlp
   #... code not shown
   logits = flow.layers.dense(hidden, 10, kernel_initializer=initializer)
@@ -110,8 +110,8 @@ def cb_print_loss(result):
 
 ```python
 @flow.global_function(get_eval_config())
-def eval_job(images=flow.FixedTensorDef((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-              labels=flow.FixedTensorDef((BATCH_SIZE, ), dtype=flow.int32)):
+def eval_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+              labels:oft.Numpy.Placeholder((BATCH_SIZE, ), dtype=flow.int32)):
   with flow.scope.placement("gpu", "0:0"):
     logits = lenet(images, train=True)
     loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits, name="softmax_loss")
@@ -156,6 +156,7 @@ OneFlow会在获取到训练结果时，自动调用注册的回调。
 ```python
 import oneflow as flow
 from mnist_util import load_data
+import oneflow.typing as oft
 
 BATCH_SIZE = 100
 
@@ -183,8 +184,8 @@ def get_train_config():
 
 
 @flow.global_function(get_train_config())
-def train_job(images=flow.FixedTensorDef((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-              labels=flow.FixedTensorDef((BATCH_SIZE,), dtype=flow.int32)):
+def train_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+              labels:oft.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32)):
     with flow.scope.placement("gpu", "0:0"):
         logits = lenet(images, train=True)
         loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits, name="softmax_loss")
@@ -239,8 +240,8 @@ def get_eval_config():
 
 
 @flow.global_function(get_eval_config())
-def eval_job(images=flow.FixedTensorDef((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-             labels=flow.FixedTensorDef((BATCH_SIZE,), dtype=flow.int32)):
+def eval_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+             labels:oft.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32)):
     with flow.scope.placement("gpu", "0:0"):
         logits = lenet(images, train=True)
         loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits, name="softmax_loss")
@@ -300,8 +301,8 @@ def get_train_config():
 
 
 @flow.global_function(get_train_config())
-def train_job(images=flow.FixedTensorDef((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-              labels=flow.FixedTensorDef((BATCH_SIZE,), dtype=flow.int32)):
+def train_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+              labels:oft.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32)):
     # mlp
     initializer = flow.truncated_normal(0.1)
     reshape = flow.reshape(images, [images.shape[0], -1])
@@ -372,8 +373,8 @@ def get_eval_config():
 
 
 @flow.global_function(get_eval_config())
-def eval_job(images=flow.FixedTensorDef((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-             labels=flow.FixedTensorDef((BATCH_SIZE,), dtype=flow.int32)):
+def eval_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+             labels:oft.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32)):
     with flow.scope.placement("cpu", "0:0"):
         logits = mlp(images)
         loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits, name="softmax_loss")
