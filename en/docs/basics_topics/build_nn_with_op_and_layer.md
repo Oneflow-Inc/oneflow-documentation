@@ -1,8 +1,8 @@
-# 使用OneFlow搭建神经网络
+# Use OneFlow build the neural network
 
-在之前[识别MNIST手写体数字](http://183.81.182.202:8000/quick_start/lenet_mnist.html)的例子中，我们通过flow.layers中的网络层和flow.nn中提供的算子搭建了一个简单的lenet网络。下面，我们将通过一个简单的神经网络，来介绍Onflow中网络搭建的核心—算子op和层layer。下面，我们将通过一个简单的神经网络，来介绍Onflow中网络搭建的核心—算子op和层layer。
+The example in the previous section [ Recognition of MNIST handwritten numbers](http://183.81.182.202:8000/quick_start/lenet_mnist.html), we use flow.layers in the network layer and the operator in flow.nn build up a simple lenet network.Now we will using a simple neural network to introduce the core operator and layer in OneFlow network.
 
-下面的代码部分是一个主要由卷积层、池化层和全连接层组成的神经网络；图示部分展示了该网络的算子（op）和算子输出的形状。 `data`是维度是100x1×28×28的`Blob`，`data`首先作为`conv2d`的输入参与卷积计算，计算结果传给conv1，然后conv1作为输入传给`max_pool2d`，依次类推。（注：这里的说法不准确，只是方便理解这么描述） `data`是维度是100x1×28×28的`Blob`，`data`首先作为`conv2d`的输入参与卷积计算，计算结果传给conv1，然后conv1作为输入传给`max_pool2d`，依次类推。（注：这里的说法不准确，只是方便理解这么描述）
+The code below is nerural network which is constructed by convolution layer, pooling layer and all connection layer. The figure show part of the operator of network and shape of result of operator. `data`是维度是100x1×28×28的`Blob`，`data`首先作为`conv2d`的输入参与卷积计算，计算结果传给conv1，然后conv1作为输入传给`max_pool2d`，依次类推。（注：这里的说法不准确，只是方便理解这么描述）
 
 ```python
 def lenet(data, train=False):
