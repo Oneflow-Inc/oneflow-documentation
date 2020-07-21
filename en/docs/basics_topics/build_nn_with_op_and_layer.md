@@ -42,10 +42,10 @@ Like '+' in the following code:
 ```
 output = output + fc2_biases
 ```
-这句代码等价于：
+Same as:
 ```
 output = flow.broadcast_add(output, fc2_biases)
 ```
 
-## 总结
-使用OneFlow进行神经网络搭建，需要OneFlow提供的算子或层作为计算单元，BlobDef作为算子和层的输入和输出，运算符重载帮助简化了部分语句。
+## Summary
+Use OneFlow to construct the neural network need OneFlow to provide operator or layer as calculation unit. BlobDef help simplify some language by play as the in or output in operator and layer.
