@@ -1,11 +1,11 @@
 # feed_numpy.py
 import numpy as np
 import oneflow as flow
-
+import oneflow.typing as oft
 
 @flow.global_function(flow.function_config())
-def test_job(images=flow.FixedTensorDef((32, 1, 28, 28), dtype=flow.float),
-             labels=flow.FixedTensorDef((32,), dtype=flow.int32)):
+def test_job(images:oft.Numpy.Placeholder((32, 1, 28, 28), dtype=flow.float),
+             labels:oft.Numpy.Placeholder((32,), dtype=flow.int32)):
     # do something with images or labels
     return images, labels
 
