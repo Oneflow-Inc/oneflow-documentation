@@ -14,7 +14,7 @@ def cb(y):
     print("out", y.ndarray())
 
 @flow.global_function()
-def ReluJob(x=flow.FixedTensorDef((10,))):
+def ReluJob(x:oft.Numpy.Placeholder((10,))):
     y = flow.nn.relu(x)
     flow.watch(y, cb)
 
@@ -65,8 +65,8 @@ def get_train_config():
     return config
 
 @flow.global_function(get_train_config())
-def train_job(images=flow.FixedTensorDef((8, 1, 28, 28), dtype=flow.float),
-              labels=flow.FixedTensorDef((8,), dtype=flow.int32)):
+def train_job(images:oft.Numpy.Placeholder((8, 1, 28, 28), dtype=flow.float),
+              labels:oft.Numpy.Placeholder((8,), dtype=flow.int32)):
     initializer = flow.truncated_normal(0.1)
     reshape = flow.reshape(images, [images.shape[0], -1])
     hidden = flow.layers.dense(reshape, 512, activation=flow.nn.relu, kernel_initializer=initializer)
