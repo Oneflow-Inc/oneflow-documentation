@@ -1,30 +1,30 @@
-# 获取任务函数的结果
+# Obtain results from job function
 
-本文主要介绍如何在OneFlow中获取任务函数的返回结果，主要包括：
+In this article, we will mainly introduce how to obtain the return value from job function in OneFlow which includes:
 
-* 如何同步方式获取任务函数的结果
+* How to use synchronously method obtained the return value from job function.
 
-* 如何异步方式获取任务函数的结果
+* How to use asynchronous method obtained the return value from job function.
 
-在OneFlow中，通常将用@flow.global_function装饰器修饰的函数定义为任务函数(Job)，此任务可能是训练、验证或预测任务。可以通过`get()`方法和`async_get()`方法来获取任务函数被执行后的返回对象/结果，`get`和`async_get`则分别对应表示同步和异步获取结果。可以通过`get()`方法和`async_get()`方法来获取任务函数被执行后的返回对象/结果，`get`和`async_get`则分别对应表示同步和异步获取结果。
+In OneFlow, we usually use the decorator called @flow.global_function to defined job function. Thus, This task could be training, evaluation or prediction.We can use `get()` and `async_get()` to obtain the return object from a job function. `get` and `async_get` is apply in corresponding job function.
 
-## 同步/异步对比
+## Difference between synchronous and asynchronous
 
-通常，我们训练模型的过程都是同步的，同步即意味着排队，下面我们以一个简单的例子，说明同步和异步的概念，以及在OneFlow中异步执行的优势。
+Normally, our trainin process is synonymous which mean in line. Now we will demonstrated the concept of synchronous and asynchronous and the advantages of asynchronous in OneFlow by a simple example.
 
-#### 同步
+#### Synchronous
 
-在一轮完整的迭代过程中，当某个step/iter的数据完成了前向和反向传播过程，并且完成了权重参数和优化器参数的更新后，才能开始下一个step的训练。而开始下一step之前，还往往需要等cpu准备好训练数据，这通常又伴随着一定的数据预处理和加载时间。而开始下一step之前，还往往需要等cpu准备好训练数据，这通常又伴随着一定的数据预处理和加载时间。
+During the complete process in one iteration, when the data from some step/iter completed the forward and reverse transmission process and completed the updated of weight parameters and the optimizer. Then start the training process in next step.Whereas before next step, usually we need to wait for CPU prepare the training data. Normally it will come up with some times for data preprocessing and loading.
 
-#### 异步
+#### Asynchronous
 
-当在迭代过程中采用异步执行时，相当于开启了多线程模式，某个step不必等上一个step的任务结束，而是可以提前进行数据预处理和加载过程，当gpu资源有空闲时，可以直接开始训练。当gpu资源占用满了，则可以开启其它step数据的准备工作。当gpu资源占用满了，则可以开启其它step数据的准备工作。
+During the iteration with asynchronous process, it basic means opens the multithreaded mode. One step does not need to wait for the previous step to finish, but it can directly process data preprocessing and loading. When GPU is not full loading, it can start training directly.When the GPU is full loading, then it can start preparing work for other step.
 
-通过以上对比可知，在OneFlow中使用异步执行任务，有效利用了计算机资源，尤其是在数据集规模巨大的情况下，**开启异步执行能有效缩短数据的加载和准备时间，加快模型训练**。
+From the contrast mentioned above, OneFlow preform more efficient of using the computing resources when using the asynchronous mode. Especially when enormous amount of dataset are apply. **Open asynchronous process could narrow the time of data loading and data preparation and boost training model**.
 
 
 
-接下来，我们将讲解同步、异步任务中的结果的获取，异步任务中回调函数的编写，并在文章的最后提供完整的代码示例。
+Next, we will introduce how to obtain result in synchronous and asynchronous task and the coding of call function in asynchronous task. The complete source code will be provide in the end of page.
 
 ## 同步获取结果
 
