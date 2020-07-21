@@ -66,19 +66,19 @@ Basic steps include:
 
 * OneFlow find the suitable time to regist the callback and job function return the result to the callback.
 
-以上工作的前两步由OneFlow用户完成，最后一步由OneFlow框架完成。
+The first two step is done by the user and the final step is done by OneFlow framework.
 
-### 编写回调函数
-回调函数的原型如下：
+### Coding of callback function
+Prototype of callback function:
 
 ```python
 def cb_func(result):
     #...
 ```
 
-其中的result，就是任务函数的返回值
+The result is the return value of job function.
 
-比如，在以下的任务函数中，返回了loss。
+For example, in the job function below, the return is loss.
 
 ```python
 @flow.global_function(get_train_config())
@@ -94,7 +94,7 @@ def train_job(images=flow.FixedTensorDef((BATCH_SIZE, 1, 28, 28), dtype=flow.flo
   return loss
 ```
 
-对应的回调函数，简单打印平均的loss值：
+Corresponding callback function, just print the average of loss:
 
 ```python
 g_i = 0
@@ -105,7 +105,7 @@ def cb_print_loss(result):
   g_i+=1
 ```
 
-再比如，以下的任务函数：
+Another example, the job function below:
 
 ```python
 @flow.global_function(get_eval_config())
@@ -118,7 +118,7 @@ def eval_job(images=flow.FixedTensorDef((BATCH_SIZE, 1, 28, 28), dtype=flow.floa
   return {"labels":labels, "logits":logits}
 ```
 
-返回了一个字典，分别存储了labels和logits两个对象。 我们可以实现以下的回调函数，处理两者，计算准确率： 我们可以实现以下的回调函数，处理两者，计算准确率：
+The returen object is a dictionary and it store two elements which is labels and logits. We can use the callback function below, handle both of them and calculate the accuracy:
 
 ```python
 def acc(eval_result):
@@ -134,22 +134,22 @@ def acc(eval_result):
   g_correct += right_count
 ```
 
-### 注册回调函数
-调用任务函数，会返回`blob`对象，调用该对象的`async_get`方法，可以注册我们实现好的回调函数。
+### Registration of callback function
+When call the job function, will return object `blob`. Call `async_get` in that object. It can regist the callback function we already prepared.
 
 ```python
 train_job(images,labels).async_get(cb_print_loss)
 ```
 
-OneFlow会在获取到训练结果时，自动调用注册的回调。
+OneFlow automatically call the registed callback function when obtain the training result.
 
 
-## 相关完整代码
+## The relevant code
 
-### 同步获取一个结果
-在本例中，使用一个简单的多层感知机(mlp)训练，通过同步方式获取唯一的返回结果`loss`，并每隔20轮打印一次loss平均值。
+### Synchronised obtain a result
+In this example, use a simple Multilayer perceptron(mlp), use synchronization to obtain the only return value `loss` and print the average of loss in each 20 iterations.
 
-代码下载：[synchronize_single_job.py](../code/basics_topics/synchronize_single_job.py)
+Name：[synchronize_single_job.py](../code/basics_topics/synchronize_single_job.py)
 
 ```python
 import oneflow as flow
@@ -203,10 +203,10 @@ if __name__ == '__main__':
     check_point.save('./lenet_models_1')  # need remove the existed folder
 ```
 
-### 同步获取多个返回结果
-在本例中，任务函数返回一个`list`，我们通过同步方式获取`list`中`labels`与`logits`，并对上例中训练好的模型进行评估，输出准确率。
+### Synchronised obtain multiple results
+In this example, the return object of job function is a `list `. We can use synchronization to obtain the elements like `labels` and `logits` in the `list`. And evaluate the model we trained before then print the accuracy.
 
-代码下载：[synchronize_batch_job.py](../code/basics_topics/synchronize_batch_job.py)
+Name：[synchronize_batch_job.py](../code/basics_topics/synchronize_batch_job.py)
 
 ```python
 import numpy as np
@@ -274,13 +274,13 @@ if __name__ == '__main__':
     print("accuracy: {0:.1f}%".format(g_correct * 100 / g_total))
 ```
 
-其中，预训练模型文件可以点此处下载：[lenet_models_1.zip](https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/basics_topics/lenet_models_1.zip)
+The model have already trained can be downloaded in: [lenet_models_1.zip](https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/basics_topics/lenet_models_1.zip)
 
-### 异步获取一个返回结果
+### Asynchronously obtain a result
 
-在本例中，使用mlp训练，通过异步方式获取唯一的返回结果`loss`，并每隔20轮打印一次loss平均值。
+In this example, using mlp training,  obtain the only return value `loss` by asynchronous way and print the average of loss in each 20 times of iterations.
 
-代码下载：[async_single_job.py](../code/basics_topics/async_single_job.py)
+Name：[async_single_job.py](../code/basics_topics/async_single_job.py)
 
 ```python
 import oneflow as flow
@@ -339,13 +339,13 @@ if __name__ == '__main__':
     main_train()
 ```
 
-其中，预训练模型文件可以点此处下载：[mlp_models_1.zip](https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/basics_topics/mlp_models_1.zip)
+The model have already trained can be downloaded in: [mlp_models_1.zip](https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/basics_topics/mlp_models_1.zip)
 
-### 异步获取多个返回结果
+### Asynchronously obtain multiple results
 
-在以下的例子中，任务函数返回一个`dict`，我们展示了如何异步方式获取`dict`中的多个返回结果。 并对上例中训练好的模型进行评估，输出准确率。 并对上例中训练好的模型进行评估，输出准确率。
+In this example, the return object of job function is a `dict `. We can use asynchronization to obtain multiple return objects in `dict`. And evaluate the model we trained before then print the accuracy.
 
-代码下载：[async_batch_job.py](../code/basics_topics/async_batch_job.py)
+Name：[async_batch_job.py](../code/basics_topics/async_batch_job.py)
 
 ```python
 import numpy as np
