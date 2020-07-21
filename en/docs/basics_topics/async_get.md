@@ -26,11 +26,11 @@ From the contrast mentioned above, OneFlow preform more efficient of using the c
 
 Next, we will introduce how to obtain result in synchronous and asynchronous task and the coding of call function in asynchronous task. The complete source code will be provide in the end of page.
 
-## 同步获取结果
+## Obtain result in synchronous
 
-调用任务函数，得到一个OneFlow对象，该对象的`get`方法，可以同步方式结果。
+When calling the job function, we will get an OneFlow object. The method `get` of this object can get result by synchronous.
 
-比如，如果我们定义了如下的任务函数：
+For example, we defined the function below:
 ```python
 @flow.global_function(get_train_config())
 def train_job(images=flow.FixedTensorDef((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
@@ -42,29 +42,29 @@ def train_job(images=flow.FixedTensorDef((BATCH_SIZE, 1, 28, 28), dtype=flow.flo
     return loss
 ```
 
-那么，我们可以使用以下代码，通过调用`get`方法，获取任务函数所返回的loss，并打印平均值。
+Thus, we can use the following code, use `get`  to obtain the return loss in the job function and print the average of them.
 
 ```python
 loss = train_job(images, labels).get()
 print(loss.mean())
 ```
 
-从以上示例中，应该注意到：
+From the example above, we should notice that:
 
-因为OneFlow框架的特点，定义任务函数时所`return`的对象，在调用任务函数时并 **不是** 直接得到，而需要进一步调用`get`（及下文介绍的`async_get`）方法获取。
+Because of the characteristic of OneFlow frame work, the `return `object when define the function **can not** directly get when call the job function. It need use `get` (next chapter will introduce`async_get` ).
 
 
-## 异步获取结果
+## Obtain result in asynchronous
 
-一般而言，采用异步方式获取训练结果的效率高于同步方式。 一般而言，采用异步方式获取训练结果的效率高于同步方式。 以下介绍如何通过调用任务函数的`async_get`方法，异步获取训练结果。
+Normally, the efficiency of asynchronous is better than synchronous. The following is introduced how to use `async_get` to obtain the result from a job function which is asynchronous training.
 
-其基本步骤包括：
+Basic steps include:
 
-* 准备回调函数，在回调函数中实现处理任务函数的返回结果的逻辑
+* Prepare callback function and achieve return the result of logic in  function of processing.
 
-* 通过async_get方法注册回调
+* Use async_get to regist callback.
 
-* OneFlow在合适时机调用注册好的回调，并将任务函数的训练结果传递给该回调
+* OneFlow find the suitable time to regist the callback and job function return the result to the callback.
 
 以上工作的前两步由OneFlow用户完成，最后一步由OneFlow框架完成。
 
