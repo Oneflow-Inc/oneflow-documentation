@@ -1,7 +1,7 @@
-This article introduces how to quickly get started with OneFlow. We can complete a full neural network training process just in 3 minutes.
+这篇文章介绍了如何快速上手 OneFlow ，我们可以在3分钟内完成一个完整的神经网络训练过程。
 
 ## Example
-If you already have one flow installed, you can run the following command to clone our [repository](https://github.com/Oneflow-Inc/oneflow-documentation.git) and run the script called [mlp_mnist.py](https://github.com/Oneflow-Inc/oneflow-documentation/blob/master/docs/code/quick_start/mlp_mnist.py).
+如果已经安装好了 OneFlow ，可以使用以下命令同步我们的[文档仓库](https://github.com/Oneflow-Inc/oneflow-documentation.git)，并运行其中的[mlp_mnist.py](https://github.com/Oneflow-Inc/oneflow-documentation/blob/master/docs/code/quick_start/mlp_mnist.py)脚本。
 
 ```shell
 git clone https://github.com/Oneflow-Inc/oneflow-documentation.git #clone repository
@@ -23,7 +23,7 @@ We will get following output:
 ...
 ```
 
-The output is a string of number, each number represents the loss value of each round of training.The target of training is make loss value as small as possibleThus far, you have completed a full neural network training by using OneFlow.
+The output is a string of number, each number represents the loss value of each round of training.到此您已经用 OneFlow 完成了一个完整的神经网络的训练。
 
 ## Code interpretation
 The following is the full code
@@ -68,19 +68,19 @@ if __name__ == '__main__':
 
 The next chapter is a brief description of this code.
 
-The special feature of OneFlow compare to other deep learning framework:
+OneFlow 相对其他深度学习框架较特殊的地方是这里：
 ```python
 @flow.global_function(get_train_config())
 def train_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
               labels:oft.Numpy.Placeholder((BATCH_SIZE, ), dtype=flow.int32)):
 ```
-`train_job`function which decorated by `@flow.global_function`is called "job function".Only the job function can be identified by OneFlow as a neural network training or forecasting task.
+`train_job` 是一个被 `@flow.global_function` 修饰的函数，通常被称作任务函数。只有被 `@flow.global_function` 修饰的任务函数才能够被 OneFlow 识别成一个神经网络训练或者预测任务。
 
-In OneFlow, a neural network training or prediction tasks need two pieces of information:
+在 OneFlow 中一个神经网络的训练或者预测任务需要两部分信息：
 
 * One part is structure related parameters of the neural network itself. These is define in the job function which mentioned above.
 
-* Another part is using what kind of configuration to train the network. For example, `learning rate` and method of update model optimization. The configuration of `get_train_config()` in `@flow.global_function(get_train_config())`.
+* 另外一部分是使用什么样的配置去训练这个网络，比如 `learning rate` 、模型优化更新的方法。这些在 `@flow.global_function(get_train_config())` 中的 `get_train_config()` 配置。
 
 This part of code contains all the elements of training a neural network besides the job function and its configuration which mentioned above.
 
@@ -95,7 +95,7 @@ This part of code contains all the elements of training a neural network besides
 
 
 
-This page is a demonstration of a simple network. In Using [convolution neural network for handwriting recognition](lenet_mnist.md), we will give a more comprehensive and detailed introduction of using OneFlow process. In addition, you can reference to the training of all kinds of problems in detail in [Based topics](../basics_topics/data_input.md) of OneFlow.
+This page is a demonstration of a simple network. In Using [convolution neural network for handwriting recognition](lenet_mnist.md), we will give a more comprehensive and detailed introduction of using OneFlow process. 另外，还可参考 OneFlow [基础专题](../basics_topics/data_input.md)中对于训练中各类问题的详细介绍。
 
 
 We also provide some of the prevalent network and the data for your reference The [sample code](https://github.com/Oneflow-Inc/OneFlow-Benchmark).
