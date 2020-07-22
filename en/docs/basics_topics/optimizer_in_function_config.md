@@ -1,4 +1,4 @@
-# 使用flow.function_config()配置优化算法和超参
+# Using of flow.function_config() to config optimization algorithm and parameters
 当一个神经网络被搭建好之后，通常是需要经过训练之后才能够被拿来做预测。当一个神经网络被搭建好之后，通常是需要经过训练之后才能够被拿来做预测。而训练的过程就是网络模型参数（Variable）被优化的过程，通常采用反向传播算法和指定的优化器/优化策略（Optimizer）更新网络模型参数，本文重点介绍在OneFlow中如何设置优化策略(Optimizer)和超参（Hyperparameters）。
 
 可以在不了解OneFlow设计和概念的情况下，直接采用下面的`预测配置`或`训练配置`；如果有更进一步的需要，可以参考`如何配置model_update_conf`，自定义优化方法；本文的最后会通过逐层推进的方式，介绍OneFlow在设计的一些概念，详细解释如何设置训练时候的优化算法和超参数。
