@@ -1,4 +1,4 @@
-# Using of flow.function_config() to config optimization algorithm and parameters
+# Using of flow.function_config() to config optimization algorithm and hyperparameters
 After neural network was set up, normally need be training before use for prediction.The process of training is optimize the parameters(Variable) of network. Usually use the back propagation algorithm and special optimizer/ optimization strategy to update the network model parameters. In this article, we will focus on how to set optimizer and hyperparameters in OneFlow.
 
 We can directly use `prediction the configuration` or `training of configuration` when we not familiar with the design and concept of OneFlow. If have any further requirements, you can reference `how to config model_update_conf`. The end of this article, we will explain step by step to introduce some concepts of OneFlow when design it. And explain in detail about how to config  optimizer and hyperparameters when training.
@@ -72,21 +72,21 @@ We must choose one of these algorithms. For example the previous code is using `
 ```
 config.train.model_update_conf({"naive_conf": {}})
 ```
-`naive_conf`不需要额外配置参数，所以传入的字典是`{"naive_conf": {}}`，其key是`"naive_conf"`，value是一个空的字典`{}`。
+`naive_conf` does not need extra congregations, thus what is store in the dictionary is `{"naive_conf": {}}`. The key is `"naive_conf"` and value is an empty dictionary `{}`.
 
-如果选择其他的优化器，就需要配置相应的参数，如下面配置了一个惯量为0.875的SGD优化器，key是`momentum_conf`,value是一个非空的字典`{'beta': 0.875}`。
+If choose other optimizer, then need to config the relevant parameters. For example, the code below config a SGD optimizer which inertia is 0.875. Key is `momentum_conf` and the value is not empty. It is `{'beta': 0.875}`.
 ```
 config.train.model_update_conf({"momentum_conf": {'beta': 0.875}})
 ```
-这里不对每个优化器做详细说明，详细请参考[optimizer api](http://183.81.182.202:8000/html/train.html#)
-### 其他优化选项
-前面的定义中还有4个可选的优化选项：
-- `learning_rate_decay` - 学习率的衰减方式
-- `warmup_conf` - 学习率预热方式
-- `clip_conf` - 梯度截取
-- `weight_decay_conf` - 权重衰减
+We will not explain all optimizer, more details reference to [optimizer api](http://183.81.182.202:8000/html/train.html#).
+### Other optimizations
+The difinition previously have 4 more optional optimisations.
+- `learning_rate_decay` - descend learning rate
+- `warmup_conf` - preheated learning rate
+- `clip_conf` - gradient clip
+- `weight_decay_conf` -  weight descend
 
-这4个选项可以不选或多选，配置方式就是在python字典中加入新的key-value项，详细请参考[optimizer api](http://183.81.182.202:8000/html/train.html#)，下面仅举出两种形式的例子供参考。
+All these opinions could be selected multiple or no selection. The configuration way is add new key-value is dictionary of python. More details reference to[optimizer api](http://183.81.182.202:8000/html/train.html#). The following examples of two forms for your reference.
 ```python
 # example 1
 model_update_conf = {
@@ -132,17 +132,17 @@ model_update_conf = dict(
     ),
 )
 ```
-## OneFlow的全局函数和配置
-这个章节递进的介绍OneFlow全局函数的概念，函数配置的概念以及如何在函数配置中区分训练或预测配置。
-### OneFlow 全局函数（OneFlow Global Function）
-在介绍优化策略和超参的设置之前，需要先提到`OneFlow Global Function`这个概念，被oneflow.global_function修饰的函数就是`OneFlow Global Function`，通常也可以被称作`job function`任务函数，下面就是一个简单的例子：
+## The global function and configuration of OneFlow
+This chapter will introduce the concept, configuration and how to distinguish between training in function configuration or predict configuration of global function in OneFlow.
+### OneFlow Global Function
+Before introducing the optimization algorithm and hyperparameters, we need to mention the concept of `OneFlow Global Function` which is been decorated by oneflow.global_function. Normally be called `job function`. A simple example below:
 ```python
 import oneflow as flow
 @flow.global_function(flow.function_config())
 def test_job():
   # build up NN here
 ```
-`test_job`就是一个`OneFlow Function`，它能够被OneFlow框架识别，根据配置把函数里面定义的网络编译成适合计算图，放到设备上进行计算。
+`test_job` is an `OneFlow Function`. It can be recognised by OneFlow framework. It can turn function of network into suitable calculation chart according to configuration and put it on server to calculate.
 
 任务函数包括两部分信息：使用算子搭建的网络（NN），以及使用这个网络需要的配置信息（config）。网络的搭建请参考[如何使用OneFlow搭建网络](build_nn_with_op_and_layer.md)。本文专注介绍如何设置配置信息。网络的搭建请参考[如何使用OneFlow搭建网络](build_nn_with_op_and_layer.md)。本文专注介绍如何设置配置信息。
 
