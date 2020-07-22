@@ -1,26 +1,26 @@
 # Obtain results from job function
 
-In this article, we will mainly introduce how to obtain the return value from job function in OneFlow which includes:
+本文主要介绍如何在 OneFlow 中获取任务函数的返回结果，主要包括：
 
 * How to use synchronously method obtained the return value from job function.
 
 * How to use asynchronous method obtained the return value from job function.
 
-In OneFlow, we usually use the decorator called @flow.global_function to defined job function. Thus, This task could be training, evaluation or prediction.We can use `get()` and `async_get()` to obtain the return object from a job function. `get` and `async_get` is apply in corresponding job function.
+在 OneFlow 中，通常将用 `@flow.global_function` 装饰器修饰的函数定义为任务函数(Job)，此任务可能是训练、验证或预测任务。可以通过 `get()` 方法和 `async_get()` 方法来获取任务函数被执行后的返回对象/结果，`get` 和 `async_get` 则分别对应表示同步和异步获取结果。
 
 ## Difference between synchronous and asynchronous
 
-Normally, our trainin process is synonymous which mean in line. Now we will demonstrated the concept of synchronous and asynchronous and the advantages of asynchronous in OneFlow by a simple example.
+通常，我们训练模型的过程都是同步的，同步即意味着排队，下面我们以一个简单的例子，说明同步和异步的概念，以及在 OneFlow 中异步执行的优势。
 
 #### Synchronous
 
-During the complete process in one iteration, when the data from some step/iter completed the forward and reverse transmission process and completed the updated of weight parameters and the optimizer. Then start the training process in next step.Whereas before next step, usually we need to wait for CPU prepare the training data. Normally it will come up with some times for data preprocessing and loading.
+在一轮完整的迭代过程中，当某个 step/iter 的数据完成了前向和反向传播过程，并且完成了权重参数和优化器参数的更新后，才能开始下一个 step 的训练。而开始下一 step 之前，还往往需要等 cpu 准备好训练数据，这通常又伴随着一定的数据预处理和加载时间。
 
 #### Asynchronous
 
-During the iteration with asynchronous process, it basic means opens the multithreaded mode. One step does not need to wait for the previous step to finish, but it can directly process data preprocessing and loading. When GPU is not full loading, it can start training directly.When the GPU is full loading, then it can start preparing work for other step.
+当在迭代过程中采用异步执行时，相当于开启了多线程模式，某个 step 不必等上一个 step 的任务结束，而是可以提前进行数据预处理和加载过程，当 gpu 资源有空闲时，可以直接开始训练。当 gpu 资源占用满了，则可以开启其它 step 数据的准备工作。
 
-From the contrast mentioned above, OneFlow preform more efficient of using the computing resources when using the asynchronous mode. Especially when enormous amount of dataset are apply. **Open asynchronous process could narrow the time of data loading and data preparation and boost training model**.
+通过以上对比可知，在 OneFlow 中使用异步执行任务，有效利用了计算机资源，尤其是在数据集规模巨大的情况下，**开启异步执行能有效缩短数据的加载和准备时间，加快模型训练**。
 
 
 
@@ -28,7 +28,7 @@ Next, we will introduce how to obtain result in synchronous and asynchronous tas
 
 ## Obtain result in synchronous
 
-When calling the job function, we will get an OneFlow object. The method `get` of this object can get result by synchronous.
+调用任务函数，得到一个 OneFlow 对象，该对象的 `get` 方法，可以同步方式结果。
 
 For example, we defined the function below:
 ```python
@@ -42,7 +42,7 @@ def train_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.f
     return loss
 ```
 
-Thus, we can use the following code, use `get`  to obtain the return loss in the job function and print the average of them.
+那么，我们可以使用以下代码，通过调用 `get` 方法，获取任务函数所返回的 loss ，并打印平均值。
 
 ```python
 loss = train_job(images, labels).get()
@@ -51,22 +51,22 @@ print(loss.mean())
 
 From the example above, we should notice that:
 
-Because of the characteristic of OneFlow frame work, the `return `object when define the function **can not** directly get when call the job function. It need use `get` (next chapter will introduce`async_get` ).
+因为 OneFlow 框架的特点，定义任务函数时所 `return` 的对象，在调用任务函数时并 **不是** 直接得到，而需要进一步调用 `get` （及下文介绍的 `async_get` ）方法获取。
 
 
 ## Obtain result in asynchronous
 
-Normally, the efficiency of asynchronous is better than synchronous. The following is introduced how to use `async_get` to obtain the result from a job function which is asynchronous training.
+Normally, the efficiency of asynchronous is better than synchronous. 以下介绍如何通过调用任务函数的 `async_get` 方法，异步获取训练结果。
 
 Basic steps include:
 
 * Prepare callback function and achieve return the result of logic in  function of processing.
 
-* Use async_get to regist callback.
+* 通过 async_get 方法注册回调
 
-* OneFlow find the suitable time to regist the callback and job function return the result to the callback.
+* OneFlow 在合适时机调用注册好的回调，并将任务函数的训练结果传递给该回调
 
-The first two step is done by the user and the final step is done by OneFlow framework.
+以上工作的前两步由 OneFlow 用户完成，最后一步由 OneFlow 框架完成。
 
 ### Coding of callback function
 Prototype of callback function:
@@ -76,9 +76,9 @@ def cb_func(result):
     #...
 ```
 
-The result is the return value of job function.
+其中的 result ，就是任务函数的返回值
 
-For example, in the job function below, the return is loss.
+比如，在以下的任务函数中，返回了 loss 。
 
 ```python
 @flow.global_function(get_train_config())
@@ -94,7 +94,7 @@ def train_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.f
   return loss
 ```
 
-Corresponding callback function, just print the average of loss:
+对应的回调函数，简单打印平均的 loss 值：
 
 ```python
 g_i = 0
@@ -118,7 +118,7 @@ def eval_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.fl
   return {"labels":labels, "logits":logits}
 ```
 
-The returen object is a dictionary and it store two elements which is labels and logits. We can use the callback function below, handle both of them and calculate the accuracy:
+返回了一个字典，分别存储了 labels 和 logits 两个对象。 We can use the callback function below, handle both of them and calculate the accuracy:
 
 ```python
 def acc(eval_result):
@@ -135,19 +135,19 @@ def acc(eval_result):
 ```
 
 ### Registration of callback function
-When call the job function, will return object `blob`. Call `async_get` in that object. It can regist the callback function we already prepared.
+调用任务函数，会返回 `blob` 对象，调用该对象的 `async_get` 方法，可以注册我们实现好的回调函数。
 
 ```python
 train_job(images,labels).async_get(cb_print_loss)
 ```
 
-OneFlow automatically call the registed callback function when obtain the training result.
+OneFlow 会在获取到训练结果时，自动调用注册的回调。
 
 
 ## The relevant code
 
 ### Synchronised obtain a result
-In this example, use a simple Multilayer perceptron(mlp), use synchronization to obtain the only return value `loss` and print the average of loss in each 20 iterations.
+在本例中，使用一个简单的多层感知机(mlp)训练，通过同步方式获取唯一的返回结果 `loss` ，并每隔20轮打印一次 loss 平均值。
 
 Name：[synchronize_single_job.py](../code/basics_topics/synchronize_single_job.py)
 
@@ -205,7 +205,7 @@ if __name__ == '__main__':
 ```
 
 ### Synchronised obtain multiple results
-In this example, the return object of job function is a `list `. We can use synchronization to obtain the elements like `labels` and `logits` in the `list`. And evaluate the model we trained before then print the accuracy.
+在本例中，任务函数返回一个 `list` ，我们通过同步方式获取 `list` 中 `labels` 与 `logits` ，并对上例中训练好的模型进行评估，输出准确率。
 
 Name：[synchronize_batch_job.py](../code/basics_topics/synchronize_batch_job.py)
 
@@ -279,7 +279,7 @@ The model have already trained can be downloaded in: [lenet_models_1.zip](https:
 
 ### Asynchronously obtain a result
 
-In this example, using mlp training,  obtain the only return value `loss` by asynchronous way and print the average of loss in each 20 times of iterations.
+在本例中，使用 mlp 训练，通过异步方式获取唯一的返回结果 `loss` ，并每隔20轮打印一次 loss 平均值。
 
 Name：[async_single_job.py](../code/basics_topics/async_single_job.py)
 
@@ -344,7 +344,7 @@ The model have already trained can be downloaded in: [mlp_models_1.zip](https://
 
 ### Asynchronously obtain multiple results
 
-In this example, the return object of job function is a `dict `. We can use asynchronization to obtain multiple return objects in `dict`. And evaluate the model we trained before then print the accuracy.
+在以下的例子中，任务函数返回一个 `dict` ，我们展示了如何异步方式获取 `dict` 中的多个返回结果。 And evaluate the model we trained before then print the accuracy.
 
 Name：[async_batch_job.py](../code/basics_topics/async_batch_job.py)
 
