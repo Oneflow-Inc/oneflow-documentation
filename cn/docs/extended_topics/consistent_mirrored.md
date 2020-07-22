@@ -77,7 +77,7 @@
 
 ```python
     func_config = flow.function_config()
-    func_config.default_distribute_strategy(flow.distribute.mirrored_strategy())
+    func_config.default_distribute_strategy(flow.scope.mirrored_viewed())
 ```
 
 在`mirrored_strategy`下，只能采用 **数据并行** 的并行模式，在调用任务函数时，我们需要将数据按照训练节点的数目（显卡总数）进行平均切分，并将切分后的数据放入`list`中进行传递，`list`中的每个元素，就是后分配给 **各个显卡** 的实际数据。
@@ -187,7 +187,7 @@ def train_job(images=flow.MirroredTensorDef((BATCH_SIZE_PER_GPU, 1, 28, 28),    
 默认情况下OneFlow采取的是mirrored策略，使用consistent策略需要通过`flow.function_config()`的`default_distribute_strategy`接口显式设置：
 ```python
   config = flow.function_config()
-  config.default_distribute_strategy(flow.distribute.consistent_strategy())
+  config.default_distribute_strategy(flow.scope.consistent_view())
 ```
 
 之所以说consistent策略是OneFlow的一大特色，是因为在OneFlow的设计中，若采用`consistent_strategy`，那么从用户的视角看，所使用的op、blob将获得 **逻辑上的统一**，同样以本文开头的矩阵乘法为例，我们只需要关注[矩阵乘法](#mat_mul_op)本身数学计算上的意义；而在工程上到底如何配置、采用模型并行还是数据并行等细节问题，可以使用OneFlow的接口轻松完成。OneFlow内部会高效可靠地解决 **数据并行中的数据切分** 、**模型并行中的模型切分** 、**串行逻辑** 等问题。
@@ -223,7 +223,7 @@ def lenet(data, train=False):
 
 def get_train_config():
   config = flow.function_config()
-  config.default_distribute_strategy(flow.distribute.consistent_strategy())
+  config.default_distribute_strategy(flow.scope.consistent_view())
   config.default_data_type(flow.float)
   config.train.primary_lr(0.1)
   config.train.model_update_conf({"naive_conf": {}})
@@ -231,8 +231,8 @@ def get_train_config():
 
 
 @flow.global_function(get_train_config())
-def train_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float, name="myimages"),
-              labels:oft.Numpy.Placeholder((BATCH_SIZE, ), dtype=flow.int32, name="mylabels")):
+def train_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+              labels:oft.Numpy.Placeholder((BATCH_SIZE, ), dtype=flow.int32)):
   logits = lenet(images, train=True)
   loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits, name="softmax_loss")
   flow.losses.add_loss(loss)
