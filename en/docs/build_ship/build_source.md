@@ -30,7 +30,7 @@ sudo yum -y install epel-release\
 export LD_LIBRARY_PATH=/opt/intel/lib/intel64_lin:/opt/intel/mkl/lib/intel64:$LD_LIBRARY_PATH
 ```
 
-oneflow采用的cmake作为构建工具，cmake不正确，可能造成编译失败。推荐使用： [https://github.com/Kitware/CMake/releases/download/v3.14.0/cmake-3.14.0-Linux-x86_64.tar.gz](https://github.com/Kitware/CMake/releases/download/v3.14.0/cmake-3.14.0-Linux-x86_64.tar.gz)
+oneflow采用的cmake作为构建工具，cmake不正确，可能造成编译失败。推荐使用： [https://github.com/Kitware/CMake/releases/download/v3.14.0/cmake-3.14.0-Linux-x86_64.tar.gz](https://github.com/Kitware/CMake/releases/download/v3.14.0/cmake-3.14.0-Linux-x86_64.tar.gz)推荐使用： [https://github.com/Kitware/CMake/releases/download/v3.14.0/cmake-3.14.0-Linux-x86_64.tar.gz](https://github.com/Kitware/CMake/releases/download/v3.14.0/cmake-3.14.0-Linux-x86_64.tar.gz)
 
 如果编译过程中出现问题，可以参考[常见编译问题汇总](troubleshooting.md)。
 
@@ -63,8 +63,7 @@ cd oneflow/build
 
 在build目录下运行以下命令，编译第三方库：
 ```shell
-cmake -DTHIRD_PARTY=ON .. 
-make -j$(nproc)
+cmake -DTHIRD_PARTY=ON .. make -j$(nproc)
 ```
 
 ### 编译oneflow
@@ -113,13 +112,13 @@ pip3 install oneflow-0.0.1-cp36-cp36m-linux_x86_64.whl
 
 ## 支持XLA与TensorRT
 
-oneflow也支持`TensorFlow XLA`或者`TensorRT`后端加速引擎。技术细节可参考这篇[文档](https://github.com/Oneflow-Inc/oneflow/blob/develop/oneflow/xrt/README.md)。
+oneflow也支持`TensorFlow XLA`或者`TensorRT`后端加速引擎。技术细节可参考这篇[文档](https://github.com/Oneflow-Inc/oneflow/blob/develop/oneflow/xrt/README.md)。技术细节可参考这篇[文档](https://github.com/Oneflow-Inc/oneflow/blob/develop/oneflow/xrt/README.md)。
 
 本节介绍如何在编译中加入XLA或者TensorRT支持。
 
 ### 编译时加入XLA支持
 
-首先，安装Bazel。 从[这里](https://docs.bazel.build/versions/1.0.0/bazel-overview.html) 下载并安装bazel。我们推荐使用0.24.1版本。可以通过以下命令查看bazel版本号。
+首先，安装Bazel。 首先，安装Bazel。 从[这里](https://docs.bazel.build/versions/1.0.0/bazel-overview.html) 下载并安装bazel。我们推荐使用0.24.1版本。可以通过以下命令查看bazel版本号。我们推荐使用0.24.1版本。可以通过以下命令查看bazel版本号。
 
 ```shell
 bazel version
@@ -127,11 +126,10 @@ bazel version
 
 为了支持XLA，我们需要在编译第三方库时：
 ```shell
-cmake -DWITH_XLA=ON -DTHIRD_PARTY=ON ..
-make -j$(nproc)
+cmake -DWITH_XLA=ON -DTHIRD_PARTY=ON .. make -j$(nproc)
 ```
 
-该过程会下载XLA需要的依赖并编译安装。如果下载出错，则需要 **重新安装cmake** 并清空CMakeCache.txt，再重新编译第三方库。
+该过程会下载XLA需要的依赖并编译安装。该过程会下载XLA需要的依赖并编译安装。如果下载出错，则需要 **重新安装cmake** 并清空CMakeCache.txt，再重新编译第三方库。
 
 第三方库编译完成后，采用以下命令编译`OneFlow`：
 
@@ -148,11 +146,10 @@ make -j$(nproc)
 
 ### 编译时加入TensorRT的支持
 
-首先，下载TenSortRT(>=6.0)并且解压。 之后，进入到oneflow源码的`build`目录下，编译第三方库，加上TensorRT的支持：
+首先，下载TenSortRT(>=6.0)并且解压。 首先，下载TenSortRT(>=6.0)并且解压。 之后，进入到oneflow源码的`build`目录下，编译第三方库，加上TensorRT的支持：
 
 ```shell
-cmake -DWITH_TENSORRT=ON -DTENSORRT_ROOT=your_tensorrt_path -DTHIRD_PARTY=ON ..
-make -j$(nproc)
+cmake -DWITH_TENSORRT=ON -DTENSORRT_ROOT=your_tensorrt_path -DTHIRD_PARTY=ON .. make -j$(nproc)
 ```
 
 最后，通过以下命令编译oneflow：

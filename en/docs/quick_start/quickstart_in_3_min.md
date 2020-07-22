@@ -6,7 +6,6 @@ If you already have one flow installed, you can run the following command to clo
 ```shell
 git clone https://github.com/Oneflow-Inc/oneflow-documentation.git #clone repository
 cd oneflow-documentation/docs/code/quick_start/ #Switch to the sample code path
-
 ```
 
 Then run the neural network training script:
@@ -24,7 +23,7 @@ We will get following output:
 ...
 ```
 
-The output is a string of number, each number represents the loss value of each round of training. The target of training is make loss value as small as possibleThus far, you have completed a full neural network training by using OneFlow.
+The output is a string of number, each number represents the loss value of each round of training.The target of training is make loss value as small as possibleThus far, you have completed a full neural network training by using OneFlow.
 
 ## Code interpretation
 The following is the full code
@@ -33,7 +32,7 @@ The following is the full code
 import numpy as np
 import oneflow as flow
 from mnist_util import load_data
-
+import oneflow.typing as oft
 
 BATCH_SIZE = 100
 
@@ -46,8 +45,8 @@ def get_train_config():
 
 
 @flow.global_function(get_train_config())
-def train_job(images=flow.FixedTensorDef((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-              labels=flow.FixedTensorDef((BATCH_SIZE, ), dtype=flow.int32)):
+def train_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+              labels:oft.Numpy.Placeholder((BATCH_SIZE, ), dtype=flow.int32)):
   with flow.scope.placement("cpu", "0:0"):
     initializer = flow.truncated_normal(0.1)
     reshape = flow.reshape(images, [images.shape[0], -1])
@@ -70,12 +69,12 @@ if __name__ == '__main__':
 The next chapter is a brief description of this code.
 
 The special feature of OneFlow compare to other deep learning framework:
-```
+```python
 @flow.global_function(get_train_config())
-def train_job(images=flow.FixedTensorDef((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-              labels=flow.FixedTensorDef((BATCH_SIZE, ), dtype=flow.int32)):
+def train_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+              labels:oft.Numpy.Placeholder((BATCH_SIZE, ), dtype=flow.int32)):
 ```
-`train_job `function which decorated by `@flow.global_function`is called "job function". Only the job function can be identified by OneFlow as a neural network training or forecasting task.
+`train_job`function which decorated by `@flow.global_function`is called "job function".Only the job function can be identified by OneFlow as a neural network training or forecasting task.
 
 In OneFlow, a neural network training or prediction tasks need two pieces of information:
 

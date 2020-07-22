@@ -3,8 +3,9 @@ import numpy as np
 import oneflow as flow
 from mnist_util import load_data
 from PIL import Image
-BATCH_SIZE = 100
+import oneflow.typing as oft
 
+BATCH_SIZE = 100
 
 def lenet(data, train=False):
     initializer = flow.truncated_normal(0.1)
@@ -29,8 +30,8 @@ def get_train_config():
 
 
 @flow.global_function(get_train_config())
-def train_job(images=flow.FixedTensorDef((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-              labels=flow.FixedTensorDef((BATCH_SIZE,), dtype=flow.int32)):
+def train_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+              labels:oft.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32)):
     with flow.scope.placement("gpu", "0:0"):
         logits = lenet(images, train=True)
         loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits, name="softmax_loss")

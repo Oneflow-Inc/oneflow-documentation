@@ -1,4 +1,4 @@
-文档采用markdown编写，采用`mkdocs`文档生成工具及`material`主题。
+The document is written in markdown, using `mkdocs` document generation tool and `material` theme
 
 **安装mkdocs与material**
 
@@ -16,7 +16,7 @@ mkdocs build
 
 **其它**
 
-mkdocs-material主题使用了google字体资源，可能导致加载缓慢。 可以找到主题目录下的`base.html`，将相关代码注释掉即可:
+mkdocs-material主题使用了google字体资源，可能导致加载缓慢。 可以找到主题目录下的`base.html`，将相关代码注释掉即可: 可以找到主题目录下的`base.html`，将相关代码注释掉即可:
 ```xml
 <!--
 <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>

@@ -68,7 +68,7 @@
 
 * 模型并行情况下，因为可以将逻辑上作为整体的模型 **切分到各个物理卡** 上，能够解决“模型太大，一张卡装不下”的问题，因此，对于参数量大的神经网络层（如最后的全连接层），可以考虑使用模型并行。
 
-实际上，也可以使用 **混合并行**，在同一个分布式训练的不同部分，组合使用数据并行、模型并行。比如，对于神经网络中靠前的参数较少、计算量大的层，采用数据并行；在最终的参数众多的全连接层，则采用模型并行，以下是针对本文最开始的网络模型逻辑图的 **混合并行** 实现方案的示意图：
+实际上，也可以使用 **混合并行**，在同一个分布式训练的不同部分，组合使用数据并行、模型并行。比如，对于神经网络中靠前的参数较少、计算量大的层，采用数据并行；在最终的参数众多的全连接层，则采用模型并行，以下是针对本文最开始的网络模型逻辑图的 **混合并行** 实现方案的示意图：比如，对于神经网络中靠前的参数较少、计算量大的层，采用数据并行；在最终的参数众多的全连接层，则采用模型并行，以下是针对本文最开始的网络模型逻辑图的 **混合并行** 实现方案的示意图：
 
 ![混合并行](imgs/para_consistent_mixed.png)
 
@@ -109,8 +109,8 @@ def get_train_config():
   return config
 
 @flow.global_function(get_train_config())
-def train_job(images=flow.FixedTensorDef((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-              labels=flow.FixedTensorDef((BATCH_SIZE, ), dtype=flow.int32)):
+def train_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+              labels:oft.Numpy.Placeholder((BATCH_SIZE, ), dtype=flow.int32)):
   logits = mlp(images)
   loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits, name="softmax_loss")
   flow.losses.add_loss(loss)
@@ -132,7 +132,7 @@ if __name__ == '__main__':
 ```
 
 ### 代码解析
-以上代码修改自[3分钟快速上手](../quick_start/quick_start_in_3_min.md)中的示例代码，比较两份代码，也可以体会到在OneFlow的`consistent_strategy`下进行各种并行方案的配置是多么的简单，只需要在单机的程序上稍加修改即可。
+以上代码修改自[3分钟快速上手](../quick_start/quickstart_in_3_min.md)中的示例代码，比较两份代码，也可以体会到在OneFlow的`consistent_strategy`下进行各种并行方案的配置是多么的简单，只需要在单机的程序上稍加修改即可。
 
 以上程序的关键部分有：
 
@@ -144,8 +144,7 @@ if __name__ == '__main__':
 * 通过`flow.function_config().default_distribute_strategy`接口将默认策略改为`consistent_strategy`：
 ```python
 def get_train_config():
-  #...
-  config.default_distribute_strategy(flow.distribute.consistent_strategy())
+  #... config.default_distribute_strategy(flow.distribute.consistent_strategy())
   #...
 ```
 
@@ -215,8 +214,8 @@ def get_train_config():
 
 
 @flow.global_function(get_train_config())
-def train_job(images=flow.FixedTensorDef((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-              labels=flow.FixedTensorDef((BATCH_SIZE, ), dtype=flow.int32)):
+def train_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+              labels:oft.Numpy.Placeholder((BATCH_SIZE, ), dtype=flow.int32)):
   logits = lenet(images, train=True)
   loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits, name="softmax_loss")
   flow.losses.add_loss(loss)

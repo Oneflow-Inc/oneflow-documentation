@@ -1,8 +1,8 @@
 In this article, we will learn:
 
-* Using OneFlow'port to configure software and hardware environment.
+* Using OneFlow's port to configure software and hardware environment.
 
-* Using OneFlow'port to define training model.
+* Using OneFlow's port to define training model.
 
 * Achieved OneFlow's training job function.
 
@@ -48,11 +48,11 @@ The above command will using the training model we just saved to predicting the 
 
 ## MNIST dataset introdaction
 
-MNIST is a handwritten number database which including training set and testing set. Training set include 60000 pictures and the corresponding label. Testing set include 60000 pictures and the testing labal.Yann LeCun and etc... has normalise the image size and pack them to binary file for download.http://yann.lecun.com/exdb/mnist/
+MNIST is a handwritten number database which including training set and testing set.Training set include 60000 pictures and the corresponding label.Yann LeCun and etc... has normalise the image size and pack them to binary file for download.http://yann.lecun.com/exdb/mnist/
 
 ## Configuration of hardware and software training environment
 
-Using oneflow.function_config() can construct a configuration object. By using that object, we can configure many hardware and software parameters relevant to training. The parameters directly relating to the training is been packed and store in ` function_config`'s train members. The rest of configuration directly set as the members of ` function_config`. Following is our basic configuration of training:
+Using oneflow.function_config() can construct a configuration object. By using that object, we can configure many hardware and software parameters relevant to training. The parameters directly relating to the training is been packed and store in `function_config`'s train members. The rest of configuration directly set as the members of `function_config`. Following is our basic configuration of training:
 
 ```python
 def get_train_config():
@@ -101,22 +101,22 @@ OneFlow provide a decorator called `oneflow.global_function`. By using it, we ca
 
 ### Function decorator
 
-`oneflow.global_function` decorator receive a ` function_config` object as parameter. It can can covert a normal Python function to job function of OneFlow and use the configuration we just done for ` function_config`.
+`oneflow.global_function` decorator receive a `function_config` object as parameter. It can can covert a normal Python function to job function of OneFlow and use the configuration we just done for `function_config`.
 
 ```python
 @flow.global_function(get_train_config())
-def train_job(images=flow.FixedTensorDef((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-              labels=flow.FixedTensorDef((BATCH_SIZE, ), dtype=flow.int32)):
-    #job function achieved ...
+def train_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+              labels:oft.Numpy.Placeholder((BATCH_SIZE, ), dtype=flow.int32)):
+    #任务函数实现 ...
 ```
 
 ### Specify the optimization feature
-We can using `oneflow.losses.add_loss`'s port to specify the parameters which need to optimization.In this way, OneFlow will trade optimise the parameter as target when each iteration training mission.
+We can using `oneflow.losses.add_loss`'s port to specify the parameters which need to optimization.We can using `oneflow.losses.add_loss`'s port to specify the parameters which need to optimization.In this way, OneFlow will trade optimise the parameter as target when each iteration training mission.
 
 ```python
 @flow.global_function(get_train_config())
-def train_job(images=flow.FixedTensorDef((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-              labels=flow.FixedTensorDef((BATCH_SIZE, ), dtype=flow.int32)):
+def train_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+              labels:oft.Numpy.Placeholder((BATCH_SIZE, ), dtype=flow.int32)):
   with flow.scope.placement("gpu", "0:0"):
     logits = lenet(images, train=True)
     loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits)
@@ -126,11 +126,11 @@ def train_job(images=flow.FixedTensorDef((BATCH_SIZE, 1, 28, 28), dtype=flow.flo
 
 So Far, we using `flow.nn.sparse_softmax_cross_entropy_with_logits` to calculate the loss and trade optimize loss as target parameter.
 
-** Attention **: The training function use add_loss to specified optimize parameters. It is irrelevant with return value. The return value in the demonstration above is loss but not necessary. In fact, the reture value of training function is for Interactive with external environment during the training. We will introduce that in more details in **Call the job function and interaction**below.
+** Attention **: The training function use add_loss to specified optimize parameters. It is irrelevant with return value. It is irrelevant with return value. The return value in the demonstration above is loss but not necessary. In fact, the reture value of training function is for Interactive with external environment during the training.We will introduce that in more details in **Call the job function and interaction**below.
 
 ## Call the jon function and interaction
 
-We can start training when called the job function.Because job function has been progress by OneFlow decorator. Thus, the return value is OneFlow encapsulated object **rather than **previously defined job function's return values. This involved a issue which how to interact **previous defined** job function and **previous called** job function. The solution is sample, when **called **the return object. It included ` get `and `async_ge` method. They corresponding to synchronous and asynchronous.Through them, we can obtained return value of function when **defined them**.
+We can start training when called the job function.Thus, the return value is OneFlow encapsulated object **rather than **previously defined job function's return values. This involved a issue which how to interact **previous defined** job function and **previous called** job function. This involved a issue which how to interact **previous defined** job function and **previous called** job function. The solution is sample, when **called **the return object. It included `get`and `async_ge` method. They corresponding to synchronous and asynchronous.Through them, we can obtained return value of function when **defined them**.Through them, we can obtained return value of function when **defined them**.
 
 ### Synchronously method obtained the return value when training task
 
@@ -147,13 +147,11 @@ The code above, using `get` method to obtain the loss vector and calculated the 
 
 ### Asynchronous method obtained the return value when training task
 
-` async_get` is use for asynchronous get the train job function's return value when **defined it**. It need us to prepare a callback function. When OneFlow finish iterate thire train job function, it will call our callback function and sned the return value of train job function as parameter to our callback function. Sample code:
+`async_get` is use for asynchronous get the train job function's return value when **defined it**. It need us to prepare a callback function. When OneFlow finish iterate thire train job function, it will call our callback function and sned the return value of train job function as parameter to our callback function. Sample code:
 
 ```python
 cb_handle_result(result):
-    #...
-
-job_func(images, labels).async_get(cb_handle_result)
+    #... job_func(images, labels).async_get(cb_handle_result)
 ```
 
 More details example will be demonstrated in **Model evaluation**.
@@ -162,7 +160,7 @@ More details example will be demonstrated in **Model evaluation**.
 
 ### Initialization and saving model
 
-The object structured by `oneflow.train.CheckPoint` can use for initialization, saving and loading models. During the training process, we can use `init` to initialize model and use `save` to save model.For example:
+The object structured by `oneflow.train.CheckPoint` can use for initialization, saving and loading models. During the training process, we can use `init` to initialize model and use `save` to save model.For example:For example:
 
 ```python
 if __name__ == '__main__':
@@ -176,7 +174,7 @@ When save successfully, we will get a ** directory** called "lenet_models_1". Th
 
 ### Loading models
 
-During the evaluation or prediction, we can use `oneflow.train.CheckPoint.load` to load the existing model parameters.For example:
+During the evaluation or prediction, we can use `oneflow.train.CheckPoint.load` to load the existing model parameters.For example:For example:
 
 ```python
 if __name__ == '__main__':
@@ -205,8 +203,8 @@ Above code is the configuration of function_config during the evaluation. Compar
 
 ```python
 @flow.global_function(get_eval_config())
-def eval_job(images=flow.FixedTensorDef((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-              labels=flow.FixedTensorDef((BATCH_SIZE, ), dtype=flow.int32)):
+def eval_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+              labels:oft.Numpy.Placeholder((BATCH_SIZE, ), dtype=flow.int32)):
   with flow.scope.placement("gpu", "0:0"):
     logits = lenet(images, train=True)
     loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits, name="softmax_loss")
@@ -214,7 +212,7 @@ def eval_job(images=flow.FixedTensorDef((BATCH_SIZE, 1, 28, 28), dtype=flow.floa
   return {"labels":labels, "logits":logits}
 ```
 
-Above is the coding of evolution job function and return object is a dictionary.We will call train job function and demonstrated how to use asynchronous method to obtain return value.
+Above is the coding of evolution job function and return object is a dictionary.Above is the coding of evolution job function and return object is a dictionary.We will call train job function and demonstrated how to use asynchronous method to obtain return value.
 
 ### Iteration evaluation
 
@@ -316,8 +314,8 @@ def get_train_config():
 
 
 @flow.global_function(get_train_config())
-def train_job(images=flow.FixedTensorDef((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-              labels=flow.FixedTensorDef((BATCH_SIZE,), dtype=flow.int32)):
+def train_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+              labels:oft.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32)):
     with flow.scope.placement("gpu", "0:0"):
         logits = lenet(images, train=False)
         loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits, name="softmax_loss")
@@ -332,8 +330,8 @@ def get_eval_config():
 
 
 @flow.global_function(get_eval_config())
-def eval_job(images=flow.FixedTensorDef((1, 1, 28, 28), dtype=flow.float),
-             labels=flow.FixedTensorDef((1,), dtype=flow.int32)):
+def eval_job(images:oft.Numpy.Placeholder((1, 1, 28, 28), dtype=flow.float),
+             labels:oft.Numpy.Placeholder((1,), dtype=flow.int32)):
     with flow.scope.placement("gpu", "0:0"):
         logits = lenet(images, train=False)
     return logits
@@ -391,8 +389,8 @@ def get_eval_config():
 
 
 @flow.global_function(get_eval_config())
-def eval_job(images=flow.FixedTensorDef((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-             labels=flow.FixedTensorDef((BATCH_SIZE,), dtype=flow.int32)):
+def eval_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+             labels:oft.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32)):
     with flow.scope.placement("gpu", "0:0"):
         logits = lenet(images, train=True)
         loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits, name="softmax_loss")
@@ -467,8 +465,8 @@ def get_eval_config():
 
 
 @flow.global_function(get_eval_config())
-def eval_job(images=flow.FixedTensorDef((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-             labels=flow.FixedTensorDef((BATCH_SIZE,), dtype=flow.int32)):
+def eval_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+             labels:oft.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32)):
     with flow.scope.placement("gpu", "0:0"):
         logits = lenet(images, train=False)
     return logits

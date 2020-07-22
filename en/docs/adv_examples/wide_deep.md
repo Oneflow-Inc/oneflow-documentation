@@ -2,7 +2,7 @@
 
 [HugeCTR](https://github.com/NVIDIA/HugeCTR)是英伟达提供的一种高效的GPU框架，专为点击率（CTR）估计训练而设计。
 
-OneFlow对标HugeCTR搭建了Wide & Deep 学习网络（WDL)。OneFlow-WDL网络实现了模型并行与稀疏更新，在8卡12G TitanV的服务器上实现支持超过4亿的词表大小，而且性能没有损失与小词表性能相当。
+OneFlow对标HugeCTR搭建了Wide & Deep 学习网络（WDL)。OneFlow对标HugeCTR搭建了Wide & Deep 学习网络（WDL)。OneFlow-WDL网络实现了模型并行与稀疏更新，在8卡12G TitanV的服务器上实现支持超过4亿的词表大小，而且性能没有损失与小词表性能相当。
 
 本文介绍如何使用OneFlow-WDL网络进行训练，以及一些训练结果及分析。
 
@@ -54,7 +54,7 @@ python3 wdl_train_eval.py \
 我们在一台有8块12G显存的TitanV的服务器上对OneFlow-WDL进行了一组测试，并使用HugeCTR提供的docker容器做了同样参数的测试。
 
 ### 多GPU性能测试
-主要测试目的是在batch size = 16384的情况下，测量不同GPU数量处理每个批次的平均时延（latency）。 测试配置了7个1024神经单元的隐藏层。
+主要测试目的是在batch size = 16384的情况下，测量不同GPU数量处理每个批次的平均时延（latency）。 测试配置了7个1024神经单元的隐藏层。 测试配置了7个1024神经单元的隐藏层。
 
 结果如下图：
 
@@ -67,7 +67,7 @@ python3 wdl_train_eval.py \
 综合上面结果表明，1卡到8卡，OneFlow-WDL在占用较少的显存的情况下，速度要比HugeCTR快。
 
 ### batch size=16384每卡，多卡性能测试
-主要测试目的是在保证每GPU卡处理16384batch size情况下，使用1至8GPU卡进行训练每个批次的平均时延（latency）。 测试配置了7个1024神经单元的隐藏层。
+主要测试目的是在保证每GPU卡处理16384batch size情况下，使用1至8GPU卡进行训练每个批次的平均时延（latency）。 测试配置了7个1024神经单元的隐藏层。 测试配置了7个1024神经单元的隐藏层。
 
 结果如下图：
 
@@ -80,7 +80,7 @@ python3 wdl_train_eval.py \
 综合上面结果表明，随着卡数的增加，时延增加，OneFlow-WDL在占用较少的显存的情况下，速度要比HugeCTR快；因为每卡保证16384 batch size，OneFlow每卡占用的内存并无显著变化。
 
 ### 单GPU卡不同batch size性能测试
-主要测试目的是在一个GPU卡情况下，测量不同batch size每个批次的平均时延（latency）。 测试配置了2个1024神经单元的隐藏层。
+主要测试目的是在一个GPU卡情况下，测量不同batch size每个批次的平均时延（latency）。 测试配置了2个1024神经单元的隐藏层。 测试配置了2个1024神经单元的隐藏层。
 
 结果如下图：
 
@@ -91,7 +91,7 @@ OneFlow-WDL中配置了两个Embedding Table：
 - `wide_embedding` 大小是vocab_size x 1
 - `deep_embedding` 大小是vocab_size x 16
 
-HugeCTR中词表大小（vocab_size）是1603616。我们从3200000开始测起，一直到支持4亿的词表大小，结果如下图：
+HugeCTR中词表大小（vocab_size）是1603616。我们从3200000开始测起，一直到支持4亿的词表大小，结果如下图：我们从3200000开始测起，一直到支持4亿的词表大小，结果如下图：
 
 ![image](imgs/big_vocab_table_2x1024.png) ![image](imgs/big_vocab_table_7x1024.png)
 
@@ -112,6 +112,6 @@ HugeCTR中词表大小（vocab_size）是1603616。我们从3200000开始测起�
 ![image](imgs/train_eval_auc_loss.png)
 
 结论与分析：
-1. 蓝色的train loss曲线有明显向下的台阶，因为整个训练集有36674623条数据，batch_size=512的情况下，大概71630步就过了整个数据集（一个epoch），30万步就把训练数据集用了4次多，蓝色曲线的台阶印证了这些。OneFlow在训练过程中支持数据的打乱，每当数据集被完整的用完一遍之后，数据会被重新打乱，减少过拟合。
+1. 蓝色的train loss曲线有明显向下的台阶，因为整个训练集有36674623条数据，batch_size=512的情况下，大概71630步就过了整个数据集（一个epoch），30万步就把训练数据集用了4次多，蓝色曲线的台阶印证了这些。OneFlow在训练过程中支持数据的打乱，每当数据集被完整的用完一遍之后，数据会被重新打乱，减少过拟合。OneFlow在训练过程中支持数据的打乱，每当数据集被完整的用完一遍之后，数据会被重新打乱，减少过拟合。
 2. 橙色的曲线是验证集loss，在前两个epoch的时候基本保持下降的趋势，从第三个epoch开始，loss开始有上升的趋势，表明已经过拟合了。
 3. 灰色是验证集的AUC，AUC也是在第二个epoch的时候达到了峰值，超过了0.8，后面几个epoch就开始下降。

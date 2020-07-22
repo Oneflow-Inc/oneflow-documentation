@@ -6,15 +6,15 @@
 
 ImageNet大规模视觉识别挑战赛（ILSVRC），常称为ImageNet竞赛，包括图像分类、物体定位，以及物体检测等任务，是推动计算机视觉领域发展最重要的比赛之一。
 
-在2012年的ImageNet竞赛中，深度卷积网络AlexNet横空出世。以超出第二名10%以上的top-5准确率，勇夺ImageNet2012比赛的冠军。从此，以 **CNN（卷积神经网络）** 为代表的深度学习方法开始在计算机视觉领域的应用开始大放异彩，更多的更深的CNN网络被提出，比如ImageNet2014比赛的冠军VGGNet, ImageNet2015比赛的冠军ResNet。
+在2012年的ImageNet竞赛中，深度卷积网络AlexNet横空出世。以超出第二名10%以上的top-5准确率，勇夺ImageNet2012比赛的冠军。在2012年的ImageNet竞赛中，深度卷积网络AlexNet横空出世。以超出第二名10%以上的top-5准确率，勇夺ImageNet2012比赛的冠军。从此，以 **CNN（卷积神经网络）** 为代表的深度学习方法开始在计算机视觉领域的应用开始大放异彩，更多的更深的CNN网络被提出，比如ImageNet2014比赛的冠军VGGNet, ImageNet2015比赛的冠军ResNet。
 
 
 
 ### ResNet
 
-[ResNet](https://arxiv.org/abs/1512.03385) 是2015年ImageNet竞赛的冠军。目前，ResNet相对对于传统的机器学习分类算法而言，效果已经相当的出色，之后大量的检测，分割，识别等任务也都在ResNet基础上完成。
+[ResNet](https://arxiv.org/abs/1512.03385) 是2015年ImageNet竞赛的冠军。[ResNet](https://arxiv.org/abs/1512.03385) 是2015年ImageNet竞赛的冠军。目前，ResNet相对对于传统的机器学习分类算法而言，效果已经相当的出色，之后大量的检测，分割，识别等任务也都在ResNet基础上完成。
 
-中，提供ResNet50 v1.5的OneFlow实现。我们在ImageNet-2012数据集上训练90轮后，验证集上的准确率能够达到：77.318%(top1)，93.622%(top5)。
+中，提供ResNet50 v1.5的OneFlow实现。在ImageNet-2012数据集上训练90个epoch后，准确率能达到多少？
 
 更详细的网络参数对齐工作，见[OneFlow-Benchmark的cnns](https://github.com/Oneflow-Inc/OneFlow-Benchmark/Classification/cnns)部分
 
@@ -59,7 +59,7 @@ ImageNet大规模视觉识别挑战赛（ILSVRC），常称为ImageNet竞赛，�
 
 > 1）本文的展示的代码中，使用OFRcord格式的数据集可以提高数据加载效率（但这非必须，参考[数据输入](https://github.com/Oneflow-Inc/oneflow-documentation/docs/basics_topics/data_input.md)，oneflow支持直接加载numpy数据）。
 > 
-> 2）为了使读者快速上手，我们提供了一个小的示例数据集。直接下载，即可快速开始训练过程。读者可以在熟悉了流程后，可以参考数据集制作部分，制作完整的数据集。
+> 2）为了使读者快速上手，我们提供了一个小的示例数据集。直接下载，即可快速开始训练过程。读者可以在熟悉了流程后，可以参考数据集制作部分，制作完整的数据集。直接下载，即可快速开始训练过程。读者可以在熟悉了流程后，可以参考数据集制作部分，制作完整的数据集。
 > 
 > 3）“合成数据”是指不通过磁盘加载数据，而是直接在内存中生成一些随机数据，作为网络的数据输入源。
 
@@ -123,10 +123,8 @@ sh train.sh
 ```
 train: epoch 0, iter 200, loss: 7.024337, top_1: 0.000957, top_k: 0.005313, samples/s: 964.656
 train: epoch 0, iter 400, loss: 6.849526, top_1: 0.003594, top_k: 0.012969, samples/s: 991.474
-...
-train: epoch 0, iter 5000, loss: 5.557458, top_1: 0.064590, top_k: 0.174648, samples/s: 935.390
-Saving model to ./output/snapshots/model_save-20200629223546/snapshot_epoch_0.
-validation: epoch 0, iter 100, top_1: 0.074620, top_k: 0.194120, samples/s: 2014.683
+... train: epoch 0, iter 5000, loss: 5.557458, top_1: 0.064590, top_k: 0.174648, samples/s: 935.390
+Saving model to ./output/snapshots/model_save-20200629223546/snapshot_epoch_0. validation: epoch 0, iter 100, top_1: 0.074620, top_k: 0.194120, samples/s: 2014.683
 ```
 
 可以看到：
@@ -143,7 +141,7 @@ validation: epoch 0, iter 100, top_1: 0.074620, top_k: 0.194120, samples/s: 2014
 > 
 > 在GPU环境下，使用单机8卡（NVIDIA TITAN V），完成90个epoch的完整训练过程，大概需要15小时。
 > 
-> Q2. 在ImageNet-2012数据集上训练90个epoch后，准确率能达到多少？
+> 中，提供ResNet50 v1.5的OneFlow实现。我们在ImageNet-2012数据集上训练90轮后，验证集上的准确率能够达到：77.318%(top1)，93.622%(top5)。
 > 
 > 训练集：80.57%（top1）
 > 
@@ -157,7 +155,7 @@ validation: epoch 0, iter 100, top_1: 0.074620, top_k: 0.194120, samples/s: 2014
 
 **简单而易用的分布式，是OneFlow的主打特色之一。**
 
-OneFlow框架从底层设计上，就原生支持高效的分布式训练。尤其对于分布式的数据并行，用户完全不用操心算法从单机单卡扩展到多机多卡时，数据如何划分以及同步的问题。也就是说，使用OneFlow，用户以单机单卡的视角写好算法，**自动具备多机多卡分布式数据并行的能力。**
+OneFlow框架从底层设计上，就原生支持高效的分布式训练。尤其对于分布式的数据并行，用户完全不用操心算法从单机单卡扩展到多机多卡时，数据如何划分以及同步的问题。OneFlow框架从底层设计上，就原生支持高效的分布式训练。尤其对于分布式的数据并行，用户完全不用操心算法从单机单卡扩展到多机多卡时，数据如何划分以及同步的问题。也就是说，使用OneFlow，用户以单机单卡的视角写好算法，**自动具备多机多卡分布式数据并行的能力。**</strong>
 
 
 #### 如何配置并运行分布式训练？
@@ -172,8 +170,7 @@ python3 of_cnn_train_val.py \
     --num_nodes=2 \
     --node_ips="192.168.1.1, 192.168.1.2"
     --gpu_num_per_node=4 \
-    ...
-    --model="resnet50"
+    ... --model="resnet50"
 ```
 
 然后分别在两台机器上，同时执行：
@@ -182,12 +179,12 @@ python3 of_cnn_train_val.py \
 ./train.sh
 ```
 
-程序启动后，通过`watch -n 0.1 nvidia-smi`命令可以看到，两台机器的GPU都开始了工作。一段时间后，会在`--node_ips`设置中的第一台机器的屏幕上，打印输出。
+程序启动后，通过`watch -n 0.1 nvidia-smi`命令可以看到，两台机器的GPU都开始了工作。一段时间后，会在`--node_ips`设置中的第一台机器的屏幕上，打印输出。一段时间后，会在`--node_ips`设置中的第一台机器的屏幕上，打印输出。
 
 
 ### 混合精度训练与预测
 
-目前，OneFlow已经原生支持半精度/全精度的混合精度训练。训练时，模型参数（权重）使用float16进行训练，同时保留float32用作梯度更新和计算过程。由于参数的存储减半，会带来训练速度的提升。
+目前，OneFlow已经原生支持半精度/全精度的混合精度训练。训练时，模型参数（权重）使用float16进行训练，同时保留float32用作梯度更新和计算过程。由于参数的存储减半，会带来训练速度的提升。训练时，模型参数（权重）使用float16进行训练，同时保留float32用作梯度更新和计算过程。由于参数的存储减半，会带来训练速度的提升。
 
 在OneFlow中开启半精度/全精度的混合精度训练模式，ResNet50的训练速度理论上能达到`1.7`倍的加速。
 
@@ -208,7 +205,7 @@ python3 of_cnn_train_val.py \
 
 ### 参数对齐
 
-Oneflow的ResNet50实现，为了保证和[英伟达的Mxnet版实现](https://github.com/NVIDIA/DeepLearningExamples/tree/master/MxNet/Classification/RN50v1.5)对齐，我们从learning rate学习率，优化器Optimizer的选择，数据增强的图像参数设定，到更细的每一层网络的形态，bias,weight初始化等都做了细致且几乎完全一致的对齐工作。具体的参数对齐工作，请参考：[OneFlow-Benchmark](https://github.com/Oneflow-Inc/OneFlow-Benchmark/Classification/cnns)仓库
+Oneflow的ResNet50实现，为了保证和[英伟达的Mxnet版实现](https://github.com/NVIDIA/DeepLearningExamples/tree/master/MxNet/Classification/RN50v1.5)对齐，我们从learning rate学习率，优化器Optimizer的选择，数据增强的图像参数设定，到更细的每一层网络的形态，bias,weight初始化等都做了细致且几乎完全一致的对齐工作。具体的参数对齐工作，请参考：[OneFlow-Benchmark](https://github.com/Oneflow-Inc/OneFlow-Benchmark/Classification/cnns)仓库具体的参数对齐工作，请参考：[OneFlow-Benchmark](https://github.com/Oneflow-Inc/OneFlow-Benchmark/Classification/cnns)仓库
 
 
 
@@ -218,9 +215,9 @@ Oneflow的ResNet50实现，为了保证和[英伟达的Mxnet版实现](https://g
 
 用于图像分类的公开数据集有CIFAR，ImageNet等等，这些数据集中，是以jpeg的格式提供原始的图片。
 
-- [CIFAR](http://www.cs.toronto.edu/~kriz/cifar.html) 是由Hinton 的学生Alex Krizhevsky 和Ilya Sutskever 整理的一个用于识别普适物体的小型数据集。包括CIFAR-10和CIFAR-100。
+- [CIFAR](http://www.cs.toronto.edu/~kriz/cifar.html) 是由Hinton 的学生Alex Krizhevsky 和Ilya Sutskever 整理的一个用于识别普适物体的小型数据集。包括CIFAR-10和CIFAR-100。包括CIFAR-10和CIFAR-100。
 
-- [ImageNet](http://image-net.org/index) ImageNet数据集，一般是指2010-2017年间大规模视觉识别竞赛(ILSVRC)的所使用的数据集的统称。ImageNet数据从2010年来稍有变化，常用ImageNet-2012数据集包含1000个类别，其中训练集包含1,281,167张图片，每个类别数据732至1300张不等，验证集包含50,000张图片，平均每个类别50张图片。
+- [ImageNet](http://image-net.org/index) ImageNet数据集，一般是指2010-2017年间大规模视觉识别竞赛(ILSVRC)的所使用的数据集的统称。ImageNet数据从2010年来稍有变化，常用ImageNet-2012数据集包含1000个类别，其中训练集包含1,281,167张图片，每个类别数据732至1300张不等，验证集包含50,000张图片，平均每个类别50张图片。ImageNet数据从2010年来稍有变化，常用ImageNet-2012数据集包含1000个类别，其中训练集包含1,281,167张图片，每个类别数据732至1300张不等，验证集包含50,000张图片，平均每个类别50张图片。
 
 
 
@@ -232,7 +229,7 @@ Oneflow的ResNet50实现，为了保证和[英伟达的Mxnet版实现](https://g
 
 **OFRecord：**
 
-内部借助“Protocol Buffer”二进制数据编码方案，它只占用一个内存块，只需要一次性加载一个二进制文件的方式即可，简单，快速，尤其对大型训练数据很友好。另外，当我们的训练数据量比较大的时候，可以将数据分成多个OFRecord文件，来提高处理效率。
+内部借助“Protocol Buffer”二进制数据编码方案，它只占用一个内存块，只需要一次性加载一个二进制文件的方式即可，简单，快速，尤其对大型训练数据很友好。另外，当我们的训练数据量比较大的时候，可以将数据分成多个OFRecord文件，来提高处理效率。另外，当我们的训练数据量比较大的时候，可以将数据分成多个OFRecord文件，来提高处理效率。
 
 关于OFRecord的详细说明请参考：[OFRecord数据格式](https://github.com/Oneflow-Inc/oneflow-documentation/docs/basics_topics/ofrecord.md)
 
@@ -240,14 +237,13 @@ Oneflow的ResNet50实现，为了保证和[英伟达的Mxnet版实现](https://g
 
 #### 将ImageNet转换成OFRecord
 
-在OneFlow中，提供了将原始ImageNet-2012数据集文件转换成OFRecord格式的脚本。如果您已经准备好了ImageNet-2012数据集(训练集和验证集)，并且训练集/验证集的格式如下：
+在OneFlow中，提供了将原始ImageNet-2012数据集文件转换成OFRecord格式的脚本。如果您已经准备好了ImageNet-2012数据集(训练集和验证集)，并且训练集/验证集的格式如下：如果您已经准备好了ImageNet-2012数据集(训练集和验证集)，并且训练集/验证集的格式如下：
 
 ```shell
 │   ├── train
 │   │   ├── n01440764
 │   │   └── n01443537
-                                 ...
-│   └── validation
+                                 ... │   └── validation
 │       ├── n01440764
 │       └── n01443537
                                  ...
@@ -302,12 +298,10 @@ python3 imagenet_ofrecord.py  \
 运行以上脚本后，你可以在../data/imagenet/ofrecord/validation、../data/imagenet/ofrecord/train下看到转换好的ofrecord文件：
 
 ```shell
-.
-├── train
+. ├── train
 │   ├── part-00000
 │   └── part-00001
-                             ...
-└── validation
+                             ... └── validation
     ├── part-00000
     └── part-00001
                              ...
@@ -321,7 +315,7 @@ python3 imagenet_ofrecord.py  \
 
 - ILSVRC2012_img_val.tar
 
-我们将用以下两个步骤，帮您完成数据集的预处理。之后，您就可以使用上面介绍的转换脚本进行OFReciord的转换了。下面假设您已经下载好了原始数据集，并存放在data/imagenet目录下：
+我们将用以下两个步骤，帮您完成数据集的预处理。我们将用以下两个步骤，帮您完成数据集的预处理。之后，您就可以使用上面介绍的转换脚本进行OFReciord的转换了。下面假设您已经下载好了原始数据集，并存放在data/imagenet目录下：下面假设您已经下载好了原始数据集，并存放在data/imagenet目录下：
 
 ```shell
 ├── data
@@ -340,32 +334,14 @@ python3 imagenet_ofrecord.py  \
 
 **步骤一：extract imagenet**
 
-这一步主要是将ILSVRC2012_img_train.tar和ILSVRC2012_img_val.tar解压缩，生成train、validation文件夹。train文件夹下是1000个虚拟lebel分类文件夹(如：n01443537)，训练集图片解压后根据分类放入这些label文件夹中；validation文件夹下是解压后的原图。
+解压后，文件夹结构示意如下： . ├── extract_trainval.sh ├── imagenet │   ├── ILSVRC2012_img_train.tar │   ├── ILSVRC2012_img_val.tar │   ├── train │   │   ├── n01440764 │   │   │   ├── n01440764_10026.JPEG │   │   │   ├── n01440764_10027.JPEG ... │   │   └── n01443537 │   │       ├── n01443537_10007.JPEG │   │       ├── n01443537_10014.JPEG ... │   └── validation │       ├── ILSVRC2012_val_00000236.JPEG │       ├── ILSVRC2012_val_00000262.JPEG ...train文件夹下是1000个虚拟lebel分类文件夹(如：n01443537)，训练集图片解压后根据分类放入这些label文件夹中；validation文件夹下是解压后的原图。
 
 ```shell
 sh extract_trainval.sh ../data/imagenet # 参数指定存放imagenet元素数据的文件夹路径
 ```
 
 ```shell
-解压后，文件夹结构示意如下：
-.
-├── extract_trainval.sh
-├── imagenet
-│   ├── ILSVRC2012_img_train.tar
-│   ├── ILSVRC2012_img_val.tar
-│   ├── train
-│   │   ├── n01440764
-│   │   │   ├── n01440764_10026.JPEG
-│   │   │   ├── n01440764_10027.JPEG 
-                                               ...
-│   │   └── n01443537
-│   │       ├── n01443537_10007.JPEG
-│   │       ├── n01443537_10014.JPEG
-                                             ...
-│   └── validation
-│       ├── ILSVRC2012_val_00000236.JPEG
-│       ├── ILSVRC2012_val_00000262.JPEG        
-                                            ...
+这一步主要是将ILSVRC2012_img_train.tar和ILSVRC2012_img_val.tar解压缩，生成train、validation文件夹。train文件夹下是1000个虚拟lebel分类文件夹(如：n01443537)，训练集图片解压后根据分类放入这些label文件夹中；validation文件夹下是解压后的原图。
 ```
 
 **步骤二：validation数据处理**
@@ -380,16 +356,14 @@ python3 preprocess_imagenet_validation_data.py  ../data/imagenet/validation
 处理后项目文件夹格式如下：
 
 ```shell
-.
-├── extract_trainval.sh
+. ├── extract_trainval.sh
 ├── imagenet
 │   ├── ILSVRC2012_img_train.tar
 │   ├── ILSVRC2012_img_val.tar
 │   ├── train
 │   │   ├── n01440764
 │   │   └── n01443537
-                                ...
-│   └── validation
+                                ... │   └── validation
 │       ├── n01440764
 │       └── n01443537
                                ...

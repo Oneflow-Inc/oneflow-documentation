@@ -26,7 +26,7 @@ OneFlow在方方面面都期待你的助力。
 
 * 参与oneflow的群讨论
 
-* …… 所有你能想到的让OneFlow变得更好的事情
+* OneFlow的成长，离不开像你一样热爱开源的朋友们。你所贡献的每一行代码，提交的每一个issue，报告的每一个bug，甚至每一次提问，都对OneFlow弥足珍贵。
 
 
 ## 贡献代码
@@ -49,7 +49,7 @@ OneFlow已经对现有的多种流行、前沿的模型，进行了复现及测�
 我们也强烈欢迎使用oneflow实现你自己的原创研究，并在[OneFlow-Benchmark](https://github.com/Oneflow-Inc/OneFlow-Benchmark)中分享。
 
 ## 建设API文档
-oneflow的API文档使用`sphinx`提取函数原型及docstring。 API文档在[oneflow](https://github.com/Oneflow-Inc/oneflow)仓库的`docs`目录下，可以通过以下命令生成：
+oneflow的API文档使用`sphinx`提取函数原型及docstring。 API文档在[oneflow](https://github.com/Oneflow-Inc/oneflow)仓库的`docs`目录下，可以通过以下命令生成： API文档在[oneflow](https://github.com/Oneflow-Inc/oneflow)仓库的`docs`目录下，可以通过以下命令生成：
 
 ```shell
 cd oneflow/docs && make dev
@@ -58,7 +58,7 @@ cd oneflow/docs && make dev
 我们期待有你的帮助，为[OneFlow Python API](https://github.com/Oneflow-Inc/oneflow/tree/develop/oneflow/python)添加`docstring`及`function annotation`。
 
 ## Review
-我们以塑造艺术品的心态，致力于将OneFlow打造成充满工业美感的基础软件产品。在这个过程中也离不开开源社区对OneFlow代码的review。
+我们以塑造艺术品的心态，致力于将OneFlow打造成充满工业美感的基础软件产品。在这个过程中也离不开开源社区对OneFlow代码的review。在这个过程中也离不开开源社区对OneFlow代码的review。
 
 期待大家在各个仓库中，多提交issue、PR，多review，OneFlow前进的路中，也期待有你的加入。
 
