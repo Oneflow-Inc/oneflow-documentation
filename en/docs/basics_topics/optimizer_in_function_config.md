@@ -144,10 +144,10 @@ def test_job():
 ```
 `test_job` is an `OneFlow Function`. It can be recognised by OneFlow framework. It can turn function of network into suitable calculation chart according to configuration and put it on server to calculate.
 
-任务函数包括两部分信息：使用算子搭建的网络（NN），以及使用这个网络需要的配置信息（config）。网络的搭建请参考[如何使用OneFlow搭建网络](build_nn_with_op_and_layer.md)。本文专注介绍如何设置配置信息。网络的搭建请参考[如何使用OneFlow搭建网络](build_nn_with_op_and_layer.md)。本文专注介绍如何设置配置信息。
+The job function have two sections of information: The networks build by the operator and the information to config this network.Building networks reference to [Use OneFlow build the neural network ](build_nn_with_op_and_layer.md).This article focus on introduce how to config information.
 
-### 函数配置（function_config）
-前面的例子中，你也可能注意到`@flow.global_function`装饰器接受一个参数`flow.function_config()`。这个参数`function_config`就是设置`OneFlow Function`配置信息的入口。比如下面这个略微复杂一点的例子：这个参数`function_config`就是设置`OneFlow Function`配置信息的入口。比如下面这个略微复杂一点的例子：
+### Function configuration
+In the previous example, you may noticed that `@flow.global_function` receive an parameter `flow.function_config()`.This `function_config` is the port of parameters information of `OneFlow Function`.There is a more complex example:
 
 ```python
 config = flow.function_config()
@@ -159,16 +159,16 @@ config.train.model_update_conf({"naive_conf": {}})
 def test_job():
   # build up NN here
 ```
-上面的例子中，通过`function_config`设置了网络的缺省数据类型为float；将被用于训练；学习率是0.1；采用了`naive_conv`优化算法，也就是`SGD`。
+The example above is use `function_config` to config missing data type as float. It will be use for training and the learning rate is 0.1. It use `naive_conv` optimization algorithm which is `SGD`.
 
-function_config中还包含哪些配置请参考[function_config API](http://183.81.182.202:8000/html/oneflow.html).
+Some other things include in function_config please reference to [function_config API](http://183.81.182.202:8000/html/oneflow.html).
 
-### train or not
-function_config里面有好多可以设置的属性，这里着重介绍`train`。通常`train`不会被设置，这种情况下`job function`只能做预测任务。一旦`train`被设置，`job function`就是一个训练任务了，如下面代码所示设置了学习率和模型更新的策略（优化算法）：通常`train`不会被设置，这种情况下`job function`只能做预测任务。一旦`train`被设置，`job function`就是一个训练任务了，如下面代码所示设置了学习率和模型更新的策略（优化算法）：
+### Train or not
+Function_config has a lot of property can be set. We are focuse on `train`.Usually, `train` will not be set. In this situation `job function` only can achieve prediction.Once `train` is setted, it means the `job function` have one more training job. The example below demonstrated set learning rate and optimize algorithms.
 ```python
 config.train.primary_lr(0.1)
 config.train.model_update_conf({"naive_conf": {}})
 ```
 
-## 总结
-一个OneFlow的全局函数由`@oneflow.global_function`修饰，解耦了网络的搭建过程和任务相关配置（function_config)，`function_config`**采取集中配置的方式，既方便任务切换，又方便集群调度配置。**</strong>
+## Summary
+OneFlow is decorated by `@oneflow.global_function`. Explain how to build the network and the relevant function_config. `Function_config` is **use centralized configuration. It is easier for switching task and cluster configuration.(这里链接可能出错） </p>
