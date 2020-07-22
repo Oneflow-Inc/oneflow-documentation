@@ -1,14 +1,14 @@
 # Using of flow.function_config() to config optimization algorithm and parameters
 After neural network was set up, normally need be training before use for prediction.The process of training is optimize the parameters(Variable) of network. Usually use the back propagation algorithm and special optimizer/ optimization strategy to update the network model parameters. In this article, we will focus on how to set optimizer and hyperparameters in OneFlow.
 
-可以在不了解OneFlow设计和概念的情况下，直接采用下面的`预测配置`或`训练配置`；如果有更进一步的需要，可以参考`如何配置model_update_conf`，自定义优化方法；本文的最后会通过逐层推进的方式，介绍OneFlow在设计的一些概念，详细解释如何设置训练时候的优化算法和超参数。
+We can directly use `prediction the configuration` or `training of configuration` when we not familiar with the design and concept of OneFlow. If have any further requirements, you can reference `how to config model_update_conf`. The end of this article, we will explain step by step to introduce some concepts of OneFlow when design it. And explain in detail about how to config  optimizer and hyperparameters when training.
 
-## 预测配置
-在OneFlow中，无论是训练还是验证、预测，都需要通过装饰器@flow.global_function来指定，而优化器和超参数的设置通过函数自定义，并作为参数传递到@flow.global_function中。通过这种方式，做到了**参数/配置和任务的分离。**通过这种方式，做到了**参数/配置和任务的分离。**
+## Configuration of prediction
+In OneFlow, no matter training, evaluation or prediction all need use @flow.global_function to specified. But the parameters of optimizer and hyperparameters will send to @flow.global_function as parameter by custom function.In this way, we achieve **parameters and configuration separate from main job</0>. </p>
 
-例如：下面我们定义了一个用于验证的任务(Job)：`eval_job`()
+For example, we define a job for evaluating: `eval_job`()
 
-我们通过get_eval_config()定义了eval_job()的配置，并将get_eval_config()作为@flow.global_function的参数传递到eval_job()函数。
+We use get_eval_config() to define the configurations of eval_job() and use get_eval_config() as the parameter of @flow.global_function to send to eval_job() function.
 
 ```python
 def get_eval_config():
@@ -20,10 +20,10 @@ def get_eval_config():
 def eval_job():
   # build up NN here
 ```
-当然，上面的`get_eval_config`中只配置了网络的基本参数。在下面的例子中，我们将介绍一个训练任务，并配置学习率lr和sgd优化器等参数。在下面的例子中，我们将介绍一个训练任务，并配置学习率lr和sgd优化器等参数。
+Of course, the `get_eval_config` above just config the basic parameters in the network.In the example below, we will introduce a training job and config learning rate and sgd optimizer.
 
-## 训练配置
-同样，只要按照下面的方式给`train_job`函数配上一个装饰器`@flow.global_function(get_train_config())`就能够实现一个用于训练任务的网络。
+## Configuration of training
+As same, just following the instructions below and give `train_job` to add a decorator then `@flow.global_function(get_train_config())` are able to achieve a network which can use for training.
 ```python
 def get_train_config():
   config = flow.function_config()
@@ -36,12 +36,12 @@ def get_train_config():
 def train_job():
   # build up NN here
 ```
-其中`get_train_config`是定义了训练任务(train_job)中的配置，主要的参数设置如下：
-1. 利用`config.train.primary_lr`设置了学习率learning rate；
-2. 在`config.train.model_update_conf`设置了optimizer优化器/优化算法。(naive_conf即使用默认的sgd优化算法)(naive_conf即使用默认的sgd优化算法)
+The `get_train_config` inside is defined the parameters of train_job. The main parameters:
+1. Use `config.train.primary_lr` to set learning rate；
+2. In `config.train.model_update_conf` define the optimizer and optimization algorithm.(naive_conf is using the default sgd optimization algorithm)
 
-## 配置`model_update_conf`
-因为OneFlow中很多数据结构都是用protobuf定义的，python的字典对象能够方便的转换成protobuf对象，`model_update_conf`的输入要求是一个python字典对象，我们需要参考下面的protobuf定义，构建好一个python字典对象，传给`model_update_conf`作为输入。
+## Config `model_update_conf`
+Because there are lots of data frame is defined by protobuf in OneFlow. The dictionary in python can convert to protobuf easier. The input of `model_update_conf` is expecting a dictionary of python. We need to reference the definition of protobuf below to create a good python dictionary and pass that dictionary to `model_update_conf` as input.
 ```protobuf
 message NormalModelUpdateOpUserConf {
   optional LearningRateDecayConf learning_rate_decay = 1;
@@ -59,16 +59,16 @@ message NormalModelUpdateOpUserConf {
 }
 ```
 
-### 选择优化算法
-从上面的定义中可以看到，目前OneFlow支持6种优化算法，分别是：
-- `naive_conf`代表SGD
+### Choosing optimization algorithm
+From the definition above, we can see OneFlow is support 6 types of optimization algorithm. They are:
+- `naive_conf` represent SGD
 - `momentum_conf`
 - `rmsprop_conf`
 - `lars_conf`
 - `adam_conf`
 - `lazy_adam_conf`
 
-这六种算法必须选择其一，比如前面的例子中选择的是`naive_conf`，语法是：
+We must choose one of these algorithms. For example the previous code is using `naive_conf` and the syntax is:
 ```
 config.train.model_update_conf({"naive_conf": {}})
 ```
