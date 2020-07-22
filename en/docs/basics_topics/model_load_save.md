@@ -1,12 +1,12 @@
-# 模型的加载与保存
+# Loading and saving of model
 
-对于模型的加载与保存，常用的场景有：
+For loading and saving for model, the common scenario have:
 
-* 将已经训练一段时间的模型保存，方便下次继续训练
+* Save the model which have been training for a while and make it ready for next train.
 
-* 将训练好的模型保存，方便后续直接部署使用
+* Save the model have completed training and make it ready for deployment.
 
-严格来说，尚未训练好的模型的保存，称为保存检查点`checkpoint`或者快照`snapshot`。与将已经训练好的模型保存`model saving`，在概念上，略有不同。与将已经训练好的模型保存`model saving`，在概念上，略有不同。
+Strictly speaking, to save a incompleted model is called save `checkpoint` or `snapshot`.It is different with `model saving` of a completed model.
 
 不过，无论模型是否训练完毕，我们都可以使用 **统一的接口** 将其保存，因此，我们在其它框架中看到的`model`、`checkpoint`、`snapshot`，在OneFlow的操作中不做区分。它们在OneFlow中，都通过`flow.train.CheckPoint`类作为接口操作。它们在OneFlow中，都通过`flow.train.CheckPoint`类作为接口操作。
 
