@@ -8,35 +8,35 @@ For loading and saving for model, the common scenario have:
 
 Strictly speaking, to save a incompleted model is called save `checkpoint` or `snapshot`.It is different with `model saving` of a completed model.
 
-不过，无论模型是否训练完毕，我们都可以使用 **统一的接口** 将其保存，因此，我们在其它框架中看到的`model`、`checkpoint`、`snapshot`，在OneFlow的操作中不做区分。它们在OneFlow中，都通过`flow.train.CheckPoint`类作为接口操作。它们在OneFlow中，都通过`flow.train.CheckPoint`类作为接口操作。
+But, no matter is the model have completed the training process, we can use **unified port**. Thus, like the `model`、`checkpoint`、`snapshot` we saw in other framework is no difference in OneFlow framework.In OneFlow, we all use `flow.train.CheckPoint` as port controls.
 
-本文将介绍：
+In this article, we will introduce:
 
-* 如何创建模型参数
+* How to create model parameters
 
-* 如果保存/加载模型
+* How to save and load model
 
-* OneFlow模型的存储结构
+* Storage structure of OneFlow model
 
-* 模型的部分初始化技巧
+* Part of the initialization technique of the model
 
-## 使用get_variable创建/获取模型参数对象
+## Use get_variable to create/access object of model parameters
 
-我们可以使用`oneflow.get_variable`方法创造或者获取一个对象，该对象可以用于在全局任务函数中交互信息；当调用`OneFlow.CheckPoint`的对应接口时，该对象也会被自动地保存或从存储设备中恢复。
+We can use `oneflow.get_variable` to create or obtain an object. This object could used for submitting information with global job function. When calling the port of `OneFlow.CheckPoint`. This object also will be store automatically or recover from storage devices.
 
-因为这个特点，`get_variable`创建的对象，常用于存储模型参数。因为这个特点，`get_variable`创建的对象，常用于存储模型参数。实际上，OneFlow中很多较高层接口（如`oneflow.layers.conv2d`），内部使用`get_variable`创建模型参数。
+Because of this character, the object create by `get_variable` always used in store model parameters.In fact, there are many high levels ports in OneFlow like `oneflow.layers.conv2d`. We use `get_variable` to create model parameters.
 
-### get_variable获取/创建对象的流程
+### Process of get_variable get/create object
 
-`get_variable`需要一个指定一个`name`参数，该参数作为创建对象的标识。
+`Get_variable`  need a specified `name`. This parameter will be the name when create a object.
 
-如果`name`指定的值在当前上下文环境中已经存在，那么get_variable会取出已有对象，并返回。
+If the name value is existing in the program, then get_variable will get the existing object and return.
 
-如果`name`指定的值不存在，则get_varialbe内部会创建一个blob对象，并返回。
+If the name value is not existing in the program, then get_variable will create a blob object and return.
 
-### 使用get_variable创建对象
+### Use get_variable create object
 
-`oneflow.get_variable`的原型如下：
+The prototype of `oneflow.get_variable`:
 
 ```python
 def get_variable(
@@ -52,10 +52,11 @@ def get_variable(
 )
 ```
 
-以下是`oneflow.layers.conv2d`中，使用get_variable创造参数变量，并进一步构建网络的例子：
+Next code is an example of in `oneflow.layers.conv2d`, use get_variable to create parameters and keep forward build network:
 
 ```python
-    #... weight = flow.get_variable(
+    #...
+    weight = flow.get_variable(
         weight_name if weight_name else name_prefix + "-weight",
         shape=weight_shape,
         dtype=inputs.dtype,
@@ -71,15 +72,20 @@ def get_variable(
         inputs, weight, strides, padding, data_format, dilation_rate, groups=groups, name=name
     )
     #...
+
+    output = flow.nn.conv2d(
+        inputs, weight, strides, padding, data_format, dilation_rate, groups=groups, name=name
+    )
+    #...
 ```
 
-### initializer设置初始化方式
+### Initializer setting
 
-我们在上文中已经看到，在调用`get_variable`时，通过设置初始化器`initializer`来指定参数的初始化方式，OneFlow中提供了多种初始化器，它们在`oneflow/python/ops/initializer_util.py`中。
+In the previous chapters, when we calling `get_variable`, we specified the method of initiating the parameters by `initializer`. In OneFlow, we provide many initializer which can be find in `oneflow/python/ops/initializer_util.py`
 
-设置`initializer`后，初始化工作由OneFlow框架完成，具体时机为：当用户调用下文中的`CheckPoint.init`时，OneFlow会根据`initializer`对所有get_variable创建的对象进行 **数据初始化**。
+After config `initializer`, the initialize work is done by OneFlow framework. Exactly time was: when user called the `CheckPoint.init` later on, OneFlow will initialize all data created by get_variable according to `initializer`.
 
-以下列举部分常用的`initializer`：
+Some common `initializer`:
 
 * constant_initializer
 
