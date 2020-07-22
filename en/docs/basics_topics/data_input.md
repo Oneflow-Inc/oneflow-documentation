@@ -124,7 +124,7 @@ if __name__ == '__main__':
     images, labels = test_job().get()
     print(images.shape, labels.shape)
 ```
-为了运行上面这段脚本，需要一个ofrecord数据集，您可以[加载与准备OFRecord数据集](../extended_topics/how_to_make_ofdataset.md)或者下载我们准备的一个包含64张图片的ofrecord文件[part-00000](https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/basics_topics/part-00001)。完整代码：完整代码：
+为了运行上面这段脚本，需要一个ofrecord数据集，您可以[加载与准备OFRecord数据集](../extended_topics/how_to_make_ofdataset.md)或者下载我们准备的一个包含64张图片的ofrecord文件[part-00000](https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/basics_topics/part-00000)。
 
 上面这段脚本中`/path/to/ImageNet/ofrecord`替换为保存`part-00000`文件的目录，然后运行
 ```
