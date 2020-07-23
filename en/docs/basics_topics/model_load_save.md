@@ -166,8 +166,8 @@ check_point.load("./path_to_model") #load model
 ```
 
 
-## OneFlow模型的存储结构
-OneFlow 模型是一组已经被训练好的网络的 **参数值** ，目前OneFlow的模型中没有包括网络的元图信息（Meta Graph）。 模型所保存的路径下，有多个子目录，每个子目录对应了 `任务函数` 中模型的 `name` 。 比如，我们先通过代码定义以下的模型：
+## The structure of OneFlow saved model
+Model of OneFlow are the **parameters** of network. For now there are no Meta Graph information in OneFlow model. The path to saved model have many subdirectories. Each of them corresponding to a `name` of `job function `in model. For example, we define the model in the first place:
 
 ```python
 def lenet(data, train=False):
@@ -183,12 +183,12 @@ def lenet(data, train=False):
   if train: hidden = flow.nn.dropout(hidden, rate=0.5)
   return flow.layers.dense(hidden, 10, kernel_initializer=initializer, name="outlayer")
 ```
-假设在训练过程中，我们调用以下代码保存模型：
+Assume that in the process of training, we called the following code to save model:
 ```python
 check_point = flow.train.CheckPoint()
 check_point.save('./lenet_models_name') 
 ```
-那么 `lenet_models_name` 及其子目录结构为：
+Then  `lenet_models_name` and the subdirectories will look like:
 ```
 lenet_models_name
 ├── conv1-bias
@@ -212,49 +212,49 @@ lenet_models_name
     └── out
 ```
 
-可以看到：
+We can see:
 
-* 任务函数中的网络模型，每个变量对应一个子目录
+* The job function in network, each of the variables have a subdirectories.
 
-* 以上每个子目录中，都有一个 `out` 文件，它是以二进制的方式存储的网络参数信息。`out` 是默认文件名，可以通过设置网络中的 `variable op` 修改。
+* All subdirectories above have a  `out` document. It store the parameters of network in binary.`out` is the default file name. We can change that by  `variable op` in the network.
 
-* `snapshot_done` 是一个空文件，如果它存在，表示网络已经训练完成
+* `snapshot_done` is an empty folder. If it exists, means the network is completed training.
 
-* `System-Train-TrainStep-train_job` 中保存有快照的训练步数
+* Snapshots of the training steps is store in `System-Train-TrainStep-train_job`.
 
 
-## 常见问题
+## Q&A
 
-目前 OneFlow 框架支持了模型处理方面最基础的功能，在实际的操作中可能会碰到一些问题，这里罗列一些。
+For now, OneFlow frame support the basic functions of processing model. But in real time operation may have some problems. We list some of below.
 
-### 模型参数的初始化
-在进行网络的训练或者推理前，需要初始化模型，也就是初始化网络中的参数变量(variable op)，否则这些参数的初始值就很可能不符合期待。
+### Initialize the parameters of model
+Befor the network training or inference, model need be initialize. Means initialize variable op in the network. Otherwise the parameters of network will probably does not meet expectations.
 
-为网络中的参数填充值的方式有两种：
+There are two methods of filling the parameters in network:
 
-* 调用前面介绍的 `init` 函数，这样每个参数变量(variable op)都会根据自己的初始化方式进行初始化；
+* Calling `init` function. This that case all variable op will initialize according to their own initialize method.
 
-* 调用 `load` 函数，从指定目录中读取用于初始化的值。
+* Using `load` function which can read the initialize value from specificed path.
 
-### 模型部分初始化和部分导入
-实际使用中经常碰到这么一些场景，特别是在系统精调或者迁移学习的时候碰到：
+### Part of model initialization and loading
+In real time using, we will meet some situations especially when system adjustment or migration study:
 
-* 新的网络以一个经典的网络为骨干网，拓展一些新的网络结构，骨干网部分的模型已经被训练好了，训练新的网络时需要被导入(`load`)；而新拓展网络部分的模型需要被按照指定方式初始化(`init`)；
+* New network is based on a classic network. Expanding some new network structures. The classic model is been trained and it need to be` loaded` when training a new network. And the new expanding of the network needs to be` initialized` according to the specified way.
 
-* 原来网络已经被训练，需要按照新的优化方式重新训练，新的优化方式带来了一些额外的参数变量，比如 `momentum` 或者 `adam` ；原来的参数变量需要被导入(load)，而额外的参数变量需要被初始化(init)；
+* The old network has been trained. It need be train again in new optimize the way. New optimize the way will bring some extra variables like `momentum` or `adam`. The old parameters need be load but extra variables need be initialize.
 
-总之，以上情况都属于：
+The situations above is:
 
-* 模型中的一部分参数由 `load` 导入
+* Only part of parameters is input by  `load`
 
-* 模型中的另一部分参数由 `init` 初始化
+* Other parameters are initialize by  `init`
 
-对此，目前我们的建议是：
+We advise that:
 
-* 先保存扩展前的模型；
+* Save the extended model first.
 
-* 对于扩展后的模型，首先使用 `init` 初始化所有参数，并保存；
+* Use  `init` to the extended model then save.
 
-* 合并模型目录：将扩展前模型的子目录，覆盖掉扩展后模型的对应目录；
+* Combined model directory: repalce the path before extending by new path.
 
-* 最后，用 `load` 方法加载合并后的模型，并运行训练脚本。
+* Finally use  `load` to get model and keep training.
