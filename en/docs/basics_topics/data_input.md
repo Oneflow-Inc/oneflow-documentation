@@ -3,19 +3,19 @@ Machine learning is drive by data. Loading and pretreatment need give attention 
 
 - One is very flexible, use numpy ndarray as input, which means the training and predicting task can take a set of numpy data as input.
 
-- Another way is the ` data line` of OneFlow. Data line only can take specific formats data. For example, `ofrecord_reader` loading data in OFRecord (similar as: TFRecord )
+- Another way is the ` data flow` of OneFlow. Data line only can take specific formats data. For example, `ofrecord_reader` loading data in OFRecord (similar as: TFRecord )
 
-#### 优劣对比
+#### Comparison
 
-numpy ndarray 的方式简单方便，但仅适合小数据量的情况。因为当数据量过大时，可能在准备numpy数据上遭遇时间瓶颈。因此，推荐在项目的初始阶段，数据结构没有确定的情况下采用此种方式；
+The numpy ndarray is easier, but it only suitable for small scale of data.When scale of data is too large. May stuck on preparing numpy data.Thus, we recommend use the following methon at the beginning of the project and when the data structure is unclear.
 
-OneFlow 的数据流水线的方式，看上去稍显复杂，实际则采用了多线程和数据流水线等技术使得加载数据以及后面的数据预处理、数据增强的效率更高。因此，推荐成熟的项目使用。
+The data flow method in OneFlow may looks more complicated. But it use multithreading and data flow technology made the following data load, data preprocessing and data to enhance more efficient.Thus, we recommend use for experienced projects.
 
 
-## 使用Numpy作为数据输入
-### 运行一个例子
+## Use numpy as data input
+### For example
 
-在Oneflow中，你可以在训练/预测过程中，直接使用 numpy ndarray 类型的数据作为输入，下面是一个完整的例子：
+In Oneflow, during the process of training or predicting, can directly use numpy ndarray as data input:
 
 ```python
 # feed_numpy.py
@@ -38,14 +38,14 @@ if __name__ == '__main__':
     print(images.shape, labels.shape)
 ```
 
-在上面的代码中，我们用 `@flow.global_function` 定义了一个预测任务--test_job()，其输入为 images 和 labels ，我们可以直接通过 numpy 格式的 images 和 labels 作为其数据输入。
+In the script above, we use  `@flow.global_function` to define a --test_job(). Its input is images and labels. We using numpy format images and labels as input.
 
-你可以下载完整代码：[feed_numpy.py](../code/basics_topics/feed_numpy.py) ，然后用 python 执行即可，如：
+You can download complete script：[feed_numpy.py](../code/basics_topics/feed_numpy.py) and run by:
 
 ```bash
 python feed_numpy.py
 ```
-您将得到如下结果
+We are expecting the following results:
 ```bash
 (32, 1, 28, 28) (32,)
 ```
