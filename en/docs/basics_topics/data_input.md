@@ -49,7 +49,7 @@ We are expecting the following results:
 ```bash
 (32, 1, 28, 28) (32,)
 ```
-### 代码解析
+### Code explanation
 当用户要用 OneFlow 进行一个深度学习的训练或者预测任务的时候，需要定义一个任务/作业函数(Job Function)，然后再使用这个 Job 函数。先`定义`再`使用`是两个基本的步骤。要实现 numpy 数据输入功能，就需要在`定义`和`使用`任务函数的地方特殊处理一下，下面就分别说一下。
 
 #### 定义
