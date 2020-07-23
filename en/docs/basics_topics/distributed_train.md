@@ -1,6 +1,6 @@
 # Distributed training
 
-在 OneFlow 中您只需要简单的几行配置，OneFlow 框架内部会自动处理任务调度、资源并行等问题，因此，您并不需要特别改动网络结构和业务逻辑代码，就可以方便地使用分布式训练。
+In OneFlow, you only need few simple configuration and the frame of OneFlow will automatically deal with calling job function, resources paralleling  and other issue. Thus, we do not need change network structure and logic of code. Then we can easily use distributed training.
 
 OneFlow 的分布式训练能力独树一帜，是 OneFlow 区别于其它框架的 **最重要特性**。
 
