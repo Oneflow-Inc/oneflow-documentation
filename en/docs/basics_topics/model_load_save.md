@@ -110,7 +110,7 @@ Some common `initializer`:
 
 ## The python port of OneFlow
 
-We use `oneflow.train.CheckPoint()` to achieve object of CheckPoint. 在 `CheckPoint` 类有三个关键方法：
+We use `oneflow.train.CheckPoint()` to achieve object of CheckPoint. There are three critical methods in `CheckPoint`:
 
 * `init` : 根据缺省的初始化方式，初始化参数变量；
 
