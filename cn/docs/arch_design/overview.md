@@ -13,7 +13,6 @@
 ## OneFlow 的架构层次图解
 ![summary of oneflow](imgs/design_overview.png)
 
-
 如上图所示，如果暂时略去 OneFlow 的上层模型库、底层支撑库，集中关注 OneFlow 内部架构中与神经网络训练直接相关的部分，总体上可分为三层：
 
 * Python层：用户通过调用Python接口来配置超参，并编写 OneFlow 的任务函数来定义网络，这一切的信息，最终会在 OneFlow 中序列化为字节流，传递给下一层-- **编译时层**；
@@ -27,12 +26,12 @@
 
 本文讨论对象为 OneFlow 脚本编程所对应的 `lazy` 模式， OneFlow 交互式编程所对应的 `eager` 模式不在本文讨论范围。
 
-## OneFlow 任务是如何跑起来的
+### OneFlow 任务是如何跑起来的
 如果想结合 OneFlow 的源码研究 OneFlow 的设计，建议重点关注 OneFlow 源码目录下的 [protobuf](https://developers.google.cn/protocol-buffers/) 文件，OneFlow 中控制面的数据结构、协议，都是使用 `protobuf` 定义的，结合这些数据结构，可以更快理解 OneFlow 的内部设计。
 
 以下，我们将针对通常情况下 OneFlow 脚本执行过程(如[3分钟快速上手](../quick_start/quickstart_in_3_min.md))，逐层分析 OneFlow 在Python层、编译时和运行时到底都做了哪些工作。
 
-### Python 层次
+## Python 层次
 我们在使用 OneFlow 的过程中已经知道，OneFlow 需要使用`@oneflow.global_function`装饰器来修饰一个python编写的“任务函数”。
 比如：
 ```python
@@ -65,7 +64,7 @@ def train_job():
 
 以下，我们来展开讨论`sess.AddJob`与`_RunLazyJob`的细节。
 
-#### Python 中触发编译
+### Python 中完成序列化并触发编译
 
 在`/oneflow/python/framework/session_util.py`中可以看到`AddJob`的实现：
 ```python
@@ -79,7 +78,7 @@ class Session(object):
 
 将训练配置信息加入到 `session` 中的主要原因，是 OneFlow 在编译时需要这些信息来进行推理、优化。接下来我们来分析 OneFlow 在 Python层次是如何触发编译过程的。
 
-我们观察 `_RunLazyJob` 的内部实现，可以找到 OneFlow 触发编译的时机：
+我们观察 `_RunLazyJob` 的内部实现，可以找到 OneFlow 进行序列化并触发 OneFlow C++ 层编译的代码位置：
 ```python
 def _RunLazyJob(session, job_func, *args, **kwargs):
     return session.TryInit().LazyRun(job_func, *args, **kwargs)
@@ -97,19 +96,52 @@ class Session(object):
         assert self.status_ is SessionStatus.OPEN
         self.status_ = SessionStatus.RUNNING
         #...
+        _TryCompleteConfigProto(self.config_proto)
             for job_name, func_desc in self.job_name2function_desc_.items():
                 compiler.Compile(self, func_desc, self.config_proto)
         #...
+        c_api_util.StartGlobalSession()
         return self
 ```
-从以上代码可以看到，如果当前 Session 处于 "OPEN" 状态，那么 session 会调用 `Init`， 遍历之前通过 `AddJob` 设置在 session 中的 `job_name2function_desc_` 中的各个 job ，并且调用 `compiler.Compile` 编译，深入 `Compile` 方法内部，Python层最终进入到 `oneflow/python/framework/c_api_util.py` 中，`c_api_util.py` 是对 C++ 代码的封装，编译的真正工作最终由 C++ 完成。
+从以上代码可以看到，如果当前 Session 处于 "OPEN" 状态，那么 session 会调用 `Init`， 遍历之前通过 `AddJob` 设置在 session 中的 `job_name2function_desc_` 中的各个 job ，并且调用 `compiler.Compile` 编译，`compiler.Compile`的内部实现为：
+```python
+def Compile(session, function_desc, config_proto):
+    with InterpretScope(session, function_desc, config_proto):
+        _CompileJob(function_desc)
+        c_api_util.CurJobBuildAndInferCtx_Complete()
+```
 
-#### Python 层运行任务函数
+其中`_CompileJob`中将对`function_desc`所描述的任务函数进行序列化。再通过 `c_api_util.CurJobBuildAndInferCtx_Complete` 告之 C++ 层序列化完成。
+
+完成`compiler.Compile`的工作后，将通过`c_api_util.StartGlobalSession()` 触发 C++ 层，创建 session，开始 C++ 层的编译、构图等工作。
 
 
-### 编译阶段
+### Python 层运行任务函数
+回顾上文提到到的`_RunLazyJob`代码：
+```python
+def _RunLazyJob(session, job_func, *args, **kwargs):
+    return session.TryInit().LazyRun(job_func, *args, **kwargs)
+```
+我们已经知道在`TryInit()`中完成了任务函数的序列化，并通知 编译时完成编译构图工作。
+
+而`LazyRun`内部，就对应了用户调用任务函数时，Python层如何运行任务函数。
+
+```python
+    def LazyRun(self, job_func, *arg):
+        #...
+        remote_blobs = self.LaunchUserJob(job_func, *arg)
+        #...
+        return LazyFutureRemoteBlobs(self).SetResult(remote_blobs).Inited()
+```
+其中 `LaunchUserJob` 接受的参数 `job_func` 与 `arg` 就分别是用户调用任务函数时的任务函数以及传递的参数。
+
+`LaunchUserJob` 会遍历 `job_func` 中需要执行的计算单元，并最终通在`session.LaunchJob`(`/oneflow/python/framework/session_util.py`)中通过调用`c_api_util.LaunchJob(job_instance)`执行计算。
+
+值得一提的是，因为当用户调用任务函数时，OneFlow 已经完成了任务函数的编译构图，得到了执行计划(Execution Plan)，1个 Plan 由多个描述任务的`TaskProto`组成。以上`c_api_util.LaunchJob(job_instance)`所接受的参数`job_instance`，并不是任务函数本身，而是 Plan中的 `Task` 实例化对象，一个任务函数，将对应多个`job_instance`。
+
+## 编译阶段
 
 
-### 运行时
+## 运行时
 
 ## OneFlow 各模块的技术特色
