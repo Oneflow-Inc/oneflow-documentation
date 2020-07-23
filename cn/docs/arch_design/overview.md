@@ -64,7 +64,7 @@ def train_job():
 
 以下，我们来展开讨论`sess.AddJob`与`_RunLazyJob`的细节。
 
-### Python 中完成序列化并触发编译
+### 任务函数的序列化
 
 在`/oneflow/python/framework/session_util.py`中可以看到`AddJob`的实现：
 ```python
@@ -116,7 +116,7 @@ def Compile(session, function_desc, config_proto):
 完成`compiler.Compile`的工作后，将通过`c_api_util.StartGlobalSession()` 触发 C++ 层，创建 session，开始 C++ 层的编译、构图等工作。
 
 
-### Python 层运行任务函数
+### 任务函数的调用
 回顾上文提到到的`_RunLazyJob`代码：
 ```python
 def _RunLazyJob(session, job_func, *args, **kwargs):
@@ -140,8 +140,97 @@ def _RunLazyJob(session, job_func, *args, **kwargs):
 值得一提的是，因为当用户调用任务函数时，OneFlow 已经完成了任务函数的编译构图，得到了执行计划(Execution Plan)，1个 Plan 由多个描述任务的`TaskProto`组成。以上`c_api_util.LaunchJob(job_instance)`所接受的参数`job_instance`，并不是任务函数本身，而是 Plan中的 `Task` 实例化对象，一个任务函数，将对应多个`job_instance`。
 
 ## 编译阶段
+上文提到的 Python 层的 `c_api_util.StartGlobalSession()` 会触发 C++ 代码中的 `StartGlobalSession` 并最终触发 OneFlow 编译时的入口函数 `Oneflow::Init` (`/oneflow/core/job/oneflow.cpp`)：
+```c++
+Maybe<void> Oneflow::Init(const oneflow::JobSet& job_set) {
+  // Runtime
+  JUST(CompileAndMergePlanOnMaster(job_set.job(), &plan_));
+  // ...
+}
+```
+可以看到，OneFlow 通过 `CompileAndMergePlanOnMaster` 完成编译构图，其中的`job_set.job()`是这个阶段的输入，它是包含了由 Python 接口所定义的神经网络结构及超参配置信息的序列化字节流，而 `plan_` 是输出，称为 **执行计划** (Execution Plan)。
 
+执行计划由一系列对于任务的描述(`oneflow/core/job/task.proto`)组成，每个任务自身都是一个图结构，描述了内部计算类型、内存配额、上游生产者和下游消费者等信息。这些信息包含了 OneFlow 运行时所需要的一切信息。
+
+以下是一个编译后的得到的 `Execution Plan`的图示([点击查看大图](imgs/plan_illustration.svg))：
+
+![Execution Plan](imgs/plan_illustration.svg)
+
+### 执行计划的生成过程
+进入到 `CompileAndMergePlanOnMaster` 中可以看到，首先，会调用一系列的 `MakeXXXJob(s)` 整合序列化后的任务函数信息， 加入到 `jobs` 中：
+```cpp
+Maybe<void> CompileAndMergePlanOnMaster(const PbRpf<Job>& conf_jobs, Plan* plan) {
+  std::vector<std::shared_ptr<Job>> jobs(conf_jobs.size());
+  //...	
+    if (/*...*/) {
+      MakeModelIoV2Jobs(jobs, var_op_name2parallel_blob_conf, AppendJob);
+    } else {
+      MakeModelIoJobs(jobs, var_op_name2parallel_blob_conf, AppendJob);
+    }
+  }
+  //...
+    for (const auto& pair : push_op_name2parallel_blob_conf) {
+	  //...
+      MakePushJob(std::string("System-Push-") + pair.first, 
+      //...
+    }
+    for (const auto& pair : pull_op_name2parallel_blob_conf) {
+	  //...
+      MakePullJob(std::string("System-Pull-") + pair.first, pair.first, pair.second,
+                  pull_job.get());
+    }
+  //...
+}
+```
+然后通过 `CompileCurJobOnMaster` 将 `jobs` 编译为 Plan，值得注意的是 `AddJobName2JobId` 会为每个 `job` 分配一个全局唯一的ID，用于运行时区分任务：
+```c++
+  FOR_RANGE(int64_t, i, 0, jobs.size()) {
+    AddJobName2JobId(jobs.at(i)->job_conf().job_name(), i);
+    //...
+    JUST(CompileCurJobOnMaster(jobs.at(i).get(), &sub_plans.at(i), true));
+  }
+```
+以上的编译过程，最终会调用 `Compiler::Compile`，在其内部完成 `TaskProto`的构建，并添加到 Plan 中(`oneflow/core/job/compiler.cpp`)：
+```c++
+  task_gph->ForEachNode([&](TaskNode* task_node) {
+    if (task_node->IsMeaningLess()) { return; }
+    task_node->ToProto(plan->mutable_task()->Add());
+  });
+```
+
+不过，以上步骤完成后，得到的 Plan 还不是最终完整的 Plan，OneFlow 还会增加 `main_plan`， 它对应了本节开始 Plan 图示中的 "System-Main-Tick-CriticalSection" 系列节点，具有同步与调度功能，将作为各项任务的入口：
+```c++
+    Plan main_plan;
+    //...
+    {
+      //...
+      MakeMainJob(&main_job, /*...*/);
+      //...
+      JUST(CompileMainJob(&main_job, /*...*/, &main_plan));
+    }
+```
+以上一切完成后，通过调用 `LinkMainPlan` 将各个 Plan 链接起来，得到这节开始的图片所示 Execution Plan：
+```c++
+LinkMainPlan(plan, main_plan, identity_tick_op_names);
+```
+
+执行计划是编译阶段与运行时的分界线，在得到执行计划后，OneFlow 将启动运行时，并根据执行计划中的信息执行任务。
 
 ## 运行时
+完成`CompileAndMergePlanOnMaster`后，OneFlow 会实例化`Runtime`，按照 `plan` 中的信息执行任务：
+
+```c++
+Maybe<void> Oneflow::Init(const oneflow::JobSet& job_set) {
+  // Runtime
+  JUST(CompileAndMergePlanOnMaster(job_set.job(), &plan_));
+  if (Global<MachineCtx>::Get()->IsThisMachineMaster()) {
+    runtime_buffers_scope_.reset(new RuntimeBuffersScope(plan_));
+  }
+  runtime_.reset(new Runtime(plan_, GetMaxVal<size_t>(), false));
+  //...
+}
+```
+
+
 
 ## OneFlow 各模块的技术特色
