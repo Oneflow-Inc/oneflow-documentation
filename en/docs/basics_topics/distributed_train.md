@@ -112,22 +112,22 @@ We can specific to distribution configuration to package code as function. Then 
 ```python
 def config_distributed():
     print("distributed config")
-    #每个节点的gpu使用数目
+    #number of GPU used in each node
     flow.config.gpu_device_num(1)
-    #通信端口
+    #communication channel 
     flow.env.ctrl_port(9988)
 
-    #节点配置
+    #node configuration 
     nodes = [{"addr":"192.168.1.12"}, {"addr":"192.168.1.11"}]
-    flow.env.machine(nodes)
+    flow.env.machine(n
 ```
 
-### 分布式训练完整脚本
-单机程序加入 OneFlow 的分布式配置代码后，就成为了分布式程序，在所有的节点运行一样的程序即可。
+### Complete script of distributed training
+After solo process join yo OneFlow's configurations code, it will become distribution program. Just need run the same program in all nodes.
 
-我们可以将分布式训练程序与上文的 **单机训练程序** 比较，会发现仅仅只是增加了 `config_distributed` 函数并调用，我们之前的单机训练脚本，就成为了分布式训练脚本。
+We can compare distributed training with  **solo training**. We will find that we turn the solo training script to distributed training script only by adding `config_distributed`  function and called it.
 
-以下是完整代码：[distributed_train.py](../code/basics_topics/distributed_train.py)
+Name: [distributed_train.py](../code/basics_topics/distributed_train.py)
 
 ```python
 import numpy as np
@@ -180,12 +180,12 @@ def train_job():
   return loss
 
 def config_distributed():
-    #每个节点的gpu使用数目
+    #number of GPU used in each node
     flow.config.gpu_device_num(1)
-    #通信端口
+    #communication channel 
     flow.env.ctrl_port(9988)
 
-    #节点配置
+    #node configuration 
     nodes = [{"addr":"192.168.1.12"}, {"addr":"192.168.1.11"}]
     flow.env.machine(nodes)
 
