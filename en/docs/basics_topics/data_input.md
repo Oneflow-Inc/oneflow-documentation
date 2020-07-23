@@ -1,9 +1,9 @@
 # Data input
-机器学习是一种数据驱动的技术，数据加载和预处理需要兼顾效率和可扩展性。OneFlow提供了两种加载数据的方法： OneFlow 提供了两种加载数据的方法：
+Machine learning is drive by data. Loading and pretreatment need give attention to both efficiency and scalability. OneFlow support two methods to load data:
 
-- 一种是非常灵活的，以numpy ndarray 为接口的方法，也就是说 OneFlow 的训练或者预测任务能够接收一组 numpy 数据作为输入。
+- One is very flexible, use numpy ndarray as input, which means the training and predicting task can take a set of numpy data as input.
 
-- 另外一种方法是OneFlow的`数据流水线`，数据流水线方式只能够接受特定格式的数据文件，如：通过 `ofrecord_reader` 加载的 OFRecord 格式的数据(类似于 TFRecord )
+- Another way is the ` data line` of OneFlow. Data line only can take specific formats data. For example, `ofrecord_reader` loading data in OFRecord (similar as: TFRecord )
 
 #### 优劣对比
 
