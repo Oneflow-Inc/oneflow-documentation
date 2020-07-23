@@ -112,59 +112,57 @@ Some common `initializer`:
 
 We use `oneflow.train.CheckPoint()` to achieve object of CheckPoint. There are three critical methods in `CheckPoint`:
 
-* `init` : 根据缺省的初始化方式，初始化参数变量；
+* `init` : According to method of lacking to initializa parameters.
 
-* `save` : 负责保存当前的模型到指定路径；
+* `save` : Responsible for save the current model to the specified path.
 
-* `load` : 从指定`path`中导入模型值，并用这些值初始化相应的参数变量。
+* `load` : Import the model from `path` and use the model to initialize parameters.
 
-`init` 的原型如下，在训练开始前，我们需要调用 `init` 初始化网络中的参数变量。
+The `init`  work like this. Before you training, we need use  `init` to initialize the parameters in net work.
 
 ```python
 def init(self)
 ```
 
-`save` 的原型如下，可以将模型保存至 `path` 所指定的路径。
+The `save` work like this. It could save the model under a specified  `path`.
 ```python
 def save(self, path)
 ```
 
-`load` 的原型如下，可以加载之前已经保存的，由 `path` 路径所指定的模型。
+The `load` work like this. Can load the model we train perviously from the specified  `path`.
 ```python
 def load(self, path)
 ```
 
-### 调用 init 初始化模型
-在训练开始前，我们需要先获取 `CheckPoint` 对象，再调用其中的 `init` 方法初始其中的网络参数。 如以下示例:
+### Initialize model
+Before training, we need get the object of  `CheckPoint` then called the  `init` to initialize the parameters in network. For example:
 
 ```python
-check_point = flow.train.CheckPoint() #构造CheckPoint对象
-check_point.init() #初始化网络参数
-
-#... 调用任务函数等操作
+check_point = flow.train.CheckPoint() #constructing object of CheckPoint
+check_point.init() #initialize network parameters 
 ```
 
-### 调用 save 保存模型
+### Save model
 
-训练过程的任意阶段，都可以通过调用 `CheckPoint` 对象的 `save` 方法来保存模型。
+At any step of training process, we can called the `save`  which is the obejct of `CheckPoint`  to save model.
 ```python
 check_point.save('./path_to_save')
 ```
-注意：
+Attention:
 
-* 保存的路径必须为空，否则 `save` 会报错
+* The path to save must be empty otherwise there will be an error in  `save`.
 
-* 虽然OneFlow对 `save` 的频率没有限制，但是过高的保存频率，会加重磁盘及贷款等资源的负担。
+* Although OneFlow do not have limitation of `save` frequency, but more frequent you save model more duty will push to the disk.
 
-* OneFlow 模型以一定的组织形式保存在指定的路径中，具体结构参见下文中的OneFlow模型的存储结构
+* OneFlow model can save in a certain form stored in the specified path. More details in the example below.
 
-### 调用 load 加载模型
-通过调用 `CheckPoint` 对象的 `load` 方法，可以从指定的路径中加载模型。 注意，从磁盘中加载的模型需要与当前任务函数中使用使用的网络模型匹配，否则会出错。
+### Load model
+We can called the `load` which is the obejct of `CheckPoint` to load model from specificed path. Attention, load model from the disk must match in the model with the current task function. Otherwise will have error message.
 
-以下代码，构造 `CheckPoint对象` 并从指定路径加载模型：
+There is a example of load model from a specific path and construct  `CheckPoint object` :
 ```python
-check_point = flow.train.CheckPoint() #构造对象
-check_point.load("./path_to_model") #加载先前保存的模型
+check_point = flow.train.CheckPoint() #constructing object 
+check_point.load("./path_to_model") #load model
 ```
 
 
