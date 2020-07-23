@@ -2,34 +2,34 @@
 
 In OneFlow, you only need few simple configuration and the frame of OneFlow will automatically deal with calling job function, resources paralleling  and other issue. Thus, we do not need change network structure and logic of code. Then we can easily use distributed training.
 
-OneFlow 的分布式训练能力独树一帜，是 OneFlow 区别于其它框架的 **最重要特性**。
+The ability of distributed training in OneFlow is very outstanding. This is the **main characters **distinguished between other framework.
 
-本文将介绍：
+In this article, we will introduce:
 
-* 如何将单机程序修改为分布式程序
+* How to change a solo program to distributing program.
 
-* OneFlow 中节点概念及分工
+* The concept and job division of node in OneFlow.
 
-## OneFlow 分布式优势
+## The distribution advantage of OneFlow.
 
-* 采用去中心化的流水架构，而非 `master` 与 `worker` 架构，最大程度优化节点网络通信效率
+* OneFlow use decentralized and flow framework. Not like  `master` and `worker` frame, it can maximum optimize the network speed between nodes.
 
-* 提供 `consistent strategy` ，整个节点网络中只需要逻辑上唯一的输入与输出
+* Support for  `consistent strategy`, the whole network only need only logic input and output.
 
-* 提供兼容其它框架的`mirrored strategy`，熟悉其它框架分布式训练的用户可直接上手
+* Also support to adapt with `mirrored strategy` from other framework. User who familiar with the distributed training in other frame can easily use OneFlow.
 
-* 极简配置，由单一节点的训练程序转变为分布式训练程序，只需要几行配置代码
+* The minimalist configuration, only need few line of code can change a single node of the training program into a distributed training program.
 
-## 配置分布式训练网络
+## Configuration of the distributed training
 
-通过 OneFlow 提供的分布式配置的接口，您只需要简单的几行配置(指定分布式计算的节点 ip 以及每个节点使用 gpu 的数量)即可实现分布式的训练网络。
+By the distribued training port of OneFlow, you only need few configuration(Specify the distributed computing nodes IP and the number GPU used of each node ) to achieve distribued training network.
 
-换句话说，这使得单机训练程序与分布式训练程序几乎是一样的，作为 OneFlow 用户，只需要专注于程序的 **业务逻辑** 及 **模型结构本身** ，而不用操心分布式执行问题。**OneFlow 框架会自动帮您处理复杂的任务调度、资源并行等问题。**
+In another word, it make solo training as same as distribued training. As the user of OneFlow, just need to focus on **job logic ** and **structures of model**. No need to worry anout distribution execution.**Frame of OneFlow will automatically deal with calling job function, resources paralleling  and other issue. (链接可能有问题）**
 
-下面，我们会介绍一个例子：将单机版的训练任务，通过添加几行配置代码后将其改造为分布式训练任务。
+This is a example for change the solo training to a distributed training by adding few code:
 
-### 单机训练程序
-以下是单机训练程序的框架，因为各个函数的代码会在下文分布式程序中呈现，在此就未呈现。
+### Solo training
+This is solo training framework, code of function will show in distributed training later on.
 ```python
 import numpy as np
 import oneflow as flow
@@ -40,14 +40,19 @@ IMG_SIZE = 28
 NUM_CHANNELS = 1
 
 def _data_load_layer(data_dir=DATA_DIRECTORY, arg_data_part_num=1, fromat="NHWC"):
-    #加载数据 ... def lenet(data, train=False):
-    #构建网络 ... def get_train_config():
-    #配置训练环境
+    #loading data...
+
+def lenet(data, train=False):
+    #constructed network...
+
+
+def get_train_config():
+    #config training env
 
 
 @flow.global_function(get_train_config())
 def train_job():
-    #任务函数的实现
+    #achieve job function
 
 def main():
   check_point = flow.train.CheckPoint()
@@ -64,7 +69,7 @@ if __name__ == '__main__':
   main()
 ```
 
-### GPU及端口配置
+### Configuration of ports and GPU
 
 在 `oneflow.config` 模块中，提供了分布式相关的设置接口，我们主要使用其中两个：
 
