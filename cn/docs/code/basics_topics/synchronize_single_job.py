@@ -1,5 +1,4 @@
 import oneflow as flow
-from mnist_util import load_data
 
 BATCH_SIZE = 100
 
@@ -41,7 +40,7 @@ if __name__ == '__main__':
     flow.config.enable_debug_mode(True)
     check_point = flow.train.CheckPoint()
     check_point.init()
-    (train_images, train_labels), (test_images, test_labels) = load_data(BATCH_SIZE)
+    (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(BATCH_SIZE,BATCH_SIZE)
     for epoch in range(1):
         for i, (images, labels) in enumerate(zip(train_images, train_labels)):
             loss = train_job(images, labels).get().mean()

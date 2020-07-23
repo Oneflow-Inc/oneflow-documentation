@@ -130,7 +130,7 @@ def acc(eval_result):
   labels = eval_result["labels"]
   logits = eval_result["logits"]
 
-  predictions = np.argmax(logits.ndarray(), 1)
+  predictions = np.argmax(logits.numpy(), 1)
   right_count = np.sum(predictions == labels)
   g_total += labels.shape[0]
   g_correct += right_count
@@ -155,7 +155,6 @@ OneFlow会在获取到训练结果时，自动调用注册的回调。
 
 ```python
 import oneflow as flow
-from mnist_util import load_data
 
 BATCH_SIZE = 100
 
@@ -197,7 +196,7 @@ if __name__ == '__main__':
     flow.config.enable_debug_mode(True)
     check_point = flow.train.CheckPoint()
     check_point.init()
-    (train_images, train_labels), (test_images, test_labels) = load_data(BATCH_SIZE)
+    (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(BATCH_SIZE,BATCH_SIZE)
     for epoch in range(1):
         for i, (images, labels) in enumerate(zip(train_images, train_labels)):
             loss = train_job(images, labels).get().mean()
@@ -213,7 +212,6 @@ if __name__ == '__main__':
 ```python
 import numpy as np
 import oneflow as flow
-from mnist_util import load_data
 
 BATCH_SIZE = 100
 
@@ -256,7 +254,7 @@ def acc(labels, logits):
     global g_total
     global g_correct
 
-    predictions = np.argmax(logits.ndarray(), 1)
+    predictions = np.argmax(logits.numpy(), 1)
     right_count = np.sum(predictions == labels)
     g_total += labels.shape[0]
     g_correct += right_count
@@ -267,7 +265,7 @@ if __name__ == '__main__':
     check_point = flow.train.CheckPoint()
     check_point.load("./lenet_models_1")
 
-    (train_images, train_labels), (test_images, test_labels) = load_data(BATCH_SIZE, BATCH_SIZE)
+    (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(BATCH_SIZE,BATCH_SIZE)
     for epoch in range(1):
         for i, (images, labels) in enumerate(zip(train_images, train_labels)):
             labels, logits = eval_job(images, labels).get()
@@ -286,7 +284,6 @@ if __name__ == '__main__':
 
 ```python
 import oneflow as flow
-from mnist_util import load_data
 
 BATCH_SIZE = 100
 
@@ -329,7 +326,7 @@ def main_train():
     check_point = flow.train.CheckPoint()
     check_point.init()
 
-    (train_images, train_labels), (test_images, test_labels) = load_data(BATCH_SIZE)
+    (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(BATCH_SIZE,BATCH_SIZE)
     for epoch in range(50):
         for i, (images, labels) in enumerate(zip(train_images, train_labels)):
             train_job(images, labels).async_get(cb_print_loss)
@@ -353,7 +350,6 @@ if __name__ == '__main__':
 ```python
 import numpy as np
 import oneflow as flow
-from mnist_util import load_data
 
 BATCH_SIZE = 100
 
@@ -392,7 +388,7 @@ def acc(eval_result):
     labels = eval_result["labels"]
     logits = eval_result["logits"]
 
-    predictions = np.argmax(logits.ndarray(), 1)
+    predictions = np.argmax(logits.numpy(), 1)
     right_count = np.sum(predictions == labels)
     g_total += labels.shape[0]
     g_correct += right_count
@@ -402,7 +398,7 @@ def main_eval():
     # flow.config.enable_debug_mode(True)
     check_point = flow.train.CheckPoint()
     check_point.load('./mlp_models_1')
-    (train_images, train_labels), (test_images, test_labels) = load_data(BATCH_SIZE)
+    (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(BATCH_SIZE,BATCH_SIZE)
     for epoch in range(1):
         for i, (images, labels) in enumerate(zip(test_images, test_labels)):
             eval_job(images, labels).async_get(acc)

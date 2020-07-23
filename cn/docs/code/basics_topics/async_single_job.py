@@ -1,5 +1,4 @@
 import oneflow as flow
-from mnist_util import load_data
 
 BATCH_SIZE = 100
 
@@ -42,7 +41,7 @@ def main_train():
     check_point = flow.train.CheckPoint()
     check_point.init()
 
-    (train_images, train_labels), (test_images, test_labels) = load_data(BATCH_SIZE)
+    (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(BATCH_SIZE,BATCH_SIZE)
     for epoch in range(50):
         for i, (images, labels) in enumerate(zip(train_images, train_labels)):
             train_job(images, labels).async_get(cb_print_loss)
