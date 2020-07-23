@@ -71,43 +71,43 @@ if __name__ == '__main__':
 
 ### Configuration of ports and GPU
 
-在 `oneflow.config` 模块中，提供了分布式相关的设置接口，我们主要使用其中两个：
+In  `oneflow.config` , we provide distributed related port. We mainly use two of them:
 
-* `oneflow.config.gpu_device_num` : 设置所使用的 GPU 的数目，这个参数会应用到所有的机器中；
+* `oneflow.config.gpu_device_num` : set the number of GPU been using. This will apply to all machine.
 
-* `oneflow.config.ctrl_port` : 设置用于通信的端口号，所有机器上都将使用相同的端口号进行通信。
+* `oneflow.config.ctrl_port` :set the port number of communications, also will apply to all mechine.
 
-以下代码中，我们设置每台主机使用的 GPU 数目为1，采用9988端口通信。大家可以根据自身环境的具体情况进行修改。
+The following demo we set all machine use one GPU and use port 9988 to communicate.User can change the configuration as well.
 ```python
-#每个节点的 gpu 使用数目
+#GPU number
 flow.config.gpu_device_num(1)
-#通信端口
-flow.env.ctrl_port(9988)
+#Port number
+flow.env.ctrl_port(9988
 ```
 
-注意，即使是单机的训练，只要有多张 GPU 卡，我们也可以通过 `flow.config.gpu_device_num` 将单机程序，设置为单机多卡的分布式程序，如以下代码，设置1台(每台)机器上，2张 GPU 卡参与分布式训练：
+Attention, even use solo training. If you have multiple GPU, we can use  `flow.config.gpu_device_num`  to change solo process to single machine with multiple GPU distribution process. The code below set two GPU in one machine to do the distribution training:
 ```python
 flow.config.gpu_device_num(2)
 ```
 
-### 节点配置
+### Node configuration
 
-接着，我们需要配置网络中的主机关系，需要提前说明的是，OneFlow 中，将分布式中的主机称为节点(`node`)。
+Then we need to comfig the connection between the machine in network. In OneFlow, the distributed machine called `node`.
 
-每个节点的组网信息，由一个 `dict` 类型存放，其中的 "addr" 这个 key 对应了节点的 IP 。 所有的节点放置在一个 `list` 中，经接口 `flow.env.machine` 告之 OneFlow ，OneFlow 内部会自动建立各个节点之间的连接。
+Each node of the network information, is store by a  `dict`. The key "addr" in following example is this corresponding IP of this node. All node is stored in a  `list`, use port  `flow.env.machine` to connect OneFlow. OneFlow will automatically generate the connection between nodes.
 
 ```python
 nodes = [{"addr":"192.168.1.12"}, {"addr":"192.168.1.11"}]
 flow.env.machine(nodes)
 ```
 
-如以上代码中，我们的分布式系统中有2个节点，IP分别为"192.168.1.12"与"192.168.1.11"。
+The code above, we have two nodes in our distribution system. Their IP are"192.168.1.12" and "192.168.1.11".
 
-注意，节点list中的第0个节点(以上代码中的"192.168.1.12")，又称为`master node`，整个分布式训练系统启动后，由它完成构图，其它节点等待；当构图完成后，所有节点会收到通知，知晓各自联系的其它节点，去中心化地协同运行。
+Attention, the number zero node in list(192.168.1.12) is called `master node`. After the whole distribution system active, it will do the mapping and other node is waiting. We the mapping is done, all node will get a message. Know the connection between other nodes and itself. Then working together decentralized.
 
-在训练过程中，由 `master node` 保留标准输出及保存模型，其它节点只负责计算。
+During the process of training, `master node`  will remain stander output and stored model. The calculation is done by other node.
 
-我们可以将针对分布式的配置代码封装为函数，方便调用：
+We can specific to distribution configuration to package code as function. Then it is easier to use:
 
 ```python
 def config_distributed():
