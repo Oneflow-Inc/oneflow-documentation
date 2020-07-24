@@ -160,7 +160,7 @@ data/fish.jpg
 
   >  为了方便运行演示，我们默认使用synthetic虚拟合成数据集，使您可以快速看到模型运行的效果
 
-  同样，你也可以使用[迷你示例数据集](https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/dataset/imagenet/data.zip)，下载解压后放入cnn项目的root目录即可，然后修改训练脚本如下：
+  同样，你也可以使用[迷你示例数据集](https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/dataset/imagenet/mini-imagenet.zip)，下载解压后放入cnn项目的root目录即可，然后修改训练脚本如下：
 
   ```shell
   rm -rf core.* 
