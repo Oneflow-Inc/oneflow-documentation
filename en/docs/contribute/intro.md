@@ -42,25 +42,25 @@ You can find or create more OneFlow open source project in [here](https://github
 
 ## Contribution of the testing case
 
-OneFlow已经对现有的多种流行、前沿的模型，进行了复现及测试，相关的脚本及文档均放置在[OneFlow-Benchmark](https://github.com/Oneflow-Inc/OneFlow-Benchmark)仓库。
+OneFlow has already done the testing of many popular and cutting edge models. The relevant scripts is stored in [OneFlow-Benchmark](https://github.com/Oneflow-Inc/OneFlow-Benchmark).
 
-但是OneFlow还有更多没有涵盖的模型，期待由你迁移到oneflow。
+But OneFlow still have many models which not cover yet. We expecting you to migrate those to OneFlow.
 
-我们也强烈欢迎使用oneflow实现你自己的原创研究，并在[OneFlow-Benchmark](https://github.com/Oneflow-Inc/OneFlow-Benchmark)中分享。
+We also strongly encourage you to achieved your own projects by using OneFlow and share your experience in [OneFlow-Benchmark](https://github.com/Oneflow-Inc/OneFlow-Benchmark).
 
-## 建设API文档
-oneflow的API文档使用`sphinx`提取函数原型及docstring。 API文档在[oneflow](https://github.com/Oneflow-Inc/oneflow)仓库的`docs`目录下，可以通过以下命令生成： API文档在[oneflow](https://github.com/Oneflow-Inc/oneflow)仓库的`docs`目录下，可以通过以下命令生成：
+## Buliding API documentation
+API of OneFlow use `sphinx` to extract prototypes and docstring. API documentation is located in [oneflow](https://github.com/Oneflow-Inc/oneflow) repository under folder `docs`. We can get to by folder by:
 
 ```shell
 cd oneflow/docs && make dev
 ```
 
-我们期待有你的帮助，为[OneFlow Python API](https://github.com/Oneflow-Inc/oneflow/tree/develop/oneflow/python)添加`docstring`及`function annotation`。
+We expecting your help on adding `docstring` and `function annotation` in [OneFlow Python API](https://github.com/Oneflow-Inc/oneflow/tree/develop/oneflow/python).
 
 ## Review
-我们以塑造艺术品的心态，致力于将OneFlow打造成充满工业美感的基础软件产品。在这个过程中也离不开开源社区对OneFlow代码的review。在这个过程中也离不开开源社区对OneFlow代码的review。
+We trading OneFlow like an works of art and try our best to make OneFlow to a full of industrial beauty product.This process cannot without the reviews from yours.
 
-期待大家在各个仓库中，多提交issue、PR，多review，OneFlow前进的路中，也期待有你的加入。
+Looking forward to see the issues reports, PR, reviews in every repository. We also welcome you to join our team as a developer.
 
-## 交流QQ群
+## Facebook or 其他国外社交媒体
 **加QQ群331883 或扫描下方二维码** ![qq group](imgs/qq_group.png)
