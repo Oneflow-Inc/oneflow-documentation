@@ -4,11 +4,10 @@
 
 * OneFlow 的核心架构
 
-* OneFlow 训练任务从 Python 层到运行时的工作流程
+* OneFlow 训练任务从 Python 层到运行时的流程
 
-* OneFlow 各个层次中所涉及的技术特色
 
-通过阅读本文，可以对 OneFlow 的架构及源码目录结构有一个初步的了解；本文涉及到的 OneFlow 的每一个技术特色，我们会在后续的文章中分专题进行更深入的介绍。
+通过阅读本文，可以对 OneFlow 的架构有一个初步的了解；本文末尾附上 OneFlow 各个模块技术特色深入介绍的文章索引，读者可以根据兴趣和需要自行选择。
 
 ## OneFlow 的架构层次图解
 ![summary of oneflow](imgs/design_overview.png)
@@ -111,9 +110,9 @@ def Compile(session, function_desc, config_proto):
         c_api_util.CurJobBuildAndInferCtx_Complete()
 ```
 
-其中`_CompileJob`中将对`function_desc`所描述的任务函数进行序列化。再通过 `c_api_util.CurJobBuildAndInferCtx_Complete` 告之 C++ 层序列化完成。
+其中`_CompileJob`中将对`function_desc`所描述的任务函数进行序列化并在内部调用 C++ 层代码进行构图优化。再通过 `c_api_util.CurJobBuildAndInferCtx_Complete` 告之 C++ 层序列化完成。
 
-完成`compiler.Compile`的工作后，将通过`c_api_util.StartGlobalSession()` 触发 C++ 层，创建 session，开始 C++ 层的编译、构图等工作。
+完成`compiler.Compile`的工作后，将通过`c_api_util.StartGlobalSession()` 触发 C++ 层，创建 session，开始 C++ 层的编译 Plan 的工作。
 
 
 ### 任务函数的调用
@@ -139,7 +138,7 @@ def _RunLazyJob(session, job_func, *args, **kwargs):
 
 值得一提的是，因为当用户调用任务函数时，OneFlow 已经完成了任务函数的编译构图，得到了执行计划(Execution Plan)，1个 Plan 由多个描述任务的`TaskProto`组成。以上`c_api_util.LaunchJob(job_instance)`所接受的参数`job_instance`，并不是任务函数本身，而是 Plan中的 `Task` 实例化对象，一个任务函数，将对应多个`job_instance`。
 
-## 编译阶段
+## 编译期阶段
 上文提到的 Python 层的 `c_api_util.StartGlobalSession()` 会触发 C++ 代码中的 `StartGlobalSession` 并最终触发 OneFlow 编译时的入口函数 `Oneflow::Init` (`/oneflow/core/job/oneflow.cpp`)：
 ```c++
 Maybe<void> Oneflow::Init(const oneflow::JobSet& job_set) {
@@ -216,7 +215,7 @@ LinkMainPlan(plan, main_plan, identity_tick_op_names);
 
 执行计划是编译阶段与运行时的分界线，在得到执行计划后，OneFlow 将启动运行时，并根据执行计划中的信息执行任务。
 
-## 运行时
+## 运行时阶段
 完成`CompileAndMergePlanOnMaster`后，OneFlow 会实例化`Runtime`，按照 `plan` 中的信息执行任务：
 
 ```c++
@@ -230,7 +229,87 @@ Maybe<void> Oneflow::Init(const oneflow::JobSet& job_set) {
   //...
 }
 ```
+在 `Runtime` (`oneflow/core/job/runtime.cpp`)的构造中，将 `Plan` 中的 task 分成了三类：
+```c++
+  std::vector<const TaskProto*> mdupdt_tasks;
+  std::vector<const TaskProto*> source_tasks;
+  std::vector<const TaskProto*> other_tasks;
+  int64_t this_machine_task_num = 0;
+  for (const TaskProto& task : plan.task()) {
+    if (task.machine_id() != Global<MachineCtx>::Get()->this_machine_id()) { continue; }
+    if (IsMdUpdtTaskType(task.task_type())) {
+      mdupdt_tasks.push_back(&task);
+    } else if (!HasNonCtrlConsumedRegstDescId(task)) {
+      source_tasks.push_back(&task);
+    } else {
+      other_tasks.push_back(&task);
+    }
+    this_machine_task_num += 1;
+  }
+```
 
+* mdupdt_tasks：【……】
+
+* source_tasks：【……】
+
+* other_tasks：【……】
+
+如前文所描述，在 task 中包含了内部计算类型、内存配额、上游生产者和下游消费者 **运行时所需要的全部信息** ，因此 OneFlow 可以通过解析 Task 启动线程执行任务。
+
+OneFlow 使用 `Actor` 执行线程，在 OneFlow 中 **数据是一等公民** ，编译阶段产生的 `Plan` 中的每个 `Task`，记录了自己数据的上游与下游，执行引擎会根据 `Task` 的记录，为每个 `Task` 实例化对应的 `Actor`， `Actor` 负责执行 `Task` 规定的数据处理或数据搬运任务。
+
+以下代码根据 `Task` 构建 `Actor`：
+
+```c++
+  RuntimeCtx* runtime_ctx = Global<RuntimeCtx>::Get();
+  runtime_ctx->NewCounter("constructing_actor_cnt", this_machine_task_num);
+  HandoutTasks(mdupdt_tasks);
+  HandoutTasks(source_tasks);
+  HandoutTasks(other_tasks);
+  runtime_ctx->WaitUntilCntEqualZero("constructing_actor_cnt");
+```
+
+OneFlow 执行引擎采用去中心化调度机制，每个 `Actor` 只需要与自己的上下游进行通信， **不需要** 所谓的 master 节点进行中转，actor之间使用消息(message)来实现生产者和消费者之间的握手协议。
 
 
 ## OneFlow 各模块的技术特色
+以上，我们只是结合 OneFlow 的 Python 接口，简要介绍了 OneFlow 框架的运行流程。以下文章，分专题更深入介绍 OneFlow 框架内部的各个模块：
+
+
+### [OneFlow 的并行观](link)
+
+OneFlow 在Python接口层次提供了 `consistent_view`，在框架内部，为了提供给用户逻辑上统一的视角，将 `op` 在物理上的实现划分为多个 `kernel`，并且提出了 **SBP 并行签名机制** ，在严谨的数学基石上进行OneFlow 的工程实践。
+
+并且，OneFlow 的 `boxing` 机制，将 `SBP` 过程中的数据操作变为了透明黑盒，保证了用户使用 OneFlow 进行分布式训练时可保持逻辑单卡视角。
+
+### [自动并行](link)
+【一鹏的……】
+
+### [构图与优化](link)
+OneFlow 基于数据流模型描述计算任务，神经网络由一系列算子(Operator)构成的有向无环图(DAG)表示。并且通过注册一系列的 `PASS` 在构图与推导过程中进行优化。 
+
+### [Actor 机制](link)
+
+OneFlow 的执行引擎，采用 Actor 流水机制，实现了去中心化分布式流式计算，在统一的设计框架内解决了长期困扰深度学习的各类问题，如磁盘 IO、 copyHD、 去中心计算等。
+
+### [网络控制平面的协议设计](link)
+
+控制平面主要实现分布式系统的控制协议，包括节点初始化，集群发现，分布式锁等功能，通常这类网络通信需求只发生在系统初始化或退出阶段，编程易用性比追求苛刻性能更重要， OneFlow 基于 GRPC 实现了该模块。
+
+### [网络数据平面的网络通信实现](link)
+
+分布式深度学习系统在训练过程中 `Actor` 之间的消息及中间运算结果，具有高频、吞吐量大的特点，对网络通信要求高。
+
+OneFlow 自底层定制了网络传输模块用于数据平面的通信。并且有 RDMA 及 epoll 两套方案，可以做到在网络传输层次不依赖 `nccl`，扩大芯片选择范围。
+
+### [内存管理](link)
+
+OneFlow 的训练采用了 **纯静态内存分配方案**，在编译生成 `Plan` 的过程中，就已经确定了所有 `Task` 的内存使用情况，在整个运行时阶段，不再有内存的动态申请、释放，最大限度降低内存分配与回收带来的性能损耗。
+
+此外……【成城的内存方案】
+
+### [eager模式的实现](link)
+
+OneFlow 开发的 eager 模式，通过实现定制的虚拟机使得用户可以采用交互式的方式进行训练。
+
+
