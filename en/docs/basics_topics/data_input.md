@@ -50,31 +50,31 @@ We are expecting the following results:
 (32, 1, 28, 28) (32,)
 ```
 ### Code explanation
-When user need use OneFlow to achieve a 先`定义`再`使用`是两个基本的步骤。要实现 numpy 数据输入功能，就需要在`定义`和`使用`任务函数的地方特殊处理一下，下面就分别说一下。
+When user need use OneFlow to achieve a deep learning training or predicting task. We need to define a job function then use it.First, `define` then `use `is two basic steps.To achieved using numpy as input, need make some special configurations to `define` and `use` the job function. The following part will explain in details.
 
-#### 定义
-定义的地方需要声明一下有哪些输入，以及这些输入的形状和数据类型等信息。下面这段代码就是定义 Job 函数的地方。`test_job` 是 Job 函数的函数名，例子中它有两个输入：`images` 和 `labels` ，而且分别有自己的形状和数据类型。
+#### Definition
+The definition part need declare what input do we have and the shape and data type of the input.The following part is where to define the job function.`test_job`  is the name of job function. The example have two inputs: `images` and `labels`. Also have the data shape and type of the input.
 ```python
 def test_job(images:oft.Numpy.Placeholder((32, 1, 28, 28), dtype=flow.float),
              labels:oft.Numpy.Placeholder((32, ), dtype=flow.int32)):
 ```
-#### 使用
-在使用之前需要先准备好需要被输入的 numpy 的 ndarray ，例子中按照输入的形状和数据类型的要求随机生成了输入：`images_in` 和 `labels_in` 。
+#### Using
+We need prepared the numpy ndarray first. In example, it generates the `images_in` and `labels_in` according to the input data type and shape.
 ```python
   images_in = np.random.uniform(-10, 10, (32, 1, 28, 28)).astype(np.float32)
   labels_in = np.random.randint(-10, 10, (32, )).astype(np.int32)
 ```
 
-然后把 `images_in` 和 `labels_in` 作为 `test_job` 的输入传入并且进行计算，并返回计算结果保存到 `images` 和 `labels` 里。
+Then put  `images_in` and `labels_in` as input in  `test_job`  then calculating. After that, it return the results and stored in  `images` and `labels`.
 ```python
   images, labels = test_job(images_in, labels_in).get()
 ```
 
-一般使用的地方都是在一个训练或者预测任务的循环中，这个简化的例子就使用了一次作业函数。
+Normally is be used in the cycle of training and predicting task.This simplified example used the job function at a time.
 
-有关Job函数参数的两点说明：
+Two things need be explained in job function:
 
-* 1 - 例子中 `oft.Numpy.Placeholder` 返回的是一个占位符，OneFlow中还可以用 `oft.ListNumpy.Placeholder` 方式生成占位符，这两种方式的区别参考[两类blob](../extended_topics/consistent_mirrored.md);
+* In  `oft.Numpy.Placeholder`, the return object is a place holder and also the place holder can be generate by `oft.ListNumpy.Placeholder` in OneFlow. The difference between this two please renference [two type of blob](../extended_topics/consistent_mirrored.md).
 
 * 2 - 任务函数支持多个参数，每个参数都必须是下面几种中的一种：1. 一个`占位符`  2. 一个由`占位符`组成的列表(list)
 
