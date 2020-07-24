@@ -70,25 +70,25 @@ Then pass in `images_in` and `labels_in` as the input of `test_job` and perform 
   images, labels = test_job(images_in, labels_in).get()
 ```
 
-Normally is be used in the cycle of training and predicting task.This simplified example used the job function at a time.
+Normally it is used in a training or prediction task cycle. This simplified example uses a job function.
 
-Two things need be explained in job function:
+Two points about the parameters of the Job function
 
-* In  `oft.Numpy.Placeholder`, the return object is a place holder and also the place holder can be generate by `oft.ListNumpy.Placeholder` in OneFlow. The difference between this two please renference [two type of blob](../extended_topics/consistent_mirrored.md).
+* In the example of `oft.Numpy.Placeholder`, the return object is a place holder. The place holder can also be generate by `oft.ListNumpy.Placeholder` in OneFlow. Please refer to [two type of blob](../extended_topics/consistent_mirrored.md) for the difference between the two.
 
-* The job function supports multiple parameters. But the parameters must be one of the following: a `place holder` and the list of` place holder`.
+* The job function supports for multiple parameters. and each parameter must be one of the following: a `place holder` and the list (list) of` place holder`.
 
-Summary: define the input of job function as place holder when defining the job function. When the job function receive the corresponding numpy array as input. The numpy array will send to the network for training or predicting.
+**Summary**: When defining the job function, define the input of the job function as a placeholder. When using the job function, take the corresponding numpy array object as input, so that the numpy data is sent to the network for training or prediction.
 
-## Use the data flow of OneFlow
-The data flow of OneFlow decoupling the data loading and data pretreatment process:
+## Use the data pipeline of OneFlow
+The data pipeline of OneFlow decoupling the data loading and data preprocessing process:
 
-- The data load is support  `data.ofrecord_reader` and `data.coco_reader` for now. Support respective  `OFRecord`  and coco dataset. Reading other type of data can achieve by custom extensions.
+- Data loading currently supports two types: `data.ofrecord_reader` and `data.coco_reader`, which respectively support OneFlow's `OFRecord` format files and coco dataset. Readers in other formats can be extended through customization;
 
-- The preprocessing data is using the data flow method. Support the different preprocessing to calculate their operators. And it also can be custom extensions.
+- The data preprocessing process adopts a pipeline method, which supports the combination of various data preprocessing operators, and the data preprocessing operators can also be customized and extended.
 
-### For example
-The following example read   `OFRecord`  data and it is the image of ImageNet dataset.Name: [of_data_pipeline.py](../code/basics_topics/of_data_pipeline.py)
+### Example
+Here is a complete example. This example reads the `OFRecord` data format file and processes the images in the ImageNet datasetThe complete code can be downloaded here: [of_data_pipeline.py](../code/basics_topics/of_data_pipeline.py)
 
 ```python
 # of_data_pipeline.py
@@ -123,17 +123,29 @@ if __name__ == '__main__':
     images, labels = test_job().get()
     print(images.shape, labels.shape)
 ```
-In order to run the above script, we need a ofrecord dataset. We can [ load and prepare OFRecord dataset](../extended_topics/how_to_make_ofdataset.md) or we have a package which have 64 images called  [part-00000](https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/basics_topics/part-00000) .
+In order to run the script above, an ofrecord data set is required. You can [load and prepare the Ofrecord data set](../extended_topics/how_to_make_ofdataset.md) or download an ofrecord file containing 64 pictures prepared by us
 
-Replace the `/path/to/ImageNet/ofrecord` to  `part-00000` if you want use our package.
+part-00000</1 ></p> 
+
+Replace the `/path/to/ImageNet/ofrecord` to the path to `part-00000` and run
+
+
 ```
 python of_data_pipeline.py
 ```
-We are expecting the following result:
+
+
+The following result is expected
+
+
 ```
 (64, 3, 224, 224) (64,)
 ```
-### Script Explanation
+
+
+
+### The explanation of the code
+
 There are two stage in data processing in OneFlow: **loading data** and **preprocessing data**.
 
 - Loading is use  `ofrecord_reader`. It need specify the path and other parameters. More information reference [ofrecord_reader api](../api/data.html?highlight=ofrecord_reader#oneflow.data.ofrecord_reader).
