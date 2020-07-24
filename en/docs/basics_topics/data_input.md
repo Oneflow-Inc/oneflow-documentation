@@ -76,19 +76,19 @@ Two things need be explained in job function:
 
 * In  `oft.Numpy.Placeholder`, the return object is a place holder and also the place holder can be generate by `oft.ListNumpy.Placeholder` in OneFlow. The difference between this two please renference [two type of blob](../extended_topics/consistent_mirrored.md).
 
-* 2 - 任务函数支持多个参数，每个参数都必须是下面几种中的一种：1. 一个`占位符`  2. 一个由`占位符`组成的列表(list)
+* The job function supports multiple parameters. But the parameters must be one of the following: a `place holder` and the list of` place holder`.
 
-**总结**：在定义 job 函数的时候把 job 函数的输入定义成占位符的形式，当使用 job 函数的时候输入相应的 numpy 数组对象，这样就把 numpy 数据送入了网络进行训练或者预测。
+Summary: define the input of job function as place holder when defining the job function. When the job function receive the corresponding numpy array as input. The numpy array will send to the network for training or predicting.
 
-## 使用OneFlow数据流水线
-OneFlow 数据流水线解耦了数据的加载和数据预处理过程：
+## Use the data flow of OneFlow
+The data flow of OneFlow decoupling the data loading and data pretreatment process:
 
-- 数据的加载目前支持 `data.ofrecord_reader` 和 `data.coco_reader` 两种，分别支持 OneFlow 原生的 `OFRecord` 格式的文件和 coco 数据集，其他格式的 reader 可以通过自定义扩展；
+- The data load is support  `data.ofrecord_reader` and `data.coco_reader` for now. Support respective  `OFRecord`  and coco dataset. Reading other type of data can achieve by custom extensions.
 
-- 数据预处理过程采用的是流水线的方式，支持各种数据预处理算子的组合，数据预处理算子也可以自定义扩展。
+- The preprocessing data is using the data flow method. Support the different preprocessing to calculate their operators. And it also can be custom extensions.
 
-### 运行一个例子
-下面就给一个完整的例子，这个例子读取的是 `OFRecord` 数据格式文件，处理的是 ImageNet 数据集中的图片。完整代码可以点此下载：[of_data_pipeline.py](../code/basics_topics/of_data_pipeline.py)
+### For example
+The following example read   `OFRecord`  data and it is the image of ImageNet dataset.Name: [of_data_pipeline.py](../code/basics_topics/of_data_pipeline.py)
 
 ```python
 # of_data_pipeline.py
@@ -123,18 +123,18 @@ if __name__ == '__main__':
     images, labels = test_job().get()
     print(images.shape, labels.shape)
 ```
-为了运行上面这段脚本，需要一个 ofrecord 数据集，您可以[加载与准备OFRecord数据集](../extended_topics/how_to_make_ofdataset.md)或者下载我们准备的一个包含64张图片的 ofrecord 文件 [part-00000](https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/basics_topics/part-00000) 。
+In order to run the above script, we need a ofrecord dataset. We can [ load and prepare OFRecord dataset](../extended_topics/how_to_make_ofdataset.md) or we have a package which have 64 images called  [part-00000](https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/basics_topics/part-00000) .
 
-上面这段脚本中 `/path/to/ImageNet/ofrecord` 替换为保存 `part-00000` 文件的目录，然后运行
+Replace the `/path/to/ImageNet/ofrecord` to  `part-00000` if you want use our package.
 ```
 python of_data_pipeline.py
 ```
-将得到下面的输出：
+We are expecting the following result:
 ```
 (64, 3, 224, 224) (64,)
 ```
-### 代码解析
-OneFlow的数据处理流水线分为两个阶段： **数据加载** 和 **数据预处理** 。
+### Script Explanation
+There are two stage in data processing in OneFlow: **loading data** and **preprocessing data**.
 
 - 数据加载采用的是 `ofrecord_reader`，需要指定 ofrecord 文件所在的目录，和一些其他参数，请参考 [ofrecord_reader api](../api/data.html?highlight=ofrecord_reader#oneflow.data.ofrecord_reader)
 
