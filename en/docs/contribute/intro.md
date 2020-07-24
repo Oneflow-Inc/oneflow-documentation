@@ -1,38 +1,38 @@
 
 
-OneFlow作为核心竞争力突出、具有高壁垒的开源基础软件设施，还在快速迭代和进步之中。
+OneFlow outstanding as the core competitiveness have high barriers to open source software infrastructure and it is still in rapid iteration and improvement.
 
-OneFlow的成长，离不开像你一样热爱开源的朋友们。你所贡献的每一行代码，提交的每一个issue，报告的每一个bug，甚至每一次提问，都对OneFlow弥足珍贵。
+The growing of OneFlow can not without our friends like you who love open source.Every code you contributed, every issue you submitted, every bug you reported, even the questions you asked. Is very precious for OneFlow.
 
-## 助力OneFlow
+## Helping OneFlow
 
-无论是贡献代码、添加API文档、整理bugs和issues、review代码……
+No matter script contributions, adding API documents, collecting bugs and issues or review code...
 
-OneFlow在方方面面都期待你的助力。
+We are appreciating and expecting your contribution in every aspect.
 
-你可以根据你自身的情况，选择以下的一项或者多项，参与到OneFlow的开源项目中来：
+You can choose any of these options to participate in OneFlow open source project:
 
-* 贡献代码
+* Contribute scripts
 
-* 贡献测试案例
+* Contribute testing cases
 
-* 建设API文档
+* Build API documents
 
-* 编写Wiki
+* Edit Wiki
 
 * Review PR
 
-* 向有需要的人推荐oneflow
+* Recommend to people in need of OneFlow
 
-* 参与oneflow的群讨论
+* Participate in OneFlow channel
 
-* OneFlow的成长，离不开像你一样热爱开源的朋友们。你所贡献的每一行代码，提交的每一个issue，报告的每一个bug，甚至每一次提问，都对OneFlow弥足珍贵。
+* And other things you can imagine which can make OneFlow better.
 
 
-## 贡献代码
-我们的主要开源仓库有：
+## Script contributions
+The main open source repository are:
 
-* [oneflow](https://github.com/Oneflow-Inc/oneflow)：包含oneflow深度学习框架的完整代码
+* [oneflow](https://github.com/Oneflow-Inc/oneflow)：Includes the complete deep learning framework code.
 
 * [OneFlow-Benchmark](https://github.com/Oneflow-Inc/OneFlow-Benchmark)：包含在OneFlow上实现的多种模型（含脚本、文档、数据集处理方法等）
 
