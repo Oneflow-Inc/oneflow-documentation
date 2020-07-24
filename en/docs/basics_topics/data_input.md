@@ -1,21 +1,21 @@
 # Data input
-Machine learning is drive by data. Loading and pretreatment need give attention to both efficiency and scalability. OneFlow support two methods to load data:
+Machine learning is a data-driven technology. Data loading and preprocessing need to balance both efficiency and scalability. OneFlow provides two ways to load data.
 
-- One is very flexible, use numpy ndarray as input, which means the training and predicting task can take a set of numpy data as input.
+- One is very flexible, using Numpy ndarray as the interface, which means that OneFlow training or prediction tasks can take a set of Numpy data as input.
 
-- Another way is the ` data flow` of OneFlow. Data line only can take specific formats data. For example, `ofrecord_reader` loading data in OFRecord (similar as: TFRecord )
+- Another way is the ` data flow` of OneFlow. This way can only take data of a specific format, such as: OFRecord format data loaded by `ofrecord_reader` (similar to TFRecord)
 
 #### Comparison
 
-The numpy ndarray is easier, but it only suitable for small scale of data.When scale of data is too large. May stuck on preparing numpy data.Thus, we recommend use the following methon at the beginning of the project and when the data structure is unclear.
+the way of numpy ndarray is simple and convenient, but only suitable for small-scale data.Because when the amount data is too large, there may be a time bottleneck in preparing numpy data.Therefore, it is recommended to use this way in the earlier stage of the project when the data structure is not determined;
 
-The data flow method in OneFlow may looks more complicated. But it use multithreading and data flow technology made the following data load, data preprocessing and data to enhance more efficient.Thus, we recommend use for experienced projects.
+The way of OneFlow looks a little more complicated, but in fact, it uses technologies such as multithreading and data pipeline to make data loading and subsequent data preprocessing and data augmentation more efficient.Therefore, it is recommended for more mature projects.
 
 
 ## Use numpy as data input
-### For example
+### Example
 
-In Oneflow, during the process of training or predicting, can directly use numpy ndarray as data input:
+In Oneflow, you can directly use numpy ndarray type data as input during the training/prediction process. The following is a complete example
 
 ```python
 # feed_numpy.py
@@ -38,34 +38,34 @@ if __name__ == '__main__':
     print(images.shape, labels.shape)
 ```
 
-In the script above, we use  `@flow.global_function` to define a --test_job(). Its input is images and labels. We using numpy format images and labels as input.
+In the script above, we use `@flow.global_function` to define a --test_job(). It takes images and labels as input. We can directly pass images and labels in numpy format as its data input.
 
-You can download complete script：[feed_numpy.py](../code/basics_topics/feed_numpy.py) and run by:
+You can download the complete script：[feed_numpy.py](../code/basics_topics/feed_numpy.py) and run by Python,
 
 ```bash
 python feed_numpy.py
 ```
-We are expecting the following results:
+The following results are expected
 ```bash
 (32, 1, 28, 28) (32,)
 ```
-### Code explanation
-When user need use OneFlow to achieve a deep learning training or predicting task. We need to define a job function then use it.First, `define` then `use `is two basic steps.To achieved using numpy as input, need make some special configurations to `define` and `use` the job function. The following part will explain in details.
+### The explanation of the code
+When a user wants to use OneFlow for a deep learning training or prediction task, they need to define a job/job function (Job Function), and then use the Job function.First, `define` then `use ` are the two basic steps.To achieved using numpy as input, need make some special configurations to `define` and `use` the job function. The following part will explain in details.
 
 #### Definition
-The definition part need declare what input do we have and the shape and data type of the input.The following part is where to define the job function.`test_job`  is the name of job function. The example have two inputs: `images` and `labels`. Also have the data shape and type of the input.
+Where you define it, you need to declare what inputs are, as well as the shape and data type of the inputs.The following part is where to define the job function.`test_job`  is the name of job function. The example have two inputs: `images` and `labels`. Also have the data shape and type of the input.
 ```python
 def test_job(images:oft.Numpy.Placeholder((32, 1, 28, 28), dtype=flow.float),
              labels:oft.Numpy.Placeholder((32, ), dtype=flow.int32)):
 ```
-#### Using
+#### How to use
 We need prepared the numpy ndarray first. In example, it generates the `images_in` and `labels_in` according to the input data type and shape.
 ```python
   images_in = np.random.uniform(-10, 10, (32, 1, 28, 28)).astype(np.float32)
   labels_in = np.random.randint(-10, 10, (32, )).astype(np.int32)
 ```
 
-Then put  `images_in` and `labels_in` as input in  `test_job`  then calculating. After that, it return the results and stored in  `images` and `labels`.
+Then pass in `images_in` and `labels_in` as the input of `test_job` and perform calculations, and return the calculation results and save them to `images` and `labels`.
 ```python
   images, labels = test_job(images_in, labels_in).get()
 ```
@@ -136,9 +136,9 @@ We are expecting the following result:
 ### Script Explanation
 There are two stage in data processing in OneFlow: **loading data** and **preprocessing data**.
 
-- 数据加载采用的是 `ofrecord_reader`，需要指定 ofrecord 文件所在的目录，和一些其他参数，请参考 [ofrecord_reader api](../api/data.html?highlight=ofrecord_reader#oneflow.data.ofrecord_reader)
+- Loading is use  `ofrecord_reader`. It need specify the path and other parameters. More information reference [ofrecord_reader api](../api/data.html?highlight=ofrecord_reader#oneflow.data.ofrecord_reader).
 
-- 数据预处理是一个系列过程，`OFRecordImageDecoderRandomCrop` 负责图片解码并随机做了裁剪，`Resize` 把裁剪后的图片调整成224x224的大小， `CropMirrorNormalize` 把图片进行了正则化。标签部分只需要进行解码 `CropMirrorNormalize` 。
+- Data preprocessing is a multi-stage process. `OFRecordImageDecoderRandomCrop` is for decoding the picture and random cropping, `Resize` adjusts the cropped picture to the size of 224x224 and `CropMirrorNormalize` 0> regularize the picture.`CropMirrorNormalize` if for decoding the labeled part.
 
-OneFlow提供了一些数据加载和预处理的算子，详细请参考[数据流水线API](../api/data.html)。未来会不断丰富和优化这些算子，用户也可以自己定义算子满足特定的需求。
+OneFlow provides some operators for data loading and preprocessing. Please refer to [Data Pipeline Api](../api/data.html) for details.These operators will be continuously enriched and optimized in the future, and users can also define their customized operators to meet specific needs.
 
