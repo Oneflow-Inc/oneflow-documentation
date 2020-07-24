@@ -1,0 +1,139 @@
+
+site_name: OneFlow
+site_url: https://www.oneflow.org/
+site_description: >-
+  OneFlow 是一款分布式高效的机器学习框架
+# Repository
+repo_name: OneFlow
+repo_url: https://github.com/OneFlow-Inc/oneflow-documentation
+edit_uri: "blob/master/cn/docs/"
+
+# Copyright
+copyright: Copyright &copy; 2017 - 2020 OneFlow
+
+#website/xxx.html style
+use_directory_urls: false
+
+# Configuration
+theme:
+  name: material
+
+  # 404 page
+  static_templates:
+    - 404.html
+
+  # Don't include MkDocs' JavaScript
+  include_search_page: false
+  search_index_only: true
+
+  # Default values, taken from mkdocs_theme.yml
+  language: zh
+  features:
+    - tabs
+    #- instant
+  palette:
+    scheme: default
+    primary: indigo
+    accent: indigo
+  font:
+    text: Roboto
+    code: Roboto Mono
+  icon:
+    logo: logo
+  favicon: assets/favicon.png
+
+# Plugins
+plugins:
+  - search
+
+# Extensions
+markdown_extensions:
+  - markdown.extensions.admonition
+  - markdown.extensions.attr_list
+  - markdown.extensions.codehilite:
+      guess_lang: false
+  - markdown.extensions.def_list
+  - markdown.extensions.footnotes
+  - markdown.extensions.meta
+  - markdown.extensions.toc:
+      permalink: true
+  - pymdownx.arithmatex
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.critic
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
+  # - pymdownx.highlight:
+  #     linenums_style: pymdownx-inline
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.magiclink:
+      repo_url_shorthand: true
+      user: squidfunk
+      repo: mkdocs-material
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.snippets:
+      check_paths: true
+  - pymdownx.superfences
+  - pymdownx.tabbed
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+
+nav:
+    - 首页: index.md
+
+    - 快速上手:
+      - 3分钟快速上手: quick_start/quickstart_in_3_min.md
+      - 识别 MNIST 手写体数字: quick_start/lenet_mnist.md
+
+    - 基础专题:
+      - 数据输入: basics_topics/data_input.md
+      - 搭建神经网络: basics_topics/build_nn_with_op_and_layer.md
+      - 优化算法及超参配置: basics_topics/optimizer_in_function_config.md
+      - 获取任务函数的结果: basics_topics/async_get.md
+      - 模型的加载与保存: basics_topics/model_load_save.md
+      - 分布式训练: basics_topics/distributed_train.md
+
+    
+    - 扩展专题:
+      - 任务函数的定义与调用: extended_topics/job_function_define_call.md
+      - Consistent 与 Mirrored策略: extended_topics/consistent_mirrored.md
+      - OneFlow 的并行特色: extended_topics/model_mixed_parallel.md
+      - OFRecord 数据格式: extended_topics/ofrecord.md
+      - 加载与准备 OFRecord 数据集: extended_topics/how_to_make_ofdataset.md
+      - 使用 VS Code 调试 OneFlow: extended_topics/debug_by_vscode.md
+      #- 用户自定义 op: extended_topics/user_op.md
+      - Watch 与 Watch Diff: extended_topics/watch_watch_diff.md
+
+    - 高级应用实例:
+      - 图像处理:
+        - ResNet: adv_examples/resnet.md
+        - AlexNet: adv_examples/alexnet.md
+        - MaskRCNN: adv_examples/mask_rcnn.md
+      - NLP处理-BERT: adv_examples/bert.md
+      - 推荐系统-Wide&Deep: adv_examples/wide_deep.md
+      - 深度伪造-生成对抗网络: adv_examples/dcgan.md
+    - API: 
+      - API: api/
+    # - 二次开发:
+    #   - oneflow 架构: extended_dev/framework.md
+    #   - 算子描述符: extended_dev/op_desc.md
+    #   - 自动梯度求导: extended_dev/auto_grad.md
+    #   - 图优化: extended_dev/graph_optimize.md
+    #   - 自动并行: extended_dev/auto_parallel.md
+    #   - 代价模型: extended_dev/loss_model.md
+    #   - 自动放置: extended_dev/auto_placement.md
+    #   - 数据路由: extended_dev/data_router.md
+    #   - 内存规划: extended_dev/mem_model.md
+    #   - NDArray: extended_dev/ndarray.md
+
+    - 安装:
+      - 安装: build_ship/install.md
+
+    - OneFlow 开源计划:
+      - OneFlow 开源计划: contribute/intro.md

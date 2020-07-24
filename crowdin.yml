@@ -1,0 +1,5 @@
+files:
+  - source: /cn/**/*
+    ignore:
+      - cn/mkdocs.yml
+    translation: '**/%original_file_name%'
