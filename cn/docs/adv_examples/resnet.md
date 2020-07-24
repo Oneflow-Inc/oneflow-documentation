@@ -59,28 +59,36 @@ ImageNet大规模视觉识别挑战赛（ILSVRC），常称为ImageNet竞赛，�
 
 - 安装OneFlow。 
 
-  - 直接通过pip安装：`pip install oneflow`  （TODO：确定我们的pip源是否做好,问caishenghang）
-  - 其他安装方式：参考[这里](https://github.com/Oneflow-Inc/oneflow) 。
+  - 直接通过pip安装：`pip install oneflow`  
+  - 安装轻量版：`pip install --find-links https://oneflow-inc.github.io/nightly oneflow`
+  - 源码编译等其他安装方式：参考[OneFlow项目主页](https://github.com/Oneflow-Inc/oneflow)
 
-- 下载[OneFlow-Benchmark](https://github.com/Oneflow-Inc/OneFlow-Benchmark)仓库。
+- 克隆/下载[OneFlow-Benchmark](https://github.com/Oneflow-Inc/OneFlow-Benchmark)仓库。
 
   `git clone git@github.com:Oneflow-Inc/OneFlow-Benchmark.git`
 
+  `cd  OneFlow-Benchmark/Classification/cnns` 
+
 - 准备数据集（可选）
-  - 下载[示例数据集](https://oneflow-public.oss-cn-beijing.aliyuncs.com/datasets/imagenet_ofrecord_example/part-00000`)
+
+  - 直接使用synthetic虚拟合成数据集
+  - 下载我们制作的Imagenet(2012)[迷你数据集](https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/dataset/imagenet/mini-imagenet.zip) 解压放入data目录
   - 或者：制作完整OFRecord格式的ImageNet数据集（见下文进阶部分）
-  - 再或者：直接使用“合成数据”。
 
+我们提供了通用脚本：train.sh和inference.sh，它们适用于此仓库下所有cnn网络模型的训练、验证、推理。您可以通过设置参数使用不同的模型、数据集来训练/推理。
 
+ **关于模型的说明：** 
+
+> 默认情况下，我们使用resnet50，您也可以通过改动脚本中的--model参数指定其他模型，如：--model="resnet50"，--model="vgg"等。
 
 **关于数据集的说明：**
 
 
-> 1）本文的展示的代码中，使用OFRcord格式的数据集可以提高数据加载效率（但这非必须，参考[数据输入](https://github.com/Oneflow-Inc/oneflow-documentation/docs/basics_topics/data_input.md)，oneflow支持直接加载numpy数据）。
+> 1）为了使读者快速上手，我们提供了synthetic虚拟合成数据，“合成数据”是指不通过磁盘加载数据，而是直接在内存中生成一些随机数据，作为神经网络的数据输入源。
 >
-> 2）为了使读者快速上手，我们提供了一个小的示例数据集。直接下载，即可快速开始训练过程。读者可以在熟悉了流程后，可以参考数据集制作部分，制作完整的数据集。
+> 2）同时，我们提供了一个小的迷你示例数据集。直接下载解压至cnn项目的root目录，即可快速开始训练。读者可以在熟悉了流程后，参考数据集制作部分，制作完整的Imagenet2012数据集。
 >
-> 3）“合成数据”是指不通过磁盘加载数据，而是直接在内存中生成一些随机数据，作为网络的数据输入源。
+> 3）使用OFRcord格式的数据集可以提高数据加载效率（但这非必须，参考[数据输入](https://github.com/Oneflow-Inc/oneflow-documentation/docs/basics_topics/data_input.md)，oneflow支持直接加载numpy数据）。
 
 
 
@@ -94,81 +102,93 @@ ImageNet大规模视觉识别挑战赛（ILSVRC），常称为ImageNet竞赛，�
 cd OneFlow-Benchmark/Classification/cnns
 ```
 
-### 模型（Model）
+### 预训练模型
 
-**关于模型，您可以选择：**
+#### resnet50
 
-- 自己训练好的模型
-
-- 或者，下载我们已训练好的模型：[resnet_v1.5_model](https://oneflow-public.oss-cn-beijing.aliyuncs.com/model_zoo/resnet_v15_of_best_model_val_top1_77318.tgz ) 
-
-  (validation accuracy: 77.318% top1，93.622% top5 )。
+[resnet50_v1.5_model](https://oneflow-public.oss-cn-beijing.aliyuncs.com/model_zoo/resnet_v15_of_best_model_val_top1_77318.tgz ) (validation accuracy: 77.318% top1，93.622% top5 )
 
 ### 预测/推理
 
-设置inference.sh中的参数：MODEL_LOAD_DIR，指定好模型路径后，直接运行：
+下载我们训练好的模型：[resnet50_v1.5_model](https://oneflow-public.oss-cn-beijing.aliyuncs.com/model_zoo/resnet_v15_of_best_model_val_top1_77318.tgz ) ，解压后放入当前目录，然后执行：
 
 ```shell
 sh inference.sh
 ```
 
-此脚本将调用模型对这张老虎图片进行分类：
+此脚本将调用模型对这张金鱼图片进行分类：
 
-<img src="./imgs/tiger.jpg" alt="tiger"  />
+![](./imgs/fish.jpg)
+
+
 
 若输出下面的内容，则表示预测成功：
 
 ```
-image_demo/tiger.jpg
-0.81120294 tiger, Panthera tigris
+data/fish.jpg
+0.87059885 goldfish, Carassius auratus
 ```
+
+可见，模型判断这张图片有87.05%的概率是金鱼goldfish。
 
 
 
 ### 训练和验证（Train & Validation）
 
-训练过程也很简单，如果只是需要测试一下效果，可以使用我们为你提供的mini[示例数据集](https://oneflow-public.oss-cn-beijing.aliyuncs.com/datasets/imagenet_ofrecord_example/part-00000`)，或者直接使用虚拟合成数据进行训练。
+- 训练同样很简单，只需执行：
 
-如果需要在完整的imagenet2012上进行训练，则需要参考下面【进阶 Advanced】部分，我们详细介绍了数据集制作的过程，使得数据集的准备不再麻烦。
+  ```shell
+  sh train.sh
+  ```
 
-准备好数据集，并在train.sh中设置好相应参数后，在命令行执行：
+  即可开始模型的训练，您将看到如下输出：
 
-```
-sh train.sh
-```
+  ```shell
+  Loading synthetic data.
+  Loading synthetic data.
+  Saving model to ./output/snapshots/model_save-20200723124215/snapshot_initial_model.
+  Init model on demand.
+  train: epoch 0, iter 10, loss: 7.197278, top_1: 0.000000, top_k: 0.000000, samples/s: 61.569
+  train: epoch 0, iter 20, loss: 6.177684, top_1: 0.000000, top_k: 0.000000, samples/s: 122.555
+  Saving model to ./output/snapshots/model_save-20200723124215/snapshot_epoch_0.
+  train: epoch 0, iter 30, loss: 3.988656, top_1: 0.525000, top_k: 0.812500, samples/s: 120.337
+  train: epoch 1, iter 10, loss: 1.185733, top_1: 1.000000, top_k: 1.000000, samples/s: 80.705
+  train: epoch 1, iter 20, loss: 1.042017, top_1: 1.000000, top_k: 1.000000, samples/s: 118.478
+  Saving model to ./output/snapshots/model_save-20200723124215/snapshot_epoch_1.
+  ...
+  ```
 
-即可开始训练，若在屏幕上不断打印出类似下面的信息，则表明训练过程正常运行：
+  >  为了方便运行演示，我们默认使用synthetic虚拟合成数据集，使您可以快速看到模型运行的效果
 
-```
-train: epoch 0, iter 200, loss: 7.024337, top_1: 0.000957, top_k: 0.005313, samples/s: 964.656
-train: epoch 0, iter 400, loss: 6.849526, top_1: 0.003594, top_k: 0.012969, samples/s: 991.474
-...
-train: epoch 0, iter 5000, loss: 5.557458, top_1: 0.064590, top_k: 0.174648, samples/s: 935.390
-Saving model to ./output/snapshots/model_save-20200629223546/snapshot_epoch_0.
-validation: epoch 0, iter 100, top_1: 0.074620, top_k: 0.194120, samples/s: 2014.683
-```
+  同样，你也可以使用[迷你示例数据集](https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/dataset/imagenet/data.zip)，下载解压后放入cnn项目的root目录即可，然后修改训练脚本如下：
 
-可以看到：
+  ```shell
+  rm -rf core.* 
+  rm -rf ./output/snapshots/*
+  
+  DATA_ROOT=data/imagenet/ofrecord
+  
+  python3 of_cnn_train_val.py \
+      --train_data_dir=$DATA_ROOT/train \
+      --num_examples=50 \
+      --train_data_part_num=1 \
+      --val_data_dir=$DATA_ROOT/validation \
+      --num_val_examples=50 \
+      --val_data_part_num=1 \
+      --num_nodes=1 \
+      --gpu_num_per_node=1 \
+      --model_update="momentum" \
+      --learning_rate=0.001 \
+      --loss_print_every_n_iter=1 \
+      --batch_size_per_device=16 \
+      --val_batch_size_per_device=10 \
+      --num_epoch=10 \
+      --model="resnet50"
+  ```
 
-- 随着训练的进行，loss不断下降，而训练的top_1/top_k准确率不断提高（其中top_k默认为top_5准确率，可自定义）。
-- 每个epoch结束时，会做另外两个工作：1）执行一次验证，并打印出验证集上的top_1/top_k准确率；2）保存模型。
-- samples/s 用来指示训练/验证的执行速度，即每秒钟能处理的图片数量。
+  运行此脚本，将在仅有50张金鱼图片的迷你imagenet数据集上，训练出一个分类模型，利用它，你可以对金鱼图片进行分类。
 
-
-
-**复现实验的说明：**
-
-> Q1. 多久能够完成训练？
->
-> 在GPU环境下，使用单机8卡（NVIDIA TITAN V），完成90个epoch的完整训练过程，大概需要15小时。
->
-> 
->
-> Q2. 在ImageNet-2012数据集上训练90个epoch后，准确率能达到多少？
->
-> 训练集：80.57%（top1）
->
-> 验证集：77.318%（top1），93.622%（top5）
+  不要着急，如果您需要在完整的ImageNet2012数据集上进行训练，请参考：[OneFlow-Benchmark](https://github.com/Oneflow-Inc/OneFlow-Benchmark/cnns)仓库。
 
 
 
@@ -245,180 +265,7 @@ Oneflow的ResNet50实现，为了保证和[英伟达的Mxnet版实现](https://g
 - [ImageNet](http://image-net.org/index) 
   ImageNet数据集，一般是指2010-2017年间大规模视觉识别竞赛(ILSVRC)的所使用的数据集的统称。ImageNet数据从2010年来稍有变化，常用ImageNet-2012数据集包含1000个类别，其中训练集包含1,281,167张图片，每个类别数据732至1300张不等，验证集包含50,000张图片，平均每个类别50张图片。
 
-
-
-#### OFRecord提高IO效率
-
-**原始的数据集：**
-
-往往是由成千上万的图片或文本等文件组成，这些文件被散列存储在不同的文件夹中，一个个读取的时候会非常慢，并且占用大量内存空间。
-
-**OFRecord：**
-
-内部借助“Protocol Buffer”二进制数据编码方案，它只占用一个内存块，只需要一次性加载一个二进制文件的方式即可，简单，快速，尤其对大型训练数据很友好。另外，当我们的训练数据量比较大的时候，可以将数据分成多个OFRecord文件，来提高处理效率。
-
-关于OFRecord的详细说明请参考：[OFRecord数据格式](https://github.com/Oneflow-Inc/oneflow-documentation/docs/basics_topics/ofrecord.md)
-
-
-
-#### 将ImageNet转换成OFRecord
-
-在OneFlow中，提供了将原始ImageNet-2012数据集文件转换成OFRecord格式的脚本。如果您已经准备好了ImageNet-2012数据集(训练集和验证集)，并且训练集/验证集的格式如下：
-
-```shell
-│   ├── train
-│   │   ├── n01440764
-│   │   └── n01443537
-                                 ...
-│   └── validation
-│       ├── n01440764
-│       └── n01443537
-                                 ...
-```
-
-那么，一键执行以下脚本即可完成训练集和验证集 > OFRecord的转换：
-
-##### 转换训练集
-
-```shell
-python3 imagenet_ofrecord.py  \
---train_directory ../data/imagenet/train  \
---output_directory ../data/imagenet/ofrecord/train   \
---label_file imagenet_lsvrc_2015_synsets.txt   \
---shards 256  --num_threads 8 --name train  \
---bounding_box_file imagenet_2012_bounding_boxes.csv   \
---height 224 --width 224
-```
-
-##### 转换验证集
-
-```shell
-python3 imagenet_ofrecord.py  \
---validation_directory ../data/imagenet/validation  \
---output_directory ../data/imagenet/ofrecord/validation  \
---label_file imagenet_lsvrc_2015_synsets.txt --name validation  \
---shards 256 --num_threads 8 --name validation \
---bounding_box_file imagenet_2012_bounding_boxes.csv  \
---height 224 --width 224
-```
-
-##### 参数说明
-
-```shell
---train_directory
-# 指定待转换的训练集文件夹路径
---validation_directory
-# 指定待转换的验证集文件夹路径
---name
-# 指定转换的是训练集还是验证集
---output_directory
-# 指定转换后的ofrecord存储位置
- --num_threads
-# 任务运行线程数
---shards
-# 指定ofrecord分片数量，建议shards = 256
-#（shards数量越大，则转换后的每个ofrecord分片数据量就越少）
---bounding_box_file
-# 该参数指定的csv文件中标记了所有目标box的坐标，使转换后的ofrecord同时支持分类和目标检测任务
-```
-
-运行以上脚本后，你可以在../data/imagenet/ofrecord/validation、../data/imagenet/ofrecord/train下看到转换好的ofrecord文件：
-
-```shell
-.
-├── train
-│   ├── part-00000
-│   └── part-00001
-                             ...
-└── validation
-    ├── part-00000
-    └── part-00001
-                             ...
-```
-
-
-
-如果您尚未下载过Imagenet数据集，请自行下载和准备以下文件：
-
-- ILSVRC2012_img_train.tar
-
-- ILSVRC2012_img_val.tar
-
-我们将用以下两个步骤，帮您完成数据集的预处理。之后，您就可以使用上面介绍的转换脚本进行OFReciord的转换了。下面假设您已经下载好了原始数据集，并存放在data/imagenet目录下：
-
-```shell
-├── data
-│   └── imagenet
-│       ├── ILSVRC2012_img_train.tar
-│       ├── ILSVRC2012_img_val.tar
-├── imagenet_utils
-│   ├── extract_trainval.sh
-│   ├── imagenet_2012_bounding_boxes.csv
-│   ├── imagenet_2012_validation_synset_labels.txt
-│   ├── imagenet_lsvrc_2015_synsets.txt
-│   ├── imagenet_metadata.txt
-│   ├── imagenet_ofrecord.py
-│   └── preprocess_imagenet_validation_data.py
-```
-
-**步骤一：extract imagenet**
-
-这一步主要是将ILSVRC2012_img_train.tar和ILSVRC2012_img_val.tar解压缩，生成train、validation文件夹。train文件夹下是1000个虚拟lebel分类文件夹(如：n01443537)，训练集图片解压后根据分类放入这些label文件夹中；validation文件夹下是解压后的原图。
-
-```shell
-sh extract_trainval.sh ../data/imagenet # 参数指定存放imagenet元素数据的文件夹路径
-```
-
-```shell
-解压后，文件夹结构示意如下：
-.
-├── extract_trainval.sh
-├── imagenet
-│   ├── ILSVRC2012_img_train.tar
-│   ├── ILSVRC2012_img_val.tar
-│   ├── train
-│   │   ├── n01440764
-│   │   │   ├── n01440764_10026.JPEG
-│   │   │   ├── n01440764_10027.JPEG 
-                                               ...
-│   │   └── n01443537
-│   │       ├── n01443537_10007.JPEG
-│   │       ├── n01443537_10014.JPEG
-											 ...
-│   └── validation
-│       ├── ILSVRC2012_val_00000236.JPEG
-│       ├── ILSVRC2012_val_00000262.JPEG        
-											...
-```
-
-**步骤二：validation数据处理**
-
-经过上一步，train数据集已经放入了1000个分类label文件夹中形成了规整的格式，而验证集部分的图片还全部堆放在validation文件夹中，这一步，我们就用preprocess_imagenet_validation_data.py对其进行处理，使其也按类别存放到label文件夹下。
-
-```shell
-python3 preprocess_imagenet_validation_data.py  ../data/imagenet/validation
-# 参数 ../data/imagenet/validation为ILSVRC2012_img_val.tar解压后验证集图像存放的路径。
-```
-
-处理后项目文件夹格式如下：
-
-```shell
-.
-├── extract_trainval.sh
-├── imagenet
-│   ├── ILSVRC2012_img_train.tar
-│   ├── ILSVRC2012_img_val.tar
-│   ├── train
-│   │   ├── n01440764
-│   │   └── n01443537
-                                ...
-│   └── validation
-│       ├── n01440764
-│       └── n01443537
-                               ...
-```
-
-至此，已经完成了全部的数据预处理，您可以直接跳转至**转换训练集**和**转换验证集**部分，轻松完成ImageNet-2012数据集到OFRecord的转换过程了。
+完整的ImageNet(2012)制作过程，请参考tools目录下的[README说明](https://github.com/Oneflow-Inc/OneFlow-Benchmark/Classification/cnns/tools/README.md)
 
 
 
