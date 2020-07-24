@@ -34,13 +34,13 @@ The main open source repository are:
 
 * [oneflow](https://github.com/Oneflow-Inc/oneflow)：Includes the complete deep learning framework code.
 
-* [OneFlow-Benchmark](https://github.com/Oneflow-Inc/OneFlow-Benchmark)：包含在OneFlow上实现的多种模型（含脚本、文档、数据集处理方法等）
+* [OneFlow-Benchmark](https://github.com/Oneflow-Inc/OneFlow-Benchmark)：Includes many model can achieved on OneFlow (script, documentations and data processing methods)
 
-* [OneFlow-Toolkit](https://github.com/Oneflow-Inc/oneflow_toolkit)：包含OneFlow在训练过程中的日志解析、训练调试、数据转换等工具
+* [OneFlow-Toolkit](https://github.com/Oneflow-Inc/oneflow_toolkit)：Include the Log analysis, training and debugging and data conversion tools of OneFlow.
 
-你也可以在[这里](https://github.com/Oneflow-Inc)找到或者创建更多的OneFlow开源项目。
+You can find or create more OneFlow open source project in [here](https://github.com/Oneflow-Inc).
 
-## 贡献测试案例
+## Contribution of the testing case
 
 OneFlow已经对现有的多种流行、前沿的模型，进行了复现及测试，相关的脚本及文档均放置在[OneFlow-Benchmark](https://github.com/Oneflow-Inc/OneFlow-Benchmark)仓库。
 
