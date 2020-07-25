@@ -47,51 +47,51 @@ In **data parallel**, divide the sample data in small parts. **Data after dividi
 
 ### Model parallel diagram
 
-在 **模型并行** 中，将模型进行切分，**完整的数据** 被送至各个训练节点，与 **切分后的模型** 进行运算，最后将多个节点的运算结果合并，如下图所示：
+In **model parallel**, model will be divided. **Completely data** will send to each nodes and calculate with **model after dividing**. Finally combined the model in each nodes. Like figure show below:
 
 ![mat_mul_op](imgs/mul_op_model_parr.png)
 
-总之：
+Basically:
 
-* 数据并行下，各个训练节点的模型是完全一样的，数据被切分；
+* In data parallel, each node use the same model to train, data will be cut.
 
-* 模型并行下，各个训练节点都接收一样的完整数据， 模型被切分。
+* In model parallel, each node received same data, model will be cut.
 
-接下来我们将介绍 OneFlow 中的两种并行策略（`mirrored` 策略与 `consistent` 策略），学习在不同的策略如何选择并行方式。
+We will introduce two parallel strategies in OneFlow (`mirrored` and `consistent`). Study how to choose different parallel methods in different strategies.
 
-### 两类占位符
-在[使用OneFlow搭建神经网络](../basics_topics/build_nn_with_op_and_layer.md)中已经介绍了 `Placeholder` 的概念，它是数据占位符。
+### Two type of place holder
+In [use OneFlow build neural network](../basics_topics/build_nn_with_op_and_layer.md), we already introduce the concept of  `Placeholder`. It is data place holder.
 
-实际上，针对并行，OneFlow的 `Placeholder` 还可以细分为两类：分别通过接口 `oneflow.typing.Numpy.Placeholder` 和 `oneflow.typing.ListNumpy.Placeholder` 构造的占位符，分别对应 `Consistent`  与 `Mirrored`情况。
+In fact, for parallel, the  `Placeholder`  of OneFlow can divide to two types: Use `oneflow.typing.Numpy.Placeholder` and `oneflow.typing.ListNumpy.Placeholder` to constructing the place holder is corresponding to `Consistent`  and `Mirrored`.
 
-我们将在下文中看到它们的具体应用。
+We will see the detailed examples below.
 
 
-## 在 OneFlow 中使用 mirrored 策略
+## Using mirrored in OneFlow
 
-其它的框架，如 TensorFlow、Pytorch 均支持 mirroed 策略；OneFlow 的 mirrored 策略与它们类似。
+Other framework like TensorFlow or Pytorch are support mirroed strategy. The strategy of OneFlow is similar to them.
 
-在 mirrored 策略中，每个节点的模型构图是完全相同的，只能采用 **数据并行**。
+In mirrored, the model in each nodes is same, thus we only can use **data parallel**.
 
-在 OneFlow 中，默认是 mirrored 策略，也可以通过 `flow.function_config()` 的 `default_distribute_strategy` 接口来显式指定：
+In OneFlow, the default strategy is mirrored or you can use `default_distribute_strategy` of  `flow.function_config()` to define:
 
 ```python
     func_config = flow.function_config()
     func_config.default_distribute_strategy(flow.scope.mirrored_viewed())
 ```
 
-在 `mirrored_strategy` 下，只能采用 **数据并行** 的并行模式，在调用任务函数时，我们需要将数据按照训练节点的数目（显卡总数）进行平均切分，并将切分后的数据放入 `list` 中进行传递，`list` 中的每个元素，就是后分配给 **各个显卡** 的实际数据。
+In `mirrored_strategy`, only can use **data parallel**. When calling the function, we need divided data in average according to number of the GPU and put the data after dividing in to `list`. Every elements in `list` is the data to send to **each GPU**.
 
-训练函数的返回值，也不再使用 `numpy` 转化为 numpy 数据，而是使用 `numpy_list` 接口获取一个 `list`，`list` 中的每个元素，对应了每张卡上训练结果。
+The return value of job function no longer use  `numpy` data. It actually use `numpy_list`  to get a  `list`. Every elements in  `list`is corresponding to the results of each GPU.
 
-以上提及的 `list` 中的所有元素 **拼接在一起** ，才是一个完整的BATCH。
+**Combined all **elements `list` mention above can make a complete BATCH.
 
-### 代码示例
-在以下的代码中，我们使用采用默认的 `mirrored_strategy` 策略，使用2个 GPU 进行训练。
+### Example
+In following script, we use default  `mirrored_strategy` strategy with two GPU to training.
 
-完整代码：[mirrored_strategy.py](../code/extended_topics/mirrored_strategy.py)
+Name: [mirrored_strategy.py](../code/extended_topics/mirrored_strategy.py)
 
-重点部分的说明请见后文“代码解析”部分。
+The key part of the description in "script explanation" section.
 
 ```python
 import numpy as np
