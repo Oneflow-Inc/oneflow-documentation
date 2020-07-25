@@ -2,41 +2,41 @@ When doing distributed training, OneFlow provide two aspects for determining the
 
 In this article, we will introduce:
 
-* 数据并行与模型并行的区别及适用场景
+* The difference and applicable scenario of the data parallel and model parallel.
 
-* 在分布式任务中采用 `mirrored` 策略及其特点
+* The characteristics of using  `mirrored`  in distributed training.
 
-* 在分布式任务中采用 `consistent` 策略及其特点
+* The characteristics of using  `consistent` in distributed training.
 
-## 数据并行与模型并行
-为了更好地理解OneFlow中的 `consistent` 和 `mirrored` 策略，我们需要了解分布式任务中的 **数据并行** 、**模型并行** 两种并行方式的区别。
+## Data parallel and model parallel.
+In order to better understand  `consistent` and `mirrored` in OneFlow. We need to understand the difference between **data parallel **and **model parallel** in distributed training.
 
-为了更直观地展示两者的差别，我们先看一个简单的op (在OneFlow中，逻辑上的运算都被抽象为了 operator ，称作 op)：矩阵乘法。
+To further demonstrated the difference between data parallel and model parallel, we will introduce a simple operator(In OneFlow, the logical calculation will regard as operator): matrix multiplication
 
-我们假定在模型训练中，存在一个输入矩阵 I ，通过矩阵 I 与矩阵 W 做矩阵乘法，得到输出矩阵 O 。
+We assume that in training model have a matrix I as input. Multiply matrix I and W then get result O.
 
 ![I×W](imgs/i_mul_w.png)
 
-如以上所示，I的大小为(N, C1)，W的大小为(C1, C2)，O的大小为(N, C2)。
+As the description above, size of I is (N, C1), size of W is (C1, C2) and size of O is (N, C2).
 
-结合机器学习的业务逻辑，可以赋予以上几个矩阵直观意义：
+Combined  machine learning logic. It can give definitions to the matrixes above:
 
-* I 矩阵作为输入矩阵，每一行都是一个样本，一行中的各列代表了样本的特征
+* Matrix I as the input object, each line is a sample and each column is represents the characteristics of sample.
 
-* W 矩阵代表了模型参数
+* Matrix W represents the parameters of model.
 
-* O 是预测结果或者 label ，如果是预测任务，那么就是由 I、W 求解 O，得到分类结果的过程；如果是训练任务，那么就是由 I 与 O 求解 W 的过程
+* Matrixe O is the result of prediction or label. If it is a prediction task. Then it is a process of figure out O by I and W and get the distribution result. If it is a training task. Then Then it is a process of figure out W by I and O.
 
-当以上 I 矩阵的行 N 很大，说明样本很多；如果 W 矩阵的列 C2 很大，说明模型复杂；当样本数目、模型复杂程度复杂到一定程度时，单机单卡的硬件条件已经无法承载训练任务，就需要考虑分布式的方式训练。而在分布式系统中，我们可以选择 **数据并行** 和 **模型并行**。
+When the line N in matrixe I is very large. It means we have large scale of sample. If when C2 in matrixe W is very large. It means we have very complex model. If the scale and complexity reached a point. The solo machine with solo GPU will not able to handle the training job. We might consider the distributed training. In distributed training system, we can choose ** data parallel **and **model parallel**.
 
 <a id="mat_mul_op"></a>
-为了便于理解数据并行与模型并行，我们先用下图作为矩阵相乘 op 的示例：
+In order to better understand data parallel and model parallel, we use the following figure as the demo of matrix multiplication operator:
 
 ![mat_mul_op](imgs/mul_op_illustrated.png)
 
-等式左边第1个灰色的矩阵代表输入样本，每一行是一个样本；等式左边第2个蓝色的矩阵代表模型。
+The first matrixe in grey on left of equation is the input sample. Each line is a sample. The second matrixe in blue on left of equation is the model.
 
-在后文中，我们将看到以上的 op，在数据并行与模型并行下，不同的“切分”方式。
+In this article, we will see the operators above switching to different way under data parallel and model parallel.
 
 
 ### 数据并行图示
