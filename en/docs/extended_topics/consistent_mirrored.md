@@ -144,21 +144,21 @@ if __name__ == '__main__':
     if i % 20 == 0: print(total_loss.mean())
 ```
 
-### 代码解析
-以上代码中：
+### Script explanation
+In the above script:
 
-* 使用 `flow.config.gpu_device_num` 设置 GPU 数目为2
+* Use  `flow.config.gpu_device_num` to set GPU amount as two.
 ```python
 flow.config.gpu_device_num(2)
 ```
 
-* `oneflow.typing.ListNumpy.Placeholder` 定义的样本数目，是被切分后的数目，即代码中的 `BATCH_SIZE_PER_GPU` 与总样本数 `BATCH_SIZE` 的关系为：`BATCH_SIZE=BATCH_SIZE_PER_GPU×GPU_NUM`
+* `oneflow.typing.ListNumpy.Placeholder` defined the sample amount which is the amount after dividing. And the relationship between `BATCH_SIZE_PER_GPU`  and `BATCH_SIZE` is `BATCH_SIZE=BATCH_SIZE_PER_GPU×GPU_NUM`.
 ```python
 def train_job(images:oft.ListNumpy.Placeholder((BATCH_SIZE_PER_GPU, 1, 28, 28),       dtype=flow.float),
         labels:oft.ListNumpy.Placeholder((BATCH_SIZE_PER_GPU, ), dtype=flow.int32))
 ```
 
-* 切分后的数据，需要保存至 `list` 中传入训练函数；`list` 中元素的个数与 **参与训练的GPU数目** 一致；OneFlow 将按照 `list` 中元素顺序，向各卡传递数据( `list` 中第 i 个元素对应第 i 张卡)：
+* The data after dividing need to store in the  `list` and pass to training functions. The number of elements in `list` need be same as the **GPU number in training**. OneFlow will pass the data according to the order of the elements in `list ` to each GPU(the number i element in `list` is corresponding to number i GPU):
 ```python
     images1 = images[:BATCH_SIZE_PER_GPU]
     images2 = images[BATCH_SIZE_PER_GPU:]
@@ -171,7 +171,7 @@ def train_job(images:oft.ListNumpy.Placeholder((BATCH_SIZE_PER_GPU, 1, 28, 28), 
     loss = train_job(imgs_list, labels_list).get().ndarray_list()
 ```
 
-* 返回的结果，通过 `numpy_list` 转为 numpy 数据，也是一个 `list`，该 `list` 中元素个数与 **参与训练的GPU数目** 一致；`list` 中的第i个元素对应了第 i 张 GPU 卡上的运算结果。我们做了拼接后，计算并打印了 `total_loss`
+* The results use  `numpy_list`  convert to numpy data which is also a list. The number of elements in this `list` need be same as **the number of GPU in training process**. Then we do the combination then print the  `total_loss`
 ```python
     loss = train_job(imgs_list, labels_list).get().ndarray_list()
     total_loss = np.array([*loss[0], *loss[1]])
