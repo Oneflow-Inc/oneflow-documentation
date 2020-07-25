@@ -40,7 +40,6 @@ def eval_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.fl
 g_total = 0
 g_correct = 0
 
-
 def acc(labels, logtis):
     global g_total
     global g_correct
