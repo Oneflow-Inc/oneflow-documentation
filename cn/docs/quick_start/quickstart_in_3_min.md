@@ -13,7 +13,7 @@ cd oneflow-documentation/docs/code/quick_start/ #切换到示例代码路径
 python mlp_mnist.py
 ```
 
-这样您将得到下面的输出：
+我们将得到类似以下输出：
 ```
 2.7290366
 0.81281316
@@ -28,51 +28,53 @@ python mlp_mnist.py
 ## 代码解读
 下面是完整代码。
 ```python
-#mlp_mnist.py
-import numpy as np
+# mlp_mnist.py
 import oneflow as flow
-from mnist_util import load_data
 import oneflow.typing as oft
 
 BATCH_SIZE = 100
 
+
 def get_train_config():
-  config = flow.function_config()
-  config.default_data_type(flow.float)
-  config.train.primary_lr(0.1)
-  config.train.model_update_conf({"naive_conf": {}})
-  return config
+    config = flow.function_config()
+    config.default_data_type(flow.float)
+    config.train.primary_lr(0.1)
+    config.train.model_update_conf({"naive_conf": {}})
+    return config
 
 
 @flow.global_function(get_train_config())
 def train_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-              labels:oft.Numpy.Placeholder((BATCH_SIZE, ), dtype=flow.int32)):
-  with flow.scope.placement("cpu", "0:0"):
-    initializer = flow.truncated_normal(0.1)
-    reshape = flow.reshape(images, [images.shape[0], -1])
-    hidden = flow.layers.dense(reshape, 512, activation=flow.nn.relu, kernel_initializer=initializer)
-    logits = flow.layers.dense(hidden, 10, kernel_initializer=initializer)
-    loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits)
-  flow.losses.add_loss(loss)
-  return loss
+              labels:oft.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32)) -> oft.Numpy:
+    with flow.scope.placement("cpu", "0:0"):
+        initializer = flow.truncated_normal(0.1)
+        reshape = flow.reshape(images, [images.shape[0], -1])
+        hidden = flow.layers.dense(reshape, 512, activation=flow.nn.relu, kernel_initializer=initializer)
+        logits = flow.layers.dense(hidden, 10, kernel_initializer=initializer)
+        loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits)
+    flow.losses.add_loss(loss)
+
+    return loss
 
 
 if __name__ == '__main__':
-  check_point = flow.train.CheckPoint()
-  check_point.init()
-  (train_images, train_labels), (test_images, test_labels) = load_data(BATCH_SIZE)
-  for i, (images, labels) in enumerate(zip(train_images, train_labels)):
-    loss = train_job(images, labels).get().mean()
-    if i % 20 == 0: print(loss)
+    check_point = flow.train.CheckPoint()
+    check_point.init()
+
+    (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(BATCH_SIZE)
+    for i, (images, labels) in enumerate(zip(train_images, train_labels)):
+        loss = train_job(images, labels)
+        if i % 20 == 0:
+            print(loss.mean())
 ```
 
-后面章节是对这段代码的简单介绍。
+接下来让我们对这段代码的简单介绍。
 
 OneFlow 相对其他深度学习框架较特殊的地方是这里：
 ```python
 @flow.global_function(get_train_config())
 def train_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-              labels:oft.Numpy.Placeholder((BATCH_SIZE, ), dtype=flow.int32)):
+              labels:oft.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32)) -> oft.Numpy:
 ```
 `train_job` 是一个被 `@flow.global_function` 修饰的函数，通常被称作任务函数。只有被 `@flow.global_function` 修饰的任务函数才能够被 OneFlow 识别成一个神经网络训练或者预测任务。
 
@@ -86,11 +88,11 @@ def train_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.f
 
 - `check_point.init()`: 初始化网络模型参数；
 
-- `load_data(BATCH_SIZE)`: 准备并加载训练数据；
+- `flow.data.load_mnist(BATCH_SIZE)`: 准备并加载训练数据；
 
-- `train_job(images, labels).get().mean()`: 返回每一次训练的损失值；
+- ` train_job(images, labels)`: 返回每一次训练的损失值；
 
-- `if i % 20 == 0: print(loss)`: 每训练20次，打印一次损失值。
+- `print(loss.mean())`: 每训练20次，打印一次损失值。
 
 
   
