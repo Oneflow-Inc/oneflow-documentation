@@ -39,13 +39,13 @@ The first matrixe in grey on left of equation is the input sample. Each line is 
 In this article, we will see the operators above switching to different way under data parallel and model parallel.
 
 
-### 数据并行图示
+### Data parallel diagram
 
-在 **数据并行** 中，将样本数据进行切分，**切分后的数据** 被送至各个训练节点，与 **完整的模型** 进行运算，最后将多个节点的信息进行合并，如下图所示：
+In **data parallel**, divide the sample data in small parts. **Data after dividing **will send to each training nodes and calculate with the **completely models**. Finally combined the information in each nodes. Like figure show below:
 
 ![mat_mul_op](imgs/mul_op_data_parr.png)
 
-### 模型并行图示
+### Model parallel diagram
 
 在 **模型并行** 中，将模型进行切分，**完整的数据** 被送至各个训练节点，与 **切分后的模型** 进行运算，最后将多个节点的运算结果合并，如下图所示：
 
