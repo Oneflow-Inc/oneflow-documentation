@@ -38,7 +38,7 @@ def get_eval_config():
 
 @flow.global_function(get_eval_config())
 def eval_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-             labels:oft.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32)):
+             labels:oft.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32)) -> oft.Numpy:
     with flow.scope.placement("gpu", "0:0"):
         logits = lenet(images, train=False)
     return logits
@@ -61,10 +61,10 @@ def main():
     check_point.load("./lenet_models_1")
 
     image = load_image(sys.argv[1])
-    logits = eval_job(image, np.zeros((1,)).astype(np.int32)).get()
+    logits = eval_job(image, np.zeros((1,)).astype(np.int32))
 
-    prediction = np.argmax(logits.ndarray(), 1)
-    print("predict:{}".format(prediction[0]))
+    prediction = np.argmax(logits, 1)
+    print("prediction: {}".format(prediction[0]))
 
 if __name__ == '__main__':
     main()
