@@ -1,6 +1,6 @@
-在进行分布式训练时，OneFlow 框架提供了两种角度看待数据与模型的关系，被称作 `consistent` 策略与 `mirrored` 策略。
+When doing distributed training, OneFlow provide two aspects for determining the relationship between data and models. There are `consistent` strategy and `mirrored` strategy.
 
-本文将介绍：
+In this article, we will introduce:
 
 * 数据并行与模型并行的区别及适用场景
 
