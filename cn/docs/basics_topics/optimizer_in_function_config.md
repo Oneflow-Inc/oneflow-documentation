@@ -18,7 +18,7 @@ def get_eval_config():
   return config
   
 @flow.global_function(get_eval_config())
-def eval_job():
+def eval_job() -> oft.Numpy:
   # build up NN here
 ```
 当然，上面的 `get_eval_config` 中只配置了网络的基本参数。在下面的例子中，我们将介绍一个训练任务，并配置学习率 lr 和 sgd 优化器等参数。
@@ -35,7 +35,7 @@ def get_train_config():
   return config
   
 @flow.global_function(get_train_config())
-def train_job():
+def train_job() -> oft.Numpy:
   # build up NN here
 ```
 其中 `get_train_config` 是定义了训练任务(train_job)中的配置，主要的参数设置如下：
@@ -183,7 +183,7 @@ def test_job():
 ```
 上面的例子中，通过 `function_config` 设置了网络的缺省数据类型为 float；将被用于训练；学习率是0.1；采用了 `naive_conv` 优化算法，也就是 `SGD`。
 
-function_config 中还包含哪些配置请参考[function_config API](http://183.81.182.202:8000/html/oneflow.html).
+function_config 中还包含哪些配置请参考[function_config API](../api/oneflow.html?highlight=functionconfig#oneflow.FunctionConfig)。
 
 ### 训练还是预测配置
 默认情况下，任务函数只能做预测任务，如果想要做训练任务，需要设置 `train` 属性。
