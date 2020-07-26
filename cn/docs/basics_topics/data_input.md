@@ -15,51 +15,57 @@ OneFlow 的数据流水线的方式，看上去稍显复杂，实际则采用了
 ## 使用Numpy作为数据输入
 ### 运行一个例子
 
-在Oneflow中，你可以在训练/预测过程中，直接使用 numpy ndarray 类型的数据作为输入，下面是一个完整的例子：
+在Oneflow中，你可以在训练/预测过程中，直接使用 `numpy ndarray` 类型的数据作为输入，下面是一个完整的例子：
 
 ```python
 # feed_numpy.py
 import numpy as np
 import oneflow as flow
 import oneflow.typing as oft
-
+from typing import Tuple
 
 @flow.global_function(flow.function_config())
 def test_job(images:oft.Numpy.Placeholder((32, 1, 28, 28), dtype=flow.float),
-             labels:oft.Numpy.Placeholder((32,), dtype=flow.int32)):
+             labels:oft.Numpy.Placeholder((32,), dtype=flow.int32)) -> Tuple[oft.Numpy, oft.Numpy]:
     # do something with images or labels
-    return images, labels
+    return (images, labels)
 
 
 if __name__ == '__main__':
     images_in = np.random.uniform(-10, 10, (32, 1, 28, 28)).astype(np.float32)
     labels_in = np.random.randint(-10, 10, (32,)).astype(np.int32)
-    images, labels = test_job(images_in, labels_in).get()
+    images, labels = test_job(images_in, labels_in)
     print(images.shape, labels.shape)
 ```
 
-在上面的代码中，我们用 `@flow.global_function` 定义了一个预测任务--test_job()，其输入为 images 和 labels ，我们可以直接通过 numpy 格式的 images 和 labels 作为其数据输入。
+在上面的代码中，我们用 `@flow.global_function` 定义了一个预测任务-- `test_job()`，其输入为 `images` 和 `labels` ，我们可以直接通过 `numpy` 格式的 `images_in` 和 `labels_in` 作为其数据输入。
 
-你可以下载完整代码：[feed_numpy.py](../code/basics_topics/feed_numpy.py) ，然后用 python 执行即可，如：
+下载完整代码：[feed_numpy.py](../code/basics_topics/feed_numpy.py) ，然后用 python 执行即可：
 
 ```bash
 python feed_numpy.py
 ```
-您将得到如下结果
+将得到如下结果
 ```bash
 (32, 1, 28, 28) (32,)
 ```
 ### 代码解析
-当用户要用 OneFlow 进行一个深度学习的训练或者预测任务的时候，需要定义一个任务/作业函数(Job Function)，然后再使用这个 Job 函数。先`定义`再`使用`是两个基本的步骤。要实现 numpy 数据输入功能，就需要在`定义`和`使用`任务函数的地方特殊处理一下，下面就分别说一下。
+我们在快速入门的[识别 MNIST 手写体数字](../quick_start/lenet_mnist.md)一文中，已经了解到任务函数分为先 **定义** 再 **调用** 两个基本的步骤。我们来解析，如果要将 numpy 数据作为任务函数的输入，在任务函数的定义和调用阶段分别要如何做。
 
 #### 定义
-定义的地方需要声明一下有哪些输入，以及这些输入的形状和数据类型等信息。下面这段代码就是定义 Job 函数的地方。`test_job` 是 Job 函数的函数名，例子中它有两个输入：`images` 和 `labels` ，而且分别有自己的形状和数据类型。
+在任务函数定义时，指定参数类型为 `oneflow.typing` 中的类型作为数据占位符，声明输入变量的形状及数据类型。 
+
 ```python
 def test_job(images:oft.Numpy.Placeholder((32, 1, 28, 28), dtype=flow.float),
-             labels:oft.Numpy.Placeholder((32, ), dtype=flow.int32)):
+             labels:oft.Numpy.Placeholder((32, ), dtype=flow.int32)) -> Tuple[oft.Numpy, oft.Numpy]:
 ```
-#### 使用
-在使用之前需要先准备好需要被输入的 numpy 的 ndarray ，例子中按照输入的形状和数据类型的要求随机生成了输入：`images_in` 和 `labels_in` 。
+
+如以上代码中，声明了 `images` 和 `labels` 两个传入参数，它们都是 `oneflow.typing.Numpy`的占位符，在调用时，需要传入形状、数据类型一致的 `numpy` 数据。
+
+#### 调用
+调用任务函数时，准备好与任务函数中声明的占位符形状、数据类型一致的 `numpy ndarray` 数据，作为参数调用即可。
+
+例子中按照输入的形状和数据类型的要求随机生成了输入：`images_in` 和 `labels_in` ：
 ```python
   images_in = np.random.uniform(-10, 10, (32, 1, 28, 28)).astype(np.float32)
   labels_in = np.random.randint(-10, 10, (32, )).astype(np.int32)
@@ -67,18 +73,16 @@ def test_job(images:oft.Numpy.Placeholder((32, 1, 28, 28), dtype=flow.float),
 
 然后把 `images_in` 和 `labels_in` 作为 `test_job` 的输入传入并且进行计算，并返回计算结果保存到 `images` 和 `labels` 里。
 ```python
-  images, labels = test_job(images_in, labels_in).get()
+  images, labels = test_job(images_in, labels_in)
 ```
 
-一般使用的地方都是在一个训练或者预测任务的循环中，这个简化的例子就使用了一次作业函数。
+一般我们是在一个训练或者预测任务的循环中调用任务函数，以上简化的例子仅调用了一次任务函数。
 
-有关Job函数参数的两点说明：
+关于占位符的其它说明：
 
-* 1 - 例子中 `oft.Numpy.Placeholder` 返回的是一个占位符，OneFlow中还可以用 `oft.ListNumpy.Placeholder` 方式生成占位符，这两种方式的区别参考[两类blob](../extended_topics/consistent_mirrored.md);
+* `oneflow.typing.Numpy.Placeholder` 表示的是 `numpy ndarray` 类型的占位符，OneFlow 中还有多种占位符，分别对应 `list of ndarray` 以及更复杂的形式。 具体可以参考[任务函数的定义与调用](../extended_topics/job_function_define_call.md);
 
-* 2 - 任务函数支持多个参数，每个参数都必须是下面几种中的一种：1. 一个`占位符`  2. 一个由`占位符`组成的列表(list)
-
-**总结**：在定义 job 函数的时候把 job 函数的输入定义成占位符的形式，当使用 job 函数的时候输入相应的 numpy 数组对象，这样就把 numpy 数据送入了网络进行训练或者预测。
+* 调用任务函数时，传入的参数和返回的结果，都是 `numpy` 数据，而不是占位符
 
 ## 使用OneFlow数据流水线
 OneFlow 数据流水线解耦了数据的加载和数据预处理过程：
