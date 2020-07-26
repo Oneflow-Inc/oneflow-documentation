@@ -87,9 +87,9 @@ def test_job(images:oft.Numpy.Placeholder((32, 1, 28, 28), dtype=flow.float),
 ## 使用OneFlow数据流水线
 OneFlow 数据流水线解耦了数据的加载和数据预处理过程：
 
-- 数据的加载目前支持 `data.ofrecord_reader` 和 `data.coco_reader` 两种，分别支持 OneFlow 原生的 `OFRecord` 格式的文件和 coco 数据集，其他格式的 reader 可以通过自定义扩展；
+* 数据的加载目前支持 `data.ofrecord_reader` 和 `data.coco_reader` 两种，分别支持 OneFlow 原生的 `OFRecord` 格式的文件和 coco 数据集，其他格式的 reader 可以通过自定义扩展；
 
-- 数据预处理过程采用的是流水线的方式，支持各种数据预处理算子的组合，数据预处理算子也可以自定义扩展。
+* 数据预处理过程采用的是流水线的方式，支持各种数据预处理算子的组合，数据预处理算子也可以自定义扩展。
 
 ### 运行一个例子
 下面就给一个完整的例子，这个例子读取的是 `OFRecord` 数据格式文件，处理的是 ImageNet 数据集中的图片。完整代码可以点此下载：[of_data_pipeline.py](../code/basics_topics/of_data_pipeline.py)
@@ -97,14 +97,15 @@ OneFlow 数据流水线解耦了数据的加载和数据预处理过程：
 ```python
 # of_data_pipeline.py
 import oneflow as flow
-
+import oneflow.typing as oft
+from typing import Tuple
 
 @flow.global_function(flow.function_config())
-def test_job():
+def test_job() -> Tuple[oft.Numpy, oft.Numpy]:
     batch_size = 64
     color_space = 'RGB'
     with flow.scope.placement("cpu", "0:0"):
-        ofrecord = flow.data.ofrecord_reader('/path/to/ImageNet/ofrecord',
+        ofrecord = flow.data.ofrecord_reader('path/to/ImageNet/ofrecord',
                                              batch_size=batch_size,
                                              data_part_num=1,
                                              part_name_suffix_length=5,
@@ -124,12 +125,12 @@ def test_job():
 
 
 if __name__ == '__main__':
-    images, labels = test_job().get()
+    images, labels = test_job()
     print(images.shape, labels.shape)
 ```
-为了运行上面这段脚本，需要一个 ofrecord 数据集，您可以[加载与准备OFRecord数据集](../extended_topics/how_to_make_ofdataset.md)或者下载我们准备的一个包含64张图片的 ofrecord 文件 [part-00000](https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/basics_topics/part-00000) 。
+为了运行上面这段脚本，需要一个 ofrecord 数据集，你可以[加载与准备OFRecord数据集](../extended_topics/how_to_make_ofdataset.md)或者下载我们准备的一个包含64张图片的 ofrecord 文件 [part-00000](https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/basics_topics/part-00000) 。
 
-上面这段脚本中 `/path/to/ImageNet/ofrecord` 替换为保存 `part-00000` 文件的目录，然后运行
+上面这段脚本中 `path/to/ImageNet/ofrecord` 替换为保存 `part-00000` 文件 **所在的目录**，然后运行
 ```
 python of_data_pipeline.py
 ```
@@ -140,9 +141,9 @@ python of_data_pipeline.py
 ### 代码解析
 OneFlow的数据处理流水线分为两个阶段： **数据加载** 和 **数据预处理** 。
 
-- 数据加载采用的是 `ofrecord_reader`，需要指定 ofrecord 文件所在的目录，和一些其他参数，请参考 [ofrecord_reader api](../api/data.html?highlight=ofrecord_reader#oneflow.data.ofrecord_reader)
+* 数据加载采用的是 `ofrecord_reader`，需要指定 ofrecord 文件所在的目录，和一些其他参数，请参考 [ofrecord_reader api](../api/data.html?highlight=ofrecord_reader#oneflow.data.ofrecord_reader)
 
-- 数据预处理是一个系列过程，`OFRecordImageDecoderRandomCrop` 负责图片解码并随机做了裁剪，`Resize` 把裁剪后的图片调整成224x224的大小， `CropMirrorNormalize` 把图片进行了正则化。标签部分只需要进行解码 `CropMirrorNormalize` 。
+* 数据预处理是一个系列过程，`OFRecordImageDecoderRandomCrop` 负责图片解码并随机做了裁剪，`Resize` 把裁剪后的图片调整成224x224的大小， `CropMirrorNormalize` 把图片进行了正则化。标签部分只需要进行解码 `CropMirrorNormalize` 。
 
 OneFlow提供了一些数据加载和预处理的算子，详细请参考[数据流水线API](../api/data.html)。未来会不断丰富和优化这些算子，用户也可以自己定义算子满足特定的需求。
 
