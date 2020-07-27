@@ -1,8 +1,8 @@
-OneFlow 的开发环境为 Linux，如果我们想使用 GUI 开发、调试 OneFlow，可以采用 VS Code + Remote - SSH 插件的方案。
+The developing environment of OneFlow is Linux. If we want to use GUI developing or configure OneFlow. We can use VS code withe a Remote - SSH connection to server.
 
-如果对于 VS Code 及其插件系统还不熟悉，可以参阅[官方文档](https://code.visualstudio.com/docs)。
+If you are not familiar with VScode please reference to [official documentation](https://code.visualstudio.com/docs).
 
-本文包括：
+This article:
 
 * 如何编译 `Debug` 版本的 OneFlow
 
