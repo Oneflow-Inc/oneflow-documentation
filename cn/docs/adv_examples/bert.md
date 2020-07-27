@@ -310,7 +310,7 @@ cp -R --remove-destination ./dataset/uncased_L-12_H-768_A-12_oneflow/* ./squadMo
 ```
 
 ### OneFlow预训练模型的训练次数问题
-OneFlow生成的模型目录中，会有一个名为`System-Train-TrainStep-xxx`的子目录(xxx为任务函数的函数名)，该子目录下的out文件中，保存有训练总迭代数，并且这个迭代数会用于动态调节训练过程的`learning rate`。
+OneFlow生成的模型目录中，会有一个名为`System-Train-TrainStep-xxx`的子目录(xxx为作业函数的函数名)，该子目录下的out文件中，保存有训练总迭代数，并且这个迭代数会用于动态调节训练过程的`learning rate`。
 
 为了防止保存的迭代数影响到微调的训练，应该将out文件中的二进制数据清零：
 ```shell

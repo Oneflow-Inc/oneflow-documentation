@@ -22,7 +22,7 @@
 
 ## 使用 get_variable 创建/获取模型参数对象
 
-我们可以使用 `oneflow.get_variable` 方法创造或者获取一个对象，该对象可以用于在全局任务函数中交互信息；当调用 `OneFlow.CheckPoint` 的对应接口时，该对象也会被自动地保存或从存储设备中恢复。
+我们可以使用 `oneflow.get_variable` 方法创造或者获取一个对象，该对象可以用于在全局作业函数中交互信息；当调用 `OneFlow.CheckPoint` 的对应接口时，该对象也会被自动地保存或从存储设备中恢复。
 
 因为这个特点，`get_variable` 创建的对象，常用于存储模型参数。实际上，OneFlow 中很多较高层接口（如 `oneflow.layers.conv2d`），内部使用 `get_variable` 创建模型参数。
 
@@ -138,7 +138,7 @@ def load(self, path)
 check_point = flow.train.CheckPoint() #构造CheckPoint对象
 check_point.init() #初始化网络参数
 
-#... 调用任务函数等操作
+#... 调用作业函数等操作
 ```
 
 ### 调用 save 保存模型
@@ -157,7 +157,7 @@ check_point.save('./path_to_save')
 
 ### 调用 load 加载模型
 通过调用 `CheckPoint` 对象的 `load` 方法，可以从指定的路径中加载模型。
-注意，从磁盘中加载的模型需要与当前任务函数中使用使用的网络模型匹配，否则会出错。
+注意，从磁盘中加载的模型需要与当前作业函数中使用使用的网络模型匹配，否则会出错。
 
 以下代码，构造 `CheckPoint对象` 并从指定路径加载模型：
 ```python
@@ -168,7 +168,7 @@ check_point.load("./path_to_model") #加载先前保存的模型
 
 ## OneFlow模型的存储结构
 OneFlow 模型是一组已经被训练好的网络的 **参数值** ，目前OneFlow的模型中没有包括网络的元图信息（Meta Graph）。
-模型所保存的路径下，有多个子目录，每个子目录对应了 `任务函数` 中模型的 `name` 。
+模型所保存的路径下，有多个子目录，每个子目录对应了 `作业函数` 中模型的 `name` 。
 比如，我们先通过代码定义以下的模型：
 
 ```python
@@ -216,7 +216,7 @@ lenet_models_name
 
 可以看到：
 
-* 任务函数中的网络模型，每个变量对应一个子目录
+* 作业函数中的网络模型，每个变量对应一个子目录
 
 * 以上每个子目录中，都有一个 `out` 文件，它是以二进制的方式存储的网络参数信息。`out` 是默认文件名，可以通过设置网络中的 `variable op` 修改。
 

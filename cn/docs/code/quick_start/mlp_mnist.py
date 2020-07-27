@@ -1,6 +1,5 @@
 # mlp_mnist.py
 import oneflow as flow
-from mnist_util import load_data
 import oneflow.typing as oft
 
 BATCH_SIZE = 100
@@ -16,7 +15,7 @@ def get_train_config():
 
 @flow.global_function(get_train_config())
 def train_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-              labels:oft.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32)):
+              labels:oft.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32)) -> oft.Numpy:
     with flow.scope.placement("cpu", "0:0"):
         initializer = flow.truncated_normal(0.1)
         reshape = flow.reshape(images, [images.shape[0], -1])
@@ -32,8 +31,9 @@ if __name__ == '__main__':
     check_point = flow.train.CheckPoint()
     check_point.init()
 
-    (train_images, train_labels), (test_images, test_labels) = load_data(BATCH_SIZE)
+    (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(BATCH_SIZE)
     for i, (images, labels) in enumerate(zip(train_images, train_labels)):
-        loss = train_job(images, labels).get().mean()
+        loss = train_job(images, labels)
         if i % 20 == 0:
-            print(loss)
+            print(loss.mean())
+

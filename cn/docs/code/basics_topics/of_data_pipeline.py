@@ -1,13 +1,14 @@
 # of_data_pipeline.py
 import oneflow as flow
-
+import oneflow.typing as oft
+from typing import Tuple
 
 @flow.global_function(flow.function_config())
-def test_job():
+def test_job() -> Tuple[oft.Numpy, oft.Numpy]:
     batch_size = 64
     color_space = 'RGB'
     with flow.scope.placement("cpu", "0:0"):
-        ofrecord = flow.data.ofrecord_reader('/path/to/ImageNet/ofrecord',
+        ofrecord = flow.data.ofrecord_reader('path/to/ImageNet/ofrecord',
                                              batch_size=batch_size,
                                              data_part_num=1,
                                              part_name_suffix_length=5,
@@ -27,5 +28,5 @@ def test_job():
 
 
 if __name__ == '__main__':
-    images, labels = test_job().get()
+    images, labels = test_job()
     print(images.shape, labels.shape)
