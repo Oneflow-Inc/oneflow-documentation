@@ -152,7 +152,7 @@ Attention:
 
 * The path to save must be empty otherwise there will be an error in  `save`.
 
-* Although OneFlow do not have limitation of `save` frequency, but more frequent you save model more duty will push to the disk.
+* 虽然OneFlow对 `save` 的频率没有限制，但是过高的保存频率，会加重磁盘及带宽等资源的负担。
 
 * OneFlow model can save in a certain form stored in the specified path. More details in the example below.
 
