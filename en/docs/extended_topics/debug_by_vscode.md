@@ -67,15 +67,15 @@ First, download the clangd corresponding to our system version on [this site](ht
 /path/to/clangd/bin/clangd --help
 ```
 
-#### 配置 VS Code 中的 clangd 插件
+#### Config clangd in VS code
 
-将 build 目录下的 `compile_commands.json` 文件软链接到 OneFlow 的源码根目录下，在OneFlow的源码根目录下：
+Link the  `compile_commands.json` in building dictionary to OneFlow source code dictionary:
 
 ```shell
 ln -s ./build/compile_commands.json compile_commands.json
 ```
 
-然后`Ctrl+Shift+P` (macOS 下 `command+shift+p`)，找到 `Open Remote Settings` 选项，打开 `settings.json` 配置文件，在其中加入以下配置：
+Then `Ctrl+Shift+P` (macOS use `command+shift+p`), find  `Open Remote Settings`  and open  `settings.json` add the following configuration:
 
 ```json
     "clangd.path": "/path/to/bin/clangd",
@@ -85,7 +85,7 @@ ln -s ./build/compile_commands.json compile_commands.json
         "-clang-tidy"
     ]
 ```
-`clangd.arguments`的意义及更多参数选项，可查阅`clangd --help`。
+More meaning or parameters of `clangd.arguments` please reference to `clangd --help`.
 
 #### 使用 clangd
 在 VS Code 的 View->Output 面板，下拉菜单中选择 "Clang Language Server"，可以看到 clangd 的解析输出，解析完成后。选择 C/C++ 源码中的符号，可以实现跳转。选择 C/C++ 源码中的符号，可以实现跳转。
