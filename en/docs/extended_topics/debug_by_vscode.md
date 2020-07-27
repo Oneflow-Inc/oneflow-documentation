@@ -34,25 +34,25 @@ Use the  Remote SSH of  VS Code can use SSH connects to a server.
 
 We can operate the OneFlow on server and use Remote SSH connect  VS Code. Thus **it can let user operated just like local environment**.
 
-安装完成 Remote - SSH 后，按 F1，在弹出的搜索栏中选择 `Remote-SSH: Connect to Host...`，即可设置 ssh 的连接信息，连接远程主机。
+After finish Remote - SSH installation, press F1 then enter `Remote-SSH: Connect to Host..` to search. After config ssh then you can connect to server.
 
-Remote - SSH 连接远程主机后，在插件一栏，会自动分类“远程”与“本地”，如果检测到需要在远程电脑上安装的插件，会显示为灰色，并带有 **Install in SSH:远程主机名** 的按钮，点击即可将对应插件安装在远程主机。
+After use Remote - SSH, in plug column, will automatically classify the local and remote. If detected the need some plug need install on remote server. It will show in grey and with a button called **Install in SSH: remote server name**. Click on that can install the corresponding plugs.
 
 ![remotePlugin](imgs/plugin-remote-ssh-install.png)
 
-如上图，我们已经在远程主机安装 Python、clangd、NativeDebug 插件，用于支持远程调试 OneFlow。
+Like the figure show, we have already installed Python, clangd and NativeDebug. In order to support remote configuration.
 
-但是远程主机并没（本地主机已经安装的）Go 和 HTML CSS Suport 插件。
+But the remote console didn’t installed Go and HTML CSS Suport plug.
 
 
 ### clangd
-经过简单的配置，clangd可以为我们提供代码补全、符号跳转等便利。
+After sample configuration, clangd can support convenient of code completion and symbols jump.
 
-在配置 clangd 之前，需要确认：
+Before configure clangd, we need make sure:
 
-* 已经通过编译，生成了`compile_commands.json`文件；
+* Already use editor generated `compile_commands.json` file.
 
-* 已经通过 Remote - SSH 在远程主机上安装了 clangd 插件。
+* Already use Remote - SSH install clangd on remote console.
 
 * 建议 **不要** 安装 VS Code 推荐的 ms-vscode.cpptools C/C++ 插件，因为 clangd 有可能与之冲突
 
