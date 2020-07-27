@@ -15,92 +15,97 @@ The way of OneFlow looks a little more complicated, but in fact, it uses technol
 ## Use numpy as data input
 ### Example
 
-In Oneflow, you can directly use numpy ndarray type data as input during the training/prediction process. The following is a complete example
+在Oneflow中，你可以在训练/预测过程中，直接使用 `numpy ndarray` 类型的数据作为输入，下面是一个完整的例子：
 
 ```python
 # feed_numpy.py
 import numpy as np
 import oneflow as flow
 import oneflow.typing as oft
-
+from typing import Tuple
 
 @flow.global_function(flow.function_config())
 def test_job(images:oft.Numpy.Placeholder((32, 1, 28, 28), dtype=flow.float),
-             labels:oft.Numpy.Placeholder((32,), dtype=flow.int32)):
+             labels:oft.Numpy.Placeholder((32,), dtype=flow.int32)) -> Tuple[oft.Numpy, oft.Numpy]:
     # do something with images or labels
-    return images, labels
+    return (images, labels)
 
 
 if __name__ == '__main__':
     images_in = np.random.uniform(-10, 10, (32, 1, 28, 28)).astype(np.float32)
     labels_in = np.random.randint(-10, 10, (32,)).astype(np.int32)
-    images, labels = test_job(images_in, labels_in).get()
+    images, labels = test_job(images_in, labels_in)
     print(images.shape, labels.shape)
 ```
 
-In the script above, we use `@flow.global_function` to define a --test_job(). It takes images and labels as input. We can directly pass images and labels in numpy format as its data input.
+在上面的代码中，我们用 `@flow.global_function` 定义了一个预测作业-- `test_job()`，其输入为 `images` 和 `labels` ，我们可以直接通过 `numpy` 格式的 `images_in` 和 `labels_in` 作为其数据输入。
 
-You can download the complete script：[feed_numpy.py](../code/basics_topics/feed_numpy.py) and run by Python,
+下载完整代码：[feed_numpy.py](../code/basics_topics/feed_numpy.py) ，然后用 python 执行即可：
 
 ```bash
 python feed_numpy.py
 ```
-The following results are expected
+将得到如下结果
 ```bash
 (32, 1, 28, 28) (32,)
 ```
 ### The explanation of the code
-When a user wants to use OneFlow for a deep learning training or prediction task, they need to define a job/job function (Job Function), and then use the Job function.First, `define` then `use ` are the two basic steps.To achieved using numpy as input, need make some special configurations to `define` and `use` the job function. The following part will explain in details.
+我们在快速入门的[识别 MNIST 手写体数字](../quick_start/lenet_mnist.md)一文中，已经了解到作业函数分为先 **定义** 再 **调用** 两个基本的步骤。我们来解析，如果要将 numpy 数据作为作业函数的输入，在作业函数的定义和调用阶段分别要如何做。
 
 #### Definition
-Where you define it, you need to declare what inputs are, as well as the shape and data type of the inputs.The following part is where to define the job function.`test_job`  is the name of job function. The example have two inputs: `images` and `labels`. Also have the data shape and type of the input.
+在作业函数定义时，指定参数类型为 `oneflow.typing` 中的类型作为数据占位符，声明输入变量的形状及数据类型。
+
 ```python
 def test_job(images:oft.Numpy.Placeholder((32, 1, 28, 28), dtype=flow.float),
-             labels:oft.Numpy.Placeholder((32, ), dtype=flow.int32)):
+             labels:oft.Numpy.Placeholder((32, ), dtype=flow.int32)) -> Tuple[oft.Numpy, oft.Numpy]:
 ```
-#### How to use
-We need prepared the numpy ndarray first. In example, it generates the `images_in` and `labels_in` according to the input data type and shape.
+
+如以上代码中，声明了 `images` 和 `labels` 两个传入参数，它们都是 `oneflow.typing.Numpy`的占位符，在调用时，需要传入形状、数据类型一致的 `numpy` 数据。
+
+#### 调用
+调用作业函数时，准备好与作业函数中声明的占位符形状、数据类型一致的 `numpy ndarray` 数据，作为参数调用即可。
+
+例子中按照输入的形状和数据类型的要求随机生成了输入：`images_in` 和 `labels_in` ：
 ```python
   images_in = np.random.uniform(-10, 10, (32, 1, 28, 28)).astype(np.float32)
   labels_in = np.random.randint(-10, 10, (32, )).astype(np.int32)
 ```
 
-Then pass in `images_in` and `labels_in` as the input of `test_job` and perform calculations, and return the calculation results and save them to `images` and `labels`.
+然后把 `images_in` 和 `labels_in` 作为 `test_job` 的输入传入并且进行计算，并返回计算结果保存到 `images` 和 `labels` 里。
 ```python
-  images, labels = test_job(images_in, labels_in).get()
+  images, labels = test_job(images_in, labels_in)
 ```
 
-Normally it is used in a training or prediction task cycle. This simplified example uses a job function.
+一般我们是在一个训练或者预测作业的循环中调用作业函数，以上简化的例子仅调用了一次作业函数。
 
-Two points about the parameters of the Job function
+关于占位符的其它说明：
 
-* In the example of `oft.Numpy.Placeholder`, the return object is a place holder. The place holder can also be generate by `oft.ListNumpy.Placeholder` in OneFlow. Please refer to [two type of blob](../extended_topics/consistent_mirrored.md) for the difference between the two.
+* `oneflow.typing.Numpy.Placeholder` 表示的是 `numpy ndarray` 类型的占位符，OneFlow 中还有多种占位符，分别对应 `list of ndarray` 以及更复杂的形式。 具体可以参考[作业函数的定义与调用](../extended_topics/job_function_define_call.md);
 
-* The job function supports for multiple parameters. and each parameter must be one of the following: a `place holder` and the list (list) of` place holder`.
-
-**Summary**: When defining the job function, define the input of the job function as a placeholder. When using the job function, take the corresponding numpy array object as input, so that the numpy data is sent to the network for training or prediction.
+* 调用作业函数时，传入的参数和返回的结果，都是 `numpy` 数据，而不是占位符
 
 ## Use the data pipeline of OneFlow
-The data pipeline of OneFlow decoupling the data loading and data preprocessing process:
+OneFlow 数据流水线解耦了数据的加载和数据预处理过程：
 
-- Data loading currently supports two types: `data.ofrecord_reader` and `data.coco_reader`, which respectively support OneFlow's `OFRecord` format files and coco dataset. Readers in other formats can be extended through customization;
+* Data loading currently supports two types: `data.ofrecord_reader` and `data.coco_reader`, which respectively support OneFlow's `OFRecord` format files and coco dataset. Readers in other formats can be extended through customization;
 
-- The data preprocessing process adopts a pipeline method, which supports the combination of various data preprocessing operators, and the data preprocessing operators can also be customized and extended.
+* The data preprocessing process adopts a pipeline method, which supports the combination of various data preprocessing operators, and the data preprocessing operators can also be customized and extended.
 
 ### Example
-Here is a complete example. This example reads the `OFRecord` data format file and processes the images in the ImageNet datasetThe complete code can be downloaded here: [of_data_pipeline.py](../code/basics_topics/of_data_pipeline.py)
+下面就给一个完整的例子，这个例子读取的是 `OFRecord` 数据格式文件，处理的是 ImageNet 数据集中的图片。完整代码可以点此下载：[of_data_pipeline.py](../code/basics_topics/of_data_pipeline.py)
 
 ```python
 # of_data_pipeline.py
 import oneflow as flow
-
+import oneflow.typing as oft
+from typing import Tuple
 
 @flow.global_function(flow.function_config())
-def test_job():
+def test_job() -> Tuple[oft.Numpy, oft.Numpy]:
     batch_size = 64
     color_space = 'RGB'
     with flow.scope.placement("cpu", "0:0"):
-        ofrecord = flow.data.ofrecord_reader('/path/to/ImageNet/ofrecord',
+        ofrecord = flow.data.ofrecord_reader('path/to/ImageNet/ofrecord',
                                              batch_size=batch_size,
                                              data_part_num=1,
                                              part_name_suffix_length=5,
@@ -120,37 +125,25 @@ def test_job():
 
 
 if __name__ == '__main__':
-    images, labels = test_job().get()
+    images, labels = test_job()
     print(images.shape, labels.shape)
 ```
-In order to run the script above, an ofrecord data set is required. You can [load and prepare the Ofrecord data set](../extended_topics/how_to_make_ofdataset.md) or download an ofrecord file containing 64 pictures prepared by us
+为了运行上面这段脚本，需要一个 ofrecord 数据集，你可以[加载与准备OFRecord数据集](../extended_topics/how_to_make_ofdataset.md)或者下载我们准备的一个包含64张图片的 ofrecord 文件 [part-00000](https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/basics_topics/part-00000) 。
 
-part-00000</1 ></p> 
-
-Replace the `/path/to/ImageNet/ofrecord` to the path to `part-00000` and run
-
-
+上面这段脚本中 `path/to/ImageNet/ofrecord` 替换为保存 `part-00000` 文件 **所在的目录**，然后运行
 ```
 python of_data_pipeline.py
 ```
-
-
-The following result is expected
-
-
+将得到下面的输出：
 ```
 (64, 3, 224, 224) (64,)
 ```
-
-
-
 ### The explanation of the code
+OneFlow的数据处理流水线分为两个阶段： **数据加载** 和 **数据预处理** 。
 
-There are two stage in data processing in OneFlow: **loading data** and **preprocessing data**.
+* Loading is use  `ofrecord_reader`. It need specify the path and other parameters. More information reference [ofrecord_reader api](../api/data.html?highlight=ofrecord_reader#oneflow.data.ofrecord_reader).
 
-- Loading is use  `ofrecord_reader`. It need specify the path and other parameters. More information reference [ofrecord_reader api](../api/data.html?highlight=ofrecord_reader#oneflow.data.ofrecord_reader).
+* Data preprocessing is a multi-stage process. `OFRecordImageDecoderRandomCrop` is for decoding the picture and random cropping, `Resize` adjusts the cropped picture to the size of 224x224 and `CropMirrorNormalize` 0> regularize the picture.`CropMirrorNormalize` if for decoding the labeled part.
 
-- Data preprocessing is a multi-stage process. `OFRecordImageDecoderRandomCrop` is for decoding the picture and random cropping, `Resize` adjusts the cropped picture to the size of 224x224 and `CropMirrorNormalize` 0> regularize the picture.`CropMirrorNormalize` if for decoding the labeled part.
-
-OneFlow provides some operators for data loading and preprocessing. Please refer to [Data Pipeline Api](../api/data.html) for details.These operators will be continuously enriched and optimized in the future, and users can also define their customized operators to meet specific needs.
+OneFlow提供了一些数据加载和预处理的算子，详细请参考[数据流水线API](../api/data.html)。未来会不断丰富和优化这些算子，用户也可以自己定义算子满足特定的需求。
 
