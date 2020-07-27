@@ -28,11 +28,11 @@ Above code:
 * `-DCMAKE_EXPORT_COMPILE_COMMANDS`  will generate the  `compile_commands.json` files need by clangd in  `build`.
 
 ### Remote - SSH
-通过 VS Code 的 Remote SSH 插件，可以通过 ssh 的方式连接远程服务器。
+Use the  Remote SSH of  VS Code can use SSH connects to a server.
 
 ![RemoteSSH](imgs/plugin-remote-ssh.png)
 
-我们的被调试对象 OneFlow 可以运行在远程主机上，然后通过 Remote SSH 将远程的情况和本地的 VS Code 用户操作连接起来， **像调试本地程序一样调试远程主机上的程序**。
+We can operate the OneFlow on server and use Remote SSH connect  VS Code. Thus **it can let user operated just like local environment**.
 
 安装完成 Remote - SSH 后，按 F1，在弹出的搜索栏中选择 `Remote-SSH: Connect to Host...`，即可设置 ssh 的连接信息，连接远程主机。
 
