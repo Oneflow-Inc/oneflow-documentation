@@ -8,7 +8,7 @@ def test_job() -> Tuple[oft.Numpy, oft.Numpy]:
     batch_size = 64
     color_space = 'RGB'
     with flow.scope.placement("cpu", "0:0"):
-        ofrecord = flow.data.ofrecord_reader('./',
+        ofrecord = flow.data.ofrecord_reader('path/to/ImageNet/ofrecord',
                                              batch_size=batch_size,
                                              data_part_num=1,
                                              part_name_suffix_length=5,
