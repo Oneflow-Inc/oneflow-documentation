@@ -54,14 +54,14 @@ Before configure clangd, we need make sure:
 
 * Already use Remote - SSH install clangd on remote console.
 
-* 建议 **不要** 安装 VS Code 推荐的 ms-vscode.cpptools C/C++ 插件，因为 clangd 有可能与之冲突
+* We **do not** recommend installing ms-vscode.cpptools C/C++ which is recommended by VS Code. Because it could be conflicts to clangd.
 
-#### 安装 clangd 程序
-VS Code 上的插件，是通过与clangd服务程序交互，获取解析信息并显示的。VS Code 上的插件，是通过与clangd服务程序交互，获取解析信息并显示的。因此除了安装 VS Code 上的 clangd 插件外，我们还需要在 **OneFlow源码所在的主机上** （本文中为远程Linux主机）安装clangd服务程序。
+#### Installing clangd
+The plug on VS code use clangd services to interact and get information then display.Thus, in addition to use clangd on VS code. We also need installed clangd services program on **the console which have OneFlow source code**.
 
-我们将采用 **下载 zip 文件并解压** 的方式安装，更多安装方法，可以参考 [clangd 官方文档](https://clangd.llvm.org/installation.html)。
+We use **download zip file and unpack** to install. More methods please reference to [ clangd offical site](https://clangd.llvm.org/installation.html).
 
-首先，在[这个页面](https://github.com/clangd/clangd/releases/)下载与我们系统平台对应的clangd压缩包，并解压。 解压后可先运行 clangd 测试，确保能正常运行后再进行后续配置。 解压后可先运行 clangd 测试，确保能正常运行后再进行后续配置。
+First, download the clangd corresponding to our system version on [this site](https://github.com/clangd/clangd/releases/) and unpacked. After unpack, run the clangd testing to make sure everything can run normally.
 
 ```shell
 /path/to/clangd/bin/clangd --help
