@@ -22,7 +22,7 @@ In this article, we will introduce:
 
 ## Use get_variable to create/access object of model parameters
 
-We can use `oneflow.get_variable` to create or obtain an object. This object could used for submitting information with global job function. When calling the port of `OneFlow.CheckPoint`. This object also will be store automatically or recover from storage devices.
+我们可以使用 `oneflow.get_variable` 方法创造或者获取一个对象，该对象可以用于在全局作业函数中交互信息；当调用 `OneFlow.CheckPoint` 的对应接口时，该对象也会被自动地保存或从存储设备中恢复。
 
 Because of this character, the object create by `get_variable` always used in store model parameters.In fact, there are many high levels ports in OneFlow like `oneflow.layers.conv2d`. We use `get_variable` to create model parameters.
 
@@ -138,8 +138,10 @@ def load(self, path)
 Before training, we need get the object of  `CheckPoint` then called the  `init` to initialize the parameters in network. For example:
 
 ```python
-check_point = flow.train.CheckPoint() #constructing object of CheckPoint
-check_point.init() #initialize network parameters 
+check_point = flow.train.CheckPoint() #构造CheckPoint对象
+check_point.init() #初始化网络参数
+
+#... 调用作业函数等操作
 ```
 
 ### Save model
@@ -157,7 +159,7 @@ Attention:
 * OneFlow model can save in a certain form stored in the specified path. More details in the example below.
 
 ### Load model
-We can called the `load` which is the obejct of `CheckPoint` to load model from specificed path. Attention, load model from the disk must match in the model with the current task function. Otherwise will have error message.
+We can called the `load` which is the obejct of `CheckPoint` to load model from specificed path. 注意，从磁盘中加载的模型需要与当前作业函数中使用使用的网络模型匹配，否则会出错。
 
 There is a example of load model from a specific path and construct  `CheckPoint object` :
 ```python
@@ -167,7 +169,7 @@ check_point.load("./path_to_model") #load model
 
 
 ## The structure of OneFlow saved model
-Model of OneFlow are the **parameters** of network. For now there are no Meta Graph information in OneFlow model. The path to saved model have many subdirectories. Each of them corresponding to a `name` of `job function `in model. For example, we define the model in the first place:
+Model of OneFlow are the **parameters** of network. For now there are no Meta Graph information in OneFlow model. 模型所保存的路径下，有多个子目录，每个子目录对应了 `作业函数` 中模型的 `name` 。 For example, we define the model in the first place:
 
 ```python
 def lenet(data, train=False):
@@ -214,7 +216,7 @@ lenet_models_name
 
 We can see:
 
-* The job function in network, each of the variables have a subdirectories.
+* 作业函数中的网络模型，每个变量对应一个子目录
 
 * All subdirectories above have a  `out` document. It store the parameters of network in binary.`out` is the default file name. We can change that by  `variable op` in the network.
 
