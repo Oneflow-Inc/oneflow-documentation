@@ -1,13 +1,13 @@
 
-在[Consistent与Mirrored策略](consistent_mirrored.md)中，我们已经知道 OneFlow 提供了 mirrored 与 consistent 两种策略，并且提前了解了 OneFlow 的 `consistent` 策略颇具特色。
+在[Consistent 与 Mirrored 视角](consistent_mirrored.md)中，我们已经知道 OneFlow 提供了 mirrored 与 consistent 两种看待分布式系统的视角，并且提前了解了 OneFlow 的 `consistent` 视角颇具特色。
 
-因为在 `consistent_strategy` 下，OneFlow 提供了逻辑上统一的视角，分布式训练时，用户可以自由选择数据并行、模型并行还是是混合并行。
+因为在 `consistent_view` 下，OneFlow 提供了逻辑上统一的视角，分布式训练时，用户可以自由选择数据并行、模型并行还是是混合并行。
 
-在本文中，继续深入介绍 OneFlow 独居特色的 `consistent` 策略，包括：
+在本文中，继续深入介绍 OneFlow 独居特色的 `consistent` 视角，包括：
 
-* OneFlow在 `consistent_strategy` 下纯数据并行流程示意
+* OneFlow在 `consistent_view` 下纯数据并行流程示意
 
-* OneFlow在 `consistent_strategy` 下混合并行流程示意
+* OneFlow在 `consistent_view` 下混合并行流程示意
 
 * 混合并行的优势及适用场景
 
@@ -28,26 +28,26 @@
 
 * 第2层为 `output` 层，`Data 2` 作为整个网络的输出；当然，在更深的网络中，它也可以作为下一层的输入继续参与训练
 
-`consistent` 策略下支持数据并行、模型并行与混合并行，我们将依次进行介绍，其中混合并行是重点。
+`consistent` 视角下支持数据并行、模型并行与混合并行，我们将依次进行介绍，其中混合并行是重点。
 
-## Consistent 策略下的并行特色
+## Consistent 视角下的并行特色
 
 ### 纯数据并行
 
-我们已经知道，consistent 策略下，默认的并行方式是数据并行；而如果选择 mirrored 策略，则只能采用数据并行；若在调用作业函数时直接传递数据(而不是使用 OneFlow 的 `flow.data.xxx_reader` 接口)，两者的区别在于：
+我们已经知道，consistent 视角下，默认的并行方式是数据并行；而如果选择 mirrored 视角，则只能采用数据并行；若在调用作业函数时直接传递 `numpy` 数据(而不是使用 OneFlow 的 `flow.data.xxx_reader` 接口进行数据加载)，两者的区别在于：
 
-* mirrored 策略下，采用纯数据并行，需要自己根据参与训练的卡数对数据进行切分、重组，使用 `list` 传递和接收数据；
+* mirrored 视角下，采用纯数据并行，需要自己根据参与训练的卡数对数据进行切分、重组，使用 `list` 传递和接收数据；
 
-* 而 consistent 策略下提供了统一的视角，数据的切分和重组交给了OneFlow 框架完成。
+* 而 consistent 视角下提供了逻辑上的统一看待，数据的切分和重组交给了OneFlow 框架完成。
 
-下图是 consistent 策略下，采用纯数据并行的方式，实现原逻辑网络模型的流程示意图：
+下图是 consistent 视角下，采用纯数据并行的方式，实现原逻辑网络模型的流程示意图：
 
 ![纯数据并行](imgs/para_consistent_data.png)
 
 在纯数据并行中，采用了2张显卡进行并行训练，因为采用了 **纯数据并行** ，可以看到，对于原逻辑模型中的每一层，样本数据都被平均分配到了各个卡上，每张卡上都拥有 **完整的模型**，与切分的数据进行 `op` 运算，最后组合各个卡上的样本，得到完整的输出。
 
 ### 纯模型并行
-在 `consistent` 策略下，也可以通过选择纯模型并行（设置方式在下文实例中会介绍），其流程示意图为：
+在 `consistent` 视角下，也可以通过选择纯模型并行（设置方式在下文实例中会介绍），其流程示意图为：
 
 ![纯模型并行](imgs/para_consistent_model.png)
 
@@ -76,7 +76,7 @@
 
 ## 混合并行实例
 ### 代码示例
-以下，在 `consistent` 策略下，我们对 MLP 模型采用了混合并行方案：输入层与隐藏层采用（默认的）数据并行；输出层采用模型并行并进行列切分。
+以下，在 `consistent` 视角下，我们对 MLP 模型采用了混合并行方案：输入层与隐藏层采用（默认的）数据并行；输出层采用模型并行并进行列切分。
 
 完整代码：[mixed_parallel_mlp.py](../code/extended_topics/mixed_parallel_mlp.py)
 
@@ -89,51 +89,52 @@ import oneflow.typing as oft
 
 BATCH_SIZE = 100
 
+
 def mlp(data):
-  initializer = flow.truncated_normal(0.1)
-  reshape = flow.reshape(data, [data.shape[0], -1])
-  hidden = flow.layers.dense(reshape, 512, activation=flow.nn.relu, kernel_initializer=initializer)
-  return flow.layers.dense(hidden, 
-        10, 
-        kernel_initializer=initializer,
-        #dense为列存储，进行split(0)切分
-        model_distribute=flow.distribute.split(axis=0)
-        )
+    initializer = flow.truncated_normal(0.1)
+    reshape = flow.reshape(data, [data.shape[0], -1])
+    hidden = flow.layers.dense(reshape, 512, activation=flow.nn.relu, kernel_initializer=initializer, name="hidden")
+    return flow.layers.dense(hidden,
+                             10,
+                             kernel_initializer=initializer,
+                             # dense为列存储，进行split(0)切分
+                             model_distribute=flow.distribute.split(axis=0),
+                             name="output"
+                             )
+
 
 def get_train_config():
-  config = flow.function_config()
-  config.default_data_type(flow.float)
-  config.train.primary_lr(0.1)
-  config.train.model_update_conf({"naive_conf": {}})
-  config.default_distribute_strategy(flow.scope.consistent_view())
+    config = flow.function_config()
+    config.default_data_type(flow.float)
+    config.train.primary_lr(0.1)
+    config.train.model_update_conf({"naive_conf": {}})
+    return config
 
-  return config
 
 @flow.global_function(get_train_config())
 def train_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-              labels:oft.Numpy.Placeholder((BATCH_SIZE, ), dtype=flow.int32)):
-  logits = mlp(images)
-  loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits, name="softmax_loss")
-  flow.losses.add_loss(loss)
-  return loss
+              labels:oft.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32)) -> oft.Numpy:
+    logits = mlp(images)
+    loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits, name="softmax_loss")
+    flow.losses.add_loss(loss)
+    return loss
 
 
 if __name__ == '__main__':
-  flow.config.gpu_device_num(2)
-  check_point = flow.train.CheckPoint()
-  check_point.init()
-  
-  (train_images, train_labels), (test_images, test_labels) = load_data(BATCH_SIZE)
+    flow.config.gpu_device_num(2)
+    check_point = flow.train.CheckPoint()
+    check_point.init()
 
-  for epoch in range(3):
-    for i, (images, labels) in enumerate(zip(train_images, train_labels)):
-      def callback(loss):
-        if i % 20 == 0: print(loss.mean())
-      loss = train_job(images, labels).async_get(callback)
+    (train_images, train_labels), (test_images, test_labels) = load_data(BATCH_SIZE)
+
+    for epoch in range(3):
+        for i, (images, labels) in enumerate(zip(train_images, train_labels)):
+            loss = train_job(images, labels)
+            if i % 20 == 0: print(loss.mean())
 ```
 
 ### 代码解析
-以上代码修改自[3分钟快速上手](../quick_start/quickstart_in_3_min.md)中的示例代码，比较两份代码，也可以体会到在 OneFlow 的 `consistent_strategy` 下进行各种并行方案的配置是多么的简单，只需要在单机的程序上稍加修改即可。
+以上代码修改自[3分钟快速上手](../quick_start/quickstart_in_3_min.md)中的示例代码，比较两份代码，也可以体会到在 OneFlow 的 `consistent_view` 下进行各种并行方案的配置是多么的简单，只需要在单机的程序上稍加修改即可。
 
 以上程序的关键部分有：
 
@@ -142,37 +143,38 @@ if __name__ == '__main__':
   flow.config.gpu_device_num(2)
 ```
 
-* 通过 `flow.function_config().default_distribute_strategy` 接口将默认策略改为`consistent_view`：
+* 通过 `flow.function_config().default_logical_view` 接口将默认视角改为 `consistent_view`：
 ```python
 def get_train_config():
   #...
-  config.default_distribute_strategy(flow.scope.consistent_view())
+  config.default_logical_view(flow.scope.consistent_view())
   #...
 ```
 
 * `reshape` 及 `hidden` 采用默认的数据并行，不需要修改；输出层通过设置 `model_distribute` 为 `flow.distribute.split(axis=0)` 变为模型并行：
 ```python
 def mlp(data):
-  initializer = flow.truncated_normal(0.1)
-  reshape = flow.reshape(data, [data.shape[0], -1])
-  hidden = flow.layers.dense(reshape, 512, activation=flow.nn.relu, kernel_initializer=initializer)
-  return flow.layers.dense(hidden, 
-        10, 
-        kernel_initializer=initializer,
-        #dense为列存储，进行split(0)切分
-        model_distribute=flow.distribute.split(axis=0)
-        )
+    initializer = flow.truncated_normal(0.1)
+    reshape = flow.reshape(data, [data.shape[0], -1])
+    hidden = flow.layers.dense(reshape, 512, activation=flow.nn.relu, kernel_initializer=initializer, name="hidden")
+    return flow.layers.dense(hidden,
+                             10,
+                             kernel_initializer=initializer,
+                             # dense为列存储，进行split(0)切分
+                             model_distribute=flow.distribute.split(axis=0),
+                             name="output"
+                             )
 ```
-有读者可能好奇为什么`split(axis=0)`是列切分？需要说明的是，OneFlow中的 `dense` 内部采用列存储，因此以上代码的`flow.distribute.split(axis=0)`确实是在做列切分。
+有读者可能好奇为什么`split(axis=0)`是列切分？需要说明的是，OneFlow 中的 `dense` 内部采用列存储，因此以上代码的`flow.distribute.split(axis=0)`确实是在做列切分。
 
 此外，`flow.layers.dense` 使用 `model_distribute` 形参设置并行方式，其内部调用了底层更通用的 `get_variable` 接口创建 `blob`， `get_variable` 接口设置并行方式的形参名为 `distribute`。
 
-可以看到，我们通过极少量的修改，就能将单机训练程序改为分布式、混合并行的程序，这是OneFlow区别于其它框架的一大特色。
+可以看到，我们通过极少量的修改，就能将单机训练程序改为分布式、混合并行的程序，这是 OneFlow 区别于其它框架的一大特色。
 
 ## 网络接力并行实例
 在模型并行之外，OneFlow 还提供了一种灵活度更高的“网络接力”的并行方式，可以让用户使用 `scope.placement` 接口显式指定用来运行逻辑 `op`的 **物理硬件**。
 
-在以下示例中，我们对[Consistent与Mirrored策略](consistent_mirrored.md)中的"在 OneFlow 中使用 consistent 策略"代码进行简单修改，展示了"网络接力"并行模式。
+在以下示例中，我们对[Consistent 与 Mirrored 视角](consistent_mirrored.md)中的"在 OneFlow 中使用 consistent 视角"代码进行简单修改，展示了"网络接力"并行模式。
 
 ### 代码示例
 
@@ -181,62 +183,57 @@ def mlp(data):
 更详细的讨论可见后文的“代码解析”。
 
 ```python
-import numpy as np
 import oneflow as flow
-from mnist_util import load_data
 import oneflow.typing as oft
-
 
 BATCH_SIZE = 100
 
+
 def lenet(data, train=False):
-  initializer = flow.truncated_normal(0.1)
-  conv1 = flow.layers.conv2d(data, 32, 5, padding='SAME', activation=flow.nn.relu,
-                             kernel_initializer=initializer, name="conv1")
-  pool1 = flow.nn.max_pool2d(conv1, ksize=2, strides=2, padding='SAME', name="pool1")
-  conv2 = flow.layers.conv2d(pool1, 64, 5, padding='SAME', activation=flow.nn.relu,
-                             kernel_initializer=initializer, name="conv2")
-  pool2 = flow.nn.max_pool2d(conv2, ksize=2, strides=2, padding='SAME', name="pool2")
-  reshape = flow.reshape(pool2, [pool2.shape[0], -1])
-  with flow.scope.placement("gpu", "0:0"):
-    hidden = flow.layers.dense(reshape, 512, activation=flow.nn.relu, kernel_initializer=initializer, name="hidden")
-  if train: hidden = flow.nn.dropout(hidden, rate=0.5)
-  
-  with flow.scope.placement("gpu", "0:1"):
-    output = flow.layers.dense(hidden, 10, kernel_initializer=initializer, name="outlayer")
-  return output
+    initializer = flow.truncated_normal(0.1)
+    conv1 = flow.layers.conv2d(data, 32, 5, padding='SAME', activation=flow.nn.relu,
+                               kernel_initializer=initializer, name="conv1")
+    pool1 = flow.nn.max_pool2d(conv1, ksize=2, strides=2, padding='SAME', name="pool1")
+    conv2 = flow.layers.conv2d(pool1, 64, 5, padding='SAME', activation=flow.nn.relu,
+                               kernel_initializer=initializer, name="conv2")
+    pool2 = flow.nn.max_pool2d(conv2, ksize=2, strides=2, padding='SAME', name="pool2")
+    reshape = flow.reshape(pool2, [pool2.shape[0], -1])
+    with flow.scope.placement("gpu", "0:0"):
+        hidden = flow.layers.dense(reshape, 512, activation=flow.nn.relu, kernel_initializer=initializer, name="hidden")
+    if train: hidden = flow.nn.dropout(hidden, rate=0.5)
+
+    with flow.scope.placement("gpu", "0:1"):
+        output = flow.layers.dense(hidden, 10, kernel_initializer=initializer, name="outlayer")
+    return output
 
 
 def get_train_config():
-  config = flow.function_config()
-  config.default_distribute_strategy(flow.scope.consistent_view())
-  config.default_data_type(flow.float)
-  config.train.primary_lr(0.1)
-  config.train.model_update_conf({"naive_conf": {}})
-  return config
+    config = flow.function_config()
+    config.default_data_type(flow.float)
+    config.train.primary_lr(0.1)
+    config.train.model_update_conf({"naive_conf": {}})
+    return config
 
 
 @flow.global_function(get_train_config())
 def train_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-              labels:oft.Numpy.Placeholder((BATCH_SIZE, ), dtype=flow.int32)):
-  logits = lenet(images, train=True)
-  loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits, name="softmax_loss")
-  flow.losses.add_loss(loss)
-  return loss
+              labels:oft.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32)) -> oft.Numpy:
+    logits = lenet(images, train=True)
+    loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits, name="softmax_loss")
+    flow.losses.add_loss(loss)
+    return loss
 
 
 if __name__ == '__main__':
-  flow.config.gpu_device_num(2)
-  check_point = flow.train.CheckPoint()
-  check_point.init()
-  (train_images, train_labels), (test_images, test_labels) = load_data(BATCH_SIZE)
-  
-  for epoch in range(50):
-    for i, (images, labels) in enumerate(zip(train_images, train_labels)):
-      loss = train_job(images, labels).get().numpy()
+    flow.config.gpu_device_num(2)
+    check_point = flow.train.CheckPoint()
+    check_point.init()
+    (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(BATCH_SIZE)
 
-      if i % 20 == 0: 
-        print(loss.mean())
+    for epoch in range(50):
+        for i, (images, labels) in enumerate(zip(train_images, train_labels)):
+            loss = train_job(images, labels)
+            if i % 20 == 0: print(loss.mean())
 ```
 ### 代码解析
 
