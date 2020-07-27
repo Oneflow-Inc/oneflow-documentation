@@ -42,6 +42,7 @@ ImageNet大规模视觉识别挑战赛（ILSVRC），常称为ImageNet竞赛，�
 - 快速开始
   - 预测/推理
   - 训练和验证
+  - 评估
 - 更详细的说明
   - 分布式训练
   - 混合精度训练与预测
@@ -56,11 +57,7 @@ ImageNet大规模视觉识别挑战赛（ILSVRC），常称为ImageNet竞赛，�
 
 别担心，使用OneFlow非常容易，只要准备好下面三步，即可开始OneFlow的图像识别之旅。
 
-- 安装OneFlow。
-
-  - 直接通过pip安装：`pip install oneflow`
-  - 安装轻量版：`pip install --find-links https://oneflow-inc.github.io/nightly oneflow`
-  - 源码编译等其他安装方式：参考[OneFlow项目主页](https://github.com/Oneflow-Inc/oneflow)
+- 安装OneFlow，安装方式参考[OneFlow项目主页](https://github.com/Oneflow-Inc/oneflow)
 
 - 克隆/下载[OneFlow-Benchmark](https://github.com/Oneflow-Inc/OneFlow-Benchmark)仓库。
 
@@ -130,8 +127,6 @@ data/fish.jpg
 
 可见，模型判断这张图片有87.05%的概率是金鱼goldfish。
 
-
-
 ### 训练和验证（Train & Validation）
 
 - 训练同样很简单，只需执行：
@@ -188,6 +183,36 @@ data/fish.jpg
   运行此脚本，将在仅有50张金鱼图片的迷你imagenet数据集上，训练出一个分类模型，利用它，你可以对金鱼图片进行分类。
 
   不要着急，如果您需要在完整的ImageNet2012数据集上进行训练，请参考：[OneFlow-Benchmark](https://github.com/Oneflow-Inc/OneFlow-Benchmark/cnns)仓库。
+
+
+
+### 评估(Evaluate)
+
+你可以使用自己训练好的模型，或者我们提供的[resnet50_v1.5_model](https://oneflow-public.oss-cn-beijing.aliyuncs.com/model_zoo/resnet_v15_of_best_model_val_top1_77318.tgz) （解压后放入当前目录），对resnet50模型的精度进行评估。
+
+只需运行：
+
+```shell
+sh evaluate.sh
+```
+
+即可获得训练好的模型在50000张验证集上的准确率：
+
+```shell
+Time stamp: 2020-07-27-09:28:28
+Restoring model from resnet_v15_of_best_model_val_top1_77318.
+I0727 09:28:28.773988162    8411 ev_epoll_linux.c:82]        Use of signals is disabled. Epoll engine will not be used
+Loading data from /dataset/ImageNet/ofrecord/validation
+validation: epoch 0, iter 195, top_1: 0.773277, top_k: 0.936058, samples/s: 1578.325
+validation: epoch 0, iter 195, top_1: 0.773237, top_k: 0.936078, samples/s: 1692.303
+validation: epoch 0, iter 195, top_1: 0.773297, top_k: 0.936018, samples/s: 1686.896
+```
+
+> 执行sh evaluate.sh前，确保准备了imagenet(2012)的验证集，验证集制作方法请参考：[OneFlow-Benchmark](https://github.com/Oneflow-Inc/OneFlow-Benchmark/cnns)仓库。
+
+从3轮的评估结果来看，我们的模型在Imagenet(2012)上已经达到了77.32+%的top_1精度。
+
+最后，恭喜你！完成了Resnet模型在ImageNet上完整的训练/验证、推理和评估，为自己鼓个掌吧！
 
 
 
