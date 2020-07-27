@@ -38,7 +38,7 @@ if __name__ == '__main__':
     print(images.shape, labels.shape)
 ```
 
-在上面的代码中，我们用 `@flow.global_function` 定义了一个预测任务-- `test_job()`，其输入为 `images` 和 `labels` ，我们可以直接通过 `numpy` 格式的 `images_in` 和 `labels_in` 作为其数据输入。
+在上面的代码中，我们用 `@flow.global_function` 定义了一个预测作业-- `test_job()`，其输入为 `images` 和 `labels` ，我们可以直接通过 `numpy` 格式的 `images_in` 和 `labels_in` 作为其数据输入。
 
 下载完整代码：[feed_numpy.py](../code/basics_topics/feed_numpy.py) ，然后用 python 执行即可：
 
@@ -50,10 +50,10 @@ python feed_numpy.py
 (32, 1, 28, 28) (32,)
 ```
 ### 代码解析
-我们在快速入门的[识别 MNIST 手写体数字](../quick_start/lenet_mnist.md)一文中，已经了解到任务函数分为先 **定义** 再 **调用** 两个基本的步骤。我们来解析，如果要将 numpy 数据作为任务函数的输入，在任务函数的定义和调用阶段分别要如何做。
+我们在快速入门的[识别 MNIST 手写体数字](../quick_start/lenet_mnist.md)一文中，已经了解到作业函数分为先 **定义** 再 **调用** 两个基本的步骤。我们来解析，如果要将 numpy 数据作为作业函数的输入，在作业函数的定义和调用阶段分别要如何做。
 
 #### 定义
-在任务函数定义时，指定参数类型为 `oneflow.typing` 中的类型作为数据占位符，声明输入变量的形状及数据类型。 
+在作业函数定义时，指定参数类型为 `oneflow.typing` 中的类型作为数据占位符，声明输入变量的形状及数据类型。 
 
 ```python
 def test_job(images:oft.Numpy.Placeholder((32, 1, 28, 28), dtype=flow.float),
@@ -63,7 +63,7 @@ def test_job(images:oft.Numpy.Placeholder((32, 1, 28, 28), dtype=flow.float),
 如以上代码中，声明了 `images` 和 `labels` 两个传入参数，它们都是 `oneflow.typing.Numpy`的占位符，在调用时，需要传入形状、数据类型一致的 `numpy` 数据。
 
 #### 调用
-调用任务函数时，准备好与任务函数中声明的占位符形状、数据类型一致的 `numpy ndarray` 数据，作为参数调用即可。
+调用作业函数时，准备好与作业函数中声明的占位符形状、数据类型一致的 `numpy ndarray` 数据，作为参数调用即可。
 
 例子中按照输入的形状和数据类型的要求随机生成了输入：`images_in` 和 `labels_in` ：
 ```python
@@ -76,13 +76,13 @@ def test_job(images:oft.Numpy.Placeholder((32, 1, 28, 28), dtype=flow.float),
   images, labels = test_job(images_in, labels_in)
 ```
 
-一般我们是在一个训练或者预测任务的循环中调用任务函数，以上简化的例子仅调用了一次任务函数。
+一般我们是在一个训练或者预测作业的循环中调用作业函数，以上简化的例子仅调用了一次作业函数。
 
 关于占位符的其它说明：
 
-* `oneflow.typing.Numpy.Placeholder` 表示的是 `numpy ndarray` 类型的占位符，OneFlow 中还有多种占位符，分别对应 `list of ndarray` 以及更复杂的形式。 具体可以参考[任务函数的定义与调用](../extended_topics/job_function_define_call.md);
+* `oneflow.typing.Numpy.Placeholder` 表示的是 `numpy ndarray` 类型的占位符，OneFlow 中还有多种占位符，分别对应 `list of ndarray` 以及更复杂的形式。 具体可以参考[作业函数的定义与调用](../extended_topics/job_function_define_call.md);
 
-* 调用任务函数时，传入的参数和返回的结果，都是 `numpy` 数据，而不是占位符
+* 调用作业函数时，传入的参数和返回的结果，都是 `numpy` 数据，而不是占位符
 
 ## 使用OneFlow数据流水线
 OneFlow 数据流水线解耦了数据的加载和数据预处理过程：

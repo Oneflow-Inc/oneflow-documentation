@@ -76,15 +76,15 @@ OneFlow 相对其他深度学习框架较特殊的地方是这里：
 def train_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
               labels:oft.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32)) -> oft.Numpy:
 ```
-`train_job` 是一个被 `@flow.global_function` 修饰的函数，通常被称作任务函数。只有被 `@flow.global_function` 修饰的任务函数才能够被 OneFlow 识别成一个神经网络训练或者预测任务。
+`train_job` 是一个被 `@flow.global_function` 修饰的函数，通常被称作作业函数。只有被 `@flow.global_function` 修饰的作业函数才能够被 OneFlow 识别成一个神经网络训练或者预测作业。
 
-在 OneFlow 中一个神经网络的训练或者预测任务需要两部分信息：
+在 OneFlow 中一个神经网络的训练或者预测作业需要两部分信息：
 
-* 一部分是这个神经网络本身的结构和相关参数，这些在上文提到的任务函数里定义；
+* 一部分是这个神经网络本身的结构和相关参数，这些在上文提到的作业函数里定义；
 
 * 另外一部分是使用什么样的配置去训练这个网络，比如 `learning rate` 、模型优化更新的方法。这些在 `@flow.global_function(get_train_config())` 中的 `get_train_config()` 配置。
 
-这段代码里包含了训练一个神经网络的所有元素，除了上面说的任务函数及其配置之外：
+这段代码里包含了训练一个神经网络的所有元素，除了上面说的作业函数及其配置之外：
 
 - `check_point.init()`: 初始化网络模型参数；
 

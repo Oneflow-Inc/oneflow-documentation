@@ -75,7 +75,7 @@ def get_train_config():
 
 * 训练过程中的模型更新策略为 "naive_conf"
 
-config 对象，其使用场景，将在后文 **实现训练任务函数** 中介绍。
+config 对象，其使用场景，将在后文 **实现训练作业函数** 中介绍。
 
 ## 定义训练模型
 
@@ -98,26 +98,26 @@ def lenet(data, train=False):
 
 以上代码中，我们搭建了一个 LeNet 网络模型。
 
-## 实现训练任务函数
+## 实现训练作业函数
 
-OneFlow 中提供了 `oneflow.global_function` 装饰器，通过它，可以将一个 Python 函数转变为训练任务函数（job function）。
+OneFlow 中提供了 `oneflow.global_function` 装饰器，通过它，可以将一个 Python 函数转变为训练作业函数（job function）。
 
 ### function装饰器
 
 `oneflow.global_function` 装饰器接收一个 `function_config` 对象作为参数。
-它可以将一个普通 Python 函数转变为 OneFlow 的训练任务函数，并将前文所述的 `function_config` 所做的配置应用到其中。
+它可以将一个普通 Python 函数转变为 OneFlow 的训练作业函数，并将前文所述的 `function_config` 所做的配置应用到其中。
 
 ```python
 @flow.global_function(get_train_config())
 def train_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
               labels:oft.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32)) -> oft.Numpy:
-    #任务函数实现 ...
+    #作业函数实现 ...
 ```
 
-其中的 `oft.Numpy.Placeholder` 是数据占位符， `oft.Numpy` 指定这个任务函数在调用时，将返回一个 `numpy` 对象。
+其中的 `oft.Numpy.Placeholder` 是数据占位符， `oft.Numpy` 指定这个作业函数在调用时，将返回一个 `numpy` 对象。
 
 ### 指定优化特征
-我们可以通过 `oneflow.losses.add_loss` 接口指定待优化参数。这样，OneFlow在每次迭代训练任务的过程中，将以该参数的最优化作为目标。
+我们可以通过 `oneflow.losses.add_loss` 接口指定待优化参数。这样，OneFlow在每次迭代训练作业的过程中，将以该参数的最优化作为目标。
 
 ```python
 @flow.global_function(get_train_config())
@@ -133,16 +133,16 @@ def train_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.f
 以上，我们通过 `flow.nn.sparse_softmax_cross_entropy_with_logits` 求得 loss ，并且将优化 loss 作为目标参数。
 
 **注意** ：训练函数 `add_loss` 所指定的优化参数，与返回值没有关系。
-以上示例中 `add_loss` 的参数 `loss` 同时是任务函数的返回值，但这并不是必须，实际上训练函数的返回值主要用于训练过程中与外界交互。在下文中的 **调用任务函数并交互** 会详细介绍。
+以上示例中 `add_loss` 的参数 `loss` 同时是作业函数的返回值，但这并不是必须，实际上训练函数的返回值主要用于训练过程中与外界交互。在下文中的 **调用作业函数并交互** 会详细介绍。
 
-## 调用任务函数并交互
+## 调用作业函数并交互
 
-调用任务函数就可以开始训练。
+调用作业函数就可以开始训练。
 
-调用任务函数时的返回结果，由定义任务函数时指定的返回值类型决定，可以返回一个，也可以返回多个结果。
+调用作业函数时的返回结果，由定义作业函数时指定的返回值类型决定，可以返回一个，也可以返回多个结果。
 
 ### 返回一个结果的例子
-在[lenet_train.py](../code/quick_start/lenet_train.py)中定义任务函数：
+在[lenet_train.py](../code/quick_start/lenet_train.py)中定义作业函数：
 ```python
 @flow.global_function(get_train_config())
 def train_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
@@ -153,7 +153,7 @@ def train_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.f
     flow.losses.add_loss(loss)
     return loss
 ```
-该任务函数的返回值类型为 `oft.Numpy`，则当调用时，会返回一个 `numpy` 对象：
+该作业函数的返回值类型为 `oft.Numpy`，则当调用时，会返回一个 `numpy` 对象：
 ```python
 for epoch in range(20):
     for i, (images, labels) in enumerate(zip(train_images, train_labels)):
@@ -164,7 +164,7 @@ for epoch in range(20):
 我们计算了 `train_job` 返回的 `loss` 平均值并打印。
 
 ### 返回多个结果的例子
-在校验模型的代码[lenet_eval.py](../code/quick_start/lenet_eval.py)中定义的任务函数：
+在校验模型的代码[lenet_eval.py](../code/quick_start/lenet_eval.py)中定义的作业函数：
 ```python
 @flow.global_function(get_eval_config())
 def eval_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
@@ -176,16 +176,16 @@ def eval_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.fl
     return (labels, logits)
 ```
 
-该任务函数的返回值类型为 `Tuple[oft.Numpy, oft.Numpy]`，则当调用时，会返回一个 `tuple` 容器，里面有2个元素，每个元素都是一个 `numpy` 对象：
+该作业函数的返回值类型为 `Tuple[oft.Numpy, oft.Numpy]`，则当调用时，会返回一个 `tuple` 容器，里面有2个元素，每个元素都是一个 `numpy` 对象：
 ```python
 for i, (images, labels) in enumerate(zip(test_images, test_labels)):
     labels, logtis = eval_job(images, labels)
     acc(labels, logtis)
 ```
-我们调用任务函数返回了 `labels` 与 `logits`，并用它们评估模型准确率。
+我们调用作业函数返回了 `labels` 与 `logits`，并用它们评估模型准确率。
 
 ### 同步与异步调用
-本文所有代码都是同步方式调用任务函数，实际上 OneFlow 还支持异步方式调用任务函数，具体内容在[获取任务函数的结果](../basics_topics/async_get.md)一文中详细介绍。
+本文所有代码都是同步方式调用作业函数，实际上 OneFlow 还支持异步方式调用作业函数，具体内容在[获取作业函数的结果](../basics_topics/async_get.md)一文中详细介绍。
 
 ## 模型的初始化、保存与加载
 
@@ -218,7 +218,7 @@ if __name__ == '__main__':
 load 自动读取之前保存的模型，并加载。
 
 ## 模型的校验
-校验任务函数与训练任务函数 **几乎没有区别** ，不同之处在于校验过程中的模型参数来自于已经保存好的模型，因此不需要初始化，也不需要在迭代过程中更新模型参数。
+校验作业函数与训练作业函数 **几乎没有区别** ，不同之处在于校验过程中的模型参数来自于已经保存好的模型，因此不需要初始化，也不需要在迭代过程中更新模型参数。
 
 ### 配置校验的软硬件环境
 
@@ -231,7 +231,7 @@ def get_eval_config():
 
 以上是校验过程的 function_config 配置，与训练过程相比，去掉了 learning rate 的选择，以及更新模型参数的设置。
 
-### 校验任务函数的编写
+### 校验作业函数的编写
 
 ```python
 @flow.global_function(get_eval_config())
@@ -244,10 +244,10 @@ def eval_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.fl
     return (labels, logits)
 ```
 
-以上是校验训练任务函数的编写，声明了返回值类型是 `Tuple[oft.Numpy, oft.Numpy]`， 因此返回一个 `tuple`， `tuple` 中有2个元素，每个元素都是1个 `numpy` 对象。我们将调用训练任务函数，并根据返回结果计算准确率。
+以上是校验训练作业函数的编写，声明了返回值类型是 `Tuple[oft.Numpy, oft.Numpy]`， 因此返回一个 `tuple`， `tuple` 中有2个元素，每个元素都是1个 `numpy` 对象。我们将调用训练作业函数，并根据返回结果计算准确率。
 
 ### 迭代校验
-以下 `acc` 函数中统计样本的总数目，以及校验正确的总数目，我们将调用任务函数，得到 `labels` 与 `logtis`：
+以下 `acc` 函数中统计样本的总数目，以及校验正确的总数目，我们将调用作业函数，得到 `labels` 与 `logtis`：
 ```python
 g_total = 0
 g_correct = 0
@@ -262,7 +262,7 @@ def acc(labels, logtis):
     g_correct += right_count
 ```
 
-调用校验任务函数：
+调用校验作业函数：
 
 ```python
 if __name__ == '__main__':

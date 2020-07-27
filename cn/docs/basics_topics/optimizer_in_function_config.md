@@ -7,7 +7,7 @@
 ## 预测配置
 在 OneFlow 中，无论是训练还是验证、预测，都需要通过装饰器 `@flow.global_function` 来指定，而优化器和超参数的设置通过函数自定义，并作为参数传递到 `@flow.global_function` 中。通过这种方式，做到了 **参数配置和任务的分离** 。
 
-例如：下面我们定义了一个用于验证的任务函数(job function)：`eval_job`
+例如：下面我们定义了一个用于验证的作业函数(job function)：`eval_job`
 
 我们通过 get_eval_config() 定义了 eval_job() 的配置，并将 get_eval_config() 作为 `@flow.global_function` 的参数，应用到eval_job()函数。
 
@@ -21,10 +21,10 @@ def get_eval_config():
 def eval_job() -> oft.Numpy:
   # build up NN here
 ```
-当然，上面的 `get_eval_config` 中只配置了网络的基本参数。在下面的例子中，我们将介绍一个训练任务，并配置学习率 lr 和 sgd 优化器等参数。
+当然，上面的 `get_eval_config` 中只配置了网络的基本参数。在下面的例子中，我们将介绍一个训练作业，并配置学习率 lr 和 sgd 优化器等参数。
 
 ## 训练配置
-同样，只要按照下面的方式给 `train_job` 函数配上一个装饰器 `@flow.global_function(get_train_config())` 就能够实现一个用于训练任务的网络。
+同样，只要按照下面的方式给 `train_job` 函数配上一个装饰器 `@flow.global_function(get_train_config())` 就能够实现一个用于训练的网络。
 
 ```python
 def get_train_config():
@@ -38,7 +38,7 @@ def get_train_config():
 def train_job() -> oft.Numpy:
   # build up NN here
 ```
-其中 `get_train_config` 是定义了训练任务(train_job)中的配置，主要的参数设置如下：
+其中 `get_train_config` 是定义了训练作业(train_job)中的配置，主要的参数设置如下：
 
 1. 利用 `config.train.primary_lr` 设置了学习率 learning rate；
 
@@ -156,7 +156,7 @@ model_update_conf = dict(
 这个章节递进的介绍 OneFlow 全局函数的概念，函数配置的概念以及如何在函数配置中区分训练或预测配置。
 
 ### OneFlow 全局函数(OneFlow Global Function)
-在介绍优化策略和超参的设置之前，需要先提到`OneFlow Global Function`这个概念，被 `oneflow.global_function` 修饰的函数就是`OneFlow Global Function`，通常也可以被称作`job function`任务函数，下面就是一个简单的例子：
+在介绍优化策略和超参的设置之前，需要先提到`OneFlow Global Function`这个概念，被 `oneflow.global_function` 修饰的函数就是`OneFlow Global Function`，通常也可以被称作`job function`作业函数，下面就是一个简单的例子：
 
 ```python
 import oneflow as flow
@@ -166,10 +166,10 @@ def test_job():
 ```
 `test_job`就是一个`OneFlow Global Function`，它能够被 OneFlow 框架识别，根据配置把函数里面定义的网络编译成适合计算图，放到设备上进行计算。
 
-任务函数包括两部分信息：使用算子搭建的网络(NN)，以及使用这个网络需要的配置信息(config)。网络的搭建请参考[如何使用OneFlow搭建网络](build_nn_with_op_and_layer.md)。本文专注介绍如何设置配置信息。
+作业函数包括两部分信息：使用算子搭建的网络(NN)，以及使用这个网络需要的配置信息(config)。网络的搭建请参考[如何使用OneFlow搭建网络](build_nn_with_op_and_layer.md)。本文专注介绍如何设置配置信息。
 
 ### 函数配置(function_config)
-前面的例子中，你也可能注意到 `@flow.global_function` 装饰器接受`flow.function_config()` 的返回对象作为参数。这个参数就是设置任务函数配置信息的入口。比如下面这个略微复杂一点的例子：
+前面的例子中，你也可能注意到 `@flow.global_function` 装饰器接受`flow.function_config()` 的返回对象作为参数。这个参数就是设置作业函数配置信息的入口。比如下面这个略微复杂一点的例子：
 
 ```python
 config = flow.function_config()
@@ -186,7 +186,7 @@ def test_job():
 function_config 中还包含哪些配置请参考[function_config API](../api/oneflow.html?highlight=functionconfig#oneflow.FunctionConfig)。
 
 ### 训练还是预测配置
-默认情况下，任务函数只能做预测任务，如果想要做训练任务，需要设置 `train` 属性。
+默认情况下，作业函数只能做预测作业，如果想要做训练作业，需要设置 `train` 属性。
 
 如一下代码设置了学习率和模型更新的策略(优化算法)：
 
@@ -195,7 +195,7 @@ config.train.primary_lr(0.1)
 config.train.model_update_conf({"naive_conf": {}})
 ```
 
-反之，如果省略掉以上配置，那么得到的就是任务函数就可用于预测。
+反之，如果省略掉以上配置，那么得到的就是作业函数就可用于预测。
 
 ## 总结
 

@@ -14,9 +14,9 @@
 
 如上图所示，如果暂时略去 OneFlow 的上层模型库、底层支撑库，集中关注 OneFlow 内部架构中与神经网络训练直接相关的部分，总体上可分为三层：
 
-* Python层：用户通过调用Python接口来配置超参，并编写 OneFlow 的任务函数来定义网络，这一切的信息，最终会在 OneFlow 中序列化为字节流，传递给下一层-- **编译时层**；
+* Python层：用户通过调用Python接口来配置超参，并编写 OneFlow 的作业函数来定义网络，这一切的信息，最终会在 OneFlow 中序列化为字节流，传递给下一层-- **编译时层**；
 
-* 编译时层：OneFlow 实现的编译器，将接受 Python 层传递的字节流，并将字节流中所承载的任务函数的信息，经分析、优化后，编译、链接为 OneFlow 中的 **执行计划** (Execution Plan)，最后将 `Execution Plan` 传递给下一层-- **运行时层** ；
+* 编译时层：OneFlow 实现的编译器，将接受 Python 层传递的字节流，并将字节流中所承载的作业函数的信息，经分析、优化后，编译、链接为 OneFlow 中的 **执行计划** (Execution Plan)，最后将 `Execution Plan` 传递给下一层-- **运行时层** ；
 
 * 运行时层：OneFlow 的执行引擎接收上一层传递来的执行计划(`Plan`)，执行计划由多个更小单元的任务描述(`Task Proto`)结构组成，OneFlow 的执行引擎会解析 `Plan`，并为每个 `Task Proto` 分配一个执行单元 **actor**，众多 `actor` 一起运作，完成 OneFlow 的 **去中心化、分布式、流式计算** 。
 
@@ -31,7 +31,7 @@
 以下，我们将针对通常情况下 OneFlow 脚本执行过程(如[3分钟快速上手](../quick_start/quickstart_in_3_min.md))，逐层分析 OneFlow 在Python层、编译时和运行时到底都做了哪些工作。
 
 ## Python 层次
-我们在使用 OneFlow 的过程中已经知道，OneFlow 需要使用`@oneflow.global_function`装饰器来修饰一个python编写的“任务函数”。
+我们在使用 OneFlow 的过程中已经知道，OneFlow 需要使用`@oneflow.global_function`装饰器来修饰一个python编写的“作业函数”。
 比如：
 ```python
 @flow.global_function(get_train_config())
@@ -53,17 +53,17 @@ def train_job():
         #...
         return Func
 ```
-可以看到，装饰器返回的是 `Func` 函数，我们在训练过程中调用的任务函数，其实真正执行的是此处的 `Func`。
+可以看到，装饰器返回的是 `Func` 函数，我们在训练过程中调用的作业函数，其实真正执行的是此处的 `Func`。
 
 装饰器的主要作用有：
 
-* 通过调用`sess.AddJob`，将训练的环境配置及任务函数的信息，添加到当前 session 上下文中，我们将看到，这些信息在编译时会被用到
+* 通过调用`sess.AddJob`，将训练的环境配置及作业函数的信息，添加到当前 session 上下文中，我们将看到，这些信息在编译时会被用到
 
-* 通过修饰器，使得任务函数的调用被导向`_RunLazyJob`，我们将看到在`_RunLazyJob`中包括了编译 `job_func` 的代码
+* 通过修饰器，使得作业函数的调用被导向`_RunLazyJob`，我们将看到在`_RunLazyJob`中包括了编译 `job_func` 的代码
 
 以下，我们来展开讨论`sess.AddJob`与`_RunLazyJob`的细节。
 
-### 任务函数的序列化
+### 作业函数的序列化
 
 在`/oneflow/python/framework/session_util.py`中可以看到`AddJob`的实现：
 ```python
@@ -73,7 +73,7 @@ class Session(object):
         #...
         self.job_name2function_desc_[function_desc.job_func.__name__] = function_desc
 ```
-可以看到， `session`中有一个名为 `job_name2function_desc_` 的字典，`AddJob` 将任务函数的名字作为 key，配置信息作(`function_desc`)为 value 放置进去，配置信息可以在 `oneflow/core/job/job.proto`中查看。
+可以看到， `session`中有一个名为 `job_name2function_desc_` 的字典，`AddJob` 将作业函数的名字作为 key，配置信息作(`function_desc`)为 value 放置进去，配置信息可以在 `oneflow/core/job/job.proto`中查看。
 
 将训练配置信息加入到 `session` 中的主要原因，是 OneFlow 在编译时需要这些信息来进行推理、优化。接下来我们来分析 OneFlow 在 Python层次是如何触发编译过程的。
 
@@ -110,20 +110,20 @@ def Compile(session, function_desc, config_proto):
         c_api_util.CurJobBuildAndInferCtx_Complete()
 ```
 
-其中`_CompileJob`中将对`function_desc`所描述的任务函数进行序列化并在内部调用 C++ 层代码进行构图优化。再通过 `c_api_util.CurJobBuildAndInferCtx_Complete` 告之 C++ 层序列化完成。
+其中`_CompileJob`中将对`function_desc`所描述的作业函数进行序列化并在内部调用 C++ 层代码进行构图优化。再通过 `c_api_util.CurJobBuildAndInferCtx_Complete` 告之 C++ 层序列化完成。
 
 完成`compiler.Compile`的工作后，将通过`c_api_util.StartGlobalSession()` 触发 C++ 层，创建 session，开始 C++ 层的编译 Plan 的工作。
 
 
-### 任务函数的调用
+### 作业函数的调用
 回顾上文提到到的`_RunLazyJob`代码：
 ```python
 def _RunLazyJob(session, job_func, *args, **kwargs):
     return session.TryInit().LazyRun(job_func, *args, **kwargs)
 ```
-我们已经知道在`TryInit()`中完成了任务函数的序列化，并通知 编译时完成编译构图工作。
+我们已经知道在`TryInit()`中完成了作业函数的序列化，并通知 编译时完成编译构图工作。
 
-而`LazyRun`内部，就对应了用户调用任务函数时，Python层如何运行任务函数。
+而`LazyRun`内部，就对应了用户调用作业函数时，Python层如何运行作业函数。
 
 ```python
     def LazyRun(self, job_func, *arg):
@@ -132,11 +132,11 @@ def _RunLazyJob(session, job_func, *args, **kwargs):
         #...
         return LazyFutureRemoteBlobs(self).SetResult(remote_blobs).Inited()
 ```
-其中 `LaunchUserJob` 接受的参数 `job_func` 与 `arg` 就分别是用户调用任务函数时的任务函数以及传递的参数。
+其中 `LaunchUserJob` 接受的参数 `job_func` 与 `arg` 就分别是用户调用作业函数时的作业函数以及传递的参数。
 
 `LaunchUserJob` 会遍历 `job_func` 中需要执行的计算单元，并最终通在`session.LaunchJob`(`/oneflow/python/framework/session_util.py`)中通过调用`c_api_util.LaunchJob(job_instance)`执行计算。
 
-值得一提的是，因为当用户调用任务函数时，OneFlow 已经完成了任务函数的编译构图，得到了执行计划(Execution Plan)，1个 Plan 由多个描述任务的`TaskProto`组成。以上`c_api_util.LaunchJob(job_instance)`所接受的参数`job_instance`，并不是任务函数本身，而是 Plan中的 `Task` 实例化对象，一个任务函数，将对应多个`job_instance`。
+值得一提的是，因为当用户调用作业函数时，OneFlow 已经完成了作业函数的编译构图，得到了执行计划(Execution Plan)，1个 Plan 由多个描述任务的`TaskProto`组成。以上`c_api_util.LaunchJob(job_instance)`所接受的参数`job_instance`，并不是作业函数本身，而是 Plan中的 `Task` 实例化对象，一个作业函数，将对应多个`job_instance`。
 
 ## 编译期阶段
 上文提到的 Python 层的 `c_api_util.StartGlobalSession()` 会触发 C++ 代码中的 `StartGlobalSession` 并最终触发 OneFlow 编译时的入口函数 `Oneflow::Init` (`/oneflow/core/job/oneflow.cpp`)：
@@ -156,7 +156,7 @@ Maybe<void> Oneflow::Init(const oneflow::JobSet& job_set) {
 ![Execution Plan](imgs/plan_illustration.svg)
 
 ### 执行计划的生成过程
-进入到 `CompileAndMergePlanOnMaster` 中可以看到，首先，会调用一系列的 `MakeXXXJob(s)` 整合序列化后的任务函数信息， 加入到 `jobs` 中：
+进入到 `CompileAndMergePlanOnMaster` 中可以看到，首先，会调用一系列的 `MakeXXXJob(s)` 整合序列化后的作业函数信息， 加入到 `jobs` 中：
 ```cpp
 Maybe<void> CompileAndMergePlanOnMaster(const PbRpf<Job>& conf_jobs, Plan* plan) {
   std::vector<std::shared_ptr<Job>> jobs(conf_jobs.size());
