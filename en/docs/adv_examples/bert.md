@@ -1,48 +1,48 @@
 
-## 模型概述
+## BERT (Bidirectional Encoder Representations from Transformer) is a new type of pre-training model in the NLP field. In this case, based on the paper BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding, the OneFlow version of the BERT model is implemented.
 BERT(Bidirectional Encoder Representations from Transformers)是NLP领域的一种新型预训练模型。本案例中，基于论文[BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding](https://arxiv.org/abs/1810.04805)实现了BERT模型的OneFlow版本。本案例中，基于论文[BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding](https://arxiv.org/abs/1810.04805)实现了BERT模型的OneFlow版本。
 
-### 模型架构
+### Model Architecture
 | **Model** | **Hidden layers** | **Hidden unit size** | **Attention heads** | **Feedforward filter size** | **Max sequence length** | **Parameters** |
 |:---------:|:-----------------:|:--------------------:|:-------------------:|:---------------------------:|:-----------------------:|:--------------:|
 | BERTBASE  |    12 encoder     |         768          |         12          |          4 x  768           |           512           |      110M      |
 
-BERT在实际应用中往往分为两步：
+BERT is often divided into two steps in practical applications
 
-* 首先，预训练得到BERT语言模型；
+* First, pre-train to get Bert model
 
-* 然后，为满足下游应用，在得到的BERT语言模型的基础上，多加一层网络，并进行微调，得到下游应用。
+* Then, in order to meet the needs of downstream applications, on the basis of the obtained Bert language model, an additional layer of network is added and fine-tuned to obtain downstream applications.
 
 
-## 快速开始
-### 获取相关数据集
-我们提供了完成BERT预训练及SQuAD微调的[OFRecord数据集及相关数据文件](https://oneflow-static.oss-cn-beijing.aliyuncs.com/oneflow-tutorial-attachments/bert_squad_dataset.zip)，可以通过以下命令下载并解压：
+## Quick Start
+### Get the dataset
+We provide [the OFRecord dataset and the related data files](https://oneflow-static.oss-cn-beijing.aliyuncs.com/oneflow-tutorial-attachments/bert_squad_dataset.zip) that have completed BERT pre-training and SQuAD fine-tuning, which can be downloaded and decompressed by the following command:
 
 ```bash
 wget https://oneflow-static.oss-cn-beijing.aliyuncs.com/oneflow-tutorial-attachments/bert_squad_dataset.zip
 unzip bert_squad_dataset.zip
 ```
-解压后的文件目录清单如下：
+The decompressed file directory list is as follows:
 
-* bert_config.json、vocab.txt：制作prediction json文件需要的文件，来自[google bert](https://github.com/google-research/bert)
+* bert_config.json, vocab.txt: files needed to make prediction json files, from [google bert](https://github.com/google-research/bert)
 
-* dev-v1.1/、dev-v1.1.json：SQuAD检验集，用于打分
+* dev-v1.1/, dev-v1.1.json: SQuAD test set, used for scoring
 
-* part-0：预训练集样本（40个样本）
+* part-0: Pre-training set samples (40 samples)
 
-* train-v1.1：SQuAD训练集，已经转为ofrecord数据集格式
+* train-v1.1: SQuAD training set, which has been converted to ofrecord data set format
 
-以上各个文件将在下文的预训练任务、SQuAD微调中使用到。
+The files above will be used in the pre-training tasks and SQuAD fine-tuning below.
 
-### 训练BERT模型
-首先，克隆`OneFlow-Benchmark`仓库。
+### Train BERT model
+First, clone `OneFlow-Benchmark` repository.
 
 ```bash
 git clone https://github.com/Oneflow-Inc/OneFlow-Benchmark.git
 cd OneFlow-Benchmark/LanguageModeling/BERT/
 ```
 
-然后，通过以下命令，使用我们预训练好的pretrain模型以及小型样本集合，开始BERT预训练查看效果：
+Then, use our pre-trained pre-trained model and a small sample set to start BERT pre-training to see the effect with the following command:
 ```bash
 python ./run_pretraining.py\
     --gpu_num_per_node=1 \
@@ -69,7 +69,7 @@ python ./run_pretraining.py\
     --warmup_batches 831 \
     --save_last_snapshot True 
 ```
-我们将获得类似以下输出：
+The following outputs are expected:
 ```text
 ==================================================================
 Running bert: num_gpu_per_node = 1, num_nodes = 1. ==================================================================
@@ -115,50 +115,50 @@ average speed: 0.556(sentences/sec)
 ------------------------------------------------------------------
 ```
 
-## 详细说明
-### 脚本说明
-|            **分类**            |                                **说明**                                 |   **所属**   |
-|:----------------------------:|:---------------------------------------------------------------------:|:----------:|
-|     pretrain.py、bert.py      |                             定义了BERT网络模型；                              |    BERT    |
-|      run_pretraining.py      | 启动BERT训练的用户脚本，用户通过命令行参数进行BERT训练的训练环境及超参配置，各个参数的具体作用将在下文 **脚本参数** 中说明。 |    BERT    |
-|           squad.py           |                              定义了squad网络；                              |   SQuAD    |
-|         run_squad.py         |                             用于启动SQuAD的训练                              |   SQuAD    |
-|    run_squad_predict.py    |                           使用训练好的SQuAD模型进行预测                           |   SQuAD    |
-|         npy2json.py          |                将OneFlow的预测结果转化为prediction json格式的必要脚本                 |   SQuAD    |
-| convert_tf_ckpt_to_of.py |                      将TensorFlow模型转为OneFlow个模型格式                      | BERT/SQuAD |
+## Detailed Explanation
+### Explanation of the script
+|         **Scripts**          |                                                                                                                      **Explanation**                                                                                                                       | **Belong to** |
+|:----------------------------:|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|:-------------:|
+|     pretrain.py、bert.py      |                                                                                                                     Defines BERT model                                                                                                                     |     BERT      |
+|      run_pretraining.py      | Starts the user script for BERT training. The user can configure the training environment and hyperparameters of BERT training through command line parameters. The specific functions of each parameter will be explained in **Script Parameters** below. |     BERT      |
+|           squad.py           |                                                                                                                    Defines SQuAD model                                                                                                                     |     SQuAD     |
+|         run_squad.py         |                                                                                                              Starts the SQuAD model training.                                                                                                              |     SQuAD     |
+|    run_squad_predict.py    |                                                                                                        Use the trained SQuAD model for prediction.                                                                                                         |     SQuAD     |
+|         npy2json.py          |                                                                                           Converts the OneFlow prediction results to the prediction json format.                                                                                           |     SQuAD     |
+| convert_tf_ckpt_to_of.py |                                                                                                        Converts TensorFlow model to OneFlow model.                                                                                                         |  BERT/SQuAD   |
 
 
 
-### 脚本参数
-`run_pretraining.py`通过命令行参数配置包括超参在内的训练环境，可以通过 `run_pretraining.py --help`查看，以下是这些参数作用的具体说明：
+### Script Parameters
+`run_pretraining.py` uses command arguments to configure the training environment including hyperparameters. You can check with `run_pretraining.py --help`. The detailed explanation for these parameters is as follows:
 
-* gpu_num_per_node： 每个节点上GPU的数目，OneFlow要求每个节点的GPU数目必须一致
+* gpu_num_per_node: number of GPUs in each node. OneFlow requires the same number of GPUs in each node.
 
-* node_num： 节点数目，即分布式训练时的主机数目
+* node_num: number of nodes, that is, the number of hosts during distributed training.
 
-* node_list： 节点列表，如果节点数大于1，则需要通过node_list指定节点列表，节点列表为字符串形式，采用逗号分隔，如`--node_num=2 --node_list="192.168.1.12,192.168.1.14`"
+* node_list: node list, if the number of nodes is greater than 1, you need to specify the node list through node_list, the node list is in the form of a string, separated by commas, such as `--node_num=2 --node_list="192.168.1.12,192.168. 1.14`"
 
 * learning_rate： Learning rate
 
-* weight_decay_rate：设置权重衰减率
+* weight_decay_rate: Set the weight decay rate
 
-* batch_size_per_device： 分布式训练时每个设备上的batch大小
+* batch_size_per_device: batch size on each device during distributed training
 
-* iter_num ITER_NUM： 训练的总轮数
+* iter_num ITER_NUM: total number of training iterations
 
-* warmup_batches： 预热轮数，默认值为10000
+* warmup_batches: the number of warm up batches, the default value is 10000
 
-* data_dir： OFRecord数据集的路径
+* data_dir: the directory of the OFRecord dataset
 
-* data_part_num：OFRecord数据集目录下的数据文件数目
+* data_part_num: The number of data files in the OFRecord dataset directory
 
-* use_fp16： 是否使用fp16
+* use_fp16: whether or not to use float16
 
-* use_boxing_v2： 是否使用boxing v2
+* use_boxing_v2: whether or not to use boxing v2
 
-* loss_print_every_n_iter：训练中每隔多少轮打印一次训练信息（loss信息）
+* loss_print_every_n_iter: print training information (loss information) every n iterations during training
 
-* model_save_every_n_iter： 训练中每隔多少轮保存一次模型
+* model_save_every_n_iter: save model every n iterations during training
 
 * model_save_dir： 模型存储路径
 
