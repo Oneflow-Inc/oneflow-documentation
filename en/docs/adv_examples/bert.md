@@ -160,21 +160,21 @@ average speed: 0.556(sentences/sec)
 
 * model_save_every_n_iter: save model every n iterations during training
 
-* model_save_dir： 模型存储路径
+* model_save_dir: the path where the model will be saved
 
-* save_last_snapshot：指定最后一轮训练完成后，模型保存路径
+* save_last_snapshot: specify the path to save the model after the last round of training is completed
 
-* model_load_dir：指定模型加载路径
+* model_load_dir: specify the model loading path
 
-* log_dir LOG_DIR：指定日志路径
+* log_dir LOG_DIR: specify the log path
 
-* seq_length： 指定BERT句子长度，默认值为512
+* seq_length: specify the length of the BERT sentence, the default value is 512
 
-* max_predictions_per_seq： 默认值为80
+* max_predictions_per_seq: the default value is 80
 
-* num_hidden_layers：隐藏层数目，默认值为24
+* num_hidden_layers: the number of hidden layers, the default value is 24
 
-* num_attention_heads： Attention头数目，默认值为16
+* num_attention_heads: the number of Attention heads, the default value is 16
 
 * max_position_embeddings：
 
@@ -188,23 +188,23 @@ average speed: 0.556(sentences/sec)
 
 * hidden_size_per_head
 
-### 使用完整的Wikipedia + BookCorpus数据集
-如果需要无到有进行BERT的pretrain训练，则需要使用较大的训练集。
+### Use the complete Wikipedia + BookCorpus data set
+If you need to perform Bert pre-train training from scratch, you need to use a larger training set.
 
-如果感兴趣，可以通过[google-research BERT](https://github.com/google-research/bert)的页面，下载tfrecord格式的数据集。再根据[加载与准备OFRecord数据集](../extended_topics/how_to_make_ofdataset.md)中的方法，将TFRecord数据转为OFRecord数据集使用。再根据[加载与准备OFRecord数据集](../extended_topics/how_to_make_ofdataset.md)中的方法，将TFRecord数据转为OFRecord数据集使用。
+If you are interested, you can download the data set in tfrecord format through the page of [google-research BERT](https://github.com/google-research/bert). Then according to [ the method in loading and preparing OFRecord data set](../extended_topics/how_to_make_ofdataset. md), convert TFRecord data to OFRecord data set for use.再根据[加载与准备OFRecord数据集](../extended_topics/how_to_make_ofdataset.md)中的方法，将TFRecord数据转为OFRecord数据集使用。
 
-### 将Tensorflow的BERT模型转为OneFlow模型格式
-如果想直接使用已经训练好的pretrained模型做fine-tune任务（如以下将展示的SQuAD），可以考虑直接从[google-research BERT](https://github.com/google-research/bert)页面下载已经训练好的BERT模型。
+### Convert Tensorflow's BERT model to OneFlow model format
+If you want to directly use the trained pretrained model for fine-tune tasks (such as SQuAD shown below), you can consider downloading the trained BERT model directly from the [google-research BERT](https://github.com/google-research/bert) page.
 
-再利用我们提供的`convert_tf_ckpt_to_of.py`脚本，将其转为OneFlow模型格式。转换过程如下：转换过程如下：
+Then use the `convert_tf_ckpt_to_of.py` script we provided to convert it to the OneFlow model format.The conversion process is as follows:
 
-首先，下载并解压某个版本的BERT模型，如`uncased_L-12_H-768_A-12`。
+First, download and decompress a certain version of the BERT model, such as `uncased_L-12_H-768_A-12`.
 ```shell
 wget https://storage.googleapis.com/bert_models/2020_02_20/uncased_L-12_H-768_A-12.zip
 unzip uncased_L-12_H-768_A-12.zip -d uncased_L-12_H-768_A-12
 ```
 
-然后，运行以下命令：
+Then, run the following command:
 ```shell
 cd uncased_L-12_H-768_A-12/
 cat > checkpoint <<ONEFLOW
@@ -213,13 +213,13 @@ all_model_checkpoint_paths: "bert_model.ckpt"
 ONEFLOW
 ```
 
-该命令将在解压目录下创建一个`checkpoint`文件，并写入以下内容：
+This command will create a `checkpoint` file in the decompressed directory and write the following content:
 ```
 model_checkpoint_path: "bert_model.ckpt" 
 all_model_checkpoint_paths: "bert_model.ckpt" 
 ```
 
-此时，已经准备好待转化的tensorflow模型目录，整个模型目录的结构如下：
+At this point, the tensorflow model directory to be converted is ready. The structure of the entire model directory is as follows
 ```shell
 uncased_L-12_H-768_A-12
 ├── bert_config.json
@@ -229,22 +229,22 @@ uncased_L-12_H-768_A-12
 └── vocab.txt
 ```
 
-我们接着使用`convert_tf_ckpt_to_of.py`将tensorflow模型转为OneFlow模型：
+We then use `convert_tf_ckpt_to_of.py` to convert the tensorflow model to the OneFlow model:
 ```bash
 python convert_tf_ckpt_to_of.py \
   --tf_checkpoint_path ./uncased_L-12_H-768_A-12 \
   --of_dump_path ./uncased_L-12_H-768_A-12-oneflow
 ```
-以上命令，将转化好的OneFlow格式的模型保存在`./uncased_L-12_H-768_A-12-oneflow`目录下，供后续微调训练(如SQuAD)使用。
+The above command saves the converted OneFlow format model in the `./uncased_L-12_H-768_A-12-oneflow` directory for subsequent fine-tuning training (such as SQuAD).
 
-## 微调：SQuAD问答任务
-### 将pretrained模型修改为SQuAD模型
-我们只需要在BERT的backbone基础上，加上一层`output`层，并修改loss的表达式即可，完整的代码可以查看`squad.py`脚本，以下是几处关键修改：
+## Fine-tuning: SQuAD question and answer task
+### Modify the pretrained model to SQuAD model
+We only need to add a layer of `output` on the basis of BERT's backbone, and modify the expression of loss. The complete code can be viewed in the `squad.py` script. Here are a few key changes:
 ```python
 def SQuADTrain():
     #... backbone = bert_util.BertBackbone()
 
-    #在BERT的基础上加上一个全连接层
+    #Add a full-connected layer to BERT
     with flow.name_scope("cls-squad"):
         final_hidden = backbone.sequence_output()
         final_hidden_matrix = flow.reshape(final_hidden, [-1, hidden_size])
@@ -259,7 +259,7 @@ def SQuADTrain():
         start_logits = flow.slice(logits, [None, None, 0], [None, None, 1])
         end_logits = flow.slice(logits, [None, None, 1], [None, None, 1])
 
-    #重新定义SQuAD任务的loss
+    #Redefine the loss of SQuAD task
         start_loss = _ComputeLoss(start_logits, start_positions_blob, seq_length)
         end_loss = _ComputeLoss(end_logits, end_positions_blob, seq_length)
 
@@ -268,7 +268,7 @@ def SQuADTrain():
     return total_loss
 ```
 
-为了得到一个初始化的squad模型，我们通过以下脚本启动squad训练，并保存模型。
+In order to get an initialized squad model, we start squad training through the following script and save the model.
 
 ```shell
 python ./run_squad.py\
@@ -295,20 +295,20 @@ python ./run_squad.py\
     --warmup_batches 831\
     --save_last_snapshot True
 ```
-完成训练后，在`./bert_regresssioin_test/of/last_snapshot`中保存有初始化的SQuAD模型，我们将其与训练好的SQuAD合并后，进行微调（fine-tune）训练。
+After the training is completed, the initialized SQuAD model is saved in `./bert_regresssioin_test/of/last_snapshot`, we merge it with the trained SQuAD, and perform fine-tune training.
 
-### 合并pretrained模型为SQuAD模型
-SQuAD模型是在pretrained模型基础上的扩充，我们需要参照[模型的加载与保存](../basics_topics/model_load_save.md)中的“模型部分初始化和部分导入”方法，将训练好的BERT pretrained模型与初始化的SQuAD模型合并。
+### Combine pretrained models into SQuAD models
+The SQuAD model is an expansion on the basis of the pretrained model. We need to refer to the "model partial initialization and partial import" method in [Model Loading and Saving](../basics_topics/model_load_save.md), to combine the trained BERT pretrained model with the initialized SQuAD model.
 
 ```shell
 cp -R ./bert_regresssioin_test/of/last_snapshot ./squadModel
 cp -R --remove-destination ./dataset/uncased_L-12_H-768_A-12_oneflow/* ./squadModel/
 ```
 
-### OneFlow预训练模型的训练次数问题
-OneFlow生成的模型目录中，会有一个名为`System-Train-TrainStep-xxx`的子目录(xxx为任务函数的函数名)，该子目录下的out文件中，保存有训练总迭代数，并且这个迭代数会用于动态调节训练过程的`learning rate`。
+### The number of training times of the OneFlow pre-training model
+In the model directory generated by OneFlow, there will be a subdirectory named `System-Train-TrainStep-xxx` (xxx is the function name of the task function). The out file under this subdirectory contains The total number of training iterations, and this number of iterations will be used to dynamically adjust the `learning rate` of the training process.
 
-为了防止保存的迭代数影响到微调的训练，应该将out文件中的二进制数据清零：
+In order to prevent the saved iterations from affecting the fine-tuning training, the binary data in the out file should be cleared:
 ```shell
 cd System-Train-TrainStep-xxx
 xxd -r > out <<ONEFLOW
@@ -316,14 +316,14 @@ xxd -r > out <<ONEFLOW
 ONEFLOW
 ```
 
-如果你使用的是由TensorFlow转过来的预训练模型，则可以省去这个步骤。
+If you are using a pre-trained model converted from TensorFlow, you can omit this step.
 
-### 开始SQuAD训练
-通过`run_suqad.py`脚本，开始训练SQuAD模型，主要配置如下：
+### Start the training of SQuAD
+Start training the SQuAD model through the `run_suqad.py` script, the main configuration is as follows:
 
-* 使用以上合并得到的SQuAD模型`./squadModel`
+* Use the SQuAD model obtained by the above merge `./squadModel`
 
-* 采用SQuAD v1.1作为训练集
+* Use SQuAD v1.1 as the training set
 
 * epoch = 3 (`iternum = 88641*3/(4*8) = 8310`)
 
@@ -356,7 +356,7 @@ python ./run_squad.py\
     --model_load_dir=./squadModel
 ```
 
-### 预测及打分
+### Forecast and grading
 生成为了生成[Preidiction File](https://rajpurkar.github.io/SQuAD-explorer/)格式的json文件，我们先将预测结果保存为npy文件，再使用[google BERT的run_squad.py](https://github.com/google-research/bert/blob/master/run_squad.py)中的`write_predictions`函数，转化为json格式。
 
 利用`run_squad_predict.py`生成`all_results.npy`文件：
