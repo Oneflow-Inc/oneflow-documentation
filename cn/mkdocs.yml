@@ -95,14 +95,14 @@ nav:
       - 数据输入: basics_topics/data_input.md
       - 搭建神经网络: basics_topics/build_nn_with_op_and_layer.md
       - 优化算法及超参配置: basics_topics/optimizer_in_function_config.md
-      - 获取任务函数的结果: basics_topics/async_get.md
+      - 获取作业函数的结果: basics_topics/async_get.md
       - 模型的加载与保存: basics_topics/model_load_save.md
       - 分布式训练: basics_topics/distributed_train.md
 
     
     - 扩展专题:
-      - 任务函数的定义与调用: extended_topics/job_function_define_call.md
-      - Consistent 与 Mirrored策略: extended_topics/consistent_mirrored.md
+      - 作业函数的定义与调用: extended_topics/job_function_define_call.md
+      - Consistent 与 Mirrored 视角: extended_topics/consistent_mirrored.md
       - OneFlow 的并行特色: extended_topics/model_mixed_parallel.md
       - OFRecord 数据格式: extended_topics/ofrecord.md
       - 加载与准备 OFRecord 数据集: extended_topics/how_to_make_ofdataset.md
@@ -111,10 +111,9 @@ nav:
       - Watch 与 Watch Diff: extended_topics/watch_watch_diff.md
 
     - 高级应用实例:
-      - 图像处理:
-        - ResNet: adv_examples/resnet.md
-        - AlexNet: adv_examples/alexnet.md
-        - MaskRCNN: adv_examples/mask_rcnn.md
+      - ResNet: adv_examples/resnet.md
+      - AlexNet: adv_examples/alexnet.md
+      - MaskRCNN: adv_examples/mask_rcnn.md
       - NLP处理-BERT: adv_examples/bert.md
       - 推荐系统-Wide&Deep: adv_examples/wide_deep.md
       - 深度伪造-生成对抗网络: adv_examples/dcgan.md
