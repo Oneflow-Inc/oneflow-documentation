@@ -4,28 +4,28 @@ If you are not familiar with VScode please reference to [official documentation]
 
 This article:
 
-* 如何编译 `Debug` 版本的 OneFlow
+* How to edit the  `Debug` version of OneFlow.
 
-* 远程调试所必要的 VS Code插件的安装配置
+* The necessary extension packages of VS code and installed guidelines.
 
-### 编译 Debug 版本的 OneFlow
+### Edit the Debug version of OneFlow.
 
-如果使用 `Release` 版本的 OneFlow，因为存在编译器优化的问题，在调试过程中可能会出现程序实际运行位置与源码行不对应。
+If use the  `Release` version of OneFlow. Because of editor optimization issue, the issue that don't correspond to the actual position and source line may occur in the process of debugging programs.
 
-因此我们需要编译 `Debug` 版本的 OneFlow，并且需要生成 clangd 所需要的json文件。
+Thus, we need to edit `Debug` version of OneFlow. And need to generate json files need by clangd.
 
-在运行 cmake 的时候需要加上 `Debug` 及 `CMAKE_EXPORT_COMPILE_COMMANDS` 的 flag
+When running cmake, we need add flag of  `Debug` and `CMAKE_EXPORT_COMPILE_COMMANDS`
 
 ```shell
 cmake .. \
 -DCMAKE_BUILD_TYPE=Debug \
 -DCMAKE_EXPORT_COMPILE_COMMANDS=1
 ```
-以上的
+Above code:
 
-* `-DCMAKE_BUILD_TYPE=Debug` 选项指定编译 Debug 版本
+* `-DCMAKE_BUILD_TYPE=Debug`  choose the version of Debug.
 
-* `-DCMAKE_EXPORT_COMPILE_COMMANDS` 选项会在 `build` 目录下生成后文clangd配置时所需要的 `compile_commands.json` 文件。
+* `-DCMAKE_EXPORT_COMPILE_COMMANDS`  will generate the  `compile_commands.json` files need by clangd in  `build`.
 
 ### Remote - SSH
 通过 VS Code 的 Remote SSH 插件，可以通过 ssh 的方式连接远程服务器。
