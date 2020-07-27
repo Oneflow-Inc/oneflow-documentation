@@ -181,22 +181,22 @@ def train_job(images:oft.ListNumpy.Placeholder((BATCH_SIZE_PER_GPU, 1, 28, 28), 
 ## Use consistent strategies in OneFlow
 We already know the mirrored strategy. In `mirrored_view`, sample will assign to many exactly same model to training distributed. The results of each nodes need be assembled to get the completed batch.
 
-除了 mirroed 策略外，OneFlow 还提供了 consistent 策略。 **consistent 策略是 OneFlow 的一大特色，与 mirrored 策略相比有很大的优势。**
+In addition to mirroed strategy, OneFlow also provides consistent strategy. **Consistent strategy is the main characteristic of OneFlow, have lots of advantages compared with mirrored.(链接可能出错）**
 
-默认情况下 OneFlow 采取的是 mirrored 策略，使用 consistent 策略需要通过 `flow.function_config()` 的 `default_distribute_strategy` 接口显式设置：
+OneFlow will use mirrored strategy as default. To use consistent strategy, we need use  `default_distribute_strategy` of `flow.function_config()` to config:
 ```python
   config = flow.function_config()
   config.default_distribute_strategy(flow.scope.consistent_view())
 ```
 
-之所以说 consistent 策略是 OneFlow 的一大特色，是因为在 OneFlow 的设计中，若采用 `consistent_strategy`，那么从用户的视角看，所使用的op、blob将获得 **逻辑上的统一**，同样以本文开头的矩阵乘法为例，我们只需要关注[矩阵乘法](#mat_mul_op)本身数学计算上的意义；而在工程上到底如何配置、采用模型并行还是数据并行等细节问题，可以使用OneFlow的接口轻松完成。OneFlow内部会高效可靠地解决 **数据并行中的数据切分** 、**模型并行中的模型切分** 、**串行逻辑** 等问题。
+The reason of why consistent strategy is the main character of OneFlow is because in OneFlow design use `consistent_strategy`. Then from user's point of view, the op and blob can get consistently in logic level. We use matrixes multiplication as example in the beginning of article, we only need focus on [matrix multiplication](#mat_mul_op) itself on mathematics level. But in project, the issue of how to config and use model parallel or data parallel can be easily done by using OneFlow. OneFlow will handle **The data division of data parallel**, **model division of model parallel** and **serial logic** issue very fast and efficient.
 
- **在OneFlow的consistent策略下，可以自由选择模型并行、数据并行或者两者共存的混合并行。**
+ **In consistent strategy in OneFlow, we are free to choose either model parallel or data parallel or mix of them.**
 
-### 代码示例
-以下代码，我们采用 consistent 策略，使用2个 GPU 进行训练，consistent 策略下默认的并行方式仍然是 **数据并行**。关于如何在consistent 策略下设置 **模型并行** 及 **混合并行** 不在本文讨论范围，我们在[OneFlow的并行特色](model_mixed_parallel.md)中有专门的介绍与示例。
+### Example
+In following script, we use consistent strategy and use two GPU to training. The default parallels method is **data parallel** in consistent strategy.The issue of how to set **model parallel** and **mix parallel** in consistent strategy will not be discussed in this article. We have special introduction of that in [parallels characters of OneFlow](model_mixed_parallel.md).
 
-完整代码：[consistent_strategy.py](../code/extended_topics/consistent_strategy.py)
+Name: [consistent_strategy.py](../code/extended_topics/consistent_strategy.py)
 
 ```python
 import numpy as np
@@ -253,30 +253,30 @@ if __name__ == '__main__':
         print(loss.mean())
 ```
 
-### 代码解析
-以上代码中：
+### Script explanation
+In above script:
 
-* 使用 `flow.config.gpu_device_num` 设置GPU数目：
+* Use  `flow.config.gpu_device_num` to define the GPU number:
 ```python
 flow.config.gpu_device_num(2)
 ```
 
-* 使用 `oft.Numpy.Placeholder` 定义 consistent 策略下的占位符，因为`Numpy.Placeholder`产出的blob代表逻辑上的op及数据占位符，因此此处的BATCH_SIZE就是整个分布式训练的样本总和，不需要人为切分或者组合
+* Use  `oft.Numpy.Placeholder` to define the place holder in consistent strategy. Because the blob of `Numpy.Placeholder` is represent the op and place holder in logic. Thus. the BATCH_SIZE is the totally number of samples and no need for manually dividing or combining.
 ```python
 def train_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
             labels:oft.Numpy.Placeholder((BATCH_SIZE, ), dtype=flow.int32))
 ```
 
-* 训练结果通过 `numpy` 转化为 numpy 数据，直接是一个统一的结果，OneFlow 完成分布式过程中切分与合并的工作。在 consistent 模式下，多卡的分布式训练与单卡的训练，代码差别极少，上手体验几乎一样
+* The result of training use `numpy` as a consistent results. OneFlow done the distributed training and merging process.In consistent model, multi card is basically no difference with single card. User will not find that when using.
 ```python
       loss = train_job(images, labels).get().ndarray()
       if i % 20 == 0: 
         print(loss.mean())
 ```
 
-## 更多扩展
-随着机器学习理论与实践发展，现在已经出现了很多单机无法训练的网络；也出现了越来越多仅采用数据并行无法训练的模型。
+## More extending
+With the development of machine learning theory and practice, and now there are already many network unable to training by single card. There have been more and more using of data can not be trained on the parallel model.
 
-采用OneFlow的 `consistent` 策略，通过自由选择及组合并行方式，可以很好地解决以上问题，我们在[OneFlow的并行特色](model_mixed_parallel.md)进行了专门的介绍。
+Use  `consistent` in OneFlow, by free to choice and combination of parallel. Can give a good solutions to the above issue. We will introduce in [parallel characteristic of OneFlow](model_mixed_parallel.md).
 
 
