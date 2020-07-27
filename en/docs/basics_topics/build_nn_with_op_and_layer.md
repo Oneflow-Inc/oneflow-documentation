@@ -1,8 +1,8 @@
 # Use OneFlow build the neural network
 
-在之前[识别MNIST手写体数字](http://183.81.182.202:8000/quick_start/lenet_mnist.html)的例子中，我们通过 flow.layers 中的网络层和 flow.nn 中提供的算子搭建了一个简单的 lenet 网络。下面，我们将通过一个简单的神经网络，来介绍 Onflow 中网络搭建的核心—算子(op)和层(layer)。
+在之前[识别MNIST手写体数字](../quick_start/lenet_mnist.md)的例子中，我们通过 `flow.layers` 中的网络层和 `flow.nn` 中提供的算子搭建了一个简单的 lenet 网络。下面，我们将通过一个简单的神经网络，来介绍 Onflow 中网络搭建的核心—算子(op)和层(layer)。
 
-下面的代码部分是一个主要由卷积层、池化层和全连接层组成的神经网络；图示部分展示了该网络的算子(op)和算子输出的形状。 `data` 是维度是100x1×28×28的 `Blob` ，`data` 首先作为 `conv2d` 的输入参与卷积计算，计算结果传给conv1，然后conv1作为输入传给 `max_pool2d` ，依次类推。(Note: Here isn't accurate, it is easy to understand such a description)
+下面的代码部分是一个主要由卷积层、池化层和全连接层组成的神经网络；图示部分展示了该网络的算子(op)和算子输出的形状。 参数 `data` 是维度为 `100x1×28×28` 的数据，`data` 首先作为 `conv2d` 的输入参与卷积计算，计算结果传给 `conv1` ，然后 `conv1` 作为输入传给 `max_pool2d` ，依次类推。（注：这里的说法不准确，只是方便理解这么描述，后文会解释）
 
 ```python
 def lenet(data, train=False):
@@ -21,31 +21,37 @@ def lenet(data, train=False):
 
 ![](imgs/lenet.png)
 
-上图中有两类元素，一类是方框代表的运算单元，包括 `op` 和 `layer` 两类，比如 conv2d 、 dense 、 max_pool2d 等；一类是箭头代表的数据块定义（`BlobDef`）。
+上图中有两类元素，一类是方框代表的运算单元，包括 `op` 和 `layer` 两类，比如 `conv2d` 、 `dense` 、 `max_pool2d` 等；一类是箭头代表的数据。
 
-## 算子(op)和层(layer)
-算子(op)是比较常用的一种概念，是 OneFlow 中基本的运算单元，前面的 `reshape` 和 `nn.max_pool2d` 就是两种算子。 `layers.conv2d` 和 `layers.dense` 不是算子，它们是由算子组合成的特定的运算层(layer)。比如 `layers.conv2d` 其实是由 `conv2d` 算子和 variable 算子组成的，层的存在简化了前端的构图过程，详细参考[layers.py](api/layers.html)。
+## op 和 layer
+算子(op)是比较常用的一种概念，是 OneFlow 中基本的运算单元，前面的 `reshape` 和 `nn.max_pool2d` 就是两种算子。 `layers.conv2d` 和 `layers.dense` 不是基本的运算单元，它们是由算子组合成的特定的运算层(`layer`)。比如 `layers.conv2d` 其实是由 `conv2d` 算子和 `variable` 算子组成的，层的存在简化了前端的构图过程，详情请参考[layers.py](api/layers.html)。
 
-## Blob - `BlobDef` object
-The statement we mention before have some part inaccurate. The network construction process and running process is separate in fact. The build process is OneFlow underlying calculation chart based on the description of the network connection relation and the process, but the real calculation happened at run time.我们这里讨论的是构图过程(compile)，不是计算过程(runtime)，`data`、`conv1` 等都是 [`BlobDef`对象](https://github.com/Oneflow-Inc/oneflow-documentation/docs/extended_topics/consistent_mirrored.md)，在 OneFlow 的语境中经常被称作 `Blob` ，它在图中处于边的位置，作为算子的输入或者输出。 `Blob` 也可以被看作是数据占位符，在构图阶段它虽然没有具体的数值，但它包括了这条边所有的信息，比如 `shape` 或者 `dtype` 。另外OneFlow中经常提到的 `lbn` ，其实就是 `Logical Blob` 的缩写，它就是用户在构建网络时头脑里的那个`Blob`。为什么一定要强调是用户头脑里的`Blob`，主要是因为，runtime阶段，这个 `Blob` 的实际数据有可能分布在不同的设备上，比如2机16卡数据并行的时候，16个卡上每张卡都只有1/16的数据，拼起来才是这个 `Blob` 对应的完整数据。
+## 网络构建过程中的数据块
+前文提到过有说法不准确的地方，指的是“参数 `data` 是维度为 `100x1×28×28` 的数据”这句话不准确。其实，在定义网络时，`data` 中并没有真实的数据，而只是数据的占位符。
 
-搭建网络时可以打印 `Blob` 的属性，比如要打印形状 `shape` 和数据类型 `dtype` 可以
+因为 OneFlow 网络的构建过程和运行过程其实是分开的，构建过程是 OneFlow 底层根据描述的网络连接关系构建计算图的过程，而真正的计算是在运行时发生的。
+
+在构建网络时，我们只是描述了网络中各个节点的性质、形状（如 `shape`、`dtype`）等，并没有具体的数值，仅仅只是 **数据占位符**， OneFlow 可以根据这种数据占位符进行编译推理，得到计算图。
+
+这种数据占位符在 OneFlow 的语境中被称作 `Blob` ，在 OneFlow 中有对应的基类 `BlobDef`。
+
+搭建网络时可以打印 `Blob` 的属性，比如一下代码打印 `conv1` 的 `shape` 和 `dtype` ：
 ```
 print(conv1.shape, conv1.dtype)
 ```
 
 ### Operator overloading
-BlobDef中定义了运算符重载，也就是说，BlobDef 对象之间可以进行加减乘除等操作。
+`BlobDef` 中定义了运算符重载，也就是说，`BlobDef` 对象之间可以进行加减乘除等操作。
 
-Like '+' in the following code:
+例如下面这句代码中的加号：
 
 ```
 output = output + fc2_biases
 ```
-Same as:
+这句代码等价于：
 ```
 output = flow.broadcast_add(output, fc2_biases)
 ```
 
 ## Summary
-使用 OneFlow 进行神经网络搭建，需要 OneFlow 提供的算子或层作为计算单元，BlobDef 作为算子和层的输入和输出，运算符重载帮助简化了部分语句。
+使用 OneFlow 进行神经网络搭建，需要 OneFlow 提供的算子或层作为计算单元，`BlobDef` 作为算子和层的输入和输出，运算符重载帮助简化了部分语句。
