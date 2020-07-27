@@ -357,9 +357,9 @@ python ./run_squad.py\
 ```
 
 ### Forecast and grading
-生成为了生成[Preidiction File](https://rajpurkar.github.io/SQuAD-explorer/)格式的json文件，我们先将预测结果保存为npy文件，再使用[google BERT的run_squad.py](https://github.com/google-research/bert/blob/master/run_squad.py)中的`write_predictions`函数，转化为json格式。
+To generate a json file in the format of [Preidiction File](https://rajpurkar.github.io/SQuAD-explorer/), we first save the prediction result as an npy file, and then use [write_predictions](https://github.com/google-research/bert/blob/master/run_squad.py) in `google BERT’s run_squad.py` Function, converted to json format.
 
-利用`run_squad_predict.py`生成`all_results.npy`文件：
+Use `run_squad_predict.py` to generate `all_results.npy` file:
 ```bash
 python run_squad_predict.py \
   --gpu_num_per_node=1 \
@@ -382,9 +382,9 @@ python run_squad_predict.py \
   --model_load_dir=path/to/squadModel \
   --warmup_batches 831
 ```
-注意将以上`model_load_dir`修改为 **训练好的** squadModel。
+Note that you need to modify the above `model_load_dir` to **trained** squadModel.
 
-得到`all_results.npy`文件后，在[google bert](https://github.com/google-research/bert/)仓库目录下（注意该仓库的tensorflow版本为 **tensorflow v1** ），运行我们提供的`npy2json.py`(由google bert中的run_squand.py修改得来)：
+After obtaining the `all_results.npy` file, in the [google bert](https://github.com/google-research/bert/) warehouse directory (note that the tensorflow version of the warehouse is **tensorflow v1**), run the provided `npy2json.py` (modified from run_squand.py in google bert):
 ```shell
 python npy2json.py\
   --vocab_file=./dataset/vocab.txt \
@@ -398,9 +398,9 @@ python npy2json.py\
   --output_dir=./squad_base/
 ```
 
-注意将`all_results_file`修改为上一步得到的`all_results.npy`的路径。
+Note that you need to change `all_results_file` to the path of `all_results.npy` obtained in the previous step.
 
-最终，得到`predictions.json`文件，可以使用[evaluate-v1.1.py](https://rajpurkar.github.io/SQuAD-explorer/)进行打分。
+Finally, you will get the `predictions.json` file, which can be scored using [evaluate-v1.1.py](https://rajpurkar.github.io/SQuAD-explorer/).
 
 ```bash
 python evaluate-v1.1.py \
@@ -408,8 +408,8 @@ python evaluate-v1.1.py \
 path/to/squad_base/predictions.json 
 ```
 
-## 分布式训练
-如之前介绍脚本参数时描述：进行分布式训练，只需要在启动训练脚本式加入`node_num`选项指定主机数目及 `node_list`选项即可：
+## Distributed Training
+As described in the previous explanation of script parameters: in distributed training, you only need to add the `node_num` option to specify the number of hosts and `node_list` option when starting the training script:
 
 ```bash
 python run_squad_predict.py \
