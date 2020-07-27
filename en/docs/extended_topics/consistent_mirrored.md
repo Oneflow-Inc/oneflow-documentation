@@ -178,8 +178,8 @@ def train_job(images:oft.ListNumpy.Placeholder((BATCH_SIZE_PER_GPU, 1, 28, 28), 
     if i % 20 == 0: print(total_loss.mean())
 ```
 
-## 在OneFlow中使用consistent策略
-我们已经了解了mirrored策略，知道在`mirrored_view`视角下，样本会被平均分配到多个完全一样的模型上进行分布式训练，各个训练节点上的结果，需要组装才能得到真正完整的BATCH。
+## Use consistent strategies in OneFlow
+We already know the mirrored strategy. In `mirrored_view`, sample will assign to many exactly same model to training distributed. The results of each nodes need be assembled to get the completed batch.
 
 除了 mirroed 策略外，OneFlow 还提供了 consistent 策略。 **consistent 策略是 OneFlow 的一大特色，与 mirrored 策略相比有很大的优势。**
 
