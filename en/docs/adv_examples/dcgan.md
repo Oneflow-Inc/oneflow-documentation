@@ -2,11 +2,11 @@
 
 
 
-## 简介
+## Introduction
 
-生成对抗网络(GANs)属于一种生成网络，它通过两个网络的相互博弈的方式来学习特定的数据分布。而DCGAN则是一种基于卷积/反卷积运算的生成对抗网络，被广泛应用于图像生成领域而DCGAN则是一种基于卷积/反卷积运算的生成对抗网络，被广泛应用于图像生成领域
+Generative Adversarial Networks (GANs) are a type of generative network that learns specific data distribution through a zero-sum game of two networks.DCGAN is a Generative Adversarial Network based on convolution/deconvolution operations, which is widely used in the field of image generation.
 
-本例程将主要演示如何在Oneflow中运行DCGAN网络，而不重点讨论生成对抗网络的原理和细节。如果感兴趣的话，可以参考：如果感兴趣的话，可以参考：
+This example will mainly demonstrate how to run the DCGAN network in Oneflow, without focusing on the principles and details of generating a confrontation network.If you are interested, you can refer to:
 
 - [Unsupervised Representation Learning with Deep Convolutional Generative Adversarial Networks](https://arxiv.org/abs/1511.06434)
 
@@ -14,11 +14,11 @@
 
 
 
-## 对齐测试
+## The core code of this example is in the dcgan. py file. The model structure and parameters refer to the official example of tensorflow
 
-本例程的核心代码在`dcgan.py`文件中，其中的模型结构和参数参考了tensorflow的[官方示例](https://www.tensorflow.org/tutorials/generative/dcgan)
+The core code of this example is in the `dcgan.py` file, and the model structure and parameters refer to tensorflow's [official example](https://www.tensorflow.org/tutorials/generative/dcgan)
 
-通过以下代码，可以运行一个简单的对齐测试，保证oneflow的模型结果与tensorflow的结果是一致的
+Through the following code, you can run a simple alignment test to ensure that the results of the oneflow model are consistent with the results of tensorflow
 
 ```python
 dcgan = DCGAN()
@@ -27,9 +27,9 @@ dcgan.compare_with_tensorflow()
 
 
 
-## 数据集准备
+## Dataset Preparation
 
-例程提供了数据集下载脚本，运行`download.py`下载mnist数据集， 数据集默认保存在`./data/minst`目录中
+The example provides a data set download script, run `download.py` to download the mnist data set, and the dataset is saved in the directory `./data/minst` by default
 
 ```bash
 python download.py mnist
@@ -37,21 +37,21 @@ python download.py mnist
 
 
 
-## 训练
+## Training
 
-在准备好数据集后，可通过DCGAN实例的`train`方法进行DCGAN的训练
+After the data set is prepared, you can start DCGAN training through the `train` method of the DCGAN instance
 
 ```python
 dcgan.train(epochs=2)
 ```
 
-训练将每隔`self.eval_interval`个batch输出生成的图像
+It will output the generated images every `self.eval_interval` batch during training.
 
 ![1](imgs/1.png)
 
-## 导出动图
+## Save to gif
 
-再完成训练后，可以通过DCGAN实例的`save_to_gif`方法将图像导出为动图
+After completing the training, the image can be exported as a moving image through the save_to_gif method of the DCGAN instance
 
 ```python
 dcgan.save_to_gif()
