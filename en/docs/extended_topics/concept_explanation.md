@@ -29,7 +29,7 @@ It define the input of a job function. The shape of image input is (32, 1, 28, 2
 
 ### 2.Tensor and Blob
 
-在其他框架中常用Tensor这个概念，譬如pytorch中的Tensor，其中包含了数据值和类型(data,dtype)、梯度grad、存放的设备类型device等属性。利用Tensor可以用来构造和描述前向/反向过程中的计算图。
+Tensor is the common concept in other framework. Such as Tensor in pytorch, it containthe data and data type, grad, storing device and other attribute.Tensor can use to structure and the description of the process of the forward/reverse calculation chart.
 
 而在OneFlow中，底层也使用了Tensor的概念，不过OneFlow中的Tensor和pytorch/tensorflow中的有些不同，为了对分布式和并行提供充分的支持，OneFlow中的Tensor更为复杂，类型和属性更多（譬如：逻辑/物理、设备、分布式相关的属性），而且一个逻辑上统一的Tensor可能在实际计算过程中，被拆分到了不同的设备上，所以为了简化描述，OneFlow中屏蔽了各种具体类型的Tensor，其上层由一个统一的概念—Blob作为定义。
 
