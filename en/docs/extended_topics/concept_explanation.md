@@ -84,51 +84,51 @@ The bottom of layer is composed by many operators. Like: `layers.conv2d` is comp
 
 #### Operator
 
-Operator即算子（简称为op），是OneFlow中的 **基本运算单元** 。上面例子中layer之间的计算全部由各种算子叠加完成。譬如flow.nn.max_pool2d就是一种算子，flow.reshape()是另一种算子。
+Operator is the **basics calculation unit** in OneFlow.The calculation in above example is complete by overlay of operator.flow.nn.max_pool2d and flow.reshape() all both operators.
 
 
 
 ### 5.Consistent/Mirrored View
 
-OneFlow中采取了两种视角： **Mirrored View** 和 **Consistent View** 来描述分布式情况下数据和模型的分布，不同的view对应了不同的并行策略。
+OneFlow use two type of point of view:  **Mirrored View** and **Consistent View** is for describ distribution of data and model under distributed system. Different view is for different parallel strategies.
 
-Mirrored View来源于MPI分布式计算中的镜像策略，用于描述数据并行时，模型镜像到多卡的行为；
+Mirrored View is come from mirrors strategy of MPI distributed calculation. It is for describing model mirrored to multiple GPU when use data parallel.
 
-Consistent View则表示将分布式环境下的多机多卡视为一个整体，采取此策略时，OneFlow会为用户屏蔽掉具体的执行方式，内部将以最优化的策略选择并行方式（可能是数据并行/模型并行或混合并行）
+Consistent View is trade multi machines and multi GPUs as one object in distribution environment. When use this strategy, OneFlow will hiding the detail process for user and chosse parallel method in the optimal strategy(can be data/model/mix parallel).
 
-简单来说：
+Basically:
 
-当设置mirrored view时（flow.scope.mirrored_view）表示只能使用 **数据并行** 的方式。譬如在job funciton中设置了4台单卡节点，则模型会被完整的复制/镜像到4台节点的GPU卡上，数据则会切分为4份分别喂给4台节点上的GPU卡。
+When set the mirrored view(flow.scope.mirrored_view), it means only can use **data parallel**.Such as set four solo GPU nodes in job function. Thus the model will be copy and paste to all machines but data will be cut in to four part and send to each machine.
 
-当设置consistent view时(flow.scope.consistent_view)，则表示没有限制，OneFlow**可以自由选择模型并行、数据并行或者两者共存的混合并行。**
+When set consistent view(flow.scope.consistent_view), It means no limit. OneFlow **can choose use data parallel, model parallel or mix parallel. **
 
 
 
-## 框架开发
+## Frame developing
 
 ### 1.Boxing
 
-负责在逻辑张量的不同并行属性之间转换的机制/功能模块，我们称之为 **Boxing** 。
+The model responsible for the logic switching different between different parallel properties of tensor transformation mechanism/functionfor. We called it  **Boxing**.
 
-例如：当上下游的op具有不同的并行特性(如并行数不同)，OneFlow将利用Boxing自动处理各种数据转换和传输过程。
+Such as: When the upstream and downstream of the op has different parallel characteristics (such as parallel number different). OneFlow will use Boxing automatic processing all kinds of data conversion and transfer process.
 
 
 
 ### 2.SBP
 
-本质上，神经网络前向后向过程中的大多数操作，都可以归纳为矩阵计算，在矩阵计算中常有根据axis切分、广播等操作。同样OneFlow中也有类似的操作，我们称为SBP，当然，OneFlow中的SBP不仅仅是简单的矩阵运算，其还对应了数据在不同物理GPU上的划分、广播等实际操作。
+In fact, all forwards or bcakward operations in neural network can calculate by matrixes. Matrixes calculation always have process which according to the axis cut broadcast.OneFlow also have same step, we call it SBP. Of course, the SBP in OneFlow is not only matrixes calculations. It also corresponding to divided data in different GPU and broadcast.
 
-SBP即Split、broadcast、Partial sum的缩写。其中Split表示切分；broadcast表示广播；Partial sum表示部分求和。
+SBP means Split、broadcast、Partial sum.
 
 #### Split
 
-在并行op计算时，张量被split切分为多个子张量。不同的op算符允许张量在不同的axis轴上进行拆分。Boxing机制将自动处理一个张量在多种op操作下在不同轴上切分的情况。
+When parallel operations, tensor is divided in to many sub-ensor.Different operators allow tensor to divided on different axis.Boxing will automatically process one tensor is divided in multiple axis.
 
 #### Broadcast
 
-并行op计算时，一个设备上的张量被广播至多个设备，使每台设备上有相同的张量。
+When parallel operator calculation, one tensor will be broadcast to many machine. Make the same tensor amount in each machine.
 
 #### Partial Sum
 
-如果一个op具有分配(distributive)属性，则张量会根据属性进行部分维度的加和操作。
+If a operator have distributive attribute, tensor will sum part of dimension according to attribute of tensor.
 
