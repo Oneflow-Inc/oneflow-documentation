@@ -1,53 +1,95 @@
-在OneFlow中，我们将训练、预测/推理等任务统称为任务函数(job function)，任务函数联系用户的业务逻辑与OneFlow管理的计算资源。
+In OneFlow, We can encapsulate the train, predict, inference and some other tasks into a function, which is called job function. The job function is used to connect the user's business logic and the computing resource managed by OneFlow
 
-在OneFlow中，任何被定义为任务函数的方法体都需要用@oneflow.global_function修饰，通过此注解，我们不仅能定义任务的模型结构，优化方式等业务逻辑，同时可以将任务运行时所需的配置当做参数传递给任务函数(如:下面例子中的：get_train_config())，使得OneFlow能方便地为我们管理内存、GPU等计算资源。
+In OneFlow, the function decorated by `@oneflow.global_function` decorator is the OneFlow's job function
 
-本文中我们将具体学习：
+We mainly define the structure of the model and choose the optimization in job function.Otherwise, we can also pass some hyperparameters about training and the environment configuration to the job function(like the following example:`get_train_config()`), OneFlow will manage the memory, GPU and some other computing resource according to our config.
 
-* 如何定义和调用任务函数
+In this section, we will specifically learn about:
 
-* 如何获取任务函数的返回值
+* how to define and call the job function
 
-## 任务函数的定义与调用
-任务函数分为定义和调用两个阶段。
-### 任务函数的定义
-我们将模型封装在Python中，再使用`oneflow.global_function`修饰符进行修饰。就完成了任务函数的定义。 任务函数主要描述两方面的事情：就完成了任务函数的定义。 任务函数主要描述两方面的事情：
+* how to get the return value of job function
 
-* 模型结构
+## The relationship between the job function and the running process of OneFlow
 
-* 训练过程中的优化目标
+The Job function is divided into two phases: definition and call.
 
-以下代码示例中，我们构建了一个mlp模型。以下代码示例中，我们构建了一个mlp模型。并且将由`flow.nn.sparse_softmax_cross_entropy_with_logits`计算得到交叉熵损失结果作为优化目标。
+It's related to OneFlow's operating mechanism.Briefly, The OneFlow Python layer Api simply describes the configuration and the training environment of the model.These information will pass to the C++ backend.After compilation, composition and so on, the calculation diagram is obtained.Finally, it will be executed by OneFlow runtime.
+
+The definition of the job function, is actually doing the description of network model and the configuration of training environment in Python. In this phase, there's no data here, we can only define the shape, data type of the model's node, we call it as  **placeholder **, which is convenient to model inference in the compilation of OneFlow.
+
+The job function will be called after the OneFlow runtime has started. We can pass the data by calling job function and get the results
+
+The definition and calling method of job functions are described in detail as below
+
+## 作业函数的定义
+
+we encapsulate the model in Python and use oneflow.global_function to decorate.The definition is completed.
+
+The job function mainly describes two things:
+
+* The structure of model
+
+* The optimizing target in training phase
+
+In the following code, we build a Multi-Layer Perceptron model and use `flow.nn.sparse_softmax_cross_entropy_with_logits` to compute the cross-entropy loss as our optimizing target.
+
 ```python
 @flow.global_function(get_train_config())
 def train_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-              labels:oft.Numpy.Placeholder((BATCH_SIZE, ), dtype=flow.int32)):
-  with flow.scope.placement("cpu", "0:0"):
+              labels:oft.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32)) -> oft.Numpy:
+    # mlp
     initializer = flow.truncated_normal(0.1)
     reshape = flow.reshape(images, [images.shape[0], -1])
-    hidden = flow.layers.dense(reshape, 512, activation=flow.nn.relu, kernel_initializer=initializer)
-    logits = flow.layers.dense(hidden, 10, kernel_initializer=initializer)
+    hidden = flow.layers.dense(reshape, 512, activation=flow.nn.relu, kernel_initializer=initializer, name="hidden")
+    logits = flow.layers.dense(hidden, 10, kernel_initializer=initializer, name="output")
 
     loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits, name="softmax_loss")
-
-  flow.losses.add_loss(loss)
-  return loss
+    flow.losses.add_loss(loss)
+    return loss
 ```
-注意，以上的logtis、labels、loss等对象，它们的作用只是 **描述模型中的数据对象** ，起到 **占位符** 的作用。在定义函数时并 **没有** 真正的数据。在OneFlow中把这种对象类型统称为`blob`。 任务函数的返回值 **必须是blob对象类型或者包含blob对象的容器** 。在定义函数时并 **没有** 真正的数据。在OneFlow中把这种对象类型统称为`blob`。 任务函数的返回值 **必须是blob对象类型或者包含blob对象的容器** 。
 
-### 任务函数的调用
-OneFlow对任务函数的处理，对于用户而言是无感、透明的，我们可以像调用普通的Python函数一样调用任务函数。每一次调用，OneFlow都会在框架内部完成正向传播、反向传播、参数更新等一系列事情。每一次调用，OneFlow都会在框架内部完成正向传播、反向传播、参数更新等一系列事情。
+### PlaceHolder
 
-以下代码，获取数据之后，会向`train_job`任务函数传递参数并调用，打印平均损失值。
+Specifically, the `images`、`logits`、`labels`、`loss` and some other objects have no data in our definition of the job function.They are used to describe the **shape** and **attribute** of data, which is called PlaceHolder.
+
+The PlaceHolder in job function's parameter, use `Numpy.Placeholder`、`ListNumpy.Placeholder`、`ListListNumpy.Placeholder` under the `oneflow.typing` to annotate the data type of job function's parameter.As we call the job function, we should pass the `numpy` object
+
+Besides the several types under the `oneflow.typing` in parameter.The variable computed by OneFlow operators or layers, like the `reshape`、`hidden`、`logits`、`loss` and some other in above code, are also PlaceHolder.
+
+Either of the variables mentioned above, They inherit the base class `BlobDef` directly or inderectly, we call this object type as **Blob** in OneFlow
+
+The **Blob** has no data in definition of job function. It only plays the role of data placeholder which is convenient to framework inference.
+
+### The return value of the job function
+
+The concept of the data placeholder **Blob** is emphasized above because the return value of the job function cannot be arbitrarily specified. It must be `Blob` type object or the container which only containing the `Blob` object
+
+As the `loss` returned in the above code, it's type is `Blob` object
+
+The return values of job function should be annotated.As an example, `-> oft.Numpy` in above code means return a `Blob` object.
+
+In Another example, we can annotate the return value type as `-> Tuple[oft.Numpy, oft.Numpy]`.It means the function return a `tuple` which contains two `Blob` object
+
+You can refer to [Get the result of the job function](../basics_topics/async_get.md) for specific examples.
+
+## The call of job function
+
+OneFlow use decorator to translate Python function into OneFlow's job function. It is insensitive to the user.
+
+We can call the job function just like we call a Python function.Everytime we call the job function, OneFlow will complete the forward propagation, back propagation, parameter updates, and more in framework
+
+In the code below. When we get the data, we will pass parameter and call the `train_job` function to print the mean loss
 
 ```python
-  # 简单的共50epochs的训练任务
-  (train_images, train_labels), (test_images, test_labels) = load_data(BATCH_SIZE)
-  for epoch in range(50):
-    for i, (images, labels) in enumerate(zip(train_images, train_labels)):
-      loss = train_job(images, labels).get()
-      if i % 20 == 0: print(loss.mean())
+(train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(BATCH_SIZE)
+for i, (images, labels) in enumerate(zip(train_images, train_labels)):
+    loss = train_job(images, labels)
+    if i % 20 == 0:
+        print(loss.mean())
 ```
 
-要注意，直接调用任务函数`tran_job`其实得到的是OneFlow的`blob`对象，需要进一步通过该对象的`get`或者`async_get`方法，来获取任务函数的返回结果。详情可以参阅专题[获取任务函数的结果](../basics_topics/async_get.md)。详情可以参阅专题[获取任务函数的结果](../basics_topics/async_get.md)。
+As you can see, by calling the job function `train_job`, the `numpy` data is directly returned.
+
+The method shown above is synchronous. OneFlow also support asynchronous invocation. you can refer to the chapter [Get the result of the job function](../basics_topics/async_get.md).
 
