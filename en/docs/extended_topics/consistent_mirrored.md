@@ -1,102 +1,103 @@
-在进行分布式训练时，OneFlow框架提供了两种角度看待数据与模型的关系，被称作`consistent`策略与`mirrored`策略。
+When doing distributed training, OneFlow provide two aspects for determining the relationship between data and models. There are `consistent` strategy and `mirrored` strategy.
 
-本文将介绍：
+In this article, we will introduce:
 
-* 数据并行与模型并行的区别及适用场景
+* The difference and applicable scenario of the data parallel and model parallel.
 
-* 在分布式任务中采用`mirrored`策略及其特点
+* The characteristics of using  `mirrored`  in distributed training.
 
-* 在分布式任务中采用`consistent`策略及其特点
+* The characteristics of using  `consistent` in distributed training.
 
-## 数据并行与模型并行
-为了更好地理解OneFlow中的`consistent`和`mirrored`策略，我们需要了解分布式任务中的 **数据并行** 、**模型并行** 两种并行方式的区别。
+## Data parallel and model parallel.
+In order to better understand  `consistent` and `mirrored` in OneFlow. We need to understand the difference between **data parallel **and **model parallel** in distributed training.
 
-为了更直观地展示两者的差别，我们先看一个简单的op（在OneFlow中，逻辑上的运算都被抽象为了operator，称作op）：矩阵乘法。
+To further demonstrated the difference between data parallel and model parallel, we will introduce a simple operator(In OneFlow, the logical calculation will regard as operator): matrix multiplication
 
-我们假定在模型训练中，存在一个输入矩阵I，通过矩阵I与矩阵W做矩阵乘法，得到输出矩阵O。
+We assume that in training model have a matrix I as input. Multiply matrix I and W then get result O.
 
 ![I×W](imgs/i_mul_w.png)
 
-如以上所示，I的大小为(N, C1)，W的大小为(C1, C2)，O的大小为(N, C2)。
+As the description above, size of I is (N, C1), size of W is (C1, C2) and size of O is (N, C2).
 
-结合机器学习的业务逻辑，可以赋予以上几个矩阵直观意义：
+Combined  machine learning logic. It can give definitions to the matrixes above:
 
-* I矩阵作为输入矩阵，每一行都是一个样本，一行中的各列代表了样本的特征
+* Matrix I as the input object, each line is a sample and each column is represents the characteristics of sample.
 
-* W矩阵代表了模型参数
+* Matrix W represents the parameters of model.
 
-* O是预测结果或者label，如果是预测任务，那么就是由I、W求解O，得到分类结果的过程；如果是训练任务，那么就是由I与O求解W的过程
+* Matrixe O is the result of prediction or label. If it is a prediction task. Then it is a process of figure out O by I and W and get the distribution result. If it is a training task. Then Then it is a process of figure out W by I and O.
 
-当以上I矩阵的行N很大，说明样本很多；如果W矩阵的列C2很大，说明模型复杂；当样本数目、模型复杂程度复杂到一定程度时，单机单卡的硬件条件已经无法承载训练任务，就需要考虑分布式的方式训练。而在分布式系统中，我们可以选择 **数据并行** 和 **模型并行**。而在分布式系统中，我们可以选择 **数据并行** 和 **模型并行**。
+When the line N in matrixe I is very large. It means we have large scale of sample. If when C2 in matrixe W is very large. It means we have very complex model. If the scale and complexity reached a point. The solo machine with solo GPU will not able to handle the training job. We might consider the distributed training. In distributed training system, we can choose ** data parallel **and **model parallel**.
 
 <a id="mat_mul_op"></a>
-为了便于理解数据并行与模型并行，我们先用下图作为矩阵相乘op的示例：
+In order to better understand data parallel and model parallel, we use the following figure as the demo of matrix multiplication operator:
 
 ![mat_mul_op](imgs/mul_op_illustrated.png)
 
-等式左边第1个灰色的矩阵代表输入样本，每一行是一个样本；等式左边第2个蓝色的矩阵代表模型。
+The first matrixe in grey on left of equation is the input sample. Each line is a sample. The second matrixe in blue on left of equation is the model.
 
-在后文中，我们将看到以上的op，在数据并行与模型并行下，不同的“切分”方式。
+In this article, we will see the operators above switching to different way under data parallel and model parallel.
 
 
-### 数据并行图示
+### Data parallel diagram
 
-在 **数据并行** 中，将样本数据进行切分，**切分后的数据** 被送至各个训练节点，与 **完整的模型** 进行运算，最后将多个节点的信息进行合并，如下图所示：
+In **data parallel**, divide the sample data in small parts. **Data after dividing **will send to each training nodes and calculate with the **completely models**. Finally combined the information in each nodes. Like figure show below:
 
 ![mat_mul_op](imgs/mul_op_data_parr.png)
 
-### 模型并行图示
+### Model parallel diagram
 
-在 **模型并行** 中，将模型进行切分，**完整的数据** 被送至各个训练节点，与 **切分后的模型** 进行运算，最后将多个节点的运算结果合并，如下图所示：
+In **model parallel**, model will be divided. **Completely data** will send to each nodes and calculate with **model after dividing**. Finally combined the model in each nodes. Like figure show below:
 
 ![mat_mul_op](imgs/mul_op_model_parr.png)
 
-总之：
+Basically:
 
-* 数据并行下，各个训练节点的模型是完全一样的，数据被切分；
+* In data parallel, each node use the same model to train, data will be cut.
 
-* 模型并行下，各个训练节点都接收一样的完整数据， 模型被切分。
+* In model parallel, each node received same data, model will be cut.
 
-接下来我们将介绍OneFlow中的两种并行策略（`mirrored`策略与`consistent`策略），学习在不同的策略如何选择并行方式。
+We will introduce two parallel strategies in OneFlow (`mirrored` and `consistent`). Study how to choose different parallel methods in different strategies.
 
-### 两类占位符
-在[使用OneFlow搭建神经网络](../basics_topics/build_nn_with_op_and_layer.md)中已经介绍了 `Placeholder` 的概念，它是数据占位符。
+### Two type of place holder
+In [use OneFlow build neural network](../basics_topics/build_nn_with_op_and_layer.md), we already introduce the concept of  `Placeholder`. It is data place holder.
 
-实际上，针对并行，OneFlow的 `Placeholder` 还可以细分为两类：分别通过接口 `oneflow.typing.Numpy.Placeholder` 和 `oneflow.typing.ListNumpy.Placeholder` 构造的占位符，分别对应 `Mirrored` 与 `Consistent` 情况。
+In fact, for parallel, the  `Placeholder`  of OneFlow can divide to two types: Use `oneflow.typing.Numpy.Placeholder` and `oneflow.typing.ListNumpy.Placeholder` to constructing the place holder is corresponding to `Consistent`  and `Mirrored`.
 
-我们将在下文中看到它们的具体应用。
+We will see the detailed examples below.
 
 
-## 在OneFlow中使用mirrored策略
+## Using mirrored in OneFlow
 
-其它的框架，如TensorFlow、Pytorch均支持mirroed策略；OneFlow的mirrored策略与它们类似。
+Other framework like TensorFlow or Pytorch are support mirroed strategy. The strategy of OneFlow is similar to them.
 
-在mirrored策略中，每个节点的模型构图是完全相同的，只能采用 **数据并行**。
+In mirrored, the model in each nodes is same, thus we only can use **data parallel**.
 
-在OneFlow中，默认是mirrored策略，也可以通过`flow.function_config()`的`default_distribute_strategy`接口来显式指定：
+In OneFlow, the default strategy is mirrored or you can use `default_distribute_strategy` of  `flow.function_config()` to define:
 
 ```python
     func_config = flow.function_config()
-    func_config.default_distribute_strategy(flow.distribute.mirrored_strategy())
+    func_config.default_distribute_strategy(flow.scope.mirrored_viewed())
 ```
 
-在`mirrored_strategy`下，只能采用 **数据并行** 的并行模式，在调用任务函数时，我们需要将数据按照训练节点的数目（显卡总数）进行平均切分，并将切分后的数据放入`list`中进行传递，`list`中的每个元素，就是后分配给 **各个显卡** 的实际数据。
+In `mirrored_strategy`, only can use **data parallel**. When calling the function, we need divided data in average according to number of the GPU and put the data after dividing in to `list`. Every elements in `list` is the data to send to **each GPU**.
 
-训练函数的返回值，也不再使用`ndarray`转化为numpy数据，而是使用`ndarray_list`接口获取一个`list`，`list`中的每个元素，对应了每张卡上训练结果。
+The return value of job function no longer use  `numpy` data. It actually use `numpy_list`  to get a  `list`. Every elements in  `list`is corresponding to the results of each GPU.
 
-以上提及的`list`中的所有元素 **拼接在一起** ，才是一个完整的BATCH。
+**Combined all **elements `list` mention above can make a complete BATCH.
 
-### 代码示例
-在以下的代码中，我们使用采用默认的`mirrored_strategy`策略，使用2个GPU进行训练。
+### Example
+In following script, we use default  `mirrored_strategy` strategy with two GPU to training.
 
-完整代码：[mirrored_strategy.py](../code/extended_topics/mirrored_strategy.py)
+Name: [mirrored_strategy.py](../code/extended_topics/mirrored_strategy.py)
 
-重点部分的说明请见后文“代码解析”部分。
+The key part of the description in "script explanation" section.
 
 ```python
 import numpy as np
 import oneflow as flow
 from mnist_util import load_data
+import oneflow.typing as oft
 
 
 BATCH_SIZE = 100
@@ -112,8 +113,8 @@ def get_train_config():
 
 
 @flow.global_function(get_train_config())
-def train_job(images=flow.MirroredTensorDef((BATCH_SIZE_PER_GPU, 1, 28, 28), dtype=flow.float),
-              labels=flow.MirroredTensorDef((BATCH_SIZE_PER_GPU, ), dtype=flow.int32)):
+def train_job(images:oft.ListNumpy.Placeholder((BATCH_SIZE_PER_GPU, 1, 28, 28), dtype=flow.float),
+              labels:oft.ListNumpy.Placeholder((BATCH_SIZE_PER_GPU, ), dtype=flow.int32)):
   initializer = flow.truncated_normal(0.1)
   reshape = flow.reshape(images, [images.shape[0], -1])
   hidden = flow.layers.dense(reshape, 512, activation=flow.nn.relu, kernel_initializer=initializer)
@@ -143,21 +144,21 @@ if __name__ == '__main__':
     if i % 20 == 0: print(total_loss.mean())
 ```
 
-### 代码解析
-以上代码中：
+### Script explanation
+In the above script:
 
-* 使用`flow.config.gpu_device_num`设置GPU数目为2 (注意：如果GPU数量<2会报错)
+* Use  `flow.config.gpu_device_num` to set GPU amount as two.
 ```python
 flow.config.gpu_device_num(2)
 ```
 
-* MirroredTensorDef定义的样本数目，是被切分后的数目，即代码中的`BATCH_SIZE_PER_GPU`与总样本数`BATCH_SIZE`的关系为：`BATCH_SIZE=BATCH_SIZE_PER_GPU×GPU_NUM`
+* `oneflow.typing.ListNumpy.Placeholder` defined the sample amount which is the amount after dividing. And the relationship between `BATCH_SIZE_PER_GPU`  and `BATCH_SIZE` is `BATCH_SIZE=BATCH_SIZE_PER_GPU×GPU_NUM`.
 ```python
-def train_job(images=flow.MirroredTensorDef((BATCH_SIZE_PER_GPU, 1, 28, 28),       dtype=flow.float),
-        labels=flow.MirroredTensorDef((BATCH_SIZE_PER_GPU, ), dtype=flow.int32))
+def train_job(images:oft.ListNumpy.Placeholder((BATCH_SIZE_PER_GPU, 1, 28, 28),       dtype=flow.float),
+        labels:oft.ListNumpy.Placeholder((BATCH_SIZE_PER_GPU, ), dtype=flow.int32))
 ```
 
-* 切分后的数据，需要保存至`list`中传入训练函数；`list`中元素的个数与 **参与训练的GPU数目** 一致；OneFlow将按照`list`中元素顺序，向各卡传递数据(`list`中第i个元素对应第i张卡)：
+* The data after dividing need to store in the  `list` and pass to training functions. The number of elements in `list` need be same as the **GPU number in training**. OneFlow will pass the data according to the order of the elements in `list ` to each GPU(the number i element in `list` is corresponding to number i GPU):
 ```python
     images1 = images[:BATCH_SIZE_PER_GPU]
     images2 = images[BATCH_SIZE_PER_GPU:]
@@ -170,39 +171,38 @@ def train_job(images=flow.MirroredTensorDef((BATCH_SIZE_PER_GPU, 1, 28, 28),    
     loss = train_job(imgs_list, labels_list).get().ndarray_list()
 ```
 
-* 返回的结果，通过`ndarray_list`转为numpy数据，也是一个`list`，该`list`中元素个数与 **参与训练的GPU数目** 一致；`list`中的第i个元素对应了第i张GPU卡上的运算结果。我们做了拼接后，计算并打印了`total_loss`我们做了拼接后，计算并打印了`total_loss`
+* The results use  `numpy_list`  convert to numpy data which is also a list. The number of elements in this `list` need be same as **the number of GPU in training process**. Then we do the combination then print the  `total_loss`
 ```python
     loss = train_job(imgs_list, labels_list).get().ndarray_list()
     total_loss = np.array([*loss[0], *loss[1]])
     if i % 20 == 0: print(total_loss.mean())
 ```
 
+## Use consistent strategies in OneFlow
+We already know the mirrored strategy. In `mirrored_view`, sample will assign to many exactly same model to training distributed. The results of each nodes need be assembled to get the completed batch.
 
+In addition to mirroed strategy, OneFlow also provides consistent strategy. **Consistent strategy is the main characteristic of OneFlow, have lots of advantages compared with mirrored.(链接可能出错）**
 
-## 在OneFlow中使用consistent策略
-我们已经了解了mirrored策略，知道在`mirrored_strategy`配置下，样本会被平均分配到多个完全一样的模型上进行分布式训练，各个训练节点上的结果，需要组装才能得到真正完整的BATCH。
-
-除了mirroed策略外，OneFlow还提供了consistent策略。 除了mirroed策略外，OneFlow还提供了consistent策略。 **consistent策略是OneFlow的一大特色，与mirrored策略相比有很大的优势。**</strong>
-
-默认情况下OneFlow采取的是mirrored策略，使用consistent策略需要通过`flow.function_config()`的`default_distribute_strategy`接口显式设置：
+OneFlow will use mirrored strategy as default. To use consistent strategy, we need use  `default_distribute_strategy` of `flow.function_config()` to config:
 ```python
   config = flow.function_config()
-  config.default_distribute_strategy(flow.distribute.consistent_strategy())
+  config.default_distribute_strategy(flow.scope.consistent_view())
 ```
 
-之所以说consistent策略是OneFlow的一大特色，是因为在OneFlow的设计中，若采用`consistent_strategy`，那么从用户的视角看，所使用的op、blob将获得 **逻辑上的统一**，同样以本文开头的矩阵乘法为例，我们只需要关注[矩阵乘法](#mat_mul_op)本身数学计算上的意义；而在工程上到底如何配置、采用模型并行还是数据并行等细节问题，可以使用OneFlow的接口轻松完成。OneFlow内部会高效可靠地解决 **数据并行中的数据切分** 、**模型并行中的模型切分** 、**串行逻辑** 等问题。OneFlow内部会高效可靠地解决 **数据并行中的数据切分** 、**模型并行中的模型切分** 、**串行逻辑** 等问题。
+The reason of why consistent strategy is the main character of OneFlow is because in OneFlow design use `consistent_strategy`. Then from user's point of view, the op and blob can get consistently in logic level. We use matrixes multiplication as example in the beginning of article, we only need focus on [matrix multiplication](#mat_mul_op) itself on mathematics level. But in project, the issue of how to config and use model parallel or data parallel can be easily done by using OneFlow. OneFlow will handle **The data division of data parallel**, **model division of model parallel** and **serial logic** issue very fast and efficient.
 
- **在OneFlow的consistent策略下，可以自由选择模型并行、数据并行或者两者共存的混合并行。**
+ **In consistent strategy in OneFlow, we are free to choose either model parallel or data parallel or mix of them.**
 
-### 代码示例
-以下代码，我们采用consistent策略，使用2个GPU进行训练，consistent策略下默认的并行方式仍然是 **数据并行**。关于如何在consistent策略下设置 **模型并行** 及 **混合并行** 不在本文讨论范围，我们在[OneFlow的并行特色](model_mixed_parallel.md)中有专门的介绍与示例。关于如何在consistent策略下设置 **模型并行** 及 **混合并行** 不在本文讨论范围，我们在[OneFlow的并行特色](model_mixed_parallel.md)中有专门的介绍与示例。
+### Example
+In following script, we use consistent strategy and use two GPU to training. The default parallels method is **data parallel** in consistent strategy.The issue of how to set **model parallel** and **mix parallel** in consistent strategy will not be discussed in this article. We have special introduction of that in [parallels characters of OneFlow](model_mixed_parallel.md).
 
-完整代码：[consistent_strategy.py](../code/extended_topics/consistent_strategy.py)
+Name: [consistent_strategy.py](../code/extended_topics/consistent_strategy.py)
 
 ```python
 import numpy as np
 import oneflow as flow
 from mnist_util import load_data
+import oneflow.typing as oft
 
 
 BATCH_SIZE = 100
@@ -223,7 +223,7 @@ def lenet(data, train=False):
 
 def get_train_config():
   config = flow.function_config()
-  config.default_distribute_strategy(flow.distribute.consistent_strategy())
+  config.default_distribute_strategy(flow.scope.consistent_view())
   config.default_data_type(flow.float)
   config.train.primary_lr(0.1)
   config.train.model_update_conf({"naive_conf": {}})
@@ -231,8 +231,8 @@ def get_train_config():
 
 
 @flow.global_function(get_train_config())
-def train_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float, name="myimages"),
-              labels:oft.Numpy.Placeholder((BATCH_SIZE, ), dtype=flow.int32, name="mylabels")):
+def train_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+              labels:oft.Numpy.Placeholder((BATCH_SIZE, ), dtype=flow.int32)):
   logits = lenet(images, train=True)
   loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits, name="softmax_loss")
   flow.losses.add_loss(loss)
@@ -247,36 +247,36 @@ if __name__ == '__main__':
 
   for epoch in range(50):
     for i, (images, labels) in enumerate(zip(train_images, train_labels)):
-      loss = train_job(images, labels).get().ndarray()
+      loss = train_job(images, labels).get().numpy()
 
       if i % 20 == 0: 
         print(loss.mean())
 ```
 
-### 代码解析
-以上代码中：
+### Script explanation
+In above script:
 
-* 使用`flow.config.gpu_device_num`设置GPU数目：
+* Use  `flow.config.gpu_device_num` to define the GPU number:
 ```python
 flow.config.gpu_device_num(2)
 ```
 
-* 使用`oft.Numpy.Placeholder`定义consistent策略下的占位符，因为`Numpy.Placeholder`产出的blob代表逻辑上的op及数据占位符，因此此处的BATCH_SIZE就是整个分布式训练的样本总和，不需要人为切分或者组合
+* Use  `oft.Numpy.Placeholder` to define the place holder in consistent strategy. Because the blob of `Numpy.Placeholder` is represent the op and place holder in logic. Thus. the BATCH_SIZE is the totally number of samples and no need for manually dividing or combining.
 ```python
 def train_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
             labels:oft.Numpy.Placeholder((BATCH_SIZE, ), dtype=flow.int32))
 ```
 
-* 训练结果通过`ndarray`转化为numpy数据，直接是一个统一的结果，OneFlow完成分布式过程中切分与合并的工作。在consistent模式下，多卡的分布式训练与单卡的训练，代码差别极少，上手体验几乎一样在consistent模式下，多卡的分布式训练与单卡的训练，代码差别极少，上手体验几乎一样
+* The result of training use `numpy` as a consistent results. OneFlow done the distributed training and merging process.In consistent model, multi card is basically no difference with single card. User will not find that when using.
 ```python
       loss = train_job(images, labels).get().ndarray()
       if i % 20 == 0: 
         print(loss.mean())
 ```
 
-## 更多扩展
-随着机器学习理论与实践发展，现在已经出现了很多单机无法训练的网络；也出现了越来越多仅采用数据并行无法训练的模型。
+## More extending
+With the development of machine learning theory and practice, and now there are already many network unable to training by single card. There have been more and more using of data can not be trained on the parallel model.
 
-采用OneFlow的`consistent`策略，通过自由选择及组合并行方式，可以很好地解决以上问题，我们在[OneFlow的并行特色](model_mixed_parallel.md)进行了专门的介绍。
+Use  `consistent` in OneFlow, by free to choice and combination of parallel. Can give a good solutions to the above issue. We will introduce in [parallel characteristic of OneFlow](model_mixed_parallel.md).
 
 
