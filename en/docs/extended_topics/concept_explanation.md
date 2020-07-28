@@ -1,9 +1,9 @@
-# 名词/概念解释
+# Term/concept explanation
 
-本文将对OneFlow中涉及到的，常用的一些概念/名词做一个概括性的解释。主要内容针对算法工程师和框架开发者分为以下两部分：
+In this article, we will make a general explanation of some common terms and concepts in OneFlow.The main content is divided for algorithm engineer and framework developers:
 
--  **算法开发**
--  **框架开发**
+-  **Algorithm development **
+-  **Framework development**
 
 在算法开发部分，我们将解释深度学习算法开发，模型训练等过程中常用的一些概念和名词，而在框架开发部分，我们则侧重于OneFlow框架内部设计概念，框架开发相关的底层概念等介绍。
 
