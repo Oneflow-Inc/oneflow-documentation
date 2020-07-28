@@ -1,8 +1,8 @@
-# 作业函数的定义与调用
+# The Definition and Call of Job Function
 
-在 OneFlow 中，我们将训练、预测、推理等任务封装在一个函数中，统称为作业函数(job function)，作业函数联系用户的业务逻辑与 OneFlow 管理的计算资源。
+In OneFlow, We can encapsulate the train, predict, inference and some other tasks into a function, which is called job function. The job function is used to connect the user's business logic and the computing resource managed by OneFlow
 
-在 OneFlow 中，被 `@oneflow.global_function` 装饰器所修饰的 python 函数，就成为了 OneFlow 作业函数。
+In OneFlow, the function decorated by @oneflow.global_function decorator is the OneFlow's job function
 
 我们主要在作业函数中定义网络模型的结构、选择优化指标；此外，还可以将训练有关的超参及环境配置当做参数传递给作业函数(如:下面例子中的：`get_train_config()`)，OneFlow 会根据设置为我们管理内存、GPU等硬件资源。
 
