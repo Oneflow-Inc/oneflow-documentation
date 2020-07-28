@@ -53,17 +53,17 @@ In OneFlow, all function need use decorator `@oneflow.global_function` to define
 
 
 
- **为什么要用global_function而不用function？**
+ **Why use global_function rather than function?**
 
-在OneFlow设计之初，就是为了解决分布式多卡环境下的深度学习任务，在此种情况下，设置global_function即意味着对多卡进行全局配置。
+The beginning of the design of OneFlow is to solve the task of multiple GPU in distribution training. In this situation, set global_function means make global configuration on GPUs.
 
 
 
-### 4.Layer和Operator（op）
+### 4.Layer and Operator
 
-#### layer
+#### Layer
 
-Layer即层，layer的概念和tensorflow、pytorch等主流深度学习框架类似，用来描述神经网络模型中的一个层级如：conv2d卷积层、batch_normalization层、dense全连接层、layer_norm正则化层等。层的存在简化了神经网络模型的搭建过程，譬如你可以用简单的几行代码搭建出Lenet：
+The layer concept in OneFlow is basically same as the layer in tensorflow, pytorch and other popular deep learning framework. It is use to describe a layer in neural network. Like: conv2d convolution layer, batch_normalization layer, dense full connect layer and layer_norm regularization layer.Layer can simplify the process of build the neural networks. For example you can use just few line of code to build Lenet:
 
 ```python
 def lenet(data, train=False):
@@ -80,9 +80,9 @@ def lenet(data, train=False):
     return flow.layers.dense(hidden, 10, kernel_initializer=initializer, name='dense2')
 ```
 
-layer底层是由各种算子拼接而成，譬如：`layers.conv2d`其实是由 `conv2d` 算子和 `variable` 算子组成。
+The bottom of layer is composed by many operators. Like: `layers.conv2d` is composed by  `conv2d` and `variable`.
 
-#### op
+#### Operator
 
 Operator即算子（简称为op），是OneFlow中的 **基本运算单元** 。上面例子中layer之间的计算全部由各种算子叠加完成。譬如flow.nn.max_pool2d就是一种算子，flow.reshape()是另一种算子。
 
