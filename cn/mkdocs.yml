@@ -114,8 +114,9 @@ nav:
       - ResNet: adv_examples/resnet.md
       - AlexNet: adv_examples/alexnet.md
       - MaskRCNN: adv_examples/mask_rcnn.md
-      - NLP处理-BERT: adv_examples/bert.md
-      - 推荐系统-Wide&Deep: adv_examples/wide_deep.md
+      - YoloV3: adv_examples/yolov3.md
+      - BERT: adv_examples/bert.md
+      - Wide & Deep: adv_examples/wide_deep.md
       - 深度伪造-生成对抗网络: adv_examples/dcgan.md
     - API: 
       - API: api/

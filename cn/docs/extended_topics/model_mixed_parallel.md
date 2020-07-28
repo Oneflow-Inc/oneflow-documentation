@@ -1,4 +1,6 @@
 
+# OneFlow 的并行特色
+
 在[Consistent 与 Mirrored 视角](consistent_mirrored.md)中，我们已经知道 OneFlow 提供了 mirrored 与 consistent 两种看待分布式系统的视角，并且提前了解了 OneFlow 的 `consistent` 视角颇具特色。
 
 因为在 `consistent_view` 下，OneFlow 提供了逻辑上统一的视角，分布式训练时，用户可以自由选择数据并行、模型并行还是是混合并行。
@@ -171,10 +173,12 @@ def mlp(data):
 
 可以看到，我们通过极少量的修改，就能将单机训练程序改为分布式、混合并行的程序，这是 OneFlow 区别于其它框架的一大特色。
 
-## 网络接力并行实例
-在模型并行之外，OneFlow 还提供了一种灵活度更高的“网络接力”的并行方式，可以让用户使用 `scope.placement` 接口显式指定用来运行逻辑 `op`的 **物理硬件**。
+## 流水并行实例
+在模型并行之外，OneFlow 还提供了一种灵活度更高的“流水并行”的并行方式，可以让用户使用 `scope.placement` 接口显式指定用来运行逻辑 `op`的 **物理硬件**。
 
-在以下示例中，我们对[Consistent 与 Mirrored 视角](consistent_mirrored.md)中的"在 OneFlow 中使用 consistent 视角"代码进行简单修改，展示了"网络接力"并行模式。
+在流水并行中，整个神经网络有的层次在一组物理设备上，另外一些层次在另外一组物理设备上，它们以接力的方式协同工作，分多个阶段，在设备之间流水执行。
+
+在以下示例中，我们对[Consistent 与 Mirrored 视角](consistent_mirrored.md)中的"在 OneFlow 中使用 consistent 视角"代码进行简单修改，展示了流水并行模式。
 
 ### 代码示例
 
@@ -257,5 +261,7 @@ if __name__ == '__main__':
     # ...
 ```
 
-网络接力的并行方式，使得用户可以为每个 op 指定物理设备，非常适合对网络模型及分布式情况都很熟悉的用户进行 **深度优化** 。
+流水并行，使得用户可以为每个 op 指定物理设备，非常适合对网络模型及分布式情况都很熟悉的用户进行 **深度优化** 。
+
+此外，OneFlow 提供的 API `oneflow.unpack`、`oneflow.pack` 等，结合了 OneFlow 自身任务调度的特点，使得流水并行更易用、高效，我们将在另外的文章中专门介绍。
 

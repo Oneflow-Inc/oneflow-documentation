@@ -192,34 +192,38 @@ if __name__ == '__main__':
 完整代码：[of_data_pipeline.py](../code/basics_topics/of_data_pipeline.py)
 
 ```python
+# of_data_pipeline.py
 import oneflow as flow
+import oneflow.typing as oft
+from typing import Tuple
 
 @flow.global_function(flow.function_config())
-def test_job():
-  batch_size = 64
-  color_space = 'RGB'
-  with flow.scope.placement("cpu", "0:0"):
-    ofrecord = flow.data.ofrecord_reader('/path/to/ImageNet/ofrecord',
-                                         batch_size = batch_size,
-                                         data_part_num = 1,
-                                         part_name_suffix_length = 5,
-                                         random_shuffle = True,
-                                         shuffle_after_epoch = True)
-    image = flow.data.OFRecordImageDecoderRandomCrop(ofrecord, "encoded",
-                                                     color_space = color_space)
-    label = flow.data.OFRecordRawDecoder(ofrecord, "class/label", shape = (), dtype = flow.int32)
-    rsz = flow.image.Resize(image, resize_x = 224, resize_y = 224, color_space = color_space)
+def test_job() -> Tuple[oft.Numpy, oft.Numpy]:
+    batch_size = 64
+    color_space = 'RGB'
+    with flow.scope.placement("cpu", "0:0"):
+        ofrecord = flow.data.ofrecord_reader('path/to/ImageNet/ofrecord',
+                                             batch_size=batch_size,
+                                             data_part_num=1,
+                                             part_name_suffix_length=5,
+                                             random_shuffle=True,
+                                             shuffle_after_epoch=True)
+        image = flow.data.OFRecordImageDecoderRandomCrop(ofrecord, "encoded",
+                                                         color_space=color_space)
+        label = flow.data.OFRecordRawDecoder(ofrecord, "class/label", shape=(), dtype=flow.int32)
+        rsz = flow.image.Resize(image, resize_x=224, resize_y=224, color_space=color_space)
 
-    rng = flow.random.CoinFlip(batch_size = batch_size)
-    normal = flow.image.CropMirrorNormalize(rsz, mirror_blob = rng, color_space = color_space,
-                                            mean = [123.68, 116.779, 103.939],
-                                            std = [58.393, 57.12, 57.375],
-                                            output_dtype = flow.float)
-    return normal, label
+        rng = flow.random.CoinFlip(batch_size=batch_size)
+        normal = flow.image.CropMirrorNormalize(rsz, mirror_blob=rng, color_space=color_space,
+                                                mean=[123.68, 116.779, 103.939],
+                                                std=[58.393, 57.12, 57.375],
+                                                output_dtype=flow.float)
+        return normal, label
+
 
 if __name__ == '__main__':
-  images, labels = test_job().get()
-  print(images.shape, labels.shape)
+    images, labels = test_job()
+    print(images.shape, labels.shape)
 ```
 
 `ofrecord_reader` 的接口如下：
@@ -236,6 +240,22 @@ def ofrecord_reader(
     name=None,
 )
 ```
+
+* `ofrecord_dir` 指定存放数据集的目录路径
+
+* `batch_size` 指定每轮读取的 batch 大小
+
+* `data_part_num` 指定数据集目录中一共有多少个 ofrecord 格式的文件，如果这个数字大于真实存在的文件数，会报错
+
+* `part_name_prefix` 指定 ofrecord 文件的文件名前缀， OneFlow 根据前缀+序号在数据集目录中定位 ofrecord 文件
+
+* `part_name_suffix_length` 指定 ofrecord 文件的序号的对齐长度，-1表示不用对齐
+
+* `random_shuffle` 表示读取时是否需要随机打乱样本顺序
+
+* `shuffle_buffer_size` 指定了读取样本的缓冲区大小
+
+* `shuffle_after_epoch` 表示每轮读取完后是否需要重新打乱样本顺序
 
 使用 `ofrecord_reader` 的好处在于可以用数据处理流水线的方式进行数据预处理，而且可以通自定义预处理 op，拥有很高的灵活性和扩展性。
 
