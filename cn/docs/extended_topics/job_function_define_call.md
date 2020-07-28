@@ -50,7 +50,7 @@ def train_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.f
 ```
 
 ### 数据占位符
-注意，以上的 `images`、`logtis`、`labels`、`loss`等对象，在我们定义作业函数时，并没有实际的数据。它们的作用只是 **描述数据的形状和属性** ，起到 **占位符** 的作用。
+注意，以上的 `images`、`logits`、`labels`、`loss`等对象，在我们定义作业函数时，并没有实际的数据。它们的作用只是 **描述数据的形状和属性** ，起到 **占位符** 的作用。
 
 在作业函数的参数中的数据占位符，使用`oneflow.typing`下的`Numpy.Placeholder`、`ListNumpy.Placeholder`、`ListListNumpy.Placeholder`，注解作业函数参数的类型，对应作业函数调用时，传递 `numpy` 数据对象。
 
@@ -87,7 +87,7 @@ for i, (images, labels) in enumerate(zip(train_images, train_labels)):
         print(loss.mean())
 ```
 
-可以看到，通过调用调用作业函数 `train_job` 直接返回了 `numpy` 数据。
+可以看到，通过调用作业函数 `train_job` 直接返回了 `numpy` 数据。
 
 以上展示的调用方式是同步方式， OneFlow 还支持异步调用，具体可以参阅专题[获取作业函数的结果](../basics_topics/async_get.md)。
 
