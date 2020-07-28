@@ -2,22 +2,22 @@ In [data_input](../basics_topics/data_input.md) section， we know that because 
 
 In [OFRecord](ofrecord.md) section, we learn about the storage format of OFRecord files.
 
-本文，将围绕 OneFlow 的 OFRecord 数据集的加载与制作展开，主要包括：
+In this section, we will focus on the loading and producing of OneFlow's OFRecord dataset. Mainly including:
 
-* OFRecord 数据集的组织形式
+* The organization of OFRecord dataset
 
-* 加载 OFRecord 数据集的多种方式
+* The multiple ways of loading OFRecord dataset
 
-* OFRecord 数据集与其它数据格式的相互转化
+* The transition of OFRecord dataset to other dataformats
 
-## 什么是OFRecord数据集
-在[OFrecord数据格式](ofrecord.md)中我们已经介绍过 `OFRecord文件` 的存储格式，知道了什么是 `OFRecord文件`。
+## What is OFRecord dataset
+In [OFRecord](ofrecord.md) section. We have introduced the storage format of `OFRecord file `, and we also have known about what is `OFRecord file`
 
-OFRecord 数据集是 **OFRecord 文件的集合** 。将多个 `OFRecord文件`，按照 OneFlow 约定的文件名格式，存放在同一个目录中，就得到了OFRecord 数据集。
+OFRecord dataset is **the collection of OFRecord files **.According to the OneFlow convention file format, we store `multiple OFRecord files` in the same directory, then we will get OFRecord dataset.
 
-默认情况下，OFRecord 数据集目录中的文件，统一以 `part-xxx` 的方式命名，其中的 "xxx" 是从0开始的文件编号，可以有补齐和不补齐两种选择。
+By default, The files in OFRecord dataset directory are uniformly named in the way of `part-xxx`, where "xxx" is the file id starting from zero, and there can be two choices of completement or non-completement.
 
-以下是没有采用补齐的命名风格示例：
+Here is the example of using non-completement name style:
 ```
 mnist_kaggle/train/
 ├── part-0
@@ -38,7 +38,7 @@ mnist_kaggle/train/
 └── part-9
 ```
 
-以下是有补齐的命名风格：
+Here is the example of using completement name style:
 ```
 mnist_kaggle/train/
 ├── part-00000
@@ -58,11 +58,11 @@ mnist_kaggle/train/
 ├── part-00014
 ├── part-00015
 ```
-OneFlow 采用此约定，与`spark`的默认存储的文件名一致，方便使用 spark制作与转化 OFRecord 数据。
+OneFlow adopts this convention, which is consistent with the default storage filename in `spark`, it is convenient to make and convert to OFRecord data by spark.
 
-实际上，文件名前缀(`part-`)、文件名编号是否补齐、按多少位补齐，均可以自行指定，只需要在加载数据集(下文会介绍)时，保持相关参数一致即可。
+Actually, we can specify the filename prefix(`part-`)，whether to complete the filename id, how many bits to complete.We just need to keep the same parameters when loading dataset(described below)
 
-OneFlow 提供了加载 OFRecord 数据集的接口，使得我们只要指定数据集目录的路径，就可以享受 OneFlow 框架所带来的多线程、数据流水线等优势。
+OneFlow provides the API interface to load OFRecord dataset, so that we can enjoy the Multi-threading, pipeline and some other advantages brought by OneFlow framework by specifying the path of dataset directory.
 
 ## 加载OFRecord数据集的方法
 我们常常使用 `decode_ofrecord` 加载并解码数据集；或者使用 `ofrecord_reader` 加载并预处理数据集。
