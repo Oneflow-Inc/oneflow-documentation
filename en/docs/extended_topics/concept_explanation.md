@@ -5,17 +5,17 @@ In this article, we will make a general explanation of some common terms and con
 -  **Algorithm development **
 -  **Framework development**
 
-在算法开发部分，我们将解释深度学习算法开发，模型训练等过程中常用的一些概念和名词，而在框架开发部分，我们则侧重于OneFlow框架内部设计概念，框架开发相关的底层概念等介绍。
+In algorithms development part, we will explain some common terms and concepts may use in the process of deep learning algorithms development and model training. But in framework developing, we will focus on the inner design concepts of OneFlow and some relevant basic level concepts.
 
 
 
-## 算法开发
+## Algorithms developing
 
 ### 1.Placeholder
 
-Placeholder即 **数据占位符** ，此概念用于描述输入/输出的数据形状，而并不是实体的数据。
+Placeholder is **data Placeholder**, this concept is for define the shape of input or output data. It do not have real data in it.
 
-例如：
+For example:
 
 ```python
 import oneflow.typing as oft
@@ -23,11 +23,11 @@ def test_job(images:oft.Numpy.Placeholder((32, 1, 28, 28), dtype=flow.float32),
              labels:.oft.Numpy.Placeholder((32, ), dtype=flow.int32)):
 ```
 
-描述了一个测试的job函数中，输入的图片shape是(32, 1, 28, 28)，数据类型是flow.float32；输入的labels标签的shape是(32,)，类型是flow.int32
+It define the input of a job function. The shape of image input is (32, 1, 28, 28) and the data type is flow.float32. The shape of labels is (32,) and data type is flow.int32.
 
 
 
-### 2.Tensor和Blob
+### 2.Tensor and Blob
 
 在其他框架中常用Tensor这个概念，譬如pytorch中的Tensor，其中包含了数据值和类型(data,dtype)、梯度grad、存放的设备类型device等属性。利用Tensor可以用来构造和描述前向/反向过程中的计算图。
 
