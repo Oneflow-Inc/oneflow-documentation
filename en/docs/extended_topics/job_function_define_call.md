@@ -50,7 +50,7 @@ def train_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.f
 ```
 
 ### PlaceHolder
-Specifically, the `images`、`logits`、`labels`、`loss` and some other objects have no data in our definition of the job function.They are used to describe the **shape** and **attribute** of data, which is called PlaceHolder.
+注意，以上的 `images`、`logits`、`labels`、`loss`等对象，在我们定义作业函数时，并没有实际的数据。They are used to describe the **shape** and **attribute** of data, which is called PlaceHolder.
 
 The PlaceHolder in job function's parameter, use `Numpy.Placeholder`、`ListNumpy.Placeholder`、`ListListNumpy.Placeholder` under the `oneflow.typing` to annotate the data type of job function's parameter.As we call the job function, we should pass the `numpy` object
 
@@ -86,7 +86,7 @@ for i, (images, labels) in enumerate(zip(train_images, train_labels)):
         print(loss.mean())
 ```
 
-As you can see, by calling the job function `train_job`, the `numpy` data is directly returned.
+可以看到，通过调用作业函数 `train_job` 直接返回了 `numpy` 数据。
 
-以上展示的调用方式是同步方式， OneFlow 还支持异步调用，具体可以参阅专题[获取作业函数的结果](../basics_topics/async_get.md)。
+The method shown above is synchronous. OneFlow also support asynchronous invocation. you can refer to the chapter [Get the result of the job function](../basics_topics/async_get.md).
 
