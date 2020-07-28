@@ -1,5 +1,16 @@
 # 名词/概念解释
 
+本文将对OneFlow中涉及到的，常用的一些概念/名词做一个概括性的解释。主要内容针对算法工程师和框架开发者分为以下两部分：
+
+-  **算法开发** 
+-  **框架开发** 
+
+在算法开发部分，我们将解释深度学习算法开发，模型训练等过程中常用的一些概念和名词，而在框架开发部分，我们则侧重于OneFlow框架内部设计概念，框架开发相关的底层概念等介绍。
+
+
+
+## 算法开发
+
 ### 1.Placeholder
 
 Placeholder即 **数据占位符** ，此概念用于描述输入/输出的数据形状，而并不是实体的数据。
@@ -22,6 +33,14 @@ def test_job(images:oft.Numpy.Placeholder((32, 1, 28, 28), dtype=flow.float32),
 
 而在OneFlow中，底层也使用了Tensor的概念，不过OneFlow中的Tensor和pytorch/tensorflow中的有些不同，为了对分布式和并行提供充分的支持，OneFlow中的Tensor更为复杂，类型和属性更多（譬如：逻辑/物理、设备、分布式相关的属性），而且一个逻辑上统一的Tensor可能在实际计算过程中，被拆分到了不同的设备上，所以为了简化描述，OneFlow中屏蔽了各种具体类型的Tensor，其上层由一个统一的概念—Blob作为定义。
 
+
+
+Blob在 OneFlow 中有对应的基类 `BlobDef`，搭建网络时可以打印 `Blob` 的属性，比如一下代码打印 `conv1` 的 `shape` 和 `dtype` ：
+
+```python
+print(conv1.shape, conv1.dtype)
+```
+
 Blob可能只是占位符Placeholder，也可能是具体的包含数值的单元。
 
 
@@ -31,6 +50,12 @@ Blob可能只是占位符Placeholder，也可能是具体的包含数值的单�
 在 OneFlow 中，我们将训练、验证、预测/推理等具体任务统称为作业函数(job function)，作业函数联系用户的业务逻辑与 OneFlow 管理的计算资源。
 
 在 OneFlow 中，任何被定义为作业函数的方法体都需要用装饰器 `@oneflow.global_function` 修饰，通过此装饰器，我们不仅能定义任务的模型结构，优化方式等业务逻辑，同时可以将job运行时所需的配置当做参数传递给作业函数(如:get_train_config())，使得 OneFlow 能方便地为我们管理内存、GPU等计算资源。
+
+
+
+ **为什么要用global_function而不用function？** 
+
+在OneFlow设计之初，就是为了解决分布式多卡环境下的深度学习任务，在此种情况下，设置global_function即意味着对多卡进行全局配置。
 
 
 
@@ -45,19 +70,21 @@ def lenet(data, train=False):
     initializer = flow.truncated_normal(0.1)
     conv1 = flow.layers.conv2d(data, 32, 5, padding='SAME', activation=flow.nn.relu, name='conv1',
                                kernel_initializer=initializer)
-    pool1 = flow.nn.max_pool2d(conv1, ksize=2, strides=2, padding='SAME', name='pool1')
+    pool1 = flow.nn.max_pool2d(conv1, ksize=2, strides=2, padding='SAME', name='pool1', data_format='NCHW')
     conv2 = flow.layers.conv2d(pool1, 64, 5, padding='SAME', activation=flow.nn.relu, name='conv2',
                                kernel_initializer=initializer)
-    pool2 = flow.nn.max_pool2d(conv2, ksize=2, strides=2, padding='SAME', name='pool2', )
+    pool2 = flow.nn.max_pool2d(conv2, ksize=2, strides=2, padding='SAME', name='pool2', data_format='NCHW')
     reshape = flow.reshape(pool2, [pool2.shape[0], -1])
     hidden = flow.layers.dense(reshape, 512, activation=flow.nn.relu, kernel_initializer=initializer, name='dense1')
-    if train: hidden = flow.nn.dropout(hidden, rate=0.5)
+    if train: hidden = flow.nn.dropout(hidden, rate=0.5, name="dropout")
     return flow.layers.dense(hidden, 10, kernel_initializer=initializer, name='dense2')
 ```
 
+layer底层是由各种算子拼接而成，譬如：`layers.conv2d`其实是由 `conv2d` 算子和 `variable` 算子组成。
+
 #### op
 
-Operator即算子（简称为op），是OneFlow中的基本运算单元。上面例子中layer之间的计算全部由各种算子叠加完成。譬如flow.nn.max_pool2d就是一种算子，flow.reshape()是另一种算子。
+Operator即算子（简称为op），是OneFlow中的 **基本运算单元** 。上面例子中layer之间的计算全部由各种算子叠加完成。譬如flow.nn.max_pool2d就是一种算子，flow.reshape()是另一种算子。
 
 
 
@@ -77,7 +104,9 @@ Consistent View则表示将分布式环境下的多机多卡视为一个整体�
 
 
 
-### 6.Boxing
+## 框架开发
+
+### 1.Boxing
 
 负责在逻辑张量的不同并行属性之间转换的机制/功能模块，我们称之为 **Boxing** 。
 
@@ -85,7 +114,7 @@ Consistent View则表示将分布式环境下的多机多卡视为一个整体�
 
 
 
-### 7.SBP
+### 2.SBP
 
 本质上，神经网络前向后向过程中的大多数操作，都可以归纳为矩阵计算，在矩阵计算中常有根据axis切分、广播等操作。同样OneFlow中也有类似的操作，我们称为SBP，当然，OneFlow中的SBP不仅仅是简单的矩阵运算，其还对应了数据在不同物理GPU上的划分、广播等实际操作。
 
