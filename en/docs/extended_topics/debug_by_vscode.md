@@ -87,52 +87,52 @@ Then `Ctrl+Shift+P` (macOS use `command+shift+p`), find  `Open Remote Settings` 
 ```
 More meaning or parameters of `clangd.arguments` please reference to `clangd --help`.
 
-#### 使用 clangd
-在 VS Code 的 View->Output 面板，下拉菜单中选择 "Clang Language Server"，可以看到 clangd 的解析输出，解析完成后。选择 C/C++ 源码中的符号，可以实现跳转。选择 C/C++ 源码中的符号，可以实现跳转。
+#### Using clangd
+In View->Output dashboard in VS code, we can choose "Clang Language Server" in dropdown list. We can view the analyse output of clangd. After analyse the output,Choose the symbols of C/C++ source codes can switch to an other site.
 
-`Ctrl+Shift+P` (macOS 下 `command+shift+P`) 中通过`@符号名`或`#符号名`可以分别实现当前文件内查找符号，或工程范围内查找符号。
+By use `@symbols name` or `#symbols name` through `Ctrl+Shift+P` (In macOS: `command+shift+P`) can find the symbols in current file or in current project.
 
 
 
 ### native debug
-`Ctrl + Shift + D` (macOS 下 `command+shift+D`) 或者点击 activity bar 的 Run 按钮，进入到 Run 视图。
+Use `Ctrl + Shift + D` (In macOS: `command+shift+D`)  or double click on Run button on activity bar can switch to view of Run.
 
 ![Run View](imgs/run-view.png)
 
-选择 `Create a launch.json file`，选择 gdb 模板。 ![gdb](imgs/gdb-select.png)
+Choose `Create a launch.json file` then choose gdb template. ![gdb](imgs/gdb-select.png)
 
-然后设置相关参数：
+Config relevant parameters:
 ```json
 {
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "lenet", //自定义任务名
+            "name": "lenet", //defined job name
             "type": "gdb",
             "request": "launch",
-            "target": "/home/yaochi/.conda/envs/ycof/bin/python3", //python路径
-            "arguments": "lenet_train.py", //脚本
-            "cwd": "/home/yaochi/of_example", //脚本所在路径
+            "target": "/home/yaochi/.conda/envs/ycof/bin/python3", //python path
+            "arguments": "lenet_train.py", //script 
+            "cwd": "/home/yaochi/of_example", //script path
             "valuesFormatting": "parseText"
         }
     ]
 }
 ```
 
-设置断点后，F5 启动调试： ![调试截图](imgs/debug_snapshot.png)
+After set the break, press F5 to run the debug.![调试截图](imgs/debug_snapshot.png)
 
-### 其它
+### Others:
 
-* 如果 VS Code 下载插件速度过慢，可以按照[官方文档](https://code.visualstudio.com/docs/setup/network)的步骤切换 `hostname` 或者设置代理。
+* If the download speed is too slow in VS code, you can reference to [offcial document](https://code.visualstudio.com/docs/setup/network) and change `hostname` or set ssh connection.
 
-* 关于 clangd 安装配置的[官方介绍](https://clang.llvm.org/extra/clangd/Installation.html)
+* The [official introduction](https://clang.llvm.org/extra/clangd/Installation.html) about installing of clangd.
 
-* 关于 VS Code 的调试设置的[官方介绍](https://code.visualstudio.com/docs/editor/debugging)
+* The [official introduction](https://code.visualstudio.com/docs/editor/debugging) about configuration of VS code.
 
-* clangd 的最新版本可能对 glibc 版本要求过高，导致报缺少库的错误。
+* The latest version of clangd may have special requirements of glibc. That may lead to have error on missing libraries.
 
 ```shell
 ./bin/clangd: /lib64/libc.so.6: version `GLIBC_2.18' not found (required by ./bin/clangd)
 ```
 
-此时可以下载其它更低 clangd 的版本，早期版本的 clangd 需要到 [LLVM官网](https://releases.llvm.org/download.html) 下载整个LLVM工具链，其中包含有 clangd。
+We can download the older version of clangd. Older version of clangd is available on [LLVM official site](https://releases.llvm.org/download.html). Download the LLVM tools package have clangd inside.
