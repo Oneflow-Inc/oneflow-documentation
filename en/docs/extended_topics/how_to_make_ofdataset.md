@@ -1,6 +1,6 @@
-在[数据输入](../basics_topics/data_input.md)一文中我们知道了OneFlow 的数据流水线因为有 OneFlow 框架的资源调度、多线程等支持，处理数据的效率更高，并且学习了基本的数据流水线操作流程。
+In [data_input](../basics_topics/data_input.md) section， we know that because of the support like Multi-threading, scheduling of resources in OneFlow, the efficiency of processing data will be highter in OneFlow data-pipeline. Also, we learn about the operation in data-pipeline.
 
-在[OFrecord数据格式](ofrecord.md)中，我们学习了 OFRecord 文件的存储格式。
+In [OFRecord](ofrecord.md) section, we learn about the storage format of OFRecord files.
 
 本文，将围绕 OneFlow 的 OFRecord 数据集的加载与制作展开，主要包括：
 
