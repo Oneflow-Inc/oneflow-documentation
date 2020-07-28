@@ -4,24 +4,24 @@ In OneFlow, We can encapsulate the train, predict, inference and some other task
 
 In OneFlow, the function decorated by @oneflow.global_function decorator is the OneFlow's job function
 
-我们主要在作业函数中定义网络模型的结构、选择优化指标；此外，还可以将训练有关的超参及环境配置当做参数传递给作业函数(如:下面例子中的：`get_train_config()`)，OneFlow 会根据设置为我们管理内存、GPU等硬件资源。
+We mainly define the structure of the model and choose the optimization in job function.Otherwise, we can also pass some hyperparameters about training and the environment configuration to the job function(like the following example: get_train_config()), OneFlow will manage the memory, GPU and some other computing resource according to our config.
 
-本文中我们将具体学习：
+In this section, we will specifically learn about:
 
-* 如何定义和调用作业函数
+* how to define and call the job function
 
-* 如何获取作业函数的返回值
+* how to get the return value of job function
 
-## 作业函数与 OneFlow 运行流程的关系
-作业函数分为定义和调用两个阶段。
+## The relationship between the job function and the running process of OneFlow
+The Job function is divided into two phases: definition and call.
 
-这与 OneFlow 本身的运行机制有关，简化地说，OneFlow Python 层接口，只是在描述网络模型和训练环境的配置信息，这些信息将传递给底层的 C++ 代码，经过编译、构图等得到计算图，最终交给 OneFlow 运行时，由 OneFlow 运行时(runtime)执行。
+It's related to OneFlow's operating mechanism.Briefly, The OneFlow Python layer Api simply describes the configuration and the training environment of the model.These information will pass to the C++ backend.After compilation, composition and so on, the calculation diagram is obtained.Finally, it will be executed by OneFlow runtime.
 
-作业函数的定义，其实是在做 Python 层的描述网络模型和训练环境的配置工作，在这个阶段，并没有实际的数据，而只能通过规定网络节点的形状、数据类型等信息，起到 **数据占位符** 的作用，方便 OneFlow 的编译构图过程进行模型推理。
+The definition of the job function, is actually doing the description of network model and the configuration of training environment in Python. In this phase, there's no data here, we can only define the shape, data type of the model's node, we call it as placeholder, which is convenient to model inference in the compilation of OneFlow.
 
-作业函数的调用，发生在 OneFlow runtime 已经启动后，我们可以通过调用作业函数，向其传递真实的数据，并获取返回结果。
+The job function will be called after the OneFlow runtime has started. We can pass the data by calling job function and get the results
 
-以下将具体介绍作业函数的定义与调用方法。
+The definition and calling method of job functions are described in detail as below
 
 ## 作业函数的定义
 我们将模型封装在 Python 中，再使用`oneflow.global_function`修饰符进行修饰。就完成了作业函数的定义。
