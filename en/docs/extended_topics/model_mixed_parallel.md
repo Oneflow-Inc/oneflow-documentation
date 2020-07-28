@@ -1,17 +1,17 @@
 
-在[Consistent 与 Mirrored 视角](consistent_mirrored.md)中，我们已经知道 OneFlow 提供了 mirrored 与 consistent 两种看待分布式系统的视角，并且提前了解了 OneFlow 的 `consistent` 视角颇具特色。
+In [Consistent and Mirrored view](consistent_mirrored.md), we already know OneFlow provide mirrored and consistent two point of view. And be aware of  `consistent` in OneFlow have some special characteristics.
 
-因为在 `consistent_view` 下，OneFlow 提供了逻辑上统一的视角，分布式训练时，用户可以自由选择数据并行、模型并行还是是混合并行。
+Thus, in `consistent_view`, OneFlow give the  unified view on logical side. When doing the distributed training, use can choose use data parallel, model parallel or mix parallel.
 
-在本文中，继续深入介绍 OneFlow 独居特色的 `consistent` 视角，包括：
+In this article, we will keep go through the ` consistent` view in OneFlow. Which includes:
 
-* OneFlow在 `consistent_view` 下纯数据并行流程示意
+* Process demo of pure data parallel in `consistent_view`.
 
-* OneFlow在 `consistent_view` 下混合并行流程示意
+* Process demo of mixed parallel in `consistent_view`.
 
-* 混合并行的优势及适用场景
+* The advantages of mixed parallel and the scenario.
 
-* OneFlow混合并行实例
+* Example of mixed parallel.
 
 ## 网络模型训练的逻辑图
 我们先设定一个简单的多层网络，作为我们我们讨论并行方式的载体，其结构如下图所示：
