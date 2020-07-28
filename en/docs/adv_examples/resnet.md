@@ -1,38 +1,38 @@
-## 简介 Introduction
+## Introduction
 
-### 图像分类与CNN
+### Image classification and CNN
 
- **图像分类** 是指将图像信息中所反映的不同特征，把不同类别的目标区分开来的图像处理方法，是计算机视觉中其他任务，比如目标检测、语义分割、人脸识别等高层视觉任务的基础。
+ **Image classification** refers to the image processing method that distinguishes the different types of targets from the different features reflected in the image information. It is the basis of other tasks in computer vision, such as target detection, semantic segmentation, and face recognition.
 
-ImageNet大规模视觉识别挑战赛（ILSVRC），常称为ImageNet竞赛，包括图像分类、物体定位，以及物体检测等任务，是推动计算机视觉领域发展最重要的比赛之一。
+ImageNet Large-scale Visual Recognition Challenge (ILSVRC), often called ImageNet competition, includes tasks such as image classification, object positioning, and object detection. It is one of the most important competitions to promote the development of computer vision
 
-在2012年的ImageNet竞赛中，深度卷积网络AlexNet横空出世。以超出第二名10%以上的top-5准确率，勇夺ImageNet2012比赛的冠军。在2012年的ImageNet竞赛中，深度卷积网络AlexNet横空出世。以超出第二名10%以上的top-5准确率，勇夺ImageNet2012比赛的冠军。从此，以 **CNN（卷积神经网络）** 为代表的深度学习方法开始在计算机视觉领域的应用开始大放异彩，更多的更深的CNN网络被提出，比如ImageNet2014比赛的冠军VGGNet, ImageNet2015比赛的冠军ResNet。
+In the 2012 ImageNet competition, the deep convolutional network AlexNet came out.With a top-5 accuracy rate exceeding the second place by more than 10%, he won the championship of ImageNet2012 competition.Since then, the deep learning method represented by **CNN (Convolutional Neural Network)** has begun to shine in the field of computer vision, and more and deeper CNN networks have been proposed, such as the champion of the ImageNet2014 competition ResNet, the champion of VGGNet, ImageNet2015 competition.
 
 
 
 ### ResNet
 
-[ResNet](https://arxiv.org/abs/1512.03385) 是2015年ImageNet竞赛的冠军。[ResNet](https://arxiv.org/abs/1512.03385) 是2015年ImageNet竞赛的冠军。目前，ResNet相对对于传统的机器学习分类算法而言，效果已经相当的出色，之后大量的检测，分割，识别等任务也都在ResNet基础上完成。
+[ResNet](https://arxiv.org/abs/1512.03385) is the winner of the 2015 ImageNet competition.At present, ResNet is very good compared with traditional machine learning classification algorithms. After it came out, a large number of tasks such as detection, segmentation, and recognition are also completed on the basis of ResNet.
 
-中，提供ResNet50 v1.5的OneFlow实现。在ImageNet-2012数据集上训练90个epoch后，准确率能达到多少？
+In this introduction, we provide the implementation of ResNet50 v1.5 in OneFlow.After 90 rounds of training on the ImageNet-2012 dataset, the accuracy on the validation set can reach: 77.318% (top1), 93.622% (top5).
 
-更详细的网络参数对齐工作，见[OneFlow-Benchmark的cnns](https://github.com/Oneflow-Inc/OneFlow-Benchmark/Classification/cnns)部分
+For more detailed network parameter alignment, see [cnns of OneFlow-Benchmark](https://github.com/Oneflow-Inc/OneFlow-Benchmark/Classification/cnns)
 
 ![resnet50_validation_acuracy](imgs/resnet50_validation_acuracy.png)
 
 
 
-**关于ResNet50 v1.5的说明：**
+**Notes on ResNet50 v1.5:**
 
-> ResNet50 v1.5是原始[ResNet50 v1](https://arxiv.org/abs/1512.03385)的一个改进版本，相对于原始的模型，精度稍有提升 (~0.5% top1)，详细说明参见[这里](https://github.com/NVIDIA/DeepLearningExamples/tree/master/MxNet/Classification/RN50v1.5) 。
-
-
-
-准备好亲自动手，复现上面的结果了吗？
+> ResNet50 v1.5 is an improved version of the original [ResNet50 v1](https://arxiv.org/abs/1512.03385). Compared with the original model, the accuracy is slightly improved (~0.5% top1). For details, please refer to [here](https://github.com/NVIDIA/DeepLearningExamples/tree/master/MxNet/Classification/RN50v1.5).
 
 
 
-下面，本文就以上面的ResNet50 为例，一步步展现如何使用OneFlow进行ResNet50网络的训练和预测。
+Are you ready to get your hands dirty and reproduce the above results?
+
+
+
+Below, this article takes the ResNet50 above as an example to show how to use OneFlow to train and predict the ResNet50 network step by step.
 
 主要内容包括：
 
