@@ -145,14 +145,6 @@ if __name__ == '__main__':
   flow.config.gpu_device_num(2)
 ```
 
-* 通过 `flow.function_config().default_logical_view` 接口将默认视角改为 `consistent_view`：
-```python
-def get_train_config():
-  #...
-  config.default_logical_view(flow.scope.consistent_view())
-  #...
-```
-
 * `reshape` 及 `hidden` 采用默认的数据并行，不需要修改；输出层通过设置 `model_distribute` 为 `flow.distribute.split(axis=0)` 变为模型并行：
 ```python
 def mlp(data):
