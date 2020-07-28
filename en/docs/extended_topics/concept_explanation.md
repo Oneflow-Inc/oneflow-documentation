@@ -31,25 +31,25 @@ It define the input of a job function. The shape of image input is (32, 1, 28, 2
 
 Tensor is the common concept in other framework. Such as Tensor in pytorch, it containthe data and data type, grad, storing device and other attribute.Tensor can use to structure and the description of the process of the forward/reverse calculation chart.
 
-而在OneFlow中，底层也使用了Tensor的概念，不过OneFlow中的Tensor和pytorch/tensorflow中的有些不同，为了对分布式和并行提供充分的支持，OneFlow中的Tensor更为复杂，类型和属性更多（譬如：逻辑/物理、设备、分布式相关的属性），而且一个逻辑上统一的Tensor可能在实际计算过程中，被拆分到了不同的设备上，所以为了简化描述，OneFlow中屏蔽了各种具体类型的Tensor，其上层由一个统一的概念—Blob作为定义。
+In OneFlow, the basics level also use the concept of Tensor. But there are some difference between the Tensor in OneFlow and Tensor in pytorch/tensorflow. In order to provide sufficient support for distributed and parallel, Tensor in OneFlow is more complex and have more types and properties. Such as logical, physical, equipment and properties of distributed. But a Tensor unified on logic level, could be divided to different machines on real time operations. So in order to simplified description, OneFlow hide the specific type of Tensor, all the things is define by a higher level concept Blob.
 
 
 
-Blob在 OneFlow 中有对应的基类 `BlobDef`，搭建网络时可以打印 `Blob` 的属性，比如一下代码打印 `conv1` 的 `shape` 和 `dtype` ：
+Blob in OneFlow have corresponding base class  `BlobDef`. You can print the attribute of  `Blob` when build network. Such as the following script can print  `conv1`, `shape` and `dtype`:
 
 ```python
 print(conv1.shape, conv1.dtype)
 ```
 
-Blob可能只是占位符Placeholder，也可能是具体的包含数值的单元。
+Blob can only be Placeholder, but also can be the unit to pack the function's parameters.
 
 
 
-### 3.Job Function(作业函数)
+### 3.Job Function
 
-在 OneFlow 中，我们将训练、验证、预测/推理等具体任务统称为作业函数(job function)，作业函数联系用户的业务逻辑与 OneFlow 管理的计算资源。
+In OneFlow, we called training, evaluations, predictions and ratiocination tasks as job function. Job function(中文没有理解）
 
-在 OneFlow 中，任何被定义为作业函数的方法体都需要用装饰器 `@oneflow.global_function` 修饰，通过此装饰器，我们不仅能定义任务的模型结构，优化方式等业务逻辑，同时可以将job运行时所需的配置当做参数传递给作业函数(如:get_train_config())，使得 OneFlow 能方便地为我们管理内存、GPU等计算资源。
+In OneFlow, all function need use decorator `@oneflow.global_function` to define as a job functions. By this decorator, we not only can define the model structure of task, optimize method and other task logic but also can pass the parameters needed by job when running the job function. (like: get_train_config()). That can make OneFlow manage our memory and GPU resources more conveniently.
 
 
 
