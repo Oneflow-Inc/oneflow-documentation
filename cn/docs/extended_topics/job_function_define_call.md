@@ -35,19 +35,43 @@
 以下代码示例中，我们构建了一个 mlp 模型。并且将由 `flow.nn.sparse_softmax_cross_entropy_with_logits` 计算得到交叉熵损失结果作为优化目标。
 
 ```python
-@flow.global_function(get_train_config())
-def train_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-              labels:oft.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32)) -> oft.Numpy:
-    # mlp
-    initializer = flow.truncated_normal(0.1)
-    reshape = flow.reshape(images, [images.shape[0], -1])
-    hidden = flow.layers.dense(reshape, 512, activation=flow.nn.relu, kernel_initializer=initializer, name="hidden")
-    logits = flow.layers.dense(hidden, 10, kernel_initializer=initializer, name="output")
+@flow.global_function(type="train")
+def train_job(images:tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+              labels:tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32)) -> tp.Numpy:
+    with flow.scope.placement("cpu", "0:0"):
+        initializer = flow.truncated_normal(0.1)
+        reshape = flow.reshape(images, [images.shape[0], -1])
+        hidden = flow.layers.dense(reshape, 512, activation=flow.nn.relu, kernel_initializer=initializer, name="dense1")
+        logits = flow.layers.dense(hidden, 10, kernel_initializer=initializer, name="dense2")
+        loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits)
 
-    loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits, name="softmax_loss")
-    flow.losses.add_loss(loss)
+    lr_scheduler = flow.optimizer.PiecewiseConstantScheduler([], [0.1])
+    flow.optimizer.SGD(lr_scheduler, momentum=0).minimize(loss)
+
     return loss
 ```
+
+### `oneflow.global_function` 的参数
+`oneflow.global_function` 修饰符接受两个参数，分别是 `type` 与 `function_config`。
+
+* `type` 参数接受字符串，只能设定为 `train` 或者 `predict`，当在定义一个训练模型时，设定为 `train`，当在定义一个测试或者推理模型时，设定为 `predict`
+
+* `function_config` 参数接受一个 `oneflow.function_config()` 所构造的对象，在 `function_config` 对象中，可以通过成员方法或属性，进行相关配置。如以下代码：
+```python
+def get_train_config():
+    config = flow.function_config()
+    config.default_data_type(flow.float)
+    config.default_logical_view(flow.scope.mirrored_view())
+    return config
+```
+我们设置了默认数据类型，以及讲默认分布式视角采用 `mirrored_view` 视角，然后，我们可以在向 `global_function` 装饰器传递这个`function_config` 对象：
+```python
+@flow.global_function(type="train", function_config=get_train_config())
+def train_job(images:oft.ListNumpy.Placeholder((BATCH_SIZE_PER_GPU, 1, 28, 28), dtype=flow.float),
+              labels:oft.ListNumpy.Placeholder((BATCH_SIZE_PER_GPU,), dtype=flow.int32)) -> oft.ListNumpy: 
+              #...
+```
+包含以上代码的完整示例可见文章[Consistent 与 Mirrored 视角](consistent_mirrored.md)
 
 ### 数据占位符
 注意，以上的 `images`、`logits`、`labels`、`loss`等对象，在我们定义作业函数时，并没有实际的数据。它们的作用只是 **描述数据的形状和属性** ，起到 **占位符** 的作用。
