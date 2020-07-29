@@ -15,7 +15,6 @@ def train_job(images:tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.fl
         logits = flow.layers.dense(hidden, 10, kernel_initializer=initializer, name="dense2")
         loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits)
 
-    # flow.losses.add_loss(loss)
     lr_scheduler = flow.optimizer.PiecewiseConstantScheduler([], [0.1])
     flow.optimizer.SGD(lr_scheduler, momentum=0).minimize(loss)
 
