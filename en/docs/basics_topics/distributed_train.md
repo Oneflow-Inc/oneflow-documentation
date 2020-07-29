@@ -14,9 +14,9 @@ In this article, we will introduce:
 
 * OneFlow use decentralized and flow framework. Not like  `master` and `worker` frame, it can maximum optimize the network speed between nodes.
 
-* Support for  `consistent strategy`, the whole network only need only logic input and output.
+* 提供 `consistent view` ，整个节点网络中只需要逻辑上唯一的输入与输出
 
-* Also support to adapt with `mirrored strategy` from other framework. User who familiar with the distributed training in other frame can easily use OneFlow.
+* 提供兼容其它框架的`mirrored view`，熟悉其它框架分布式训练的用户可直接上手
 
 * The minimalist configuration, only need few line of code can change a single node of the training program into a distributed training program.
 
@@ -33,20 +33,19 @@ In another word, it make solo training as same as distribued training. As the us
 ```python
 import numpy as np
 import oneflow as flow
-import oneflow.typing as oft
+import oneflow.typing as tp
 
 BATCH_SIZE = 100
 
 def mlp(data):
   #构建网络...
 
-def get_train_config():
-  #配置训练参数及环境...
 
-@flow.global_function(get_train_config())
+@flow.global_function(type="train")
 def train_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-              labels:oft.Numpy.Placeholder((BATCH_SIZE, ), dtype=flow.int32)) -> oft.Numpy:
+              labels:oft.Numpy.Placeholder((BATCH_SIZE, ), dtype=flow.int32)) -> tp.Numpy:
   #作业函数实现...
+  #配置训练优化方法和参数
 
 
 if __name__ == '__main__':
@@ -116,54 +115,49 @@ We can compare distributed training with  **solo training**. We will find that w
 Name: [distributed_train.py](../code/basics_topics/distributed_train.py)
 
 ```python
-import numpy as np
 import oneflow as flow
-import oneflow.typing as oft
+import oneflow.typing as tp
 
 BATCH_SIZE = 100
 
-def mlp(data):
-  initializer = flow.truncated_normal(0.1)
-  reshape = flow.reshape(data, [data.shape[0], -1])
-  hidden = flow.layers.dense(reshape, 512, activation=flow.nn.relu, kernel_initializer=initializer, name="hidden")
-  return flow.layers.dense(hidden, 10, kernel_initializer=initializer, name="output-weight")
 
-def get_train_config():
-  config = flow.function_config()
-  config.default_data_type(flow.float)
-  config.train.primary_lr(0.1)
-  config.default_logical_view(flow.scope.consistent_view())
-  config.train.model_update_conf({"naive_conf": {}})
-  return config
+def mlp(data):
+    initializer = flow.truncated_normal(0.1)
+    reshape = flow.reshape(data, [data.shape[0], -1])
+    hidden = flow.layers.dense(reshape, 512, activation=flow.nn.relu, kernel_initializer=initializer, name="hidden")
+    return flow.layers.dense(hidden, 10, kernel_initializer=initializer, name="output-weight")
+
 
 def config_distributed():
-  print("distributed config")
-  #每个节点的gpu使用数目
-  flow.config.gpu_device_num(1)
-  #通信端口
-  flow.env.ctrl_port(9988)
+    print("distributed config")
+    # 每个节点的gpu使用数目
+    flow.config.gpu_device_num(1)
+    # 通信端口
+    flow.env.ctrl_port(9988)
 
-  #节点配置
-  nodes = [{"addr":"192.168.1.12"}, {"addr":"192.168.1.11"}]
-  flow.env.machine(nodes)
+    # 节点配置
+    nodes = [{"addr": "192.168.1.12"}, {"addr": "192.168.1.11"}]
+    flow.env.machine(nodes)
 
-@flow.global_function(get_train_config())
-def train_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-              labels:oft.Numpy.Placeholder((BATCH_SIZE, ), dtype=flow.int32)) -> oft.Numpy:
-  logits = mlp(images)
-  loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits, name="softmax_loss")
-  flow.losses.add_loss(loss)
-  return loss
+
+@flow.global_function(type="train")
+def train_job(images: tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+              labels: tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32)) -> tp.Numpy:
+    logits = mlp(images)
+    loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits, name="softmax_loss")
+    lr_scheduler = flow.optimizer.PiecewiseConstantScheduler([], [0.1])
+    flow.optimizer.SGD(lr_scheduler, momentum=0).minimize(loss)
+    return loss
 
 
 if __name__ == '__main__':
-  config_distributed()
-  flow.config.enable_debug_mode(True)
-  check_point = flow.train.CheckPoint()
-  check_point.init()
-  (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(BATCH_SIZE)
-  for epoch in range(1):
-    for i, (images, labels) in enumerate(zip(train_images, train_labels)):
-      loss = train_job(images, labels)
-      if i % 20 == 0: print(loss.mean())
+    config_distributed()
+    flow.config.enable_debug_mode(True)
+    check_point = flow.train.CheckPoint()
+    check_point.init()
+    (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(BATCH_SIZE, BATCH_SIZE)
+    for epoch in range(1):
+        for i, (images, labels) in enumerate(zip(train_images, train_labels)):
+            loss = train_job(images, labels)
+            if i % 20 == 0: print(loss.mean())
 ```
