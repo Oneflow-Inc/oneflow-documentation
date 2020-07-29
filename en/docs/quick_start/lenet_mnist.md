@@ -73,30 +73,7 @@ python lenet_test.py ./9.png
 
 MNIST 是一个手写数字的数据库。包括了训练集与测试集；训练集包含了60000张图片以及图片对应的标签，测试集包含了60000张图片以及图片测试的标签。Yann LeCun 等已经将图片进行了大小归一化及居中处理，并且打包为二进制文件供下载。http://yann.lecun.com/exdb/mnist/
 
-## Configuration of hardware and software training environment
-
-使用 `oneflow.function_config()` 可以构造一个配置对象，使用该对象，可以对训练相关的诸多软硬件参数进行配置。 与训练直接相关参数，被打包放置在 `function_config` 的 train 成员中，其余的配置直接作为 `function_config` 的成员。 以下是我们训练的基本配置：
-
-```python
-def get_train_config():
-    config = flow.function_config()
-    config.default_data_type(flow.float)
-    config.train.primary_lr(0.1)
-    config.train.model_update_conf({"naive_conf": {}})
-    return config
-```
-
-在以上代码中，我们：
-
-* 将训练的默认类型设置为 float
-
-* 设置 learning rate 为0.1
-
-* 训练过程中的模型更新策略为 "naive_conf"
-
-config 对象，其使用场景，将在后文 **实现训练作业函数** 中介绍。
-
-## Define training model
+## 定义训练模型
 
 在 `oneflow.nn` 及 `oneflow.layers` 提供了部分用于构建模型的算子。
 
@@ -211,7 +188,7 @@ for i, (images, labels) in enumerate(zip(test_images, test_labels)):
 ### 同步与异步调用
 本文所有代码都是同步方式调用作业函数，实际上 OneFlow 还支持异步方式调用作业函数，具体内容在[获取作业函数的结果](../basics_topics/async_get.md)一文中详细介绍。
 
-## Initialization, saving and loading models
+## 模型的初始化、保存与加载
 
 ### 模型的初始化与保存
 
@@ -240,7 +217,7 @@ if __name__ == '__main__':
 
 load 自动读取之前保存的模型，并加载。
 
-## Evaluation of models
+## 模型的校验
 校验作业函数与训练作业函数 **几乎没有区别** ，不同之处在于校验过程中的模型参数来自于已经保存好的模型，因此不需要初始化，也不需要在迭代过程中更新模型参数。
 
 ### 校验作业函数的编写
@@ -292,7 +269,7 @@ if __name__ == '__main__':
 
 以上，循环调用校验函数，并且最终输出对于测试集的判断准确率。
 
-## Image prediction
+## 预测图片
 
 将以上校验代码修改，使得校验数据来自于原始的图片而不是现成的数据集，我们就可以使用模型进行图片预测。
 
@@ -325,7 +302,7 @@ if __name__ == '__main__':
     main()
 ```
 
-## Complete code
+## 完整代码
 
 ### 训练模型
 
