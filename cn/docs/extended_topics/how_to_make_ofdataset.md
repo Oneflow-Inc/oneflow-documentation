@@ -65,128 +65,8 @@ OneFlow 采用此约定，与`spark`的默认存储的文件名一致，方便�
 OneFlow 提供了加载 OFRecord 数据集的接口，使得我们只要指定数据集目录的路径，就可以享受 OneFlow 框架所带来的多线程、数据流水线等优势。
 
 ## 加载OFRecord数据集的方法
-我们常常使用 `decode_ofrecord` 加载并解码数据集；或者使用 `ofrecord_reader` 加载并预处理数据集。
+我们使用 `ofrecord_reader` 加载并预处理数据集。
 
-### `decode_ofrecord`
-我们可以使用 `flow.data.decode_ofrecord` 加载数据集并同时解码数据。
-`decode_ofrecord` 的调用接口如下：
-```python
-def decode_ofrecord(
-    ofrecord_dir,
-    blobs,
-    batch_size=1,
-    data_part_num=1,
-    part_name_prefix="part-",
-    part_name_suffix_length=-1,
-    shuffle=False,
-    buffer_size=1024,
-    name=None,
-)
-```
-
-它的常用非必需参数及其意义如下：
-
-* batch_size： 一次训练所选取的数据个数
-
-* data_part_num： 数据集中 OFRecord 文件的个数
-
-* part_name_prefix： 数据集中 OFRecord 文件的文件名前缀
-
-* part_name_suffix_length： 数据集中 OFRecord 文件编号的补齐长度，如 `part-00001` 这种文件名，其 `part_name_suffix_length` 应该设置为5，-1表示无补齐
-
-* shuffle：数据获取时顺序是否随机打乱
-
-* buffer_size： 数据流水线中样本的数量，比如，若设置为1024表示缓冲区中一共1024个样本，则以上参数 shuffle 为 True 时，是针对缓冲区中的1024个样本进行打乱
-
-其中必需参数 `ofrecord_dir` 为数据集目录的路径，`blobs` 为一个tuple，tuple 中存有需要读取数据集中的`Feature`(参考[OFrecord数据格式](ofrecord.md))，我们将在下文结合实例，介绍如何定义 `blobs` 参数。
-
-完整代码：[decode_ofrecord.py](../code/extended_topics/decode_ofrecord.py)
-
-```python
-import oneflow as flow
-
-def get_train_config():
-  config = flow.function_config()
-  config.default_data_type(flow.float)
-  return config
-
-
-@flow.global_function(get_train_config())
-def train_job():
-  images = flow.data.BlobConf("images", 
-          shape=(28, 28, 1), 
-          dtype=flow.float, 
-          codec=flow.data.RawCodec())
-  labels = flow.data.BlobConf("labels", 
-          shape=(1, 1), 
-          dtype=flow.int32, 
-          codec=flow.data.RawCodec())
-  
-  return flow.data.decode_ofrecord("./dataset/", (images, labels),
-                                data_part_num=1,
-                                batch_size=3)
-
-def main():
-  check_point = flow.train.CheckPoint()
-  check_point.init()
-
-  f0, f1 = train_job().get()
-  print(f0.ndarray(), f1.ndarray())
-  print(f0.shape, f1.shape)
-
-if __name__ == '__main__':
-  main()
-```
-
-以上的代码，加载[OFrecord数据格式](ofrecord.md)一文中"将 OFRecord 对象写入文件"中所写入的数据集。
-
-运行后得到类似如下结果：
-```text
-...
-
-  [[0.5941235 ]
-   [0.27485612]
-   [0.4714867 ]
-   ...
-   [0.21632855]
-   [0.15881447]
-   [0.65982276]]]] [[[2]]
-
- [[3]]
-
- [[1]]]
-(3, 28, 28, 1) (3, 1, 1)
-```
-
-可以看到，我们使用 `flow.data.BlobConf` 声明与数据集中 `Feature` 对应的占位符，`BlobConf` 的必需参数有：
-```python
- BlobConf(name, shape, dtype, codec)
-```
-
-* name：在制作 OFRecord 文件时，Feature 所对应的 Key；
-
-* shape：数据对应的形状，需要与 Feature 中元素个数一致。如上文中的`(28, 28, 1)`修改为`(14, 28*2, 1)`或者`(28, 28)`均可；
-
-* dtype：数据类型，需要与写入数据集中的 Feature 数据类型一致；
-
-* codec： 解码器，OneFlow 内置了诸如 `RawCodec`、`ImageCodec`、`BytesListCodec`等解码器。上例中我们使用 `RawCodec`。
-
-使用 `BlobConf` 得到占位符后，我们可以使用 `decode_ofrecord` 方法，从数据集中获取数据。
-```python
-    flow.data.decode_ofrecord("./dataset/", (images, labels),
-                            data_part_num=1,
-                            batch_size=3)
-```
-
-通过以上例子可以总结使用 `decode_ofrecord` 的基本步骤：
-
-* 通过 `BlobConf` 定义占位符，用于提取数据集中的 `Feature`
-
-* 调用 `decode_ofrecord`，将上一步定义的占位符传递给 `decode_ofrecord` ，并设置相关参数，获取数据集中的数据
-
-使用 `decode_ofrecord` 的方式提取数据中的 `Feature` 虽然方便，但是支持的预处理方式和解码器种类有限。如果需要更灵活的数据预处理方式，包括自定义用户 op，推荐使用 `ofrecord_reader`。
-
-### `ofrecord_reader`
 在[数据输入](../basics_topics/data_input.md)一文中，我们已经展示了如何使用 `ofrecord_reader` 接口加载 OFRecord 数据，并进行数据预处理：
 
 完整代码：[of_data_pipeline.py](../code/basics_topics/of_data_pipeline.py)
@@ -257,7 +137,9 @@ def ofrecord_reader(
 
 * `shuffle_after_epoch` 表示每轮读取完后是否需要重新打乱样本顺序
 
-使用 `ofrecord_reader` 的好处在于可以用数据处理流水线的方式进行数据预处理，而且可以通自定义预处理 op，拥有很高的灵活性和扩展性。
+使用 `ofrecord_reader` 的好处在于， `ofrecord_reader` 中的数据处理被 OneFlow 框架调度，享有 OneFlow 流水线加速。
+
+对于与业务逻辑耦合的特定数据格式，我们还可以为 `ofrecord_reader` 定义预处理 op，让程序拥有很高的灵活性和扩展性。
 
 * 关于数据流水线及预处理可以参考[数据输入](../basics_topics/data_input.md)
 
