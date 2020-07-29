@@ -13,8 +13,8 @@ In this article, we will keep go through the ` consistent` view in OneFlow. Whic
 
 * Example of mixed parallel.
 
-## 网络模型训练的逻辑图
-我们先设定一个简单的多层网络，作为我们我们讨论并行方式的载体，其结构如下图所示：
+## Network logic diagram of model training
+We need to set up a simple multi-layer network first and use this network to discuss parallel methods. The structure like the figure shows:
 
 ![多层网络逻辑图](imgs/para_logical.png)
 
