@@ -108,21 +108,21 @@ BATCH_SIZE_PER_GPU = int(BATCH_SIZE / GPU_NUM)
 def get_train_config():
     config = flow.function_config()
     config.default_data_type(flow.float)
-    config.train.primary_lr(0.1)
     config.default_logical_view(flow.scope.mirrored_view())
-    config.train.model_update_conf({"naive_conf": {}})
     return config
 
 
-@flow.global_function(get_train_config())
+@flow.global_function(type="train", function_config=get_train_config())
 def train_job(images:oft.ListNumpy.Placeholder((BATCH_SIZE_PER_GPU, 1, 28, 28), dtype=flow.float),
               labels:oft.ListNumpy.Placeholder((BATCH_SIZE_PER_GPU,), dtype=flow.int32)) -> oft.ListNumpy:
     initializer = flow.truncated_normal(0.1)
     reshape = flow.reshape(images, [images.shape[0], -1])
-    hidden = flow.layers.dense(reshape, 512, activation=flow.nn.relu, kernel_initializer=initializer, name="hidden")
-    logits = flow.layers.dense(hidden, 10, kernel_initializer=initializer, name="output")
+    hidden = flow.layers.dense(reshape, 512, activation=flow.nn.relu, kernel_initializer=initializer, name="dense1")
+    logits = flow.layers.dense(hidden, 10, kernel_initializer=initializer, name="dense2")
     loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits)
-    flow.losses.add_loss(loss)
+
+    lr_scheduler = flow.optimizer.PiecewiseConstantScheduler([], [0.1])
+    flow.optimizer.SGD(lr_scheduler, momentum=0).minimize(loss)
     return loss
 
 
@@ -221,20 +221,13 @@ def lenet(data, train=False):
     return flow.layers.dense(hidden, 10, kernel_initializer=initializer, name="outlayer")
 
 
-def get_train_config():
-    config = flow.function_config()
-    config.default_data_type(flow.float)
-    config.train.primary_lr(0.1)
-    config.train.model_update_conf({"naive_conf": {}})
-    return config
-
-
-@flow.global_function(get_train_config())
+@flow.global_function(type="train")
 def train_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
               labels:oft.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32)) -> oft.Numpy:
     logits = lenet(images, train=True)
     loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits, name="softmax_loss")
-    flow.losses.add_loss(loss)
+    lr_scheduler = flow.optimizer.PiecewiseConstantScheduler([], [0.1])
+    flow.optimizer.SGD(lr_scheduler, momentum=0).minimize(loss)
     return loss
 
 
@@ -260,7 +253,7 @@ flow.config.gpu_device_num(2)
 
 * 使用 `oft.Numpy.Placeholder` 定义 consistent 视角下的占位符，因为`Numpy.Placeholder`产出的 Blob 代表逻辑上的 op 及数据占位符，因此此处的 BATCH_SIZE 就是整个分布式训练的样本总和，不需要人为切分或者组合
 ```python
-@flow.global_function(get_train_config())
+@flow.global_function(type="train")
 def train_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
               labels:oft.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32)) -> oft.Numpy:
 ```
