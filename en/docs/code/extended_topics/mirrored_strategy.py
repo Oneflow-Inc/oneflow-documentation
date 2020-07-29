@@ -10,21 +10,21 @@ BATCH_SIZE_PER_GPU = int(BATCH_SIZE / GPU_NUM)
 def get_train_config():
     config = flow.function_config()
     config.default_data_type(flow.float)
-    config.train.primary_lr(0.1)
     config.default_logical_view(flow.scope.mirrored_view())
-    config.train.model_update_conf({"naive_conf": {}})
     return config
 
 
-@flow.global_function(get_train_config())
+@flow.global_function(type="train", function_config=get_train_config())
 def train_job(images:oft.ListNumpy.Placeholder((BATCH_SIZE_PER_GPU, 1, 28, 28), dtype=flow.float),
               labels:oft.ListNumpy.Placeholder((BATCH_SIZE_PER_GPU,), dtype=flow.int32)) -> oft.ListNumpy:
     initializer = flow.truncated_normal(0.1)
     reshape = flow.reshape(images, [images.shape[0], -1])
-    hidden = flow.layers.dense(reshape, 512, activation=flow.nn.relu, kernel_initializer=initializer, name="hidden")
-    logits = flow.layers.dense(hidden, 10, kernel_initializer=initializer, name="output")
+    hidden = flow.layers.dense(reshape, 512, activation=flow.nn.relu, kernel_initializer=initializer, name="dense1")
+    logits = flow.layers.dense(hidden, 10, kernel_initializer=initializer, name="dense2")
     loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits)
-    flow.losses.add_loss(loss)
+    
+    lr_scheduler = flow.optimizer.PiecewiseConstantScheduler([], [0.1])
+    flow.optimizer.SGD(lr_scheduler, momentum=0).minimize(loss)
     return loss
 
 
