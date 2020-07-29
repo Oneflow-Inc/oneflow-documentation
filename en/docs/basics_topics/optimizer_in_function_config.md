@@ -4,8 +4,8 @@ After neural network was set up, normally need be training before use for predic
 
 可以在不了解 OneFlow 设计和概念的情况下，直接采用下面的预测配置或训练配置；如果有更进一步的需要，可以参考如何配置 `model_update_conf`，自定义优化方法；本文的最后会通过逐层推进的方式，介绍 OneFlow 在设计的一些概念，详细解释如何设置训练时候的优化算法和超参数。
 
-## Configuration of prediction
-在 OneFlow 中，无论是训练还是验证、预测，都需要通过装饰器 `@flow.global_function` 来指定，而优化器和超参数的设置通过函数自定义，并作为参数传递到 `@flow.global_function` 中。通过这种方式，做到了 **参数配置和任务的分离** 。
+## 预测/推理配置
+在 OneFlow 中，无论是训练还是验证、预测/推理，都需要通过装饰器 `@flow.global_function` 来指定，而优化器和超参数的设置通过函数自定义，并作为参数传递到 `@flow.global_function` 中。通过这种方式，做到了 **参数配置和任务的分离** 。
 
 例如：下面我们定义了一个用于验证的作业函数(job function)：`eval_job`
 
@@ -18,31 +18,30 @@ def get_eval_config():
   return config
 
 @flow.global_function(get_eval_config())
-def eval_job() -> oft.Numpy:
+def eval_job() -> tp.Numpy:
   # build up NN here
 ```
 当然，上面的 `get_eval_config` 中只配置了网络的基本参数。在下面的例子中，我们将介绍一个训练作业，并配置学习率 lr 和 sgd 优化器等参数。
 
 ## Configuration of training
-同样，只要按照下面的方式给 `train_job` 函数配上一个装饰器 `@flow.global_function(get_train_config())` 就能够实现一个用于训练的网络。
+同样，只要按照下面的方式给 `train_job` 函数配上一个装饰器 `@flow.global_function())` 就能够实现一个用于训练的网络。
 
 ```python
-def get_train_config():
-  config = flow.function_config()
-  config.default_data_type(flow.float)
-  config.train.primary_lr(0.1)
-  config.train.model_update_conf({"naive_conf": {}})
-  return config
+@flow.global_function(type="train")
+def train_job(images: tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+              labels: tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32)) -> tp.Numpy:
+    logits = mlp(images)
+    loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits, name="softmax_loss")
 
-@flow.global_function(get_train_config())
-def train_job() -> oft.Numpy:
-  # build up NN here
+    lr_scheduler = flow.optimizer.PiecewiseConstantScheduler([], [0.1])
+    flow.optimizer.SGD(lr_scheduler, momentum=0).minimize(loss)
+    return loss
 ```
-其中 `get_train_config` 是定义了训练作业(train_job)中的配置，主要的参数设置如下：
+其中 `type="train"` 表明作业函数是一个训练任务，学习率和优化器的设置如下：
 
-1. 利用 `config.train.primary_lr` 设置了学习率 learning rate；
+1. 利用 `flow.optimizer.PiecewiseConstantScheduler` 设置了学习率 learning rate的策略—初始学习率为0.1的分段缩放策略。当然，你也可以使用其他的学习率策略如：`flow.optimizer.CosineSchedule`r(余弦策略)
 
-2. 在 `config.train.model_update_conf` 设置了 optimizer 优化器/优化算法。(naive_conf 即使用默认的 sgd 优化算法)
+2. 在 `flow.optimizer.SGD(lr_scheduler, momentum=0).minimize(loss)` 设置了 optimizer 优化器/优化算法。(naive_conf 即使用默认的 sgd 优化算法)
 
 ## 配置 `model_update_conf`
 OneFlow 中很多数据结构都是用 [protobuf](https://developers.google.cn/protocol-buffers/) 描述的，python的字典对象能够方便的转换成 protobuf 对象，`model_update_conf` 的输入要求是一个 python 字典对象，我们需要参考下面的 protobuf 定义，构建好一个 python 字典对象，传给 `model_update_conf` 作为输入。
@@ -160,7 +159,7 @@ model_update_conf = dict(
 
 ```python
 import oneflow as flow
-@flow.global_function(flow.function_config())
+@flow.global_function(flow.function_config(),type="test")
 def test_job():
   # build up NN here
 ```
@@ -186,7 +185,7 @@ def test_job():
 function_config 中还包含哪些配置请参考[function_config API](../api/oneflow.html?highlight=functionconfig#oneflow.FunctionConfig)。
 
 ### 训练还是预测配置
-默认情况下，作业函数只能做预测作业，如果想要做训练作业，需要设置 `train` 属性。
+默认情况下，作业函数只能做预测作业，如果想要做训练作业，需要设置 `type=train` 属性。
 
 如一下代码设置了学习率和模型更新的策略(优化算法)：
 
