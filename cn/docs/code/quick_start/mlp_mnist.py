@@ -25,7 +25,7 @@ if __name__ == '__main__':
     check_point = flow.train.CheckPoint()
     check_point.init()
 
-    (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(BATCH_SIZE)
+    (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(BATCH_SIZE, BATCH_SIZE)
     for i, (images, labels) in enumerate(zip(train_images, train_labels)):
         loss = train_job(images, labels)
         if i % 20 == 0:
