@@ -34,30 +34,30 @@ Are you ready to get your hands dirty and reproduce the above results?
 
 Below, this article takes the ResNet50 above as an example to show how to use OneFlow to train and predict the ResNet50 network step by step.
 
-主要内容包括：
+It mainly includes
 
-- 准备工作
-  - 项目安装和准备工作
+- Preparation
+  - Project installation and preparation
 
-- 快速开始
-  - 预测/推理
-  - 训练和验证
-  - 评估
-- 更详细的说明
-  - 分布式训练
-  - 混合精度训练与预测
-- 进阶
-  - 参数对齐
-  - 数据集制作(ImageNet2012)
-  - OneFlow 模型转 ONNX 模型
+- Quick Start
+  - Prediction/Inference
+  - Training and Validation
+  - Evaluation
+- Detailed Introduction
+  - Distributed Training
+  - Mixed precision training and prediction
+- Advanced
+  - Parameter alignment
+  - Dataset production (ImageNet2012)
+  - Convert OneFlow model to ONNX model
 
 
 
-## 准备工作 Requirements
+## Requirements
 
-别担心，使用OneFlow非常容易，只要准备好下面三步，即可开始OneFlow的图像识别之旅。
+Don't worry, It is very easy to use OneFlow. Just prepare the following three steps to start OneFlow's image recognition journey.
 
-- 安装OneFlow，安装方式参考[OneFlow项目主页](https://github.com/Oneflow-Inc/oneflow)
+- When installing OneFlow, please refer to [OneFlow project homepage](https://github.com/Oneflow-Inc/oneflow)
 
 - 克隆/下载[OneFlow-Benchmark](https://github.com/Oneflow-Inc/OneFlow-Benchmark)仓库。
 
@@ -65,9 +65,9 @@ Below, this article takes the ResNet50 above as an example to show how to use On
 
   `cd  OneFlow-Benchmark/Classification/cnns`
 
-- 准备数据集（可选）
+- Prepare data set (optional)
 
-  - 直接使用synthetic虚拟合成数据集
+  - Use synthetic virtual synthetic datasets directly
   - 下载我们制作的Imagenet(2012)[迷你数据集](https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/dataset/imagenet/mini-imagenet.zip) 解压放入data目录
   - 或者：制作完整OFRecord格式的ImageNet数据集（见下文进阶部分）
 
