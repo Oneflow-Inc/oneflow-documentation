@@ -1,4 +1,6 @@
 
+# OneFlow 的并行特色
+
 In [Consistent and Mirrored view](consistent_mirrored.md), we already know OneFlow provide mirrored and consistent two point of view. And be aware of  `consistent` in OneFlow have some special characteristics.
 
 Thus, in `consistent_view`, OneFlow give the  unified view on logical side. When doing the distributed training, use can choose use data parallel, model parallel or mix parallel.
@@ -40,14 +42,14 @@ We already know that in consistent view. The default parallel method is data par
 
 * But in consistent view we have the consistency on logic. Cutting data and assembly data will complete by OneFlow framework.
 
-下图是 consistent 视角下，采用纯数据并行的方式，实现原逻辑网络模型的流程示意图：
+The following figure is in consistent view, using pure data parallel to achieve original logical network process:
 
 ![纯数据并行](imgs/para_consistent_data.png)
 
-在纯数据并行中，采用了2张显卡进行并行训练，因为采用了 **纯数据并行** ，可以看到，对于原逻辑模型中的每一层，样本数据都被平均分配到了各个卡上，每张卡上都拥有 **完整的模型**，与切分的数据进行 `op` 运算，最后组合各个卡上的样本，得到完整的输出。
+In pure data parallel, we use two GPU for training. Because we use **pure data parallel**. We can see that for each original logical layer, the sample is divided in average to each GPU. We have complete **training model** in each GPU. The data after cut process by `operator`. Finally combined the data in each GPU and get the full complete data.
 
-### 纯模型并行
-在 `consistent` 视角下，也可以通过选择纯模型并行（设置方式在下文实例中会介绍），其流程示意图为：
+### Pure model parallel
+In `consistent` view, we can choose pure model parallel (the configuration details will talk about later). The process schematic diagram:
 
 ![纯模型并行](imgs/para_consistent_model.png)
 
@@ -143,14 +145,6 @@ if __name__ == '__main__':
   flow.config.gpu_device_num(2)
 ```
 
-* 通过 `flow.function_config().default_logical_view` 接口将默认视角改为 `consistent_view`：
-```python
-def get_train_config():
-  #...
-  config.default_logical_view(flow.scope.consistent_view())
-  #...
-```
-
 * `reshape` 及 `hidden` 采用默认的数据并行，不需要修改；输出层通过设置 `model_distribute` 为 `flow.distribute.split(axis=0)` 变为模型并行：
 ```python
 def mlp(data):
@@ -171,10 +165,12 @@ def mlp(data):
 
 可以看到，我们通过极少量的修改，就能将单机训练程序改为分布式、混合并行的程序，这是 OneFlow 区别于其它框架的一大特色。
 
-## 网络接力并行实例
-在模型并行之外，OneFlow 还提供了一种灵活度更高的“网络接力”的并行方式，可以让用户使用 `scope.placement` 接口显式指定用来运行逻辑 `op`的 **物理硬件**。
+## 流水并行实例
+在模型并行之外，OneFlow 还提供了一种灵活度更高的“流水并行”的并行方式，可以让用户使用 `scope.placement` 接口显式指定用来运行逻辑 `op`的 **物理硬件**。
 
-在以下示例中，我们对[Consistent 与 Mirrored 视角](consistent_mirrored.md)中的"在 OneFlow 中使用 consistent 视角"代码进行简单修改，展示了"网络接力"并行模式。
+在流水并行中，整个神经网络有的层次在一组物理设备上，另外一些层次在另外一组物理设备上，它们以接力的方式协同工作，分多个阶段，在设备之间流水执行。
+
+在以下示例中，我们对[Consistent 与 Mirrored 视角](consistent_mirrored.md)中的"在 OneFlow 中使用 consistent 视角"代码进行简单修改，展示了流水并行模式。
 
 ### 代码示例
 
@@ -257,5 +253,7 @@ if __name__ == '__main__':
     # ...
 ```
 
-网络接力的并行方式，使得用户可以为每个 op 指定物理设备，非常适合对网络模型及分布式情况都很熟悉的用户进行 **深度优化** 。
+流水并行，使得用户可以为每个 op 指定物理设备，非常适合对网络模型及分布式情况都很熟悉的用户进行 **深度优化** 。
+
+此外，OneFlow 提供的 API `oneflow.unpack`、`oneflow.pack` 等，结合了 OneFlow 自身任务调度的特点，使得流水并行更易用、高效，我们将在另外的文章中专门介绍。
 
