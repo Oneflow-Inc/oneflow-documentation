@@ -116,7 +116,7 @@ nav:
       - BERT: adv_examples/bert.md
       - Wide & Deep: adv_examples/wide_deep.md
     - API: 
-      - API: api/
+      - API: https://oneflow-api.readthedocs.io/en/latest/
     # - 二次开发:
     #   - oneflow 架构: extended_dev/framework.md
     #   - 算子描述符: extended_dev/op_desc.md
