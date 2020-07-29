@@ -64,11 +64,11 @@ Actually, we can specify the filename prefix(`part-`)，whether to complete the 
 
 OneFlow provides the API interface to load OFRecord dataset, so that we can enjoy the Multi-threading, pipeline and some other advantages brought by OneFlow framework by specifying the path of dataset directory.
 
-## 加载OFRecord数据集的方法
-我们常常使用 `decode_ofrecord` 加载并解码数据集；或者使用 `ofrecord_reader` 加载并预处理数据集。
+## The method to load OFRecord dataset
+We usually use `decode_ofrecord` to load and decode dataset; or use `ofrecord_reader` to load and preprocess dataset.
 
 ### `decode_ofrecord`
-我们可以使用 `flow.data.decode_ofrecord` 加载数据集并同时解码数据。 `decode_ofrecord` 的调用接口如下：
+We can use `flow.data.decode_ofrecord` to load and decode the dataset at the same time. `decode_ofrecord` 的调用接口如下：
 ```python
 def decode_ofrecord(
     ofrecord_dir,
