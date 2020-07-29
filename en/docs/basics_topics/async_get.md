@@ -200,7 +200,7 @@ def lenet(data, train=False):
     pool1 = flow.nn.max_pool2d(conv1, ksize=2, strides=2, padding='SAME', name='pool1')
     conv2 = flow.layers.conv2d(pool1, 64, 5, padding='SAME', activation=flow.nn.relu, name='conv2',
                                kernel_initializer=initializer)
-    pool2 = flow.nn.max_pool2d(conv2, ksize=2, strides=2, padding='SAME', name='pool2', )
+    pool2 = flow.nn.max_pool2d(conv2, ksize=2, strides=2, padding='SAME', name='pool2')
     reshape = flow.reshape(pool2, [pool2.shape[0], -1])
     hidden = flow.layers.dense(reshape, 512, activation=flow.nn.relu, kernel_initializer=initializer, name='dense1')
     if train: hidden = flow.nn.dropout(hidden, rate=0.5, name="dropout")
@@ -402,7 +402,7 @@ File mnist.npz already exist, path: ./mnist.npz
 import numpy as np
 import oneflow as flow
 from typing import Tuple
-import oneflow.typing as oft
+import oneflow.typing as tp
 
 BATCH_SIZE = 100
 
@@ -414,15 +414,9 @@ def mlp(data):
     return flow.layers.dense(hidden, 10, kernel_initializer=initializer, name="output")
 
 
-def get_eval_config():
-    config = flow.function_config()
-    config.default_data_type(flow.float)
-    return config
-
-
-@flow.global_function(get_eval_config())
-def eval_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-             labels:oft.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32)) -> oft.Callback[Tuple[oft.Numpy, oft.Numpy]]:
+@flow.global_function(type="predict")
+def eval_job(images: tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+             labels: tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32)) -> tp.Callback[Tuple[tp.Numpy, tp.Numpy]]:
     with flow.scope.placement("cpu", "0:0"):
         logits = mlp(images)
         loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits, name="softmax_loss")
@@ -432,7 +426,7 @@ def eval_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.fl
 
 g_total = 0
 g_correct = 0
-def acc(arguments:Tuple[oft.Numpy, oft.Numpy]):
+def acc(arguments:Tuple[tp.Numpy, tp.Numpy]):
     global g_total
     global g_correct
 
@@ -444,7 +438,7 @@ def acc(arguments:Tuple[oft.Numpy, oft.Numpy]):
     g_correct += right_count
 
 
-def main_eval():
+def main():
     check_point = flow.train.CheckPoint()
     check_point.load('./mlp_models_1')
     (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(BATCH_SIZE)
@@ -454,8 +448,9 @@ def main_eval():
 
     print("accuracy: {0:.1f}%".format(g_correct * 100 / g_total))
 
+
 if __name__ == '__main__':
-    main_eval()
+    main()
 ```
 
 输出：
