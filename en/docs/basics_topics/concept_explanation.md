@@ -19,9 +19,9 @@ Placeholder is **data Placeholder**, this concept is for define the shape of inp
 For example:
 
 ```python
-import oneflow.typing as oft
-def test_job(images:oft.Numpy.Placeholder((32, 1, 28, 28), dtype=flow.float32),
-             labels:.oft.Numpy.Placeholder((32, ), dtype=flow.int32)):
+import oneflow.typing as tp
+def test_job(images:tp.Numpy.Placeholder((32, 1, 28, 28), dtype=flow.float32),
+             labels:.tp.Numpy.Placeholder((32, ), dtype=flow.int32)):
 ```
 
 It define the input of a job function. The shape of image input is (32, 1, 28, 28) and the data type is flow.float32. The shape of labels is (32,) and data type is flow.int32.
@@ -50,7 +50,7 @@ Blob can only be Placeholder, but also can be the unit to pack the function's pa
 
 In OneFlow, we called training, evaluations, predictions and ratiocination tasks as job function. Job function(中文没有理解）
 
-In OneFlow, all function need use decorator `@oneflow.global_function` to define as a job functions. By this decorator, we not only can define the model structure of task, optimize method and other task logic but also can pass the parameters needed by job when running the job function. (like: get_train_config()). That can make OneFlow manage our memory and GPU resources more conveniently.
+在 OneFlow 中，任何被定义为作业函数的方法体都需要用装饰器 `@oneflow.global_function` 修饰，通过此装饰器，我们不仅能定义作业的类型(如：`type="train"`)，同时将为作业绑定一个FunctionConfig对象用于设置Job作业运行时所需的配置，使得 OneFlow 能方便地为我们管理内存、GPU等计算资源。
 
 
 
