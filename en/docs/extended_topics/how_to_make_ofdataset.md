@@ -74,11 +74,11 @@ OneFlow provides the API interface to load OFRecord dataset, so that we can enjo
 ```python
 # of_data_pipeline.py
 import oneflow as flow
-import oneflow.typing as oft
+import oneflow.typing as tp
 from typing import Tuple
 
-@flow.global_function(flow.function_config())
-def test_job() -> Tuple[oft.Numpy, oft.Numpy]:
+@flow.global_function(type="predict")
+def test_job() -> Tuple[tp.Numpy, tp.Numpy]:
     batch_size = 64
     color_space = 'RGB'
     with flow.scope.placement("cpu", "0:0"):
