@@ -17,6 +17,7 @@ usage:
     '''.format(os.path.basename(sys.argv[0]), os.path.join(".", "9.png"))
     print(usageHint)
 
+
 def lenet(data, train=False):
     initializer = flow.truncated_normal(0.1)
     conv1 = flow.layers.conv2d(data, 32, 5, padding='SAME', activation=flow.nn.relu, name='conv1',
@@ -33,8 +34,8 @@ def lenet(data, train=False):
 
 
 @flow.global_function(type="predict")
-def eval_job(images:tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-             labels:tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32)) -> tp.Numpy:
+def eval_job(images: tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+             labels: tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32)) -> tp.Numpy:
     with flow.scope.placement("gpu", "0:0"):
         logits = lenet(images, train=False)
     return logits
@@ -48,11 +49,12 @@ def load_image(file):
     im.reshape((-1, 1, 1, im.shape[1], im.shape[2]))
     return im
 
+
 def main():
     if len(sys.argv) != 2:
         usage()
         return
-    
+
     check_point = flow.train.CheckPoint()
     check_point.load("./lenet_models_1")
 

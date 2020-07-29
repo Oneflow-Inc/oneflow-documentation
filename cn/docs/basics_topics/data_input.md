@@ -21,12 +21,12 @@ OneFlow 的数据流水线的方式，看上去稍显复杂，实际则采用了
 # feed_numpy.py
 import numpy as np
 import oneflow as flow
-import oneflow.typing as oft
+import oneflow.typing as tp
 from typing import Tuple
 
-@flow.global_function(flow.function_config())
-def test_job(images:oft.Numpy.Placeholder((32, 1, 28, 28), dtype=flow.float),
-             labels:oft.Numpy.Placeholder((32,), dtype=flow.int32)) -> Tuple[oft.Numpy, oft.Numpy]:
+@flow.global_function(type="predict")
+def test_job(images:tp.Numpy.Placeholder((32, 1, 28, 28), dtype=flow.float),
+             labels:tp.Numpy.Placeholder((32,), dtype=flow.int32)) -> Tuple[tp.Numpy, tp.Numpy]:
     # do something with images or labels
     return (images, labels)
 
@@ -56,8 +56,8 @@ python feed_numpy.py
 在作业函数定义时，指定参数类型为 `oneflow.typing` 中的类型作为数据占位符，声明输入变量的形状及数据类型。 
 
 ```python
-def test_job(images:oft.Numpy.Placeholder((32, 1, 28, 28), dtype=flow.float),
-             labels:oft.Numpy.Placeholder((32, ), dtype=flow.int32)) -> Tuple[oft.Numpy, oft.Numpy]:
+def test_job(images:tp.Numpy.Placeholder((32, 1, 28, 28), dtype=flow.float),
+             labels:tp.Numpy.Placeholder((32, ), dtype=flow.int32)) -> Tuple[tp.Numpy, tp.Numpy]:
 ```
 
 如以上代码中，声明了 `images` 和 `labels` 两个传入参数，它们都是 `oneflow.typing.Numpy`的占位符，在调用时，需要传入形状、数据类型一致的 `numpy` 数据。
@@ -97,11 +97,11 @@ OneFlow 数据流水线解耦了数据的加载和数据预处理过程：
 ```python
 # of_data_pipeline.py
 import oneflow as flow
-import oneflow.typing as oft
+import oneflow.typing as tp
 from typing import Tuple
 
-@flow.global_function(flow.function_config())
-def test_job() -> Tuple[oft.Numpy, oft.Numpy]:
+@flow.global_function(type="predict")
+def test_job() -> Tuple[tp.Numpy, tp.Numpy]:
     batch_size = 64
     color_space = 'RGB'
     with flow.scope.placement("cpu", "0:0"):
