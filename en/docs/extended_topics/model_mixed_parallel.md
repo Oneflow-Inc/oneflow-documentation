@@ -53,7 +53,7 @@ In `consistent` view, we can choose pure model parallel (the configuration detai
 
 ![纯模型并行](imgs/para_consistent_model.png)
 
-在纯模型并行中，同样是2张显卡进行并行训练，原逻辑模型中的每一层中，都是 **部分模型** 与 **完整的数据** 进行 `op` 运算，最后组合得到完整的输出。
+In pure model parallel example, we still use two GPU for training. In each layer of original logic model is process by `operator `on **part of model** and **complete data**. Then combine the output and get whole results.
 
 值得一提的是，从上图可以看出，各个卡上第0层的输出，并 **不能** 直接作为第1层的输入：因为模型并行中，为完成 `op` 操作，需要部分的模型与 **完整的** 数据； 为了解决这个问题，OneFlow 中使用了 `boxing` 机制。
 
