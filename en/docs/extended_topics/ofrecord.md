@@ -1,18 +1,18 @@
-深度学习应用需要复杂的多阶段数据预处理流水线，数据加载是流水线的第一步，OneFlow 支持多种格式数据的加载，其中 `OFRecord` 格式是 OneFlow原生的数据格式。
+Deep Learning applications need complex multi-stage data preprocessing pipeline, the first step of data pipeline is data loading. OneFlow supports multiple data formats in data loading, among which `OFRecord` format is the native data format of OneFlow.
 
-`OFRecord` 的格式定义参考了 TensorFlow 的[TFRecord](https://www.tensorflow.org/tutorials/load_data/tfrecord)，熟悉 `TFRecord` 的用户，可以很快上手 OneFlow 的 `OFRecord`。
+The data format definition of `OFRecord` refers to Tensorflow's [<1>TFRecord](https://www.tensorflow.org/tutorials/load_data/tfrecord), you can quickly start OneFlow's `OFRecord` if you are familiar with `TFRecord`
 
-本文将介绍：
+In this section we will introduce：
 
-* OFRecord 使用的数据类型
+* The data type used in OFRecord
 
-* 如何将数据转化为 OFRecord 对象并序列化
+* How to convert data to OFRecord object and serialize it
 
-* OFRecord 文件格式
+* The file format of OFRecord
 
-掌握它们后，有助于我们学习[加载与准备OFRecord数据集](how_to_make_ofdataset.md)。
+After learning that, it is helpful for us to learn [how to make ofdataset](how_to_make_ofdataset.md).
 
-## OFRecord 相关数据类型
+## Some data types in OFRecord
 OneFlow 内部采用[Protocol Buffers](https://developers.google.com/protocol-buffers/) 描述 `OFRecord` 的序列化格式。相关的 `.proto` 文件在 `oneflow/core/record/record.proto` 中，具体定义如下：
 
 ```
