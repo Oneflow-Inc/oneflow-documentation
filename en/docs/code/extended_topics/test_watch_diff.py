@@ -1,13 +1,11 @@
-import numpy as np
+# test_watch_diff.py
 import oneflow as flow
 import oneflow.typing as oft
 
-def get_cb(bn):
-    def cb(x):
-        blob = x.ndarray()
-        print(bn, blob.shape, blob.dtype)
-        #print(blob)
-    return cb
+BATCH_SIZE = 100
+
+def watch_diff_handler(blob: oft.Numpy):
+    print("watch_diff_handler:", blob, blob.shape, blob.dtype)
 
 def get_train_config():
     config = flow.function_config()
@@ -16,23 +14,27 @@ def get_train_config():
     config.train.model_update_conf({"naive_conf": {}})
     return config
 
+
 @flow.global_function(get_train_config())
-def train_job(images:oft.Numpy.Placeholder((8, 1, 28, 28), dtype=flow.float),
-              labels:oft.Numpy.Placeholder((8,), dtype=flow.int32)):
-    initializer = flow.truncated_normal(0.1)
-    reshape = flow.reshape(images, [images.shape[0], -1])
-    hidden = flow.layers.dense(reshape, 512, activation=flow.nn.relu, kernel_initializer=initializer)
-    logits = flow.layers.dense(hidden, 10, kernel_initializer=initializer)
-    loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits)
+def train_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+              labels:oft.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32)) -> oft.Numpy:
+    with flow.scope.placement("cpu", "0:0"):
+        initializer = flow.truncated_normal(0.1)
+        reshape = flow.reshape(images, [images.shape[0], -1])
+        hidden = flow.layers.dense(reshape, 512, activation=flow.nn.relu, kernel_initializer=initializer, name="hidden")
+        logits = flow.layers.dense(hidden, 10, kernel_initializer=initializer, name="output")
+        loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits)
+    
     flow.losses.add_loss(loss)
-
-    flow.watch(logits, get_cb("logits"))
-    flow.watch_diff(logits, get_cb("logits_grad"))
-
+    flow.watch_diff(logits, watch_diff_handler)
     return loss
 
-flow.train.CheckPoint().init()
-images = np.random.uniform(-10, 10, (8, 1, 28, 28)).astype(np.float32)
-labels = np.random.randint(-10, 10, (8,)).astype(np.int32)
-loss = train_job(images, labels).get().mean()
-print(loss)
+
+if __name__ == '__main__':
+    check_point = flow.train.CheckPoint()
+    check_point.init()
+
+    (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(BATCH_SIZE)
+    for i, (images, labels) in enumerate(zip(train_images, train_labels)):
+        loss = train_job(images, labels)
+        if i % 20 == 0: print(loss.mean())
