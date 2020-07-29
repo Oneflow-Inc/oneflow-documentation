@@ -115,9 +115,9 @@ sh inference.sh
 
 此脚本将调用模型对这张金鱼图片进行分类：
 
-![](./imgs/fish.jpg)
-
-
+<div align="center">
+    <img src="imgs/fish.jpg" align='center'/>
+</div>
 
 若输出下面的内容，则表示预测成功：
 
@@ -183,7 +183,7 @@ data/fish.jpg
 
   运行此脚本，将在仅有50张金鱼图片的迷你imagenet数据集上，训练出一个分类模型，利用它，你可以对金鱼图片进行分类。
 
-  不要着急，如果您需要在完整的ImageNet2012数据集上进行训练，请参考：[OneFlow-Benchmark](https://github.com/Oneflow-Inc/OneFlow-Benchmark/cnns)仓库。
+  不要着急，如果您需要在完整的ImageNet2012数据集上进行训练，请参考：[OneFlow-Benchmark](https://github.com/Oneflow-Inc/OneFlow-Benchmark/Classification/cnns)仓库。
   
   
 
@@ -209,7 +209,7 @@ validation: epoch 0, iter 195, top_1: 0.773237, top_k: 0.936078, samples/s: 1692
 validation: epoch 0, iter 195, top_1: 0.773297, top_k: 0.936018, samples/s: 1686.896
 ```
 
-> 执行sh evaluate.sh前，确保准备了imagenet(2012)的验证集，验证集制作方法请参考：[OneFlow-Benchmark](https://github.com/Oneflow-Inc/OneFlow-Benchmark/cnns)仓库。
+> 执行sh evaluate.sh前，确保准备了imagenet(2012)的验证集，验证集制作方法请参考：[OneFlow-Benchmark](https://github.com/Oneflow-Inc/OneFlow-Benchmark/Classification/cnns)仓库。
 
 从3轮的评估结果来看，我们的模型在Imagenet(2012)上已经达到了77.32+%的top_1精度。
 
@@ -300,16 +300,16 @@ ONNX (Open Neural Network Exchange) 是一种较为广泛使用的神经网络�
 
 #### 如何生成 ONNX 模型
 
-**步骤一：将网络权重保存到磁盘**
+**步骤一：将模型权重保存到本地**
 
-首先将训练得到的网络权重保存到磁盘，例如我们保存到 /tmp/resnet50_weights 这个文件夹下
+首先将训练得到的网络权重保存到本地磁盘，例如我们保存到 /tmp/resnet50_weights 这个文件夹下
 
 ```python
 check_point = flow.train.CheckPoint()
 check_point.save("/tmp/resnet50_weights")
 ```
 
-**步骤二：新建一个用于推理的 job function**
+**步骤二：新建一个用于测试/推理的 job function**
 
 然后新建一个用于推理的 job function，它只包含网络结构本身，不包含读取 OFRecord 的算子，并且直接接受 numpy 数组形式的输入。可参考 resnet\_to\_onnx.py 中的 `InferenceNet`。
 
