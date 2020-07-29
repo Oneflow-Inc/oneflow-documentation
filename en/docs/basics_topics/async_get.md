@@ -28,7 +28,7 @@
 
 * 定义作业函数时，通过返回值类型来告之 OneFlow 是同步还是异步模式
 
-* 作业函数的返回值类型在 `oneflow.typing` 中选择
+* 作业函数的返回值类型在 `oneflow.typing` (下文简称为`flow.typing`)中选择
 
 * 调用作业函数时，同步/异步调用作业函数的形式略有不同
 
@@ -38,17 +38,18 @@
 
 比如，如果我们定义了如下的作业函数：
 ```python
-@flow.global_function(get_train_config())
-def train_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-              labels:oft.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32)) -> oft.Numpy:
+@flow.global_function(type="train")
+def train_job(images: tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+              labels: tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32)) -> tp.Numpy:
     with flow.scope.placement("gpu", "0:0"):
         logits = lenet(images, train=True)
         loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits, name="softmax_loss")
-    flow.losses.add_loss(loss)
+    lr_scheduler = flow.optimizer.PiecewiseConstantScheduler([], [0.1])
+    flow.optimizer.SGD(lr_scheduler, momentum=0).minimize(loss)
     return loss
 ```
 
-以上代码，通过 python 注解的方式告之 OneFlow 系统，返回的是 `oft.Numpy` 类型，即对应了 `numpy` 中的 `ndarray`。
+以上代码，通过 python 注解的方式告之 OneFlow 系统，返回的是 `tp.Numpy` 类型，即对应了 `numpy` 中的 `ndarray`。
 
 那么，当我们调用作业函数时，作业函数会直接返回 `ndarray` 对象：
 
@@ -61,18 +62,17 @@ if i % 20 == 0: print(loss.mean())
 
 * 定义作业函数时，作业函数返回的对象(上文中的 `loss`) 只是数据占位符，用于构建计算图，并没有真实数据。
 
-* 通过指定作业函数的返回值类型为 `oneflow.typing.Numpy`，可以告之 OneFlow 此作业函数调用时，返回的真实数据类型为 `numpy` 对象
+* 通过指定作业函数的返回值类型为 `flow.typing.Numpy`，可以告之 OneFlow 此作业函数调用时，返回的真实数据类型为 `numpy` 对象
 
-* 通过调用作业函数 `train_job(images, labels)` 可以直接获取作业函数的运行计算结果，类型为 `oneflow.typing.Numpy` 对应的 `numpy` 对象。
+* 通过调用作业函数 `train_job(images, labels)` 可以直接获取作业函数的运行计算结果，类型为 `flow.typing.Numpy` 对应的 `numpy` 对象。
 
 ## `oneflow.typing` 中的数据类型
-`oneflow.typing` 中包含了作业函数可以返回的数据类型，上文中出现的 `oneflow.typing.Numpy` 只是其中一种，现将其中常用类型及对应意义罗列如下：
+`flow.typing` 中包含了作业函数可以返回的数据类型，上文中出现的 `flow.typing.Numpy` 只是其中一种，现将其中常用的几种类型及对应意义罗列如下：
 
-* `oneflow.typing.Numpy`：对应了 `numpy.ndarray`
-
-* `oneflow.typing.ListNumpy`：对应了一个 `list` 容器，其中每个元素都是一个 `numpy.ndarray` 对象。与 OneFlow 进行分布式训练的视角有关，将在[分布式训练的consistent与mirrored视角](../extended_topics/consistent_mirrored.md)中看到其作用
-
-* `oneflow.typing.Callback`：对应了一个回调函数，用于异步调用作业函数，下文会介绍
+* `flow.typing.Numpy`：对应了 `numpy.ndarray`
+* `flow.typing.ListNumpy`：对应了一个 `list` 容器，其中每个元素都是一个 `numpy.ndarray` 对象。与 OneFlow 进行分布式训练的视角有关，将在[分布式训练的consistent与mirrored视角](../extended_topics/consistent_mirrored.md)中看到其作用
+* `flow.typing.Dict`：对应了`Dict`字典，键为`str`类型，值为`numpy.ndarray`
+* `flow.typing.Callback`：对应了一个回调函数，用于异步调用作业函数，下文会介绍
 
 
 ## 异步获取结果
@@ -83,7 +83,7 @@ if i % 20 == 0: print(loss.mean())
 
 * 准备回调函数，需要通过注解的方式指定回调函数所接受的参数，回调函数的内部实现处理作业函数返回值结果的逻辑
 
-* 实现作业函数，通过注解的方式，指定 `oneflow.typing.Callback` 为作业函数的返回类型。我们将在下文例子中看到，我们通过 `Callback` 可以指定回调函数的参数类型
+* 实现作业函数，通过注解的方式，指定 `flow.typing.Callback` 为作业函数的返回类型。我们将在下文例子中看到，我们通过 `Callback` 可以指定回调函数的参数类型
 
 * 调用作业函数，并注册以上第一步准备的回调函数
 
@@ -105,9 +105,9 @@ def cb_func(result: T):
 
 比如，我们定义了一个作业函数：
 ```python
-@flow.global_function(get_train_config())
-def train_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-              labels:oft.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32)) -> oft.Callback[oft.Numpy]:
+@flow.global_function(type="train")
+def train_job(images: tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+              labels: tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32)) -> tp.Callback[tp.Numpy]:
     # mlp
     initializer = flow.truncated_normal(0.1)
     reshape = flow.reshape(images, [images.shape[0], -1])
@@ -115,14 +115,15 @@ def train_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.f
     logits = flow.layers.dense(hidden, 10, kernel_initializer=initializer, name="output")
 
     loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits, name="softmax_loss")
-    flow.losses.add_loss(loss)
+    lr_scheduler = flow.optimizer.PiecewiseConstantScheduler([], [0.1])
+    flow.optimizer.SGD(lr_scheduler, momentum=0).minimize(loss)
     return loss
 ```
-注解`-> oft.Callback[oft.Numpy]` 表示此作业函数，返回一个 `oft.Numpy` 类型的对象，并且需要异步调用。
+注解`-> tp.Callback[oft.Numpy]` 表示此作业函数，返回一个 `tp.Numpy` 类型的对象，并且需要异步调用。
 
 那么，我们定义的回调函数，就应该接受一个 `Numpy` 类型的参数：
 ```python
-def cb_print_loss(result:oft.Numpy):
+def cb_print_loss(result:tp.Numpy):
     global g_i
     if g_i % 20 == 0:
         print(result.mean())
@@ -131,9 +132,9 @@ def cb_print_loss(result:oft.Numpy):
 
 类似的，如果作业函数的定义为：
 ```python
-@flow.global_function(get_eval_config())
+@flow.global_function(type="predict")
 def eval_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-             labels:oft.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32)) -> oft.Callback[Tuple[oft.Numpy, oft.Numpy]]:
+             labels:oft.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32)) -> oft.Callback[Tuple[tp.Numpy, tp.Numpy]]:
     with flow.scope.placement("cpu", "0:0"):
         logits = mlp(images)
         loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits, name="softmax_loss")
@@ -141,13 +142,13 @@ def eval_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.fl
     return (labels, logits)
 ```
 
-其中`-> oft.Callback[Tuple[oft.Numpy, oft.Numpy]]`表示此作业函数，返回一个包含2个元素的 `tuple`，且每个元素都是 `oft.Numpy` 类型，并且需要异步调用。
+其中`-> tp.Callback[Tuple[tp.Numpy, tp.Numpy]]`表示此作业函数，返回一个包含2个元素的 `tuple`，且每个元素都是 `tp.Numpy` 类型，并且需要异步调用。
 
 那么，对应的回调函数的参数注解应该为：
 ```python
 g_total = 0
 g_correct = 0
-def acc(arguments:Tuple[oft.Numpy, oft.Numpy]):
+def acc(arguments:Tuple[tp.Numpy, tp.Numpy]):
     global g_total
     global g_correct
 
@@ -185,12 +186,12 @@ train_job(images, labels)(cb_print_loss)
 代码下载：[synchronize_single_job.py](../code/basics_topics/synchronize_single_job.py)
 
 ```python
-#lenet_train.py
-import numpy as np
+# lenet_train.py
 import oneflow as flow
-import oneflow.typing as oft
+import oneflow.typing as tp
 
 BATCH_SIZE = 100
+
 
 def lenet(data, train=False):
     initializer = flow.truncated_normal(0.1)
@@ -214,16 +215,18 @@ def get_train_config():
     return config
 
 
-@flow.global_function(get_train_config())
-def train_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-              labels:oft.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32)) -> oft.Numpy:
+@flow.global_function(type="train")
+def train_job(images: tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+              labels: tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32)) -> tp.Numpy:
     with flow.scope.placement("gpu", "0:0"):
         logits = lenet(images, train=True)
         loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits, name="softmax_loss")
-    flow.losses.add_loss(loss)
+    lr_scheduler = flow.optimizer.PiecewiseConstantScheduler([], [0.1])
+    flow.optimizer.SGD(lr_scheduler, momentum=0).minimize(loss)
     return loss
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     flow.config.gpu_device_num(1)
     check_point = flow.train.CheckPoint()
     check_point.init()
@@ -238,7 +241,23 @@ if __name__ == '__main__':
     print("model saved")
 ```
 
+输出：
+
+```shell
+File mnist.npz already exist, path: ./mnist.npz
+7.3258467
+2.1435719
+1.1712438
+0.7531896
+...
+...
+model saved
+```
+
+
+
 ### Synchronised obtain multiple results
+
 在本例中，作业函数返回一个 `tuple` ，我们通过同步方式获取 `tuple` 中 `labels` 与 `logits` ，并对上例中训练好的模型进行评估，输出准确率。
 
 代码下载：[synchronize_batch_job.py](../code/basics_topics/synchronize_batch_job.py)
@@ -248,7 +267,7 @@ if __name__ == '__main__':
 import numpy as np
 import oneflow as flow
 from typing import Tuple
-import oneflow.typing as oft
+import oneflow.typing as tp
 
 BATCH_SIZE = 100
 
@@ -267,15 +286,9 @@ def lenet(data, train=False):
     return flow.layers.dense(hidden, 10, kernel_initializer=initializer, name='dense2')
 
 
-def get_eval_config():
-    config = flow.function_config()
-    config.default_data_type(flow.float)
-    return config
-
-
-@flow.global_function(get_eval_config())
-def eval_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-             labels:oft.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32)) -> Tuple[oft.Numpy, oft.Numpy]:
+@flow.global_function(type="predict")
+def eval_job(images:tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+             labels:tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32)) -> Tuple[tp.Numpy, tp.Numpy]:
     with flow.scope.placement("gpu", "0:0"):
         logits = lenet(images, train=False)
         loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits, name="softmax_loss")
@@ -320,22 +333,14 @@ if __name__ == '__main__':
 
 ```python
 import oneflow as flow
-import oneflow.typing as oft
+import oneflow.typing as tp
 
 BATCH_SIZE = 100
 
 
-def get_train_config():
-    config = flow.function_config()
-    config.default_data_type(flow.float)
-    config.train.primary_lr(0.1)
-    config.train.model_update_conf({"naive_conf": {}})
-    return config
-
-
-@flow.global_function(get_train_config())
-def train_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-              labels:oft.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32)) -> oft.Callback[oft.Numpy]:
+@flow.global_function(type="train")
+def train_job(images: tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+              labels: tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32)) -> tp.Callback[tp.Numpy]:
     # mlp
     initializer = flow.truncated_normal(0.1)
     reshape = flow.reshape(images, [images.shape[0], -1])
@@ -343,19 +348,20 @@ def train_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.f
     logits = flow.layers.dense(hidden, 10, kernel_initializer=initializer, name="output")
 
     loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits, name="softmax_loss")
-    flow.losses.add_loss(loss)
+    lr_scheduler = flow.optimizer.PiecewiseConstantScheduler([], [0.1])
+    flow.optimizer.SGD(lr_scheduler, momentum=0).minimize(loss)
     return loss
 
 
 g_i = 0
-def cb_print_loss(result:oft.Numpy):
+def cb_print_loss(result: tp.Numpy):
     global g_i
     if g_i % 20 == 0:
         print(result.mean())
     g_i += 1
 
 
-def main_train():
+def main():
     check_point = flow.train.CheckPoint()
     check_point.init()
 
@@ -368,14 +374,27 @@ def main_train():
 
 
 if __name__ == '__main__':
-    main_train()
+    main()
 ```
 
-其中，预训练模型文件可以点此处下载：[mlp_models_1.zip](https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/basics_topics/mlp_models_1.zip)
+输出：
+
+```shell
+File mnist.npz already exist, path: ./mnist.npz
+3.0865736
+0.8949808
+0.47858357
+0.3486296
+...
+```
+
+
 
 ### Asynchronously obtain multiple results
 
-在以下的例子中，我们展示了如何异步方式获取作业函数的多个返回结果。 并对上例中训练好的模型进行评估，输出准确率。
+在以下的例子中，我们展示了如何异步方式获取作业函数的多个返回结果，并对上例中训练好的模型进行评估，输出准确率。
+
+其中，预训练模型文件可以点此处下载：[mlp_models_1.zip](https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/basics_topics/mlp_models_1.zip)
 
 代码下载：[async_batch_job.py](../code/basics_topics/async_batch_job.py)
 
@@ -438,3 +457,11 @@ def main_eval():
 if __name__ == '__main__':
     main_eval()
 ```
+
+输出：
+
+```shell
+File mnist.npz already exist, path: ./mnist.npz
+accuracy: 97.6%
+```
+
