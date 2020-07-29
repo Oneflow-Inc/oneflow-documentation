@@ -35,11 +35,11 @@ def eval_job(images:tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.flo
 g_total = 0
 g_correct = 0
 
-def acc(labels, logtis):
+def acc(labels, logits):
     global g_total
     global g_correct
 
-    predictions = np.argmax(logtis, 1)
+    predictions = np.argmax(logits, 1)
     right_count = np.sum(predictions == labels)
     g_total += labels.shape[0]
     g_correct += right_count
@@ -53,7 +53,7 @@ if __name__ == "__main__":
 
     for epoch in range(1):
         for i, (images, labels) in enumerate(zip(test_images, test_labels)):
-            labels, logtis = eval_job(images, labels)
-            acc(labels, logtis)
+            labels, logits = eval_job(images, labels)
+            acc(labels, logits)
 
     print("accuracy: {0:.1f}%".format(g_correct * 100 / g_total))
