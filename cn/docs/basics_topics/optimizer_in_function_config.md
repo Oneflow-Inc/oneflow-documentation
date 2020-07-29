@@ -194,7 +194,7 @@ def train_job():
 并且，通过 `flow.optimizer` 下的方法设置学习速率及优化方法，如以下代码设置了学习率和模型更新的策略(针对 `loss` 变量，使用 SGD)：
 
 ```python
-   lr_scheduler = flow.optimizer.PiecewiseConstantScheduler([], [0.1])
+    lr_scheduler = flow.optimizer.PiecewiseConstantScheduler([], [0.1])
     flow.optimizer.SGD(lr_scheduler, momentum=0).minimize(loss)
 ```
 
