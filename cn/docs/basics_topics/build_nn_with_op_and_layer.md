@@ -10,18 +10,20 @@ def lenet(data, train=False):
     initializer = flow.truncated_normal(0.1)
     conv1 = flow.layers.conv2d(data, 32, 5, padding='SAME', activation=flow.nn.relu, name='conv1',
                                kernel_initializer=initializer)
-    pool1 = flow.nn.max_pool2d(conv1, ksize=2, strides=2, padding='SAME', name='pool1')
+    pool1 = flow.nn.max_pool2d(conv1, ksize=2, strides=2, padding='SAME', name='pool1', data_format='NCHW')
     conv2 = flow.layers.conv2d(pool1, 64, 5, padding='SAME', activation=flow.nn.relu, name='conv2',
                                kernel_initializer=initializer)
-    pool2 = flow.nn.max_pool2d(conv2, ksize=2, strides=2, padding='SAME', name='pool2', )
+    pool2 = flow.nn.max_pool2d(conv2, ksize=2, strides=2, padding='SAME', name='pool2', data_format='NCHW')
     reshape = flow.reshape(pool2, [pool2.shape[0], -1])
     hidden = flow.layers.dense(reshape, 512, activation=flow.nn.relu, kernel_initializer=initializer, name='dense1')
-    if train: hidden = flow.nn.dropout(hidden, rate=0.5)
+    if train:
+        hidden = flow.nn.dropout(hidden, rate=0.5, name="dropout")
     return flow.layers.dense(hidden, 10, kernel_initializer=initializer, name='dense2')
 ```
 
-![](imgs/lenet.png)
-
+<div align="center">
+<img src="imgs/lenet.png" align='center'/>
+</div>
 上图中有两类元素，一类是方框代表的运算单元，包括 `op` 和 `layer` 两类，比如 `conv2d` 、 `dense` 、 `max_pool2d` 等；一类是箭头代表的数据。
 
 ## op 和 layer
