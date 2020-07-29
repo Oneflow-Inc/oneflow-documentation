@@ -152,7 +152,7 @@ check_point.save('./path_to_save')
 ```
 Attention:
 
-* The path to save must be empty otherwise there will be an error in  `save`.
+* `save` 参数所指定路径对应的目录要么不存在，要么应该为空目录，否则 `save` 会报错(防止覆盖掉原有保存的模型)
 
 * 虽然OneFlow对 `save` 的频率没有限制，但是过高的保存频率，会加重磁盘及带宽等资源的负担。
 
