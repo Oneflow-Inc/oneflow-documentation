@@ -173,10 +173,8 @@ def test_job():
 ```python
 config = flow.function_config()
 config.default_data_type(flow.float)
-config.train.primary_lr(0.1)
-config.train.model_update_conf({"naive_conf": {}})
 
-@flow.global_function(config)
+@flow.global_function(type="predict", function_config=config)
 def test_job():
   # build up NN here
 ```
@@ -187,11 +185,17 @@ function_config 中还包含哪些配置请参考[function_config API](https://o
 ### 训练还是预测配置
 默认情况下，作业函数只能做预测作业，如果想要做训练作业，需要设置 `type=train` 属性。
 
-如一下代码设置了学习率和模型更新的策略(优化算法)：
+```python
+@flow.global_function(type="train")
+def train_job():
+    #网络模型...
+```
+
+并且，通过 `flow.optimizer` 下的方法设置学习速率及优化方法，如以下代码设置了学习率和模型更新的策略(针对 `loss` 变量，使用 SGD)：
 
 ```python
-config.train.primary_lr(0.1)
-config.train.model_update_conf({"naive_conf": {}})
+   lr_scheduler = flow.optimizer.PiecewiseConstantScheduler([], [0.1])
+    flow.optimizer.SGD(lr_scheduler, momentum=0).minimize(loss)
 ```
 
 反之，如果省略掉以上配置，那么得到的就是作业函数就可用于预测。
