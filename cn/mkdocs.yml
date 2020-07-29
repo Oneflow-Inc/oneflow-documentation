@@ -106,9 +106,10 @@ nav:
       - OneFlow 的并行特色: extended_topics/model_mixed_parallel.md
       - OFRecord 数据格式: extended_topics/ofrecord.md
       - 加载与准备 OFRecord 数据集: extended_topics/how_to_make_ofdataset.md
-      - 使用 VS Code 调试 OneFlow: extended_topics/debug_by_vscode.md
+      #- Eager模式和Lazy模式: extended_topics/eager_lazy_mode.md
       #- 用户自定义 op: extended_topics/user_op.md
       - Watch 与 Watch Diff: extended_topics/watch_watch_diff.md
+      - 使用 VS Code 调试 OneFlow: extended_topics/debug_by_vscode.md
 
     - 高级应用实例:
       - ResNet: adv_examples/resnet.md
