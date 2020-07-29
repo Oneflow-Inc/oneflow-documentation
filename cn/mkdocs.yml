@@ -98,7 +98,7 @@ nav:
       - 获取作业函数的结果: basics_topics/async_get.md
       - 模型的加载与保存: basics_topics/model_load_save.md
       - 分布式训练: basics_topics/distributed_train.md
-
+      - OneFlow 概念清单: basics_topics/concept_explanation.md
     
     - 扩展专题:
       - 作业函数的定义与调用: extended_topics/job_function_define_call.md
@@ -112,11 +112,9 @@ nav:
 
     - 高级应用实例:
       - ResNet: adv_examples/resnet.md
-      - AlexNet: adv_examples/alexnet.md
-      - MaskRCNN: adv_examples/mask_rcnn.md
-      - NLP处理-BERT: adv_examples/bert.md
-      - 推荐系统-Wide&Deep: adv_examples/wide_deep.md
-      - 深度伪造-生成对抗网络: adv_examples/dcgan.md
+      - YoloV3: adv_examples/yolov3.md
+      - BERT: adv_examples/bert.md
+      - Wide & Deep: adv_examples/wide_deep.md
     - API: 
       - API: api/
     # - 二次开发:
