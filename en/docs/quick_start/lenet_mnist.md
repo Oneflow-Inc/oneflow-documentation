@@ -12,7 +12,7 @@ In this article, we will learn:
 
 本文通过使用 LeNet 模型，训练 MNIST 数据集向大家介绍使用 OneFlow 的各个核心环节，文末附有完整的示例代码。
 
-Before learning, you can check the function of each script by running the following command.
+在学习之前，也可以通过以下命令查看各脚本功能( **脚本运行依赖GPU** )。
 
 First of all, clone the documentation repository and switch to the corresponding path:
 ```shell
