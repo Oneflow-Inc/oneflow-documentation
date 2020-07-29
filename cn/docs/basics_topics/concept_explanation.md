@@ -19,9 +19,9 @@ Placeholder即 **数据占位符** ，此概念用于描述输入/输出的数�
 例如：
 
 ```python
-import oneflow.typing as oft
-def test_job(images:oft.Numpy.Placeholder((32, 1, 28, 28), dtype=flow.float32),
-             labels:.oft.Numpy.Placeholder((32, ), dtype=flow.int32)):
+import oneflow.typing as tp
+def test_job(images:tp.Numpy.Placeholder((32, 1, 28, 28), dtype=flow.float32),
+             labels:.tp.Numpy.Placeholder((32, ), dtype=flow.int32)):
 ```
 
 描述了一个测试的job函数中，输入的图片shape是(32, 1, 28, 28)，数据类型是flow.float32；输入的labels标签的shape是(32,)，类型是flow.int32
@@ -50,7 +50,7 @@ Blob可能只是占位符Placeholder，也可能是具体的包含数值的单�
 
 在 OneFlow 中，我们将训练、验证、预测/推理等具体任务统称为作业函数(job function)，作业函数联系用户的业务逻辑与 OneFlow 管理的计算资源。
 
-在 OneFlow 中，任何被定义为作业函数的方法体都需要用装饰器 `@oneflow.global_function` 修饰，通过此装饰器，我们不仅能定义任务的模型结构，优化方式等业务逻辑，同时可以将job运行时所需的配置当做参数传递给作业函数(如:get_train_config())，使得 OneFlow 能方便地为我们管理内存、GPU等计算资源。
+在 OneFlow 中，任何被定义为作业函数的方法体都需要用装饰器 `@oneflow.global_function` 修饰，通过此装饰器，我们不仅能定义作业的类型(如：`type="train"`)，同时将为作业绑定一个FunctionConfig对象用于设置Job作业运行时所需的配置，使得 OneFlow 能方便地为我们管理内存、GPU等计算资源。
 
 
 
