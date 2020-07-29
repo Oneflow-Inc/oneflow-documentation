@@ -26,7 +26,7 @@ def lenet(data, train=False):
 上图中有两类元素，一类是方框代表的运算单元，包括 `op` 和 `layer` 两类，比如 `conv2d` 、 `dense` 、 `max_pool2d` 等；一类是箭头代表的数据。
 
 ## op 和 layer
-算子(op)是比较常用的一种概念，是 OneFlow 中基本的运算单元，前面的 `reshape` 和 `nn.max_pool2d` 就是两种算子。 `layers.conv2d` 和 `layers.dense` 不是基本的运算单元，它们是由算子组合成的特定的运算层(`layer`)。比如 `layers.conv2d` 其实是由 `conv2d` 算子和 `variable` 算子组成的，层的存在简化了前端的构图过程，详情请参考[layers.py](api/layers.html)。
+算子(op)是比较常用的一种概念，是 OneFlow 中基本的运算单元，前面的 `reshape` 和 `nn.max_pool2d` 就是两种算子。 `layers.conv2d` 和 `layers.dense` 不是基本的运算单元，它们是由算子组合成的特定的运算层(`layer`)。比如 `layers.conv2d` 其实是由 `conv2d` 算子和 `variable` 算子组成的，层的存在简化了前端的构图过程，详情请参考[layers.py](https://oneflow-api.readthedocs.io/en/latest/layers.html)。
 
 ## 网络构建过程中的数据块
 前文提到过有说法不准确的地方，指的是“参数 `data` 是维度为 `100x1×28×28` 的数据”这句话不准确。其实，在定义网络时，`data` 中并没有真实的数据，而只是数据的占位符。
