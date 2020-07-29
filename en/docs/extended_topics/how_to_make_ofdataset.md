@@ -65,160 +65,48 @@ Actually, we can specify the filename prefix(`part-`)，whether to complete the 
 OneFlow provides the API interface to load OFRecord dataset, so that we can enjoy the Multi-threading, pipeline and some other advantages brought by OneFlow framework by specifying the path of dataset directory.
 
 ## The method to load OFRecord dataset
-We usually use `decode_ofrecord` to load and decode dataset; or use `ofrecord_reader` to load and preprocess dataset.
+我们使用 `ofrecord_reader` 加载并预处理数据集。
 
-### `decode_ofrecord`
-We can use `flow.data.decode_ofrecord` to load and decode the dataset at the same time. The APIinterface of `decode_ofrecord` is as follow：
-```python
-def decode_ofrecord(
-    ofrecord_dir,
-    blobs,
-    batch_size=1,
-    data_part_num=1,
-    part_name_prefix="part-",
-    part_name_suffix_length=-1,
-    shuffle=False,
-    buffer_size=1024,
-    name=None,
-)
-```
+在[数据输入](../basics_topics/data_input.md)一文中，我们已经展示了如何使用 `ofrecord_reader` 接口加载 OFRecord 数据，并进行数据预处理：
 
-Its common parameters and their meanings are as follows
-
-* batch_size： sample number in a mini-batch training
-
-* data_part_num: the number of OFRecord files in dataset
-
-* part_name_prefix: the prefix of OFRecord files in dataset
-
-* part_name_suffix_length：the suffix length of OFRecord files in dataset, like the filename `part-00001`, we should set `part_name_suffix_length` as 5, -1 means there is no complement.
-
-* shuffle：Whether the order of data is randomly shuffled
-
-* buffer_size：the sample number is data-pipeline. For example, when we set it as 1024, which means there are 1024 samples in buffer. Also, when we set the shuffle as True, it only shuffle the 1024 samples in buffer。
-
-The required parameter `ofrecord_dir` is the path of dataset directory, `blobs` is a tuple, in which there is a `Feature`(refer to [OFRecord](ofrecord.md)) that needs to read the dataset. We will introduce how to define the `blobs` parameter as follow.
-
-The complete code: [decode_ofrecord.py](../code/extended_topics/decode_ofrecord.py)
+完整代码：[of_data_pipeline.py](../code/basics_topics/of_data_pipeline.py)
 
 ```python
+# of_data_pipeline.py
 import oneflow as flow
-
-def get_train_config():
-  config = flow.function_config()
-  config.default_data_type(flow.float)
-  return config
-
-
-@flow.global_function(get_train_config())
-def train_job():
-  images = flow.data.BlobConf("images", 
-          shape=(28, 28, 1), 
-          dtype=flow.float, 
-          codec=flow.data.RawCodec())
-  labels = flow.data.BlobConf("labels", 
-          shape=(1, 1), 
-          dtype=flow.int32, 
-          codec=flow.data.RawCodec())
-
-  return flow.data.decode_ofrecord("./dataset/", (images, labels),
-                                data_part_num=1,
-                                batch_size=3)
-
-def main():
-  check_point = flow.train.CheckPoint()
-  check_point.init()
-
-  f0, f1 = train_job().get()
-  print(f0.ndarray(), f1.ndarray())
-  print(f0.shape, f1.shape)
-
-if __name__ == '__main__':
-  main()
-```
-
-For the above code, load the dataset in [OFRecord](ofrecord.md) - "Write the OFRecord object to a file" section.
-
-After running code, we will get the results as follows：
-```text
-... [[0.5941235 ]
-   [0.27485612]
-   [0.4714867 ]
-   ... [0.21632855]
-   [0.15881447]
-   [0.65982276]]]] [[[2]]
-
- [[3]]
-
- [[1]]]
-(3, 28, 28, 1) (3, 1, 1)
-```
-
-As you can see, we use `flow.data.BlobConf` to declare the placeholders corresponding to `Feature` in dataset, the required parameters in `BlobConf` are：
-```python
- BlobConf(name, shape, dtype, codec)
-```
-
-* name：The Key corresponding to Feature when making OFRecord files;
-
-* shape：The shape corresponding to data, it needs to be consistent with the number of elements in Feature.Like the above `(28, 28, 1)` can be modified to `(14, 28*2, 1)` or `(28, 28)`；
-
-* dtype：The data type, it needs to be consistent with the Feature data type written in dataset;
-
-* codec：The decoder，OneFlow has `RawCodec`、`ImageCodec`、`BytesListCodec` and some other decoders.In the previous example, we use `RawCodec`.
-
-When we get the placeholder by using `BlobConf`, we can get the data in dataset by using `decode_ofrecord`
-```python
-    flow.data.decode_ofrecord("./dataset/", (images, labels),
-                            data_part_num=1,
-                            batch_size=3)
-```
-
-Through the above examples, we can summarize the basic steps of using `decode_ofrecord` ：
-
-* The placeholder is defined by `BlobConf`, which is used to extract the `Feature` in dataset
-
-* We pass the placeholder defined in the previous step to `decode_ofrecord` by calling `decode_ofrecord`, and set some parameters to get data in dataset
-
-It's convenient to extract the `Feature` in data by using `decode_ofrecord`. However, the types of preprocessing and decoder are limited.For more flexible data preprocessing, including custom user op, it is recommended to use `ofrecord_reader`.
-
-### `ofrecord_reader`
-In [data_input](../basics_topics/data_input.md) section, we have shown how to use `ofrecord_reader` this api to load and preprocess OFRecord data:
-
-The complete code: [of_data_pipeline.py](../code/basics_topics/of_data_pipeline.py)
-
-```python
-import oneflow as flow
+import oneflow.typing as oft
+from typing import Tuple
 
 @flow.global_function(flow.function_config())
-def test_job():
-  batch_size = 64
-  color_space = 'RGB'
-  with flow.scope.placement("cpu", "0:0"):
-    ofrecord = flow.data.ofrecord_reader('/path/to/ImageNet/ofrecord',
-                                         batch_size = batch_size,
-                                         data_part_num = 1,
-                                         part_name_suffix_length = 5,
-                                         random_shuffle = True,
-                                         shuffle_after_epoch = True)
-    image = flow.data.OFRecordImageDecoderRandomCrop(ofrecord, "encoded",
-                                                     color_space = color_space)
-    label = flow.data.OFRecordRawDecoder(ofrecord, "class/label", shape = (), dtype = flow.int32)
-    rsz = flow.image.Resize(image, resize_x = 224, resize_y = 224, color_space = color_space)
+def test_job() -> Tuple[oft.Numpy, oft.Numpy]:
+    batch_size = 64
+    color_space = 'RGB'
+    with flow.scope.placement("cpu", "0:0"):
+        ofrecord = flow.data.ofrecord_reader('path/to/ImageNet/ofrecord',
+                                             batch_size=batch_size,
+                                             data_part_num=1,
+                                             part_name_suffix_length=5,
+                                             random_shuffle=True,
+                                             shuffle_after_epoch=True)
+        image = flow.data.OFRecordImageDecoderRandomCrop(ofrecord, "encoded",
+                                                         color_space=color_space)
+        label = flow.data.OFRecordRawDecoder(ofrecord, "class/label", shape=(), dtype=flow.int32)
+        rsz = flow.image.Resize(image, resize_x=224, resize_y=224, color_space=color_space)
 
-    rng = flow.random.CoinFlip(batch_size = batch_size)
-    normal = flow.image.CropMirrorNormalize(rsz, mirror_blob = rng, color_space = color_space,
-                                            mean = [123.68, 116.779, 103.939],
-                                            std = [58.393, 57.12, 57.375],
-                                            output_dtype = flow.float)
-    return normal, label
+        rng = flow.random.CoinFlip(batch_size=batch_size)
+        normal = flow.image.CropMirrorNormalize(rsz, mirror_blob=rng, color_space=color_space,
+                                                mean=[123.68, 116.779, 103.939],
+                                                std=[58.393, 57.12, 57.375],
+                                                output_dtype=flow.float)
+        return normal, label
+
 
 if __name__ == '__main__':
-  images, labels = test_job().get()
-  print(images.shape, labels.shape)
+    images, labels = test_job()
+    print(images.shape, labels.shape)
 ```
 
-The API interface of `ofrecord_reader` is as follow.
+`ofrecord_reader` 的接口如下：
 ```python
 def ofrecord_reader(
     ofrecord_dir,
@@ -233,30 +121,48 @@ def ofrecord_reader(
 )
 ```
 
-The advantage of using `ofrecord_reader` is we can preprocess data in the way of data processing pipeline, and we can customize preprocessing op with high flexibility and expansibility.
+* `ofrecord_dir` 指定存放数据集的目录路径
 
-* you can refer to [data_input](../basics_topics/data_input.md) for data pipeline and preprocessing.
+* `batch_size` 指定每轮读取的 batch 大小
 
-* you can refer to [user_op](user_op.md) for customizing op
+* `data_part_num` 指定数据集目录中一共有多少个 ofrecord 格式的文件，如果这个数字大于真实存在的文件数，会报错
+
+* `part_name_prefix` 指定 ofrecord 文件的文件名前缀， OneFlow 根据前缀+序号在数据集目录中定位 ofrecord 文件
+
+* `part_name_suffix_length` 指定 ofrecord 文件的序号的对齐长度，-1表示不用对齐
+
+* `random_shuffle` 表示读取时是否需要随机打乱样本顺序
+
+* `shuffle_buffer_size` 指定了读取样本的缓冲区大小
+
+* `shuffle_after_epoch` 表示每轮读取完后是否需要重新打乱样本顺序
+
+使用 `ofrecord_reader` 的好处在于， `ofrecord_reader` 中的数据处理被 OneFlow 框架调度，享有 OneFlow 流水线加速。
+
+对于与业务逻辑耦合的特定数据格式，我们还可以为 `ofrecord_reader` 定义预处理 op，让程序拥有很高的灵活性和扩展性。
+
+* 关于数据流水线及预处理可以参考[数据输入](../basics_topics/data_input.md)
+
+* 关于自定义OP可以参考[用户自定义op](user_op.md)
 
 ## The transition between other dataformat data and OFRecord dataset
-According to the the storage format of OFRecord file in [OFRecord](ofrecord.md) section and the filename format convention of OFRecord dataset introduced at the begining, we can make OFRecord dataset by ourselves.
+参考[OFrecord数据格式](ofrecord.md)中 OFRecord 文件的存储格式及本文开头介绍的 OFRecord 数据集的文件名格式约定，我们完全可以自己制作 OFRecord 数据集。
 
-To make things easier, we provide Spark's jar package, which is convenient to the interconversion between OFRecord and common data formats (such as TFRecord and JSON).
+不过为了更加方便，我们提供了 Spark 的 jar 包，方便 OFRecord 与常见数据格式(如 TFRecord、json)进行相互转化。
 
-### The installation and launch of Spark
-At first, we should download Spark and Spark-oneflow-connector：
+### spark 的安装与启动
+首先，下载 spark 及 spark-oneflow-connector：
 
-* Download the [spark-2.4.0-bin-hadoop2.7](https://archive.apache.org/dist/spark/spark-2.4.0/spark-2.4.0-bin-hadoop2.7.tgz) from the official website of Spark
+* 在 spark 官网下载[spark-2.4.0-bin-hadoop2.7](https://archive.apache.org/dist/spark/spark-2.4.0/spark-2.4.0-bin-hadoop2.7.tgz)
 
-* Download jar package at [there](https://oneflow-static.oss-cn-beijing.aliyuncs.com/oneflow-tutorial-attachments/spark-oneflow-connector-assembly-0.1.0_int64.jar), which Spark needs to support the ofrecord file format
+* 在[这里](https://oneflow-static.oss-cn-beijing.aliyuncs.com/oneflow-tutorial-attachments/spark-oneflow-connector-assembly-0.1.0_int64.jar)下载 jar 包，spark 需要它来支持 ofrecord 格式
 
-Then, unzip the `spark-2.4.0-bin-hadoop2.7.tgz` and configure the environment variable `SPARK_HOME`:
+接着，解压 `spark-2.4.0-bin-hadoop2.7.tgz`，并配置环境变量 `SPARK_HOME`:
 ```shell
 export SPARK_HOME=path/to/spark-2.4.0-bin-hadoop2.7
 ```
 
-Here we can launch the pyspark shell with the following command：
+然后，通过以下命令启动 pyspark shell：
 ```shell
 pyspark --master "local[*]"\
  --jars spark-oneflow-connector-assembly-0.1.0_int64.jar\
@@ -264,7 +170,8 @@ pyspark --master "local[*]"\
 ```
 
 ```text
-... Welcome to
+...
+Welcome to
       ____              __
      / __/__  ___ _____/ /__
     _\ \/ _ \/ _ `/ __/  '_/
@@ -272,17 +179,18 @@ pyspark --master "local[*]"\
       /_/
 
 Using Python version 3.6.10 (default, May  8 2020 02:54:21)
-SparkSession available as 'spark'. >>> 
+SparkSession available as 'spark'.
+>>> 
 ```
 
-We can complete the interconversion between OFRecord dataset and other data formats in launched pyspark shell.
+在启动的 pyspark shell 中，我们可以完成 OFRecord 数据集与其它数据格式的相互转化。
 
-### Use Spark to view OFRecord dataset
-We can view OFRecord data with following code：
+### 使用 spark 查看 OFRecord 数据集
+使用以下命令可以查看 OFRecord 数据：
 ```
 spark.read.format("ofrecord").load("file:///path/to/ofrecord_file").show()
 ```
-The first 20 data are displayed by default:
+默认显示前20条数据:
 ```
 +--------------------+------+
 |              images|labels|
@@ -312,8 +220,8 @@ only showing top 20 rows
 ```
 
 
-### The interconversion with TFRecord dataset
-we can convert TFRecord to OFRecord with the following command：
+### 与 TFRecord 数据集的相互转化
+以下命令可以将 TFRecord 转化为 OFRecrod：
 
 ```python
 reader = spark.read.format("tfrecords")
@@ -321,18 +229,18 @@ dataframe = reader.load("file:///path/to/tfrecord_file")
 writer = dataframe.write.format("ofrecord")
 writer.save("file:///path/to/outputdir")
 ```
-In the above code, the `outputdir` directory will be created automatically, we will save ofrecord file in this directory.Make sure the "outputdir" directory does not exist before excuting the command.
+以上代码中的 `outputdir` 目录会被自动创建，并在其中保存 ofrecord 文件。在执行命令前应保证 outputdir 目录不存在。
 
-In addition, we can use the following command to split the data into multiple ofrecord file in conversion.
+此外，还可以使用以下命令，在转化的同时，将数据切分为多个 ofrecord 文件：
 ```python
 reader = spark.read.format("tfrecords")
 dataframe = reader.load("file:///path/to/tfrecord_file")
 writer = dataframe.repartition(10).write.format("ofrecord")
 writer.save("file://path/to/outputdir")
 ```
-After the above command is executed, 10 ofrecord files of `part-xxx` format will be generated in "outputdir" directory.
+以上命令执行后，在 outputdir 目录下会产生10个 `part-xxx` 格式的ofrecord文件。
 
-The process of converting OFRecord file to TFRecord file is similar. we just need to swap read/write side `format`:
+将 OFRecord 文件转为 TFRecord 文件的过程类似，交换读/写方的 `format` 即可：
 ```python
 reader = spark.read.format("ofrecord")
 dataframe = reader.load("file:///path/to/ofrecord_file")
@@ -340,22 +248,22 @@ writer = dataframe.write.format("tfrecords")
 writer.save("file:///path/to/outputdir")
 ```
 
-### The interconversion with JSON format
-we can convert JSON to OFRecord with the following command：
+### 与 JSON 格式的相互转化
+以下命令可以将 JSON 格式数据转为 OFRecord 数据集:
 ```python
 dataframe = spark.read.json("file:///path/to/json_file")
 writer = dataframe.write.format("ofrecord")
 writer.save("file:///path/to/outputdir")
 ```
 
-The following command will convert OFRecord data to JSON file：
+以下命令将 OFRecord 数据转为 JSON 文件：
 ```python
 reader = spark.read.format("ofrecord")
 dataframe = reader.load("file:///path/to/ofrecord_file")
 dataframe.write.json("file://path/to/outputdir")
 ```
 
-### Other script and tools
+### 其它脚本及工具
 除了以上介绍的方法，使得其它数据格式与 OFRecord 数据格式进行转化外，在[oneflow_toolkit](https://github.com/Oneflow-Inc/oneflow_toolkit/tree/master/ofrecord)仓库下，还有各种与 OFRecord有关的脚本：
 
 * 为 BERT 模型准备 OFRecord 数据集的脚本
