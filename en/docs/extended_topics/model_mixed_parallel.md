@@ -1,5 +1,5 @@
 
-# OneFlow 的并行特色
+# Characteristics of parallel in OneFlow
 
 In [Consistent and Mirrored view](consistent_mirrored.md), we already know OneFlow provide mirrored and consistent two point of view. And be aware of  `consistent` in OneFlow have some special characteristics.
 
@@ -59,30 +59,30 @@ One thing we need to mention is in above figure. The output from each GPU on lay
 
 `boxing` will count the data in each nodes in distributed training and divide or assemble data properly then send to corresponding GPU. Except the model assembling in model parallel. The reverse gradient synchronization in data parallel also will use  `boxing`  to solve problem.
 
-`boxing` 的内部机制虽然复杂，但是对于用户而言是透明的，我们仅仅是防止读者产生迷惑才加入了 `boxing` 的图示，对于本文而言，我们只需要了解：OneFlow 会自动协调好分布式中数据的同步问题。
+The algorithm in `boxing` is complex. But it is open to users. The reason of adding  for adding `boxing` is for keep user from confused. In this article, we only need to remember that OneFlow will automatically solve the data distribution issue.
 
-## 选择最优的并行方式
-数据并行与模型并行的优劣并不是一成不变的，样本规模、模型规模及模型结构决定了分布式训练中的综合表现，需要具体情况具体分析。
+## Choose the optimal parallel method
+The difference between data parallel and model parallel is constant. The sample scale, model scale and model structure decide the performance in distributed training. We need analysis  particular case.
 
-概括而言：
+To be concluded:
 
-* 数据并行情况下，需要同步的信息是反向传播过程的 **梯度**，因此应该确保各个训练节点之间的信息同步速度要比节点内部的计算速度快，比如说 **卷积层** 的参数较少，但是计算量大，就比较适合使用数据并行；
+* In data parallel case, the information need to synced is ** gradient** need to be pass reversely. Thus, we need to make sure the synchronization speed in different nodes is faster than the calculations speed in side nodes. Such as there is not much parameters in **Convolutional Layer**. But need large scale of calculation. It is suitable for data parallel.
 
-* 模型并行情况下，因为可以将逻辑上作为整体的模型 **切分到各个物理卡** 上，能够解决“模型太大，一张卡装不下”的问题，因此，对于参数量大的神经网络层（如最后的全连接层），可以考虑使用模型并行。
+* In model parallel, we can send the complete model in logical to **each GPU**. Can deal with the oversize model issue. Thus it is suitable for the neural network which have massive parameters (like full connection layer).
 
-实际上，也可以使用 **混合并行**，在同一个分布式训练的不同部分，组合使用数据并行、模型并行。比如，对于神经网络中靠前的参数较少、计算量大的层，采用数据并行；在最终的参数众多的全连接层，则采用模型并行，以下是针对本文最开始的网络模型逻辑图的 **混合并行** 实现方案的示意图：比如，对于神经网络中靠前的参数较少、计算量大的层，采用数据并行；在最终的参数众多的全连接层，则采用模型并行，以下是针对本文最开始的网络模型逻辑图的 **混合并行** 实现方案的示意图：
+In fact, we can use **mix parallel**. That means use different parallel in different part of training process.Such as at the beginning of the neural network, just have few parameters and need for large calculation. We better user data parallel. But layer like full connection layer which have many parameters we should use model parallel. The following is the demonstration figure for the neural network in begin of the article which use **mixed parallel**.
 
 ![混合并行](imgs/para_consistent_mixed.png)
 
-目前，其它的主流框架对于混合并行或者不支持，或者需要深度定制，而OneFlow 中可以通过简单的设置，配置混合并行的分布式训练，还可以用自由度超高的“网络接力”的并行模式，深度优化分布式系统。
+For now, all other popular framework didn’t support the mixed parallel otherwise need be deep customizing. But in OneFlow, we can use it very simple. We aslo can use mixed parallel distributed training with network relay to deep optimize distributed systems.
 
-## 混合并行实例
-### 代码示例
-以下，在 `consistent` 视角下，我们对 MLP 模型采用了混合并行方案：输入层与隐藏层采用（默认的）数据并行；输出层采用模型并行并进行列切分。
+## Mixed parallel example:
+### Demo script
+In `consistent`  view, we use mixed parallel to MLP model: data input layer and hidden layer is data parallel, output layer use model parallel.
 
-完整代码：[mixed_parallel_mlp.py](../code/extended_topics/mixed_parallel_mlp.py)
+Name: [mixed_parallel_mlp.py](../code/extended_topics/mixed_parallel_mlp.py)
 
-更具体的解析在后文“代码解析”可见。
+More details explanations in "script explanations"
 
 ```python
 from mnist_util import load_data
@@ -135,17 +135,17 @@ if __name__ == '__main__':
             if i % 20 == 0: print(loss.mean())
 ```
 
-### 代码解析
-以上代码修改自[3分钟快速上手](../quick_start/quickstart_in_3_min.md)中的示例代码，比较两份代码，也可以体会到在 OneFlow 的 `consistent_view` 下进行各种并行方案的配置是多么的简单，只需要在单机的程序上稍加修改即可。
+### Script explanation
+The above script is modified from the demo in [3 min quick start](../quick_start/quickstart_in_3_min.md). Compare two version of script, we can see how easy to configure the parallel method in `consistent_view`. Only need modify on code of solo machine.
 
-以上程序的关键部分有：
+The crucial parts are:
 
-* 通过 `oneflow.config.gpu_device_num` 接口设置参与训练的GPU数目：
+* Use  `oneflow.config.gpu_device_num`  to set the GPU number in training:
 ```python
   flow.config.gpu_device_num(2)
 ```
 
-* `reshape` 及 `hidden` 采用默认的数据并行，不需要修改；输出层通过设置 `model_distribute` 为 `flow.distribute.split(axis=0)` 变为模型并行：
+* `reshape` and `hidden` is default using data parallel. The output layer can set `model_distribute` as `flow.distribute.split(axis=0)` to change to model parallel:
 ```python
 def mlp(data):
     initializer = flow.truncated_normal(0.1)
@@ -154,19 +154,19 @@ def mlp(data):
     return flow.layers.dense(hidden,
                              10,
                              kernel_initializer=initializer,
-                             # dense为列存储，进行split(0)切分
+                             # dense is columns storing，process split(0) cutting 
                              model_distribute=flow.distribute.split(axis=0),
                              name="output"
                              )
 ```
-有读者可能好奇为什么`split(axis=0)`是列切分？需要说明的是，OneFlow 中的 `dense` 内部采用列存储，因此以上代码的`flow.distribute.split(axis=0)`确实是在做列切分。
+You may curious about why `split(axis=0)` is column cutting.What we need to explain is in OneFlow  `dense` is column storing. Thus the `flow.distribute.split(axis=0)` in above script is column cutting.
 
-此外，`flow.layers.dense` 使用 `model_distribute` 形参设置并行方式，其内部调用了底层更通用的 `get_variable` 接口创建 `blob`， `get_variable` 接口设置并行方式的形参名为 `distribute`。
+In addition, `flow.layers.dense`  use `model_distribute`  to set parallel method. It use the common  `get_variable` to creates `blob` in basic level from inner.  Use `get_variable` to config parallel method called  `distribute`.
 
-可以看到，我们通过极少量的修改，就能将单机训练程序改为分布式、混合并行的程序，这是 OneFlow 区别于其它框架的一大特色。
+We can see that we only modify just few things. Then change parallel method to mixed parallel in distributed training. It is the main difference between OneFlow and other framework.
 
-## 流水并行实例
-在模型并行之外，OneFlow 还提供了一种灵活度更高的“流水并行”的并行方式，可以让用户使用 `scope.placement` 接口显式指定用来运行逻辑 `op`的 **物理硬件**。
+## Flow parallel example
+Besides the model parallel, OneFlow also provides a more flexible parallel method which is flow parallel. It can let user use  `scope.placement` to display specify hardware of the operator.
 
 在流水并行中，整个神经网络有的层次在一组物理设备上，另外一些层次在另外一组物理设备上，它们以接力的方式协同工作，分多个阶段，在设备之间流水执行。
 
