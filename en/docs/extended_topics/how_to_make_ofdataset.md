@@ -68,7 +68,7 @@ OneFlow provides the API interface to load OFRecord dataset, so that we can enjo
 We usually use `decode_ofrecord` to load and decode dataset; or use `ofrecord_reader` to load and preprocess dataset.
 
 ### `decode_ofrecord`
-We can use `flow.data.decode_ofrecord` to load and decode the dataset at the same time. `decode_ofrecord` 的调用接口如下：
+We can use `flow.data.decode_ofrecord` to load and decode the dataset at the same time. The API interface of `decode_ofrecord` is as follows：
 ```python
 def decode_ofrecord(
     ofrecord_dir,
@@ -83,23 +83,23 @@ def decode_ofrecord(
 )
 ```
 
-它的常用非必需参数及其意义如下：
+Its common parameters and their meanings are as follows
 
-* batch_size： 一次训练所选取的数据个数
+* batch_size： sample number in a mini-batch training
 
-* data_part_num： 数据集中 OFRecord 文件的个数
+* data_part_num: the number of OFRecord files in dataset
 
-* part_name_prefix： 数据集中 OFRecord 文件的文件名前缀
+* part_name_prefix: the prefix of OFRecord files in dataset
 
-* part_name_suffix_length： 数据集中 OFRecord 文件编号的补齐长度，如 `part-00001` 这种文件名，其 `part_name_suffix_length` 应该设置为5，-1表示无补齐
+* part_name_suffix_length：the suffix length of OFRecord files in dataset, like the filename `part-00001`, we should set `part_name_suffix_length` as 5, -1 means there is no complement.
 
-* shuffle：数据获取时顺序是否随机打乱
+* shuffle：Whether the order of data is randomly shuffled
 
-* buffer_size： 数据流水线中样本的数量，比如，若设置为1024表示缓冲区中一共1024个样本，则以上参数 shuffle 为 True 时，是针对缓冲区中的1024个样本进行打乱
+* buffer_size：the sample number is data-pipeline. For example, when we set it as 1024, which means there are 1024 samples in buffer. Also, when we set the shuffle as True, it only shuffle the 1024 samples in buffer。
 
-其中必需参数 `ofrecord_dir` 为数据集目录的路径，`blobs` 为一个tuple，tuple 中存有需要读取数据集中的`Feature`(参考[OFrecord数据格式](ofrecord.md))，我们将在下文结合实例，介绍如何定义 `blobs` 参数。
+The required parameter `ofrecord_dir` is the path of dataset directory, `blobs` is a tuple, in which there is a `Feature`(refer to [OFRecord](ofrecord.md)) that needs to read the dataset. We will introduce how to define the `blobs` parameter as follow.
 
-完整代码：[decode_ofrecord.py](../code/extended_topics/decode_ofrecord.py)
+The complete code: [decode_ofrecord.py](../code/extended_topics/decode_ofrecord.py)
 
 ```python
 import oneflow as flow
@@ -137,9 +137,9 @@ if __name__ == '__main__':
   main()
 ```
 
-以上的代码，加载[OFrecord数据格式](ofrecord.md)一文中"将 OFRecord 对象写入文件"中所写入的数据集。
+For the above code, load the dataset in [OFRecord](ofrecord.md) - "Write the OFRecord object to a file" section.
 
-运行后得到类似如下结果：
+After running code, we will get the results as follows：
 ```text
 ... [[0.5941235 ]
    [0.27485612]
@@ -154,33 +154,33 @@ if __name__ == '__main__':
 (3, 28, 28, 1) (3, 1, 1)
 ```
 
-可以看到，我们使用 `flow.data.BlobConf` 声明与数据集中 `Feature` 对应的占位符，`BlobConf` 的必需参数有：
+As you can see, we use `flow.data.BlobConf` to declare the placeholders corresponding to `Feature` in dataset, the required parameters in `BlobConf` are：
 ```python
  BlobConf(name, shape, dtype, codec)
 ```
 
-* name：在制作 OFRecord 文件时，Feature 所对应的 Key；
+* name：The Key corresponding to Feature when making OFRecord files;
 
-* shape：数据对应的形状，需要与 Feature 中元素个数一致。如上文中的`(28, 28, 1)`修改为`(14, 28*2, 1)`或者`(28, 28)`均可；
+* shape：The shape corresponding to data, it needs to be consistent with the number of elements in Feature.Like the above `(28, 28, 1)` can be modified to `(14, 28*2, 1)` or `(28, 28)`；
 
-* dtype：数据类型，需要与写入数据集中的 Feature 数据类型一致；
+* dtype：The data type, it needs to be consistent with the Feature data type written in dataset;
 
-* codec： 解码器，OneFlow 内置了诸如 `RawCodec`、`ImageCodec`、`BytesListCodec`等解码器。上例中我们使用 `RawCodec`。
+* codec：The decoder，OneFlow has `RawCodec`、`ImageCodec`、`BytesListCodec` and some other decoders.In the previous example, we use `RawCodec`.
 
-使用 `BlobConf` 得到占位符后，我们可以使用 `decode_ofrecord` 方法，从数据集中获取数据。
+When we get the placeholder by using `BlobConf`, we can get the data in dataset by using `decode_ofrecord`
 ```python
     flow.data.decode_ofrecord("./dataset/", (images, labels),
                             data_part_num=1,
                             batch_size=3)
 ```
 
-通过以上例子可以总结使用 `decode_ofrecord` 的基本步骤：
+Through the above examples, we can summarize the basic steps of using `decode_ofrecord` ：
 
-* 通过 `BlobConf` 定义占位符，用于提取数据集中的 `Feature`
+* The placeholder is defined by `BlobConf`, which is used to extract the `Feature` in dataset
 
-* 调用 `decode_ofrecord`，将上一步定义的占位符传递给 `decode_ofrecord` ，并设置相关参数，获取数据集中的数据
+* We pass the placeholder defined in the previous step to `decode_ofrecord` by calling `decode_ofrecord`, and set some parameters to get data in dataset
 
-使用 `decode_ofrecord` 的方式提取数据中的 `Feature` 虽然方便，但是支持的预处理方式和解码器种类有限。如果需要更灵活的数据预处理方式，包括自定义用户 op，推荐使用 `ofrecord_reader`。
+It's convenient to extract the `Feature` in data by using `decode_ofrecord`. However, the types of preprocessing and decoder are limited.For more flexible data preprocessing, including custom user op, it is recommended to use `ofrecord_reader`.
 
 ### `ofrecord_reader`
 在[数据输入](../basics_topics/data_input.md)一文中，我们已经展示了如何使用 `ofrecord_reader` 接口加载 OFRecord 数据，并进行数据预处理：
