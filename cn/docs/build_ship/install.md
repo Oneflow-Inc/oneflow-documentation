@@ -22,4 +22,4 @@ pip install --find-links https://oneflow-inc.github.io/nightly oneflow
 安装或使用过程遇到问题，欢迎入群与众多 OneFlow 爱好者共同讨论交流：
 
 **加QQ群331883 或扫描下方二维码**
-![qq group](imgs/qq_group.png)
+![qq group](../contribute/imgs/qq_group.png)
