@@ -1,4 +1,3 @@
-import numpy as np
 import oneflow as flow
 import oneflow.typing as tp
 
@@ -39,7 +38,7 @@ if __name__ == '__main__':
     flow.config.enable_debug_mode(True)
     check_point = flow.train.CheckPoint()
     check_point.init()
-    (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(BATCH_SIZE)
+    (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(BATCH_SIZE, BATCH_SIZE)
     for epoch in range(1):
         for i, (images, labels) in enumerate(zip(train_images, train_labels)):
             loss = train_job(images, labels)
