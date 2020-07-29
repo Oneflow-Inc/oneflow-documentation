@@ -21,7 +21,7 @@ def lenet(data, train=False):
 ```
 
 <div align="center">
-<img src="imgs/lenet.png" align='center'/>
+<img src="imgs/Lenet.png" align='center'/>
 </div>
 上图中有两类元素，一类是方框代表的运算单元，包括 `op` 和 `layer` 两类，比如 `conv2d` 、 `dense` 、 `max_pool2d` 等；一类是箭头代表的数据。
 
