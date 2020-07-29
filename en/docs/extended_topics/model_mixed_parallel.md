@@ -55,9 +55,9 @@ In `consistent` view, we can choose pure model parallel (the configuration detai
 
 In pure model parallel example, we still use two GPU for training. In each layer of original logic model is process by `operator `on **part of model** and **complete data**. Then combine the output and get whole results.
 
-值得一提的是，从上图可以看出，各个卡上第0层的输出，并 **不能** 直接作为第1层的输入：因为模型并行中，为完成 `op` 操作，需要部分的模型与 **完整的** 数据； 为了解决这个问题，OneFlow 中使用了 `boxing` 机制。
+One thing we need to mention is in above figure. The output from each GPU on layer 0 **cannot** use as the input in layer 1: Beacuse in model parallel, in order to run the operator. We need part of model and **complete** data. To solve this problem, OneFlow use `boxing` function.
 
-`boxing` 机制会统筹分布式训练中各个节点的数据，并合理切分、合并到对应的卡上，除了模型并行过程中的数据重组问题外，数据并行中的反向梯度同步，也使用 `boxing` 机制解决。
+`boxing` will count the data in each nodes in distributed training and divide or assemble data properly then send to corresponding GPU. Except the model assembling in model parallel. The reverse gradient synchronization in data parallel also will use  `boxing`  to solve problem.
 
 `boxing` 的内部机制虽然复杂，但是对于用户而言是透明的，我们仅仅是防止读者产生迷惑才加入了 `boxing` 的图示，对于本文而言，我们只需要了解：OneFlow 会自动协调好分布式中数据的同步问题。
 
