@@ -10,12 +10,10 @@ def watch_diff_handler(blob: oft.Numpy):
 def get_train_config():
     config = flow.function_config()
     config.default_data_type(flow.float)
-    config.train.primary_lr(0.1)
-    config.train.model_update_conf({"naive_conf": {}})
     return config
 
 
-@flow.global_function(get_train_config())
+@flow.global_function(type="train", function_config=get_train_config())
 def train_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
               labels:oft.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32)) -> oft.Numpy:
     with flow.scope.placement("cpu", "0:0"):
@@ -25,7 +23,8 @@ def train_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.f
         logits = flow.layers.dense(hidden, 10, kernel_initializer=initializer, name="output")
         loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits)
     
-    flow.losses.add_loss(loss)
+    lr_scheduler = flow.optimizer.PiecewiseConstantScheduler([], [0.1])
+    flow.optimizer.SGD(lr_scheduler, momentum=0).minimize(loss)
     flow.watch_diff(logits, watch_diff_handler)
     return loss
 
