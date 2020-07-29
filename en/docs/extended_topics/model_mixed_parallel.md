@@ -168,15 +168,15 @@ We can see that we only modify just few things. Then change parallel method to m
 ## Flow parallel example
 Besides the model parallel, OneFlow also provides a more flexible parallel method which is flow parallel. It can let user use  `scope.placement` to display specify hardware of the operator.
 
-在流水并行中，整个神经网络有的层次在一组物理设备上，另外一些层次在另外一组物理设备上，它们以接力的方式协同工作，分多个阶段，在设备之间流水执行。
+In flow parallel, the part of layer of whole network is on one hardware and other layer is on other hardware. They work as relay, switch between hardware in different step.
 
-在以下示例中，我们对[Consistent 与 Mirrored 视角](consistent_mirrored.md)中的"在 OneFlow 中使用 consistent 视角"代码进行简单修改，展示了流水并行模式。
+In following example, we change few code in "Using consistent view in OneFlow" of  [Consistent and Mirrored view](consistent_mirrored.md) and demonstrate flow parallel.
 
-### 代码示例
+### Example
 
-完整代码：[mixed_parallel_lenet.py](../code/extended_topics/mixed_parallel_lenet.py)
+Name: [mixed_parallel_lenet.py](../code/extended_topics/mixed_parallel_lenet.py)
 
-更详细的讨论可见后文的“代码解析”。
+More details in script explanation.
 
 ```python
 import oneflow as flow
@@ -231,29 +231,28 @@ if __name__ == '__main__':
             loss = train_job(images, labels)
             if i % 20 == 0: print(loss.mean())
 ```
-### 代码解析
+### Script explanation
 
-以上关键的代码只有2行，且他们的本质作用是类似的：
+There are only two line of code is important and they have same nature:
 
-* 通过 `oneflow.scope.placement` ，指定 `hidden` 层的 op 计算运行在0号 GPU 上
+* Use  `oneflow.scope.placement` to specify the operator run on number 0 GPU in  `hidden` layer.
 ```python
   with flow.scope.placement("gpu", "0:0"):
     hidden = flow.layers.dense(reshape, 512, activation=flow.nn.relu, kernel_initializer=initializer, name="hidden")
 ```
 
-* 通过 `oneflow.scope.placement` ，指定 `output` 层的op计算运行在1号GPU上
+* Use  `oneflow.scope.placement` to specify the operator run on number 1 GPU in  ` output ` layer.
 ```python
   with flow.scope.placement("gpu", "0:1"):
     output = flow.layers.dense(hidden, 10, kernel_initializer=initializer, name="outlayer")
 ```
 
-其中 `scope.placement` 的第一个参数指定 `cpu` 还是 `gpu`，第二个参数指定机器及运算设备编号，如，“使用第1号机器的第2个 GPU”，则应该写：
+The first parameter in  `scope.placement` is to specify `cpu` or `gpu`. The second parameter is to specify machine number and device. Like use the second GPU on first machine should be:
 ```python
   with flow.scope.placement("gpu", "1:2"):
-    # ...
 ```
 
-流水并行，使得用户可以为每个 op 指定物理设备，非常适合对网络模型及分布式情况都很熟悉的用户进行 **深度优化** 。
+Flow parallel can let user to specify device for each operator. It is very useful for user who master the distributed training to **deep optimize**.
 
-此外，OneFlow 提供的 API `oneflow.unpack`、`oneflow.pack` 等，结合了 OneFlow 自身任务调度的特点，使得流水并行更易用、高效，我们将在另外的文章中专门介绍。
+In addition, OneFlow also provide `oneflow.unpack`, `oneflow.pack`. Combine those with the characteristics of task scheduling in OneFlow. That will make the flow parallel easier to use and more efficient. We will introduce those in other article.
 
