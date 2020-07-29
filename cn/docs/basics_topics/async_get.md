@@ -208,14 +208,6 @@ def lenet(data, train=False):
     return flow.layers.dense(hidden, 10, kernel_initializer=initializer, name='dense2')
 
 
-def get_train_config():
-    config = flow.function_config()
-    config.default_data_type(flow.float)
-    config.train.primary_lr(0.1)
-    config.train.model_update_conf({"naive_conf": {}})
-    return config
-
-
 @flow.global_function(type="train")
 def train_job(images: tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
               labels: tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32)) -> tp.Numpy:
