@@ -4,7 +4,9 @@
 本文档服务于那些需要自定义实现C++ Op的用户，通常来说，这来源于如下需求
 
 - 自定义Op难以通过OneFlow已有的Op在Python前端组合搭配生成。
+
 - 自定义Op可以通过OneFlow已有Op在Python前端组合搭配生成，但却满足不了性能需求。
+
 - 用户想要手动对kernel进行融合fuse，以满足某些特定的需求。
 
 除上述需求之外的需求，我们推荐您在Python前端使用现有Op组合得到想要的Op。
@@ -14,9 +16,13 @@
 对于的确需要手动实现C++ Op的用户，你需要如下步骤来让自定义Op正常工作：
 
 1. 注册Op的定义： Op的定义独立于Op的实现（即Kernel），用来描述Op的功能性。通常包括Op的名称，Op的输入和输出，Op的配置属性和一些必要的用于推导Tensor的shape和data type的函数。
+
 2. 用C++实现Op对应的Kernel： Kernel用来描述Op的详细计算过程。对于一个Op来说，可能会对应多个Kernel。
+
 3. 书写对应的Python前端：因为OneFlow的网络构建是基于Python去书写的，所以我们需要在Python前端去书写少量代码来封装前两步所写的C++的代码。
+
 4. （可选）注册Op对应的后向构图函数：如果训练网络中需要Op的反向，那么我们还需要去写一个函数来告诉OneFlow如何在去构建该Op对应的后向计算过程。
+
 5. 测试Op：上述步骤全部执行完毕后，我们还需要对Op进行测试以保证Op的正确性，具体步骤见后续。
 
 
@@ -135,7 +141,7 @@ g++ -std=c++11 -shared -o cuda_relu.so relu.cpp relu_gpu.cu.o  \
 ```
 注意： 当你的环境中的CUDA**不是**安装在`/usr/local/lib64`目录下时，你需要在第二行g++的编译命令中指定CUDA的library目录。举个例子： 添加`-L /usr/local/cuda-10.0/lib64/`， 如果你的CUDA的安装目录是在`/usr/local/cuda-10.0/`。
 
-## 在Python使用Op (chengcheng)
+## 在Python使用Op
 
 - python加载自定义op Oneflow的python库提供`oneflow.config.load_library`函数来加载用户自定义的op动态库。该函数没有返回值。同时你需要编写一个函数表示该Op的python wrapper。Oneflow的python库提供了`user_op_builder`的类，用于生成一个op的wrapper。`user_op_builder`的使用方法见后续说明，对于简单的自定义my_op，可以参考下列python脚本使用和测试其正确性。
 ```python
@@ -167,6 +173,7 @@ print(output_data)
 [0. 0. 0. 1. 2.]
 ```
 - 其他测试示例 对于复杂的自定义op单元测试或者网路测试，可以参考oneflow代码仓库中的`oneflow/python/test/ops`目录下的样例进行编写。
+
 - python op wrapper 你可以使用`oneflow.user_op_builder`来生成你自定义op的python wrapper。`user_op_builder` 有一些特定规则来得到最终的输出blob：
   1. `user_op_builder("your_op_name")` 构造函数，参数为这个op的实际名字
   2. `.Op("op_type_name")` 指定这个op的type  必选项，只可调用一次
@@ -355,7 +362,7 @@ class XKernel final : public oneflow::user_op::OpKernel {
 
 
 
-### 注册Op的Grad (chengcheng)
+### 注册Op的Grad
 
 - 说明及示例 Oneflow使用自动求导的方式进行后向计算图展开，为了对自定义的op进行后向求导，需要你注册一个后向生成函数来根据这个op的输出blob的导数计算输入blob的导数。你可以通过已有的其他op来构建这个后向展开的子图，当无法用已有op来描述后向时，你需要自己实现一个后向grad_op来表示。 后向生成函数在c++端注册。对于relu op，其后向生成函数的示例如下：
 ```cpp
