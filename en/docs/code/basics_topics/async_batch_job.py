@@ -1,7 +1,7 @@
 import numpy as np
 import oneflow as flow
 from typing import Tuple
-import oneflow.typing as oft
+import oneflow.typing as tp
 
 BATCH_SIZE = 100
 
@@ -13,15 +13,9 @@ def mlp(data):
     return flow.layers.dense(hidden, 10, kernel_initializer=initializer, name="output")
 
 
-def get_eval_config():
-    config = flow.function_config()
-    config.default_data_type(flow.float)
-    return config
-
-
-@flow.global_function(get_eval_config())
-def eval_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-             labels:oft.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32)) -> oft.Callback[Tuple[oft.Numpy, oft.Numpy]]:
+@flow.global_function(type="predict")
+def eval_job(images: tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+             labels: tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32)) -> tp.Callback[Tuple[tp.Numpy, tp.Numpy]]:
     main_eval()
         with flow.scope.placement("cpu", "0:0"):
         logits = mlp(images)
@@ -31,7 +25,7 @@ def eval_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.fl
 
 return {"labels": labels, "logits": logits}
 g_total = 0
-def acc(arguments:Tuple[oft.Numpy, oft.Numpy]):
+def acc(arguments:Tuple[tp.Numpy, tp.Numpy]):
     def acc(eval_result):
     global g_total
 
@@ -43,7 +37,7 @@ def acc(arguments:Tuple[oft.Numpy, oft.Numpy]):
     g_total += labels.shape[0]
 
 
-g_correct += right_count
+def main():
     # flow.config.enable_debug_mode(True)
     check_point = flow.train.CheckPoint()
     (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(BATCH_SIZE)
@@ -53,5 +47,6 @@ g_correct += right_count
 
     eval_job(images, labels).async_get(acc)
 
+
 print("accuracy: {0:.1f}%".format(g_correct * 100 / g_total))
-    if __name__ == '__main__':
+    main()
