@@ -19,8 +19,8 @@ def train_job(images:oft.ListNumpy.Placeholder((BATCH_SIZE_PER_GPU, 1, 28, 28), 
               labels:oft.ListNumpy.Placeholder((BATCH_SIZE_PER_GPU,), dtype=flow.int32)) -> oft.ListNumpy:
     initializer = flow.truncated_normal(0.1)
     reshape = flow.reshape(images, [images.shape[0], -1])
-    hidden = flow.layers.dense(reshape, 512, activation=flow.nn.relu, kernel_initializer=initializer, name="hidden")
-    logits = flow.layers.dense(hidden, 10, kernel_initializer=initializer, name="output")
+    hidden = flow.layers.dense(reshape, 512, activation=flow.nn.relu, kernel_initializer=initializer, name="dense1")
+    logits = flow.layers.dense(hidden, 10, kernel_initializer=initializer, name="dense2")
     loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits)
     
     lr_scheduler = flow.optimizer.PiecewiseConstantScheduler([], [0.1])
