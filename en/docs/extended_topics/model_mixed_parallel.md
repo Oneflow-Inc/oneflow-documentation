@@ -18,27 +18,27 @@ We need to set up a simple multi-layer network first and use this network to dis
 
 ![多层网络逻辑图](imgs/para_logical.png)
 
-各层中，有 **样本** (灰色矩形)、 **模型** (蓝色矩形)，以及作用在两者之上的 **op** (圆形)，为了简化讨论，我们也可将样本与模型限定为 **矩阵** ，作用在它们之上的op为 **矩阵乘法** 。
+In each layers, we have **samples**(in grey), **models**(in blue) and **operators**(circles) which operating on both of them. To simplify our discussion, we can limiting the samples and model as** matrixes**. The operator applying on them we called it **Matrix multiplication**.
 
-对照上图，我们很容易梳理出该网络模型的逻辑：
+Compare the figure above, we can easily get the logic of the network:
 
-* 第0层的输入为 `Data 0` 矩阵与 `Model 0` 矩阵，它们进行 `op` (矩阵乘法)运算后，输出 `Data 1`
+* The input of layer 0 is `Data 0` matrix and `Model 0`matrix. Then apply `operator`(matrix multiplication) and give output `Data 1`.
 
-* 第1层的输入为 `Data 1` 矩阵与 `Model 1` 矩阵，它们进行 `op` 运算后，输出 `output`
+* The input of layer 1 is `Data 1` matrix and `Model 1`matrix. Then apply `operator` and get `output`.
 
-* 第2层为 `output` 层，`Data 2` 作为整个网络的输出；当然，在更深的网络中，它也可以作为下一层的输入继续参与训练
+* The layer 2 is `output layer` and `Data 2` is the output of network. Of course, it can play as input in deeper network.
 
-`consistent` 视角下支持数据并行、模型并行与混合并行，我们将依次进行介绍，其中混合并行是重点。
+In `consistent` view, it supports the data parallel, model parallel and mixed parallel. We will introduce those in order but mixed parallel is the key thing.
 
-## Consistent 视角下的并行特色
+## The characteristics of parallel in consistent view
 
-### 纯数据并行
+### Pure data parallel
 
-我们已经知道，consistent 视角下，默认的并行方式是数据并行；而如果选择 mirrored 视角，则只能采用数据并行；若在调用作业函数时直接传递 `numpy` 数据(而不是使用 OneFlow 的 `flow.data.xxx_reader` 接口进行数据加载)，两者的区别在于：
+We already know that in consistent view. The default parallel method is data parallel. If we choose mirrored view, we only can use data parallel. Compare passing data in `numpy` when calling the job function with use `flow.data.xxx_reader` in OneFlow. The difference between them is:
 
-* mirrored 视角下，采用纯数据并行，需要自己根据参与训练的卡数对数据进行切分、重组，使用 `list` 传递和接收数据；
+* In mirrored view, when we use pure data parallel. We need to cut assembly data according to the number of GPU and use `list` to pass and receive data.
 
-* 而 consistent 视角下提供了逻辑上的统一看待，数据的切分和重组交给了OneFlow 框架完成。
+* But in consistent view we have the consistency on logic. Cutting data and assembly data will complete by OneFlow framework.
 
 下图是 consistent 视角下，采用纯数据并行的方式，实现原逻辑网络模型的流程示意图：
 
