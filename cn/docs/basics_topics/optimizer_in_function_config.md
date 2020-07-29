@@ -182,7 +182,7 @@ def test_job():
 ```
 上面的例子中，通过 `function_config` 设置了网络的缺省数据类型为 float；将被用于训练；学习率是0.1；采用了 `naive_conv` 优化算法，也就是 `SGD`。
 
-function_config 中还包含哪些配置请参考[function_config API](../api/oneflow.html?highlight=functionconfig#oneflow.FunctionConfig)。
+function_config 中还包含哪些配置请参考[function_config API](https://oneflow-api.readthedocs.io/en/latest/oneflow.html?highlight=functionconfig#oneflow.FunctionConfig)。
 
 ### 训练还是预测配置
 默认情况下，作业函数只能做预测作业，如果想要做训练作业，需要设置 `type=train` 属性。
