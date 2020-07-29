@@ -2,7 +2,7 @@
 import numpy as np
 import oneflow as flow
 from typing import Tuple
-import oneflow.typing as oft
+import oneflow.typing as tp
 
 BATCH_SIZE = 100
 
@@ -21,15 +21,9 @@ def lenet(data, train=False):
     return flow.layers.dense(hidden, 10, kernel_initializer=initializer, name='dense2')
 
 
-def get_eval_config():
-    config = flow.function_config()
-    config.default_data_type(flow.float)
-    return config
-
-
-@flow.global_function(get_eval_config())
-def eval_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-             labels:oft.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32)) -> Tuple[oft.Numpy, oft.Numpy]:
+@flow.global_function(type="predict")
+def eval_job(images:tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+             labels:tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32)) -> Tuple[tp.Numpy, tp.Numpy]:
     with flow.scope.placement("gpu", "0:0"):
         logits = lenet(images, train=False)
         loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits, name="softmax_loss")
