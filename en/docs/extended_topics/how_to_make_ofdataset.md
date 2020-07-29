@@ -68,7 +68,7 @@ OneFlow provides the API interface to load OFRecord dataset, so that we can enjo
 We usually use `decode_ofrecord` to load and decode dataset; or use `ofrecord_reader` to load and preprocess dataset.
 
 ### `decode_ofrecord`
-We can use `flow.data.decode_ofrecord` to load and decode the dataset at the same time. The API interface of `decode_ofrecord` is as follows：
+We can use `flow.data.decode_ofrecord` to load and decode the dataset at the same time. The APIinterface of `decode_ofrecord` is as follow：
 ```python
 def decode_ofrecord(
     ofrecord_dir,
@@ -183,9 +183,9 @@ Through the above examples, we can summarize the basic steps of using `decode_of
 It's convenient to extract the `Feature` in data by using `decode_ofrecord`. However, the types of preprocessing and decoder are limited.For more flexible data preprocessing, including custom user op, it is recommended to use `ofrecord_reader`.
 
 ### `ofrecord_reader`
-在[数据输入](../basics_topics/data_input.md)一文中，我们已经展示了如何使用 `ofrecord_reader` 接口加载 OFRecord 数据，并进行数据预处理：
+In [data_input](../basics_topics/data_input.md) section, we have shown how to use `ofrecord_reader` this api to load and preprocess OFRecord data:
 
-完整代码：[of_data_pipeline.py](../code/basics_topics/of_data_pipeline.py)
+The complete code: [of_data_pipeline.py](../code/basics_topics/of_data_pipeline.py)
 
 ```python
 import oneflow as flow
@@ -218,7 +218,7 @@ if __name__ == '__main__':
   print(images.shape, labels.shape)
 ```
 
-`ofrecord_reader` 的接口如下：
+The API interface of `ofrecord_reader` is as follow.
 ```python
 def ofrecord_reader(
     ofrecord_dir,
@@ -233,13 +233,13 @@ def ofrecord_reader(
 )
 ```
 
-使用 `ofrecord_reader` 的好处在于可以用数据处理流水线的方式进行数据预处理，而且可以通自定义预处理 op，拥有很高的灵活性和扩展性。
+The advantage of using `ofrecord_reader` is we can preprocess data in the way of data processing pipeline, and we can customize preprocessing op with high flexibility and expansibility.
 
-* 关于数据流水线及预处理可以参考[数据输入](../basics_topics/data_input.md)
+* you can refer to [data_input](../basics_topics/data_input.md) for data pipeline and preprocessing.
 
-* 关于自定义OP可以参考[用户自定义op](user_op.md)
+* you can refer to [user_op](user_op.md) for customizing op
 
-## 其它格式数据与 OFRecord 数据集的相互转化
+## The transition between other dataformat data and OFRecord dataset
 参考[OFrecord数据格式](ofrecord.md)中 OFRecord 文件的存储格式及本文开头介绍的 OFRecord 数据集的文件名格式约定，我们完全可以自己制作 OFRecord 数据集。
 
 不过为了更加方便，我们提供了 Spark 的 jar 包，方便 OFRecord 与常见数据格式(如 TFRecord、json)进行相互转化。
