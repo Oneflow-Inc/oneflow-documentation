@@ -240,23 +240,23 @@ The advantage of using `ofrecord_reader` is we can preprocess data in the way of
 * you can refer to [user_op](user_op.md) for customizing op
 
 ## The transition between other dataformat data and OFRecord dataset
-参考[OFrecord数据格式](ofrecord.md)中 OFRecord 文件的存储格式及本文开头介绍的 OFRecord 数据集的文件名格式约定，我们完全可以自己制作 OFRecord 数据集。
+According to the the storage format of OFRecord file in [OFRecord](ofrecord.md) section and the filename format convention of OFRecord dataset introduced at the begining, we can make OFRecord dataset by ourselves.
 
-不过为了更加方便，我们提供了 Spark 的 jar 包，方便 OFRecord 与常见数据格式(如 TFRecord、json)进行相互转化。
+To make things easier, we provide Spark's jar package, which is convenient to the interconversion between OFRecord and common data formats (such as TFRecord and JSON).
 
-### spark 的安装与启动
-首先，下载 spark 及 spark-oneflow-connector：
+### The installation and launch of Spark
+At first, we should download Spark and Spark-oneflow-connector：
 
-* 在 spark 官网下载[spark-2.4.0-bin-hadoop2.7](https://archive.apache.org/dist/spark/spark-2.4.0/spark-2.4.0-bin-hadoop2.7.tgz)
+* Download the [spark-2.4.0-bin-hadoop2.7](https://archive.apache.org/dist/spark/spark-2.4.0/spark-2.4.0-bin-hadoop2.7.tgz) from the official website of Spark
 
-* 在[这里](https://oneflow-static.oss-cn-beijing.aliyuncs.com/oneflow-tutorial-attachments/spark-oneflow-connector-assembly-0.1.0_int64.jar)下载 jar 包，spark 需要它来支持 ofrecord 格式
+* Download jar package at [there](https://oneflow-static.oss-cn-beijing.aliyuncs.com/oneflow-tutorial-attachments/spark-oneflow-connector-assembly-0.1.0_int64.jar), which Spark needs to support the ofrecord file format
 
-接着，解压 `spark-2.4.0-bin-hadoop2.7.tgz`，并配置环境变量 `SPARK_HOME`:
+Then, unzip the `spark-2.4.0-bin-hadoop2.7.tgz` and configure the environment variable `SPARK_HOME`:
 ```shell
 export SPARK_HOME=path/to/spark-2.4.0-bin-hadoop2.7
 ```
 
-然后，通过以下命令启动 pyspark shell：
+Here we can launch the pyspark shell with the following command：
 ```shell
 pyspark --master "local[*]"\
  --jars spark-oneflow-connector-assembly-0.1.0_int64.jar\
@@ -275,14 +275,14 @@ Using Python version 3.6.10 (default, May  8 2020 02:54:21)
 SparkSession available as 'spark'. >>> 
 ```
 
-在启动的 pyspark shell 中，我们可以完成 OFRecord 数据集与其它数据格式的相互转化。
+We can complete the interconversion between OFRecord dataset and other data formats in launched pyspark shell.
 
-### 使用 spark 查看 OFRecord 数据集
-使用以下命令可以查看 OFRecord 数据：
+### Use Spark to view OFRecord dataset
+We can view OFRecord data with following code：
 ```
 spark.read.format("ofrecord").load("file:///path/to/ofrecord_file").show()
 ```
-默认显示前20条数据:
+The first 20 data are displayed by default:
 ```
 +--------------------+------+
 |              images|labels|
@@ -312,8 +312,8 @@ only showing top 20 rows
 ```
 
 
-### 与 TFRecord 数据集的相互转化
-以下命令可以将 TFRecord 转化为 OFRecrod：
+### The interconversion with TFRecord dataset
+we can convert TFRecord to OFRecord with the following command：
 
 ```python
 reader = spark.read.format("tfrecords")
@@ -321,18 +321,18 @@ dataframe = reader.load("file:///path/to/tfrecord_file")
 writer = dataframe.write.format("ofrecord")
 writer.save("file:///path/to/outputdir")
 ```
-以上代码中的 `outputdir` 目录会被自动创建，并在其中保存 ofrecord 文件。在执行命令前应保证 outputdir 目录不存在。
+In the above code, the `outputdir` directory will be created automatically, we will save ofrecord file in this directory.Make sure the "outputdir" directory does not exist before excuting the command.
 
-此外，还可以使用以下命令，在转化的同时，将数据切分为多个 ofrecord 文件：
+In addition, we can use the following command to split the data into multiple ofrecord file in conversion.
 ```python
 reader = spark.read.format("tfrecords")
 dataframe = reader.load("file:///path/to/tfrecord_file")
 writer = dataframe.repartition(10).write.format("ofrecord")
 writer.save("file://path/to/outputdir")
 ```
-以上命令执行后，在 outputdir 目录下会产生10个 `part-xxx` 格式的ofrecord文件。
+After the above command is executed, 10 ofrecord files of `part-xxx` format will be generated in "outputdir" directory.
 
-将 OFRecord 文件转为 TFRecord 文件的过程类似，交换读/写方的 `format` 即可：
+The process of converting OFRecord file to TFRecord file is similar. we just need to swap read/write side `format`:
 ```python
 reader = spark.read.format("ofrecord")
 dataframe = reader.load("file:///path/to/ofrecord_file")
@@ -340,22 +340,22 @@ writer = dataframe.write.format("tfrecords")
 writer.save("file:///path/to/outputdir")
 ```
 
-### 与 JSON 格式的相互转化
-以下命令可以将 JSON 格式数据转为 OFRecord 数据集:
+### The interconversion with JSON format
+we can convert JSON to OFRecord with the following command：
 ```python
 dataframe = spark.read.json("file:///path/to/json_file")
 writer = dataframe.write.format("ofrecord")
 writer.save("file:///path/to/outputdir")
 ```
 
-以下命令将 OFRecord 数据转为 JSON 文件：
+The following command will convert OFRecord data to JSON file：
 ```python
 reader = spark.read.format("ofrecord")
 dataframe = reader.load("file:///path/to/ofrecord_file")
 dataframe.write.json("file://path/to/outputdir")
 ```
 
-### 其它脚本及工具
+### Other script and tools
 除了以上介绍的方法，使得其它数据格式与 OFRecord 数据格式进行转化外，在[oneflow_toolkit](https://github.com/Oneflow-Inc/oneflow_toolkit/tree/master/ofrecord)仓库下，还有各种与 OFRecord有关的脚本：
 
 * 为 BERT 模型准备 OFRecord 数据集的脚本
