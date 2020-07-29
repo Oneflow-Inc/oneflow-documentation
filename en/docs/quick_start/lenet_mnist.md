@@ -203,8 +203,8 @@ def eval_job(images:tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.flo
 该作业函数的返回值类型为 `Tuple[tp.Numpy, tp.Numpy]`，则当调用时，会返回一个 `tuple` 容器，里面有2个元素，每个元素都是一个 `numpy` 对象：
 ```python
 for i, (images, labels) in enumerate(zip(test_images, test_labels)):
-    labels, logtis = eval_job(images, labels)
-    acc(labels, logtis)
+    labels, logits = eval_job(images, labels)
+    acc(labels, logits)
 ```
 我们调用作业函数返回了 `labels` 与 `logits`，并用它们评估模型准确率。
 
@@ -259,16 +259,16 @@ def eval_job(images:tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.flo
 以上是校验训练作业函数的编写，声明了返回值类型是 `Tuple[tp.Numpy, tp.Numpy]`， 因此返回一个 `tuple`， `tuple` 中有2个元素，每个元素都是1个 `numpy` 对象。我们将调用训练作业函数，并根据返回结果计算准确率。
 
 ### 迭代校验
-以下 `acc` 函数中统计样本的总数目，以及校验正确的总数目，我们将调用作业函数，得到 `labels` 与 `logtis`：
+以下 `acc` 函数中统计样本的总数目，以及校验正确的总数目，我们将调用作业函数，得到 `labels` 与 `logits`：
 ```python
 g_total = 0
 g_correct = 0
 
-def acc(labels, logtis):
+def acc(labels, logits):
     global g_total
     global g_correct
 
-    predictions = np.argmax(logtis, 1)
+    predictions = np.argmax(logits, 1)
     right_count = np.sum(predictions == labels)
     g_total += labels.shape[0]
     g_correct += right_count
@@ -284,8 +284,8 @@ if __name__ == '__main__':
 
     for epoch in range(1):
         for i, (images, labels) in enumerate(zip(test_images, test_labels)):
-            labels, logtis = eval_job(images, labels)
-            acc(labels, logtis)
+            labels, logits = eval_job(images, labels)
+            acc(labels, logits)
 
     print("accuracy: {0:.1f}%".format(g_correct * 100 / g_total))
 ```
@@ -424,11 +424,11 @@ def eval_job(images:tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.flo
 g_total = 0
 g_correct = 0
 
-def acc(labels, logtis):
+def acc(labels, logits):
     global g_total
     global g_correct
 
-    predictions = np.argmax(logtis, 1)
+    predictions = np.argmax(logits, 1)
     right_count = np.sum(predictions == labels)
     g_total += labels.shape[0]
     g_correct += right_count
@@ -442,8 +442,8 @@ if __name__ == "__main__":
 
     for epoch in range(1):
         for i, (images, labels) in enumerate(zip(test_images, test_labels)):
-            labels, logtis = eval_job(images, labels)
-            acc(labels, logtis)
+            labels, logits = eval_job(images, labels)
+            acc(labels, logits)
 
     print("accuracy: {0:.1f}%".format(g_correct * 100 / g_total))
 ```
