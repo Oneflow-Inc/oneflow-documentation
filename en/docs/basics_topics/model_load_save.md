@@ -24,7 +24,7 @@ In this article, we will introduce:
 
 We can use `oneflow.get_variable` to create or obtain an object. This object could used for submitting information with global job function. When calling the port of `OneFlow.CheckPoint`. This object also will be store automatically or recover from storage devices.
 
-Because of this character, the object create by `get_variable` always used in store model parameters.In fact, there are many high levels ports in OneFlow like `oneflow.layers.conv2d`. We use `get_variable` to create model parameters.
+Because of these characters, the object create by `get_variable` always used in store model parameters.In fact, there are many high levels ports in OneFlow like `oneflow.layers.conv2d`. We use `get_variable` to create model parameters.
 
 ### Process of get_variable get/create object
 
@@ -81,7 +81,7 @@ Next code is an example of in `oneflow.layers.conv2d`, use get_variable to creat
 
 ### Initializer setting
 
-In the previous chapters, when we calling `get_variable`, we specified the method of initiating the parameters by `initializer`. In OneFlow, we provide many initializer which can be find in `oneflow/python/ops/initializer_util.py`
+In the previous chapters, when we calling `get_variable`, we specified the method of initiating the parameters by `initializer`. In OneFlow, we provide many initializers which can be find in `oneflow/python/ops/initializer_util.py`
 
 After config `initializer`, the initialize work is done by OneFlow framework. Exactly time was: when user called the `CheckPoint.init` later on, OneFlow will initialize all data created by get_variable according to `initializer`.
 
@@ -112,7 +112,7 @@ Some common `initializer`:
 
 We use `oneflow.train.CheckPoint()` to achieve object of CheckPoint. There are three critical methods in `CheckPoint`:
 
-* `init` : According to method of lacking to initializa parameters.
+* `init` : According to method of lacking to initialize parameters.
 
 * `save` : Responsible for save the current model to the specified path.
 
@@ -167,7 +167,7 @@ check_point.load("./path_to_model") #load model
 
 
 ## The structure of OneFlow saved model
-Model of OneFlow are the **parameters** of network. For now there are no Meta Graph information in OneFlow model. The path to saved model have many subdirectories. Each of them corresponding to a `name` of `job function `in model. For example, we define the model in the first place:
+Model of OneFlow are the **parameters** of network. For now there are no Meta Graph information in OneFlow model. The path to saved model have many sub-directories. Each of them corresponding to a `name` of `job function `in model. For example, we define the model in the first place:
 
 ```python
 def lenet(data, train=False):
@@ -214,7 +214,7 @@ lenet_models_name
 
 We can see:
 
-* The job function in network, each of the variables have a subdirectories.
+* The job function in network, each of the variables have a sub-directory.
 
 * All subdirectories above have a  `out` document. It store the parameters of network in binary.`out` is the default file name. We can change that by  `variable op` in the network.
 
