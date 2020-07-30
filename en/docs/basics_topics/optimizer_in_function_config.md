@@ -28,14 +28,20 @@ def eval_job() -> tp.Numpy:
 
 ```python
 @flow.global_function(type="train")
-def train_job(images: tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-              labels: tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32)) -> tp.Numpy:
-    logits = mlp(images)
-    loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits, name="softmax_loss")
+def train_job(
+    images: tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+    labels: tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32),
+) -> tp.Numpy:
+    with flow.scope.placement("gpu", "0:0"):
+        logits = lenet(images, train=True)
+        loss = flow.nn.sparse_softmax_cross_entropy_with_logits(
+            labels, logits, name="softmax_loss"
+        )
 
     lr_scheduler = flow.optimizer.PiecewiseConstantScheduler([], [0.1])
     flow.optimizer.SGD(lr_scheduler, momentum=0).minimize(loss)
     return loss
+
 ```
 其中 `type="train"` 表明作业函数是一个训练任务，学习率和优化器的设置如下：
 
