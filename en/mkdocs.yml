@@ -98,6 +98,7 @@ nav:
       - Obtain Result From Job Function: basics_topics/async_get.md
       - Loading and Saving of Model: basics_topics/model_load_save.md
       - Distribution Training: basics_topics/distributed_train.md
+      - Concepts in OneFlow: basics_topics/concept_explanation.md
 
     
     - Extension Topic :
