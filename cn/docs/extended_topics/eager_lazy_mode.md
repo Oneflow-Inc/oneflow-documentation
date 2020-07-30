@@ -37,7 +37,7 @@ OneFlow中，不仅支持静态图，也同样支持动态图。其中Eager模�
 
 #### 简介
 
-OneFlow的lazy模式下，有着良好的底层设计，且针对静态图做了大量的编译期优化工作。这使得我们的任务不仅快速，而且在多机多卡的分布式环境下具备良好的横向拓展能力。最关键的是，无需您手写复杂的代码来控制多机多卡下数据/模型的切分、节点间的通信，oneflow在底层为您自动处理这些复杂的任务，您只需要简单的几行配置代码。
+OneFlow的lazy模式下，有着良好的底层设计，且针对静态图做了大量的编译期优化工作。这使得我们的任务不仅快速，而且在多机多卡的 **分布式环境下具备良好的横向拓展能力** 。最关键的是，无需您手写复杂的代码来控制多机多卡下数据/模型的切分、节点间的通信，oneflow在底层为您自动处理这些复杂的任务，您只需要简单的几行配置代码。
 
 #### 代码示例
 
@@ -94,40 +94,40 @@ if __name__ == '__main__':
 
 以下是Eager模式下的代码示例，我们用了和Lazy模式下的一样的多层感知机网络。
 
-你只需要增加一行代码：`flow.enable_eager_execution(True)` 即可将Lazy模式下的代码无缝切换为Eagrt模式！
+你只需要增加一行代码：`flow.enable_eager_execution(True)` ,然后将原来的`train_job`用一个函数包裹，并`return train_job(images, labels)`，即可将Lazy模式下的代码无缝切换为Eagrt模式！
 
 ```python
 # eager_mlp_mnist.py
 import oneflow as flow
 import oneflow.typing as tp
-
+flow.enable_eager_execution(True)
 BATCH_SIZE = 100
 
+def main(images, labels):
+    @flow.global_function(type="train")
+    def train_job(images:tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+                labels:tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32)) -> tp.Numpy:
+        with flow.scope.placement("cpu", "0:0"):
+            initializer = flow.truncated_normal(0.1)
+            reshape = flow.reshape(images, [images.shape[0], -1])
+            hidden = flow.layers.dense(reshape, 512, activation=flow.nn.relu, kernel_initializer=initializer, name="dense1")
+            logits = flow.layers.dense(hidden, 10, kernel_initializer=initializer, name="dense2")
+            loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits)
 
-@flow.global_function(type="train")
-def train_job(images:tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-              labels:tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32)) -> tp.Numpy:
-    with flow.scope.placement("cpu", "0:0"):
-        initializer = flow.truncated_normal(0.1)
-        reshape = flow.reshape(images, [images.shape[0], -1])
-        hidden = flow.layers.dense(reshape, 512, activation=flow.nn.relu, kernel_initializer=initializer, name="dense1")
-        logits = flow.layers.dense(hidden, 10, kernel_initializer=initializer, name="dense2")
-        loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits)
+        lr_scheduler = flow.optimizer.PiecewiseConstantScheduler([], [0.1])
+        flow.optimizer.SGD(lr_scheduler, momentum=0).minimize(loss)
 
-    lr_scheduler = flow.optimizer.PiecewiseConstantScheduler([], [0.1])
-    flow.optimizer.SGD(lr_scheduler, momentum=0).minimize(loss)
-
-    return loss
-
+        return loss
+    return train_job(images, labels)
+    
 
 if __name__ == '__main__':
-    flow.enable_eager_execution(True)
     check_point = flow.train.CheckPoint()
     check_point.init()
 
     (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(BATCH_SIZE, BATCH_SIZE)
     for i, (images, labels) in enumerate(zip(train_images, train_labels)):
-        loss = train_job(images, labels)
+        loss = main(images, labels)
         if i % 20 == 0:
             print(loss.mean())
 ```

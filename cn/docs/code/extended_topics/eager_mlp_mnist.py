@@ -4,6 +4,7 @@ import oneflow.typing as tp
 flow.enable_eager_execution(True)
 BATCH_SIZE = 100
 
+
 def main(images, labels):
     @flow.global_function(type="train")
     def train_job(images:tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
@@ -20,7 +21,6 @@ def main(images, labels):
 
         return loss
     return train_job(images, labels)
-    
 
 
 if __name__ == '__main__':
