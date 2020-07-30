@@ -65,4 +65,7 @@ cd oneflow/docs && make dev
 
 **加QQ群 331883 或扫描下方二维码**
 
-![qq group](imgs/qq_group.png)
+
+<div align="center">
+    <img src="imgs/qq_group.png" align='center'/>
+</div>
