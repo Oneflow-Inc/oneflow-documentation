@@ -16,7 +16,7 @@ ImageNet大规模视觉识别挑战赛（ILSVRC），常称为ImageNet竞赛，�
 
 中，提供ResNet50 v1.5的OneFlow实现。我们在ImageNet-2012数据集上训练90轮后，验证集上的准确率能够达到：77.318%(top1)，93.622%(top5)。
 
-更详细的网络参数对齐工作，见[OneFlow-Benchmark的cnns](https://github.com/Oneflow-Inc/OneFlow-Benchmark/Classification/cnns)部分
+更详细的网络参数对齐工作，见[OneFlow-Benchmark的cnns](https://github.com/Oneflow-Inc/OneFlow-Benchmark/blob/master/Classification/cnns)部分
 
 ![resnet50_validation_acuracy](imgs/resnet50_validation_acuracy.png)
 
@@ -85,7 +85,7 @@ ImageNet大规模视觉识别挑战赛（ILSVRC），常称为ImageNet竞赛，�
 >
 > 2）同时，我们提供了一个小的迷你示例数据集。直接下载解压至cnn项目的root目录，即可快速开始训练。读者可以在熟悉了流程后，参考数据集制作部分，制作完整的Imagenet2012数据集。
 >
-> 3）使用OFRcord格式的数据集可以提高数据加载效率（但这非必须，参考[数据输入](https://github.com/Oneflow-Inc/oneflow-documentation/docs/basics_topics/data_input.md)，oneflow支持直接加载numpy数据）。
+> 3）使用OFRcord格式的数据集可以提高数据加载效率（但这非必须，参考[数据输入](../basics_topics/data_input.md)，oneflow支持直接加载numpy数据）。
 
 
 
@@ -107,7 +107,7 @@ cd OneFlow-Benchmark/Classification/cnns
 
 ### 预测/推理
 
-下载我们训练好的模型：[resnet50_v1.5_model](https://oneflow-public.oss-cn-beijing.aliyuncs.com/model_zoo/resnet_v15_of_best_model_val_top1_77318.tgz ) ，解压后放入当前目录，然后执行：
+下载好预训练模型后，解压后放入当前目录，然后执行：
 
 ```shell
 sh inference.sh
@@ -183,7 +183,7 @@ data/fish.jpg
 
   运行此脚本，将在仅有50张金鱼图片的迷你imagenet数据集上，训练出一个分类模型，利用它，你可以对金鱼图片进行分类。
 
-  不要着急，如果您需要在完整的ImageNet2012数据集上进行训练，请参考：[OneFlow-Benchmark](https://github.com/Oneflow-Inc/OneFlow-Benchmark/Classification/cnns)仓库。
+  不要着急，如果您需要在完整的ImageNet2012数据集上进行训练，请参考：[OneFlow-Benchmark](https://github.com/Oneflow-Inc/OneFlow-Benchmark/blob/master/Classification/cnns)仓库。
   
   
 
@@ -209,7 +209,7 @@ validation: epoch 0, iter 195, top_1: 0.773237, top_k: 0.936078, samples/s: 1692
 validation: epoch 0, iter 195, top_1: 0.773297, top_k: 0.936018, samples/s: 1686.896
 ```
 
-> 执行sh evaluate.sh前，确保准备了imagenet(2012)的验证集，验证集制作方法请参考：[OneFlow-Benchmark](https://github.com/Oneflow-Inc/OneFlow-Benchmark/Classification/cnns)仓库。
+> 执行sh evaluate.sh前，确保准备了imagenet(2012)的验证集，验证集制作方法请参考：[OneFlow-Benchmark](https://github.com/Oneflow-Inc/OneFlow-Benchmark/blob/master/Classification/cnns)仓库。
 
 从3轮的评估结果来看，我们的模型在Imagenet(2012)上已经达到了77.32+%的top_1精度。
 
@@ -274,7 +274,7 @@ python3 of_cnn_train_val.py \
 
 ### 参数对齐
 
-Oneflow的ResNet50实现，为了保证和[英伟达的Mxnet版实现](https://github.com/NVIDIA/DeepLearningExamples/tree/master/MxNet/Classification/RN50v1.5)对齐，我们从learning rate学习率，优化器Optimizer的选择，数据增强的图像参数设定，到更细的每一层网络的形态，bias,weight初始化等都做了细致且几乎完全一致的对齐工作。具体的参数对齐工作，请参考：[OneFlow-Benchmark](https://github.com/Oneflow-Inc/OneFlow-Benchmark/Classification/cnns)仓库
+Oneflow的ResNet50实现，为了保证和[英伟达的Mxnet版实现](https://github.com/NVIDIA/DeepLearningExamples/tree/master/MxNet/Classification/RN50v1.5)对齐，我们从learning rate学习率，优化器Optimizer的选择，数据增强的图像参数设定，到更细的每一层网络的形态，bias,weight初始化等都做了细致且几乎完全一致的对齐工作。具体的参数对齐工作，请参考：[OneFlow-Benchmark](https://github.com/Oneflow-Inc/OneFlow-Benchmark/blob/master/Classification/cnns)仓库
 
 
 
@@ -290,7 +290,7 @@ Oneflow的ResNet50实现，为了保证和[英伟达的Mxnet版实现](https://g
 - [ImageNet](http://image-net.org/index) 
   ImageNet数据集，一般是指2010-2017年间大规模视觉识别竞赛(ILSVRC)的所使用的数据集的统称。ImageNet数据从2010年来稍有变化，常用ImageNet-2012数据集包含1000个类别，其中训练集包含1,281,167张图片，每个类别数据732至1300张不等，验证集包含50,000张图片，平均每个类别50张图片。
 
-完整的ImageNet(2012)制作过程，请参考tools目录下的[README说明](https://github.com/Oneflow-Inc/OneFlow-Benchmark/Classification/cnns/tools/README.md)
+完整的ImageNet(2012)制作过程，请参考tools目录下的[README说明](https://github.com/Oneflow-Inc/OneFlow-Benchmark/blob/master/Classification/cnns/tools/README.md)
 
 
 
@@ -323,5 +323,5 @@ flow.onnx.export(InferenceNet, '/tmp/resnet50_weights', 'resnet50_v1.5.onnx')
 
 #### 验证 ONNX 模型的正确性
 
-生成 ONNX 模型之后可以使用 ONNX Runtime 运行 ONNX 模型，以验证 OneFlow 模型和 ONNX 模型能够在相同的输入下产生相同的结果。相应的代码在 [resnet\_to\_onnx.py](https://github.com/Oneflow-Inc/OneFlow-Benchmark/Classification/cnns/resnet_to_onnx.py) 的 `check_equality`。
+生成 ONNX 模型之后可以使用 ONNX Runtime 运行 ONNX 模型，以验证 OneFlow 模型和 ONNX 模型能够在相同的输入下产生相同的结果。相应的代码在 [resnet\_to\_onnx.py](https://github.com/Oneflow-Inc/OneFlow-Benchmark/blob/master/Classification/cnns/resnet_to_onnx.py) 的 `check_equality`。
 
