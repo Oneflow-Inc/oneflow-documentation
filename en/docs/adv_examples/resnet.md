@@ -293,32 +293,64 @@ Oneflow的ResNet50实现，为了保证和[英伟达的Mxnet版实现](https://g
 
 ### Convert OneFlow model to ONNX model
 
-ONNX (Open Neural Network Exchange) 是一种较为广泛使用的神经网络中间格式，通过 ONNX 格式，OneFlow 模型可以被许多部署框架（如 OpenVINO、ONNX Runtime 和移动端的 ncnn、tnn、TEngine 等）所使用。这一节介绍如何将训练好的 resnet50 v1.5 模型转换为 ONNX 模型并验证正确性，可以在 resnet\_to\_onnx.py 中找到参考代码。
+#### 简介
 
-#### How to generate ONNX models
+ **ONNX (Open Neural Network Exchange)**  是一种较为广泛使用的神经网络中间格式，通过 ONNX 格式，OneFlow 模型可以被许多部署框架（如 OpenVINO、ONNX Runtime 和移动端的 ncnn、tnn、TEngine 等）所使用。这一节介绍如何将训练好的 resnet50 v1.5 模型转换为 ONNX 模型并验证正确性。
+
+#### 快速上手
+
+我们提供了完整代码：[resnet\_to\_onnx.py](https://github.com/Oneflow-Inc/OneFlow-Benchmark/blob/master/Classification/cnns/resnet_to_onnx.py)  帮你轻松完成模型的转换和测试的工作
+
+ **步骤一：** 下载预训练模型：[resnet50_v1.5_model](https://oneflow-public.oss-cn-beijing.aliyuncs.com/model_zoo/resnet_v15_of_best_model_val_top1_77318.tgz) ，解压后放入当前目录
+
+ **步骤二：** 执行：`python3 resnet_to_onnx.py`
+
+此代码将完成OneFlow模型->ONNX模型的转化，然后使用ONNX Runtime加载转换后的模型对单张图片进行测试。测试图片如下：
+
+<div align="center">
+    <img src="imgs/tiger.jpg" align='center'/>
+</div>
+
+输出：
+
+```python
+Convert to onnx success! >>  onnx/model/resnet_v15_of_best_model_val_top1_77318.onnx
+data/tiger.jpg
+Are the results equal? Yes
+Class: tiger, Panthera tigris; score: 0.8112028241157532
+```
+
+
+
+#### 如何生成 ONNX 模型
+
+上面的示例代码，介绍了如何转换resnet模型至onnx模型，并给出了一个利用onnx runtime进行预测的例子，同样，你也可以利用下面的步骤来完成自己训练的resnet或其他模型的转换。
 
 **步骤一：将模型权重保存到本地**
 
-首先将训练得到的网络权重保存到本地磁盘，例如我们保存到 /tmp/resnet50_weights 这个文件夹下
+首先指定待转换的OneFlow模型路径，然后指定转换后的ONNX模型存放路径，例如示例中：
 
 ```python
-check_point = flow.train.CheckPoint()
-check_point.save("/tmp/resnet50_weights")
+#set up your model path
+flow_weights_path = 'resnet_v15_of_best_model_val_top1_77318'
+onnx_model_dir = 'onnx/model'
 ```
 
-**步骤二：新建一个用于测试/推理的 job function**
+**步骤二：新建一个用于推理的 job function**
 
-然后新建一个用于推理的 job function，它只包含网络结构本身，不包含读取 OFRecord 的算子，并且直接接受 numpy 数组形式的输入。可参考 resnet\_to\_onnx.py 中的 `InferenceNet`。
+然后新建一个用于推理的 job function，它只包含网络结构本身，不包含读取 OFRecord 的算子，并且直接接受 numpy 数组形式的输入。可参考 resnet\_to\_onnx.py 中的 `InferenceNet`
 
 **步骤三：调用 flow.onnx.export 方法**
 
-接下来调用 `flow.onnx.export` 方法，从 OneFlow 网络得到 ONNX 模型，它的第一个参数是上文所说的专用于推理的 job function，第二个参数是 /tmp/resnet50_weights 这个保存了网络权重的文件夹，第三个参数是 ONNX 模型文件的路径。
+接下来代码中会调用`oneflow_to_onnx()`方法，此方法包含了核心的模型转换方法： `flow.onnx.export()`
+
+ **flow.onnx.export** 将从 OneFlow 网络得到 ONNX 模型，它的第一个参数是上文所说的专用于推理的 job function，第二个参数是OneFlow模型路径，第三个参数是（转换后）ONNX模型的存放路径
 
 ```python
-flow.onnx.export(InferenceNet, '/tmp/resnet50_weights', 'resnet50_v1.5.onnx')
+onnx_model = oneflow_to_onnx(InferenceNet, flow_weights_path, onnx_model_dir, external_data=False)
 ```
 
-#### Verify the ONNX model
+#### 验证 ONNX 模型的正确性
 
-生成 ONNX 模型之后可以使用 ONNX Runtime 运行 ONNX 模型，以验证 OneFlow 模型和 ONNX 模型能够在相同的输入下产生相同的结果。相应的代码在 [resnet\_to\_onnx.py](https://github.com/Oneflow-Inc/OneFlow-Benchmark/blob/master/Classification/cnns/resnet_to_onnx.py) 的 `check_equality`。
+生成 ONNX 模型之后可以使用 ONNX Runtime 运行 ONNX 模型，以验证 OneFlow 模型和 ONNX 模型能够在相同的输入下产生相同的结果。相应的代码在 resnet\_to\_onnx.py 的 `check_equality`。
 
