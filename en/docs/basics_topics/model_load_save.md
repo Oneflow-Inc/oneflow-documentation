@@ -22,7 +22,7 @@ In this article, we will introduce:
 
 ## Use get_variable to create/access object of model parameters
 
-我们可以使用 `oneflow.get_variable` 方法创造或者获取一个对象，该对象可以用于在全局作业函数中交互信息；当调用 `OneFlow.CheckPoint` 的对应接口时，该对象也会被自动地保存或从存储设备中恢复。
+我们可以使用 `oneflow.get_variable` 方法创造或者获取一个对象，该对象可以用于在全局作业函数中交互信息；当调用 `oneflow.CheckPoint` 的对应接口时，该对象也会被自动地保存或从存储设备中恢复。
 
 Because of this character, the object create by `get_variable` always used in store model parameters.In fact, there are many high levels ports in OneFlow like `oneflow.layers.conv2d`. We use `get_variable` to create model parameters.
 
