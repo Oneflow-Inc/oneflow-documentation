@@ -20,8 +20,12 @@ For example:
 
 ```python
 import oneflow.typing as tp
-def test_job(images:tp.Numpy.Placeholder((32, 1, 28, 28), dtype=flow.float32),
-             labels:.tp.Numpy.Placeholder((32, ), dtype=flow.int32)):
+def test_job(
+    images: tp.Numpy.Placeholder((32, 1, 28, 28), dtype=flow.float),
+    labels: tp.Numpy.Placeholder((32,), dtype=flow.int32),
+) -> Tuple[tp.Numpy, tp.Numpy]:
+    # do something with images or labels
+    return (images, labels)
 ```
 
 It define the input of a job function. The shape of image input is (32, 1, 28, 28) and the data type is flow.float32. The shape of labels is (32,) and data type is flow.int32.
@@ -69,16 +73,41 @@ The layer concept in OneFlow is basically same as the layer in tensorflow, pytor
 ```python
 def lenet(data, train=False):
     initializer = flow.truncated_normal(0.1)
-    conv1 = flow.layers.conv2d(data, 32, 5, padding='SAME', activation=flow.nn.relu, name='conv1',
-                               kernel_initializer=initializer)
-    pool1 = flow.nn.max_pool2d(conv1, ksize=2, strides=2, padding='SAME', name='pool1', data_format='NCHW')
-    conv2 = flow.layers.conv2d(pool1, 64, 5, padding='SAME', activation=flow.nn.relu, name='conv2',
-                               kernel_initializer=initializer)
-    pool2 = flow.nn.max_pool2d(conv2, ksize=2, strides=2, padding='SAME', name='pool2', data_format='NCHW')
+    conv1 = flow.layers.conv2d(
+        data,
+        32,
+        5,
+        padding="SAME",
+        activation=flow.nn.relu,
+        name="conv1",
+        kernel_initializer=initializer,
+    )
+    pool1 = flow.nn.max_pool2d(
+        conv1, ksize=2, strides=2, padding="SAME", name="pool1", data_format="NCHW"
+    )
+    conv2 = flow.layers.conv2d(
+        pool1,
+        64,
+        5,
+        padding="SAME",
+        activation=flow.nn.relu,
+        name="conv2",
+        kernel_initializer=initializer,
+    )
+    pool2 = flow.nn.max_pool2d(
+        conv2, ksize=2, strides=2, padding="SAME", name="pool2", data_format="NCHW"
+    )
     reshape = flow.reshape(pool2, [pool2.shape[0], -1])
-    hidden = flow.layers.dense(reshape, 512, activation=flow.nn.relu, kernel_initializer=initializer, name='dense1')
-    if train: hidden = flow.nn.dropout(hidden, rate=0.5, name="dropout")
-    return flow.layers.dense(hidden, 10, kernel_initializer=initializer, name='dense2')
+    hidden = flow.layers.dense(
+        reshape,
+        512,
+        activation=flow.nn.relu,
+        kernel_initializer=initializer,
+        name="dense1",
+    )
+    if train:
+        hidden = flow.nn.dropout(hidden, rate=0.5, name="dropout")
+    return flow.layers.dense(hidden, 10, kernel_initializer=initializer, name="dense2")
 ```
 
 The bottom of layer is composed by many operators. Like: `layers.conv2d` is composed by  `conv2d` and `variable`.
