@@ -1,15 +1,86 @@
 # 配置优化算法和超参
 
-当一个神经网络被搭建好之后，通常是需要经过训练之后才能够被拿来做预测。而训练的过程就是网络模型参数(Variable)被优化的过程，通常采用反向传播算法和指定的优化器/优化策略(Optimizer)更新网络模型参数，本文重点介绍在 OneFlow 中如何设置优化策略(Optimizer)和超参(Hyperparameters)。
+当一个神经网络被搭建好之后，通常是需要经过训练之后才能够被拿来做预测/推理。而训练的过程就是网络模型参数(Variable)被优化的过程，通常采用反向传播算法和指定的优化器/优化策略(Optimizer)更新网络模型参数，本文重点介绍在 OneFlow 中如何设置 **优化策略(Optimizer)** 和 **超参(Hyperparameters)** 。
 
-可以在不了解 OneFlow 设计和概念的情况下，直接采用下面的预测配置或训练配置；如果有更进一步的需要，可以参考如何配置 `model_update_conf`，自定义优化方法；本文的最后会通过逐层推进的方式，介绍 OneFlow 在设计的一些概念，详细解释如何设置训练时候的优化算法和超参数。
+可以在不了解 OneFlow 设计和概念的情况下，直接采用下面的预测配置或训练配置；如果有更进一步的需要，可以参考：
 
-## 预测/推理配置
-在 OneFlow 中，无论是训练还是验证、预测/推理，都需要通过装饰器 `@flow.global_function` 来指定，而优化器和超参数的设置通过函数自定义，并作为参数传递到 `@flow.global_function` 中。通过这种方式，做到了 **参数配置和任务的分离** 。
+文章主要内容如下：
 
-例如：下面我们定义了一个用于验证的作业函数(job function)：`eval_job`
+-  **OneFlow的全局函数和配置** 
 
-我们通过 get_eval_config() 定义了 eval_job() 的配置，并将 get_eval_config() 作为 `@flow.global_function` 的参数，应用到eval_job()函数。
+   介绍 OneFlow 的全局函数Global Function以及设计概念
+
+-  **配置示例** 
+
+   训练作业和推理/预测作业下的配置示例；
+
+-  **Optimizer和优化算法**
+
+   介绍OneFlow中常用的优化器/优化算法
+
+-  **学习率和超参数**
+
+   介绍学习率的设定，学习率衰减策略，一些超参数设定
+
+
+
+## OneFlow的全局函数和配置
+
+此章节将介绍 OneFlow 全局函数的概念，函数配置的概念以及如何在函数配置中区分训练或预测/推理配置。
+
+### 全局函数(Global Function)
+
+在介绍优化策略和超参的设置之前，需要先提到`OneFlow Global Function`这个概念，被 `oneflow.global_function` 修饰的函数就是`OneFlow Global Function`，通常也可以被称作`job function`作业函数，下面就是一个简单的例子：
+
+```python
+import oneflow as flow
+@flow.global_function(type="test", function_config = flow.function_config())
+def test_job():
+  # build up NN here
+```
+
+其中`@flow.global_function`有两个基本参数：`type`指定了作业的类型，`type = "train"`为训练；`type="predict"`为验证或推理。type默认为"predict"，function_config默认为None。
+
+`test_job`被`@flow.global_function`修饰后就成为了能被OneFlow识别的作业。
+
+换句话说：在 OneFlow 中，无论是训练还是验证、预测/推理的作业，都需要通过装饰器 `@flow.global_function` 来指定，之后，OneFlow将根据function_config参数指定的配置(或默认配置)运行此作业。通过这种方式，做到了 **参数配置和任务的分离** 。
+
+`job function`作业函数主体包括两部分信息：使用算子搭建神经网络(NN)，以及运行这个网络需要的配置信息(function_config)。
+
+下文专注介绍如何设置优化算法等配置信息，网络的搭建请参考[如何使用OneFlow搭建网络](build_nn_with_op_and_layer.md)。
+
+### 函数配置(function_config)
+
+前面的例子中，你也可能注意到 `@flow.global_function` 装饰器接受`flow.function_config()` 的返回对象作为参数。这个参数就是设置作业函数配置信息的入口。比如下面这个略微复杂一点的例子：
+
+```python
+def get_train_config():
+  config = flow.function_config()
+  # 设置默认数据类型
+  config.default_data_type(flow.float)
+  # 设置自动混合精度
+  config.enable_auto_mixed_precision(True)
+  return config
+
+@flow.global_function("train", get_train_config())
+def train_job():
+  # build up NN here
+```
+
+在这个例子中，通过 `function_config` 设置了网络的默认数据类型为 float；并设置了允许自动混合精度训练模型。
+
+还可以通过`function_config`进行一些其他的设置，如：`config.default_logical_view(flow.scope.consistent_view())` 设置作业的默认逻辑视图为`consistent_view`。
+
+`function_config`相关的设置通常和计算资源、设备、集群调度有关，而具体的优化器、学习率和超参数，我们在`job function`作业函数主体内设置。
+
+
+
+## 配置示例
+
+### 预测/推理配置
+下面我们定义了一个用于验证的作业函数(job function)：`eval_job`
+
+我们通过 get_eval_config() 定义了 eval_job() 的配置，并将 get_eval_config() 作为 `@flow.global_function` 的参数，应用到eval_job()函数。同时，通过设置参数type="predict"来表面该job function的类型—用于模型验证任务。
 
 ```python
 def get_eval_config():
@@ -17,14 +88,14 @@ def get_eval_config():
   config.default_data_type(flow.float)
   return config
   
-@flow.global_function(get_eval_config())
+@flow.global_function("predict", get_eval_config())
 def eval_job() -> tp.Numpy:
   # build up NN here
 ```
-当然，上面的 `get_eval_config` 中只配置了网络的基本参数。在下面的例子中，我们将介绍一个训练作业，并配置学习率 lr 和 sgd 优化器等参数。
 
-## 训练配置
-同样，只要按照下面的方式给 `train_job` 函数配上一个装饰器 `@flow.global_function())` 就能够实现一个用于训练的网络。
+
+### 训练配置
+同样，只要按照下面的方式给 `train_job` 函数配上一个装饰器 `@flow.global_function())` 就能够实现一个用于训练的网络。优化器，学习率和超参数的设定，我们可以直接在job function函数主体里定义：
 
 ```python
 @flow.global_function(type="train")
@@ -37,169 +108,83 @@ def train_job(images: tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.f
     flow.optimizer.SGD(lr_scheduler, momentum=0).minimize(loss)
     return loss
 ```
-其中 `type="train"` 表明作业函数是一个训练任务，学习率和优化器的设置如下：
+学习率和优化器的设置如下：
 
-1. 利用 `flow.optimizer.PiecewiseConstantScheduler` 设置了学习率 learning rate的策略—初始学习率为0.1的分段缩放策略。当然，你也可以使用其他的学习率策略如：`flow.optimizer.CosineSchedule`r(余弦策略)
+1. 利用 `flow.optimizer.PiecewiseConstantScheduler` 设置了学习率 learning rate的策略—初始学习率为0.1的分段缩放策略。当然，你也可以使用其他的学习率策略如：`flow.optimizer.CosineScheduler`(余弦策略)
 
 2. 在 `flow.optimizer.SGD(lr_scheduler, momentum=0).minimize(loss)` 设置了 optimizer 优化器/优化算法。(naive_conf 即使用默认的 sgd 优化算法)
 
-## 配置 `model_update_conf`
-OneFlow 中很多数据结构都是用 [protobuf](https://developers.google.cn/protocol-buffers/) 描述的，python的字典对象能够方便的转换成 protobuf 对象，`model_update_conf` 的输入要求是一个 python 字典对象，我们需要参考下面的 protobuf 定义，构建好一个 python 字典对象，传给 `model_update_conf` 作为输入。
-```protobuf
-message NormalModelUpdateOpUserConf {
-  optional LearningRateDecayConf learning_rate_decay = 1;
-  optional WarmupConf warmup_conf = 2;
-  optional ClipConf clip_conf = 3;
-  optional WeightDecayConf weight_decay_conf = 4;
-  oneof normal_mdupdt {
-    NaiveModelUpdateConf naive_conf = 1000;
-    MomentumModelUpdateConf momentum_conf = 1001;
-    RMSPropModelUpdateConf rmsprop_conf = 1002;
-    LARSModelUpdateConf lars_conf = 1003;
-    AdamModelUpdateConf adam_conf = 1004;
-    LazyAdamModelUpdateConf lazy_adam_conf = 1005;
-  }
-}
-```
+## Optimizer和优化算法
+目前 OneFlow 支持6种Optimize/优化算法，分别是：
 
-### 选择优化算法
-从上面的定义中可以看到，目前 OneFlow 支持6种优化算法，分别是：
+-  SGD
+-  Adam
+-  AdamW
+-  LazyAdam
+-  LARS
+-  RMSProp
 
-- `naive_conf` 代表 SGD
-
-- `momentum_conf`
-
-- `rmsprop_conf`
-
-- `lars_conf`
-
-- `adam_conf`
-
-- `lazy_adam_conf`
-
-这六种算法必须选择其一，比如前面的例子中选择的是`naive_conf`，语法是：
+这六种优化算法必须选择其一，可以通过flow.optimizer来调用，譬如：
 
 ```
-config.train.model_update_conf({"naive_conf": {}})
-```
-
-`naive_conf` 不需要额外配置参数，所以传入的字典是 `{"naive_conf": {}}`，其 key 是 `"naive_conf"` ，value 是一个空的字典`{}`。
-
-如果选择其他的优化器，就需要配置相应的参数，如下面配置了一个惯量为0.875的 SGD 优化器，key 是 `momentum_conf` , value 是一个非空的字典`{'beta': 0.875}`。
-
-```
-config.train.model_update_conf({"momentum_conf": {'beta': 0.875}})
+flow.optimizer.SGD(lr_scheduler, momentum=0.9, grad_clipping=flow.optimizer.grad_clipping.by_global_norm(1))
+  .minimize(loss)
 ```
 
 这里不对每个优化器做详细说明，详细请参考[optimizer api](https://oneflow-api.readthedocs.io/en/latest/optimizer.html)
 
-### 其他优化选项
-前面的定义中还有4个可选的优化选项：
+## 学习率和超参数
 
-- `learning_rate_decay` - 学习率的衰减方式
+#### 学习率(learning rate)
 
-- `warmup_conf` - 学习率预热方式
+学习率相关的设定是通过类：LrScheduler完成的，Optimizer类的构造方法接收一个 LrScheduler 对象来设定学习率。
 
-- `clip_conf` - 梯度截取
+你可以通过：`lr_scheduler = flow.optimizer.PiecewiseConstantScheduler([], [0.01])`实现固定大小的学习率；
 
-- `weight_decay_conf` - 权重衰减
-
-这4个选项可以不选或多选，配置方式就是在 python 字典中加入新的key-value 项，详细请参考[optimizer api](https://oneflow-api.readthedocs.io/en/latest/optimizer.html)，下面仅举出两种形式的例子供参考。
+也可以使用`flow.optimizer.PiecewiseConstantScheduler`设置分段缩放策略的学习率：
 
 ```python
-# example 1
-model_update_conf = {
-    'momentum_conf': {
-        'beta': 0.875
-    }, 
-    'warmup_conf': {
-        'linear_conf': {
-            'warmup_batches': 12515, 
-            'start_multiplier': 0
-        }
-    }, 
-    'learning_rate_decay': {
-        'cosine_conf': {
-            'decay_batches': 112635
-        }
-    }
-}
+lr_scheduler = flow.optimizer.PiecewiseScalingScheduler(0.001, [30, 60, 90], 0.1)
 ```
+
+你还可以通过`flow.optimizer.CosineSchedule`设定cosine余弦策略的学习率。
+
+
+
+例如你希望训练的初始学习率为 0.01，以 cosin策略降低学习率，迭代 10000 个 iteration，并且训练最开始时额外有 100 个 iteration 进行 warmup，这 100 个 iteration 里学习率从 0 逐渐上升到初始学习率
+
+```
+lr_scheduler = flow.optimizer.CosineScheduler(10000, 0.01, warmup=flow.optimizer.warmup.linear(100, 0))
+```
+
+#### 超参数(Hyperparameter)
+
+除了优化算法和学习率等常用设置，OneFlow中也支持一些其他的优化选项和超参数设定。
+
+像常用的：**clip梯度截取**、**weight decay**、**L2正则化**
+
+和lr_scheduler一样，clip和weight decay都作为optimizer类的参数可以直接设定：
 
 ```python
-# example 2
-model_update_conf = dict(
-    adam_conf=dict(
-        epsilon=1e-6
-    ),
-    learning_rate_decay=dict(
-        polynomial_conf=dict(
-            decay_batches=100000, 
-            end_learning_rate=0.0,
-        )
-    ),
-    warmup_conf=dict(
-        linear_conf=dict(
-            warmup_batches=1000, 
-            start_multiplier=0,
-        )
-    ),
-    clip_conf=dict(
-        clip_by_global_norm=dict(
-            clip_norm=1.0,
-        )
-    ),
-)
-```
-## OneFlow的全局函数和配置
-这个章节递进的介绍 OneFlow 全局函数的概念，函数配置的概念以及如何在函数配置中区分训练或预测配置。
-
-### OneFlow 全局函数(OneFlow Global Function)
-在介绍优化策略和超参的设置之前，需要先提到`OneFlow Global Function`这个概念，被 `oneflow.global_function` 修饰的函数就是`OneFlow Global Function`，通常也可以被称作`job function`作业函数，下面就是一个简单的例子：
-
-```python
-import oneflow as flow
-@flow.global_function(flow.function_config(),type="test")
-def test_job():
-  # build up NN here
-```
-`test_job`就是一个`OneFlow Global Function`，它能够被 OneFlow 框架识别，根据配置把函数里面定义的网络编译成适合计算图，放到设备上进行计算。
-
-作业函数包括两部分信息：使用算子搭建的网络(NN)，以及使用这个网络需要的配置信息(config)。网络的搭建请参考[如何使用OneFlow搭建网络](build_nn_with_op_and_layer.md)。本文专注介绍如何设置配置信息。
-
-### 函数配置(function_config)
-前面的例子中，你也可能注意到 `@flow.global_function` 装饰器接受`flow.function_config()` 的返回对象作为参数。这个参数就是设置作业函数配置信息的入口。比如下面这个略微复杂一点的例子：
-
-```python
-config = flow.function_config()
-config.default_data_type(flow.float)
-
-@flow.global_function(type="predict", function_config=config)
-def test_job():
-  # build up NN here
-```
-上面的例子中，通过 `function_config` 设置了网络的缺省数据类型为 float；将被用于训练；学习率是0.1；采用了 `naive_conv` 优化算法，也就是 `SGD`。
-
-function_config 中还包含哪些配置请参考[function_config API](https://oneflow-api.readthedocs.io/en/latest/oneflow.html?highlight=functionconfig#oneflow.FunctionConfig)。
-
-### 训练还是预测配置
-默认情况下，作业函数只能做预测作业，如果想要做训练作业，需要设置 `type=train` 属性。
-
-```python
-@flow.global_function(type="train")
-def train_job():
-    #网络模型...
+class Optimizer:
+    def __init__(
+        self,
+        lr_scheduler: LrScheduler,
+        loss_scale_factor: Optional[int] = None,
+        grad_clipping: Optional[ClipGradientConf] = None,
+        train_step_lbn: Optional[Text] = None,
+    ):
+        self.lr_scheduler = lr_scheduler
+        self.loss_scale_factor = loss_scale_factor
+        self.grad_clipping = grad_clipping
+        self.train_step_lbn = train_step_lbn
+        ...
 ```
 
-并且，通过 `flow.optimizer` 下的方法设置学习速率及优化方法，如以下代码设置了学习率和模型更新的策略(针对 `loss` 变量，使用 SGD)：
-
-```python
-    lr_scheduler = flow.optimizer.PiecewiseConstantScheduler([], [0.1])
-    flow.optimizer.SGD(lr_scheduler, momentum=0).minimize(loss)
-```
-
-反之，如果省略掉以上配置，那么得到的就是作业函数就可用于预测。
+> 目前，我们只在AdamW类型的优化器中提供weight decay方法，在其余优化器中，可以通过L2正则化实现"weight decay"的效果（通过设置variable的regularizer）
 
 ## 总结
 
 一个 OneFlow 的全局函数由 `@oneflow.global_function` 修饰，解耦了网络的搭建过程和任务相关配置(function_config)，`function_config` **采取集中配置的方式，既方便任务切换，又方便集群调度配置。**
+
+job function中，可以通过flow.optimizer方便地设置Optimizer优化器、学习率、已经超参数。当然，目前还不够全面，我们会不断完善，以支持更多的优化算法及参数设定。
