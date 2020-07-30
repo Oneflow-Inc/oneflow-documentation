@@ -1,8 +1,8 @@
-# Use OneFlow build the neural network
+# Use OneFlow to build a neural network
 
-The example in the previous section [ Recognition of MNIST handwritten numbers](http://183.81.182.202:8000/quick_start/lenet_mnist.html), we use flow.layers in the network layer and the operator in flow.nn build up a simple lenet network.Now we will using a simple neural network to introduce the core operator and layer in OneFlow network.
+The example in the previous section [ Recognition of MNIST handwritten numbers](../quick_start/lenet_mnist.md), we use the network layer in flow.layers and the operator in flow.nn to build a simple lenet network.Now we will use a simple neural network to introduce the core operator and layer in OneFlow.
 
-The code below is nerural network which is constructed by convolution layer, pooling layer and all connection layer. The figure show part of the operator of network and shape of result of operator. The shape of `data` is 100x1×28×28 and it is `Blob`. First of all `data` be the input of `conv2d` to take part in convolution, then the output will send to conv. After that conv1 will be the input of `max_pool2d` and keep run like this.(Note: Here isn't accurate, it is easy to understand such a description)
+The code in below is a nerural network which is constructed by convolution layer, pooling layer and fully connected layer. The figure shows the part and shape of the operator in network. The shape of `data` is 100x1×28×28. First of all `data` is the input of `conv2d` to take part in convolution, then the output will send to conv. After that conv1 will be the input of `max_pool2d` and keep run like this.(Note: Here isn't accurate, it is easy to understand such a description.We will explain it later)
 
 ```python
 def lenet(data, train=False):
