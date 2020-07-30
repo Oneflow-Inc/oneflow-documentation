@@ -63,7 +63,7 @@ The beginning of the design of OneFlow is to solve the task of multiple GPU in d
 
 #### Layer
 
-The layer concept in OneFlow is basically same as the layer in tensorflow, pytorch and other popular deep learning framework. It is use to describe a layer in neural network. Like: conv2d convolution layer, batch_normalization layer, dense full connect layer and layer_norm regularization layer.Layer can simplify the process of build the neural networks. For example you can use just few line of code to build Lenet:
+The layer concept in OneFlow is basically same as the layer in tensorflow, pytorch and other popular deep learning framework. It is use to describe a layer in neural network. Like: conv2d convolution layer, batch_normalization layer, dense fully connected layer and layer_norm regularization layer.Layer can simplify the process of build the neural networks. For example you can use just few line of code to build Lenet:
 
 ```python
 def lenet(data, train=False):
