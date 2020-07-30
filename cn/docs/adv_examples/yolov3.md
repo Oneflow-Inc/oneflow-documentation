@@ -6,7 +6,13 @@
 
 而Yolov3是其中的经典和集大成者(当然官方最近也推出了yolov4)，其以融合了残差网络的Darknet-53为骨干网络，融合了多尺度，3路输出的feature map，上采样等特点，使其模型精度和对小目标检测能力都大为提升。
 
-![detected_kite](imgs/detected_000004.jpg)
+
+
+<div align="center">
+    <img src="imgs/detected_000004.jpg" align='center'/>
+</div>
+
+
 
 本文，我们提供了YoloV3的OneFlow版实现，和其他版本实现的区别在于，我们将输出特征的nms过程写进了c++代码中，通过自定义user op的方式来调用，当然，我们也同时支持直接使用python代码处理nms。
 
@@ -59,7 +65,11 @@ sh yolo_predict_python_data_preprocess.sh
 
 运行脚本后，将在data/result下生成检测后带bbox标记框的图片：
 
-![detected_kite](imgs/detected_kite.jpg)
+<div align="center">
+    <img src="imgs/detected_kite.jpg" align='center'/>
+</div>
+
+
 
 参数说明
 - --pretrained_model    预训练模型路径

@@ -182,7 +182,7 @@ print(output_data)
   2. `.Op("op_type_name")` 指定这个op的type  必选项，只可调用一次
   3. `.Input("input_arg_name", input_blob_list)`  可选项，可以调用多次，每次指定一个`input_arg_name`，同时传入一个输入的blob列表，表示这个输入参数名字对应的多个输入blob
   4. `.Output("output_arg_name", num)` 可选项，可调用多次，每次指定一个`output_arg_name`实际对应的输出blob的数量，默认`num=1`。
-  5. `.SetAttr("attr_name", attr_value, attr_type)`  可选项，可调用多次，每次指定一个attr属性的参数取值和参数类型，参数取值和类型的合法性由该op_def的attr属性判断。
+  5. `.SetAttr("attr_name", attr_value)`  可选项，可调用多次，每次指定一个attr属性的参数取值，参数取值的合法性由该op_def的attr属性判断。
   6. `.Build()` 只可调用一次，并且在上述属性指定结束后，该方法返回一个op的python wrapper
   7. `.RemoteBlobList()` 该方法是python op wrapper的接口，用于返回该op的输出blob的列表，列表中的每个blob中的`logical_blob_name`表示该blob是该op的哪个输出blob。列表的顺序是你在python wrapper中定义的Output()参数的顺序。当你有多个output_arg_name时，假设你定义的输出是`.Output("a", 2).Output("b",3)`，则RemoteBlobList()返回的列表长度为5，分别表示`[("a",0),("a",1),("b",0),("b",1),("b",2)]` 。
 
@@ -241,7 +241,7 @@ REGISTER_USER_OP("Reshape")
 | kAtShape       | oneflow::Shape       |
 | kAtListInt32   | std::vector<int32_t> |
 | kAtListInt64   | std::vector<int64_t> |
-| kAtListFloat   | std::vector< float >   |
+| kAtListFloat   | std::vector< float > |
 
 在`Reshape` op注册的`ShapeInferFn`中，其就把`shape`对应的Attr的值（`oneflow::Shape`类型）赋给了`out` tensor对应的`out_shape`。
 
@@ -319,21 +319,6 @@ OneFlow框架支持对Op的Input/Output做如下配置：
 
 对于无需更改数据类型的Op，也无需在注册Op时指定`SetDataTypeInferFn()`，因为OneFlow框架提供的默认实现就是让output tensors 和 input tensors 的数据类型一致。
 
-
-
-#### Sbp Function、BatchAxis
-
-Sbp、BatchAxis是OneFlow框架特有的概念，具体的请参见OneFlow文档。
-`TODO()`
-
-#### 性能优化： Inplace、KeepHeaderOnly
-`TODO()`
-#### is_mutable   mut消费input
-`TODO()`
-#### required_grad  定义input是否需要注册grad
-`TODO()`
-#### TODO...
-
 ### Kernel Registration
 
 #### Temporary Buffer Size Infer Function
@@ -376,70 +361,47 @@ Oneflow使用自动求导的方式进行后向计算图展开，为了对自定�
 
 namespace oneflow {
 
-REGISTER_USER_OP_GRAD("Relu").SetGenBackwardOpConfFn([](const user_op::UserOpWrapper& op,
-                                                          user_op::AddOpFn AddOp) {
-  if (op.NeedGenGradTensor4OpInput("in", 0)) {
-    user_op::UserOpConfWrapperBuilder builder(op.op_name() + "_grad");
-    user_op::UserOpConfWrapper relu_grad_op =
-        builder.Op("relu_grad")
-            .Input("y", op.output("out", 0))
-            .Input("dy", op.GetGradTensorWithOpOutput("out", 0))
-            .Output("dx")
-            .Build();
-    op.BindGradTensorWithOpInput(relu_grad_op.output("dx", 0), "in", 0);
-    AddOp(relu_grad_op);
-  }
+REGISTER_USER_OP_GRAD("Relu").SetBackwardOpConfGenFn([](user_op::BackwardOpConfContext* ctx) {
+  const auto relu_grad_op_name = ctx->FwOp().op_name() + "_grad";
+  ctx->DefineOp(relu_grad_op_name, [&ctx](user_op::BackwardOpBuilder& builder) {
+    return builder.OpTypeName("relu_grad")
+        .InputBind("y", ctx->FwOp().output("out", 0))
+        .InputBind("dy", ctx->FwOp().output_grad("out", 0))
+        .Output("dx")
+        .Build();
+  });
+  ctx->FwOp().InputGradBind(user_op::OpArg("in", 0), [&ctx, &relu_grad_op_name]() {
+    return ctx->GetOp(relu_grad_op_name).output("dx", 0);
+  });
 });
 
 }  // namespace oneflow
 ```
 - 后向生成函数的步骤：
 
-宏`REGISTER_USER_OP_GRAD(op_type_name).SetGenBackwardOpConfFn(fn);`用来注册你的自定义op的后向生成函数，其中fn函数具有两个参数，`UserOpWrapper op`和`AddOpFn AddOp`，其中op表示你的自定义op，AddOp表示向整个计算图中添加一个新的op（用于后向图展开）。
-在生成后向图的函数中，图里的blob是由一个叫logical blob name的字符串表示的，其中包含了产生这个blob的op的name，以及这个blob在这个op里的name。后向生成函数的任务是对前向op的输入blob，生成一个op的子图，这个子图接收前向op的输入输出blob以及输出blob的导数（梯度/grad）blob，子图的最终输出是前向op输入blob对应的导数（梯度）blob，因此针对每个（可能）需要生成梯度的blob，都需要构建一个由其他op组成的子图，并将子图的输出blob与这个需要生成梯度的blob绑定。编写这个生成子图的过程通常包含下面几步：
-  1. 判断前向op的某一个input blob是否需要生成后向的梯度blob。（我们强烈建议进行这个判断，即使你认为这个op的input一定会有梯度。因为oneflow在系统的构图优化后，可能会分析得到这个input的梯度计算是没有意义的，则可以知道不需要构建这个额外的后向子图。）
-  2. 使用UserOpConfWrapperBuilder来构建这个子图中的new_op，通常这些new_op的输入是前向op的in/out或者out对应的out_grad。
-  3. 将构建好的子图的输出blob的logical blob name与前向op的输入blob绑定
-  4. 使用AddOp函数将第2步中构建的new_op添加到计算图中
+宏`REGISTER_USER_OP_GRAD(op_type_name).SetBackwardOpConfGenFn(fn);`用来注册你的自定义op的后向生成函数，其中fn函数带有一个`BackwardOpConfContext* ctx`参数，带有生成Op需要的信息。
 
-针对上图中的relu_op的例子，我们对应一下每个步骤：
-```cpp
-REGISTER_USER_OP_GRAD("Relu").SetGenBackwardOpConfFn([](const user_op::UserOpWrapper& op,
-                                                          user_op::AddOpFn AddOp) {
-  if (op.NeedGenGradTensor4OpInput("in", 0)) {   /* step 1. 判断relu_op.in(0) 是否需要构建后向子图*/
-    user_op::UserOpConfWrapperBuilder builder(op.op_name() + "_grad");
-    /* step 2. 使用UserOpConfWrapperBuilder来构建子图，该子图中包含一个 relu_grad_op */
-    user_op::UserOpConfWrapper relu_grad_op =
-        builder.Op("relu_grad")
-            .Input("y", op.output("out", 0)) /* relu grad op 的一个输入是y，对应的blob为前向op的out(0) */
-            .Input("dy", op.GetGradTensorWithOpOutput("out", 0))  /* 另一个输入dy对应的blob为out_grad */
-            .Output("dx")
-            .Build();
-    /* step 3. 绑定子图的输出blob（relu_grad.out("dx")）与 前向op的input grad blob */
-    op.BindGradTensorWithOpInput(relu_grad_op.output("dx", 0), "in", 0);
-    AddOp(relu_grad_op);  /* step 4. 将子图中新创建的op添加到计算图中 */
-  }
-});
-```
+在生成后向图的函数中，图里的blob是由一个叫logical blob name的字符串表示的，其中包含了产生这个blob的op的name，以及这个blob在这个op里的name。后向生成函数的任务是对前向op的输入blob，生成一个op的子图，这个子图接收前向op的输入输出blob以及输出blob的导数（梯度/grad）blob，子图的最终输出是前向op输入blob对应的导数（梯度）blob，因此针对每个（可能）需要生成梯度的blob，都需要构建一个由其他op组成的子图，并将子图的输出blob与这个需要生成梯度的blob绑定。编写这个生成子图的过程通常包含下面几步：
+  1. 使用`ctx->DefineOp()`和`BackwardOpBuilder`来构建这个子图中的new_op，通常这些new_op的输入是前向op的in/out或者out对应的out_grad；
+  2. 使用`ctx->FwOp().InputGradBind()`和`ctx->GetOp()`将前向op的输入blob绑定到子图的输出blob的logical blob name上；
+
 - 可能用到的接口介绍：
-  1. `UserOpWrapper`:
-    `.NeedGenGradTensor4OpInput(input_arg_name, index)` 返回一个bool值，判断前向op的输入是否需要生成后向的梯度
-    `.input(arg_name,index)` 得到输入的logical blob name
-    `.output(arg_name,index)` 得到输出的logical blob name
-    `.attr(attr_name)` 得到op的属性值
-    `.TensorDesc4ArgNameAndIndex(arg_name, index)` 返回前向op的输入/输出对应的TensorDesc，包含shape、dtype信息
-    `.GetGradTensorWithOpOutput(output_arg_name, index)` 返回前向op的输出对应的后向梯度blob的logical blob name
-    `.BindGradTensorWithOpInput(logical_blob_name, input_arg_name, index)` 将一个特定的logical blob name与该前向op的输入梯度blob绑定
-  2. `UserOpConfWrapperBuilder`:  （与python端的user_op_builder功能一致，接口类似）
-    `UserOpConfWrapperBuilder(your_op_name)`  构造函数需要输入新构建的op name
-    `.Op(op_type_name)`  指定这个op的type
-    `.Input(arg_name, logical_blob_name)`  可选项，可以调用多次，每次指定一个input_arg_name，同时传入一个logical_blob_name，表明这个input arg name对应的blob。如果该input_arg_name对应多个输入blob，则调用`.Input()`的顺序就是其对应的index顺序
-    `.Output(arg_name, num)`  可选项，可调用多次，每次指定一个`output_arg_name`实际对应的输出blob的数量，也可以调用 `.Output(arg_name)`，表示`num = 1`
-    `.Attr(attr_name, val)` 可选项，可调用多次，每次指定一个attr属性的属性名称和参数值，表示对这个attr赋值为val
-    `.Build()`  返回一个UserOpConfWrapper，表示你构建完毕的新op
-  3. `UserOpConfWrapper`:
-    `.input(arg_name,index)` 得到输入的logical blob name
-    `.output(arg_name,index)` 得到输出的logical blob name
-    `.attr(attr_name)` 得到op的属性值
-  4. `AddOp`: 
-    输入参数是一个UserOpConfWrapper
+  1. `ctx->FwOp()`：获取前向Op
+    * `.InputGradBind(input_arg, grad_get_fn)` 会自动判断前向op的输入是否需要生成后向的梯度，如果需要会触发`grad_get_fn`的执行，进行前向输入和后向梯度的绑定，其中`grad_get_fn`中都会调用`ctx->GetOp()`来触发之前定义的op的创建并获取结果；
+    * `.input(arg_name,index)` 得到输入的logical blob name
+    * `.output(arg_name,index)` 得到输出的logical blob name
+    * `.output_grad(output_arg_name, index)` 返回前向op的输出对应的后向梯度blob的logical blob name
+    * `.attr(attr_name)` 得到op的属性值
+    * `.arg_tensor_desc(arg_name, index)` 返回前向op的输入/输出对应的TensorDesc，包含shape、dtype信息
+  2. `ctx->DefineOp(op_name, build_fn)`:定义名为`op_name`的Op的创建函数`build_fn`
+    * 当调用`ctx->GetOp(op_name)`会触发`build_fn`进行Op创建，如果Op已经被创建过，那么这里直接获取创建的结果；
+  3. `BackwardOpBuilder`: 创建Op的类
+    * `.OpTypeName(op_type_name)`  指定这个op的type
+    * `.InputBind(arg_name, logical_blob_name)`  可选项，可以调用多次，每次指定一个input_arg_name，同时传入一个logical_blob_name，表明这个input arg name对应的blob。如果该input_arg_name对应多个输入blob，则调用`.Input()`的顺序就是其对应的index顺序
+    * `.Output(arg_name, num)`  可选项，可调用多次，每次指定一个`output_arg_name`实际对应的输出blob的数量，也可以调用 `.Output(arg_name)`，表示`num = 1`
+    * `.Attr(attr_name, val)` 可选项，可调用多次，每次指定一个attr属性的属性名称和参数值，表示对这个attr赋值为val
+    * `.Build()`  返回结果，表示你构建完毕的新op
+  4. `ctx->GetOp(op_name)`: 得到`op_name`对应Op创建好后返回的结果，Op只有被`ctx->GetOp`获取时才会被真正创建，这里实现了Op子图的惰性创建过程
+    * `.input(arg_name,index)` 得到输入的logical blob name
+    * `.output(arg_name,index)` 得到输出的logical blob name
+    * `.attr(attr_name)` 得到op的属性值

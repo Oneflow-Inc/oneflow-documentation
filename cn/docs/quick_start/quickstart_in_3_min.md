@@ -1,7 +1,7 @@
 这篇文章介绍了如何快速上手 OneFlow ，我们可以在3分钟内完成一个完整的神经网络训练过程。
 
 ## 运行一个例子
-如果已经安装好了 OneFlow ，可以使用以下命令同步我们的[文档仓库](https://github.com/Oneflow-Inc/oneflow-documentation.git)，并运行其中的[mlp_mnist.py](https://github.com/Oneflow-Inc/oneflow-documentation/cn/docs/code/quick_start/mlp_mnist.py)脚本。
+如果已经安装好了 OneFlow ，可以使用以下命令同步我们的[文档仓库](https://github.com/Oneflow-Inc/oneflow-documentation.git)，并运行其中的[mlp_mnist.py](https://github.com/Oneflow-Inc/oneflow-documentation/blob/master/cn/docs/code/quick_start/mlp_mnist.py)脚本。
 
 ```shell
 git clone https://github.com/Oneflow-Inc/oneflow-documentation.git #同步仓库
@@ -62,7 +62,7 @@ if __name__ == '__main__':
             print(loss.mean())
 ```
 
-接下来让我们对这段代码的简单介绍。
+接下来让我们简单介绍下这段代码。
 
 OneFlow 相对其他深度学习框架较特殊的地方是这里：
 ```python

@@ -12,7 +12,7 @@
 
 本文通过使用 LeNet 模型，训练 MNIST 数据集向大家介绍使用 OneFlow 的各个核心环节，文末附有完整的示例代码。
 
-在学习之前，也可以通过以下命令查看各脚本功能。
+在学习之前，也可以通过以下命令查看各脚本功能( **脚本运行依赖GPU** )。
 
 首先，同步本文档仓库并切换到对应路径：
 ```shell
@@ -73,31 +73,6 @@ python lenet_test.py ./9.png
 ## MNIST数据集介绍
 
 MNIST 是一个手写数字的数据库。包括了训练集与测试集；训练集包含了60000张图片以及图片对应的标签，测试集包含了60000张图片以及图片测试的标签。Yann LeCun 等已经将图片进行了大小归一化及居中处理，并且打包为二进制文件供下载。http://yann.lecun.com/exdb/mnist/
-
-## 配置训练的软硬件环境
-
-使用 `oneflow.function_config()` 可以构造一个配置对象，使用该对象，可以对训练相关的诸多软硬件参数进行配置。
-与训练直接相关参数，被打包放置在 `function_config` 的 train 成员中，其余的配置直接作为 `function_config` 的成员。
-以下是我们训练的基本配置：
-
-```python
-def get_train_config():
-    config = flow.function_config()
-    config.default_data_type(flow.float)
-    config.train.primary_lr(0.1)
-    config.train.model_update_conf({"naive_conf": {}})
-    return config
-```
-
-在以上代码中，我们：
-
-* 将训练的默认类型设置为 float
-
-* 设置 learning rate 为0.1
-
-* 训练过程中的模型更新策略为 "naive_conf"
-
-config 对象，其使用场景，将在后文 **实现训练作业函数** 中介绍。
 
 ## 定义训练模型
 
@@ -206,8 +181,8 @@ def eval_job(images:tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.flo
 该作业函数的返回值类型为 `Tuple[tp.Numpy, tp.Numpy]`，则当调用时，会返回一个 `tuple` 容器，里面有2个元素，每个元素都是一个 `numpy` 对象：
 ```python
 for i, (images, labels) in enumerate(zip(test_images, test_labels)):
-    labels, logtis = eval_job(images, labels)
-    acc(labels, logtis)
+    labels, logits = eval_job(images, labels)
+    acc(labels, logits)
 ```
 我们调用作业函数返回了 `labels` 与 `logits`，并用它们评估模型准确率。
 
@@ -263,16 +238,16 @@ def eval_job(images:tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.flo
 以上是校验训练作业函数的编写，声明了返回值类型是 `Tuple[tp.Numpy, tp.Numpy]`， 因此返回一个 `tuple`， `tuple` 中有2个元素，每个元素都是1个 `numpy` 对象。我们将调用训练作业函数，并根据返回结果计算准确率。
 
 ### 迭代校验
-以下 `acc` 函数中统计样本的总数目，以及校验正确的总数目，我们将调用作业函数，得到 `labels` 与 `logtis`：
+以下 `acc` 函数中统计样本的总数目，以及校验正确的总数目，我们将调用作业函数，得到 `labels` 与 `logits`：
 ```python
 g_total = 0
 g_correct = 0
 
-def acc(labels, logtis):
+def acc(labels, logits):
     global g_total
     global g_correct
 
-    predictions = np.argmax(logtis, 1)
+    predictions = np.argmax(logits, 1)
     right_count = np.sum(predictions == labels)
     g_total += labels.shape[0]
     g_correct += right_count
@@ -288,8 +263,8 @@ if __name__ == '__main__':
 
     for epoch in range(1):
         for i, (images, labels) in enumerate(zip(test_images, test_labels)):
-            labels, logtis = eval_job(images, labels)
-            acc(labels, logtis)
+            labels, logits = eval_job(images, labels)
+            acc(labels, logits)
 
     print("accuracy: {0:.1f}%".format(g_correct * 100 / g_total))
 ```
@@ -333,7 +308,7 @@ if __name__ == '__main__':
 
 ### 训练模型
 
-代码：[lenet_train.py](https://github.com/Oneflow-Inc/oneflow-documentation/cn/docs/code/quick_start/lenet_train.py)
+代码：[lenet_train.py](../code/quick_start/lenet_train.py)
 
 ```python
 #lenet_train.py
@@ -386,7 +361,7 @@ if __name__ == '__main__':
 
 ### 校验模型
 
-代码：[lenet_eval.py](https://github.com/Oneflow-Inc/oneflow-documentation/cn/docs/code/quick_start/lenet_eval.py)
+代码：[lenet_eval.py](../code/quick_start/lenet_eval.py)
 
 预训练模型：[lenet_models_1.zip](https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/quick_start/lenet_models_1.zip)
 
@@ -428,11 +403,11 @@ def eval_job(images:tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.flo
 g_total = 0
 g_correct = 0
 
-def acc(labels, logtis):
+def acc(labels, logits):
     global g_total
     global g_correct
 
-    predictions = np.argmax(logtis, 1)
+    predictions = np.argmax(logits, 1)
     right_count = np.sum(predictions == labels)
     g_total += labels.shape[0]
     g_correct += right_count
@@ -446,15 +421,15 @@ if __name__ == "__main__":
 
     for epoch in range(1):
         for i, (images, labels) in enumerate(zip(test_images, test_labels)):
-            labels, logtis = eval_job(images, labels)
-            acc(labels, logtis)
+            labels, logits = eval_job(images, labels)
+            acc(labels, logits)
 
     print("accuracy: {0:.1f}%".format(g_correct * 100 / g_total))
 ```
 
 ### 数字预测
 
-代码：[lenet_test.py](https://github.com/Oneflow-Inc/oneflow-documentation/cn/docs/code/quick_start/lenet_test.py)
+代码：[lenet_test.py](../code/quick_start/lenet_test.py)
 
 预训练模型：[lenet_models_1.zip](https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/quick_start/lenet_models_1.zip)
 

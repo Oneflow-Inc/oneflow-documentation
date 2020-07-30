@@ -1,4 +1,4 @@
-[TOC]
+# Wide & Deep
 
 [HugeCTR](https://github.com/NVIDIA/HugeCTR)是英伟达提供的一种高效的GPU框架，专为点击率（CTR）估计训练而设计。
 

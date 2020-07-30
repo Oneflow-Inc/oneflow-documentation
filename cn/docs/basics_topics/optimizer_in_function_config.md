@@ -91,7 +91,7 @@ config.train.model_update_conf({"naive_conf": {}})
 config.train.model_update_conf({"momentum_conf": {'beta': 0.875}})
 ```
 
-这里不对每个优化器做详细说明，详细请参考[optimizer api](../api)
+这里不对每个优化器做详细说明，详细请参考[optimizer api](https://oneflow-api.readthedocs.io/en/latest/optimizer.html)
 
 ### 其他优化选项
 前面的定义中还有4个可选的优化选项：
@@ -104,7 +104,7 @@ config.train.model_update_conf({"momentum_conf": {'beta': 0.875}})
 
 - `weight_decay_conf` - 权重衰减
 
-这4个选项可以不选或多选，配置方式就是在 python 字典中加入新的key-value 项，详细请参考[optimizer api](../api)，下面仅举出两种形式的例子供参考。
+这4个选项可以不选或多选，配置方式就是在 python 字典中加入新的key-value 项，详细请参考[optimizer api](https://oneflow-api.readthedocs.io/en/latest/optimizer.html)，下面仅举出两种形式的例子供参考。
 
 ```python
 # example 1
@@ -173,25 +173,29 @@ def test_job():
 ```python
 config = flow.function_config()
 config.default_data_type(flow.float)
-config.train.primary_lr(0.1)
-config.train.model_update_conf({"naive_conf": {}})
 
-@flow.global_function(config)
+@flow.global_function(type="predict", function_config=config)
 def test_job():
   # build up NN here
 ```
 上面的例子中，通过 `function_config` 设置了网络的缺省数据类型为 float；将被用于训练；学习率是0.1；采用了 `naive_conv` 优化算法，也就是 `SGD`。
 
-function_config 中还包含哪些配置请参考[function_config API](../api/oneflow.html?highlight=functionconfig#oneflow.FunctionConfig)。
+function_config 中还包含哪些配置请参考[function_config API](https://oneflow-api.readthedocs.io/en/latest/oneflow.html?highlight=functionconfig#oneflow.FunctionConfig)。
 
 ### 训练还是预测配置
 默认情况下，作业函数只能做预测作业，如果想要做训练作业，需要设置 `type=train` 属性。
 
-如一下代码设置了学习率和模型更新的策略(优化算法)：
+```python
+@flow.global_function(type="train")
+def train_job():
+    #网络模型...
+```
+
+并且，通过 `flow.optimizer` 下的方法设置学习速率及优化方法，如以下代码设置了学习率和模型更新的策略(针对 `loss` 变量，使用 SGD)：
 
 ```python
-config.train.primary_lr(0.1)
-config.train.model_update_conf({"naive_conf": {}})
+    lr_scheduler = flow.optimizer.PiecewiseConstantScheduler([], [0.1])
+    flow.optimizer.SGD(lr_scheduler, momentum=0).minimize(loss)
 ```
 
 反之，如果省略掉以上配置，那么得到的就是作业函数就可用于预测。
