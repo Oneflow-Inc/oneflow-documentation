@@ -1,8 +1,8 @@
-# 如何从网络中获取中间层的数据
+# How to obtain data from middle layer
 
-OneFlow 提供了 `oneflow.watch` 与 `oneflow.watch_diff` 接口，我们可以通过他们注册回调函数，以方便在作业函数运行过程中获取张量数据或梯度。
+OneFlow support `oneflow.watch` and `oneflow.watch_diff`. We can use them to register callback function. In order to get multiple data or gradient tensor in job functions.
 
-## 使用流程
+## Using guidance
 
 想要获取作业函数运行时的数据或者梯度，其基本流程如下：
 
@@ -36,13 +36,13 @@ def foo() -> T:
 #test_watch.py
 import numpy as np
 import oneflow as flow
-import oneflow.typing as oft
+import oneflow.typing as tp
 
-def watch_handler(y:oft.Numpy):
+def watch_handler(y:tp.Numpy):
     print("out:", y)
 
 @flow.global_function()
-def ReluJob(x:oft.Numpy.Placeholder((5,))) -> None:
+def ReluJob(x:tp.Numpy.Placeholder((5,))) -> None:
     y = flow.nn.relu(x)
     flow.watch(y, watch_handler)
 
@@ -78,11 +78,11 @@ out: [0.15727027 0.45887455 0.10939325 0.66666406 0.        ]
 ```python
 # test_watch_diff.py
 import oneflow as flow
-import oneflow.typing as oft
+import oneflow.typing as tp
 
 BATCH_SIZE = 100
 
-def watch_diff_handler(blob: oft.Numpy):
+def watch_diff_handler(blob: tp.Numpy):
     print("watch_diff_handler:", blob, blob.shape, blob.dtype)
 
 def get_train_config():
@@ -92,8 +92,8 @@ def get_train_config():
 
 
 @flow.global_function(type="train", function_config=get_train_config())
-def train_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-              labels:oft.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32)) -> oft.Numpy:
+def train_job(images:tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+              labels:tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32)) -> tp.Numpy:
     with flow.scope.placement("cpu", "0:0"):
         initializer = flow.truncated_normal(0.1)
         reshape = flow.reshape(images, [images.shape[0], -1])
@@ -133,7 +133,7 @@ python3 test_watch_diff.py
 
 首先，定义了回调函数：
 ```python
-def watch_diff_handler(blob: oft.Numpy):
+def watch_diff_handler(blob: tp.Numpy):
     print("watch_diff_handler:", blob, blob.shape, blob.dtype)
 ```
 
