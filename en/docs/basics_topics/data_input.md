@@ -24,14 +24,17 @@ import oneflow as flow
 import oneflow.typing as tp
 from typing import Tuple
 
+
 @flow.global_function(type="predict")
-def test_job(images:tp.Numpy.Placeholder((32, 1, 28, 28), dtype=flow.float),
-             labels:tp.Numpy.Placeholder((32,), dtype=flow.int32)) -> Tuple[tp.Numpy, tp.Numpy]:
+def test_job(
+    images: tp.Numpy.Placeholder((32, 1, 28, 28), dtype=flow.float),
+    labels: tp.Numpy.Placeholder((32,), dtype=flow.int32),
+) -> Tuple[tp.Numpy, tp.Numpy]:
     # do something with images or labels
     return (images, labels)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     images_in = np.random.uniform(-10, 10, (32, 1, 28, 28)).astype(np.float32)
     labels_in = np.random.randint(-10, 10, (32,)).astype(np.int32)
     images, labels = test_job(images_in, labels_in)
@@ -55,8 +58,12 @@ When user need use OneFlow to achieve a deep learning training or predicting tas
 #### Definition
 The definition part need declare what input do we have and the shape and data type of the input.The following part is where to define the job function.`test_job`  is the name of job function. The example have two inputs: `images` and `labels`. Also have the data shape and type of the input.
 ```python
-def test_job(images:tp.Numpy.Placeholder((32, 1, 28, 28), dtype=flow.float),
-             labels:tp.Numpy.Placeholder((32, ), dtype=flow.int32)) -> Tuple[tp.Numpy, tp.Numpy]:
+def test_job(
+    images: tp.Numpy.Placeholder((32, 1, 28, 28), dtype=flow.float),
+    labels: tp.Numpy.Placeholder((32,), dtype=flow.int32),
+) -> Tuple[tp.Numpy, tp.Numpy]:
+    # do something with images or labels
+    return (images, labels)
 ```
 #### Using
 We need prepare the numpy ndarray first. In example, it generates the `images_in` and `labels_in` according to the input data type and shape.
@@ -95,31 +102,43 @@ import oneflow as flow
 import oneflow.typing as tp
 from typing import Tuple
 
+
 @flow.global_function(type="predict")
 def test_job() -> Tuple[tp.Numpy, tp.Numpy]:
     batch_size = 64
-    color_space = 'RGB'
+    color_space = "RGB"
     with flow.scope.placement("cpu", "0:0"):
-        ofrecord = flow.data.ofrecord_reader('path/to/ImageNet/ofrecord',
-                                             batch_size=batch_size,
-                                             data_part_num=1,
-                                             part_name_suffix_length=5,
-                                             random_shuffle=True,
-                                             shuffle_after_epoch=True)
-        image = flow.data.OFRecordImageDecoderRandomCrop(ofrecord, "encoded",
-                                                         color_space=color_space)
-        label = flow.data.OFRecordRawDecoder(ofrecord, "class/label", shape=(), dtype=flow.int32)
-        rsz = flow.image.Resize(image, resize_x=224, resize_y=224, color_space=color_space)
+        ofrecord = flow.data.ofrecord_reader(
+            "path/to/ImageNet/ofrecord",
+            batch_size=batch_size,
+            data_part_num=1,
+            part_name_suffix_length=5,
+            random_shuffle=True,
+            shuffle_after_epoch=True,
+        )
+        image = flow.data.OFRecordImageDecoderRandomCrop(
+            ofrecord, "encoded", color_space=color_space
+        )
+        label = flow.data.OFRecordRawDecoder(
+            ofrecord, "class/label", shape=(), dtype=flow.int32
+        )
+        rsz = flow.image.Resize(
+            image, resize_x=224, resize_y=224, color_space=color_space
+        )
 
         rng = flow.random.CoinFlip(batch_size=batch_size)
-        normal = flow.image.CropMirrorNormalize(rsz, mirror_blob=rng, color_space=color_space,
-                                                mean=[123.68, 116.779, 103.939],
-                                                std=[58.393, 57.12, 57.375],
-                                                output_dtype=flow.float)
+        normal = flow.image.CropMirrorNormalize(
+            rsz,
+            mirror_blob=rng,
+            color_space=color_space,
+            mean=[123.68, 116.779, 103.939],
+            std=[58.393, 57.12, 57.375],
+            output_dtype=flow.float,
+        )
         return normal, label
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     images, labels = test_job()
     print(images.shape, labels.shape)
 ```
