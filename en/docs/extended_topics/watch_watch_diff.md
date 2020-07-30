@@ -4,7 +4,7 @@ OneFlow support `oneflow.watch` and `oneflow.watch_diff`. We can use them to reg
 
 ## Using guidance
 
-想要获取作业函数运行时的数据或者梯度，其基本流程如下：
+To get multiple data or gradient tensor in job functions. We need do following step:
 
 * 编写回调函数，回调函数的参数需要用注解方式表明数据类型，回调函数内部逻辑由用户自己实现
 
