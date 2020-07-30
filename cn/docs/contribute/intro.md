@@ -64,5 +64,6 @@ cd oneflow/docs && make dev
 期待大家在各个仓库中，多提交issue、PR，多review，OneFlow前进的路中，也期待有你的加入。
 
 ## 交流QQ群
-**加QQ群331883 或扫描下方二维码**
+**加QQ群 331883 或扫描下方二维码**
+
 ![qq group](imgs/qq_group.png)
