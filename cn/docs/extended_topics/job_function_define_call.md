@@ -72,17 +72,17 @@ def train_job(
 def get_train_config():
     config = flow.function_config()
     config.default_data_type(flow.float)
-    config.default_logical_view(flow.scope.mirrored_view())
     return config
 ```
-我们设置了默认数据类型，以及讲默认分布式视角采用 `mirrored_view` 视角，然后，我们可以在向 `global_function` 装饰器传递这个`function_config` 对象：
+我们设置了默认数据类型，然后，我们可以在向 `global_function` 装饰器传递这个`function_config` 对象：
 ```python
 @flow.global_function(type="train", function_config=get_train_config())
-def train_job(images:tp.ListNumpy.Placeholder((BATCH_SIZE_PER_GPU, 1, 28, 28), dtype=flow.float),
-              labels:tp.ListNumpy.Placeholder((BATCH_SIZE_PER_GPU,), dtype=flow.int32)) -> tp.ListNumpy:
-              #...
+def train_job(
+    images: tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+    labels: tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32),
+) -> tp.Numpy:
 ```
-包含以上代码的完整示例可见文章[Consistent 与 Mirrored 视角](consistent_mirrored.md)
+包含以上代码的完整示例可见文章[Consistent 与 Mirrored 视角](consistent_mirrored.md)中的 [mixed_parallel_mlp.py](../code/extended_topics/mixed_parallel_mlp.py)
 
 ### 数据占位符
 注意，以上的 `images`、`logits`、`labels`、`loss`等对象，在我们定义作业函数时，并没有实际的数据。它们的作用只是 **描述数据的形状和属性** ，起到 **占位符** 的作用。
@@ -115,15 +115,15 @@ OneFlow 利用函数修饰符将普通 Python 函数转变为 OneFlow 特有的�
 以下代码，获取数据之后，会向 `train_job` 作业函数传递参数并调用，打印平均损失值。
 
 ```python
-(train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(
-    BATCH_SIZE, BATCH_SIZE
-)
+    (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(
+        BATCH_SIZE
+    )
 
-for epoch in range(20):
-    for i, (images, labels) in enumerate(zip(train_images, train_labels)):
-        loss = train_job(images, labels)
-        if i % 20 == 0:
-            print(loss.mean())
+    for epoch in range(3):
+        for i, (images, labels) in enumerate(zip(train_images, train_labels)):
+            loss = train_job(images, labels)
+            if i % 20 == 0:
+                print(loss.mean())
 ```
 
 可以看到，通过调用作业函数 `train_job` 直接返回了 `numpy` 数据。
