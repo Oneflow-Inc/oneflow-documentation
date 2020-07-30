@@ -20,8 +20,12 @@ Placeholder即 **数据占位符** ，此概念用于描述输入/输出的数�
 
 ```python
 import oneflow.typing as tp
-def test_job(images:tp.Numpy.Placeholder((32, 1, 28, 28), dtype=flow.float32),
-             labels:.tp.Numpy.Placeholder((32, ), dtype=flow.int32)):
+def test_job(
+    images: tp.Numpy.Placeholder((32, 1, 28, 28), dtype=flow.float),
+    labels: tp.Numpy.Placeholder((32,), dtype=flow.int32),
+) -> Tuple[tp.Numpy, tp.Numpy]:
+    # do something with images or labels
+    return (images, labels)
 ```
 
 描述了一个测试的job函数中，输入的图片shape是(32, 1, 28, 28)，数据类型是flow.float32；输入的labels标签的shape是(32,)，类型是flow.int32
