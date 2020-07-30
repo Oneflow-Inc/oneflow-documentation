@@ -6,28 +6,28 @@ OneFlow support `oneflow.watch` and `oneflow.watch_diff`. We can use them to reg
 
 To get multiple data or gradient tensor in job functions. We need do following step:
 
-* 编写回调函数，回调函数的参数需要用注解方式表明数据类型，回调函数内部逻辑由用户自己实现
+* Write a callback function and the parameters in callback function need use comment to indicate data type. The logic of callback function need to be config by user themselves.
 
-* 在定义作业函数时，通过 `oneflow.watch` 或 `oneflow.watch_diff`注册回调函数，前者获取张量数据本身，后者获取对应的梯度
+* When define the job functions. Use  `oneflow.watch` or  `oneflow.watch_diff` to register callback function. <0>Oneflow.watch</0> obtain the data tensor and <0>oneflow.watch_diff</0> get corresponding gradient.
 
-* 在作业函数运行时，OneFlow 框架会在适当的时机，调用之前注册的回调，执行回调函数中的逻辑
+* When running the job function, OneFlow will call the logic in callback function in correct time.
 
-以 `oneflow.watch` 为例，以下伪代码展示了使用过程：
+Use `oneflow.watch` as example:
 
 ```python
 def MyWatch(x: T):
-    #处理x
+    #process x
 
 @global_function()
 def foo() -> T:
-    #定义网络等 ...
+    #define network ...
     oneflow.watch(x, MyWatch)
     #...
 ```
 
-以上的 T 即 `oneflow.typing` 中的数据类型，如 `oneflow.typing.Numpy`，具体可以参考 [作业函数的定义与调用](job_function_define_call.md) 一文。
+The T in above script is the data type in `oneflow.typing`. Like  `oneflow.typing.Numpy`. More details please reference to [Calling and definition of job function](job_function_define_call.md)
 
-以下我们将用实际例子展示 `watch` 与 `watch_diff` 的使用方法
+We will use the following examples to demonstrate how to use  `watch` and `watch_diff`.
 
 ## 使用 `watch` 获取运行时中间层的数据
 
