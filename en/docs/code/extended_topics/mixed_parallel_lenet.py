@@ -1,6 +1,6 @@
 #mixed_parallel_lenet.py
 import oneflow as flow
-import oneflow.typing as oft
+import oneflow.typing as tp
 
 BATCH_SIZE = 100
 
@@ -30,8 +30,8 @@ def get_train_config():
 
 
 @flow.global_function(type="train", function_config=get_train_config())
-def train_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-              labels:oft.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32)) -> oft.Numpy:
+def train_job(images:tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+              labels:tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32)) -> tp.Numpy:
     logits = lenet(images, train=True)
     loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits, name="softmax_loss")
     
