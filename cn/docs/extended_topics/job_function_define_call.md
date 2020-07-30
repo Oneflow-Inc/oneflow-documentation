@@ -36,18 +36,29 @@
 
 ```python
 @flow.global_function(type="train")
-def train_job(images:tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-              labels:tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32)) -> tp.Numpy:
-    with flow.scope.placement("cpu", "0:0"):
-        initializer = flow.truncated_normal(0.1)
-        reshape = flow.reshape(images, [images.shape[0], -1])
-        hidden = flow.layers.dense(reshape, 512, activation=flow.nn.relu, kernel_initializer=initializer, name="dense1")
-        logits = flow.layers.dense(hidden, 10, kernel_initializer=initializer, name="dense2")
-        loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits)
+def train_job(
+    images: tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+    labels: tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32),
+) -> tp.Callback[tp.Numpy]:
+    # mlp
+    initializer = flow.truncated_normal(0.1)
+    reshape = flow.reshape(images, [images.shape[0], -1])
+    hidden = flow.layers.dense(
+        reshape,
+        512,
+        activation=flow.nn.relu,
+        kernel_initializer=initializer,
+        name="hidden",
+    )
+    logits = flow.layers.dense(
+        hidden, 10, kernel_initializer=initializer, name="output"
+    )
 
+    loss = flow.nn.sparse_softmax_cross_entropy_with_logits(
+        labels, logits, name="softmax_loss"
+    )
     lr_scheduler = flow.optimizer.PiecewiseConstantScheduler([], [0.1])
     flow.optimizer.SGD(lr_scheduler, momentum=0).minimize(loss)
-
     return loss
 ```
 
@@ -68,7 +79,7 @@ def get_train_config():
 ```python
 @flow.global_function(type="train", function_config=get_train_config())
 def train_job(images:tp.ListNumpy.Placeholder((BATCH_SIZE_PER_GPU, 1, 28, 28), dtype=flow.float),
-              labels:tp.ListNumpy.Placeholder((BATCH_SIZE_PER_GPU,), dtype=flow.int32)) -> tp.ListNumpy: 
+              labels:tp.ListNumpy.Placeholder((BATCH_SIZE_PER_GPU,), dtype=flow.int32)) -> tp.ListNumpy:
               #...
 ```
 包含以上代码的完整示例可见文章[Consistent 与 Mirrored 视角](consistent_mirrored.md)
@@ -104,11 +115,15 @@ OneFlow 利用函数修饰符将普通 Python 函数转变为 OneFlow 特有的�
 以下代码，获取数据之后，会向 `train_job` 作业函数传递参数并调用，打印平均损失值。
 
 ```python
-(train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(BATCH_SIZE)
-for i, (images, labels) in enumerate(zip(train_images, train_labels)):
-    loss = train_job(images, labels)
-    if i % 20 == 0:
-        print(loss.mean())
+(train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(
+    BATCH_SIZE, BATCH_SIZE
+)
+
+for epoch in range(20):
+    for i, (images, labels) in enumerate(zip(train_images, train_labels)):
+        loss = train_job(images, labels)
+        if i % 20 == 0:
+            print(loss.mean())
 ```
 
 可以看到，通过调用作业函数 `train_job` 直接返回了 `numpy` 数据。
