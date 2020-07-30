@@ -80,7 +80,6 @@ out: [0.15727027 0.45887455 0.10939325 0.66666406 0.        ]
 下面是一段完整的例子，用于展示如何使用OneFlow的`oneflow.watch_diff`功能获取网络中间层的梯度。
 ```python
 # test_watch_diff.py
-# test_watch_diff.py
 import oneflow as flow
 import oneflow.typing as tp
 
