@@ -24,14 +24,17 @@ import oneflow as flow
 import oneflow.typing as tp
 from typing import Tuple
 
+
 @flow.global_function(type="predict")
-def test_job(images:tp.Numpy.Placeholder((32, 1, 28, 28), dtype=flow.float),
-             labels:tp.Numpy.Placeholder((32,), dtype=flow.int32)) -> Tuple[tp.Numpy, tp.Numpy]:
+def test_job(
+    images: tp.Numpy.Placeholder((32, 1, 28, 28), dtype=flow.float),
+    labels: tp.Numpy.Placeholder((32,), dtype=flow.int32),
+) -> Tuple[tp.Numpy, tp.Numpy]:
     # do something with images or labels
     return (images, labels)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     images_in = np.random.uniform(-10, 10, (32, 1, 28, 28)).astype(np.float32)
     labels_in = np.random.randint(-10, 10, (32,)).astype(np.int32)
     images, labels = test_job(images_in, labels_in)
@@ -56,8 +59,12 @@ python feed_numpy.py
 在作业函数定义时，指定参数类型为 `oneflow.typing` 中的类型作为数据占位符，声明输入变量的形状及数据类型。
 
 ```python
-def test_job(images:tp.Numpy.Placeholder((32, 1, 28, 28), dtype=flow.float),
-             labels:tp.Numpy.Placeholder((32, ), dtype=flow.int32)) -> Tuple[tp.Numpy, tp.Numpy]:
+def test_job(
+    images: tp.Numpy.Placeholder((32, 1, 28, 28), dtype=flow.float),
+    labels: tp.Numpy.Placeholder((32,), dtype=flow.int32),
+) -> Tuple[tp.Numpy, tp.Numpy]:
+    # do something with images or labels
+    return (images, labels)
 ```
 
 如以上代码中，声明了 `images` 和 `labels` 两个传入参数，它们都是 `oneflow.typing.Numpy`的占位符，在调用时，需要传入形状、数据类型一致的 `numpy` 数据。
@@ -100,31 +107,43 @@ import oneflow as flow
 import oneflow.typing as tp
 from typing import Tuple
 
+
 @flow.global_function(type="predict")
 def test_job() -> Tuple[tp.Numpy, tp.Numpy]:
     batch_size = 64
-    color_space = 'RGB'
+    color_space = "RGB"
     with flow.scope.placement("cpu", "0:0"):
-        ofrecord = flow.data.ofrecord_reader('path/to/ImageNet/ofrecord',
-                                             batch_size=batch_size,
-                                             data_part_num=1,
-                                             part_name_suffix_length=5,
-                                             random_shuffle=True,
-                                             shuffle_after_epoch=True)
-        image = flow.data.OFRecordImageDecoderRandomCrop(ofrecord, "encoded",
-                                                         color_space=color_space)
-        label = flow.data.OFRecordRawDecoder(ofrecord, "class/label", shape=(), dtype=flow.int32)
-        rsz = flow.image.Resize(image, resize_x=224, resize_y=224, color_space=color_space)
+        ofrecord = flow.data.ofrecord_reader(
+            "path/to/ImageNet/ofrecord",
+            batch_size=batch_size,
+            data_part_num=1,
+            part_name_suffix_length=5,
+            random_shuffle=True,
+            shuffle_after_epoch=True,
+        )
+        image = flow.data.OFRecordImageDecoderRandomCrop(
+            ofrecord, "encoded", color_space=color_space
+        )
+        label = flow.data.OFRecordRawDecoder(
+            ofrecord, "class/label", shape=(), dtype=flow.int32
+        )
+        rsz = flow.image.Resize(
+            image, resize_x=224, resize_y=224, color_space=color_space
+        )
 
         rng = flow.random.CoinFlip(batch_size=batch_size)
-        normal = flow.image.CropMirrorNormalize(rsz, mirror_blob=rng, color_space=color_space,
-                                                mean=[123.68, 116.779, 103.939],
-                                                std=[58.393, 57.12, 57.375],
-                                                output_dtype=flow.float)
+        normal = flow.image.CropMirrorNormalize(
+            rsz,
+            mirror_blob=rng,
+            color_space=color_space,
+            mean=[123.68, 116.779, 103.939],
+            std=[58.393, 57.12, 57.375],
+            output_dtype=flow.float,
+        )
         return normal, label
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     images, labels = test_job()
     print(images.shape, labels.shape)
 ```
