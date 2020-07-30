@@ -63,4 +63,6 @@ We trading OneFlow like an works of art and try our best to make OneFlow to a fu
 Looking forward to see the issues reports, PR, reviews in every repository. We also welcome you to join our team as a developer.
 
 ## Facebook or 其他国外社交媒体
-**加QQ群331883 或扫描下方二维码** ![qq group](imgs/qq_group.png)
+**加QQ群 331883 或扫描下方二维码**
+
+![qq group](imgs/qq_group.png)
