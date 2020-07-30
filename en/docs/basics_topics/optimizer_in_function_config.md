@@ -91,7 +91,7 @@ config.train.model_update_conf({"naive_conf": {}})
 config.train.model_update_conf({"momentum_conf": {'beta': 0.875}})
 ```
 
-这里不对每个优化器做详细说明，详细请参考[optimizer api](../api)
+这里不对每个优化器做详细说明，详细请参考[optimizer api](https://oneflow-api.readthedocs.io/en/latest/optimizer.html)
 
 ### Other optimizations
 The difinition previously have 4 more optional optimisations.
@@ -104,7 +104,7 @@ The difinition previously have 4 more optional optimisations.
 
 - `weight_decay_conf` - 权重衰减
 
-这4个选项可以不选或多选，配置方式就是在 python 字典中加入新的key-value 项，详细请参考[optimizer api](../api)，下面仅举出两种形式的例子供参考。
+这4个选项可以不选或多选，配置方式就是在 python 字典中加入新的key-value 项，详细请参考[optimizer api](https://oneflow-api.readthedocs.io/en/latest/optimizer.html)，下面仅举出两种形式的例子供参考。
 
 ```python
 # example 1
