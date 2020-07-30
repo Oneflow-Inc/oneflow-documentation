@@ -113,24 +113,36 @@ def get_train_config():
 
 
 @flow.global_function(type="train", function_config=get_train_config())
-def train_job(images:tp.ListNumpy.Placeholder((BATCH_SIZE_PER_GPU, 1, 28, 28), dtype=flow.float),
-              labels:tp.ListNumpy.Placeholder((BATCH_SIZE_PER_GPU,), dtype=flow.int32)) -> tp.ListNumpy:
+def train_job(
+    images: tp.ListNumpy.Placeholder((BATCH_SIZE_PER_GPU, 1, 28, 28), dtype=flow.float),
+    labels: tp.ListNumpy.Placeholder((BATCH_SIZE_PER_GPU,), dtype=flow.int32),
+) -> tp.ListNumpy:
     initializer = flow.truncated_normal(0.1)
     reshape = flow.reshape(images, [images.shape[0], -1])
-    hidden = flow.layers.dense(reshape, 512, activation=flow.nn.relu, kernel_initializer=initializer, name="dense1")
-    logits = flow.layers.dense(hidden, 10, kernel_initializer=initializer, name="dense2")
+    hidden = flow.layers.dense(
+        reshape,
+        512,
+        activation=flow.nn.relu,
+        kernel_initializer=initializer,
+        name="dense1",
+    )
+    logits = flow.layers.dense(
+        hidden, 10, kernel_initializer=initializer, name="dense2"
+    )
     loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits)
-    
+
     lr_scheduler = flow.optimizer.PiecewiseConstantScheduler([], [0.1])
     flow.optimizer.SGD(lr_scheduler, momentum=0).minimize(loss)
     return loss
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     flow.config.gpu_device_num(2)  # 设置GPU数目
     check_point = flow.train.CheckPoint()
     check_point.init()
-    (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(BATCH_SIZE)
+    (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(
+        BATCH_SIZE
+    )
 
     for i, (images, labels) in enumerate(zip(train_images, train_labels)):
         images1 = images[:BATCH_SIZE_PER_GPU]
@@ -143,7 +155,8 @@ if __name__ == '__main__':
 
         loss = train_job(imgs_list, labels_list)
         total_loss = np.array([*loss[0], *loss[1]])
-        if i % 20 == 0: print(total_loss.mean())
+        if i % 20 == 0:
+            print(total_loss.mean())
 ```
 
 ### 代码解析
@@ -156,8 +169,10 @@ flow.config.gpu_device_num(2)
 
 * `oneflow.typing.ListNumpy.Placeholder` 定义的样本数目，是被切分后的数目，即代码中的 `BATCH_SIZE_PER_GPU` 与总样本数 `BATCH_SIZE` 的关系为：`BATCH_SIZE=BATCH_SIZE_PER_GPU×GPU_NUM`
 ```python
-def train_job(images:tp.ListNumpy.Placeholder((BATCH_SIZE_PER_GPU, 1, 28, 28), dtype=flow.float),
-              labels:tp.ListNumpy.Placeholder((BATCH_SIZE_PER_GPU,), dtype=flow.int32)) -> tp.ListNumpy:
+def train_job(
+    images: tp.ListNumpy.Placeholder((BATCH_SIZE_PER_GPU, 1, 28, 28), dtype=flow.float),
+    labels: tp.ListNumpy.Placeholder((BATCH_SIZE_PER_GPU,), dtype=flow.int32),
+) -> tp.ListNumpy:
 ```
 
 * 切分后的数据，需要保存至 `list` 中传入训练函数；`list` 中元素的个数与 **参与训练的GPU数目** 一致；OneFlow 将按照 `list` 中元素顺序，向各卡传递数据( `list` 中第 i 个元素对应第 i 张卡)：
@@ -176,7 +191,8 @@ def train_job(images:tp.ListNumpy.Placeholder((BATCH_SIZE_PER_GPU, 1, 28, 28), d
 * 返回的得到的结果 `loss`，是一个 `list`，该 `list` 中元素个数与 **参与训练的GPU数目** 一致；`list` 中的第i个元素对应了第 i 张 GPU 卡上的运算结果。我们做了拼接后，计算并打印了 `total_loss`
 ```python
   total_loss = np.array([*loss[0], *loss[1]])
-  if i % 20 == 0: print(total_loss.mean())
+  if i % 20 == 0:
+      print(total_loss.mean())
 ```
 
 ## 在 OneFlow 中使用 consistent 视角
@@ -209,38 +225,68 @@ BATCH_SIZE = 100
 
 def lenet(data, train=False):
     initializer = flow.truncated_normal(0.1)
-    conv1 = flow.layers.conv2d(data, 32, 5, padding='SAME', activation=flow.nn.relu,
-                               kernel_initializer=initializer, name="conv1")
-    pool1 = flow.nn.max_pool2d(conv1, ksize=2, strides=2, padding='SAME', name="pool1")
-    conv2 = flow.layers.conv2d(pool1, 64, 5, padding='SAME', activation=flow.nn.relu,
-                               kernel_initializer=initializer, name="conv2")
-    pool2 = flow.nn.max_pool2d(conv2, ksize=2, strides=2, padding='SAME', name="pool2")
+    conv1 = flow.layers.conv2d(
+        data,
+        32,
+        5,
+        padding="SAME",
+        activation=flow.nn.relu,
+        kernel_initializer=initializer,
+        name="conv1",
+    )
+    pool1 = flow.nn.max_pool2d(conv1, ksize=2, strides=2, padding="SAME", name="pool1")
+    conv2 = flow.layers.conv2d(
+        pool1,
+        64,
+        5,
+        padding="SAME",
+        activation=flow.nn.relu,
+        kernel_initializer=initializer,
+        name="conv2",
+    )
+    pool2 = flow.nn.max_pool2d(conv2, ksize=2, strides=2, padding="SAME", name="pool2")
     reshape = flow.reshape(pool2, [pool2.shape[0], -1])
-    hidden = flow.layers.dense(reshape, 512, activation=flow.nn.relu, kernel_initializer=initializer, name="hidden")
-    if train: hidden = flow.nn.dropout(hidden, rate=0.5)
-    return flow.layers.dense(hidden, 10, kernel_initializer=initializer, name="outlayer")
+    hidden = flow.layers.dense(
+        reshape,
+        512,
+        activation=flow.nn.relu,
+        kernel_initializer=initializer,
+        name="hidden",
+    )
+    if train:
+        hidden = flow.nn.dropout(hidden, rate=0.5)
+    return flow.layers.dense(
+        hidden, 10, kernel_initializer=initializer, name="outlayer"
+    )
 
 
 @flow.global_function(type="train")
-def train_job(images:tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-              labels:tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32)) -> tp.Numpy:
+def train_job(
+    images: tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+    labels: tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32),
+) -> tp.Numpy:
     logits = lenet(images, train=True)
-    loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits, name="softmax_loss")
+    loss = flow.nn.sparse_softmax_cross_entropy_with_logits(
+        labels, logits, name="softmax_loss"
+    )
     lr_scheduler = flow.optimizer.PiecewiseConstantScheduler([], [0.1])
     flow.optimizer.SGD(lr_scheduler, momentum=0).minimize(loss)
     return loss
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     flow.config.gpu_device_num(2)
     check_point = flow.train.CheckPoint()
     check_point.init()
-    (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(BATCH_SIZE)
+    (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(
+        BATCH_SIZE
+    )
 
     for epoch in range(50):
         for i, (images, labels) in enumerate(zip(train_images, train_labels)):
             loss = train_job(images, labels)
-            if i % 20 == 0: print(loss.mean())
+            if i % 20 == 0:
+                print(loss.mean())
 ```
 
 ### 代码解析
@@ -254,15 +300,18 @@ flow.config.gpu_device_num(2)
 * 使用 `tp.Numpy.Placeholder` 定义 consistent 视角下的占位符，因为`Numpy.Placeholder`产出的 Blob 代表逻辑上的 op 及数据占位符，因此此处的 BATCH_SIZE 就是整个分布式训练的样本总和，不需要人为切分或者组合
 ```python
 @flow.global_function(type="train")
-def train_job(images:tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-              labels:tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32)) -> tp.Numpy:
+def train_job(
+    images: tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+    labels: tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32),
+) -> tp.Numpy:
 ```
 
 * 调用作业函数，直接得到训练结果，训练结果已经由 OneFlow 完成分布式过程中切分与合并的工作。在 consistent 视角下，多卡的分布式训练与单卡的训练，代码差别极少，上手体验几乎一样
 ```python
-  for i, (images, labels) in enumerate(zip(train_images, train_labels)):
-      loss = train_job(images, labels)
-      if i % 20 == 0: print(loss.mean())
+for i, (images, labels) in enumerate(zip(train_images, train_labels)):
+  loss = train_job(images, labels)
+  if i % 20 == 0:
+      print(loss.mean())
 ```
 
 ## 更多扩展

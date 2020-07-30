@@ -71,7 +71,7 @@ import oneflow.core.record.record_pb2 as ofrecord
 
 def int32_feature(value):
     if not isinstance(value, (list, tuple)):
-      value = [value]
+        value = [value]
     return ofrecord.Feature(int32_list=ofrecord.Int32List(value=value))
 
 
@@ -83,13 +83,13 @@ def int64_feature(value):
 
 def float_feature(value):
     if not isinstance(value, (list, tuple)):
-      value = [value]
+        value = [value]
     return ofrecord.Feature(float_list=ofrecord.FloatList(value=value))
 
 
 def double_feature(value):
     if not isinstance(value, (list, tuple)):
-      value = [value]
+        value = [value]
     return ofrecord.Feature(double_list=ofrecord.DoubleList(value=value))
 
 
@@ -107,18 +107,21 @@ def bytes_feature(value):
 在下例子中，我们将创建有2个 feature 的 OFRecord 对象，并且调用它的 `SerializeToString` 方法序列化。
 
 ```python
-    obserations = 28*28
-    #...
-    image = [random.random() for x in range(0,obserations)]
-    label = [random.randint(0,9)]
+  obserations = 28 * 28
 
-    topack = {
-        'images': float_feature(image),
-        'labels': int64_feature(label),
-    }
+  f = open("./dataset/part-0", "wb")
 
-    ofrecord_features = ofrecord.OFRecord(feature=topack)
-    serilizedBytes = ofrecord_features.SerializeToString()
+  for loop in range(0, 3):
+      image = [random.random() for x in range(0, obserations)]
+      label = [random.randint(0, 9)]
+
+      topack = {
+          "images": float_feature(image),
+          "labels": int64_feature(label),
+      }
+
+      ofrecord_features = ofrecord.OFRecord(feature=topack)
+      serilizedBytes = ofrecord_features.SerializeToString()
 ```
 
 通过以上例子，我们可以总结序列化数据的步骤：
@@ -150,6 +153,7 @@ byte   data[length]
 
 ```python
 length = ofrecord_features.ByteSize()
+
 f.write(struct.pack("q", length))
 f.write(serilizedBytes)
 ```
@@ -170,9 +174,10 @@ import six
 import random
 import struct
 
+
 def int32_feature(value):
     if not isinstance(value, (list, tuple)):
-      value = [value]
+        value = [value]
     return ofrecord.Feature(int32_list=ofrecord.Int32List(value=value))
 
 
@@ -184,13 +189,13 @@ def int64_feature(value):
 
 def float_feature(value):
     if not isinstance(value, (list, tuple)):
-      value = [value]
+        value = [value]
     return ofrecord.Feature(float_list=ofrecord.FloatList(value=value))
 
 
 def double_feature(value):
     if not isinstance(value, (list, tuple)):
-      value = [value]
+        value = [value]
     return ofrecord.Feature(double_list=ofrecord.DoubleList(value=value))
 
 
@@ -202,17 +207,18 @@ def bytes_feature(value):
             value = [x.encode() for x in value]
     return ofrecord.Feature(bytes_list=ofrecord.BytesList(value=value))
 
-obserations = 28*28
+
+obserations = 28 * 28
 
 f = open("./dataset/part-0", "wb")
 
 for loop in range(0, 3):
-    image = [random.random() for x in range(0,obserations)]
-    label = [random.randint(0,9)]
+    image = [random.random() for x in range(0, obserations)]
+    label = [random.randint(0, 9)]
 
     topack = {
-        'images': float_feature(image),
-        'labels': int64_feature(label),
+        "images": float_feature(image),
+        "labels": int64_feature(label),
     }
 
     ofrecord_features = ofrecord.OFRecord(feature=topack)
@@ -223,7 +229,7 @@ for loop in range(0, 3):
     f.write(struct.pack("q", length))
     f.write(serilizedBytes)
 
-print('Done!')
+print("Done!")
 f.close()
 ```
 
@@ -237,11 +243,11 @@ import oneflow.core.record.record_pb2 as ofrecord
 import struct
 
 with open("./dataset/part-0", "rb") as f:
-    for loop in range(0,3):
+    for loop in range(0, 3):
         length = struct.unpack("q", f.read(8))
         serilizedBytes = f.read(length[0])
         ofrecord_features = ofrecord.OFRecord.FromString(serilizedBytes)
-        
+
         image = ofrecord_features.feature["images"].float_list.value
         label = ofrecord_features.feature["labels"].int64_list.value
 
