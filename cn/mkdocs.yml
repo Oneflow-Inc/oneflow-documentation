@@ -17,7 +17,6 @@ use_directory_urls: false
 # Configuration
 theme:
   name: material
-  logo: 'logo.png'
 
   # 404 page
   static_templates:
