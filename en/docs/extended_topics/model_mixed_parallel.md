@@ -1,261 +1,258 @@
 
-在[Consistent与Mirrored策略](consistent_mirrored.md)中，我们已经知道OneFlow提供了mirrored与consistent两种策略，并且提前了解了OneFlow的`consistent`策略颇具特色。
+# Characteristics of parallel in OneFlow
 
-因为在`consistent_strategy`下，OneFlow提供了逻辑上统一的视角，分布式训练时，用户可以自由选择数据并行、模型并行还是是混合并行。
+In [Consistent and Mirrored view](consistent_mirrored.md), we already know OneFlow provide mirrored and consistent two point of view. And be aware of  `consistent` in OneFlow have some special characteristics.
 
-在本文中，继续深入介绍OneFlow独居特色的`consistent`策略，包括：
+Thus, in `consistent_view`, OneFlow give the  unified view on logical side. When doing the distributed training, use can choose use data parallel, model parallel or mix parallel.
 
-* OneFlow在`consistent_strategy`下纯数据并行流程示意
+In this article, we will keep go through the ` consistent` view in OneFlow. Which includes:
 
-* OneFlow在`consistent_strategy`下混合并行流程示意
+* Process demo of pure data parallel in `consistent_view`.
 
-* 混合并行的优势及适用场景
+* Process demo of mixed parallel in `consistent_view`.
 
-* OneFlow混合并行实例
+* The advantages of mixed parallel and the scenario.
 
-## 网络模型训练的逻辑图
-我们先设定一个简单的多层网络，作为我们我们讨论并行方式的载体，其结构如下图所示：
+* Example of mixed parallel.
+
+## Network logic diagram of model training
+We need to set up a simple multi-layer network first and use this network to discuss parallel methods. The structure like the figure shows:
 
 ![多层网络逻辑图](imgs/para_logical.png)
 
-各层中，有 **样本** (灰色矩形)、 **模型** (蓝色矩形)，以及作用在两者之上的 **op** (圆形)，为了简化讨论，我们也可将样本与模型限定为 **矩阵** ，作用在它们之上的op为 **矩阵乘法** 。
+In each layers, we have **samples**(in grey), **models**(in blue) and **operators**(circles) which operating on both of them. To simplify our discussion, we can limiting the samples and model as** matrixes**. The operator applying on them we called it **Matrix multiplication**.
 
-对照上图，我们很容易梳理出该网络模型的逻辑：
+Compare the figure above, we can easily get the logic of the network:
 
-* 第0层的输入为`Data 0`矩阵与`Model 0`矩阵，它们进行`op`(矩阵乘法)运算后，输出`Data 1`
+* The input of layer 0 is `Data 0` matrix and `Model 0`matrix. Then apply `operator`(matrix multiplication) and give output `Data 1`.
 
-* 第1层的输入为`Data 1`矩阵与`Model 1`矩阵，它们进行`op`运算后，输出`output`
+* The input of layer 1 is `Data 1` matrix and `Model 1`matrix. Then apply `operator` and get `output`.
 
-* 第2层为`output`层，`Data 2`作为整个网络的输出；当然，在更深的网络中，它也可以作为下一层的输入继续参与训练
+* The layer 2 is `output layer` and `Data 2` is the output of network. Of course, it can play as input in deeper network.
 
-`consistent`策略下支持数据并行、模型并行与混合并行，我们将依次进行介绍，其中混合并行是重点。
+In `consistent` view, it supports the data parallel, model parallel and mixed parallel. We will introduce those in order but mixed parallel is the key thing.
 
-## Consistent策略下的并行特色
+## The characteristics of parallel in consistent view
 
-### 纯数据并行
+### Pure data parallel
 
-我们已经知道，consistent策略下，默认的并行方式是数据并行；而如果选择mirrored策略，则只能采用数据并行；若在调用任务函数时直接传递数据(而不是使用OneFlow的`flow.data.xxx_reader`接口)，两者的区别在于：
+We already know that in consistent view. The default parallel method is data parallel. If we choose mirrored view, we only can use data parallel. Compare passing data in `numpy` when calling the job function with use `flow.data.xxx_reader` in OneFlow. The difference between them is:
 
-* mirrored策略下，采用纯数据并行，需要自己根据参与训练的卡数对数据进行切分、重组，使用`list`传递和接收数据；
+* In mirrored view, when we use pure data parallel. We need to cut assembly data according to the number of GPU and use `list` to pass and receive data.
 
-* 而consistent策略下提供了统一的视角，数据的切分和重组交给了OneFlow框架完成。
+* But in consistent view we have the consistency on logic. Cutting data and assembly data will complete by OneFlow framework.
 
-下图是consistent策略下，采用纯数据并行的方式，实现原逻辑网络模型的流程示意图：
+The following figure is in consistent view, using pure data parallel to achieve original logical network process:
 
 ![纯数据并行](imgs/para_consistent_data.png)
 
-在纯数据并行中，采用了2张显卡进行并行训练，因为采用了 **纯数据并行** ，可以看到，对于原逻辑模型中的每一层，样本数据都被平均分配到了各个卡上，每张卡上都拥有 **完整的模型**，与切分的数据进行`op`运算，最后组合各个卡上的样本，得到完整的输出。
+In pure data parallel, we use two GPU for training. Because we use **pure data parallel**. We can see that for each original logical layer, the sample is divided in average to each GPU. We have complete **training model** in each GPU. The data after cut process by `operator`. Finally combined the data in each GPU and get the full complete data.
 
-### 纯模型并行
-在`consistent`策略下，也可以通过选择纯模型并行（设置方式在下文实例中会介绍），其流程示意图为：
+### Pure model parallel
+In `consistent` view, we can choose pure model parallel (the configuration details will talk about later). The process schematic diagram:
 
 ![纯模型并行](imgs/para_consistent_model.png)
 
-在纯模型并行中，同样是2张显卡进行并行训练，原逻辑模型中的每一层中，都是 **部分模型** 与 **完整的数据** 进行`op`运算，最后组合得到完整的输出。
+In pure model parallel example, we still use two GPU for training. In each layer of original logic model is process by `operator `on **part of model** and **complete data**. Then combine the output and get whole results.
 
-值得一提的是，从上图可以看出，各个卡上第0层的输出，并 **不能** 直接作为第1层的输入：因为模型并行中，为完成`op`操作，需要部分的模型与 **完整的** 数据； 为了解决这个问题，OneFlow中使用了`boxing`机制。
+One thing we need to mention is in above figure. The output from each GPU on layer 0 **cannot** use as the input in layer 1: Beacuse in model parallel, in order to run the operator. We need part of model and **complete** data. To solve this problem, OneFlow use `boxing` function.
 
-`boxing`机制会统筹分布式训练中各个节点的数据，并合理切分、合并到对应的卡上，除了模型并行过程中的数据重组问题外，数据并行中的反向梯度同步，也使用`boxing`机制解决。
+`boxing` will count the data in each nodes in distributed training and divide or assemble data properly then send to corresponding GPU. Except the model assembling in model parallel. The reverse gradient synchronization in data parallel also will use  `boxing`  to solve problem.
 
-`boxing`的内部机制虽然复杂，但是对于用户而言是透明的，我们仅仅是防止读者产生迷惑才加入了`boxing`的图示，对于本文而言，我们只需要了解：OneFlow会自动协调好分布式中数据的同步问题。
+The algorithm in `boxing` is complex. But it is open to users. The reason of adding  for adding `boxing` is for keep user from confused. In this article, we only need to remember that OneFlow will automatically solve the data distribution issue.
 
-## 选择最优的并行方式
-数据并行与模型并行的优劣并不是一成不变的，样本规模、模型规模及模型结构决定了分布式训练中的综合表现，需要具体情况具体分析。
+## Choose the optimal parallel method
+The difference between data parallel and model parallel is constant. The sample scale, model scale and model structure decide the performance in distributed training. We need analysis  particular case.
 
-概括而言：
+To be concluded:
 
-* 数据并行情况下，需要同步的信息是反向传播过程的 **梯度**，因此应该确保各个训练节点之间的信息同步速度要比节点内部的计算速度快，比如说 **卷积层** 的参数较少，但是计算量大，就比较适合使用数据并行；
+* In data parallel case, the information need to synced is ** gradient** need to be pass reversely. Thus, we need to make sure the synchronization speed in different nodes is faster than the calculations speed in side nodes. Such as there is not much parameters in **Convolutional Layer**. But need large scale of calculation. It is suitable for data parallel.
 
-* 模型并行情况下，因为可以将逻辑上作为整体的模型 **切分到各个物理卡** 上，能够解决“模型太大，一张卡装不下”的问题，因此，对于参数量大的神经网络层（如最后的全连接层），可以考虑使用模型并行。
+* In model parallel, we can send the complete model in logical to **each GPU**. Can deal with the oversize model issue. Thus it is suitable for the neural network which have massive parameters (like full connection layer).
 
-实际上，也可以使用 **混合并行**，在同一个分布式训练的不同部分，组合使用数据并行、模型并行。比如，对于神经网络中靠前的参数较少、计算量大的层，采用数据并行；在最终的参数众多的全连接层，则采用模型并行，以下是针对本文最开始的网络模型逻辑图的 **混合并行** 实现方案的示意图：比如，对于神经网络中靠前的参数较少、计算量大的层，采用数据并行；在最终的参数众多的全连接层，则采用模型并行，以下是针对本文最开始的网络模型逻辑图的 **混合并行** 实现方案的示意图：
+In fact, we can use **mix parallel**. That means use different parallel in different part of training process.Such as at the beginning of the neural network, just have few parameters and need for large calculation. We better user data parallel. But layer like full connection layer which have many parameters we should use model parallel. The following is the demonstration figure for the neural network in begin of the article which use **mixed parallel**.
 
 ![混合并行](imgs/para_consistent_mixed.png)
 
-目前，其它的主流框架对于混合并行或者不支持，或者需要深度定制，而OneFlow中可以通过简单的设置，配置混合并行的分布式训练，还可以用自由度超高的“网络接力”的并行模式，深度优化分布式系统。
+For now, all other popular framework didn’t support the mixed parallel otherwise need be deep customizing. But in OneFlow, we can use it very simple. We aslo can use mixed parallel distributed training with network relay to deep optimize distributed systems.
 
-## 混合并行实例
-### 代码示例
-以下，在`consistent`策略下，我们对MLP模型采用了混合并行方案：输入层与隐藏层采用（默认的）数据并行；输出层采用模型并行并进行列切分。
+## Mixed parallel example:
+### Demo script
+In `consistent`  view, we use mixed parallel to MLP model: data input layer and hidden layer is data parallel, output layer use model parallel.
 
-完整代码：[mixed_parallel_mlp.py](../code/extended_topics/mixed_parallel_mlp.py)
+Name: [mixed_parallel_mlp.py](../code/extended_topics/mixed_parallel_mlp.py)
 
-更具体的解析在后文“代码解析”可见。
+More details explanations in "script explanations"
 
 ```python
 from mnist_util import load_data
 import oneflow as flow
+import oneflow.typing as oft
 
 BATCH_SIZE = 100
 
+
 def mlp(data):
-  initializer = flow.truncated_normal(0.1)
-  reshape = flow.reshape(data, [data.shape[0], -1])
-  hidden = flow.layers.dense(reshape, 512, activation=flow.nn.relu, kernel_initializer=initializer)
-  return flow.layers.dense(hidden, 
-        10, 
-        kernel_initializer=initializer,
-        #dense为列存储，进行split(0)切分
-        model_distribute=flow.distribute.split(axis=0)
-        )
+    initializer = flow.truncated_normal(0.1)
+    reshape = flow.reshape(data, [data.shape[0], -1])
+    hidden = flow.layers.dense(reshape, 512, activation=flow.nn.relu, kernel_initializer=initializer, name="hidden")
+    return flow.layers.dense(hidden,
+                             10,
+                             kernel_initializer=initializer,
+                             # dense为列存储，进行split(0)切分
+                             model_distribute=flow.distribute.split(axis=0),
+                             name="output"
+                             )
+
 
 def get_train_config():
-  config = flow.function_config()
-  config.default_data_type(flow.float)
-  config.train.primary_lr(0.1)
-  config.train.model_update_conf({"naive_conf": {}})
-  config.default_distribute_strategy(flow.distribute.consistent_strategy())
+    config = flow.function_config()
+    config.default_data_type(flow.float)
+    config.train.primary_lr(0.1)
+    config.train.model_update_conf({"naive_conf": {}})
+    return config
 
-  return config
 
 @flow.global_function(get_train_config())
 def train_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-              labels:oft.Numpy.Placeholder((BATCH_SIZE, ), dtype=flow.int32)):
-  logits = mlp(images)
-  loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits, name="softmax_loss")
-  flow.losses.add_loss(loss)
-  return loss
+              labels:oft.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32)) -> oft.Numpy:
+    logits = mlp(images)
+    loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits, name="softmax_loss")
+    flow.losses.add_loss(loss)
+    return loss
 
 
 if __name__ == '__main__':
-  flow.config.gpu_device_num(2)
-  check_point = flow.train.CheckPoint()
-  check_point.init()
+    flow.config.gpu_device_num(2)
+    check_point = flow.train.CheckPoint()
+    check_point.init()
 
-  (train_images, train_labels), (test_images, test_labels) = load_data(BATCH_SIZE)
+    (train_images, train_labels), (test_images, test_labels) = load_data(BATCH_SIZE)
 
-  for epoch in range(3):
-    for i, (images, labels) in enumerate(zip(train_images, train_labels)):
-      def callback(loss):
-        if i % 20 == 0: print(loss.mean())
-      loss = train_job(images, labels).async_get(callback)
+    for epoch in range(3):
+        for i, (images, labels) in enumerate(zip(train_images, train_labels)):
+            loss = train_job(images, labels)
+            if i % 20 == 0: print(loss.mean())
 ```
 
-### 代码解析
-以上代码修改自[3分钟快速上手](../quick_start/quickstart_in_3_min.md)中的示例代码，比较两份代码，也可以体会到在OneFlow的`consistent_strategy`下进行各种并行方案的配置是多么的简单，只需要在单机的程序上稍加修改即可。
+### Script explanation
+The above script is modified from the demo in [3 min quick start](../quick_start/quickstart_in_3_min.md). Compare two version of script, we can see how easy to configure the parallel method in `consistent_view`. Only need modify on code of solo machine.
 
-以上程序的关键部分有：
+The crucial parts are:
 
-* 通过`oneflow.config.gpu_device_num`接口设置参与训练的GPU数目：
+* Use  `oneflow.config.gpu_device_num`  to set the GPU number in training:
 ```python
   flow.config.gpu_device_num(2)
 ```
 
-* 通过`flow.function_config().default_distribute_strategy`接口将默认策略改为`consistent_strategy`：
-```python
-def get_train_config():
-  #... config.default_distribute_strategy(flow.distribute.consistent_strategy())
-  #...
-```
-
-* `reshape`及`hidden`采用默认的数据并行，不需要修改；输出层通过设置`model_distribute`为`flow.distribute.split(axis=0)`变为模型并行：
+* `reshape` and `hidden` is default using data parallel. The output layer can set `model_distribute` as `flow.distribute.split(axis=0)` to change to model parallel:
 ```python
 def mlp(data):
-  initializer = flow.truncated_normal(0.1)
-  reshape = flow.reshape(data, [data.shape[0], -1])
-  hidden = flow.layers.dense(reshape, 512, activation=flow.nn.relu, kernel_initializer=initializer)
-  return flow.layers.dense(hidden, 
-        10, 
-        kernel_initializer=initializer,
-        #dense为列存储，进行split(0)切分
-        model_distribute=flow.distribute.split(axis=0)
-        )
+    initializer = flow.truncated_normal(0.1)
+    reshape = flow.reshape(data, [data.shape[0], -1])
+    hidden = flow.layers.dense(reshape, 512, activation=flow.nn.relu, kernel_initializer=initializer, name="hidden")
+    return flow.layers.dense(hidden,
+                             10,
+                             kernel_initializer=initializer,
+                             # dense is columns storing，process split(0) cutting 
+                             model_distribute=flow.distribute.split(axis=0),
+                             name="output"
+                             )
 ```
-需要说明的是，OneFlow中的`dense`内部采用列存储，因此以上代码的`flow.distribute.split(axis=0)`确实是在做列切分。
+You may curious about why `split(axis=0)` is column cutting.What we need to explain is in OneFlow  `dense` is column storing. Thus the `flow.distribute.split(axis=0)` in above script is column cutting.
 
-此外，`flow.layers.dense`使用`model_distribute`形参设置并行方式，其内部调用了底层更通用的`get_variable`接口创建`blob`，`get_variable`接口设置并行方式的形参名为`distribute`。
+In addition, `flow.layers.dense`  use `model_distribute`  to set parallel method. It use the common  `get_variable` to creates `blob` in basic level from inner.  Use `get_variable` to config parallel method called  `distribute`.
 
-可以看到，我们通过极少量的修改，就能将单机训练程序改为分布式、混合并行的程序，这是OneFlow区别于其它框架的一大特色。
+We can see that we only modify just few things. Then change parallel method to mixed parallel in distributed training. It is the main difference between OneFlow and other framework.
 
-## 网络接力并行实例
-在模型并行之外，OneFlow还提供了一种灵活度更高的“网络接力”的并行方式，可以让用户使用`scope.placement`接口显式指定用来运行逻辑`op`的 **物理硬件**。
+## Flow parallel example
+Besides the model parallel, OneFlow also provides a more flexible parallel method which is flow parallel. It can let user use  `scope.placement` to display specify hardware of the operator.
 
-在以下示例中，我们对[Consistent与Mirrored策略](consistent_mirrored.md)中的“在OneFlow中使用consistent策略”代码进行简单修改，展示了“网络接力”并行模式。
+In flow parallel, the part of layer of whole network is on one hardware and other layer is on other hardware. They work as relay, switch between hardware in different step.
 
-### 代码示例
+In following example, we change few code in "Using consistent view in OneFlow" of  [Consistent and Mirrored view](consistent_mirrored.md) and demonstrate flow parallel.
 
-完整代码：[mixed_parallel_lenet.py](../code/extended_topics/mixed_parallel_lenet.py)
+### Example
 
-更详细的讨论可见后文的“代码解析”。
+Name: [mixed_parallel_lenet.py](../code/extended_topics/mixed_parallel_lenet.py)
+
+More details in script explanation.
 
 ```python
-import numpy as np
 import oneflow as flow
-from mnist_util import load_data
-
+import oneflow.typing as oft
 
 BATCH_SIZE = 100
+
 
 def lenet(data, train=False):
-  initializer = flow.truncated_normal(0.1)
-  conv1 = flow.layers.conv2d(data, 32, 5, padding='SAME', activation=flow.nn.relu,
-                             kernel_initializer=initializer, name="conv1")
-  pool1 = flow.nn.max_pool2d(conv1, ksize=2, strides=2, padding='SAME', name="pool1")
-  conv2 = flow.layers.conv2d(pool1, 64, 5, padding='SAME', activation=flow.nn.relu,
-                             kernel_initializer=initializer, name="conv2")
-  pool2 = flow.nn.max_pool2d(conv2, ksize=2, strides=2, padding='SAME', name="pool2")
-  reshape = flow.reshape(pool2, [pool2.shape[0], -1])
-  with flow.scope.placement("gpu", "0:0"):
-    hidden = flow.layers.dense(reshape, 512, activation=flow.nn.relu, kernel_initializer=initializer, name="hidden")
-  if train: hidden = flow.nn.dropout(hidden, rate=0.5)
+    initializer = flow.truncated_normal(0.1)
+    conv1 = flow.layers.conv2d(data, 32, 5, padding='SAME', activation=flow.nn.relu,
+                               kernel_initializer=initializer, name="conv1")
+    pool1 = flow.nn.max_pool2d(conv1, ksize=2, strides=2, padding='SAME', name="pool1")
+    conv2 = flow.layers.conv2d(pool1, 64, 5, padding='SAME', activation=flow.nn.relu,
+                               kernel_initializer=initializer, name="conv2")
+    pool2 = flow.nn.max_pool2d(conv2, ksize=2, strides=2, padding='SAME', name="pool2")
+    reshape = flow.reshape(pool2, [pool2.shape[0], -1])
+    with flow.scope.placement("gpu", "0:0"):
+        hidden = flow.layers.dense(reshape, 512, activation=flow.nn.relu, kernel_initializer=initializer, name="hidden")
+    if train: hidden = flow.nn.dropout(hidden, rate=0.5)
 
-  with flow.scope.placement("gpu", "0:1"):
-    output = flow.layers.dense(hidden, 10, kernel_initializer=initializer, name="outlayer")
-  return output
+    with flow.scope.placement("gpu", "0:1"):
+        output = flow.layers.dense(hidden, 10, kernel_initializer=initializer, name="outlayer")
+    return output
 
 
 def get_train_config():
-  config = flow.function_config()
-  config.default_distribute_strategy(flow.distribute.consistent_strategy())
-  config.default_data_type(flow.float)
-  config.train.primary_lr(0.1)
-  config.train.model_update_conf({"naive_conf": {}})
-  return config
+    config = flow.function_config()
+    config.default_data_type(flow.float)
+    config.train.primary_lr(0.1)
+    config.train.model_update_conf({"naive_conf": {}})
+    return config
 
 
 @flow.global_function(get_train_config())
 def train_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-              labels:oft.Numpy.Placeholder((BATCH_SIZE, ), dtype=flow.int32)):
-  logits = lenet(images, train=True)
-  loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits, name="softmax_loss")
-  flow.losses.add_loss(loss)
-  return loss
+              labels:oft.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32)) -> oft.Numpy:
+    logits = lenet(images, train=True)
+    loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits, name="softmax_loss")
+    flow.losses.add_loss(loss)
+    return loss
 
 
 if __name__ == '__main__':
-  flow.config.gpu_device_num(2)
-  check_point = flow.train.CheckPoint()
-  check_point.init()
-  (train_images, train_labels), (test_images, test_labels) = load_data(BATCH_SIZE)
+    flow.config.gpu_device_num(2)
+    check_point = flow.train.CheckPoint()
+    check_point.init()
+    (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(BATCH_SIZE)
 
-  for epoch in range(50):
-    for i, (images, labels) in enumerate(zip(train_images, train_labels)):
-      loss = train_job(images, labels).get().ndarray()
-
-      if i % 20 == 0: 
-        print(loss.mean())
+    for epoch in range(50):
+        for i, (images, labels) in enumerate(zip(train_images, train_labels)):
+            loss = train_job(images, labels)
+            if i % 20 == 0: print(loss.mean())
 ```
-### 代码解析
+### Script explanation
 
-以上关键的代码只有2行，且他们的本质作用是类似的：
+There are only two line of code is important and they have same nature:
 
-* 通过`oneflow.scope.placement`，指定`hidden`层的op计算运行在0号GPU上
+* Use  `oneflow.scope.placement` to specify the operator run on number 0 GPU in  `hidden` layer.
 ```python
   with flow.scope.placement("gpu", "0:0"):
     hidden = flow.layers.dense(reshape, 512, activation=flow.nn.relu, kernel_initializer=initializer, name="hidden")
 ```
 
-* 通过`oneflow.scope.placement`，指定`output`层的op计算运行在1号GPU上
+* Use  `oneflow.scope.placement` to specify the operator run on number 1 GPU in  ` output ` layer.
 ```python
   with flow.scope.placement("gpu", "0:1"):
     output = flow.layers.dense(hidden, 10, kernel_initializer=initializer, name="outlayer")
 ```
 
-其中`scope.placement`的第一个参数指定`cpu`还是`gpu`，第二个参数指定机器及运算设备编号，如，“使用第1号机器的第2个GPU”，则应该写：
+The first parameter in  `scope.placement` is to specify `cpu` or `gpu`. The second parameter is to specify machine number and device. Like use the second GPU on first machine should be:
 ```python
   with flow.scope.placement("gpu", "1:2"):
-    # ...
 ```
 
-网络接力的并行方式，使得用户可以为每个op指定物理设备，非常适合对网络模型及分布式情况都很熟悉的用户进行 **深度优化** 。
+Flow parallel can let user to specify device for each operator. It is very useful for user who master the distributed training to **deep optimize**.
+
+In addition, OneFlow also provide `oneflow.unpack`, `oneflow.pack`. Combine those with the characteristics of task scheduling in OneFlow. That will make the flow parallel easier to use and more efficient. We will introduce those in other article.
 
