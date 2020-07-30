@@ -67,8 +67,8 @@ def get_train_config():
 我们设置了默认数据类型，以及讲默认分布式视角采用 `mirrored_view` 视角，然后，我们可以在向 `global_function` 装饰器传递这个`function_config` 对象：
 ```python
 @flow.global_function(type="train", function_config=get_train_config())
-def train_job(images:oft.ListNumpy.Placeholder((BATCH_SIZE_PER_GPU, 1, 28, 28), dtype=flow.float),
-              labels:oft.ListNumpy.Placeholder((BATCH_SIZE_PER_GPU,), dtype=flow.int32)) -> oft.ListNumpy: 
+def train_job(images:tp.ListNumpy.Placeholder((BATCH_SIZE_PER_GPU, 1, 28, 28), dtype=flow.float),
+              labels:tp.ListNumpy.Placeholder((BATCH_SIZE_PER_GPU,), dtype=flow.int32)) -> tp.ListNumpy: 
               #...
 ```
 包含以上代码的完整示例可见文章[Consistent 与 Mirrored 视角](consistent_mirrored.md)
@@ -90,9 +90,9 @@ def train_job(images:oft.ListNumpy.Placeholder((BATCH_SIZE_PER_GPU, 1, 28, 28), 
 如以上代码的中所返回的 `loss`，它就是 `Blob` 类型。
 
 作业函数的返回值，需要通过注解声明，比如以上代码中的
-`-> oft.Numpy`，表示返回1个 `Blob`。
+`-> tp.Numpy`，表示返回1个 `Blob`。
 
-再比如，可以通过注解声明返回值类型为 `-> Tuple[oft.Numpy, oft.Numpy]`，表示返回1个 `tuple`，该 `tuple` 中有2个 `Blob` 对象。
+再比如，可以通过注解声明返回值类型为 `-> Tuple[tp.Numpy, tp.Numpy]`，表示返回1个 `tuple`，该 `tuple` 中有2个 `Blob` 对象。
 
 具体的使用例子，可以参考[获取作业函数的结果](../basics_topics/async_get.md)
 
