@@ -39,11 +39,15 @@
 比如，如果我们定义了如下的作业函数：
 ```python
 @flow.global_function(type="train")
-def train_job(images: tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-              labels: tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32)) -> tp.Numpy:
+def train_job(
+    images: tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+    labels: tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32),
+) -> tp.Numpy:
     with flow.scope.placement("gpu", "0:0"):
         logits = lenet(images, train=True)
-        loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits, name="softmax_loss")
+        loss = flow.nn.sparse_softmax_cross_entropy_with_logits(
+            labels, logits, name="softmax_loss"
+        )
     lr_scheduler = flow.optimizer.PiecewiseConstantScheduler([], [0.1])
     flow.optimizer.SGD(lr_scheduler, momentum=0).minimize(loss)
     return loss
@@ -55,7 +59,8 @@ def train_job(images: tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.f
 
 ```python
 loss = train_job(images, labels)
-if i % 20 == 0: print(loss.mean())
+            if i % 20 == 0:
+                print(loss.mean())
 ```
 
 从以上示例中，应该注意到：
@@ -106,15 +111,27 @@ def cb_func(result: T):
 比如，我们定义了一个作业函数：
 ```python
 @flow.global_function(type="train")
-def train_job(images: tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-              labels: tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32)) -> tp.Callback[tp.Numpy]:
+def train_job(
+    images: tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+    labels: tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32),
+) -> tp.Callback[tp.Numpy]:
     # mlp
     initializer = flow.truncated_normal(0.1)
     reshape = flow.reshape(images, [images.shape[0], -1])
-    hidden = flow.layers.dense(reshape, 512, activation=flow.nn.relu, kernel_initializer=initializer, name="hidden")
-    logits = flow.layers.dense(hidden, 10, kernel_initializer=initializer, name="output")
+    hidden = flow.layers.dense(
+        reshape,
+        512,
+        activation=flow.nn.relu,
+        kernel_initializer=initializer,
+        name="hidden",
+    )
+    logits = flow.layers.dense(
+        hidden, 10, kernel_initializer=initializer, name="output"
+    )
 
-    loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits, name="softmax_loss")
+    loss = flow.nn.sparse_softmax_cross_entropy_with_logits(
+        labels, logits, name="softmax_loss"
+    )
     lr_scheduler = flow.optimizer.PiecewiseConstantScheduler([], [0.1])
     flow.optimizer.SGD(lr_scheduler, momentum=0).minimize(loss)
     return loss
@@ -123,7 +140,7 @@ def train_job(images: tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.f
 
 那么，我们定义的回调函数，就应该接受一个 `Numpy` 类型的参数：
 ```python
-def cb_print_loss(result:tp.Numpy):
+def cb_print_loss(result: tp.Numpy):
     global g_i
     if g_i % 20 == 0:
         print(result.mean())
@@ -133,11 +150,15 @@ def cb_print_loss(result:tp.Numpy):
 类似的，如果作业函数的定义为：
 ```python
 @flow.global_function(type="predict")
-def eval_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-             labels:oft.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32)) -> oft.Callback[Tuple[tp.Numpy, tp.Numpy]]:
+def eval_job(
+    images: tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+    labels: tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32),
+) -> tp.Callback[Tuple[tp.Numpy, tp.Numpy]]:
     with flow.scope.placement("cpu", "0:0"):
         logits = mlp(images)
-        loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits, name="softmax_loss")
+        loss = flow.nn.sparse_softmax_cross_entropy_with_logits(
+            labels, logits, name="softmax_loss"
+        )
 
     return (labels, logits)
 ```
@@ -148,7 +169,9 @@ def eval_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.fl
 ```python
 g_total = 0
 g_correct = 0
-def acc(arguments:Tuple[tp.Numpy, tp.Numpy]):
+
+
+def acc(arguments: Tuple[tp.Numpy, tp.Numpy]):
     global g_total
     global g_correct
 
@@ -195,24 +218,49 @@ BATCH_SIZE = 100
 
 def lenet(data, train=False):
     initializer = flow.truncated_normal(0.1)
-    conv1 = flow.layers.conv2d(data, 32, 5, padding='SAME', activation=flow.nn.relu, name='conv1',
-                               kernel_initializer=initializer)
-    pool1 = flow.nn.max_pool2d(conv1, ksize=2, strides=2, padding='SAME', name='pool1')
-    conv2 = flow.layers.conv2d(pool1, 64, 5, padding='SAME', activation=flow.nn.relu, name='conv2',
-                               kernel_initializer=initializer)
-    pool2 = flow.nn.max_pool2d(conv2, ksize=2, strides=2, padding='SAME', name='pool2')
+    conv1 = flow.layers.conv2d(
+        data,
+        32,
+        5,
+        padding="SAME",
+        activation=flow.nn.relu,
+        name="conv1",
+        kernel_initializer=initializer,
+    )
+    pool1 = flow.nn.max_pool2d(conv1, ksize=2, strides=2, padding="SAME", name="pool1")
+    conv2 = flow.layers.conv2d(
+        pool1,
+        64,
+        5,
+        padding="SAME",
+        activation=flow.nn.relu,
+        name="conv2",
+        kernel_initializer=initializer,
+    )
+    pool2 = flow.nn.max_pool2d(conv2, ksize=2, strides=2, padding="SAME", name="pool2")
     reshape = flow.reshape(pool2, [pool2.shape[0], -1])
-    hidden = flow.layers.dense(reshape, 512, activation=flow.nn.relu, kernel_initializer=initializer, name='dense1')
-    if train: hidden = flow.nn.dropout(hidden, rate=0.5, name="dropout")
-    return flow.layers.dense(hidden, 10, kernel_initializer=initializer, name='dense2')
+    hidden = flow.layers.dense(
+        reshape,
+        512,
+        activation=flow.nn.relu,
+        kernel_initializer=initializer,
+        name="dense1",
+    )
+    if train:
+        hidden = flow.nn.dropout(hidden, rate=0.5, name="dropout")
+    return flow.layers.dense(hidden, 10, kernel_initializer=initializer, name="dense2")
 
 
 @flow.global_function(type="train")
-def train_job(images: tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-              labels: tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32)) -> tp.Numpy:
+def train_job(
+    images: tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+    labels: tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32),
+) -> tp.Numpy:
     with flow.scope.placement("gpu", "0:0"):
         logits = lenet(images, train=True)
-        loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits, name="softmax_loss")
+        loss = flow.nn.sparse_softmax_cross_entropy_with_logits(
+            labels, logits, name="softmax_loss"
+        )
     lr_scheduler = flow.optimizer.PiecewiseConstantScheduler([], [0.1])
     flow.optimizer.SGD(lr_scheduler, momentum=0).minimize(loss)
     return loss
@@ -223,13 +271,16 @@ if __name__ == "__main__":
     check_point = flow.train.CheckPoint()
     check_point.init()
 
-    (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(BATCH_SIZE)
+    (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(
+        BATCH_SIZE
+    )
 
     for epoch in range(20):
         for i, (images, labels) in enumerate(zip(train_images, train_labels)):
             loss = train_job(images, labels)
-            if i % 20 == 0: print(loss.mean())
-    check_point.save('./lenet_models_1')  # need remove the existed folder
+            if i % 20 == 0:
+                print(loss.mean())
+    check_point.save("./lenet_models_1")  # need remove the existed folder
     print("model saved")
 ```
 
@@ -266,30 +317,56 @@ BATCH_SIZE = 100
 
 def lenet(data, train=False):
     initializer = flow.truncated_normal(0.1)
-    conv1 = flow.layers.conv2d(data, 32, 5, padding='SAME', activation=flow.nn.relu, name='conv1',
-                               kernel_initializer=initializer)
-    pool1 = flow.nn.max_pool2d(conv1, ksize=2, strides=2, padding='SAME', name='pool1')
-    conv2 = flow.layers.conv2d(pool1, 64, 5, padding='SAME', activation=flow.nn.relu, name='conv2',
-                               kernel_initializer=initializer)
-    pool2 = flow.nn.max_pool2d(conv2, ksize=2, strides=2, padding='SAME', name='pool2', )
+    conv1 = flow.layers.conv2d(
+        data,
+        32,
+        5,
+        padding="SAME",
+        activation=flow.nn.relu,
+        name="conv1",
+        kernel_initializer=initializer,
+    )
+    pool1 = flow.nn.max_pool2d(conv1, ksize=2, strides=2, padding="SAME", name="pool1")
+    conv2 = flow.layers.conv2d(
+        pool1,
+        64,
+        5,
+        padding="SAME",
+        activation=flow.nn.relu,
+        name="conv2",
+        kernel_initializer=initializer,
+    )
+    pool2 = flow.nn.max_pool2d(conv2, ksize=2, strides=2, padding="SAME", name="pool2")
     reshape = flow.reshape(pool2, [pool2.shape[0], -1])
-    hidden = flow.layers.dense(reshape, 512, activation=flow.nn.relu, kernel_initializer=initializer, name='dense1')
-    if train: hidden = flow.nn.dropout(hidden, rate=0.5)
-    return flow.layers.dense(hidden, 10, kernel_initializer=initializer, name='dense2')
+    hidden = flow.layers.dense(
+        reshape,
+        512,
+        activation=flow.nn.relu,
+        kernel_initializer=initializer,
+        name="dense1",
+    )
+    if train:
+        hidden = flow.nn.dropout(hidden, rate=0.5)
+    return flow.layers.dense(hidden, 10, kernel_initializer=initializer, name="dense2")
 
 
 @flow.global_function(type="predict")
-def eval_job(images:tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-             labels:tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32)) -> Tuple[tp.Numpy, tp.Numpy]:
+def eval_job(
+    images: tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+    labels: tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32),
+) -> Tuple[tp.Numpy, tp.Numpy]:
     with flow.scope.placement("gpu", "0:0"):
         logits = lenet(images, train=False)
-        loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits, name="softmax_loss")
+        loss = flow.nn.sparse_softmax_cross_entropy_with_logits(
+            labels, logits, name="softmax_loss"
+        )
 
     return (labels, logits)
 
 
 g_total = 0
 g_correct = 0
+
 
 def acc(labels, logtis):
     global g_total
@@ -301,11 +378,13 @@ def acc(labels, logtis):
     g_correct += right_count
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 
     check_point = flow.train.CheckPoint()
     check_point.load("./lenet_models_1")
-    (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(BATCH_SIZE, BATCH_SIZE)
+    (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(
+        BATCH_SIZE, BATCH_SIZE
+    )
 
     for epoch in range(1):
         for i, (images, labels) in enumerate(zip(test_images, test_labels)):
@@ -331,21 +410,35 @@ BATCH_SIZE = 100
 
 
 @flow.global_function(type="train")
-def train_job(images: tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-              labels: tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32)) -> tp.Callback[tp.Numpy]:
+def train_job(
+    images: tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+    labels: tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32),
+) -> tp.Callback[tp.Numpy]:
     # mlp
     initializer = flow.truncated_normal(0.1)
     reshape = flow.reshape(images, [images.shape[0], -1])
-    hidden = flow.layers.dense(reshape, 512, activation=flow.nn.relu, kernel_initializer=initializer, name="hidden")
-    logits = flow.layers.dense(hidden, 10, kernel_initializer=initializer, name="output")
+    hidden = flow.layers.dense(
+        reshape,
+        512,
+        activation=flow.nn.relu,
+        kernel_initializer=initializer,
+        name="hidden",
+    )
+    logits = flow.layers.dense(
+        hidden, 10, kernel_initializer=initializer, name="output"
+    )
 
-    loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits, name="softmax_loss")
+    loss = flow.nn.sparse_softmax_cross_entropy_with_logits(
+        labels, logits, name="softmax_loss"
+    )
     lr_scheduler = flow.optimizer.PiecewiseConstantScheduler([], [0.1])
     flow.optimizer.SGD(lr_scheduler, momentum=0).minimize(loss)
     return loss
 
 
 g_i = 0
+
+
 def cb_print_loss(result: tp.Numpy):
     global g_i
     if g_i % 20 == 0:
@@ -357,15 +450,17 @@ def main():
     check_point = flow.train.CheckPoint()
     check_point.init()
 
-    (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(BATCH_SIZE)
+    (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(
+        BATCH_SIZE
+    )
     for epoch in range(20):
         for i, (images, labels) in enumerate(zip(train_images, train_labels)):
             train_job(images, labels)(cb_print_loss)
 
-    check_point.save('./mlp_models_1')  # need remove the existed folder
+    check_point.save("./mlp_models_1")  # need remove the existed folder
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
 ```
 
@@ -402,23 +497,35 @@ BATCH_SIZE = 100
 def mlp(data):
     initializer = flow.truncated_normal(0.1)
     reshape = flow.reshape(data, [data.shape[0], -1])
-    hidden = flow.layers.dense(reshape, 512, activation=flow.nn.relu, kernel_initializer=initializer, name="hidden")
+    hidden = flow.layers.dense(
+        reshape,
+        512,
+        activation=flow.nn.relu,
+        kernel_initializer=initializer,
+        name="hidden",
+    )
     return flow.layers.dense(hidden, 10, kernel_initializer=initializer, name="output")
 
 
 @flow.global_function(type="predict")
-def eval_job(images: tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-             labels: tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32)) -> tp.Callback[Tuple[tp.Numpy, tp.Numpy]]:
+def eval_job(
+    images: tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+    labels: tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32),
+) -> tp.Callback[Tuple[tp.Numpy, tp.Numpy]]:
     with flow.scope.placement("cpu", "0:0"):
         logits = mlp(images)
-        loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits, name="softmax_loss")
+        loss = flow.nn.sparse_softmax_cross_entropy_with_logits(
+            labels, logits, name="softmax_loss"
+        )
 
     return (labels, logits)
 
 
 g_total = 0
 g_correct = 0
-def acc(arguments:Tuple[tp.Numpy, tp.Numpy]):
+
+
+def acc(arguments: Tuple[tp.Numpy, tp.Numpy]):
     global g_total
     global g_correct
 
@@ -432,8 +539,10 @@ def acc(arguments:Tuple[tp.Numpy, tp.Numpy]):
 
 def main():
     check_point = flow.train.CheckPoint()
-    check_point.load('./mlp_models_1')
-    (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(BATCH_SIZE)
+    check_point.load("./mlp_models_1")
+    (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(
+        BATCH_SIZE
+    )
     for epoch in range(1):
         for i, (images, labels) in enumerate(zip(test_images, test_labels)):
             eval_job(images, labels)(acc)
@@ -441,7 +550,7 @@ def main():
     print("accuracy: {0:.1f}%".format(g_correct * 100 / g_total))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
 ```
 
