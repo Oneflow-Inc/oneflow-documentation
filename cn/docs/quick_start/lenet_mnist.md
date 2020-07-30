@@ -308,7 +308,7 @@ if __name__ == '__main__':
 
 ### 训练模型
 
-代码：[lenet_train.py](https://github.com/Oneflow-Inc/oneflow-documentation/cn/docs/code/quick_start/lenet_train.py)
+代码：[lenet_train.py](../code/quick_start/lenet_train.py)
 
 ```python
 #lenet_train.py
@@ -361,7 +361,7 @@ if __name__ == '__main__':
 
 ### 校验模型
 
-代码：[lenet_eval.py](https://github.com/Oneflow-Inc/oneflow-documentation/cn/docs/code/quick_start/lenet_eval.py)
+代码：[lenet_eval.py](../code/quick_start/lenet_eval.py)
 
 预训练模型：[lenet_models_1.zip](https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/quick_start/lenet_models_1.zip)
 
@@ -429,7 +429,7 @@ if __name__ == "__main__":
 
 ### 数字预测
 
-代码：[lenet_test.py](https://github.com/Oneflow-Inc/oneflow-documentation/cn/docs/code/quick_start/lenet_test.py)
+代码：[lenet_test.py](../code/quick_start/lenet_test.py)
 
 预训练模型：[lenet_models_1.zip](https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/quick_start/lenet_models_1.zip)
 
