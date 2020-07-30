@@ -36,13 +36,23 @@ BATCH_SIZE = 100
 
 
 @flow.global_function(type="train")
-def train_job(images:tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-              labels:tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32)) -> tp.Numpy:
+def train_job(
+    images: tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+    labels: tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32),
+) -> tp.Numpy:
     with flow.scope.placement("cpu", "0:0"):
         initializer = flow.truncated_normal(0.1)
         reshape = flow.reshape(images, [images.shape[0], -1])
-        hidden = flow.layers.dense(reshape, 512, activation=flow.nn.relu, kernel_initializer=initializer, name="dense1")
-        logits = flow.layers.dense(hidden, 10, kernel_initializer=initializer, name="dense2")
+        hidden = flow.layers.dense(
+            reshape,
+            512,
+            activation=flow.nn.relu,
+            kernel_initializer=initializer,
+            name="dense1",
+        )
+        logits = flow.layers.dense(
+            hidden, 10, kernel_initializer=initializer, name="dense2"
+        )
         loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits)
 
     lr_scheduler = flow.optimizer.PiecewiseConstantScheduler([], [0.1])
@@ -51,11 +61,13 @@ def train_job(images:tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.fl
     return loss
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     check_point = flow.train.CheckPoint()
     check_point.init()
 
-    (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(BATCH_SIZE,BATCH_SIZE)
+    (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(
+        BATCH_SIZE, BATCH_SIZE
+    )
     for i, (images, labels) in enumerate(zip(train_images, train_labels)):
         loss = train_job(images, labels)
         if i % 20 == 0:
@@ -67,8 +79,9 @@ if __name__ == '__main__':
 OneFlow 相对其他深度学习框架较特殊的地方是这里：
 ```python
 @flow.global_function(type="train")
-def train_job(images:tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-              labels:tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32)) -> tp.Numpy:
+def train_job(
+    images: tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+    labels: tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32),
 ```
 `train_job` 是一个被 `@flow.global_function` 修饰的函数，通常被称为作业函数(job function)。只有被 `@flow.global_function` 修饰的作业函数才能够被 OneFlow 识别，通过type来指定job的类型：type="train"为训练作业；type="predict"为验证或预测作业。
 
