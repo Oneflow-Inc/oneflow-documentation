@@ -36,13 +36,13 @@ def foo() -> T:
 #test_watch.py
 import numpy as np
 import oneflow as flow
-import oneflow.typing as oft
+import oneflow.typing as tp
 
-def watch_handler(y:oft.Numpy):
+def watch_handler(y:tp.Numpy):
     print("out:", y)
 
 @flow.global_function()
-def ReluJob(x:oft.Numpy.Placeholder((5,))) -> None:
+def ReluJob(x:tp.Numpy.Placeholder((5,))) -> None:
     y = flow.nn.relu(x)
     flow.watch(y, watch_handler)
 
@@ -78,11 +78,11 @@ out: [0.15727027 0.45887455 0.10939325 0.66666406 0.        ]
 ```python
 # test_watch_diff.py
 import oneflow as flow
-import oneflow.typing as oft
+import oneflow.typing as tp
 
 BATCH_SIZE = 100
 
-def watch_diff_handler(blob: oft.Numpy):
+def watch_diff_handler(blob: tp.Numpy):
     print("watch_diff_handler:", blob, blob.shape, blob.dtype)
 
 def get_train_config():
@@ -92,8 +92,8 @@ def get_train_config():
 
 
 @flow.global_function(type="train", function_config=get_train_config())
-def train_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-              labels:oft.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32)) -> oft.Numpy:
+def train_job(images:tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+              labels:tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32)) -> tp.Numpy:
     with flow.scope.placement("cpu", "0:0"):
         initializer = flow.truncated_normal(0.1)
         reshape = flow.reshape(images, [images.shape[0], -1])
@@ -133,7 +133,7 @@ python3 test_watch_diff.py
 
 首先，定义了回调函数：
 ```python
-def watch_diff_handler(blob: oft.Numpy):
+def watch_diff_handler(blob: tp.Numpy):
     print("watch_diff_handler:", blob, blob.shape, blob.dtype)
 ```
 
