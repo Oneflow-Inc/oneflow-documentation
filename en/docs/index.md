@@ -1,13 +1,13 @@
-# OneFlow 全新一代深度学习框架
+# OneFlow New Generation Deep Learning Framework
 
-## OneFlow 是什么
-OneFlow 是开源的、采用全新架构设计，世界领先的工业级通用深度学习框架。
+## What is OneFlow
+OneFlow is an open source, using new frame design and the world's leading deep learning framework.
 
-## 为什么是OneFlow
+## Why we choose OneFlow
 
-* 分布式训练全新体验，多机多卡如单机单卡一样简单
+* New experience of distributed training. Make multi-machines and multi-cards sample as solo card.
 
-* 完美契合一站式平台(k8s + docker)
+* Perfect fit one-stop platform(k8s + docker)
 
 * 原生支持超大模型
 
