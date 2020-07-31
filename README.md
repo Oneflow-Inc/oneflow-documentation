@@ -1,5 +1,7 @@
 # Oneflow-Documentation
 
+## Documentation
+
 此项目为OneFlow官方在线文档的[github仓库](https://github.com/Oneflow-Inc/oneflow-documentation)，你也可直接浏览我们的在线文档：http://docs.oneflow.org/ 
 
 在线文档内容全面，不仅有[OneFlow系统设计](http://docs.oneflow.org/basics_topics/essentials_of_oneflow.html)的介绍，还包括以下模块：
@@ -30,8 +32,22 @@
 
 
 
-如果你是想查看OneFlow的API，可以查看我们部署在ReadTheDocs上的在线API文档：
+## API
+
+我们的API在线文档部署在ReadTheDocs上：
 
 https://oneflow-api.readthedocs.io/en/latest/index.html
 
-同样，我们的api文档也是开源的，github地址：https://github.com/Oneflow-Inc/oneflow-api
+同样，API文档项目也是开源的，github地址：https://github.com/Oneflow-Inc/oneflow-api
+
+
+
+## Benchmark
+
+我们还在Benchmark项目中提供了一系列的基准模型，包括：
+
+- NLP相关的 **BERT** 
+- CTR相关的 **WideDeepLearning** 
+- CV相关的CNN分类模型： **Resnet50** 、 **VGG-16** 、 **Inception-v3** 、 **Alaxnet** 
+
+github地址：https://github.com/Oneflow-Inc/OneFlow-Benchmark
