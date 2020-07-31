@@ -80,7 +80,7 @@ def train_job():
 ### 预测/推理配置
 下面我们定义了一个用于验证的作业函数(job function)：`eval_job`
 
-我们通过 get_eval_config() 定义了 eval_job() 的配置，并将 get_eval_config() 作为 `@flow.global_function` 的参数，应用到eval_job()函数。同时，通过设置参数type="predict"来表面该job function的类型—用于模型验证任务。
+我们通过 get_eval_config() 定义了 eval_job() 的配置，并将 get_eval_config() 作为 `@flow.global_function` 的参数，应用到eval_job()函数。同时，通过设置参数type="predict"来表明该job function的类型—用于模型验证任务。
 
 ```python
 def get_eval_config():
@@ -118,10 +118,10 @@ def train_job(
 
 1. 利用 `flow.optimizer.PiecewiseConstantScheduler` 设置了学习率 learning rate的策略—初始学习率为0.1的分段缩放策略。当然，你也可以使用其他的学习率策略如：`flow.optimizer.CosineScheduler`(余弦策略)
 
-2. 在 `flow.optimizer.SGD(lr_scheduler, momentum=0).minimize(loss)` 设置了 optimizer 优化器/优化算法。(naive_conf 即使用默认的 sgd 优化算法)
+2. 在 `flow.optimizer.SGD(lr_scheduler, momentum=0).minimize(loss)` 设置了 optimizer 优化器/优化算法。
 
 ## Optimizer和优化算法
-目前 OneFlow 支持6种Optimize/优化算法，分别是：
+目前 OneFlow 支持6种Optimizer/优化算法，分别是：
 
 -  SGD
 -  Adam
@@ -130,7 +130,7 @@ def train_job(
 -  LARS
 -  RMSProp
 
-这六种优化算法必须选择其一，可以通过flow.optimizer来调用，譬如：
+这六种优化算法必须选择其一，可以通过`flow.optimizer`来调用，譬如：
 
 ```
 flow.optimizer.SGD(lr_scheduler, momentum=0.9, grad_clipping=flow.optimizer.grad_clipping.by_global_norm(1))
@@ -193,4 +193,4 @@ class Optimizer:
 
 一个 OneFlow 的全局函数由 `@oneflow.global_function` 修饰，解耦了网络的搭建过程和任务相关配置(function_config)，`function_config` **采取集中配置的方式，既方便任务切换，又方便集群调度配置。**
 
-job function中，可以通过flow.optimizer方便地设置Optimizer优化器、学习率、已经超参数。当然，目前还不够全面，我们会不断完善，以支持更多的优化算法及参数设定。
+job function中，可以通过`flow.optimizer`方便地设置Optimizer优化器、学习率、已经超参数。当然，目前还不够全面，我们会不断完善，以支持更多的优化算法及参数设定。
