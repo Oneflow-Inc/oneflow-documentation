@@ -29,8 +29,8 @@ We can learn how to install and quick use of OneFlow in [quick start](build_ship
 
 In [basic topics](basics_topics/data_input.md), we will introduce how to use OneFlow to finish the common task of machine learning. Such as, how to build network, configuration of parameter, loading data and distributed training.
 
-在[扩展专题](extended_topics/job_function_define_call.md)中我们介绍了具有 OneFlow 自身特点的话题，如 OneFlow 数据集格式、OneFlow 的并行观、开发者如何使用 VS Code 调试 OneFlow 框架等。
+In [extend topic](extended_topics/job_function_define_call.md). We introduce the characteristics of OneFlow. Such as, the format of OneFlow's data set, parallel strategy of OneFlow and how can developers use VS code to debugging OneFlow framework.
 
-[高级应用实例](adv_examples/resnet.md)中的文章，对应了[OneFlow Model Zoo 仓库](https://github.com/Oneflow-Inc/OneFlow-Benchmark)中的各个模型介绍，有助与读者理解模型脚本及相关细节。
+In[ advance examples](adv_examples/resnet.md), we introduce each model in [OneFlow Model Zoo repository](https://github.com/Oneflow-Inc/OneFlow-Benchmark). It is helpful for user to understand the models and other details.
 
-最后，期待广大开发者、机器学习爱好者参与 [OneFlow 开源计划](contribute/intro.md)，共创、共享，一起打造迈向完美的深度学习框架。
+Finally, we expecting all developers and all machine learning fans to participate in [OneFlow open sources project](contribute/intro.md). Creating and sharing. Build the perfect deep learning frame work together.
