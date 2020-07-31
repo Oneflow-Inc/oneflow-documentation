@@ -9,25 +9,25 @@ OneFlow is an open source, using new frame design and the world's leading deep l
 
 * Perfect fit one-stop platform(k8s + docker)
 
-* 原生支持超大模型
+* Support super scale model.
 
-* 近零运行时开销、线性加速比
+* Zero cost when running and linear acceleration
 
-* 灵活支持多种深度学习编译器
+* Flexible support for multiple deep learning compiler
 
-* 自动混合精度
+* Automatic Mixed Precision
 
-* 中立开放，合作面广
+* Neutral aspects and wide cooperation
 
-* 持续完善的算子集、模型库
+* Keep improve operator set, model library
 
-我们致力于打造一款满足开发者所有美好想象的深度学习框架，期待广大开发者试用、反馈、合作。
+We are trying to build a meet all imagine of deep learning framework developers. We expected the trial, feedback and cooperation from all developers.
 
-## 从哪开始
+## Where to start
 
-可以在[快速上手](build_ship/install.md)学习如何安装并快速运行 OneFlow。
+We can learn how to install and quick use of OneFlow in [quick start](build_ship/install.md).
 
-在[基础专题](basics_topics/data_input.md)中我们介绍了如何使用 OneFlow 完成机器学习的常见任务，如搭建网络、配置超参、加载数据、分布式训练等。
+In [basic topics](basics_topics/data_input.md), we will introduce how to use OneFlow to finish the common task of machine learning. Such as, how to build network, configuration of parameter, loading data and distributed training.
 
 在[扩展专题](extended_topics/job_function_define_call.md)中我们介绍了具有 OneFlow 自身特点的话题，如 OneFlow 数据集格式、OneFlow 的并行观、开发者如何使用 VS Code 调试 OneFlow 框架等。
 
