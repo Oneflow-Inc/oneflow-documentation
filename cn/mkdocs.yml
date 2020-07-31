@@ -100,7 +100,8 @@ nav:
       - 模型的加载与保存: basics_topics/model_load_save.md
       - 分布式训练: basics_topics/distributed_train.md
       - OneFlow 概念清单: basics_topics/concept_explanation.md
-    
+      - OneFlow 系统设计: basics_topics/essentials_of_oneflow.md
+
     - 扩展专题:
       - 作业函数的定义与调用: extended_topics/job_function_define_call.md
       - Consistent 与 Mirrored 视角: extended_topics/consistent_mirrored.md
@@ -119,17 +120,6 @@ nav:
       - Wide & Deep: adv_examples/wide_deep.md
     - API: 
       - API: https://oneflow-api.readthedocs.io/en/latest/
-    # - 二次开发:
-    #   - oneflow 架构: extended_dev/framework.md
-    #   - 算子描述符: extended_dev/op_desc.md
-    #   - 自动梯度求导: extended_dev/auto_grad.md
-    #   - 图优化: extended_dev/graph_optimize.md
-    #   - 自动并行: extended_dev/auto_parallel.md
-    #   - 代价模型: extended_dev/loss_model.md
-    #   - 自动放置: extended_dev/auto_placement.md
-    #   - 数据路由: extended_dev/data_router.md
-    #   - 内存规划: extended_dev/mem_model.md
-    #   - NDArray: extended_dev/ndarray.md
 
     - OneFlow 开源计划:
       - OneFlow 开源计划: contribute/intro.md
