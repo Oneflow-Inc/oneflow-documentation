@@ -25,7 +25,7 @@
 1.git clone[此仓库](https://github.com/Oneflow-Inc/oneflow_yolov3)到本地
 
 ```shell
-git clone https://github.com/Oneflow-Inc/oneflow_yolov3.git
+git clone --recursive https://github.com/Oneflow-Inc/oneflow_yolov3.git
 ```
 2.安装python依赖库
 
@@ -35,7 +35,7 @@ git clone https://github.com/Oneflow-Inc/oneflow_yolov3.git
 3.在项目root目录下，执行:
 
 ```
-bash scripts/test.sh
+./scripts/build.sh
 ```
 执行此脚本，将cpp代码中自定义的op算子编译成可调用执行的.so文件，您将在项目路径下看到：
 
