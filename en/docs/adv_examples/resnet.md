@@ -311,6 +311,8 @@ Oneflow的ResNet50实现，为了保证和[英伟达的Mxnet版实现](https://g
     <img src="imgs/tiger.jpg" align='center'/>
 </div>
 
+> ​                                             图片来源：https://en.wikipedia.org/wiki/Tiger
+
 输出：
 
 ```python
