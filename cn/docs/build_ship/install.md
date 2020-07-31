@@ -1,6 +1,6 @@
 ## 安装 OneFlow 发布版
 
-OneFlow 的稳定版本即将上架 [PyPI](https://pypi.python.org)，在此之前，请使用[安装 OneFlow Nightly 版本](#of_nightly)。
+OneFlow 的发布版本即将上架 [PyPI](https://pypi.python.org)，在此之前，请使用[OneFlow Nightly 版本](#of_nightly)。
 
 ## 从源码编译安装 OneFlow
 
