@@ -16,10 +16,10 @@ OneFlow对标HugeCTR搭建了Wide & Deep 学习网络（WDL)。OneFlow对标Huge
 ### 数据准备
 我们准备了一个小的[样本数据集](https://oneflow-public.oss-cn-beijing.aliyuncs.com/datasets/wdl_ofrecord_examples.tgz)，可以下载进行简单测试。
 
-或者参考[《使用Spark创建WDL数据集》](https://github.com/Oneflow-Inc/OneFlow-Benchmark/blob/of_develop_py3/ClickThroughRate/WideDeepLearning/how_to_make_ofrecord_for_wdl.md)中的步骤，从CriteoLabs官网下载原始数据集并制作成OneFlow所需要的OFRecord格式的数据集。
+或者参考[《使用Spark创建WDL数据集》](https://github.com/Oneflow-Inc/OneFlow-Benchmark/blob/master/ClickThroughRate/WideDeepLearning/how_to_make_ofrecord_for_wdl.md)中的步骤，从CriteoLabs官网下载原始数据集并制作成OneFlow所需要的OFRecord格式的数据集。
 
 ### OneFlow-WDL脚本
-OneFlow-WDL脚本只有一个文件`wdl_train_eval.py`，请从[这里](https://github.com/Oneflow-Inc/OneFlow-Benchmark/blob/of_develop_py3/ClickThroughRate/WideDeepLearning/wdl_train_eval.py)下载。
+OneFlow-WDL脚本只有一个文件`wdl_train_eval.py`，请从[这里](https://github.com/Oneflow-Inc/OneFlow-Benchmark/blob/master/ClickThroughRate/WideDeepLearning/wdl_train_eval.py)下载。
 
 ## 运行OneFlow-WDL脚本
 ```
