@@ -2,6 +2,8 @@
 
 此项目为OneFlow官方在线文档的[github仓库](https://github.com/Oneflow-Inc/oneflow-documentation)，你也可直接浏览我们的在线文档：http://docs.oneflow.org/ 
 
+在线文档内容全面，不仅有[OneFlow系统设计](http://docs.oneflow.org/basics_topics/essentials_of_oneflow.html)的介绍，还包括以下模块：
+
 - [【 首页】](http://docs.oneflow.org/index.html)
 - [【 快速上手】](http://docs.oneflow.org/build_ship/install.html)
 - [【基础专题】](http://docs.oneflow.org/basics_topics/data_input.html)
