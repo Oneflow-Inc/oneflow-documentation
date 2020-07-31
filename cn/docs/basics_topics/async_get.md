@@ -95,7 +95,7 @@ loss = train_job(images, labels)
 
 * 准备的回调函数，会被 OneFlow 调用，并将定义作业函数的返回值作为传输传递给回调函数
 
-以上工作的前三步由 OneFlow 用户完成，最后一步由 OneFlow 框架完成。
+以上工作的前四步由 OneFlow 用户完成，最后一步由 OneFlow 框架完成。
 
 ### 编写回调函数
 回调函数的原型如下：
