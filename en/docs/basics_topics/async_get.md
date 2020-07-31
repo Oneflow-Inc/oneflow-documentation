@@ -204,7 +204,7 @@ train_job(images, labels)(cb_print_loss)
 ## 相关完整代码
 
 ### Synchronised obtain a result
-在本例中，使用一个 `lenet` 网络，通过同步方式获取唯一的返回结果 `loss` ，并每隔20轮打印一次 loss 平均值。
+在本例中，使用一个 `lenet` 网络，通过同步方式获取唯一的返回结果 `loss` ，并每隔20轮打印一次 `loss`。
 
 代码下载：[synchronize_single_job.py](../code/basics_topics/synchronize_single_job.py)
 
@@ -398,7 +398,7 @@ if __name__ == "__main__":
 
 ### Asynchronously obtain a result
 
-在本例中，使用 mlp 训练，通过异步方式获取唯一的返回结果 `loss` ，并每隔20轮打印一次 loss 平均值。
+在本例中，使用 mlp 训练，通过异步方式获取唯一的返回结果 `loss` ，并每隔20轮打印一次 `loss`。
 
 代码下载：[async_single_job.py](../code/basics_topics/async_single_job.py)
 
