@@ -23,7 +23,7 @@ OneFlow 的设计目标是追求极致的性能，特别是分布式多机多卡
 
 OneFlow 的核心设计理念是，让多机多卡分布式训练高效地协同运转，同时要让用户在多机多卡的训练体验上就像单卡一样简单容易。下面我们来介绍OneFlow 实现此目标最核心的两点想法，来说明 OneFlow 是如何看待分布式场景下的深度学习训练的。
 
-## 二、Actor——一套简洁的机制解决几乎所有技术难题
+## 二、Actor：一套简洁的机制解决几乎所有技术难题
 
 关键特性：
 
@@ -44,12 +44,15 @@ OneFlow 的运行时去中心化调度就是用 Actor 机制实现的。在整�
 
 每个 Actor 内部都有一个 **状态机** ，Actor 收发的消息、执行的情况都会改变自己的状态。需要注意的是，Register 是存储块，存放了 Actor 生产出来的数据，而消息是包含了 Register 存储块的内存地址的轻量级数据，Actor 之间传递的是消息，而不是 Register，这样就实现了 zero-copy。
 
-当 Actor 收到了新消息，判断它执行所需要消费的 Register 已经就绪，且它生产的数据有空闲的 Register 可以写入时，这个 Actor 就执行（Act）一次，生产出一个 Register。
+当 Actor 收到了新消息，判断它执行所需要消费的 Register 已经就绪，且它将要生产的数据有空闲的 Register 可以写入时，这个 Actor 就执行（Act）一次，生产出一个 Register。
 
 生产完以后，该 Actor 就向需要消费这个 Register 的那些消费者 Actor 们发消息，表示 “你们可以来读取我生产的数据了” ；同时该 Actor 还需要把它消费完的那些 Register 还给这些 Regsiter 的生产者 Actor 们，表示 “我用完了你们的数据，你可以回收了” 。Actor 内部的状态机如图1 所示。 
 
+<div align="center">
+    <img src="imgs/actor_state_machine.png" align='center'/>
+</div>
+
 <center>
-![图1 Actor 内部状态机](imgs/actor_state_machine.png)
 图1 Actor 内部状态机
 </center>
 
@@ -95,14 +98,17 @@ Actor 只需要关心上下游的消息就能判断自己能不能执行。每�
 
 * 3）到 Time2 时刻，Actor b 生产出了 Regst_b_0，于是给下游的消费者Actor c 发消息说你可以来读我生产的 Regst_b_0，同时给上游的生产者Actor a 发消息说我用完了你的 Regst_a_0。此时 Actor a 已经把刚刚生产的 Regst_a_1 又发给了 Actor b，Actor b 检查自己仍有 Regst_b_1 空闲，于是 Actor b 开始读 Regst_a_1，写 Regst_b_1；Actor c 收到 Regst_b_0，发现自己有 Regst_c_0 空闲，于是 Actor c 开始执行，读 Regst_b_0，写 Regst_c_0；Actor a 收到了 Actor b 用完还回来的 Regst_a_0，检查 Regst_a_0 所有的消费者都用完了，于是将 Regst_a_0 回收，标记为空闲块，同时 Actor a 还可以继续执行，写 Regst_a_2。
 
+<div align="center">
+    <img src="imgs/actor_time_sequence.png" align='center'/>
+</div>
+
 <center>
-![图2 Actor 生产消费关系和执行时序图](imgs/actor_time_sequence.png)
 图2 Actor 生产消费关系和执行时序图
 </center>
 
 在上面的例子中，到了 Time2 时刻，其实 Actor a、b、c 都在工作，在深度学习训练任务中，Time2 时刻 Regst_b_0、Regst_c_0 存放的是 Batch 0 的数据，Regst_a_1、Regst_b_1 存放的是 Batch 1 的数据，Regst_a_2 存放的是 Batch 2 的数据。通过一个 Register 有多个空闲块的设计，Actor 机制就实现了流水并行。
 
-在这里我抛出一个更进一步深入的问题：整个数据流的执行像一个网络，数据在网络中的流动就完成了计算，如何避免生产者生产太快，消费者消费不及，以及如何避免生产者生产太慢，消费者感到饥饿的问题，这涉及到对计算、内存、传输带宽的规划，尽可能使系统的瓶颈之处最宽，需要解决流控（flow control）的问题以及资源分配问题（如每个 Actor 的 Register 到底分配几个内存块配额），这是非常关键的问题，也是 OneFlow 系统已解决的问题。
+在这里我们抛出一个更进一步深入的问题：整个数据流的执行像一个网络，数据在网络中的流动就完成了计算，如何避免生产者生产太快，消费者消费不及，以及如何避免生产者生产太慢，消费者感到饥饿的问题，这涉及到对计算、内存、传输带宽的规划，尽可能使系统的瓶颈之处最宽，需要解决流控（flow control）的问题以及资源分配问题（如每个 Actor 的 Register 到底分配几个内存块配额），这非常关键，也是 OneFlow 系统已解决的问题。
 
 ### 3. 数据搬运是一等公民
 
@@ -112,8 +118,11 @@ Actor 只需要关心上下游的消息就能判断自己能不能执行。每�
 
 在最终的执行图中，数据搬运操作也是一个个 Actor。除了在设备上做数据计算用的 Actor 以外，还有计算机内存到 GPU 显存之间的数据拷贝 Actor，机器之间做网络通信的网络 Actor，负责数据的切分、合并、复制的Actor，负责读取磁盘数据的 Actor，负责加载保存模型的 Actor 等等。很多其他框架都把数据加载、多卡模型梯度的同步、网络、模型加载更新等分别做成一个单独的模块，而 OneFlow 的设计是所有的功能都在一张由Actor组成的静态执行图里实现了。OneFlow 这样的设计不仅简洁、优雅，还非常高效。
 
+<div align="center">
+    <img src="imgs/data_transport.png" align='center'/>
+</div>
+
 <center>
-![图3 数据是如何从一个设备搬运到另一个设备上的](imgs/data_transport.png)
 图 3 数据是如何从一个设备搬运到另一个设备上的
 </center>
 
@@ -151,8 +160,11 @@ OneFlow 是目前分布式场景中支持数据并行、模型并行、流水并
 
 其中 Op_0 和 Op_1 的 Placement 是 Device 0，Op_2 的 Placement 是 Device 1，这就是一个流水并行的例子，Oneflow 会自动在 Op_1 和 Op_2 之间插入需要的数据搬运的 Copy Op。
 
+<div align="center">
+    <img src="imgs/pipeline_placement.png" align='center'/>
+</div>
+
 <center>
-![图4 一个流水并行的Placement示例图](imgs/pipeline_placement.png)
 图4 一个流水并行的Placement示例图
 </center>
 
@@ -167,8 +179,11 @@ PartialSum 表示物理上的 Tensor 虽然跟逻辑上的 Tensor 形状一致�
 
 图5展示了 SBP 的简单示例。
 
+<div align="center">
+    <img src="imgs/sbp_parallel.png" align='center'/>
+</div>
+
 <center>
-![图5 几种 SbpParallel 的简单情形](imgs/sbp_parallel.png)
 图5 几种 SbpParallel 的简单情形
 </center>
 
@@ -176,7 +191,7 @@ SbpSignature 是一个 SbpParallel 的集合，在 OneFlow 的设计里是 Op �
 
 当用户构建的逻辑上的计算图确定以后，OneFlow 在 Compiler 生成分布式的物理上的执行图时，会考虑每个 Op 的 Placement 和该 Op 允许的合法 SbpSignature 列表，在其中选择一个传输开销最小的 SbpSignature 作为本次训练的 SbpSignature，用于指导 Compiler 生成最高效的执行图。
 
-关于 Op 的合法 SbpSignature 的列表，我举一个矩阵乘法（matmul）的Op的例子。
+关于 Op 的合法 SbpSignature 的列表，我们举一个矩阵乘法（matmul）的Op的例子。
 
 定义: `Y = matmul(A, B)` , `A`, `B`, `Y` 都是 `Tensor`，表示 `Y = AB`。那么至少存在两种合法的 SbpSignature：
 
@@ -190,8 +205,11 @@ SbpSignature 是一个 SbpParallel 的集合，在 OneFlow 的设计里是 Op �
 A(64, 10) × B(10, 50) -> Y(64, 50)
 ```
 
+<div align="center">
+    <img src="imgs/sbp_signature.png" align='center'/>
+</div>
+
 <center>
-![图6 MatMul的两种合法SbpSignature](imgs/sbp_signature.png)
 图6 MatMul的两种合法SbpSignature
 </center>
 
@@ -201,8 +219,11 @@ A(64, 10) × B(10, 50) -> Y(64, 50)
 
 图7是一个混合并行的示例，定义了 Y0 = MatMul_0(A0, B0) , Y1 = MatMul_1(Y0, B1) 这样一个由两个op组成的计算图，其中A0, Y0, Y1是数据Tensor，B0, B1 是模型Tensor。
 
+<div align="center">
+    <img src="imgs/mixed_parallel.png" align='center'/>
+</div>
+
 <center>
-![图7 混合并行示例](imgs/mixed_parallel.png)
 图7 混合并行示例
 </center>
 
@@ -217,7 +238,7 @@ OneFlow 的这套 Placement + SBP + Boxing 的机制，可以使得用户定义�
 另外，早在微软推出 ZeRO-2 框架之前，OneFlow 就已经支持了类似的功能，多机多卡情况下，每个模型 Tensor 都只保存在其中一个设备上，降低梯度计算中的内存占用。
 
 ## 四、总结
-综上，在编译期，OneFlow 通过设计了一套数学上严谨的形式系统来表示所有合法的并行模式，并支持编译器较方便地自动搜索最优并行方案。
+综上，在编译期，OneFlow 通过设计一套数学上严谨的形式系统来表示所有合法的并行模式，并支持编译器较方便地自动搜索最优并行方案。
 
 在运行期，OneFlow 通过 Actor 系统最优地、灵活地支持并行、并发执行。OneFlow 的内核具有简洁、高效和高扩展性的优点。
 
