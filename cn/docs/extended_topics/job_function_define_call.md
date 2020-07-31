@@ -112,7 +112,7 @@ OneFlow 利用函数修饰符将普通 Python 函数转变为 OneFlow 特有的�
 
 我们可以像调用普通的 Python 函数一样调用作业函数。每一次调用，OneFlow 都会在框架内部完成正向传播、反向传播、参数更新等一系列事情。
 
-以下代码，获取数据之后，会向 `train_job` 作业函数传递参数并调用，打印平均损失值。
+以下代码，获取数据之后，会向 `train_job` 作业函数传递参数并调用，打印 `loss`。
 
 ```python
     (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(

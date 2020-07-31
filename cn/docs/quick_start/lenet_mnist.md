@@ -197,7 +197,7 @@ for epoch in range(20):
                 print(loss.mean())
 ```
 
-我们计算了 `train_job` 返回的 `loss` 平均值并打印。
+我们调用了 `train_job` 并每循环20次打印1次 `loss`。
 
 ### 返回多个结果的例子
 在校验模型的代码[lenet_eval.py](../code/quick_start/lenet_eval.py)中定义的作业函数：
