@@ -4,7 +4,7 @@ site_url: https://www.oneflow.org/
 site_description: >-
   OneFlow 是一款分布式高效的机器学习框架
 # Repository
-repo_name: OneFlow
+repo_name: Github
 repo_url: https://github.com/OneFlow-Inc/oneflow-documentation
 edit_uri: "blob/master/cn/docs/"
 
