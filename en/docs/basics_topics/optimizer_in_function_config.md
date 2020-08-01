@@ -74,7 +74,7 @@ The settings in `function_config` are usually related to the compute resource, d
 
 Here we define a job function to evaluate the model: `eval_job`
 
-We use `get_eval_config()` to define the configurations of `eval_job()` and use `get_eval_config()` as the parameter of `@flow.global_function` to send to` eval_job()` function. At the same time, we set the parameter type = "predict" to indicate that the job function is used for model evaluation tasks. 
+We use `get_eval_config()` to define the configurations of `eval_job()` and use `get_eval_config()` as the parameter of `@flow.global_function` to send to` eval_job()` function. At the same time, we set the parameter `type = "predict"` to indicate that the job function is used for model evaluation tasks. 
 
 ```python
 def get_eval_config():
@@ -88,7 +88,7 @@ def eval_job():
 ```
 ### The configuration of training
 
-As same, just following the instructions below and  add a decorator to `train_job()`, we can get a network to train. Otherwise, we can set the optimizer, learning rate and hyperparameters in the body of job function. 
+As same, just following the instructions below and  add a decorator `@flow.global_function()) ` to `train_job()`, we can get a network to train. Otherwise, we can set the optimizer, learning rate and hyperparameters in the body of job function. 
 ```python
 @flow.global_function(type="train")
 def train_job(
@@ -127,7 +127,7 @@ flow.optimizer.SGD(lr_scheduler, momentum=0.9, grad_clipping=flow.optimizer.grad
 ```
 We will not explain all optimizer, more details please refer to [optimizer api](http://183.81.182.202:8000/html/train.html#).
 
-## 
+## The learning rate and hyperparameters
 
 #### Learning rate
 
