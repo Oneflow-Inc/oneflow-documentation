@@ -2,7 +2,7 @@
 
 当一个神经网络被搭建好之后，通常是需要经过训练之后才能够被拿来做预测/推理。而训练的过程就是网络模型参数(Variable)被优化的过程，通常采用反向传播算法和指定的优化器/优化策略(Optimizer)更新网络模型参数，本文重点介绍在 OneFlow 中如何设置 **优化策略(Optimizer)** 和 **超参(Hyperparameters)** 。
 
-可以在不了解 OneFlow 设计和概念的情况下，直接采用下面的预测配置或训练配置；如果有更进一步的需要，可以参考：
+
 
 文章主要内容如下：
 
@@ -21,6 +21,10 @@
 -  **学习率和超参数**
 
    介绍学习率的设定，学习率衰减策略，一些超参数设定
+
+
+
+可以在不了解 OneFlow 设计和概念的情况下，直接采用 **配置示例** 部分的训练或推理配置；更详细的说明请参考 **Optimizer和优化算法** 、 **学习率和超参数**  以及 [optimizer api](https://oneflow-api.readthedocs.io/en/latest/optimizer.html)
 
 
 
@@ -80,7 +84,7 @@ def train_job():
 ### 预测/推理配置
 下面我们定义了一个用于验证的作业函数(job function)：`eval_job`
 
-我们通过 get_eval_config() 定义了 eval_job() 的配置，并将 get_eval_config() 作为 `@flow.global_function` 的参数，应用到eval_job()函数。同时，通过设置参数type="predict"来表面该job function的类型—用于模型验证任务。
+我们通过 `get_eval_config() `定义了 `eval_job() `的配置，并将 `get_eval_config() `作为 `@flow.global_function` 的参数，应用到`eval_job()`函数。同时，通过设置参数`type="predict"`来表明该job function的类型—用于模型验证任务。
 
 ```python
 def get_eval_config():
@@ -118,7 +122,7 @@ def train_job(
 
 1. 利用 `flow.optimizer.PiecewiseConstantScheduler` 设置了学习率 learning rate的策略—初始学习率为0.1的分段缩放策略。当然，你也可以使用其他的学习率策略如：`flow.optimizer.CosineScheduler`(余弦策略)
 
-2. 在 `flow.optimizer.SGD(lr_scheduler, momentum=0).minimize(loss)` 设置了 optimizer 优化器/优化算法。(naive_conf 即使用默认的 sgd 优化算法)
+2. 在 `flow.optimizer.SGD(lr_scheduler, momentum=0).minimize(loss)` 设置了 optimizer 优化器/优化算法。
 
 ## Optimizer和优化算法
 目前 OneFlow 支持6种Optimize/优化算法，分别是：
