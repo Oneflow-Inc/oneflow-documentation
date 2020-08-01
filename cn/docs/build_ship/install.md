@@ -1,19 +1,34 @@
-## 安装 OneFlow 发布版
+## 安装 OneFlow 稳定发布版
 
-OneFlow 的发布版本即将上架 [PyPI](https://pypi.python.org)，在此之前，请使用[OneFlow Nightly 版本](#of_nightly)。
+使用以下命令安装 OneFlow 最新稳定版本：
+
+```shell
+python3 -m pip install --find-links https://oneflow-inc.github.io/nightly oneflow_cu102 --user
+```
+
+系统要求：
+
+* Python >= 3.5
+
+* Nvidia Linux x86_64 driver version >= 440.33
+
+如果提示 **找不到** 对应版本，请尝试升级 `pip`：
+```shell
+python3 -m pip install --upgrade --user pip
+```
 
 ## 从源码编译安装 OneFlow
 
 如果你希望通过编译源码安装 OneFlow，可以参考 OneFlow源码仓库的 [README](https://github.com/Oneflow-Inc/oneflow/blob/develop/README.md)，在编译 OneFlow 源码之前，强烈推荐先阅读 [Troubleshooting](https://github.com/Oneflow-Inc/oneflow/blob/develop/docs/source/troubleshooting.md)。
 
-## 安装 OneFlow Nightly 版本
-
-<a id="of_nightly"></a>
-
-我们也提供了每天更新的 OneFlow Nightly 版本，适合想优先体验 OneFlow 新特性的朋友，不建议在生产环境下使用，通过以下命令安装：
-
+## 安装 OneFlow with legacy CUDA
+支持其它较早版本 CUDA 的 OneFlow 的安装方法如下：
 ```shell
-python3 -m pip install --find-links https://oneflow-inc.github.io/nightly oneflow_cu102 --user
+python3 -m pip install --find-links https://oneflow-inc.github.io/nightly oneflow_cu101 --user
+python3 -m pip install --find-links https://oneflow-inc.github.io/nightly oneflow_cu100 --user
+python3 -m pip install --find-links https://oneflow-inc.github.io/nightly oneflow_cu92 --user
+python3 -m pip install --find-links https://oneflow-inc.github.io/nightly oneflow_cu91 --user
+python3 -m pip install --find-links https://oneflow-inc.github.io/nightly oneflow_cu90 --user
 ```
 
 ## 交流QQ群
