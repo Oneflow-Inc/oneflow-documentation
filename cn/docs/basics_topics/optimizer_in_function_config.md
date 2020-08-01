@@ -30,7 +30,7 @@
 
 ### 全局函数(Global Function)
 
-在介绍优化策略和超参的设置之前，需要先提到`OneFlow Global Function`这个概念，被 `oneflow.global_function` 修饰的函数就是`OneFlow Global Function`，通常也可以被称作`job function`作业函数，下面就是一个简单的例子：
+在介绍优化策略和超参的设置之前，需要先提到 `OneFlow Global Function` 这个概念，被       `oneflow.global_function` 修饰的函数就是 `OneFlow Global Function` ，通常也可以被称作 `job function` 作业函数，下面就是一个简单的例子：
 
 ```python
 import oneflow as flow
@@ -39,19 +39,19 @@ def test_job():
   # build up NN here
 ```
 
-其中`@flow.global_function`有两个基本参数：`type`指定了作业的类型，`type = "train"`为训练；`type="predict"`为验证或推理。type默认为"predict"，function_config默认为None。
+其中 `@flow.global_function` 有两个基本参数： `type` 指定了作业的类型， `type = "train"` 为训练；`type="predict"` 为验证或推理。`type` 默认为"predict"，`function_config` 默认为None。
 
 `test_job`被`@flow.global_function`修饰后就成为了能被OneFlow识别的作业。
 
-换句话说：在 OneFlow 中，无论是训练还是验证、预测/推理的作业，都需要通过装饰器 `@flow.global_function` 来指定，之后，OneFlow将根据function_config参数指定的配置(或默认配置)运行此作业。通过这种方式，做到了 **参数配置和任务的分离** 。
+换句话说：在 OneFlow 中，无论是训练还是验证、预测/推理的作业，都需要通过装饰器 `@flow.global_function` 来指定，之后，OneFlow将根据 `function_config` 参数指定的配置(或默认配置)运行此作业。通过这种方式，做到了 **参数配置和任务的分离** 。
 
-`job function`作业函数主体包括两部分信息：使用算子搭建神经网络(NN)，以及运行这个网络需要的配置信息(function_config)。
+`job function `  作业函数主体包括两部分信息：使用算子搭建神经网络(NN)，以及运行这个网络需要的配置信息(function_config)。
 
 下文专注介绍如何设置优化算法等配置信息，网络的搭建请参考[如何使用OneFlow搭建网络](build_nn_with_op_and_layer.md)。
 
 ### 函数配置(function_config)
 
-前面的例子中，你也可能注意到 `@flow.global_function` 装饰器接受`flow.function_config()` 的返回对象作为参数。这个参数就是设置作业函数配置信息的入口。比如下面这个略微复杂一点的例子：
+前面的例子中，你也可能注意到 `@flow.global_function` 装饰器接受 `flow.function_config()`  的返回对象作为参数。这个参数就是设置作业函数配置信息的入口。比如下面这个略微复杂一点的例子：
 
 ```python
 def get_train_config():
@@ -69,9 +69,9 @@ def train_job():
 
 在这个例子中，通过 `function_config` 设置了网络的默认数据类型为 float；并设置了允许自动混合精度训练模型。
 
-还可以通过`function_config`进行一些其他的设置，如：`config.default_logical_view(flow.scope.consistent_view())` 设置作业的默认逻辑视图为`consistent_view`。
+还可以通过 `function_config` 进行一些其他的设置，如：`config.default_logical_view(flow.scope.consistent_view())` 设置作业的默认逻辑视图为 `consistent_view`。
 
-`function_config`相关的设置通常和计算资源、设备、集群调度有关，而具体的优化器、学习率和超参数，我们在`job function`作业函数主体内设置。
+`function_config` 相关的设置通常和计算资源、设备、集群调度有关，而具体的优化器、学习率和超参数，我们在 `job function `作业函数主体内设置。
 
 
 
@@ -80,7 +80,7 @@ def train_job():
 ### 预测/推理配置
 下面我们定义了一个用于验证的作业函数(job function)：`eval_job`
 
-我们通过 get_eval_config() 定义了 eval_job() 的配置，并将 get_eval_config() 作为 `@flow.global_function` 的参数，应用到eval_job()函数。同时，通过设置参数type="predict"来表明该job function的类型—用于模型验证任务。
+我们通过 `get_eval_config()`  定义了 `eval_job()` 的配置，并将 `get_eval_config()` 作为 `@flow.global_function` 的参数，应用到 `eval_job()` 函数。同时，通过设置参数 `type="predict"` 来表明该job function的类型—用于模型验证任务。
 
 ```python
 def get_eval_config():
@@ -121,7 +121,7 @@ def train_job(
 2. 在 `flow.optimizer.SGD(lr_scheduler, momentum=0).minimize(loss)` 设置了 optimizer 优化器/优化算法。
 
 ## Optimizer和优化算法
-目前 OneFlow 支持6种Optimizer/优化算法，分别是：
+目前 OneFlow 支持6种 Optimizer /优化算法，分别是：
 
 -  SGD
 -  Adam
