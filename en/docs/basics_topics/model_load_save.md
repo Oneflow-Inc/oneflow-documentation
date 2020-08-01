@@ -14,7 +14,7 @@ In this article, we will introduce:
 
 * How to create model parameters
 
-* How to save and load model
+* 如何保存/加载模型
 
 * Storage structure of OneFlow model
 
@@ -32,7 +32,7 @@ Because of this character, the object create by `get_variable` always used in st
 
 If the` name` value is existing in the program, then get_variable will get the existing object and return.
 
-If the` name` value is not existing in the program, then get_variable will create a blob object and return.
+如果 `name` 指定的值不存在，则 `get_varialbe` 内部会创建一个 blob 对象，并返回。
 
 ### Use get_variable create object
 
@@ -153,10 +153,8 @@ check_point.save('./path_to_save')
 Attention:
 
 * `save` 参数所指定路径对应的目录要么不存在，要么应该为空目录，否则 `save` 会报错(防止覆盖掉原有保存的模型)
-
+* OneFlow 模型以一定的组织形式保存在指定的路径中，具体结构参见下文中的OneFlow模型的存储结构
 * 虽然OneFlow对 `save` 的频率没有限制，但是过高的保存频率，会加重磁盘及带宽等资源的负担。
-
-* OneFlow model can save in a certain form stored in the specified path. More details in the example below.
 
 ### Load model
 We can called the `load` which is the obejct of `CheckPoint` to load model from specificed path. 注意，从磁盘中加载的模型需要与当前作业函数中使用使用的网络模型匹配，否则会出错。
