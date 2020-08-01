@@ -6,7 +6,7 @@ In this article, we will mainly introduce how to obtain the return value from jo
 
 * How to use asynchronous method obtained the return value from job function.
 
-In OneFlow, we usually use the decorator called @flow.global_function to defined job function. Thus, This task could be training, evaluation or prediction.We can use `get()` and `async_get()` to obtain the return object from a job function. `get` and `async_get` is apply in corresponding job function.
+In OneFlow, we usually use the decorator called @flow.global_function to defined job function. Thus, This task could be training, evaluation or prediction. By define the return value of job function. We can use both synchronous and asynchronous to get result of function.
 
 ## Difference between synchronous and asynchronous
 
@@ -14,7 +14,7 @@ Normally, our trainin process is synonymous which mean in line. Now we will demo
 
 #### Synchronous
 
-During the complete process in one iteration, when the data from some step/iter completed the forward and reverse transmission process and completed the updated of weight parameters and the optimizer. Then start the training process in next step.Whereas before next step, usually we need to wait for CPU prepare the training data. Normally it will come up with some times for data preprocessing and loading.
+During the complete process in one iteration, when the data from some step/iter completed the forward and reverse transmission process and completed the updated of weight parameters and the optimizer. Then start the training process in next step. Whereas before next step, usually we need to wait for CPU prepare the training data. Normally it will come up with some times for data preprocessing and loading.
 
 #### Asynchronous
 
@@ -42,7 +42,7 @@ def train_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.f
     return loss
 ```
 
-Thus, we can use the following code, use `get`  to obtain the return loss in the job function and print the average of them.
+In above script, by using citation in python to tell OneFlow system. The return value is `tp.Numpy` which is the `ndarray` in `numpy`.
 
 ```python
 loss = train_job(images, labels).get()
@@ -51,16 +51,30 @@ print(loss.mean())
 
 From the example above, we should notice that:
 
-Because of the characteristic of OneFlow frame work, the `return `object when define the function **can not** directly get when call the job function. It need use `get` (next chapter will introduce`async_get` ).
+* When define the job function, the return value of job function (loss) is just a place holder. It is for constructing map. Do not have data in it.
+
+* When define the return value as `flow.typing.Numpy`. It can tell OneFlow that when calling the job function, the real return value is `numpy` object.
+
+* When calling the job function `train_job(images, labels)`, We can directly get the results of job function and it is a `flow.typing.Numpy` corresponding to `numpy` objects.
+
+## Data type of `oneflow.typing` 
+`flow.typing` include all the data type can be return by the job function.  `flow.typing.Numpy` we mention before is one of them. The common data type is in the list below:
+
+* `flow.typing.Numpy`：corresponding to `numpy.ndarray`
+* `flow.typing.ListNumpy`：corresponding to a `list`  container. Every elements in it is  `numpy.ndarray` object. It have connections with distributed training in OneFlow. We will see the function in [The consistent and mirrored view in distributed training.](../extended_topics/consistent_mirrored.md)
+* `flow.typing.Dict`：corresponding to`Dict`，key is `str`，value is`numpy.ndarray`
+* `flow.typing.Callback`：corresponding to a callback function. It is use to call job function synchronous. We will introduce below.
 
 
 ## Obtain result in asynchronous
 
-Normally, the efficiency of asynchronous is better than synchronous. The following is introduced how to use `async_get` to obtain the result from a job function which is asynchronous training.
+Normally, the efficiency of asynchronous is better than synchronous. The following is introduced how to obtain the result from a job function which is asynchronous training.
 
 Basic steps include:
 
 * Prepare callback function and achieve return the result of logic in  function of processing.
+
+* To achieve job function. We use the citation to specify `flow.typing.Callback` is the return value data type. We can see in following example `Callback` can define the return data type.
 
 * Use async_get to regist callback.
 
@@ -76,7 +90,9 @@ def cb_func(result):
     #...
 ```
 
-The result is the return value of job function.
+The result is the return value of job function. We define the data type is T which is `Numpy`、`ListNumpy` and etc... Them can be different type. We have example in below.
+
+`result` is the return value of job function. It must be same as the registration made by the job function.
 
 For example, in the job function below, the return is loss.
 
@@ -94,8 +110,9 @@ def train_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.f
   return loss
 ```
 
-Corresponding callback function, just print the average of loss:
+注解`-> tp.Callback[oft.Numpy]` 表示此作业函数，返回一个 `tp.Numpy` 类型的对象，并且需要异步调用。
 
+那么，我们定义的回调函数，就应该接受一个 `Numpy` 类型的参数：
 ```python
 g_i = 0
 def cb_print_loss(result):
