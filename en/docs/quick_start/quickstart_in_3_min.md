@@ -1,16 +1,11 @@
 这篇文章介绍了如何快速上手 OneFlow ，我们可以在3分钟内完成一个完整的神经网络训练过程。
 
 ## Example
-如果已经安装好了 OneFlow ，可以使用以下命令同步我们的[文档仓库](https://github.com/Oneflow-Inc/oneflow-documentation.git)，并运行其中的[mlp_mnist.py](https://github.com/Oneflow-Inc/oneflow-documentation/blob/master/cn/docs/code/quick_start/mlp_mnist.py)脚本。
+如果已经安装好了 OneFlow ，可以使用以下命令下载[文档仓库](https://github.com/Oneflow-Inc/oneflow-documentation.git)中的[mlp_mnist.py](https://github.com/Oneflow-Inc/oneflow-documentation/blob/master/cn/docs/code/quick_start/mlp_mnist.py)脚本，并运行。
 
 ```shell
-git clone https://github.com/Oneflow-Inc/oneflow-documentation.git #同步仓库
-cd oneflow-documentation/cn/docs/code/quick_start/ #切换到示例代码路径
-```
-
-Then run the neural network training script:
-```shell
-python mlp_mnist.py
+wget https://docs.oneflow.org/code/quick_start/mlp_mnist.py #下载脚本
+python3 mlp_mnist.py #运行脚本
 ```
 
 我们将得到类似以下输出：
@@ -23,10 +18,10 @@ python mlp_mnist.py
 ...
 ```
 
-The output is a string of number, each number represents the loss value of each round of training.到此您已经用 OneFlow 完成了一个完整的神经网络的训练。
+输出的是一串数字，每个数字代表了每一轮训练后的损失值，训练的目标是损失值越小越好。到此您已经用 OneFlow 完成了一个完整的神经网络的训练。
 
 ## Code interpretation
-The following is the full code
+下面是完整代码。
 ```python
 # mlp_mnist.py
 import oneflow as flow
@@ -106,10 +101,10 @@ def train_job(
 
 
 
-This page is a demonstration of a simple network. In Using [convolution neural network for handwriting recognition](lenet_mnist.md), we will give a more comprehensive and detailed introduction of using OneFlow process. 另外，还可参考 OneFlow [基础专题](../basics_topics/data_input.md)中对于训练中各类问题的详细介绍。
+以上只是一个简单网络的示例，在[使用卷积神经网络进行手写体识别](lenet_mnist.md)中，我们对使用OneFlow的流程进行了更加全面和具体的介绍。 另外，还可参考 OneFlow [基础专题](../basics_topics/data_input.md)中对于训练中各类问题的详细介绍。
 
 
-We also provide some of the prevalent network and the data for your reference The [sample code](https://github.com/Oneflow-Inc/OneFlow-Benchmark).
+我们同时还提供了一些经典网络的[样例代码](https://github.com/Oneflow-Inc/OneFlow-Benchmark)及数据供参考。
 
 
 
