@@ -274,15 +274,3 @@ reader = spark.read.format("ofrecord")
 dataframe = reader.load("file:///path/to/ofrecord_file")
 dataframe.write.json("file://path/to/outputdir")
 ```
-
-### 其它脚本及工具
-除了以上介绍的方法，使得其它数据格式与 OFRecord 数据格式进行转化外，在[oneflow_toolkit](https://github.com/Oneflow-Inc/oneflow_toolkit/tree/master/ofrecord)仓库下，还有各种与 OFRecord有关的脚本：
-
-* 为 BERT 模型准备 OFRecord 数据集的脚本
-
-* 下载 ImageNet 数据集并转 OFRecord 数据集的工具
-
-* 下载 MNIST 数据集并转 OFRecord 数据集的工具
-
-* 将微软 Coco 转 OFRecord 数据集的工具
-
