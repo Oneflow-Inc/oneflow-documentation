@@ -34,8 +34,6 @@ OneFlow 在方方面面都期待你的助力。
 
 * [OneFlow-Benchmark](https://github.com/Oneflow-Inc/OneFlow-Benchmark)：包含在OneFlow上实现的多种模型（含脚本、文档、数据集处理方法等）
 
-* [OneFlow-Toolkit](https://github.com/Oneflow-Inc/oneflow_toolkit)：包含 OneFlow 在训练过程中的日志解析、训练调试、数据转换等工具
-
 你也可以在[这里](https://github.com/Oneflow-Inc)找到或者创建更多的 OneFlow 开源项目。
 
 ## 贡献测试案例
