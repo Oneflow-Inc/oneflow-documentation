@@ -34,8 +34,6 @@ The main open source repository are:
 
 * [OneFlow-Benchmark](https://github.com/Oneflow-Inc/OneFlow-Benchmark)：Includes many model can achieved on OneFlow (script, documentations and data processing methods)
 
-* [OneFlow-Toolkit](https://github.com/Oneflow-Inc/oneflow_toolkit)：包含 OneFlow 在训练过程中的日志解析、训练调试、数据转换等工具
-
 你也可以在[这里](https://github.com/Oneflow-Inc)找到或者创建更多的 OneFlow 开源项目。
 
 ## Contribution of the testing case
