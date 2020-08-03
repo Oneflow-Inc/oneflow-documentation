@@ -39,7 +39,7 @@ Key features:
 
 In the design of OneFlow, it is divided into two periods: Compile and Runtime. In the Compile period, user-defined neural networks and distributed environment information are compiled into a static graph execution plan Plan, which is composed of the description information of the execution unit Actor; During the runtime period, each machine actually created many Actor instances belonging to its own machine based on the Actor description information in the Plan, and then started the Actor operating system. During the entire deep learning training period, the basic unit of OneFlow execution is the Actor, which corresponds to the nodes on the static execution graph. The data produced and consumed between Actors is stored in Registers, and the Actors cooperate through message passing.
 
-### 1. Actor mechanism allows decentralized scheduling
+### Actor mechanism allows decentralized scheduling
 OneFlow's runtime decentralized scheduling is implemented using the Actor mechanism. In the entire static graph composed of actors, there is no central scheduler. Each actor only needs to care about the producer of the data it needs (upstream Actor) and the consumer of the data it produces (downstream Actor). In this way, in the ultra-large-scale distributed training scenario, **completely decentralized scheduling** can avoid the single-point performance bottleneck problem of central scheduling.
 
 Each Actor has a state machine inside, and the messages sent and received by the Actor and the execution status will change its own state. It should be noted that Register is a storage block, which stores the data produced by the Actor, and the message is a lightweight data containing the memory address of the Register storage block. It is messages, instead of registers, that are passed between Actors, which achieves zero-copy. 
@@ -104,7 +104,7 @@ Let's take an example to explain how the pipeline under the Actor mechanism work
 
 <center>
 Figure 2 Actor
- Producer-consumer relationship and execution sequence diagram
+ producer-consumer relationship and execution sequence diagram
 </center>
 
 
@@ -132,7 +132,7 @@ Figure 3 shows that, without GPU-Direct, in the Runtime phase of OneFlow, how th
 
 ### Use parallelism as much as possible
 
-在 OneFlow 的设计中，所有的出发点都是希望可以尽可能并行，从而达到最优的分布式性能。比如考虑到分布式训练模型梯度同步时，显存到内存的传输带宽高于机器之间的网络传输带宽，OneFlow 会做两级的 scatter 和 gather 操作（本机的和各个机器之间的），用于增加 locality，提高整体性能。
+In the design of OneFlow, parallelism is used as much as possible to achieve optimal distributed performance. For example, when considering the distributed training model of gradient synchronization, the transmission bandwidth from video memory to memory is higher than the network transmission bandwidth between machines. OneFlow will perform two-level scatter and gather operations (local and between each machine) to increase locality and improve overall performance.
 
  Another example, when deep learning training is started asynchronously, the control logic of the python end user is executed in parallel with the execution graph when OneFlow is running. At the same time, OneFlow has a set of mutually exclusive section design to ensure efficient and correct execution. 
 
@@ -156,7 +156,7 @@ The deep learning network is a computational graph composed of Op, and Op produc
 For distributed training defined by other frameworks, each card is a "world", and the model gradients are synchronized between multiple cards according to the exposed interface; for OneFlow, multiple machines and multiple cards are also a "world" , we use a set of Placement+SBP method for overall management.
 
 ### Placement
-在 OneFlow 的计算图搭建过程中，每个计算 Op 都有一个属性叫做 Placement，表示了该逻辑上的 Op，是要部署到哪些机器哪些设备上的。对于常见的数据并行，就是所有的 Op 都部署到所有的设备上。但 OneFlow 也支持用户指定 Op 的 Placement，比如当网络过大单卡根本放不下的时候，在 OneFlow 可以让网络的前一部分在一张卡上，后一部分在另一张卡上，用一种“接力”的方式工作，实现流水并行。
+During the construction of OneFlow's calculation graph, each calculation Op has an attribute called Placement, which means the machines and equipments the logical Op is to deploy on. For general data parallelism, all Ops are deployed on all devices. However, OneFlow also supports user-specified Op Placement. For example, when the network is too large for a single card to accommodate at all, OneFlow allows the first part of the network to be on one card and the second part on the other card. "Relay" work enables parallel pipelining.
 
 Figure 4 shows an example of a possible Placement. The user defines a network consisting of 3 Ops: Op_0 -> Op_1 -> Op_2. 
 
@@ -217,8 +217,6 @@ Figure 6 Two leagal SbpSignature of MatMul
 </center>
 
 And the Op is distributed on two devices. Under the first type of SbpSignature, A on device 0 is the first half of logical A, A on device 1 is the second half of logical A (division according to the 0th dimension), and B on both devices is exactly the same as the logical B. The output Y from the two devices is the first half and the second half of the logical Y respectively. The second SbpSignature can also be analyzed the same way.
-
-值得一提的是，当 A 是数据，B 是模型的时候，第一种 SbpSignature 就是 **数据并行** ，第二种 SbpSignature 就是 **模型并行** 。如果两个相邻的 MatMul op，前一个使用第一种 SbpSignature，后一个使用第二种 SbpSignature，整个网络就实现了 **混合并行** 。
 
 It should be noted that when A is data and B is model, the first SbpSignature is **data parallelism** , and the second SbpSignature is **model parallelism** . If there’re two adjacent MatMul ops, the former uses the first SbpSignature and the latter uses the second SbpSignature, the entire network will achieve **hybrid parallelism** .
 
