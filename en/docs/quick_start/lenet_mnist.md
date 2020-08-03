@@ -4,15 +4,15 @@ In this article, we will learn:
 
 * Using OneFlow's port to define training model.
 
-* Achieved OneFlow's training job function.
+* Achieving OneFlow's training job function.
 
 * Save/load the result of training model.
 
-* Achieved OneFlow's evaluation of job function.
+* Achieving OneFlow's evaluation of job function.
 
 This article demonstrated the core step of OneFlow by using the LeNet model to training MNIST dataset. The full example code is attached in the end.
 
-Before learning, you can check the function of each script by running the following command.
+Before learning, you can check the function of each code by running the following command.
 
 First of all, clone the documentation repository and switch to the corresponding path:
 ```shell
@@ -39,7 +39,7 @@ File mnist.npz already exist, path: ./mnist.npz
 0.23443426
 ...
 ```
-Training model is the precondition of `lenet_eval.py` and `lenet_test.py`. Or we can directly download and use our model which is already been trained and skip the training progress:
+Training model is the precondition of `lenet_eval.py` and `lenet_test.py` or we can directly download and use our model which is already been trained and skip the training progress:
 ```shell
 #Repository location: docs/code/quick_start/ 
 wget https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/quick_start/lenet_models_1.zip
@@ -47,7 +47,7 @@ unzip lenet_models_1.zip
 ```
 
 * Model evaluation
-```shell
+```
 python lenet_eval.py
 ```
 The command above using the MNIST's testing set to evaluate the training model and print the accuracy.
@@ -65,34 +65,12 @@ accuracy: 99.4%
 python lenet_test.py ./9.png
 # Output：prediction: 9
 ```
-The above command will using the training model we just saved to predicting the content of "9.png". Or we can download our [ prepared image](https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/quick_start/mnist_raw_images.zip)to verify their training model prediction result.
+The above command will using the training model we just saved to predicting the content of "9.png" or we can download our [ prepared image](https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/quick_start/mnist_raw_images.zip)to verify their training model prediction result.
 
 ## MNIST dataset introdaction
 
 MNIST is a handwritten number database which including training set and testing set.Training set include 60000 pictures and the corresponding label.Yann LeCun and etc... has normalise the image size and pack them to binary file for download.http://yann.lecun.com/exdb/mnist/
 
-## Configuration of hardware and software training environment
-
-Using oneflow.function_config() can construct a configuration object. By using that object, we can configure many hardware and software parameters relevant to training. The parameters directly relating to the training is been packed and store in `function_config`'s train members. The rest of configuration directly set as the members of `function_config`. Following is our basic configuration of training:
-
-```python
-def get_train_config():
-  config = flow.function_config()
-  config.default_data_type(flow.float)
-  config.train.primary_lr(0.1)
-  config.train.model_update_conf({"naive_conf": {}})
-  return config
-```
-
-In the code above:
-
-* We put the default type of training as float
-
-* We set learning rate as 0.1
-
-* We set update strategy as "naive_conf" during the training
-
-config object and it's usage scenarios will be introduce in **Implement training function** later.
 
 ## Define training model
 
@@ -101,28 +79,53 @@ In oneflow.nn and oneflow.layers, provide the operator to used to construct the 
 ```python
 def lenet(data, train=False):
     initializer = flow.truncated_normal(0.1)
-    conv1 = flow.layers.conv2d(data, 32, 5, padding='SAME', activation=flow.nn.relu, name='conv1',
-                               kernel_initializer=initializer)
-    pool1 = flow.nn.max_pool2d(conv1, ksize=2, strides=2, padding='SAME', name='pool1')
-    conv2 = flow.layers.conv2d(pool1, 64, 5, padding='SAME', activation=flow.nn.relu, name='conv2',
-                               kernel_initializer=initializer)
-    pool2 = flow.nn.max_pool2d(conv2, ksize=2, strides=2, padding='SAME', name='pool2', )
+    conv1 = flow.layers.conv2d(
+        data,
+        32,
+        5,
+        padding="SAME",
+        activation=flow.nn.relu,
+        name="conv1",
+        kernel_initializer=initializer,
+    )
+    pool1 = flow.nn.max_pool2d(
+        conv1, ksize=2, strides=2, padding="SAME", name="pool1", data_format="NCHW"
+    )
+    conv2 = flow.layers.conv2d(
+        pool1,
+        64,
+        5,
+        padding="SAME",
+        activation=flow.nn.relu,
+        name="conv2",
+        kernel_initializer=initializer,
+    )
+    pool2 = flow.nn.max_pool2d(
+        conv2, ksize=2, strides=2, padding="SAME", name="pool2", data_format="NCHW"
+    )
     reshape = flow.reshape(pool2, [pool2.shape[0], -1])
-    hidden = flow.layers.dense(reshape, 512, activation=flow.nn.relu, kernel_initializer=initializer, name='dense1')
-    if train: hidden = flow.nn.dropout(hidden, rate=0.5, name="dropout")
-    return flow.layers.dense(hidden, 10, kernel_initializer=initializer, name='dense2')
-
+    hidden = flow.layers.dense(
+        reshape,
+        512,
+        activation=flow.nn.relu,
+        kernel_initializer=initializer,
+        name="dense1",
+    )
+    if train:
+        hidden = flow.nn.dropout(hidden, rate=0.5, name="dropout")
+    return flow.layers.dense(hidden, 10, kernel_initializer=initializer, name="dense2")
 ```
+
 
 In the code above, we build up a LeNet network model.
 
-## Implement training function
+## Achieve training function
 
-OneFlow provide a decorator called `oneflow.global_function`. By using it, we can covert a Python function to job function.
+OneFlow provides a decorator called `oneflow.global_function`. By using it, we can covert a Python function to job function.
 
 ### Global_function decorator
 
-`oneflow.global_function` decorator receive a `function_config` object as parameter. It can can covert a normal Python function to job function of OneFlow and use the configuration we just done for `function_config`.
+`oneflow.global_function` decorator receive a `function_config` object as parameter. It can covert a normal Python function to job function of OneFlow and use the configuration we just done for `function_config`.
 
 ```python
 @flow.global_function(type="train")
@@ -135,7 +138,7 @@ def train_job(
 The `tp.Numpy.Placeholder` is place holder， `tp.Numpy` define that the job function will return a `numpy` object.
 
 ### Specify the optimization feature
-We can using `flow.optimizer` to specify the parameters which need to optimization. By this way, we can specify the parameters which need to optimization.In this way, OneFlow will trade optimise the parameter as target when each iteration training mission.
+We can using `flow.optimizer` to specify the parameters which need to optimization. By this way, we can specify the parameters which need to optimization and OneFlow will trade optimal parameter as target in each iteration training mission.
 
 ```python
 @flow.global_function(type="train")
@@ -154,12 +157,12 @@ def train_job(
     return loss
 ```
 
-So Far, we using `flow.nn.sparse_softmax_cross_entropy_with_logits` to calculate the loss and trade optimize loss as target parameter.
+So Far, we using `flow.nn.sparse_softmax_cross_entropy_with_logits` to calculate the loss and trade optimal loss as target parameter.
 
 
  **lr_scheduler** set the learning rate schedule，[0.1]means learning rate is 0.1；
 
- **flow.optimizer.SGD** specified optimizer is SGD. The momentum=0；loss is the return value send to minimize which indicate the optimizer aim for minimize the loss.
+ **flow.optimizer.SGD** specified optimizer is SGD. The momentum=0. Loss is the return value and send to 'minimize' which indicate the aim of optimizer is minimize the loss.
 
 ## Call the jon function and interaction
 
@@ -196,8 +199,8 @@ for epoch in range(20):
 
 We called `train_job` and print `loss` each 20 time of cycle
 
-### Examole of multiple return value
-In evaluations script[lenet_eval.py](../code/quick_start/lenet_eval.py)define the job function：
+### Example of multiple return value
+In evaluation code[lenet_eval.py](../code/quick_start/lenet_eval.py)define the job function：
 ```python
 @flow.global_function(type="predict")
 def eval_job(
@@ -223,14 +226,14 @@ We called the job function and return `labels` and `logits` then use them to eva
 
 
 ### Synchronous and asynchronous calling
-All scripts in this article is using synchronous method to called job function. In fact, OneFlow can called job function by asynchronous. More details please reference to [Obtain value from job function](../basics_topics/async_get.md).
+All codes in this article is using synchronous method to called job function. In fact, OneFlow can call job function by asynchronous. More details please reference to [Obtain value from job function](../basics_topics/async_get.md).
 
 
 ## Initialization, saving and loading models
 
 ### Initialization and saving model
 
-The object structured by `oneflow.train.CheckPoint` can use for initialization, saving and loading models. During the training process, we can use `init` to initialize model and use `save` to save model.For example:For example:
+The object structured by `oneflow.train.CheckPoint` can use for initialization, saving and loading models. During the training process, we can use `init` to initialize model and use `save` to save model.For example:
 
 ```python
 if __name__ == '__main__':
@@ -240,11 +243,11 @@ if __name__ == '__main__':
   check_point.save('./lenet_models_1') 
 ```
 
-When save successfully, we will get a ** directory** called "lenet_models_1". This directory included directories and files corresponding with the model parameters.
+When save successfully, we will get a ** path ** called "lenet_models_1". This directory included directories and files corresponding with the model parameters.
 
 ### Loading models
 
-During the evaluation or prediction, we can use `oneflow.train.CheckPoint.load` to load the existing model parameters.For example:For example:
+During the evaluation or prediction, we can use `oneflow.train.CheckPoint.load` to load the existing parameters ofmodel. For example:
 
 ```python
 if __name__ == '__main__':
@@ -256,18 +259,8 @@ if __name__ == '__main__':
 Automatically load the model we saved previously.
 
 ## Evaluation of models
-Evaluation job function **basically is same as** train job function. The difference is in evaluation process, the model we use is already saved. Thus, do not require initialize and update model during Iteration.
+Evaluation job function **basically is same as** train job function. The difference is in evaluation process, the model we use is already saved. Thus, do not require initialize and update model during iteration.
 
-### Configure the hardware and software environment of evaluation
-
-```python
-def get_eval_config():
-  config = flow.function_config()
-  config.default_data_type(flow.float)
-  return config
-```
-
-Above code is the configuration of function_config during the evaluation. Compare with the training process, cut of the option in learning rate and the settings of update model parameters.
 
 ### Coding of evaluation job function
 ```python
@@ -285,7 +278,7 @@ def eval_job(
     return (labels, logits)
 ```
 
-Above is the coding of evolution job function and return object is a `Tuple[tp.Numpy, tp.Numpy]`. Tuple have two `numpy`  in it. We called the job function and calculate accuracy according to return value.
+Above is the coding of evolution job function and return object is a `Tuple[tp.Numpy, tp.Numpy]`. Tuple have two `numpy`  in it. We called the job function and computation accuracy according to return value.
 
 ### Iteration evaluation
 The sample amount and correct sample amount in `acc`. We will called job function to get `labels` and `logits`：
