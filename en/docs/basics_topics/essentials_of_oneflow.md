@@ -2,7 +2,7 @@
 
 In this article, we will talk about:
 
-* [Motivation of OneFlow](#Motivation-of-OneFlow)
+* [Motivation for OneFlow](#Motivation-for-OneFlow)
 
 * OneFlow Essentials
   - [Actor and Decentralization](#Actor-and-Decentralization)
@@ -10,7 +10,7 @@ In this article, we will talk about:
 
 * Summary
 
-## Motivation of OneFlow
+## Motivation for OneFlow
 OneFlow's goal is to pursue extremely good performance, especially horizontal scalability in a distributed multi-machine multi-card environment. We hoped that users can use multiple machines and multiple cards as easily as using a single machine and single card, and enjoy the efficiency of linear acceleration.
 
 Why does OneFlow focus on the performance and user experience in distributed scenarios? With the development of deep learning, the model becomes increasingly large, and the computing power required to train deep learning models will become higher and higher. At the same time, the speed of model getting larger is greater than the speed of expansion of GPU single card memory; the requirement of the increase of the computing power is greater than the growth rate of GPU single card computing power. The computing power and the memory of a single card are far from meeting the needs of deep learning model training, and multiple machines and multiple cards are required for parallel acceleration.
