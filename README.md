@@ -48,6 +48,6 @@ https://oneflow-api.readthedocs.io/en/latest/index.html
 
 - NLP相关的 **BERT** 
 - CTR相关的 **WideDeepLearning** 
-- CV相关的CNN分类模型： **Resnet50** 、 **VGG-16** 、 **Inception-v3** 、 **Alaxnet** 
+- CV相关的CNN分类模型： **Resnet50** 、 **VGG-16** 、 **Inception-v3** 、 **Alexnet** 
 
 github地址：https://github.com/Oneflow-Inc/OneFlow-Benchmark
