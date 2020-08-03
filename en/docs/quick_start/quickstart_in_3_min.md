@@ -1,4 +1,4 @@
-This article introduces how to quickly get started with OneFlow. We can complete a full neural network training process just in 3 minutes.
+This article introduces how to quickly get starte with OneFlow. We can complete a full neural network training process just in 3 minutes.
 
 ## Example
 If you already have one flow installed, you can run the following command to clone our [repository](https://github.com/Oneflow-Inc/oneflow-documentation.git) and run the script called [mlp_mnist.py](https://github.com/Oneflow-Inc/oneflow-documentation/blob/master/docs/code/quick_start/mlp_mnist.py) and run.
@@ -23,10 +23,10 @@ We will get following output:
 ...
 ```
 
-The output is a string of number, each number represents the loss value of each round of training.The target of training is make loss value as small as possibleThus far, you have completed a full neural network training by using OneFlow.
+The output is a string of number, each number represents the loss value of each round of training.The target of training is make loss value as small as possible. Thus, you have completed a full neural network training by using OneFlow.
 
-## Code interpretation
-The following is the full code
+## Script interpretation
+The following is the full script
 ```python
 # mlp_mnist.py
 import oneflow as flow
@@ -74,7 +74,7 @@ if __name__ == "__main__":
             print(loss.mean())
 ```
 
-The next chapter is a brief description of this code.
+The next chapter is a brief description of this script.
 
 The special feature of OneFlow compare to other deep learning framework:
 ```python
@@ -84,24 +84,24 @@ def train_job(
     labels: tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32),
 ) -> tp.Numpy:
 ```
-`train_job`function which decorated by `@flow.global_function`is called "job function".Only be decorated by `@flow.global_function` can be identified by OneFlow. Use type to specified job type:type="train" means training job and type="predict" means evaluations or prediction job.
+`Train_job`function which decorated by `@flow.global_function`is called "job function". Only been decorated by `@flow.global_function` can be identified by OneFlow. Use "type" to specified job type: type="train" means training job and type="predict" means evaluation or prediction job.
 
-In OneFlow, a neural network training or prediction tasks need two pieces of information:
+In OneFlow, a neural network training or prediction task need two pieces of information:
 
-* One part is structure related parameters of the neural network itself. These is define in the job function which mentioned above.
+* One part is structure related parameters of the neural network itself. These is defined in the job function which mentioned above.
 
 * Another part is using what kind of configuration to train the network. For example, `learning rate` and method of update model optimization. The configuration of `get_train_config()` in `@flow.global_function(get_train_config())` like below:
 
 `lr_scheduler = flow.optimizer.PiecewiseConstantScheduler([], [0.1])`
   `flow.optimizer.SGD(lr_scheduler, momentum=0).minimize(loss)`
 
-This part of code contains all the elements of training a neural network besides the job function and its configuration which mentioned above.
+This part of script contains all the elements of training a neural network besides the job function and its configuration which mentioned above.
 
-- `check_point.init()`: Initializes the network model parameters;
+- `check_point.init()`: Initialize the network model parameters;
 
 - `load_data(BATCH_SIZE)`: Prepare and load training data;
 
-- `train_job(images, labels).get().mean()`: Returns the loss value of each training;
+- `train_job(images, labels).get().mean()`: Return the loss value of each training;
 
 - `if i % 20 == 0: print(loss)`: Print a loss value for each 20 times of training;
 
@@ -111,7 +111,7 @@ This part of code contains all the elements of training a neural network besides
 This page is a demonstration of a simple network. In Using [convolution neural network for handwriting recognition](lenet_mnist.md), we will give a more comprehensive and detailed introduction of using OneFlow process. In addition, you can reference to the training of all kinds of problems in detail in [Based topics](../basics_topics/data_input.md) of OneFlow.
 
 
-We also provide some of the prevalent network and the data for your reference The [sample code](https://github.com/Oneflow-Inc/OneFlow-Benchmark).
+We also provide some of the prevalent network and the data for you to reference [sample code](https://github.com/Oneflow-Inc/OneFlow-Benchmark).
 
 
 
