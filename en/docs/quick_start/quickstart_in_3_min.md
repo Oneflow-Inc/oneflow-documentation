@@ -1,11 +1,11 @@
 This article introduces how to quickly get started with OneFlow. We can complete a full neural network training process just in 3 minutes.
 
 ## Example
-If you already have one flow installed, you can run the following command to clone our [repository](https://github.com/Oneflow-Inc/oneflow-documentation.git) and run the script called [mlp_mnist.py](https://github.com/Oneflow-Inc/oneflow-documentation/blob/master/docs/code/quick_start/mlp_mnist.py).
+If you already have one flow installed, you can run the following command to clone our [repository](https://github.com/Oneflow-Inc/oneflow-documentation.git) and run the script called [mlp_mnist.py](https://github.com/Oneflow-Inc/oneflow-documentation/blob/master/docs/code/quick_start/mlp_mnist.py) and run.
 
 ```shell
-git clone https://github.com/Oneflow-Inc/oneflow-documentation.git #clone repository
-cd oneflow-documentation/docs/code/quick_start/ #Switch to the sample code path
+wget https://docs.oneflow.org/code/quick_start/mlp_mnist.py 
+
 ```
 
 Then run the neural network training script:
@@ -28,59 +28,72 @@ The output is a string of number, each number represents the loss value of each 
 ## Code interpretation
 The following is the full code
 ```python
-#mlp_mnist.py
-import numpy as np
+# mlp_mnist.py
 import oneflow as flow
-from mnist_util import load_data
-import oneflow.typing as oft
+import oneflow.typing as tp
 
 BATCH_SIZE = 100
 
-def get_train_config():
-  config = flow.function_config()
-  config.default_data_type(flow.float)
-  config.train.primary_lr(0.1)
-  config.train.model_update_conf({"naive_conf": {}})
-  return config
+
+@flow.global_function(type="train")
+def train_job(
+    images: tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+    labels: tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32),
+) -> tp.Numpy:
+    with flow.scope.placement("cpu", "0:0"):
+        initializer = flow.truncated_normal(0.1)
+        reshape = flow.reshape(images, [images.shape[0], -1])
+        hidden = flow.layers.dense(
+            reshape,
+            512,
+            activation=flow.nn.relu,
+            kernel_initializer=initializer,
+            name="dense1",
+        )
+        logits = flow.layers.dense(
+            hidden, 10, kernel_initializer=initializer, name="dense2"
+        )
+        loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits)
+
+    lr_scheduler = flow.optimizer.PiecewiseConstantScheduler([], [0.1])
+    flow.optimizer.SGD(lr_scheduler, momentum=0).minimize(loss)
+
+    return loss
 
 
-@flow.global_function(get_train_config())
-def train_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-              labels:oft.Numpy.Placeholder((BATCH_SIZE, ), dtype=flow.int32)):
-  with flow.scope.placement("cpu", "0:0"):
-    initializer = flow.truncated_normal(0.1)
-    reshape = flow.reshape(images, [images.shape[0], -1])
-    hidden = flow.layers.dense(reshape, 512, activation=flow.nn.relu, kernel_initializer=initializer)
-    logits = flow.layers.dense(hidden, 10, kernel_initializer=initializer)
-    loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits)
-  flow.losses.add_loss(loss)
-  return loss
+if __name__ == "__main__":
+    check_point = flow.train.CheckPoint()
+    check_point.init()
 
-
-if __name__ == '__main__':
-  check_point = flow.train.CheckPoint()
-  check_point.init()
-  (train_images, train_labels), (test_images, test_labels) = load_data(BATCH_SIZE)
-  for i, (images, labels) in enumerate(zip(train_images, train_labels)):
-    loss = train_job(images, labels).get().mean()
-    if i % 20 == 0: print(loss)
+    (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(
+        BATCH_SIZE, BATCH_SIZE
+    )
+    for i, (images, labels) in enumerate(zip(train_images, train_labels)):
+        loss = train_job(images, labels)
+        if i % 20 == 0:
+            print(loss.mean())
 ```
 
 The next chapter is a brief description of this code.
 
 The special feature of OneFlow compare to other deep learning framework:
 ```python
-@flow.global_function(get_train_config())
-def train_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-              labels:oft.Numpy.Placeholder((BATCH_SIZE, ), dtype=flow.int32)):
+@flow.global_function(type="train")
+def train_job(
+    images: tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+    labels: tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32),
+) -> tp.Numpy:
 ```
-`train_job`function which decorated by `@flow.global_function`is called "job function".Only the job function can be identified by OneFlow as a neural network training or forecasting task.
+`train_job`function which decorated by `@flow.global_function`is called "job function".Only be decorated by `@flow.global_function` can be identified by OneFlow. Use type to specified job type:type="train" means training job and type="predict" means evaluations or prediction job.
 
 In OneFlow, a neural network training or prediction tasks need two pieces of information:
 
 * One part is structure related parameters of the neural network itself. These is define in the job function which mentioned above.
 
-* Another part is using what kind of configuration to train the network. For example, `learning rate` and method of update model optimization. The configuration of `get_train_config()` in `@flow.global_function(get_train_config())`.
+* Another part is using what kind of configuration to train the network. For example, `learning rate` and method of update model optimization. The configuration of `get_train_config()` in `@flow.global_function(get_train_config())` like below:
+
+`lr_scheduler = flow.optimizer.PiecewiseConstantScheduler([], [0.1])`
+  `flow.optimizer.SGD(lr_scheduler, momentum=0).minimize(loss)`
 
 This part of code contains all the elements of training a neural network besides the job function and its configuration which mentioned above.
 
