@@ -8,7 +8,7 @@ In this article, we will talk about:
   - [Actor and Decentralization](#Actor-and-Decentralization)
   - [SBP, A Formal System for Parallelization](#SBP)
 
-* Summary
+* [Summary](#Summary)
 
 ## Motivation for OneFlow
 OneFlow's goal is to pursue extremely good performance, especially horizontal scalability in a distributed multi-machine multi-card environment. We hoped that users can use multiple machines and multiple cards as easily as using a single machine and single card, and enjoy the efficiency of linear acceleration.
