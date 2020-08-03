@@ -14,9 +14,9 @@ In this article, we will introduce:
 
 * OneFlow use decentralized and flow framework. Not like  `master` and `worker` frame, it can maximum optimize the network speed between nodes.
 
-* Support for  `consistent strategy`, the whole network only need only logic input and output.
+* Support for  `consistent view`, the whole network only need only logic input and output.
 
-* Also support to adapt with `mirrored strategy` from other framework. User who familiar with the distributed training in other frame can easily use OneFlow.
+* Also support to adapt with `mirrored view` from other framework. User who familiar with the distributed training in other frame can easily use OneFlow.
 
 * The minimalist configuration, only need few line of code can change a single node of the training program into a distributed training program.
 
@@ -33,40 +33,27 @@ This is solo training framework, code of function will show in distributed train
 ```python
 import numpy as np
 import oneflow as flow
+import oneflow.typing as tp
 
 BATCH_SIZE = 100
-DATA_DIRECTORY = '/dataset/mnist_kaggle/60/train'
-IMG_SIZE = 28
-NUM_CHANNELS = 1
 
-def _data_load_layer(data_dir=DATA_DIRECTORY, arg_data_part_num=1, fromat="NHWC"):
-    #loading data...
-
-def lenet(data, train=False):
-    #constructed network...
+def mlp(data):
+  #build network...
 
 
-def get_train_config():
-    #config training env
+@flow.global_function(type="train")
+def train_job(
+    images: tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+    labels: tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32),
+) -> tp.Numpy:
+  #achieve job function ...
+  #Optimization method and parameters configuration training
 
-
-@flow.global_function(get_train_config())
-def train_job():
-    #achieve job function
-
-def main():
-  check_point = flow.train.CheckPoint()
-  check_point.init()
-
-  for step in range(50):
-      losses = train_job().get()
-      print("{:12} {:>12.10f}".format(step, losses.mean()))
-
-  check_point.save('./lenet_models_1') # need remove the existed folder
-  print("model saved")
 
 if __name__ == '__main__':
-  main()
+  #call job function and start training...
+      loss = train_job(images, labels)
+  #...
 ```
 
 ### Configuration of ports and GPU
@@ -130,77 +117,66 @@ We can compare distributed training with  **solo training**. We will find that w
 Name: [distributed_train.py](../code/basics_topics/distributed_train.py)
 
 ```python
-import numpy as np
 import oneflow as flow
+import oneflow.typing as tp
 
 BATCH_SIZE = 100
-DATA_DIRECTORY = '/dataset/mnist_kaggle/60/train'
-IMG_SIZE = 28
-NUM_CHANNELS = 1
 
-def _data_load_layer(data_dir=DATA_DIRECTORY, arg_data_part_num=1, fromat="NHWC"):
-  if fromat == "NHWC":
-    image_shape = (IMG_SIZE, IMG_SIZE, NUM_CHANNELS)
-  else:
-    image_shape = (NUM_CHANNELS, IMG_SIZE, IMG_SIZE)
-  image_blob_conf = flow.data.BlobConf("img_raw", shape=image_shape,
-                                       dtype=flow.float32, codec=flow.data.RawCodec())
-  label_blob_conf = flow.data.BlobConf("label", shape=(1,1), dtype=flow.int32,
-                                       codec=flow.data.RawCodec())
-  return flow.data.decode_ofrecord(data_dir, (label_blob_conf, image_blob_conf),
-                                   data_part_num=arg_data_part_num, name="decode", batch_size=BATCH_SIZE)
 
-def lenet(data, train=False):
-  initializer = flow.truncated_normal(0.1)
-  conv1 = flow.layers.conv2d(data, 32, 5, padding='SAME', activation=flow.nn.relu,
-                             kernel_initializer=initializer)
-  pool1 = flow.nn.max_pool2d(conv1, ksize=2, strides=2, padding='SAME')
-  conv2 = flow.layers.conv2d(pool1, 64, 5, padding='SAME', activation=flow.nn.relu,
-                             kernel_initializer=initializer)
-  pool2 = flow.nn.max_pool2d(conv2, ksize=2, strides=2, padding='SAME')
-  reshape = flow.reshape(pool2, [pool2.shape[0], -1])
-  hidden = flow.layers.dense(reshape, 512, activation=flow.nn.relu, kernel_initializer=initializer)
-  if train: hidden = flow.nn.dropout(hidden, rate=0.5)
-  return flow.layers.dense(hidden, 10, kernel_initializer=initializer)
+def mlp(data):
+    initializer = flow.truncated_normal(0.1)
+    reshape = flow.reshape(data, [data.shape[0], -1])
+    hidden = flow.layers.dense(
+        reshape,
+        512,
+        activation=flow.nn.relu,
+        kernel_initializer=initializer,
+        name="hidden",
+    )
+    return flow.layers.dense(
+        hidden, 10, kernel_initializer=initializer, name="output-weight"
+    )
 
-def get_train_config():
-  config = flow.function_config()
-  config.default_data_type(flow.float)
-  config.train.primary_lr(0.1)
-  config.train.model_update_conf({"naive_conf": {}})
-  return config
-
-@flow.global_function(get_train_config())
-def train_job():
-  (labels, images) = _data_load_layer(arg_data_part_num=60)
-
-  logits = lenet(images, train=True)
-  loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits, name="softmax_loss")
-  flow.losses.add_loss(loss)
-  return loss
 
 def config_distributed():
-    #number of GPU used in each node
+    print("distributed config")
+    # GPU number in each node
     flow.config.gpu_device_num(1)
-    #communication channel 
+    # communications channel
     flow.env.ctrl_port(9988)
 
-    #node configuration 
-    nodes = [{"addr":"192.168.1.12"}, {"addr":"192.168.1.11"}]
+    # node configuration 
+    nodes = [{"addr": "192.168.1.12"}, {"addr": "192.168.1.11"}]
     flow.env.machine(nodes)
 
-def main():
-  config_distributed()
-  check_point = flow.train.CheckPoint()
-  check_point.init()
 
-  for step in range(50):
-      losses = train_job().get()
-      print("{:12} {:>12.10f}".format(step, losses.mean()))
+@flow.global_function(type="train")
+def train_job(
+    images: tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+    labels: tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32),
+) -> tp.Numpy:
+    logits = mlp(images)
+    loss = flow.nn.sparse_softmax_cross_entropy_with_logits(
+        labels, logits, name="softmax_loss"
+    )
+    lr_scheduler = flow.optimizer.PiecewiseConstantScheduler([], [0.1])
+    flow.optimizer.SGD(lr_scheduler, momentum=0).minimize(loss)
+    return loss
 
-  check_point.save('./lenet_models_1') # need remove the existed folder
-  print("model saved")
 
-if __name__ == '__main__':
-  main()
+if __name__ == "__main__":
+    config_distributed()
+    flow.config.enable_debug_mode(True)
+    check_point = flow.train.CheckPoint()
+    check_point.init()
+    (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(
+        BATCH_SIZE, BATCH_SIZE
+    )
+    for epoch in range(1):
+        for i, (images, labels) in enumerate(zip(train_images, train_labels)):
+            loss = train_job(images, labels)
+            if i % 20 == 0:
+                print(loss.mean())
+
 ```
+
