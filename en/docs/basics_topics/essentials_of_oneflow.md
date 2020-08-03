@@ -4,9 +4,9 @@ In this article, we will talk about:
 
 * [Motivation of OneFlow](#Motivation-of-OneFlow)
 
-* OneFlow Essentials #1: [Actor and Decentralization](#Actor-and-Decentralization)
-
-* OneFlow Essentials #2: SBP mechanism
+* OneFlow Essentials
+  - [Actor and Decentralization](#Actor-and-Decentralization)
+  - [SBP, A Formal System for Parallelization](#SBP)
 
 * Summary
 
