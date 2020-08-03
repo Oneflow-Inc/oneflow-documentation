@@ -26,6 +26,19 @@ python lenet_train.py
 ```
 The command above will perform traning of MNIST dataset and saving the model.
 
+Output：
+
+```she
+File mnist.npz already exist, path: ./mnist.npz
+5.9947124
+1.0865117
+0.5317516
+0.20937675
+0.26428983
+0.21764673
+0.23443426
+...
+```
 Training model is the precondition of `lenet_eval.py` and `lenet_test.py`. Or we can directly download and use our model which is already been trained and skip the training progress:
 ```shell
 #Repository location: docs/code/quick_start/ 
@@ -39,10 +52,18 @@ python lenet_eval.py
 ```
 The command above using the MNIST's testing set to evaluate the training model and print the accuracy.
 
+Output：
+
+```shell
+File mnist.npz already exist, path: ./mnist.npz
+accuracy: 99.4%
+```
+
 * Image recognition
 
 ```shell
 python lenet_test.py ./9.png
+# Output：prediction: 9
 ```
 The above command will using the training model we just saved to predicting the content of "9.png". Or we can download our [ prepared image](https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/quick_start/mnist_raw_images.zip)to verify their training model prediction result.
 
@@ -99,62 +120,111 @@ In the code above, we build up a LeNet network model.
 
 OneFlow provide a decorator called `oneflow.global_function`. By using it, we can covert a Python function to job function.
 
-### Function decorator
+### Global_function decorator
 
 `oneflow.global_function` decorator receive a `function_config` object as parameter. It can can covert a normal Python function to job function of OneFlow and use the configuration we just done for `function_config`.
 
 ```python
-@flow.global_function(get_train_config())
-def train_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-              labels:oft.Numpy.Placeholder((BATCH_SIZE, ), dtype=flow.int32)):
-    #任务函数实现 ...
+@flow.global_function(type="train")
+def train_job(
+    images: tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+    labels: tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32),
+    #achieved job function ...
 ```
 
+The `tp.Numpy.Placeholder` is place holder， `tp.Numpy` define that the job function will return a `numpy` object.
+
 ### Specify the optimization feature
-We can using `oneflow.losses.add_loss`'s port to specify the parameters which need to optimization.We can using `oneflow.losses.add_loss`'s port to specify the parameters which need to optimization.In this way, OneFlow will trade optimise the parameter as target when each iteration training mission.
+We can using `flow.optimizer` to specify the parameters which need to optimization. By this way, we can specify the parameters which need to optimization.In this way, OneFlow will trade optimise the parameter as target when each iteration training mission.
 
 ```python
-@flow.global_function(get_train_config())
-def train_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-              labels:oft.Numpy.Placeholder((BATCH_SIZE, ), dtype=flow.int32)):
-  with flow.scope.placement("gpu", "0:0"):
-    logits = lenet(images, train=True)
-    loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits)
-  flow.losses.add_loss(loss)
-  return loss
+@flow.global_function(type="train")
+def train_job(
+    images: tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+    labels: tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32),
+) -> tp.Numpy:
+    with flow.scope.placement("gpu", "0:0"):
+        logits = lenet(images, train=True)
+        loss = flow.nn.sparse_softmax_cross_entropy_with_logits(
+            labels, logits, name="softmax_loss"
+        )
+
+    lr_scheduler = flow.optimizer.PiecewiseConstantScheduler([], [0.1])
+    flow.optimizer.SGD(lr_scheduler, momentum=0).minimize(loss)
+    return loss
 ```
 
 So Far, we using `flow.nn.sparse_softmax_cross_entropy_with_logits` to calculate the loss and trade optimize loss as target parameter.
 
-** Attention **: The training function use add_loss to specified optimize parameters. It is irrelevant with return value. It is irrelevant with return value. The return value in the demonstration above is loss but not necessary. In fact, the reture value of training function is for Interactive with external environment during the training.We will introduce that in more details in **Call the job function and interaction**below.
+
+ **lr_scheduler** set the learning rate schedule，[0.1]means learning rate is 0.1；
+
+ **flow.optimizer.SGD** specified optimizer is SGD. The momentum=0；loss is the return value send to minimize which indicate the optimizer aim for minimize the loss.
 
 ## Call the jon function and interaction
 
-We can start training when called the job function.Thus, the return value is OneFlow encapsulated object **rather than **previously defined job function's return values. This involved a issue which how to interact **previous defined** job function and **previous called** job function. This involved a issue which how to interact **previous defined** job function and **previous called** job function. The solution is sample, when **called **the return object. It included `get`and `async_ge` method. They corresponding to synchronous and asynchronous.Through them, we can obtained return value of function when **defined them**.Through them, we can obtained return value of function when **defined them**.
+We can start training when we called the job function.
 
-### Synchronously method obtained the return value when training task
+The return value when we called the job function is define by the return value type in job function. It can be one or multiple.
 
-By using get method, we can synchronous obtain the return value.
-
+### Example of one return value
+The job function in [lenet_train.py](../code/quick_start/lenet_train.py)：
 ```python
-  for epoch in range(50):
-    for i, (images, labels) in enumerate(zip(train_images, train_labels)):
-      loss = train_job(images, labels).get().mean()
-      if i % 20 == 0: print(loss)
+@flow.global_function(type="train")
+def train_job(
+    images: tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+    labels: tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32),
+) -> tp.Numpy:
+    with flow.scope.placement("gpu", "0:0"):
+        logits = lenet(images, train=True)
+        loss = flow.nn.sparse_softmax_cross_entropy_with_logits(
+            labels, logits, name="softmax_loss"
+        )
+
+    lr_scheduler = flow.optimizer.PiecewiseConstantScheduler([], [0.1])
+    flow.optimizer.SGD(lr_scheduler, momentum=0).minimize(loss)
+    return loss
+```
+The return value in job function is `tp.Numpy`. When calling that, will return a `numpy` object：
+```python
+for epoch in range(20):
+        for i, (images, labels) in enumerate(zip(train_images, train_labels)):
+            loss = train_job(images, labels)
+            if i % 20 == 0:
+                print(loss.mean())
 ```
 
-The code above, using `get` method to obtain the loss vector and calculated the average then print it.
+We called `train_job` and print `loss` each 20 time of cycle
 
-### Asynchronous method obtained the return value when training task
-
-`async_get` is use for asynchronous get the train job function's return value when **defined it**. It need us to prepare a callback function. When OneFlow finish iterate thire train job function, it will call our callback function and sned the return value of train job function as parameter to our callback function. Sample code:
-
+### Examole of multiple return value
+In evaluations script[lenet_eval.py](../code/quick_start/lenet_eval.py)define the job function：
 ```python
-cb_handle_result(result):
-    #... job_func(images, labels).async_get(cb_handle_result)
+@flow.global_function(type="predict")
+def eval_job(
+    images: tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+    labels: tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32),
+) -> Tuple[tp.Numpy, tp.Numpy]:
+    with flow.scope.placement("gpu", "0:0"):
+        logits = lenet(images, train=False)
+        loss = flow.nn.sparse_softmax_cross_entropy_with_logits(
+            labels, logits, name="softmax_loss"
+        )
+
+    return (labels, logits)
 ```
 
-More details example will be demonstrated in **Model evaluation**.
+The return value of this job function is `Tuple[tp.Numpy, tp.Numpy]`. When calling it, will return a `tuple` container. There are two `numpy` object in it:
+```python
+for i, (images, labels) in enumerate(zip(test_images, test_labels)):
+            labels, logits = eval_job(images, labels)
+            acc(labels, logits)
+```
+We called the job function and return `labels` and `logits` then use them to evaluate the accuracy of model.
+
+
+### Synchronous and asynchronous calling
+All scripts in this article is using synchronous method to called job function. In fact, OneFlow can called job function by asynchronous. More details please reference to [Obtain value from job function](../basics_topics/async_get.md).
+
 
 ## Initialization, saving and loading models
 
@@ -166,7 +236,7 @@ The object structured by `oneflow.train.CheckPoint` can use for initialization, 
 if __name__ == '__main__':
   check_point = flow.train.CheckPoint()
   check_point.init()
-  #load data and training ...  
+  #data loading and training ...  
   check_point.save('./lenet_models_1') 
 ```
 
@@ -200,54 +270,57 @@ def get_eval_config():
 Above code is the configuration of function_config during the evaluation. Compare with the training process, cut of the option in learning rate and the settings of update model parameters.
 
 ### Coding of evaluation job function
-
 ```python
-@flow.global_function(get_eval_config())
-def eval_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-              labels:oft.Numpy.Placeholder((BATCH_SIZE, ), dtype=flow.int32)):
-  with flow.scope.placement("gpu", "0:0"):
-    logits = lenet(images, train=True)
-    loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits, name="softmax_loss")
+@flow.global_function(type="predict")
+def eval_job(
+    images: tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+    labels: tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32),
+) -> Tuple[tp.Numpy, tp.Numpy]:
+    with flow.scope.placement("gpu", "0:0"):
+        logits = lenet(images, train=False)
+        loss = flow.nn.sparse_softmax_cross_entropy_with_logits(
+            labels, logits, name="softmax_loss"
+        )
 
-  return {"labels":labels, "logits":logits}
+    return (labels, logits)
 ```
 
-Above is the coding of evolution job function and return object is a dictionary.Above is the coding of evolution job function and return object is a dictionary.We will call train job function and demonstrated how to use asynchronous method to obtain return value.
+Above is the coding of evolution job function and return object is a `Tuple[tp.Numpy, tp.Numpy]`. Tuple have two `numpy`  in it. We called the job function and calculate accuracy according to return value.
 
 ### Iteration evaluation
-
-Prepare callbcak function:
+The sample amount and correct sample amount in `acc`. We will called job function to get `labels` and `logits`：
 ```python
 g_total = 0
 g_correct = 0
 
-def acc(eval_result):
-  global g_total
-  global g_correct
 
-  labels = eval_result["labels"]
-  logits = eval_result["logits"]
+def acc(labels, logits):
+    global g_total
+    global g_correct
 
-  predictions = np.argmax(logits.ndarray(), 1)
-  right_count = np.sum(predictions == labels)
-  g_total += labels.shape[0]
-  g_correct += right_count
+    predictions = np.argmax(logits, 1)
+    right_count = np.sum(predictions == labels)
+    g_total += labels.shape[0]
+    g_correct += right_count
+
 ```
-
-The callbcak function above is `acc`. It will be call by OneFlow frame. All the parameters obtained(`eval_result`) is the return value of train job function. We record the total number of sample and total correct results number of sample in this function.
-
 Called evacuation job function:
 
 ```python
-if __name__ == '__main__':
-  check_point = flow.train.CheckPoint()
-  check_point.load("./lenet_models_1")
-  (train_images, train_labels), (test_images, test_labels) = load_data(BATCH_SIZE, BATCH_SIZE)
-  for epoch in range(1):
-    for i, (images, labels) in enumerate(zip(train_images, train_labels)):
-      eval_job(images, labels).async_get(acc)
+if __name__ == "__main__":
 
-  print("accuracy: {0:.1f}%".format(g_correct*100 / g_total))
+    check_point = flow.train.CheckPoint()
+    check_point.load("./lenet_models_1")
+    (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(
+        BATCH_SIZE, BATCH_SIZE
+    )
+
+    for epoch in range(1):
+        for i, (images, labels) in enumerate(zip(test_images, test_labels)):
+            labels, logits = eval_job(images, labels)
+            acc(labels, logits)
+
+    print("accuracy: {0:.1f}%".format(g_correct * 100 / g_total))
 ```
 
 So far, Cycle call the evaluation function and output the accuracy of result of testing set.
@@ -258,22 +331,31 @@ Modify the above evaluation code, change the evaluate date to raw images rather 
 
 ```python
 def load_image(file):
-    im = Image.open(file).convert('L')
+    im = Image.open(file).convert("L")
     im = im.resize((28, 28), Image.ANTIALIAS)
     im = np.array(im).reshape(1, 1, 28, 28).astype(np.float32)
-    im = (im -128.0)/ 255.0
+    im = (im - 128.0) / 255.0
     im.reshape((-1, 1, 1, im.shape[1], im.shape[2]))
     return im
 
-if __name__ == '__main__':
+
+def main():
+    if len(sys.argv) != 2:
+        usage()
+        return
+
     check_point = flow.train.CheckPoint()
     check_point.load("./lenet_models_1")
 
     image = load_image(sys.argv[1])
-    logits = eval_job(image, np.zeros((1,)).astype(np.int32)).get()
+    logits = eval_job(image, np.zeros((1,)).astype(np.int32))
 
-    prediction = np.argmax(logits.ndarray(), 1)
-    print("predict:{}".format(prediction))
+    prediction = np.argmax(logits, 1)
+    print("prediction: {}".format(prediction[0]))
+
+
+if __name__ == "__main__":
+    main()
 ```
 
 ## Complete code
@@ -281,75 +363,84 @@ if __name__ == '__main__':
 ### Training model
 
 Name: [lenet_train.py](https://github.com/Oneflow-Inc/oneflow-documentation/blob/master/docs/code/quick_start/lenet_train.py)
-
 ```python
 #lenet_train.py
-import numpy as np
 import oneflow as flow
-from mnist_util import load_data
-from PIL import Image
+import oneflow.typing as tp
+
 BATCH_SIZE = 100
 
 
 def lenet(data, train=False):
     initializer = flow.truncated_normal(0.1)
-    conv1 = flow.layers.conv2d(data, 32, 5, padding='SAME', activation=flow.nn.relu, name='conv1',
-                               kernel_initializer=initializer)
-    pool1 = flow.nn.max_pool2d(conv1, ksize=2, strides=2, padding='SAME', name='pool1')
-    conv2 = flow.layers.conv2d(pool1, 64, 5, padding='SAME', activation=flow.nn.relu, name='conv2',
-                               kernel_initializer=initializer)
-    pool2 = flow.nn.max_pool2d(conv2, ksize=2, strides=2, padding='SAME', name='pool2', )
+    conv1 = flow.layers.conv2d(
+        data,
+        32,
+        5,
+        padding="SAME",
+        activation=flow.nn.relu,
+        name="conv1",
+        kernel_initializer=initializer,
+    )
+    pool1 = flow.nn.max_pool2d(
+        conv1, ksize=2, strides=2, padding="SAME", name="pool1", data_format="NCHW"
+    )
+    conv2 = flow.layers.conv2d(
+        pool1,
+        64,
+        5,
+        padding="SAME",
+        activation=flow.nn.relu,
+        name="conv2",
+        kernel_initializer=initializer,
+    )
+    pool2 = flow.nn.max_pool2d(
+        conv2, ksize=2, strides=2, padding="SAME", name="pool2", data_format="NCHW"
+    )
     reshape = flow.reshape(pool2, [pool2.shape[0], -1])
-    hidden = flow.layers.dense(reshape, 512, activation=flow.nn.relu, kernel_initializer=initializer, name='dense1')
-    if train: hidden = flow.nn.dropout(hidden, rate=0.5, name="dropout")
-    return flow.layers.dense(hidden, 10, kernel_initializer=initializer, name='dense2')
+    hidden = flow.layers.dense(
+        reshape,
+        512,
+        activation=flow.nn.relu,
+        kernel_initializer=initializer,
+        name="dense1",
+    )
+    if train:
+        hidden = flow.nn.dropout(hidden, rate=0.5, name="dropout")
+    return flow.layers.dense(hidden, 10, kernel_initializer=initializer, name="dense2")
 
 
-def get_train_config():
-    config = flow.function_config()
-    config.default_data_type(flow.float)
-    config.train.primary_lr(0.1)
-    config.train.model_update_conf({"naive_conf": {}})
-    return config
-
-
-@flow.global_function(get_train_config())
-def train_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-              labels:oft.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32)):
+@flow.global_function(type="train")
+def train_job(
+    images: tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+    labels: tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32),
+) -> tp.Numpy:
     with flow.scope.placement("gpu", "0:0"):
-        logits = lenet(images, train=False)
-        loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits, name="softmax_loss")
-    flow.losses.add_loss(loss)
+        logits = lenet(images, train=True)
+        loss = flow.nn.sparse_softmax_cross_entropy_with_logits(
+            labels, logits, name="softmax_loss"
+        )
+
+    lr_scheduler = flow.optimizer.PiecewiseConstantScheduler([], [0.1])
+    flow.optimizer.SGD(lr_scheduler, momentum=0).minimize(loss)
     return loss
 
 
-def get_eval_config():
-    config = flow.function_config()
-    config.default_data_type(flow.float)
-    return config
-
-
-@flow.global_function(get_eval_config())
-def eval_job(images:oft.Numpy.Placeholder((1, 1, 28, 28), dtype=flow.float),
-             labels:oft.Numpy.Placeholder((1,), dtype=flow.int32)):
-    with flow.scope.placement("gpu", "0:0"):
-        logits = lenet(images, train=False)
-    return logits
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     flow.config.gpu_device_num(1)
     check_point = flow.train.CheckPoint()
     check_point.init()
 
-    (train_images, train_labels), (test_images, test_labels) = load_data(BATCH_SIZE)
+    (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(
+        BATCH_SIZE, BATCH_SIZE
+    )
 
-    for epoch in range(50):
+    for epoch in range(20):
         for i, (images, labels) in enumerate(zip(train_images, train_labels)):
-            loss = train_job(images, labels).get().mean()
-            if i % 20 == 0: print(loss)
-            if loss < 0.01:
-                break
-    check_point.save('./lenet_models_1')  # need remove the existed folder
+            loss = train_job(images, labels)
+            if i % 20 == 0:
+                print(loss.mean())
+    check_point.save("./lenet_models_1")  # need remove the existed folder
     print("model saved")
 ```
 
@@ -358,72 +449,95 @@ if __name__ == '__main__':
 Name: [lenet_eval.py](https://github.com/Oneflow-Inc/oneflow-documentation/blob/master/docs/code/quick_start/lenet_eval.py)
 
 Saved model: [lenet_models_1.zip](https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/quick_start/lenet_models_1.zip)
-
 ```python
 #lenet_eval.py
 import numpy as np
 import oneflow as flow
-from mnist_util import load_data
+from typing import Tuple
+import oneflow.typing as tp
 
 BATCH_SIZE = 100
 
 
 def lenet(data, train=False):
     initializer = flow.truncated_normal(0.1)
-    conv1 = flow.layers.conv2d(data, 32, 5, padding='SAME', activation=flow.nn.relu, name='conv1',
-                               kernel_initializer=initializer)
-    pool1 = flow.nn.max_pool2d(conv1, ksize=2, strides=2, padding='SAME', name='pool1')
-    conv2 = flow.layers.conv2d(pool1, 64, 5, padding='SAME', activation=flow.nn.relu, name='conv2',
-                               kernel_initializer=initializer)
-    pool2 = flow.nn.max_pool2d(conv2, ksize=2, strides=2, padding='SAME', name='pool2', )
+    conv1 = flow.layers.conv2d(
+        data,
+        32,
+        5,
+        padding="SAME",
+        activation=flow.nn.relu,
+        name="conv1",
+        kernel_initializer=initializer,
+    )
+    pool1 = flow.nn.max_pool2d(
+        conv1, ksize=2, strides=2, padding="SAME", name="pool1", data_format="NCHW"
+    )
+    conv2 = flow.layers.conv2d(
+        pool1,
+        64,
+        5,
+        padding="SAME",
+        activation=flow.nn.relu,
+        name="conv2",
+        kernel_initializer=initializer,
+    )
+    pool2 = flow.nn.max_pool2d(
+        conv2, ksize=2, strides=2, padding="SAME", name="pool2", data_format="NCHW"
+    )
     reshape = flow.reshape(pool2, [pool2.shape[0], -1])
-    hidden = flow.layers.dense(reshape, 512, activation=flow.nn.relu, kernel_initializer=initializer, name='dense1')
-    if train: hidden = flow.nn.dropout(hidden, rate=0.5)
-    return flow.layers.dense(hidden, 10, kernel_initializer=initializer, name='dense2')
+    hidden = flow.layers.dense(
+        reshape,
+        512,
+        activation=flow.nn.relu,
+        kernel_initializer=initializer,
+        name="dense1",
+    )
+    if train:
+        hidden = flow.nn.dropout(hidden, rate=0.5, name="dropout")
+    return flow.layers.dense(hidden, 10, kernel_initializer=initializer, name="dense2")
 
 
-def get_eval_config():
-    config = flow.function_config()
-    config.default_data_type(flow.float)
-    return config
-
-
-@flow.global_function(get_eval_config())
-def eval_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-             labels:oft.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32)):
+@flow.global_function(type="predict")
+def eval_job(
+    images: tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+    labels: tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32),
+) -> Tuple[tp.Numpy, tp.Numpy]:
     with flow.scope.placement("gpu", "0:0"):
-        logits = lenet(images, train=True)
-        loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits, name="softmax_loss")
+        logits = lenet(images, train=False)
+        loss = flow.nn.sparse_softmax_cross_entropy_with_logits(
+            labels, logits, name="softmax_loss"
+        )
 
-    return {"labels": labels, "logits": logits}
+    return (labels, logits)
 
 
 g_total = 0
 g_correct = 0
 
 
-def acc(eval_result):
+def acc(labels, logits):
     global g_total
     global g_correct
 
-    labels = eval_result["labels"]
-    logits = eval_result["logits"]
-
-    predictions = np.argmax(logits.ndarray(), 1)
+    predictions = np.argmax(logits, 1)
     right_count = np.sum(predictions == labels)
     g_total += labels.shape[0]
     g_correct += right_count
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 
     check_point = flow.train.CheckPoint()
     check_point.load("./lenet_models_1")
-    (train_images, train_labels), (test_images, test_labels) = load_data(BATCH_SIZE, BATCH_SIZE)
+    (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(
+        BATCH_SIZE, BATCH_SIZE
+    )
 
     for epoch in range(1):
-        for i, (images, labels) in enumerate(zip(train_images, train_labels)):
-            eval_job(images, labels).async_get(acc)
+        for i, (images, labels) in enumerate(zip(test_images, test_labels)):
+            labels, logits = eval_job(images, labels)
+            acc(labels, logits)
 
     print("accuracy: {0:.1f}%".format(g_correct * 100 / g_total))
 ```
@@ -436,44 +550,81 @@ Saved model: [lenet_models_1.zip](https://oneflow-public.oss-cn-beijing.aliyuncs
 
 MNIST image dataset [mnist_raw_images.zip](https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/quick_start/mnist_raw_images.zip)
 
+
 ```python
 import numpy as np
 import oneflow as flow
 from PIL import Image
+import sys
+import os
+import oneflow.typing as tp
 
 BATCH_SIZE = 1
 
 
+def usage():
+    usageHint = """
+usage:
+        python {0} <image file>
+    eg: 
+        python {0} {1}
+    """.format(
+        os.path.basename(sys.argv[0]), os.path.join(".", "9.png")
+    )
+    print(usageHint)
+
+
 def lenet(data, train=False):
     initializer = flow.truncated_normal(0.1)
-    conv1 = flow.layers.conv2d(data, 32, 5, padding='SAME', activation=flow.nn.relu, name='conv1',
-                               kernel_initializer=initializer)
-    pool1 = flow.nn.max_pool2d(conv1, ksize=2, strides=2, padding='SAME', name='pool1')
-    conv2 = flow.layers.conv2d(pool1, 64, 5, padding='SAME', activation=flow.nn.relu, name='conv2',
-                               kernel_initializer=initializer)
-    pool2 = flow.nn.max_pool2d(conv2, ksize=2, strides=2, padding='SAME', name='pool2', )
+    conv1 = flow.layers.conv2d(
+        data,
+        32,
+        5,
+        padding="SAME",
+        activation=flow.nn.relu,
+        name="conv1",
+        kernel_initializer=initializer,
+    )
+    pool1 = flow.nn.max_pool2d(
+        conv1, ksize=2, strides=2, padding="SAME", name="pool1", data_format="NCHW"
+    )
+    conv2 = flow.layers.conv2d(
+        pool1,
+        64,
+        5,
+        padding="SAME",
+        activation=flow.nn.relu,
+        name="conv2",
+        kernel_initializer=initializer,
+    )
+    pool2 = flow.nn.max_pool2d(
+        conv2, ksize=2, strides=2, padding="SAME", name="pool2", data_format="NCHW"
+    )
     reshape = flow.reshape(pool2, [pool2.shape[0], -1])
-    hidden = flow.layers.dense(reshape, 512, activation=flow.nn.relu, kernel_initializer=initializer, name='dense1')
-    if train: hidden = flow.nn.dropout(hidden, rate=0.5)
-    return flow.layers.dense(hidden, 10, kernel_initializer=initializer, name='dense2')
+    hidden = flow.layers.dense(
+        reshape,
+        512,
+        activation=flow.nn.relu,
+        kernel_initializer=initializer,
+        name="dense1",
+    )
+    if train:
+        hidden = flow.nn.dropout(hidden, rate=0.5, name="dropout")
+    return flow.layers.dense(hidden, 10, kernel_initializer=initializer, name="dense2")
 
 
-def get_eval_config():
-    config = flow.function_config()
-    config.default_data_type(flow.float)
-    return config
-
-
-@flow.global_function(get_eval_config())
-def eval_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-             labels:oft.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32)):
+@flow.global_function(type="predict")
+def eval_job(
+    images: tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+    labels: tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32),
+) -> tp.Numpy:
     with flow.scope.placement("gpu", "0:0"):
         logits = lenet(images, train=False)
     return logits
 
 
 def load_image(file):
-    im = Image.open(file).convert('L')
+    im = Image.open(file).convert("L")
     im = im.resize((28, 28), Image.ANTIALIAS)
     im = np.array(im).reshape(1, 1, 28, 28).astype(np.float32)
     im = (im - 128.0) / 255.0
@@ -481,14 +632,21 @@ def load_image(file):
     return im
 
 
-if __name__ == '__main__':
+def main():
+    if len(sys.argv) != 2:
+        usage()
+        return
 
     check_point = flow.train.CheckPoint()
     check_point.load("./lenet_models_1")
 
-    image = load_image("./9.png")
-    logits = eval_job(image, np.zeros((1,)).astype(np.int32)).get()
+    image = load_image(sys.argv[1])
+    logits = eval_job(image, np.zeros((1,)).astype(np.int32))
 
-    prediction = np.argmax(logits.ndarray(), 1)
-    print("predict:{}".format(prediction[0]))
+    prediction = np.argmax(logits, 1)
+    print("prediction: {}".format(prediction[0]))
+
+
+if __name__ == "__main__":
+    main()
 ```
