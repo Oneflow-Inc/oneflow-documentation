@@ -8,8 +8,6 @@ In this article, we will talk about:
   - [Actor and Decentralization](#Actor-and-Decentralization)
   - [SBP, A Formal System for Parallelization](#SBP)
 
-* [Summary](#Summary)
-
 ## Motivation for OneFlow
 
 OneFlow is born for performance and horizontal scalability, especially in multi-nodes and multi-accelerators scenarios. We envisage that users can leverage the power of multiple machines and multiple cards in a way as easy as running tasks on a single machine with one accelerator, and enjoy the efficiency of linear acceleration.
