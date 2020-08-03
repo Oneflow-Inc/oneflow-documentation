@@ -1,6 +1,6 @@
 # OneFlow System Design
 
-In this article, we will talk about:
+In this article, we will cover these topics:
 
 * [Motivation for OneFlow](#Motivation-for-OneFlow)
 
