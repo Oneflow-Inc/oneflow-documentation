@@ -25,15 +25,15 @@ OneFlow 的核心设计理念是，让多机多卡分布式训练高效地协同
 
 ## 二、Actor：一套简洁的机制解决几乎所有技术难题
 
-关键特性： 
+关键特性：
 
-* 去中心化调度 
+* 去中心化调度
 
-* 流水线 
+* 流水线
 
-* 数据搬运是一等公民 
+* 数据搬运是一等公民
 
-* 传输被计算掩盖 
+* 传输被计算掩盖
 
 * 控制逻辑被执行逻辑掩盖
 
@@ -46,7 +46,7 @@ OneFlow 的运行时去中心化调度就是用 Actor 机制实现的。在整�
 
 当 Actor 收到了新消息，判断它执行所需要消费的 Register 已经就绪，且它将要生产的数据有空闲的 Register 可以写入时，这个 Actor 就执行（Act）一次，生产出一个 Register。
 
-生产完以后，该 Actor 就向需要消费这个 Register 的那些消费者 Actor 们发消息，表示 “你们可以来读取我生产的数据了” ；同时该 Actor 还需要把它消费完的那些 Register 还给这些 Regsiter 的生产者 Actor 们，表示 “我用完了你们的数据，你可以回收了” 。Actor 内部的状态机如图1 所示。 
+生产完以后，该 Actor 就向需要消费这个 Register 的那些消费者 Actor 们发消息，表示 “你们可以来读取我生产的数据了” ；同时该 Actor 还需要把它消费完的那些 Register 还给这些 Regsiter 的生产者 Actor 们，表示 “我用完了你们的数据，你可以回收了” 。Actor 内部的状态机如图1 所示。
 
 <div align="center">
     <img src="imgs/actor_state_machine.png" align='center'/>

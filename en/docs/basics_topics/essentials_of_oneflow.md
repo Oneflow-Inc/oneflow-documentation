@@ -1,17 +1,16 @@
 # OneFlow System Design
 
-The main contents are as follows:
+In this article, we will cover these topics:
 
-* Design goals of OneFlow
+* [Motivation for OneFlow](#Motivation-for-OneFlow)
 
-* The first feature of OneFlow: Actor mechanism
+* OneFlow Essentials
+  - [Actor and Decentralization](#Actor-and-Decentralization)
+  - [SBP, A Formal System for Parallelization](#SBP)
 
-* The second feature of OneFlow: SBP mechanism
+## Motivation for OneFlow
 
-* Summary
-
-## Design goals of OneFlow
-OneFlow's goal is to pursue extremely good performance, especially horizontal scalability in a distributed multi-machine multi-card environment. We hoped that users can use multiple machines and multiple cards as easily as using a single machine and single card, and enjoy the efficiency of linear acceleration.
+OneFlow is born for performance and horizontal scalability, especially in multi-nodes and multi-accelerators scenarios. We envisage that users can leverage the power of multiple machines and multiple cards in a way as easy as running tasks on a single machine with one accelerator, and enjoy the efficiency of linear acceleration.
 
 Why does OneFlow focus on the performance and user experience in distributed scenarios? With the development of deep learning, the model becomes increasingly large, and the computing power required to train deep learning models will become higher and higher. At the same time, the speed of model getting larger is greater than the speed of expansion of GPU single card memory; the requirement of the increase of the computing power is greater than the growth rate of GPU single card computing power. The computing power and the memory of a single card are far from meeting the needs of deep learning model training, and multiple machines and multiple cards are required for parallel acceleration.
 
@@ -23,9 +22,9 @@ For models with a huge amount of parameters such as BERT/GPT-3, users often find
 
 The core design concept of OneFlow is to allow multi-machine and multi-card distributed training to work efficiently and collaboratively, and at the same time, to allow users to have the multi-machine and multi-card training experience as simple and easy as a single card. Let's introduce the two core ideas of OneFlow to achieve this goal, and explain how OneFlow views deep learning training in distributed scenarios.
 
-## Actor: Solve almost all technical problems with a simple mechanism
+## Actor and Decentralization
 
-Key features: 
+Key features:
 
 * Decentralized scheduling
 
@@ -42,11 +41,11 @@ In the design of OneFlow, it is divided into two periods: Compile and Runtime. I
 ### Actor mechanism allows decentralized scheduling
 OneFlow's runtime decentralized scheduling is implemented using the Actor mechanism. In the entire static graph composed of actors, there is no central scheduler. Each actor only needs to care about the producer of the data it needs (upstream Actor) and the consumer of the data it produces (downstream Actor). In this way, in the ultra-large-scale distributed training scenario, **completely decentralized scheduling** can avoid the single-point performance bottleneck problem of central scheduling.
 
-Each Actor has a state machine inside, and the messages sent and received by the Actor and the execution status will change its own state. It should be noted that Register is a storage block, which stores the data produced by the Actor, and the message is a lightweight data containing the memory address of the Register storage block. It is messages, instead of registers, that are passed between Actors, which achieves zero-copy. 
+Each Actor has a state machine inside, and the messages sent and received by the Actor and the execution status will change its own state. It should be noted that Register is a storage block, which stores the data produced by the Actor, and the message is a lightweight data containing the memory address of the Register storage block. It is messages, instead of registers, that are passed between Actors, which achieves zero-copy.
 
-When the Actor receives a new message and judges that the Register it needs to consume is ready for execution, and the data it produces has free Registers to be written, the Actor executes (Act) once to produce a Register. 
+When the Actor receives a new message and judges that the Register it needs to consume is ready for execution, and the data it produces has free Registers to be written, the Actor executes (Act) once to produce a Register.
 
-After production, the Actor sends a message to the consumer Actors who need to consume the Register, indicating that you can read the data I produced; at the same time, the Actor also needs to return the Registers it consumes to the producer of the Register, Actors, saying that I have used up your data and you can reclaim it. The state machine inside the Actor is shown in Figure 1. 
+After production, the Actor sends a message to the consumer Actors who need to consume the Register, indicating that you can read the data I produced; at the same time, the Actor also needs to return the Registers it consumes to the producer of the Register, Actors, saying that I have used up your data and you can reclaim it. The state machine inside the Actor is shown in Figure 1.
 
 <div align="center">
     <img src="imgs/actor_state_machine.png" align='center'/>
@@ -60,19 +59,19 @@ After the Actor starts, it will switch its two states according to the messages 
 
 The messages received by an Actor are generally divided into several types:
 
-* The upstream producer Actor sends a message saying that you can read the data I produce; 
+* The upstream producer Actor sends a message saying that you can read the data I produce;
 
-* the downstream consumer Actor sends a message saying that I have used up the data you produced. 
+* the downstream consumer Actor sends a message saying that I have used up the data you produced.
 
 When this data is used up by all consumers, it can be recycled as a free block and wait for the Actor to produce a new data next time.
 
 After receiving a message, an Actor will try to determine whether the current execution conditions are met. There are generally two execution conditions:
 
-* Whether all the data to be read is available; 
+* Whether all the data to be read is available;
 
 * Whether there are free blocks that can be used for production. When the execution state is satisfied, the actor starts to call its own internal Kernel to read and write data.
 
-After execution, the Actor will send messages upstream and downstream: 
+After execution, the Actor will send messages upstream and downstream:
 
 * Send a message to the downstream consumer Actor saying that I just produced a piece of data, you can read it;
 
@@ -82,11 +81,11 @@ Actors only need to care about upstream and downstream messages to decide whethe
 
 ### Actor mechanism realizes pipelining
 
-We introduced the internal state machine of Actors above. Message transfer and data transfer between Actors are implemented by Register. Whether an Actor can execute is only related to two conditions: 
+We introduced the internal state machine of Actors above. Message transfer and data transfer between Actors are implemented by Register. Whether an Actor can execute is only related to two conditions:
 
-* Whether the Registers consumed by itself are readable; 
+* Whether the Registers consumed by itself are readable;
 
-* Whether the Registers produced by itself have free blocks to write. 
+* Whether the Registers produced by itself have free blocks to write.
 
 For a Register, if we allocate multiple free blocks to it when it’s running, then two adjacent Actors can work at the same time, and the working time overlaps, thus realizing the pipelining between each Actor. In an ideal state, the execution time of the entire static execution graph is the total running time of the Actor that is the performance bottleneck in the entire system, and the execution time of the remaining actors is covered by the pipelining.
 
@@ -134,9 +133,9 @@ Figure 3 shows that, without GPU-Direct, in the Runtime phase of OneFlow, how th
 
 In the design of OneFlow, parallelism is used as much as possible to achieve optimal distributed performance. For example, when considering the distributed training model of gradient synchronization, the transmission bandwidth from video memory to memory is higher than the network transmission bandwidth between machines. OneFlow will perform two-level scatter and gather operations (local and between each machine) to increase locality and improve overall performance.
 
- Another example, when deep learning training is started asynchronously, the control logic of the python end user is executed in parallel with the execution graph when OneFlow is running. At the same time, OneFlow has a set of mutually exclusive section design to ensure efficient and correct execution. 
+ Another example, when deep learning training is started asynchronously, the control logic of the python end user is executed in parallel with the execution graph when OneFlow is running. At the same time, OneFlow has a set of mutually exclusive section design to ensure efficient and correct execution.
 
-Whether the data loading part is to read data from disk or feed data from python, OneFlow can ensure that it uses parallelism if possible, so that the computing device will not cause performance degradation due to waiting for data. 
+Whether the data loading part is to read data from disk or feed data from python, OneFlow can ensure that it uses parallelism if possible, so that the computing device will not cause performance degradation due to waiting for data.
 
 If existing frameworks want to nest data handling and calculations as much as possible, they generally use multi-layer callback functions. When there are too many nesting levels, the so-called callback hell will be troublesome, and the accuracy and readability may decrease. But in OneFlow, the above parallel concurrency features are implemented under this simple and clear Actor mechanism, which solves the callback hell problem.
 
@@ -149,7 +148,7 @@ This stems from a unique design of OneFlow: Consistent View. For multi-machines 
 
 The user only needs to define how the deep learning model is constructed in this logical super device, and don’t need to worry about the rest of the operation. OneFlow completes the mapping from the logical device to the physical device.
 
-Here are two concepts: "logical" and "physical". "Logical" means that OneFlow abstracts the distributed cluster into calculations and data behind a supercomputer, and "physical" means the calculations and data that are actually deployed on various machines and equipment. 
+Here are two concepts: "logical" and "physical". "Logical" means that OneFlow abstracts the distributed cluster into calculations and data behind a supercomputer, and "physical" means the calculations and data that are actually deployed on various machines and equipment.
 
 The deep learning network is a computational graph composed of Op, and Op produces and consumes Tensor data. In a multi-machine and multi-card environment, a logical Op corresponds to multiple physical Ops. The calculations actually performed by each physical Op are part of the logical Op calculations, and a logical Tensor also correspond to multiple physical Tensors, and each physical Tensor is part of the logical Tensor.
 
@@ -158,7 +157,7 @@ For distributed training defined by other frameworks, each card is a "world", an
 ### Placement
 During the construction of OneFlow's calculation graph, each calculation Op has an attribute called Placement, which means the machines and equipments the logical Op is to deploy on. For general data parallelism, all Ops are deployed on all devices. However, OneFlow also supports user-specified Op Placement. For example, when the network is too large for a single card to accommodate at all, OneFlow allows the first part of the network to be on one card and the second part on the other card. "Relay" work enables parallel pipelining.
 
-Figure 4 shows an example of a possible Placement. The user defines a network consisting of 3 Ops: Op_0 -> Op_1 -> Op_2. 
+Figure 4 shows an example of a possible Placement. The user defines a network consisting of 3 Ops: Op_0 -> Op_1 -> Op_2.
 
 Among them, the Placement of Op_0 and Op_1 is Device 0, and the Placement of Op_2 is Device 1. This is an example of pipeline parallelism. Oneflow will automatically insert the Copy Op needed for data transfer between Op_1 and Op_2.
 
@@ -172,13 +171,13 @@ Figure 4 pipelining parallelism with placement
 
 
 ### SBP
-SBP is a unique concept of OneFlow. It is a combination of the initials of three words: Split, Broadcast, PartiaSum (take PartialSum as an example, in fact, it can also be a reduce operation such as PartialMin, PartialMax). The full name is of SBP is SbpParallel, which represents a mapping relationship between the logic Tensor and the physical Tensor. 
+SBP is a unique concept of OneFlow. It is a combination of the initials of three words: Split, Broadcast, PartiaSum (take PartialSum as an example, in fact, it can also be a reduce operation such as PartialMin, PartialMax). The full name is of SBP is SbpParallel, which represents a mapping relationship between the logic Tensor and the physical Tensor.
 
 Among them, Split means that the physical Tensor is obtained by splitting the logical Tensor on a certain dimension. There’s a parameter axis in Split, which indicates the dimension of the split. If multiple physical Tensors are concatenated according to the dimensions of Split, the logical Tensor can be restored.
 
 Broadcast indicates that the physical Tensor is exactly the same as the logical Tensor.
 
-PartialSum indicates that although the physical Tensor has the same shape as the logical Tensor, the value in the physical Tensor is a part of the value in the corresponding position in the logical Tensor, if you add multiple physical Tensors according to the corresponding positions, you can restore the logical Tensor. 
+PartialSum indicates that although the physical Tensor has the same shape as the logical Tensor, the value in the physical Tensor is a part of the value in the corresponding position in the logical Tensor, if you add multiple physical Tensors according to the corresponding positions, you can restore the logical Tensor.
 
 Figure 5 shows a simple example of SbpParallel.
 
@@ -190,11 +189,11 @@ Figure 5 shows a simple example of SbpParallel.
 Figure 5 Examples of SbpParallel
 </center>
 
-SbpSignature is a collection of SbpParallel, which is the attribute of Op in the design of OneFlow. It depicts how a logical Op is mapped to multiple physical Ops on each device, and how these physical Ops treat the logical and physical mapping relationship of their input Output Tensor. An Op has multiple legal SbpSignatures. The simplest legal signature is that both input and output are Broadcast, which means that the Op needs the entire logical Tensor data. 
+SbpSignature is a collection of SbpParallel, which is the attribute of Op in the design of OneFlow. It depicts how a logical Op is mapped to multiple physical Ops on each device, and how these physical Ops treat the logical and physical mapping relationship of their input Output Tensor. An Op has multiple legal SbpSignatures. The simplest legal signature is that both input and output are Broadcast, which means that the Op needs the entire logical Tensor data.
 
 After the logical calculation graph constructed by the user is determined, when OneFlow generates a distributed physical execution graph in the Compiler, among the Placement of each Op and the list of legal SbpSignature allowed by the Op, it will select a SbpSignature with the least transmission overhead as the SbpSignature of the training to guide the Compiler to generate the most efficient execution graph.
 
-Regarding the list of legal SbpSignature of Op, we will give an example of an Op of matrix multiplication (matmul). 
+Regarding the list of legal SbpSignature of Op, we will give an example of an Op of matrix multiplication (matmul).
 
 Definition: `Y = matmul(A,B)`, `A`, `B`, `Y` are all Tensor, which means `Y = AB`. Then there are at least two legal SbpSignatures:
 
@@ -244,6 +243,6 @@ In addition, before Microsoft launched the ZeRO-2 framework, OneFlow already sup
 ## Summary
 In summary, during the compile period, OneFlow has designed a mathematically rigorous formal system to express all legal parallel modes, and supports the compiler to automatically search for the optimal parallel scheme more easily.
 
-During the runtime peroid, the Actor system supports for parallel and concurrent execution in an flexble and efficient way. The core of OneFlow has the advantages of simplicity, efficiency and high scalability. 
+During the runtime peroid, the Actor system supports for parallel and concurrent execution in an flexble and efficient way. The core of OneFlow has the advantages of simplicity, efficiency and high scalability.
 
 Based on this design, OneFlow makes the performance of distributed training extremely efficient, and distributed training as easy as training on a single card.
