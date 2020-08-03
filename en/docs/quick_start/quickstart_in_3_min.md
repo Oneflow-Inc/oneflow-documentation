@@ -8,7 +8,7 @@ wget https://docs.oneflow.org/code/quick_start/mlp_mnist.py
 
 ```
 
-Then run the neural network training script:
+Then run the neural network training code:
 ```shell
 python mlp_mnist.py
 ```
@@ -25,8 +25,8 @@ We will get following output:
 
 The output is a string of number, each number represents the loss value of each round of training.The target of training is make loss value as small as possible. Thus, you have completed a full neural network training by using OneFlow.
 
-## Script interpretation
-The following is the full script
+## Code explanation
+The following is the full code
 ```python
 # mlp_mnist.py
 import oneflow as flow
@@ -74,7 +74,7 @@ if __name__ == "__main__":
             print(loss.mean())
 ```
 
-The next chapter is a brief description of this script.
+The next chapter is a brief description of this code.
 
 The special feature of OneFlow compare to other deep learning framework:
 ```python
@@ -95,7 +95,7 @@ In OneFlow, a neural network training or prediction task need two pieces of info
 `lr_scheduler = flow.optimizer.PiecewiseConstantScheduler([], [0.1])`
   `flow.optimizer.SGD(lr_scheduler, momentum=0).minimize(loss)`
 
-This part of script contains all the elements of training a neural network besides the job function and its configuration which mentioned above.
+This part of code contains all the elements of training a neural network besides the job function and its configuration which mentioned above.
 
 - `check_point.init()`: Initialize the network model parameters;
 
