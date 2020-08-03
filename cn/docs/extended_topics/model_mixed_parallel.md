@@ -5,7 +5,7 @@
 
 因为在 `consistent_view` 下，OneFlow 提供了逻辑上统一的视角，分布式训练时，用户可以自由选择数据并行、模型并行还是是混合并行。
 
-在本文中，继续深入介绍 OneFlow 独居特色的 `consistent` 视角，包括：
+在本文中，继续深入介绍 OneFlow 独具特色的 `consistent` 视角，包括：
 
 * OneFlow在 `consistent_view` 下纯数据并行流程示意
 
