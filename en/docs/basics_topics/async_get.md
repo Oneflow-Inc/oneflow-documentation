@@ -25,6 +25,14 @@ From the contrast mentioned above, OneFlow preform more efficient of using the c
 
 
 Next, we will introduce how to obtain result in synchronous and asynchronous task and the coding of call function in asynchronous task. The complete source code will be provide in the end of page.
+The important things are：
+
+* When define the job function, told OneFlow synchronous or asynchronous by return value.
+
+* The data type of return value is select in  `oneflow.typing` (We called it `flow.typing`).
+
+* When called the job functions，there is a difference between synchronous and asynchronous.
+
 
 ## Obtain result in synchronous
 
@@ -32,21 +40,27 @@ When calling the job function, we will get an OneFlow object. The method `get` o
 
 For example, we defined the function below:
 ```python
-@flow.global_function(get_train_config())
-def train_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-              labels:oft.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32)):
-    with flow.scope.placement("cpu", "0:0"):
+@flow.global_function(type="train")
+def train_job(
+    images: tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+    labels: tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32),
+) -> tp.Numpy:
+    with flow.scope.placement("gpu", "0:0"):
         logits = lenet(images, train=True)
-        loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits, name="softmax_loss")
-    flow.losses.add_loss(loss)
+        loss = flow.nn.sparse_softmax_cross_entropy_with_logits(
+            labels, logits, name="softmax_loss"
+        )
+    lr_scheduler = flow.optimizer.PiecewiseConstantScheduler([], [0.1])
+    flow.optimizer.SGD(lr_scheduler, momentum=0).minimize(loss)
     return loss
 ```
 
 In above script, by using citation in python to tell OneFlow system. The return value is `tp.Numpy` which is the `ndarray` in `numpy`.
 
 ```python
-loss = train_job(images, labels).get()
-print(loss.mean())
+loss = train_job(images, labels)
+            if i % 20 == 0:
+                print(loss.mean())
 ```
 
 From the example above, we should notice that:
@@ -76,11 +90,11 @@ Basic steps include:
 
 * To achieve job function. We use the citation to specify `flow.typing.Callback` is the return value data type. We can see in following example `Callback` can define the return data type.
 
-* Use async_get to regist callback.
+* When calling job function, regist callback on step one.
 
 * OneFlow find the suitable time to regist the callback and job function return the result to the callback.
 
-The first two step is done by the user and the final step is done by OneFlow framework.
+The first three step is done by the user and the final step is done by OneFlow framework.
 
 ### Coding of callback function
 Prototype of callback function:
@@ -97,69 +111,98 @@ The result is the return value of job function. We define the data type is T whi
 For example, in the job function below, the return is loss.
 
 ```python
-@flow.global_function(get_train_config())
-def train_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-              labels:oft.Numpy.Placeholder((BATCH_SIZE, ), dtype=flow.int32)):
-  #mlp
-  #... code not shown
-  logits = flow.layers.dense(hidden, 10, kernel_initializer=initializer)
+@flow.global_function(type="train")
+def train_job(
+    images: tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+    labels: tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32),
+) -> tp.Callback[tp.Numpy]:
+    # mlp
+    initializer = flow.truncated_normal(0.1)
+    reshape = flow.reshape(images, [images.shape[0], -1])
+    hidden = flow.layers.dense(
+        reshape,
+        512,
+        activation=flow.nn.relu,
+        kernel_initializer=initializer,
+        name="hidden",
+    )
+    logits = flow.layers.dense(
+        hidden, 10, kernel_initializer=initializer, name="output"
+    )
 
-  loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits, name="softmax_loss")
-
-  flow.losses.add_loss(loss)
-  return loss
+    loss = flow.nn.sparse_softmax_cross_entropy_with_logits(
+        labels, logits, name="softmax_loss"
+    )
+    lr_scheduler = flow.optimizer.PiecewiseConstantScheduler([], [0.1])
+    flow.optimizer.SGD(lr_scheduler, momentum=0).minimize(loss)
+    return loss
 ```
 
-注解`-> tp.Callback[oft.Numpy]` 表示此作业函数，返回一个 `tp.Numpy` 类型的对象，并且需要异步调用。
+Attention`-> tp.Callback[oft.Numpy]` means this job function. It return a `tp.Numpy` object and need use asynchronous calling.
 
-那么，我们定义的回调函数，就应该接受一个 `Numpy` 类型的参数：
+Thus, the callback function we defined need receive a `Numpy` data：
 ```python
-g_i = 0
-def cb_print_loss(result):
-  global g_i
-  if g_i % 20 == 0:
-    print(result.mean())
-  g_i+=1
+def cb_print_loss(result: tp.Numpy):
+    global g_i
+    if g_i % 20 == 0:
+        print(result.mean())
+    g_i += 1
 ```
 
 Another example, the job function below:
 
 ```python
-@flow.global_function(get_eval_config())
-def eval_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-              labels:oft.Numpy.Placeholder((BATCH_SIZE, ), dtype=flow.int32)):
-  with flow.scope.placement("gpu", "0:0"):
-    logits = lenet(images, train=True)
-    loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits, name="softmax_loss")
+@flow.global_function(type="predict")
+def eval_job(
+    images: tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+    labels: tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32),
+) -> tp.Callback[Tuple[tp.Numpy, tp.Numpy]]:
+    with flow.scope.placement("cpu", "0:0"):
+        logits = mlp(images)
+        loss = flow.nn.sparse_softmax_cross_entropy_with_logits(
+            labels, logits, name="softmax_loss"
+        )
 
-  return {"labels":labels, "logits":logits}
+    return (labels, logits)
 ```
 
-The returen object is a dictionary and it store two elements which is labels and logits. We can use the callback function below, handle both of them and calculate the accuracy:
+
+The`-> tp.Callback[Tuple[tp.Numpy, tp.Numpy]]`represent the job function. Return a  `tuple` which have two elements. Every element is `tp.Numpy` and need use asynchronous calling.
+
+Thus，the parameters in callback function should be：
 
 ```python
-def acc(eval_result):
-  global g_total
-  global g_correct
+g_total = 0
+g_correct = 0
 
-  labels = eval_result["labels"]
-  logits = eval_result["logits"]
 
-  predictions = np.argmax(logits.ndarray(), 1)
-  right_count = np.sum(predictions == labels)
-  g_total += labels.shape[0]
-  g_correct += right_count
+def acc(arguments: Tuple[tp.Numpy, tp.Numpy]):
+    global g_total
+    global g_correct
+
+    labels = arguments[0]
+    logits = arguments[1]
+    predictions = np.argmax(logits, 1)
+    right_count = np.sum(predictions == labels)
+    g_total += labels.shape[0]
+    g_correct += right_count
 ```
-
+`arguments` corresponding to the data type of the above jon function.
 ### Registration of callback function
-When call the job function, will return object `blob`. Call `async_get` in that object. It can regist the callback function we already prepared.
+When call the job function, return a `Callback` object. We send the callback function to it. That is register.
+
+OneFlow will automatically register callback function when obtain the return value.
 
 ```python
-train_job(images,labels).async_get(cb_print_loss)
+callbacker = train_job(images, labels)
+callbacker(cb_print_loss)
 ```
 
-OneFlow automatically call the registed callback function when obtain the training result.
+不过以上的写法比较冗余，推荐使用：
 
+```python
+train_job(images, labels)(cb_print_loss)
+```
 
 ## The relevant code
 
@@ -169,56 +212,93 @@ In this example, use a simple Multilayer perceptron(mlp), use synchronization to
 Name：[synchronize_single_job.py](../code/basics_topics/synchronize_single_job.py)
 
 ```python
+# lenet_train.py
 import oneflow as flow
-from mnist_util import load_data
-import oneflow.typing as oft
+import oneflow.typing as tp
 
 BATCH_SIZE = 100
 
 
 def lenet(data, train=False):
     initializer = flow.truncated_normal(0.1)
-    conv1 = flow.layers.conv2d(data, 32, 5, padding='SAME', activation=flow.nn.relu,
-                               kernel_initializer=initializer, name="conv1")
-    pool1 = flow.nn.max_pool2d(conv1, ksize=2, strides=2, padding='SAME', name="pool1")
-    conv2 = flow.layers.conv2d(pool1, 64, 5, padding='SAME', activation=flow.nn.relu,
-                               kernel_initializer=initializer, name="conv2")
-    pool2 = flow.nn.max_pool2d(conv2, ksize=2, strides=2, padding='SAME', name="pool2")
+    conv1 = flow.layers.conv2d(
+        data,
+        32,
+        5,
+        padding="SAME",
+        activation=flow.nn.relu,
+        name="conv1",
+        kernel_initializer=initializer,
+    )
+    pool1 = flow.nn.max_pool2d(conv1, ksize=2, strides=2, padding="SAME", name="pool1")
+    conv2 = flow.layers.conv2d(
+        pool1,
+        64,
+        5,
+        padding="SAME",
+        activation=flow.nn.relu,
+        name="conv2",
+        kernel_initializer=initializer,
+    )
+    pool2 = flow.nn.max_pool2d(conv2, ksize=2, strides=2, padding="SAME", name="pool2")
     reshape = flow.reshape(pool2, [pool2.shape[0], -1])
-    hidden = flow.layers.dense(reshape, 512, activation=flow.nn.relu, kernel_initializer=initializer, name="hidden")
-    if train: hidden = flow.nn.dropout(hidden, rate=0.5)
-    return flow.layers.dense(hidden, 10, kernel_initializer=initializer, name="outlayer")
+    hidden = flow.layers.dense(
+        reshape,
+        512,
+        activation=flow.nn.relu,
+        kernel_initializer=initializer,
+        name="dense1",
+    )
+    if train:
+        hidden = flow.nn.dropout(hidden, rate=0.5, name="dropout")
+    return flow.layers.dense(hidden, 10, kernel_initializer=initializer, name="dense2")
 
 
-def get_train_config():
-    config = flow.function_config()
-    config.default_data_type(flow.float)
-    config.train.primary_lr(0.1)
-    config.train.model_update_conf({"naive_conf": {}})
-    return config
-
-
-@flow.global_function(get_train_config())
-def train_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-              labels:oft.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32)):
+@flow.global_function(type="train")
+def train_job(
+    images: tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+    labels: tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32),
+) -> tp.Numpy:
     with flow.scope.placement("gpu", "0:0"):
         logits = lenet(images, train=True)
-        loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits, name="softmax_loss")
-    flow.losses.add_loss(loss)
+        loss = flow.nn.sparse_softmax_cross_entropy_with_logits(
+            labels, logits, name="softmax_loss"
+        )
+    lr_scheduler = flow.optimizer.PiecewiseConstantScheduler([], [0.1])
+    flow.optimizer.SGD(lr_scheduler, momentum=0).minimize(loss)
     return loss
 
 
-if __name__ == '__main__':
-
-    flow.config.enable_debug_mode(True)
+if __name__ == "__main__":
+    flow.config.gpu_device_num(1)
     check_point = flow.train.CheckPoint()
     check_point.init()
-    (train_images, train_labels), (test_images, test_labels) = load_data(BATCH_SIZE)
-    for epoch in range(1):
+
+    (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(
+        BATCH_SIZE
+    )
+
+    for epoch in range(20):
         for i, (images, labels) in enumerate(zip(train_images, train_labels)):
-            loss = train_job(images, labels).get().mean()
-            if i % 20 == 0: print(loss)
-    check_point.save('./lenet_models_1')  # need remove the existed folder
+            loss = train_job(images, labels)
+            if i % 20 == 0:
+                print(loss.mean())
+    check_point.save("./lenet_models_1")  # need remove the existed folder
+    print("model saved")
+```
+
+
+Output：
+
+```shell
+File mnist.npz already exist, path: ./mnist.npz
+7.3258467
+2.1435719
+1.1712438
+0.7531896
+...
+...
+model saved
 ```
 
 ### Synchronised obtain multiple results
@@ -227,67 +307,90 @@ In this example, the return object of job function is a `list `. We can use sync
 Name：[synchronize_batch_job.py](../code/basics_topics/synchronize_batch_job.py)
 
 ```python
+#lenet_eval.py
 import numpy as np
 import oneflow as flow
-from mnist_util import load_data
+from typing import Tuple
+import oneflow.typing as tp
 
 BATCH_SIZE = 100
 
 
 def lenet(data, train=False):
     initializer = flow.truncated_normal(0.1)
-    conv1 = flow.layers.conv2d(data, 32, 5, padding='SAME', activation=flow.nn.relu,
-                               kernel_initializer=initializer, name="conv1")
-    pool1 = flow.nn.max_pool2d(conv1, ksize=2, strides=2, padding='SAME', name="pool1")
-    conv2 = flow.layers.conv2d(pool1, 64, 5, padding='SAME', activation=flow.nn.relu,
-                               kernel_initializer=initializer, name="conv2")
-    pool2 = flow.nn.max_pool2d(conv2, ksize=2, strides=2, padding='SAME', name="pool2")
+    conv1 = flow.layers.conv2d(
+        data,
+        32,
+        5,
+        padding="SAME",
+        activation=flow.nn.relu,
+        name="conv1",
+        kernel_initializer=initializer,
+    )
+    pool1 = flow.nn.max_pool2d(conv1, ksize=2, strides=2, padding="SAME", name="pool1")
+    conv2 = flow.layers.conv2d(
+        pool1,
+        64,
+        5,
+        padding="SAME",
+        activation=flow.nn.relu,
+        name="conv2",
+        kernel_initializer=initializer,
+    )
+    pool2 = flow.nn.max_pool2d(conv2, ksize=2, strides=2, padding="SAME", name="pool2")
     reshape = flow.reshape(pool2, [pool2.shape[0], -1])
-    hidden = flow.layers.dense(reshape, 512, activation=flow.nn.relu, kernel_initializer=initializer, name="hidden")
-    if train: hidden = flow.nn.dropout(hidden, rate=0.5)
-    return flow.layers.dense(hidden, 10, kernel_initializer=initializer, name="outlayer")
+    hidden = flow.layers.dense(
+        reshape,
+        512,
+        activation=flow.nn.relu,
+        kernel_initializer=initializer,
+        name="dense1",
+    )
+    if train:
+        hidden = flow.nn.dropout(hidden, rate=0.5)
+    return flow.layers.dense(hidden, 10, kernel_initializer=initializer, name="dense2")
 
 
-def get_eval_config():
-    config = flow.function_config()
-    config.default_data_type(flow.float)
-    return config
-
-
-@flow.global_function(get_eval_config())
-def eval_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-             labels:oft.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32)):
+@flow.global_function(type="predict")
+def eval_job(
+    images: tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+    labels: tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32),
+) -> Tuple[tp.Numpy, tp.Numpy]:
     with flow.scope.placement("gpu", "0:0"):
-        logits = lenet(images, train=True)
-        loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits, name="softmax_loss")
+        logits = lenet(images, train=False)
+        loss = flow.nn.sparse_softmax_cross_entropy_with_logits(
+            labels, logits, name="softmax_loss"
+        )
 
-    return [labels, logits]
+    return (labels, logits)
 
 
 g_total = 0
 g_correct = 0
 
 
-def acc(labels, logits):
+def acc(labels, logtis):
     global g_total
     global g_correct
 
-    predictions = np.argmax(logits.ndarray(), 1)
+    predictions = np.argmax(logtis, 1)
     right_count = np.sum(predictions == labels)
     g_total += labels.shape[0]
     g_correct += right_count
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 
     check_point = flow.train.CheckPoint()
     check_point.load("./lenet_models_1")
+    (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(
+        BATCH_SIZE, BATCH_SIZE
+    )
 
-    (train_images, train_labels), (test_images, test_labels) = load_data(BATCH_SIZE, BATCH_SIZE)
     for epoch in range(1):
-        for i, (images, labels) in enumerate(zip(train_images, train_labels)):
-            labels, logits = eval_job(images, labels).get()
-            acc(labels, logits)
+        for i, (images, labels) in enumerate(zip(test_images, test_labels)):
+            labels, logtis = eval_job(images, labels)
+            acc(labels, logtis)
 
     print("accuracy: {0:.1f}%".format(g_correct * 100 / g_total))
 ```
@@ -302,59 +405,75 @@ Name：[async_single_job.py](../code/basics_topics/async_single_job.py)
 
 ```python
 import oneflow as flow
-from mnist_util import load_data
+import oneflow.typing as tp
 
 BATCH_SIZE = 100
 
 
-def get_train_config():
-    config = flow.function_config()
-    config.default_data_type(flow.float)
-    config.train.primary_lr(0.1)
-    config.train.model_update_conf({"naive_conf": {}})
-    return config
-
-
-@flow.global_function(get_train_config())
-def train_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-              labels:oft.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32)):
+@flow.global_function(type="train")
+def train_job(
+    images: tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+    labels: tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32),
+) -> tp.Callback[tp.Numpy]:
     # mlp
     initializer = flow.truncated_normal(0.1)
     reshape = flow.reshape(images, [images.shape[0], -1])
-    hidden = flow.layers.dense(reshape, 512, activation=flow.nn.relu, kernel_initializer=initializer)
-    logits = flow.layers.dense(hidden, 10, kernel_initializer=initializer)
+    hidden = flow.layers.dense(
+        reshape,
+        512,
+        activation=flow.nn.relu,
+        kernel_initializer=initializer,
+        name="hidden",
+    )
+    logits = flow.layers.dense(
+        hidden, 10, kernel_initializer=initializer, name="output"
+    )
 
-    loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits, name="softmax_loss")
-
-    flow.losses.add_loss(loss)
+    loss = flow.nn.sparse_softmax_cross_entropy_with_logits(
+        labels, logits, name="softmax_loss"
+    )
+    lr_scheduler = flow.optimizer.PiecewiseConstantScheduler([], [0.1])
+    flow.optimizer.SGD(lr_scheduler, momentum=0).minimize(loss)
     return loss
 
 
 g_i = 0
 
 
-def cb_print_loss(result):
+def cb_print_loss(result: tp.Numpy):
     global g_i
     if g_i % 20 == 0:
         print(result.mean())
     g_i += 1
 
 
-def main_train():
-    # flow.config.enable_debug_mode(True)
+def main():
     check_point = flow.train.CheckPoint()
     check_point.init()
 
-    (train_images, train_labels), (test_images, test_labels) = load_data(BATCH_SIZE)
-    for epoch in range(50):
+    (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(
+        BATCH_SIZE
+    )
+    for epoch in range(20):
         for i, (images, labels) in enumerate(zip(train_images, train_labels)):
-            train_job(images, labels).async_get(cb_print_loss)
+            train_job(images, labels)(cb_print_loss)
 
-    check_point.save('./mlp_models_1')  # need remove the existed folder
+    check_point.save("./mlp_models_1")  # need remove the existed folder
 
 
-if __name__ == '__main__':
-    main_train()
+if __name__ == "__main__":
+    main()
+```
+
+Output：
+
+```shell
+File mnist.npz already exist, path: ./mnist.npz
+3.0865736
+0.8949808
+0.47858357
+0.3486296
+...
 ```
 
 The model have already trained can be downloaded in: [mlp_models_1.zip](https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/basics_topics/mlp_models_1.zip)
@@ -368,7 +487,8 @@ Name：[async_batch_job.py](../code/basics_topics/async_batch_job.py)
 ```python
 import numpy as np
 import oneflow as flow
-from mnist_util import load_data
+from typing import Tuple
+import oneflow.typing as tp
 
 BATCH_SIZE = 100
 
@@ -376,55 +496,67 @@ BATCH_SIZE = 100
 def mlp(data):
     initializer = flow.truncated_normal(0.1)
     reshape = flow.reshape(data, [data.shape[0], -1])
-    hidden = flow.layers.dense(reshape, 512, activation=flow.nn.relu, kernel_initializer=initializer)
-    return flow.layers.dense(hidden, 10, kernel_initializer=initializer)
+    hidden = flow.layers.dense(
+        reshape,
+        512,
+        activation=flow.nn.relu,
+        kernel_initializer=initializer,
+        name="hidden",
+    )
+    return flow.layers.dense(hidden, 10, kernel_initializer=initializer, name="output")
 
 
-def get_eval_config():
-    config = flow.function_config()
-    config.default_data_type(flow.float)
-    return config
-
-
-@flow.global_function(get_eval_config())
-def eval_job(images:oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-             labels:oft.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32)):
+@flow.global_function(type="predict")
+def eval_job(
+    images: tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+    labels: tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32),
+) -> tp.Callback[Tuple[tp.Numpy, tp.Numpy]]:
     with flow.scope.placement("cpu", "0:0"):
         logits = mlp(images)
-        loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits, name="softmax_loss")
+        loss = flow.nn.sparse_softmax_cross_entropy_with_logits(
+            labels, logits, name="softmax_loss"
+        )
 
-    return {"labels": labels, "logits": logits}
+    return (labels, logits)
 
 
 g_total = 0
 g_correct = 0
 
 
-def acc(eval_result):
+def acc(arguments: Tuple[tp.Numpy, tp.Numpy]):
     global g_total
     global g_correct
 
-    labels = eval_result["labels"]
-    logits = eval_result["logits"]
-
-    predictions = np.argmax(logits.ndarray(), 1)
+    labels = arguments[0]
+    logits = arguments[1]
+    predictions = np.argmax(logits, 1)
     right_count = np.sum(predictions == labels)
     g_total += labels.shape[0]
     g_correct += right_count
 
 
-def main_eval():
-    # flow.config.enable_debug_mode(True)
+def main():
     check_point = flow.train.CheckPoint()
-    check_point.load('./mlp_models_1')
-    (train_images, train_labels), (test_images, test_labels) = load_data(BATCH_SIZE)
+    check_point.load("./mlp_models_1")
+    (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(
+        BATCH_SIZE
+    )
     for epoch in range(1):
         for i, (images, labels) in enumerate(zip(test_images, test_labels)):
-            eval_job(images, labels).async_get(acc)
+            eval_job(images, labels)(acc)
 
     print("accuracy: {0:.1f}%".format(g_correct * 100 / g_total))
 
 
-if __name__ == '__main__':
-    main_eval()
+if __name__ == "__main__":
+    main()
 ```
+Output：
+
+```shell
+File mnist.npz already exist, path: ./mnist.npz
+accuracy: 97.6%
+```
+
+
