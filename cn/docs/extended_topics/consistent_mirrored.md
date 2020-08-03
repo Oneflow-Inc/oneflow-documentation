@@ -89,7 +89,7 @@
 以上提及的 `list` 中的所有元素 **拼接在一起** ，才是一个完整的 BATCH。
 
 ### 代码示例
-在以下的代码中，我们使用采用默认的 `mirrored_view` 视角，使用2个 GPU 进行训练。
+在以下的代码中，我们使用采用 `mirrored_view` 视角，使用2个 GPU 进行训练。
 
 完整代码：[mirrored_strategy.py](../code/extended_topics/mirrored_strategy.py)
 
