@@ -2,16 +2,16 @@ When doing distributed training, OneFlow provides two aspects for determining th
 
 In this section, we will introduce:
 
-* The difference and applicable scenario of the data parallel and model parallel.
+* The difference and applicable scenario of the data parallelism and model parallelism.
 
 * The characteristics of using  `mirrored`  in distributed training.
 
 * The characteristics of using  `consistent` in distributed training.
 
-## Data parallel and model parallel.
-In order to better understand  `consistent` and `mirrored` in OneFlow. We need to understand the difference between **data parallel **and **model parallel** in distributed training.
+## Data parallelism and model parallelism.
+In order to better understand  `consistent` and `mirrored` in OneFlow. We need to understand the difference between **data parallelism **and **model parallelism** in distributed training.
 
-To further demonstrate the difference between data parallel and model parallel, we will introduce a simple operator(In OneFlow, the logical calculation will regard as operator): matrix multiplication
+To further demonstrate the difference between data parallelism and model parallelism, we will introduce a simple operator(In OneFlow, the logical calculation will regard as operator): matrix multiplication
 
 We assume that in training model have a matrix I as input. Multiply matrix I and W then get result O.
 
@@ -27,42 +27,42 @@ Combined  machine learning logic. We can give some definitions to the matrixes a
 
 * Matrix O is the prediction result or label. If it is a prediction task, it is a process of solving O by I and W to get the classification result. If it is a training task. then it is a process of solving for W by I and O.
 
-When the row N in matrix I is very large. It means we have large scale samples. If when C2 in matrix W is very large, it means we have a very complex model. If the scale and complexity reach a point. The single machine with single GPU will not able to handle the training job. We might consider the distributed training. In distributed training system, we can choose **data parallel** and **model parallel**.
+When the row N in matrix I is very large. It means we have large scale samples. If when C2 in matrix W is very large, it means we have a very complex model. If the scale and complexity reach a point. The single machine with single GPU will not able to handle the training job. We might consider the distributed training. In distributed training system, we can choose **data parallelism** and **model parallelism**.
 
 
-In order to better understand data parallel and model parallel, we use the following figure as the demo of matrix multiplication:
+In order to better understand data parallelism and model parallelism, we use the following figure as the demo of matrix multiplication:
 
 ![mat_mul_op](imgs/mul_op_illustrated.png)
 
 The first matrix in grey on the left of equation is the input sample. Each row is a sample. The second matrix in blue on the left of equation is the model.
 
-In this section, we will see the operators above switching to different way under data parallel and model parallel.
+In this section, we will see the operators above switching to different way under data parallelism and model parallelism.
 
 
-### Data parallel diagram
+### Data parallelism diagram
 
-In **data parallel**, the sample data are divided in small parts. **The Data after dividing **will send to each training nodes and calculate with the **completely models**. Finally combine the information in each nodes. As shown in the figure below:
+In **data parallelism**, the sample data are divided in small parts. **The Data after dividing **will send to each training nodes and calculate with the **completely models**. Finally combine the information in each nodes. As shown in the figure below:
 
 ![mat_mul_op](imgs/mul_op_data_parr.png)
 
-### Model parallel diagram
+### Model parallelism diagram
 
-In **model parallel**, model will be divided. **Complete data** will send to each nodes and calculate with **model after dividing**. Finally combine the model in each nodes. As shown in the figure below:
+In **model parallelism**, model will be divided. **Complete data** will send to each nodes and calculate with **model after dividing**. Finally combine the model in each nodes. As shown in the figure below:
 
 ![mat_mul_op](imgs/mul_op_model_parr.png)
 
 Basically:
 
-* In data parallel, each node use the same model to train, data will be divided.
+* In data parallelism, each node use the same model to train, data will be divided.
 
-* In model parallel, each node received same data, model will be divided.
+* In model parallelism, each node received same data, model will be divided.
 
-We will introduce two parallel strategies in OneFlow (`mirrored` and `consistent`). Learn how to choose different parallel methods in different strategies.
+We will introduce two parallelism strategies in OneFlow (`mirrored` and `consistent`). Learn how to choose different parallelism methods in different strategies.
 
 ### Two types of place holder
 In [use OneFlow build neural network](../basics_topics/build_nn_with_op_and_layer.md), we have already introduced the concept of  `Placeholder` and `Blob`. 
 
-Actually, in the view of parallel, the  `Placeholder`  of OneFlow can be divided to two types: Use `oneflow.typing.Numpy.Placeholder` and `oneflow.typing.ListNumpy.Placeholder` to construct the placeholder, which is corresponding to `Consistent`  and `Mirrored`.
+Actually, in the view of parallelism, the  `Placeholder`  of OneFlow can be divided to two types: Use `oneflow.typing.Numpy.Placeholder` and `oneflow.typing.ListNumpy.Placeholder` to construct the placeholder, which is corresponding to `Consistent`  and `Mirrored`.
 
 We will explain the detailed examples below.
 
@@ -71,7 +71,7 @@ We will explain the detailed examples below.
 
 Other framework like TensorFlow or Pytorch supports mirrored strategy. The mirrored strategy of OneFlow is similar to them.
 
-In mirrored, the model are copied in each GPU, each node of creating node for model is the same, thus we only can use **data parallel**.
+In mirrored, the model are copied in each GPU, each node of creating node for model is the same, thus we only can use **data parallelism**.
 
 In OneFlow, the default strategy is not mirrored, so you should use `default_logical_view` of  `flow.function_config()` to define:
 
@@ -80,7 +80,7 @@ In OneFlow, the default strategy is not mirrored, so you should use `default_log
     func_config.default_logical_view(flow.scope.mirrored_view())
 ```
 
-In `mirrored_view`, only can use **data parallel**. When calling the job function, we need divide the  data in average according to number of the GPU and put the data after dividing into `list`. Every element in `list` is the data to send to **each GPU**.
+In `mirrored_view`, only can use **data parallelism**. When calling the job function, we need divide the  data in average according to number of the GPU and put the data after dividing into `list`. Every element in `list` is the data to send to **each GPU**.
 
 The return value type of job function is `oneflow.typing.ListNumpy`. Every element in  `list`is corresponding to the results of each GPU.
 
@@ -204,12 +204,12 @@ OneFlow will use consistent strategy as default. We can declare it explicitly as
   config.default_distribute_strategy(flow.scope.consistent_view())
 ```
 
-The reason why consistent strategy is the main character of OneFlow is because in OneFlow design, if we use `consistent_strategy`, then from user's point of view, the op and blob can **get consistently in logic level**. We use matrix multiplication as an example in the beginning of section, we only need focus on [matrix multiplication](#mat_mul_op) itself on mathematics level. But in project, the issue of how to config and use model parallel or data parallel can be easily done by using OneFlow. OneFlow will handle **The data division of data parallel**, **model division of model parallel** and **serial logic** issue quickly and efficiently. 
+The reason why consistent strategy is the main character of OneFlow is because in OneFlow design, if we use `consistent_strategy`, then from user's point of view, the op and blob can **get consistently in logic level**. We use matrix multiplication as an example in the beginning of section, we only need focus on [matrix multiplication](#mat_mul_op) itself on mathematics level. But in project, the issue of how to config and use model parallelism or data parallelism can be easily done by using OneFlow. OneFlow will handle **The data division of data parallelism**, **model division of model parallelism** and **serial logic** issue quickly and efficiently. 
 
- In consistent strategy in OneFlow, we are free to choose either model parallel or data parallel or mix of them.
+ In consistent strategy in OneFlow, we are free to choose either model parallelism or data parallelism or mix of them.
 
 ### Code Example
-In the following code, we use consistent strategy and use two GPU to train. The default parallels method is **data parallel** in consistent strategy. The issue of how to set **model parallel** and **mix parallel** in consistent strategy will not be discussed in this section. We have special introduction of that in [parallels characters of OneFlow](model_mixed_parallel.md).
+In the following code, we use consistent strategy and use two GPU to train. The default parallels method is **data parallelism** in consistent strategy. The issue of how to set **model parallelism** and **mix parallelism** in consistent strategy will not be discussed in this section. We have special introduction of that in [parallels characters of OneFlow](model_mixed_parallel.md).
 
 Complete code: [consistent_strategy.py](../code/extended_topics/consistent_strategy.py)
 
@@ -304,7 +304,7 @@ def train_job(
 ) -> tp.Numpy:
 ```
 
-* The result of training use `numpy` as a consistent results. OneFlow done the distributed training and merging process.In consistent model, multi card is basically no difference with single card. User will not find that when using.
+* The result of training use `numpy` as a consistent results. OneFlow done the distributed training and merging process. In consistent model, multi card is basically no difference with single card. User will not find that when using.
 ```python
       loss = train_job(images, labels).get().ndarray()
       if i % 20 == 0: 
@@ -312,8 +312,8 @@ def train_job(
 ```
 
 ## More extending
-With the development of machine learning theory and practice, and now there are already many network unable to training by single card. There have been more and more using of data can not be trained on the parallel model.
+With the development of machine learning theory and practice, and now there are already many network unable to training by single card. There have been more and more using of data can not be trained on the parallelism model.
 
-Use  `consistent` in OneFlow, by free to choice and combination of parallel. Can give a good solutions to the above issue. We will introduce in [parallel characteristic of OneFlow](model_mixed_parallel.md).
+Use  `consistent` in OneFlow, by free to choice and combination of parallelism. Can give a good solutions to the above issue. We will introduce in [parallel characteristic of OneFlow](model_mixed_parallel.md).
 
 
