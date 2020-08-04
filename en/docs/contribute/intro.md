@@ -1,66 +1,56 @@
+As an open source infrastructure with prominent core competitiveness and high barriers, OneFlow is still in rapid iteration and progress. 
+
+OneFlow can't grow without the friends who love open source. Every line of code you contribute, every issue you submit, every bug you report, even every question you ask, is precious to our OneFlow. 
+
+## Grow up with OneFlow
+
+Whether it's contributing code, adding API document, fixing bugs and issues, reviewing code...etc
+
+OneFlow looks forward to your help in every way. 
+
+You can participate in OneFlow's open source project by choosing one or more of the following, depending on your situation. 
+
+* Contribute code
+* Contribute test case
+* Add API document
+* Review Pull Request
+* Recommend OneFlow to people who in need
+* Participate in OneFlow's group discussion
+* …… All the things you can think of to make OneFlow better
 
 
-OneFlow outstanding as the core competitiveness have high barriers to open source software infrastructure and it is still in rapid iteration and improvement.
+## Contribute code
 
-The growing of OneFlow can not without our friends like you who love open source.Every code you contributed, every issue you submitted, every bug you reported, even the questions you asked. Is very precious for OneFlow.
+Our main open source code repository are：
 
-## Helping OneFlow
+* [oneflow](https://github.com/Oneflow-Inc/oneflow)：Including complete code of OneFlow 
+* [OneFlow-Benchmark](https://github.com/Oneflow-Inc/OneFlow-Benchmark)：Including multiple models(including scripts, documents, data preprocess, etc) made by OneFlow
 
-No matter script contributions, adding API documents, collecting bugs and issues or review code...
+You can also find [here](https://github.com/Oneflow-Inc) or create more OneFlow open source projects.  
 
-We are appreciating and expecting your contribution in every aspect.
+## Contribute test case
 
-You can choose any of these options to participate in OneFlow open source project:
+OneFlow has reproduced and tested a lot of popular models, some related scripts and documents are placed in [OneFlow-Benchmark](https://github.com/Oneflow-Inc/OneFlow-Benchmark) repository. 
 
-* Contribute scripts
+But OneFlow has more models that are not covered, so we are expecting you to migrate models in OneFlow. 
 
-* Contribute testing cases
+We also strongly to use OneFlow to implement your own original research, and share it in [OneFlow-Benchmark. 
 
-* Build API documents
+## Add API documents
 
-* Edit Wiki
+OneFlow's API documents use `sphinx` to extract the function annotation and docstring. 
 
-* Review PR
-
-* Recommend to people in need of OneFlow
-
-* Participate in OneFlow channel
-
-* And other things you can imagine which can make OneFlow better.
-
-
-## Script contributions
-The main open source repository are:
-
-* [oneflow](https://github.com/Oneflow-Inc/oneflow)：Includes the complete deep learning framework code.
-
-* [OneFlow-Benchmark](https://github.com/Oneflow-Inc/OneFlow-Benchmark)：Includes many model can achieved on OneFlow (script, documentations and data processing methods)
-
-* [OneFlow-Toolkit](https://github.com/Oneflow-Inc/oneflow_toolkit)：Include the Log analysis, training and debugging and data conversion tools of OneFlow.
-
-You can find or create more OneFlow open source project in [here](https://github.com/Oneflow-Inc).
-
-## Contribution of the testing case
-
-OneFlow has already done the testing of many popular and cutting edge models. The relevant scripts is stored in [OneFlow-Benchmark](https://github.com/Oneflow-Inc/OneFlow-Benchmark).
-
-But OneFlow still have many models which not cover yet. We expecting you to migrate those to OneFlow.
-
-We also strongly encourage you to achieved your own projects by using OneFlow and share your experience in [OneFlow-Benchmark](https://github.com/Oneflow-Inc/OneFlow-Benchmark).
-
-## Buliding API documentation
-API of OneFlow use `sphinx` to extract prototypes and docstring. API documentation is located in [oneflow](https://github.com/Oneflow-Inc/oneflow) repository under folder `docs`. We can get to by folder by:
+The API documents are placed in docs directory under the [oneflow](https://github.com/Oneflow-Inc/oneflow) repository, we can generate it as the following scripts. 
 
 ```shell
 cd oneflow/docs && make dev
 ```
 
-We expecting your help on adding `docstring` and `function annotation` in [OneFlow Python API](https://github.com/Oneflow-Inc/oneflow/tree/develop/oneflow/python).
+We are looking forward to your help, Add `docstring` and `function annotation` for [OneFlow Python API](https://github.com/Oneflow-Inc/oneflow/tree/develop/oneflow/python). 
 
 ## Review
-We trading OneFlow like an works of art and try our best to make OneFlow to a full of industrial beauty product.This process cannot without the reviews from yours.
 
-Looking forward to see the issues reports, PR, reviews in every repository. We also welcome you to join our team as a developer.
+With the mentality of shaping art works, we are committed to making OneFlow into a basic software product which is full of industrial beauty. This process is also inseparable from the open source community OneFlow code review.
 
-## Facebook or 其他国外社交媒体
-**加QQ群331883 或扫描下方二维码** ![qq group](imgs/qq_group.png)
+We are looking forward to your submission of more issues, Pull Requests and reviews in each code repository. We are also looking forward to your participation in OneFlow on its way forward. 
+
