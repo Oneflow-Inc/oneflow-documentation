@@ -42,7 +42,7 @@ Remote - SSH 连接远程主机后，在插件一栏，会自动分类“远程�
 
 如上图，我们已经在远程主机安装 Python、clangd、NativeDebug 插件，用于支持远程调试 OneFlow。
 
-但是远程主机并没（本地主机已经安装的）Go 和 HTML CSS Suport 插件。
+但是远程主机并没（本地主机已经安装的）Go 和 HTML CSS Support 插件。
 
 
 ### clangd
