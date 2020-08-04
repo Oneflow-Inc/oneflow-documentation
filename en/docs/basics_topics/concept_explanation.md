@@ -2,7 +2,7 @@
 
 In this article, we will make a general explanation of some common terms and concepts in OneFlow.The main content is divided for algorithm engineer and framework developers:
 
--  **Algorithm development **
+-  **Algorithm development**
 -  **Framework development**
 
 In algorithms development part, we will explain some common terms and concepts may use in the process of deep learning algorithms development and model training. But in framework developing, we will focus on the inner design concepts of OneFlow and some relevant basic level concepts.
@@ -29,9 +29,9 @@ It define the input of a job function. The shape of image input is (32, 1, 28, 2
 
 ### 2.Tensor and Blob
 
-Tensor is the common concept in other framework. Such as Tensor in pytorch, it containthe data and data type, grad, storing device and other attribute.Tensor can use to structure and the description of the process of the forward/reverse calculation chart.
+Tensor is the common concept in other framework. Such as Tensor in pytorch, it contain the data and data type, grad, storing device and other attribute. Tensor can use to structure and the description of the process of the forward/reverse calculation chart.
 
-In OneFlow, the basics level also use the concept of Tensor. But there are some difference between the Tensor in OneFlow and Tensor in pytorch/tensorflow. In order to provide sufficient support for distributed and parallel, Tensor in OneFlow is more complex and have more types and properties. Such as logical, physical, equipment and properties of distributed. But a Tensor unified on logic level, could be divided to different machines on real time operations. So in order to simplified description, OneFlow hide the specific type of Tensor, all the things is define by a higher level concept Blob.
+In OneFlow, the basics level also use the concept of Tensor. But there are some difference between the Tensor in OneFlow and Tensor in pytorch/tensorflow. In order to provide sufficient support for distributed and parallelism, Tensor in OneFlow is more complex and have more types and attributes. Such as logical, physical, devices and attributes of distribution. But a Tensor unified on logic level, could be divided to different devices on real time operations. So in order to simplified description, OneFlow hide the specific type of Tensor, all the things is define by a higher level concept Blob.
 
 
 
@@ -47,15 +47,15 @@ Blob can only be Placeholder, but also can be the unit to pack the function's pa
 
 ### 3.Job Function
 
-In OneFlow, we called training, evaluations, predictions and ratiocination tasks as job function. Job function(中文没有理解）
+In OneFlow, we called training, evaluations, predictions and ratiocination tasks as job function. Job function connect logic of the users and  computing resources management of OneFlow.
 
-In OneFlow, all function need use decorator `@oneflow.global_function` to define as a job functions. By this decorator, we not only can define the model structure of task, optimize method and other task logic but also can pass the parameters needed by job when running the job function. (like: get_train_config()). That can make OneFlow manage our memory and GPU resources more conveniently.
+In OneFlow, all functions need use decorator `@oneflow.global_function` to define as a job functions. By this decorator, we not only can define the model structure, optimize method and other task logic but also can pass the parameters need by job when running the job function. (like: get_train_config()). That can make OneFlow manage our memory and device resources more conveniently.
 
 
 
  **Why use global_function rather than function?**
 
-The beginning of the design of OneFlow is to solve the task of multiple GPU in distribution training. In this situation, set global_function means make global configuration on GPUs.
+The beginning of the design of OneFlow is to solve the task of multiple device in distribution training. In this situation, set global_function means make global configuration on devices.
 
 
 
@@ -90,17 +90,17 @@ Operator is the **basics calculation unit** in OneFlow.The calculation in above 
 
 ### 5.Consistent/Mirrored View
 
-OneFlow use two type of point of view:  **Mirrored View** and **Consistent View** is for describ distribution of data and model under distributed system. Different view is for different parallel strategies.
+OneFlow use two type of point of view:  **Mirrored View** and **Consistent View** is for describ distribution of data and model under distributed system. Different view is for different parallelism strategies.
 
-Mirrored View is come from mirrors strategy of MPI distributed calculation. It is for describing model mirrored to multiple GPU when use data parallel.
+Mirrored View is come from mirrors strategy of MPI distributed calculation. It is for describing model mirrored to multiple devices when use data parallelism.
 
-Consistent View is trade multi machines and multi GPUs as one object in distribution environment. When use this strategy, OneFlow will hiding the detail process for user and chosse parallel method in the optimal strategy(can be data/model/mix parallel).
+Consistent View is trade multi devices and multi devices as one object in distribution environment. When use this strategy, OneFlow will hiding the detail process for user and chosse parallelism method in the optimal strategy(can be data/model/hybrid parallelism).
 
 Basically:
 
-When set the mirrored view(flow.scope.mirrored_view), it means only can use **data parallel**.Such as set four solo GPU nodes in job function. Thus the model will be copy and paste to all machines but data will be cut in to four part and send to each machine.
+When set the mirrored view(flow.scope.mirrored_view), it means only can use **data parallelism**.Such as set four solo device nodes in job function. Thus the model will be copy and paste to all devices but data will be cut in to four part and send to each device.
 
-When set consistent view(flow.scope.consistent_view), It means no limit. OneFlow **can choose use data parallel, model parallel or mix parallel. **
+When set consistent view(flow.scope.consistent_view), It means no limit. OneFlow **can choose use data parallelism, model parallelism or hybrid parallelism.**
 
 
 
@@ -108,25 +108,25 @@ When set consistent view(flow.scope.consistent_view), It means no limit. OneFlow
 
 ### 1.Boxing
 
-The model responsible for the logic switching different between different parallel properties of tensor transformation mechanism/functionfor. We called it  **Boxing**.
+The model responsible for the logic switching different between different parallelism properties of tensor transformation mechanism/functionfor. We called it  **Boxing**.
 
-Such as: When the upstream and downstream of the op has different parallel characteristics (such as parallel number different). OneFlow will use Boxing automatic processing all kinds of data conversion and transfer process.
+Such as: When the upstream and downstream of the op has different parallelism characteristics (such as parallelism number different). OneFlow will use Boxing automatic processing all kinds of data conversion and transfer process.
 
 
 
 ### 2.SBP
 
-In fact, all forwards or bcakward operations in neural network can calculate by matrixes. Matrixes calculation always have process which according to the axis cut broadcast.OneFlow also have same step, we call it SBP. Of course, the SBP in OneFlow is not only matrixes calculations. It also corresponding to divided data in different GPU and broadcast.
+In fact, all forwards or bcakward operations in neural network can calculate by matrixes. Matrixes calculation always have process which according to the axis cut broadcast.OneFlow also have same step, we call it SBP. Of course, the SBP in OneFlow is not only matrixes calculations. It also corresponding to divided data in different device and broadcast.
 
 SBP means Split、broadcast、Partial sum.
 
 #### Split
 
-When parallel operations, tensor is divided in to many sub-ensor.Different operators allow tensor to divided on different axis.Boxing will automatically process one tensor is divided in multiple axis.
+When parallelism operations, tensor is divided in to many sub-ensor.Different operators allow tensor to divided on different axis.Boxing will automatically process one tensor is divided in multiple axis.
 
 #### Broadcast
 
-When parallel operator calculation, one tensor will be broadcast to many machine. Make the same tensor amount in each machine.
+When parallelism operator calculation, one tensor will be broadcast to many device. Make the same tensor amount in each device.
 
 #### Partial Sum
 
