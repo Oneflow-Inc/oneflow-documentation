@@ -42,7 +42,7 @@ After use Remote - SSH, in plug column, will automatically classify the local an
 
 Like the figure show, we have already installed Python, clangd and NativeDebug. In order to support remote configuration.
 
-But the remote console didn’t installed Go and HTML CSS Suport plug.
+但是远程主机并没（本地主机已经安装的）Go 和 HTML CSS Support 插件。
 
 
 ### clangd
