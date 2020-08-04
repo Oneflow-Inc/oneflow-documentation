@@ -2,17 +2,17 @@
 
 In [Consistent and Mirrored view](consistent_mirrored.md), we have already known OneFlow provides mirrored and consistent two point of view and learned about the  `consistent` in OneFlow have some special characteristics.
 
-Because in `consistent_view`, OneFlow gives the  unified view on logical side. When doing the distributed training, user can choose use data parallelism, model parallelism or mixed parallelism.
+Because in `consistent_view`, OneFlow gives the  unified view on logical side. When doing the distributed training, user can choose use data parallelism, model parallelism or hybrid parallelism.
 
 In this section, we will keep going through the special ` consistent` view in OneFlow. Which includes:
 
 * Data only parallelism in `consistent_view` flow chart.
 
-* Mixed parallelism in `consistent_view` flow chart.
+* hybrid parallelism in `consistent_view` flow chart.
 
-* The advantages of mixed parallelism and the applicable scenario.
+* The advantages of hybrid parallelism and the applicable scenario.
 
-* Example of mixed parallelism.
+* Example of hybrid parallelism.
 
 ## Network logical diagram in model training
 
@@ -30,7 +30,7 @@ Compare the figure above, we can easily get the logic of the network:
 
 * The layer 2 is `output` layer and `Data 2` is the output of network. Of course, it can play as input in a deeper network.
 
-In `consistent` view, OneFlow supports the data parallelism, model parallelism and mixed parallelism. We will introduce them in order but mixed parallelism is the key point.
+In `consistent` view, OneFlow supports the data parallelism, model parallelism and hybrid parallelism. We will introduce them in order but hybrid parallelism is the key point.
 
 ## The characteristics of parallelism in consistent view
 
@@ -72,24 +72,24 @@ To be concluded:
 
 * In model parallelism, we can send the complete model in logical to **each device**. It can deal with the oversize model problem. Thus it is suitable for the neural network with massive parameters (like full connection layer) to use model parallelism.
 
-In fact, we can use **mix parallelism**. That means OneFlow uses different parallelism in different parts of training process. For example, at the beginning of the neural network, which have few parameters and need large calculation. We better user data parallelism. But the layer like full connection layer which have many parameters we should use model parallelism. The following is the demonstration figure for the neural network in begin of the section which use **mixed parallelism**.
+In fact, we can use **hybrid parallelism**. That means OneFlow uses different parallelism in different parts of training process. For example, at the beginning of the neural network, which have few parameters and need large calculation. We better user data parallelism. But the layer like full connection layer which have many parameters we should use model parallelism. The following is the demonstration figure for the neural network in begin of the section which use **hybrid parallelism**.
 
-![混合并行](imgs/para_consistent_mixed.png)
+![混合并行](imgs/para_consistent_hybrid.png)
 
-For now, all other popular framework didn’t support the mixed parallelism otherwise need be deep customizing. But in OneFlow, we can use it very simple. We also can use mixed parallelism distributed training with network relay to deep optimize distributed systems.
+For now, all other popular framework didn’t support the hybrid parallelism otherwise need be deep customizing. But in OneFlow, we can use it very simple. We also can use hybrid parallelism distributed training with network relay to deep optimize distributed systems.
 
-## Mixed parallelism example:
+## hybrid parallelism example:
 
 ### Code example 
 
-In `consistent`  view, we use mixed parallelism to MLP model: the input layer and hidden layer use data parallelism, output layer use model parallelism.
+In `consistent`  view, we use hybrid parallelism to MLP model: the input layer and hidden layer use data parallelism, output layer use model parallelism.
 
-Complete Code: [mixed_parallelism_mlp.py](../code/extended_topics/mixed_parallelism_mlp.py)
+Complete Code: [hybrid_parallelism_mlp.py](../code/extended_topics/hybrid_parallelism_mlp.py)
 
 More details explanations in later "code explanations"
 
 ```python
-# mixed_parallelism_mlp.py
+# hybrid_parallelism_mlp.py
 import oneflow as flow
 import oneflow.typing as tp
 
@@ -185,7 +185,7 @@ You may curious about why `split(axis=0)` is column cutting. What we need to exp
 
 In addition, `flow.layers.dense`  use `model_distribute`  to set parallelism method. It use the common  `get_variable` to create `blob` in basic level from inner.  Use `get_variable` to config parallelism method called  `distribute`.
 
-We can see that we only modify just few things. Then change parallelism method to mixed parallelism in distributed training. It is the main difference between OneFlow and other framework.
+We can see that we only modify just few things. Then change parallelism method to hybrid parallelism in distributed training. It is the main difference between OneFlow and other framework.
 
 ## Flow parallelism example
 
@@ -197,12 +197,12 @@ In the following example, we change few code in "Using consistent view in OneFlo
 
 ### Code Example
 
-Complete Code: [mixed_parallelism_lenet.py](../code/extended_topics/mixed_parallelism_lenet.py)
+Complete Code: [hybrid_parallelism_lenet.py](../code/extended_topics/hybrid_parallelism_lenet.py)
 
 More details please refer to code explanation later.
 
 ```python
-# mixed_parallelism_lenet.py
+# hybrid_parallelism_lenet.py
 import oneflow as flow
 import oneflow.typing as tp
 

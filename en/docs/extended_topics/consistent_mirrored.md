@@ -1,3 +1,5 @@
+## The view of Consistent and Mirrored
+
 When doing distributed training, OneFlow provides two aspects for determining the relationship between data and models. There are `consistent` strategy and `mirrored` strategy.
 
 In this section, we will introduce:
@@ -206,10 +208,10 @@ OneFlow will use consistent strategy as default. We can declare it explicitly as
 
 The reason why consistent strategy is the main character of OneFlow is because in OneFlow design, if we use `consistent_strategy`, then from user's point of view, the op and blob can **get consistently in logic level**. We use matrix multiplication as an example in the beginning of section, we only need focus on [matrix multiplication](#mat_mul_op) itself on mathematics level. But in project, the issue of how to config and use model parallelism or data parallelism can be easily done by using OneFlow. OneFlow will handle **The data division of data parallelism**, **model division of model parallelism** and **serial logic** issue quickly and efficiently. 
 
- In consistent strategy in OneFlow, we are free to choose either model parallelism or data parallelism or mix of them.
+ In consistent strategy in OneFlow, we are free to choose either model parallelism or data parallelism or hybrid parallelism.
 
 ### Code Example
-In the following code, we use consistent strategy and use two GPU to train. The default parallels method is **data parallelism** in consistent strategy. The issue of how to set **model parallelism** and **mix parallelism** in consistent strategy will not be discussed in this section. We have special introduction of that in [parallels characters of OneFlow](model_mixed_parallel.md).
+In the following code, we use consistent strategy and use two GPU to train. The default parallels method is **data parallelism** in consistent strategy. The issue of how to set **model parallelism** and **hybrid parallelism** in consistent strategy will not be discussed in this section. We have special introduction of that in [parallels characters of OneFlow](model_mixed_parallel.md).
 
 Complete code: [consistent_strategy.py](../code/extended_topics/consistent_strategy.py)
 
