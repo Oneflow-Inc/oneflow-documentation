@@ -271,7 +271,7 @@ lenet_models_name
 
 * 如果没有找到，则自动初始化，同时打印警告提醒已经自动初始化部分参数
 
-OneFlow 的工程实例可以参考[BERT](../adv_examples/bert.md)。
+在 OneFlow Benchmark 的 [BERT](../adv_examples/bert.md) 中，可以看到微调的实际应用。
 
 以下举一个用于阐述概念的简单例子。
 
