@@ -1,18 +1,20 @@
-The developing environment of OneFlow is Linux. If we want to use GUI developing or configure OneFlow. We can use VS code withe a Remote - SSH connection to server.
+## Use VS Code to debug OneFlow
 
-If you are not familiar with VScode please reference to [official documentation](https://code.visualstudio.com/docs).
+The developing environment of OneFlow is Linux. If we want to use GUI develop or debug OneFlow. We can use VS code with a Remote - SSH connection to server.
+
+If you are not familiar with VScode please refer to [official documentation](https://code.visualstudio.com/docs).
 
 This article:
 
-* How to edit the  `Debug` version of OneFlow.
+* How to compile the  `Debug` version of OneFlow.
 
 * The necessary extension packages of VS code and installed guidelines.
 
-### Edit the Debug version of OneFlow.
+### Compile the Debug version of OneFlow.
 
-If use the  `Release` version of OneFlow. Because of editor optimization issue, the issue that don't correspond to the actual position and source line may occur in the process of debugging programs.
+If we use the  `Release` version of OneFlow, you may have problems with compiler optimization during debugging, and the location of actual running program may not correspond to the source code.  
 
-Thus, we need to edit `Debug` version of OneFlow. And need to generate json files need by clangd.
+Thus, we need to compile  `Debug` version of OneFlow. And need to generate json files need by clangd.
 
 When running cmake, we need add flag of  `Debug` and `CMAKE_EXPORT_COMPILE_COMMANDS`
 
@@ -32,36 +34,36 @@ Use the  Remote SSH of  VS Code can use SSH connects to a server.
 
 ![RemoteSSH](imgs/plugin-remote-ssh.png)
 
-We can operate the OneFlow on server and use Remote SSH connect  VS Code. Thus **it can let user operated just like local environment**.
+We can operate the OneFlow on server and use Remote SSH connect  VS Code. **It can let user debug code just like local environment**.
 
-After finish Remote - SSH installation, press F1 then enter `Remote-SSH: Connect to Host..` to search. After config ssh then you can connect to server.
+After finishing Remote - SSH installation, press F1 then enter `Remote-SSH: Connect to Host..` to search. You can connect to server after setting the connection information for SSH.
 
-After use Remote - SSH, in plug column, will automatically classify the local and remote. If detected the need some plug need install on remote server. It will show in grey and with a button called **Install in SSH: remote server name**. Click on that can install the corresponding plugs.
+After using Remote - SSH, in plugin column, will automatically classify the local and remote. If a plugin that needs to be installed on a remote computer is detected, it will show in grey and with a button called **Install in SSH: remote server name**. Click on that can install the corresponding plugins.
 
 ![remotePlugin](imgs/plugin-remote-ssh-install.png)
 
-Like the figure show, we have already installed Python, clangd and NativeDebug. In order to support remote configuration.
+Like the figure show, we have already installed Python, clangd and NativeDebug in order to support remote configuration.
 
-But the remote console didn’t installed Go and HTML CSS Suport plug.
+But the remote server didn’t installed Go and HTML CSS Support plugin.
 
 
 ### clangd
-After sample configuration, clangd can support convenient of code completion and symbols jump.
+After simple configuration, Clangd can provide us with the convenience of code completion, symbol jump, etc.
 
-Before configure clangd, we need make sure:
+Before configuring clangd, we need to make sure:
 
-* Already use editor generated `compile_commands.json` file.
+* We have already compiled and generated `compile_commands.json` file.
 
-* Already use Remote - SSH install clangd on remote console.
+* We have already used Remote - SSH to install clangd on remote server.
 
-* We **do not** recommend installing ms-vscode.cpptools C/C++ which is recommended by VS Code. Because it could be conflicts to clangd.
+* We **do not** recommend installing ms-vscode.cpptools C/C++ which is recommended by VS Code. Because the clangd might conflict with it. 
 
 #### Installing clangd
-The plug on VS code use clangd services to interact and get information then display.Thus, in addition to use clangd on VS code. We also need installed clangd services program on **the console which have OneFlow source code**.
+The plugin on VS code use clangd services to interact and get information then display. Thus, in addition to install clangd plugin on VS code. We also need to install clangd services program on **the server which have OneFlow source code**.
 
-We use **download zip file and unpack** to install. More methods please reference to [ clangd offical site](https://clangd.llvm.org/installation.html).
+We **download zip file and unpack** to install. More methods please refer to [clangd offical site](https://clangd.llvm.org/installation.html).
 
-First, download the clangd corresponding to our system version on [this site](https://github.com/clangd/clangd/releases/) and unpacked. After unpack, run the clangd testing to make sure everything can run normally.
+First, download the clangd corresponding to our platform on [this site](https://github.com/clangd/clangd/releases/) and unzip. After unzipping, run the clangd test to make sure everything can run normally.
 
 ```shell
 /path/to/clangd/bin/clangd --help
@@ -69,7 +71,7 @@ First, download the clangd corresponding to our system version on [this site](ht
 
 #### Config clangd in VS code
 
-Link the  `compile_commands.json` in building dictionary to OneFlow source code dictionary:
+Link the  `compile_commands.json` in "build" dictionary to OneFlow source code dictionary:
 
 ```shell
 ln -s ./build/compile_commands.json compile_commands.json
@@ -85,17 +87,17 @@ Then `Ctrl+Shift+P` (macOS use `command+shift+p`), find  `Open Remote Settings` 
         "-clang-tidy"
     ]
 ```
-More meaning or parameters of `clangd.arguments` please reference to `clangd --help`.
+More meaning or parameters of `clangd.arguments` please refer to `clangd --help`.
 
 #### Using clangd
-In View->Output dashboard in VS code, we can choose "Clang Language Server" in dropdown list. We can view the analyse output of clangd. After analyse the output,Choose the symbols of C/C++ source codes can switch to an other site.
+In View->Output dashboard in VS code, we can choose "Clang Language Server" in dropdown list. We can view the analysis output of clangd. After analysing the output,Choose the symbols of C/C++ source codes can switch to an other site.
 
 By use `@symbols name` or `#symbols name` through `Ctrl+Shift+P` (In macOS: `command+shift+P`) can find the symbols in current file or in current project.
 
 
 
 ### native debug
-Use `Ctrl + Shift + D` (In macOS: `command+shift+D`)  or double click on Run button on activity bar can switch to view of Run.
+Use `Ctrl + Shift + D` (In macOS: `command+shift+D`)  or click the Run button on activity bar can switch to view of Run.
 
 ![Run View](imgs/run-view.png)
 
@@ -119,17 +121,17 @@ Config relevant parameters:
 }
 ```
 
-After set the break, press F5 to run the debug.![调试截图](imgs/debug_snapshot.png)
+After set the break, press F5 to debug.![调试截图](imgs/debug_snapshot.png)
 
 ### Others:
 
-* If the download speed is too slow in VS code, you can reference to [offcial document](https://code.visualstudio.com/docs/setup/network) and change `hostname` or set ssh connection.
+* If the download speed is too slow in VS code, you can refer to [offcial document](https://code.visualstudio.com/docs/setup/network) and change `hostname` or set SSH connection.
 
-* The [official introduction](https://clang.llvm.org/extra/clangd/Installation.html) about installing of clangd.
+* The [official introduction](https://clang.llvm.org/extra/clangd/Installation.html) about install of clangd.
 
 * The [official introduction](https://code.visualstudio.com/docs/editor/debugging) about configuration of VS code.
 
-* The latest version of clangd may have special requirements of glibc. That may lead to have error on missing libraries.
+* The latest version of clangd may have special requirements of glibc. That may lead to raise some errors on missing libraries.
 
 ```shell
 ./bin/clangd: /lib64/libc.so.6: version `GLIBC_2.18' not found (required by ./bin/clangd)
