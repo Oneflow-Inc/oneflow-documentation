@@ -1,13 +1,12 @@
-# Using of flow.function_config() to config optimization algorithm and hyperparameters
-After neural network is set up, It usually requires training before it can be used for predict and inference. The process of training is optimize the parameters(Variable) of network. Network model parameters are usually updated using the back propagation algorithm and a specified Optimizer. In this section, we will focus on how to set **optimizer** and **hyperparameters** in OneFlow.
+# Optimization Algorithm and Parameter Configuration
+After neural network is set up, it usually requires training before it can be use for predict and inference. The process of training is optimize the parameters(Variables) of network. Network model's parameters are usually updated using the back propagation algorithm and a specified optimizer. In this section, we will focus on how to set **optimizers** and **hyperparameters** in OneFlow.
 
-You can use the following configuration in training or predicting without understanding the design and concept about OneFlow. If there is further need, please refer to：
 
-The main content is as follows：
+The main content in thid article：
 
 - The Global Function and configuration in OneFlow
 
-  we will introduce the Global Function and concept of design in OneFlow. 
+  We will introduce the Global Function and concept of design in OneFlow. 
 
 - The configuration example
 
@@ -21,9 +20,15 @@ The main content is as follows：
 
   We will introduce the setting of learning rate, learning rate decay schedule and other hyperparameters. 
 
+We can use training and inferencing configuration in **configuration example** when we do not know about the concept and design of OneFlow. More detials please reference to  **Optimizer and Optimization algorithm** 、 **learning rate , hyperparameters**  and [optimizer api](https://oneflow-api.readthedocs.io/en/latest/optimizer.html)
+
+
 ## The Global Function and configuration in OneFlow
 
-In this section, we will introduce the concept of Global Function, function configuration and how to distinguish between training or prediction/inference configuration in function configuration. It also known as 'job function', there is a simple example：
+In this section, we will introduce the concept of Global Function, function configuration and how to distinguish between training or prediction/inference configuration in function configuration.
+
+### 全局函数(Global Function)
+Before mention Optimization algorithm and hyperparameters, we need talk about `OneFlow Global Function`. The function decorate by `oneflow.global_function` is `OneFlow Global Function`. It also known as 'job function', there is a simple example：
 
 ```python
 import oneflow as flow
@@ -32,11 +37,11 @@ def test_job():
   # build up NN here
 ```
 
-There are two parameters in `@flow.global_function`：`type` assign the type of job, `type = "train"` is training, `type="predict"` is predicting or inference. The default type is "predict", the default of function_config is None. 
+There are two parameters in `@flow.global_function`：`type` assign the type of job, `type = "train"` is training, `type="predict"` is predicting or inference. The default type is "predict", the default of function_config is none. 
 
-`test_job` is decorated by `@flow.global_function`, and it can be recognized by OneFlow. 
+`test_job` is decorated by `@flow.global_function`, and it can be recognize by OneFlow. 
 
-In another words, whether it's training, validation or  predicting/inference job in OneFlow, it need to be assigned by the decorator `@flow.global_function`, after that, OneFlow will run the job according to the function_config. In this way, **parameter configuration and task are separated.** 
+In another words, whether it's training, evaluation or  predicting/inference job in OneFlow, it need to be assigned by the decorator `@flow.global_function`, after that, OneFlow will run the job according to the function_config. In this way, **parameters configuration and task are separated.** 
 
 The body of the `job function` consists of two parts of information: Use operators to build a neural network(NN)，and the configuration information needed to run the network. 
 
@@ -49,9 +54,9 @@ In the following example, you may also notice that the `@flow.global_function` d
 ```python
 def get_train_config():
   config = flow.function_config()
-  # 设置默认数据类型
+  # Set the default data type
   config.default_data_type(flow.float)
-  # 设置自动混合精度
+  # Set up automatic mixing precision
   config.enable_auto_mixed_precision(True)
   return config
 
@@ -74,7 +79,7 @@ The settings in `function_config` are usually related to the compute resource, d
 
 Here we define a job function to evaluate the model: `eval_job`
 
-We use `get_eval_config()` to define the configurations of `eval_job()` and use `get_eval_config()` as the parameter of `@flow.global_function` to send to` eval_job()` function. At the same time, we set the parameter `type = "predict"` to indicate that the job function is used for model evaluation tasks. 
+We use `get_eval_config()` to define the configurations of `eval_job()` and use `get_eval_config()` as the parameter of `@flow.global_function` to send to` eval_job()` function. At the same time, we set the parameter `type = "predict"` to indicate that the job function is used for model evaluation task. 
 
 ```python
 def get_eval_config():
@@ -88,7 +93,7 @@ def eval_job():
 ```
 ### The configuration of training
 
-As same, just following the instructions below and  add a decorator `@flow.global_function()) ` to `train_job()`, we can get a network to train. Otherwise, we can set the optimizer, learning rate and hyperparameters in the body of job function. 
+As same, just following the instructions below and add a decorator `@flow.global_function()) ` to `train_job()`, we can get a network to train. Also, we can set the optimizer, learning rate and hyperparameters in the body of job function. 
 ```python
 @flow.global_function(type="train")
 def train_job(
@@ -107,7 +112,7 @@ def train_job(
 ```
 The settings of learning rate and optimizer are as follow:
 
-1. We use `flow.optimizer.PiecewiseConstantScheduler` to set the strategy of learning rate, we set it as the Piecewise scheduler with the initial learning rate = 0.1. You can also use other strategy, like: `flow.optimizer.CosineScheduler`. 
+1. We use `flow.optimizer.PiecewiseConstantScheduler` to set the strategy of learning rate, we set it as the piecewise scheduler with the initial learning rate = 0.1. You can also use other strategy, like: `flow.optimizer.CosineScheduler`. 
 2. We set the optimizer in `flow.optimizer.SGD(lr_scheduler, momentum=0).minimize(loss)`
 
 ## The optimizer
@@ -133,9 +138,9 @@ We will not explain all optimizer, more details please refer to [optimizer api](
 
 Learning rate is set by the class：LrScheduler, The Constructor of Optimizer class accepts an LrScheduler object to set the learning rate. 
 
-You can use ``lr_scheduler = flow.optimizer.PiecewiseConstantScheduler([], [0.01])`` to set a regular learning rate；
+You can use ``lr_scheduler = flow.optimizer.PiecewiseConstantScheduler([], [0.01])`` to set a regular learning rate.
 
-You can also use `flow.optimizer.PiecewiseConstantScheduler` to set a piece wise scaling scheduler. 
+You can also use `flow.optimizer.PiecewiseConstantScheduler` to set a piece wise scaling scheduler:
 
 ```python
 lr_scheduler = flow.optimizer.PiecewiseScalingScheduler(0.001, [30, 60, 90], 0.1)
@@ -145,7 +150,7 @@ In addition, you can set a cosine decayed learning rate by `flow.optimizer.Cosin
 
 
 
-For example, you want the initial learning rate of the training to be 0.01, the learning rate decayed with the cosine strategy, with 10000 iterations and there are 100 iterations for warm up at the beginning,  the learning rate increases gradually from 0 to the initial learning rate. 
+For example, you want the initial learning rate of the training to be 0.01, the learning rate decayed with the cosine strategy, with 10000 iterations and there are 100 iterations for warm up at the beginning, the learning rate increases gradually from 0 to the initial learning rate. 
 
 ```python
 lr_scheduler = flow.optimizer.CosineScheduler(10000, 0.01, warmup=flow.optimizer.warmup.linear(100, 0))
