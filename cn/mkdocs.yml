@@ -46,6 +46,9 @@ theme:
 plugins:
   - search
 
+extra_javascript:
+- ../../assets/custom.js
+
 # Extensions
 markdown_extensions:
   - markdown.extensions.admonition
