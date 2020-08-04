@@ -171,7 +171,7 @@ OneFlow 是目前分布式场景中支持数据并行、模型并行、流水并
 
 
 ### SBP
-SBP 是 OneFlow 独有的概念，他是三个单词的首字母组合：Split、Broadcast、PartiaSum（以 PartialSum 为例，实际上还可以是PartialMin、 PartialMax 等 reduce 操作），全称叫 SbpParallel，表示一种逻辑上的 Tensor 跟物理上的多个 Tensor 的映射关系。
+SBP 是 OneFlow 独有的概念，他是三个单词的首字母组合：Split、Broadcast、PartialSum（以 PartialSum 为例，实际上还可以是PartialMin、 PartialMax 等 reduce 操作），全称叫 SbpParallel，表示一种逻辑上的 Tensor 跟物理上的多个 Tensor 的映射关系。
 
 其中 Split 表示物理上的 Tensor 是逻辑 Tensor 按照某一维度切分后得到的， Split 有个参数 axis，表示切分的维度，如果把多个物理上的 Tensor 按照 Split 的维度进行拼接，就能还原出逻辑 Tensor。
 
