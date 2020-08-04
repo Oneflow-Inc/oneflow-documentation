@@ -5,7 +5,7 @@ In [Consistent and Mirrored view](consistent_mirrored.md), we already know OneFl
 
 Thus, in `consistent_view`, OneFlow give the  unified view on logical side. When doing the distributed training, use can choose use data parallel, model parallel or mix parallel.
 
-In this article, we will keep go through the ` consistent` view in OneFlow. Which includes:
+在本文中，继续深入介绍 OneFlow 独具特色的 `consistent` 视角，包括：
 
 * Process demo of pure data parallel in `consistent_view`.
 
