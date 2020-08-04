@@ -1,8 +1,8 @@
 # Distributed training
 
-In OneFlow, you only need few simple configuration and the frame of OneFlow will automatically deal with calling job function, resources paralleling  and other issue. Thus, we do not need change network structure and logic of code. Then we can easily use distributed training.
+In OneFlow, you only need few simple configuration and the frame of OneFlow will automatically deal with calling job function, resources parallelism  and other issue. Thus, we do not need change network structure and logic of code. Then we can easily use distributed training.
 
-The ability of distributed training in OneFlow is very outstanding. This is the **main characters **distinguished between other framework.
+The ability of distributed training in OneFlow is very outstanding. This is the **main characters**distinguished between other framework.
 
 In this article, we will introduce:
 
@@ -24,7 +24,7 @@ In this article, we will introduce:
 
 By the distribued training port of OneFlow, you only need few configuration(Specify the distributed computing nodes IP and the number GPU used of each node ) to achieve distribued training network.
 
-In another word, it make solo training as same as distribued training. As the user of OneFlow, just need to focus on **job logic ** and **structures of model**. No need to worry anout distribution execution.**Frame of OneFlow will automatically deal with calling job function, resources paralleling  and other issue. (链接可能有问题）**
+In another word, it make solo training as same as distribued training. As the user of OneFlow, just need to focus on **job logic ** and **structures of model**. No need to worry anout distribution execution.** **Frame of OneFlow will automatically deal with calling job function, resources parallelism  and other issue.**
 
 This is a example for change the solo training to a distributed training by adding few code:
 
@@ -56,23 +56,23 @@ if __name__ == '__main__':
   #...
 ```
 
-### Configuration of ports and GPU
+### Configuration of ports and device
 
 In  `oneflow.config` , we provide distributed related port. We mainly use two of them:
 
-* `oneflow.config.gpu_device_num` : set the number of GPU been using. This will apply to all machine.
+* `oneflow.config.gpu_device_num` : set the number of device been using. This will apply to all machine.
 
 * `oneflow.config.ctrl_port` :set the port number of communications, also will apply to all mechine.
 
-The following demo we set all machine use one GPU and use port 9988 to communicate.User can change the configuration as well.
+The following demo we set all machine use one device and use port 9988 to communicate.User can change the configuration as well.
 ```python
-#GPU number
+#device number
 flow.config.gpu_device_num(1)
 #Port number
 flow.env.ctrl_port(9988
 ```
 
-Attention, even use solo training. If you have multiple GPU, we can use  `flow.config.gpu_device_num`  to change solo process to single machine with multiple GPU distribution process. The code below set two GPU in one machine to do the distribution training:
+Attention, even use solo training. If you have multiple device, we can use  `flow.config.gpu_device_num`  to change solo process to single machine with multiple device distribution process. The code below set two device in one machine to do the distribution training:
 ```python
 flow.config.gpu_device_num(2)
 ```
@@ -99,7 +99,7 @@ We can specific to distribution configuration to package code as function. Then 
 ```python
 def config_distributed():
     print("distributed config")
-    #number of GPU used in each node
+    #number of device used in each node
     flow.config.gpu_device_num(1)
     #communication channel 
     flow.env.ctrl_port(9988)
@@ -140,7 +140,7 @@ def mlp(data):
 
 def config_distributed():
     print("distributed config")
-    # GPU number in each node
+    # device number in each node
     flow.config.gpu_device_num(1)
     # communications channel
     flow.env.ctrl_port(9988)
