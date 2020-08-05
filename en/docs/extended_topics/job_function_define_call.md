@@ -88,13 +88,13 @@ def train_job(
 ) -> tp.Numpy:
 ```
 
-The complete code wo can refer to [Consistent and Mirrored](https://docs.oneflow.org/extended_topics/consistent_mirrored.html)'s  [mixed_parallel_mlp.py](https://docs.oneflow.org/code/extended_topics/mixed_parallel_mlp.py)
+The complete code wo can refer to [Consistent and Mirrored](consistent_mirrored.md)'s  [mixed_parallel_mlp.py](../code/extended_topics/hybrid_parallelism_mlp.py)
 
 ### PlaceHolder
 
 Specifically, the `images`、`logits`、`labels`、`loss` and some other objects have no data in our definition of the job function. They are used to describe the **shape** and **attribute** of data, which is called PlaceHolder.
 
-The PlaceHolder in job function's parameter, use `Numpy.Placeholder`、`ListNumpy.Placeholder`、`ListListNumpy.Placeholder` under the `oneflow.typing` to annotate the data type of job function's parameter.As we call the job function, we should pass the `numpy` object
+The PlaceHolder in job function's parameter, use `Numpy.Placeholder`、`ListNumpy.Placeholder`、`ListListNumpy.Placeholder` under the `oneflow.typing` to annotate the data type of job function's parameter. As we call the job function, we should pass the `numpy` object
 
 Besides the several types under the `oneflow.typing` in parameter. The variable computed by OneFlow operators or layers, like the `reshape`、`hidden`、`logits`、`loss` and some other in above code, are also PlaceHolder.
 

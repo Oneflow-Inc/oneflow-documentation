@@ -80,12 +80,12 @@
 ### 代码示例
 以下，在 `consistent` 视角下，我们对 MLP 模型采用了混合并行方案：输入层与隐藏层采用（默认的）数据并行；输出层采用模型并行并进行列切分。
 
-完整代码：[mixed_parallel_mlp.py](../code/extended_topics/mixed_parallel_mlp.py)
+完整代码：[hybrid_parallelism_mlp.py](../code/extended_topics/hybrid_parallelism_mlp.py)
 
 更具体的解析在后文“代码解析”可见。
 
 ```python
-# mixed_parallel_mlp.py
+# hybrid_parallel_mlp.py
 import oneflow as flow
 import oneflow.typing as tp
 
@@ -195,12 +195,12 @@ def mlp(data):
 
 ### 代码示例
 
-完整代码：[mixed_parallel_lenet.py](../code/extended_topics/mixed_parallel_lenet.py)
+完整代码：[hybrid_parallelism_lenet.py](../code/extended_topics/hybrid_parallelism_lenet.py)
 
 更详细的讨论可见后文的“代码解析”。
 
 ```python
-# mixed_parallel_lenet.py
+# hybrid_parallelism_lenet.py
 import oneflow as flow
 import oneflow.typing as tp
 
