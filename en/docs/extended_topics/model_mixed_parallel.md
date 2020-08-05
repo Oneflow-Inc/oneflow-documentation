@@ -74,7 +74,7 @@ To be concluded:
 
 In fact, we can use **hybrid parallelism**. That means OneFlow uses different parallelism in different parts of training process. For example, at the beginning of the neural network, which have few parameters and need large calculation. We better user data parallelism. But the layer like full connection layer which have many parameters we should use model parallelism. The following is the demonstration figure for the neural network in begin of the section which use **hybrid parallelism**.
 
-![混合并行](imgs/para_consistent_hybrid.png)
+![混合并行](imgs/para_consistent_mixed.png)
 
 For now, all other popular framework didn’t support the hybrid parallelism otherwise need be deep customizing. But in OneFlow, we can use it very simple. We also can use hybrid parallelism distributed training with network relay to deep optimize distributed systems.
 
@@ -110,7 +110,7 @@ def mlp(data):
         hidden,
         10,
         kernel_initializer=initializer,
-        # dense为列存储，进行split(0)切分
+        # dense is stored as a column and split on axis=0
         model_distribute=flow.distribute.split(axis=0),
         name="dense2",
     )
