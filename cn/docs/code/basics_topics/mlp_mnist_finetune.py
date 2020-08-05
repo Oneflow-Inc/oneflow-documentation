@@ -1,4 +1,4 @@
-# mlp_mnist_fintune.py
+# mlp_mnist_finetune.py
 import oneflow as flow
 import oneflow.typing as tp
 
