@@ -248,39 +248,206 @@ We can see:
 
 * Snapshots of the training steps is store in `System-Train-TrainStep-train_job`.
 
+## Model finetune and transfer learning
 
-## Q&A
+We will meet the following scenario when we do the model finetune and transfer learning:
 
-For now, OneFlow frame supports the basic functions of processing model. But in real time operation may have some problems. We list some of below.
+* Finetune: Use a backbone which already completed the training as foundation. Keep training after expand some new network structure. The model of original backbone network need load the parameters we store previously. But the new part of the network need initialization.
 
-### Initialize the parameters of model
-Befor the network training or inference, model need be initialize. Means initialize variable op in the network. Otherwise the parameters of network will probably does not meet expectations.
+* Transfer learning: We will training according to new optimization method base on the original network which have completed the training. The new optimization method bring some extra parameters. Such as `momentum` or `adam`. The original parameters need load the parameters we store previously. But the extra parameters need initialization.
 
-There are two methods of filling the parameters in network:
 
-* Calling `init` function. This case all variable op will initialize according to their own initialize method.
+To summarise, the above situation is:
 
-* Using `load` function which can read the initialize value from specificed path.
+* Part of the parameters in model are load from original model.
 
-### Part of model initialization and loading
-In real time using, we will meet some situations especially when sfine-tuning or transfer learning:
+* The other part(new) of parameters need initialization.
 
-* New network is base on a classic network. Expanding some new network structures. The classic model is been trained and it need to be` load` when training a new network. And the new expanding of the network needs to be` initialize` according to the specified way.
+For this, `flow.train.CheckPoint.load` of OneFlow set the following procedures:
 
-* The old network has been trained. It need be train again in new optimize the way. New optimize the way will bring some extra variables like `momentum` or `adam`. The old parameters need be load but extra variables need be initialize.
+* According the description of network model in job function. The saving path of ergodic model and try to load each parameters.
 
-The situations above is:
+* If find the corresponding parameter then load it.
 
-* Only part of parameters is input by  `load`
+* If do not find it then start automatic initialization and print warning at same time indicate already automatically initiated the parameters.
 
-* Other parameters are initialize by  `init`
+In the [BERT](../adv_examples/bert.md) of OneFlow Benchmark. We can see the example of finetune.
 
-We advise that:
+The following is a example to explain the concepts:
 
-* Save the extended model first.
+First we need define a model in the following shape and save it to `./mlp_models_1`：
+```python
+@flow.global_function(type="train")
+def train_job(
+    images: tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+    labels: tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32),
+) -> tp.Numpy:
+    with flow.scope.placement("cpu", "0:0"):
+        initializer = flow.truncated_normal(0.1)
+        reshape = flow.reshape(images, [images.shape[0], -1])
+        hidden = flow.layers.dense(
+            reshape,
+            512,
+            activation=flow.nn.relu,
+            kernel_initializer=initializer,
+            name="dense1",
+        )
+        dense2 = flow.layers.dense(
+            hidden, 10, kernel_initializer=initializer, name="dense2"
+        )
 
-* Use  `init` to the extended model then save.
+        loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, dense2)
 
-* Combined model directory: repalce the path before extending by new path.
+    lr_scheduler = flow.optimizer.PiecewiseConstantScheduler([], [0.1])
+    flow.optimizer.SGD(lr_scheduler, momentum=0).minimize(loss)
 
-* Finally use `load` to get model and keep training.
+    return loss
+```
+Then we expand the network and add one more layer(`dense3`) to above model:
+```python
+@flow.global_function(type="train")
+def train_job(
+    images: tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+    labels: tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32),
+) -> tp.Numpy:
+    with flow.scope.placement("cpu", "0:0"):
+        #... original structure
+
+        dense3 = flow.layers.dense(
+            dense2, 10, kernel_initializer=initializer, name="dense3"
+        )
+        loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, dense3)
+
+    #...
+```
+Finally, load parameters from original model and start training:
+```python
+if __name__ == "__main__":
+    check_point = flow.train.CheckPoint()
+    check_point.load("./mlp_models_1")
+
+    (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(
+        BATCH_SIZE, BATCH_SIZE
+    )
+    for i, (images, labels) in enumerate(zip(train_images, train_labels)):
+        loss = train_job(images, labels)
+        if i % 20 == 0:
+            print(loss.mean())
+    check_point.save("./mlp_ext_models_1")
+```
+
+We will get the following output:
+```text
+WARNING! CANNOT find variable path in : ./mlp_models_1/dense3-bias/out. It will be initialized. 
+WARNING! CANNOT find variable path in : ./mlp_models_1/dense3-weight/out. It will be initialized. 
+2.8365176
+0.38763675
+0.24882479
+0.17603233
+...
+```
+Means all parameters need by `dense3` layer did not find in original model and it start initialization.
+### Complete code
+
+The following code is from [mlp_mnist_origin.py](../code/basics_topics/mlp_mnist_origin.py). As backbone network. Store the trained model in `./mlp_models_1`。
+```python
+# mlp_mnist_origin.py
+import oneflow as flow
+import oneflow.typing as tp
+
+BATCH_SIZE = 100
+
+
+@flow.global_function(type="train")
+def train_job(
+    images: tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+    labels: tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32),
+) -> tp.Numpy:
+    with flow.scope.placement("cpu", "0:0"):
+        initializer = flow.truncated_normal(0.1)
+        reshape = flow.reshape(images, [images.shape[0], -1])
+        hidden = flow.layers.dense(
+            reshape,
+            512,
+            activation=flow.nn.relu,
+            kernel_initializer=initializer,
+            name="dense1",
+        )
+        dense2 = flow.layers.dense(
+            hidden, 10, kernel_initializer=initializer, name="dense2"
+        )
+
+        loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, dense2)
+
+    lr_scheduler = flow.optimizer.PiecewiseConstantScheduler([], [0.1])
+    flow.optimizer.SGD(lr_scheduler, momentum=0).minimize(loss)
+
+    return loss
+
+
+if __name__ == "__main__":
+    check_point = flow.train.CheckPoint()
+    check_point.init()
+
+    (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(
+        BATCH_SIZE, BATCH_SIZE
+    )
+    for i, (images, labels) in enumerate(zip(train_images, train_labels)):
+        loss = train_job(images, labels)
+        if i % 20 == 0:
+            print(loss.mean())
+    check_point.save("./mlp_models_1")
+```
+
+The following code is from [mlp_mnist_finetune.py](../code/basics_topics/mlp_mnist_finetune.py). After “finetune”（add one more layer `dense3` in backbone network）. Load  `./mlp_models_1` and keep training.
+```python
+# mlp_mnist_finetune.py
+import oneflow as flow
+import oneflow.typing as tp
+
+BATCH_SIZE = 100
+
+
+@flow.global_function(type="train")
+def train_job(
+    images: tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+    labels: tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32),
+) -> tp.Numpy:
+    with flow.scope.placement("cpu", "0:0"):
+        initializer = flow.truncated_normal(0.1)
+        reshape = flow.reshape(images, [images.shape[0], -1])
+        hidden = flow.layers.dense(
+            reshape,
+            512,
+            activation=flow.nn.relu,
+            kernel_initializer=initializer,
+            name="dense1",
+        )
+        dense2 = flow.layers.dense(
+            hidden, 10, kernel_initializer=initializer, name="dense2"
+        )
+
+        dense3 = flow.layers.dense(
+            dense2, 10, kernel_initializer=initializer, name="dense3"
+        )
+        loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, dense3)
+
+    lr_scheduler = flow.optimizer.PiecewiseConstantScheduler([], [0.1])
+    flow.optimizer.SGD(lr_scheduler, momentum=0).minimize(loss)
+
+    return loss
+
+
+if __name__ == "__main__":
+    check_point = flow.train.CheckPoint()
+    check_point.load("./mlp_models_1")
+
+    (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(
+        BATCH_SIZE, BATCH_SIZE
+    )
+    for i, (images, labels) in enumerate(zip(train_images, train_labels)):
+        loss = train_job(images, labels)
+        if i % 20 == 0:
+            print(loss.mean())
+    check_point.save("./mlp_ext_models_1")
+```
