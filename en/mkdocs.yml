@@ -114,14 +114,14 @@ nav:
       #- Eager模式和Lazy模式: extended_topics/eager_lazy_mode.md
       - Watch and Watch Diff: extended_topics/watch_watch_diff.md
 
-    - Advanced Examples:
-      - Image Processing:
-        - ResNet: adv_examples/resnet.md
-        - AlexNet: adv_examples/alexnet.md
-        - MaskRCNN: adv_examples/mask_rcnn.md
-      - NLP handling-BERT: adv_examples/bert.md
-      - Recommendation System -Wide&Deep: adv_examples/wide_deep.md
-      - Deep Faking -Generate Conflict Network: adv_examples/dcgan.md
+    #- Advanced Examples:
+      #- Image Processing:
+       # - ResNet: adv_examples/resnet.md
+        #- AlexNet: adv_examples/alexnet.md
+        #- MaskRCNN: adv_examples/mask_rcnn.md
+      #- NLP handling-BERT: adv_examples/bert.md
+      #- Recommendation System -Wide&Deep: adv_examples/wide_deep.md
+      #- Deep Faking -Generate Conflict Network: adv_examples/dcgan.md
     - API: 
       - API: https://oneflow-api.readthedocs.io/en/latest/
 
