@@ -1,4 +1,4 @@
-# mixed_parallel_lenet.py
+# hybrid_parallelism_lenet.py
 import oneflow as flow
 import oneflow.typing as tp
 

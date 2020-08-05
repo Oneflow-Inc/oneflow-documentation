@@ -1,4 +1,4 @@
-# mixed_parallel_mlp.py
+# hybrid_parallelism_mlp.py
 import oneflow as flow
 import oneflow.typing as tp
 
