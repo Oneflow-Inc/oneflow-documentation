@@ -100,6 +100,7 @@ nav:
       - Loading and Saving of Model: basics_topics/model_load_save.md
       - Distribution Training: basics_topics/distributed_train.md
       - Concepts in OneFlow: basics_topics/concept_explanation.md
+      - OneFlow system design: basics_topics/essentials_of_oneflow.md
 
     
     - Extended Topics :
