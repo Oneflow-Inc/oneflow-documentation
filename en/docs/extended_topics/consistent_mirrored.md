@@ -206,7 +206,7 @@ OneFlow will use consistent strategy as default. We can declare it explicitly as
   config.default_distribute_strategy(flow.scope.consistent_view())
 ```
 
-The reason why consistent strategy is the main character of OneFlow is because in OneFlow design, if we use `consistent_strategy`, then from user's point of view, the op and blob can **get consistently in logic level**. We use matrix multiplication as an example in the beginning of section, we only need focus on [matrix multiplication](#mat_mul_op) itself on mathematics level. But in project, the issue of how to config and use model parallelism or data parallelism can be easily done by using OneFlow. OneFlow will handle **The data division of data parallelism**, **model division of model parallelism** and **serial logic** issue quickly and efficiently. 
+The reason why consistent strategy is the main character of OneFlow is because in OneFlow design, if we use `consistent_strategy`, then from user's point of view, the op and blob can **get consistently in logic level**. We use matrix multiplication as an example in the beginning of section, we only need focus on matrix multiplication itself on mathematics level. But in project, the issue of how to config and use model parallelism or data parallelism can be easily done by using OneFlow. OneFlow will handle **The data division of data parallelism**, **model division of model parallelism** and **serial logic** issue quickly and efficiently. 
 
  In consistent strategy in OneFlow, we are free to choose either model parallelism or data parallelism or hybrid parallelism.
 
