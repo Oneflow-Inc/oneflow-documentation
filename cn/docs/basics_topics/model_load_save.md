@@ -271,7 +271,7 @@ lenet_models_name
 
 * 如果没有找到，则自动初始化，同时打印警告提醒已经自动初始化部分参数
 
-在 OneFlow Benchmark 的 [BERT](../adv_examples/bert.md) 中，可以看到微调的实际应用。
+在 OneFlow Benchmark 的 [BERT](../adv_examples/bert.md) 中，可以看到精调的实际应用。
 
 以下举一个用于阐述概念的简单例子。
 
@@ -402,7 +402,7 @@ if __name__ == "__main__":
     check_point.save("./mlp_models_1")
 ```
 
-以下代码来自 [mlp_mnist_finetune.py](../code/basics_topics/mlp_mnist_finetune.py)，“微调”（为骨干网络增加一层`dense3`）后，加载 `./mlp_models_1`，并继续训练。
+以下代码来自 [mlp_mnist_finetune.py](../code/basics_topics/mlp_mnist_finetune.py)，“精调”（为骨干网络增加一层`dense3`）后，加载 `./mlp_models_1`，并继续训练。
 ```python
 # mlp_mnist_finetune.py
 import oneflow as flow
