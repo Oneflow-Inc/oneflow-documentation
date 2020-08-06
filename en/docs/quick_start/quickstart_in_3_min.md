@@ -1,19 +1,14 @@
-This article introduces how to quickly get starte with OneFlow. We can complete a full neural network training process just in 3 minutes.
+This article introduces how to quickly get start with OneFlow. We can complete a full neural network training process just in 3 minutes.
 
 ## Example
-If you already have one flow installed, you can run the following command to clone our [repository](https://github.com/Oneflow-Inc/oneflow-documentation.git) and run the script called [mlp_mnist.py](https://github.com/Oneflow-Inc/oneflow-documentation/blob/master/docs/code/quick_start/mlp_mnist.py) and run.
+With OneFlow installed, you can run the following command to download [mlp_mnist.py](https://github.com/Oneflow-Inc/oneflow-documentation/blob/master/en/docs/code/quick_start/mlp_mnist.py) python script from [repository](https://github.com/Oneflow-Inc/oneflow-documentation.git) and run it.
 
 ```shell
-wget https://docs.oneflow.org/code/quick_start/mlp_mnist.py 
-
+wget https://docs.oneflow.org/en/code/quick_start/mlp_mnist.py
+python3 mlp_mnist.py
 ```
 
-Then run the neural network training code:
-```shell
-python mlp_mnist.py
-```
-
-We will get following output:
+Output may looks like below:
 ```
 2.7290366
 0.81281316
@@ -23,10 +18,10 @@ We will get following output:
 ...
 ```
 
-The output is a string of number, each number represents the loss value of each round of training.The target of training is make loss value as small as possible. Thus, you have completed a full neural network training by using OneFlow.
+The output is a series of number each representting the loss value of each round of training. The goal of training is make loss value as small as possible. So far, you have completed a full neural network training by using OneFlow.
 
 ## Code explanation
-The following is the full code
+The following is the full code.
 ```python
 # mlp_mnist.py
 import oneflow as flow
@@ -74,9 +69,9 @@ if __name__ == "__main__":
             print(loss.mean())
 ```
 
-The next chapter is a brief description of this code.
+The next section is a brief description of this code.
 
-The special feature of OneFlow compare to other deep learning framework:
+The special feature of OneFlow compare to other deep learning framework is:
 ```python
 @flow.global_function(type="train")
 def train_job(
@@ -84,34 +79,37 @@ def train_job(
     labels: tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32),
 ) -> tp.Numpy:
 ```
-`Train_job`function which decorated by `@flow.global_function`is called "job function". Only been decorated by `@flow.global_function` can be identified by OneFlow. Use "type" to specified job type: type="train" means training job and type="predict" means evaluation or prediction job.
+`Train_job`function which decorated by `@flow.global_function` is called "job function". Only function decorated by `@flow.global_function` can be recognized by OneFlow. 
+
+The parameter `type` is used to specify the type of job: `type="train"` means it's a training job and `type="predict"` means evaluation or prediction job.
 
 In OneFlow, a neural network training or prediction task need two pieces of information:
 
-* One part is structure related parameters of the neural network itself. These is defined in the job function which mentioned above.
+* One part is structure of neural networks and related parameters. These is defined in the job function which mentioned above.
 
-* Another part is using what kind of configuration to train the network. For example, `learning rate` and method of update model optimization. The configuration of `get_train_config()` in `@flow.global_function(get_train_config())` like below:
+* Another part is the configuration of training to the network. For example, `learning rate` and type of model optimizer. These defined by code like below:
 
-`lr_scheduler = flow.optimizer.PiecewiseConstantScheduler([], [0.1])`
-  `flow.optimizer.SGD(lr_scheduler, momentum=0).minimize(loss)`
+```
+lr_scheduler = flow.optimizer.PiecewiseConstantScheduler([], [0.1])
+flow.optimizer.SGD(lr_scheduler, momentum=0).minimize(loss)
+```
 
-This part of code contains all the elements of training a neural network besides the job function and its configuration which mentioned above.
+Besides the job function defined and related configuration which mentioned above, code in this script contains all the points of how to training a neural network.
 
-- `check_point.init()`: Initialize the network model parameters;
+* `check_point.init()`: Model initialization;
 
-- `load_data(BATCH_SIZE)`: Prepare and load training data;
+* `load_data(BATCH_SIZE)`: Data loading;
 
-- `train_job(images, labels).get().mean()`: Return the loss value of each training;
+* `loss = train_job(images, labels)`: Return the loss value of each iteration;
 
-- `if i % 20 == 0: print(loss)`: Print a loss value for each 20 times of training;
+* `if i % 20 == 0: print(loss)`: Print a loss value once every 20 iteration;
 
+This page is a just a simple example on neural network. 
+A more comprehensive  and detailed introduction of OneFlow can be found in [Convolution Neural Network for Handwriting Recognition](lenet_mnist.md). 
 
+In addition, you can reference to [Based topics](../basics_topics/data_input.md) to learn more about how to use OneFlow for deep learning.
 
-
-This page is a demonstration of a simple network. In Using [convolution neural network for handwriting recognition](lenet_mnist.md), we will give a more comprehensive and detailed introduction of using OneFlow process. In addition, you can reference to the training of all kinds of problems in detail in [Based topics](../basics_topics/data_input.md) of OneFlow.
-
-
-We also provide some of the prevalent network and the data for you to reference [sample code](https://github.com/Oneflow-Inc/OneFlow-Benchmark).
+Benchmarks and related scripts for some prevalent network are also provided in repository [OneFlow-Benchmark](https://github.com/Oneflow-Inc/OneFlow-Benchmark).
 
 
 

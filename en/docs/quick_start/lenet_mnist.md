@@ -1,4 +1,4 @@
-In this article, we will learn:
+Topics below will be covered in this article:
 
 * Using OneFlow's port to configure software and hardware environment.
 
