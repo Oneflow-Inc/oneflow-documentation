@@ -231,7 +231,11 @@ We call the job function and get `labels` and `logits` then use them to evaluate
 
 
 ### Synchronous and asynchronous call
+<<<<<<< HEAD
 All code in this article only use synchronous call to get results from job function. In fact, OneFlow can call job function asynchronously. For more details, please reference to [Obtain results from job function](../basics_topics/async_get.md).
+=======
+All codes in this article only use synchronous call to get results from job function. In fact, OneFlow can call job function asynchronously. For more details, please reference to [Obtain results from job function](../basics_topics/async_get.md).
+>>>>>>> c4b424a5a294cb097b8324b12d33a6ce6cd3a19f
 
 
 ## Model Initialization, saving and loading
@@ -354,7 +358,11 @@ if __name__ == "__main__":
     main()
 ```
 
+<<<<<<< HEAD
 ## Code
+=======
+## Codes
+>>>>>>> c4b424a5a294cb097b8324b12d33a6ce6cd3a19f
 
 ### Model training
 
