@@ -54,13 +54,13 @@ Blob可能只是占位符Placeholder，也可能是具体的包含数值的单�
 
 在 OneFlow 中，我们将训练、验证、预测/推理等具体任务统称为作业函数(job function)，作业函数联系用户的业务逻辑与 OneFlow 管理的计算资源。
 
-在 OneFlow 中，任何被定义为作业函数的方法体都需要用装饰器 `@oneflow.global_function` 修饰，通过此装饰器，我们不仅能定义作业的类型(如：`type="train"`)，同时将为作业绑定一个FunctionConfig对象用于设置Job作业运行时所需的配置，使得 OneFlow 能方便地为我们管理内存、GPU等计算资源。
+在 OneFlow 中，任何被定义为作业函数的方法体都需要用装饰器 `@oneflow.global_function` 修饰，通过此装饰器，我们不仅能定义作业的类型(如：`type="train"`)，同时将为作业绑定一个`FunctionConfig`对象用于设置Job作业运行时所需的配置，使得 OneFlow 能方便地为我们管理内存、GPU等计算资源。
 
 
 
  **为什么要用global_function而不用function？** 
 
-在OneFlow设计之初，就是为了解决分布式多卡环境下的深度学习任务，在此种情况下，设置global_function即意味着对多卡进行全局配置。
+在OneFlow设计之初，就是为了解决分布式多卡环境下的深度学习任务，在此种情况下，设置 `global_function` 即意味着对多卡进行全局配置。
 
 
 
@@ -114,7 +114,7 @@ layer底层是由各种算子拼接而成，譬如：`layers.conv2d`其实是由
 
 #### op
 
-Operator即算子（简称为op），是OneFlow中的 **基本运算单元** 。上面例子中layer之间的计算全部由各种算子叠加完成。譬如flow.nn.max_pool2d就是一种算子，flow.reshape()是另一种算子。
+Operator即算子（简称为op），是OneFlow中的 **基本运算单元** 。上面例子中layer之间的计算全部由各种算子叠加完成。譬如`flow.nn.max_pool2d`就是一种算子，`flow.reshape`是另一种算子。
 
 
 
@@ -128,9 +128,9 @@ Consistent View则表示将分布式环境下的多机多卡视为一个整体�
 
 简单来说：
 
-当设置mirrored view时（flow.scope.mirrored_view）表示只能使用 **数据并行** 的方式。譬如在job funciton中设置了4台单卡节点，则模型会被完整的复制/镜像到4台节点的GPU卡上，数据则会切分为4份分别喂给4台节点上的GPU卡。
+当设置mirrored view时（`flow.scope.mirrored_view`）表示只能使用 **数据并行** 的方式。譬如在job funciton中设置了4台单卡节点，则模型会被完整的复制/镜像到4台节点的GPU卡上，数据则会切分为4份分别喂给4台节点上的GPU卡。
 
-当设置consistent view时(flow.scope.consistent_view)，则表示没有限制，OneFlow**可以自由选择模型并行、数据并行或者两者共存的混合并行。**
+当设置consistent view时(`flow.scope.consistent_view`)，则表示没有限制，OneFlow**可以自由选择模型并行、数据并行或者两者共存的混合并行。**
 
 
 

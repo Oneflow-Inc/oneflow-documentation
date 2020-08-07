@@ -1,11 +1,11 @@
 # Term/concept explanation
 
-In this article, we will make a general explanation of some common terms and concepts in OneFlow.The main content is divided for algorithm engineer and framework developers:
+In this article, we will explain some common terms and concepts in OneFlow. The main content is divided for algorithm engineer and framework developers:
 
 -  **Algorithm development**
 -  **Framework development**
 
-In algorithms development part, we will explain some common terms and concepts may use in the process of deep learning algorithms development and model training. But in framework developing, we will focus on the inner design concepts of OneFlow and some relevant basic level concepts.
+In algorithms development part, we will explain some common terms and concepts used in the process of deep learning algorithms development and model training. But in framework development part, we will focus on the introduction of the inner design concepts of OneFlow and some relevant basic concepts.
 
 
 
@@ -13,49 +13,53 @@ In algorithms development part, we will explain some common terms and concepts m
 
 ### 1.Placeholder
 
-Placeholder is **data Placeholder**, this concept is for define the shape of input or output data. It do not have real data in it.
+Placeholder is **data Placeholder**, this concept is for define the shape of input or output data. There is no data in Placeholder. 
 
 For example:
 
 ```python
-import oneflow.typing as oft
-def test_job(images:oft.Numpy.Placeholder((32, 1, 28, 28), dtype=flow.float32),
-             labels:.oft.Numpy.Placeholder((32, ), dtype=flow.int32)):
+import oneflow.typing as tp
+def test_job(
+    images: tp.Numpy.Placeholder((32, 1, 28, 28), dtype=flow.float),
+    labels: tp.Numpy.Placeholder((32,), dtype=flow.int32),
+) -> Tuple[tp.Numpy, tp.Numpy]:
+    # do something with images or labels
+    return (images, labels)
 ```
 
-It define the input of a job function. The shape of image input is (32, 1, 28, 28) and the data type is flow.float32. The shape of labels is (32,) and data type is flow.int32.
+It define the input image shape is (32, 1, 28, 28) and data type is flow.float32, the input label shape is (32,) and data type is flow.int32 in job function.
 
 
 
 ### 2.Tensor and Blob
 
-Tensor is the common concept in other framework. Such as Tensor in pytorch, it contain the data and data type, grad, storing device and other attribute. Tensor can use to structure and the description of the process of the forward/reverse calculation chart.
+Tensor is a common concept in other framework. In pytorch, Tensor contain the data and data type, grad, storing device and other attributes. Tensor can be used to create and describe the computation graph in forward or backward process. 
 
-In OneFlow, the basics level also use the concept of Tensor. But there are some difference between the Tensor in OneFlow and Tensor in pytorch/tensorflow. In order to provide sufficient support for distributed and parallelism, Tensor in OneFlow is more complex and have more types and attributes. Such as logical, physical, devices and attributes of distribution. But a Tensor unified on logic level, could be divided to different devices on real time operations. So in order to simplified description, OneFlow hide the specific type of Tensor, all the things is define by a higher level concept Blob.
+In OneFlow, the basic level also use the concept of Tensor. But there are some difference  about Tensor between OneFlow and pytorch/tensorflow. In order to provide sufficient support for distributed system and parallelism, the Tensor in OneFlow is more complex and have more types and attributes (Such as logical, physical, devices and attributes of distribution).The Tensor unified on logic level, could be divided to different devices. So in order to simplify description, OneFlow hides the different types of Tensor, all the things are defined by a higher level concept named Blob.
 
 
 
-Blob in OneFlow have corresponding base class  `BlobDef`. You can print the attribute of  `Blob` when build network. Such as the following script can print  `conv1`, `shape` and `dtype`:
+In OneFlow, Blob has a corresponding base class  `BlobDef`. You can print the attribute of  `Blob` when building network. As the following code, we can print  `conv1`'s '`shape` and `dtype`:
 
 ```python
 print(conv1.shape, conv1.dtype)
 ```
 
-Blob can only be Placeholder, but also can be the unit to pack the function's parameters.
+Blob can only be Placeholder, but also can be a specific unit that contains values. 
 
 
 
 ### 3.Job Function
 
-In OneFlow, we called training, evaluations, predictions and ratiocination tasks as job function. Job function connect logic of the users and  computing resources management of OneFlow.
+In OneFlow, we call the training, evaluating, predicting and inferential tasks as job function. Job function connects logic of user and  computing resources that managed by  OneFlow.
 
-In OneFlow, all functions need use decorator `@oneflow.global_function` to define as a job functions. By this decorator, we not only can define the model structure, optimize method and other task logic but also can pass the parameters need by job when running the job function. (like: get_train_config()). That can make OneFlow manage our memory and device resources more conveniently.
+In OneFlow, we can use decorator `@oneflow.global_function` to change a function to a job function. By this decorator, we can not only define the type of job function(such as: `type="train"`), but also bind a `FunctionConfig` object set the configuration of job function. That can make OneFlow manage our memory and device resources more conveniently.
 
 
 
- **Why use global_function rather than function?**
+ **Why use global_function?**
 
-The beginning of the design of OneFlow is to solve the task of multiple device in distribution training. In this situation, set global_function means make global configuration on devices.
+The beginning of the design of OneFlow is to solve the task of multiple devices in distributed training. In this situation, we set the global configuration by `global_funtion`. 
 
 
 
@@ -63,7 +67,7 @@ The beginning of the design of OneFlow is to solve the task of multiple device i
 
 #### Layer
 
-The layer concept in OneFlow is basically same as the layer in tensorflow, pytorch and other popular deep learning framework. It is use to describe a layer in neural network. Like: conv2d convolution layer, batch_normalization layer, dense fully connected layer and layer_norm regularization layer.Layer can simplify the process of build the neural networks. For example you can use just few line of code to build Lenet:
+The layer concept in OneFlow is basically the same as the layer in tensorflow, pytorch and other popular deep learning framework. It is used to describe a layer in neural network. Like: convolution layer, batch_normalization layer, fully connected layer and normalization layer. Layer can simplify the process of building neural network. For example you can use just few line of code to build Lenet:
 
 ```python
 def lenet(data, train=False):
@@ -80,55 +84,55 @@ def lenet(data, train=False):
     return flow.layers.dense(hidden, 10, kernel_initializer=initializer, name='dense2')
 ```
 
-The bottom of layer is composed by many operators. Like: `layers.conv2d` is composed by  `conv2d` and `variable`.
+Layer is composed by many operators. For example: `layers.conv2d` is composed by  `conv2d` and `variable`.
 
 #### Operator
 
-Operator is the **basics calculation unit** in OneFlow.The calculation in above example is complete by overlay of operator.flow.nn.max_pool2d and flow.reshape() all both operators.
+Operator is the **basics calculation unit** in OneFlow. The calculation in above example is completed by operators. `flow.nn.max_pool2d` and `flow.reshape` all both operators.
 
 
 
 ### 5.Consistent/Mirrored View
 
-OneFlow use two type of point of view:  **Mirrored View** and **Consistent View** is for describ distribution of data and model under distributed system. Different view is for different parallelism strategies.
+OneFlow use two type of view:  **Mirrored View** and **Consistent View** to describe the distribution of data and model under distributed system. Different view is corresponding to different parallelism strategy.
 
-Mirrored View is come from mirrors strategy of MPI distributed calculation. It is for describing model mirrored to multiple devices when use data parallelism.
+Mirrored View comes from mirrors strategy of MPI distributed calculation. It is used to describe the mirrored model to multiple devices when using data parallelism.
 
-Consistent View is trade multi devices and multi devices as one object in distribution environment. When use this strategy, OneFlow will hiding the detail process for user and chosse parallelism method in the optimal strategy(can be data/model/hybrid parallelism).
+Consistent View regards multi devices as one object in distributed environment. In this strategy, OneFlow will hide the detailed process for user and choose parallelism method in the optimal strategy (data/model/hybrid parallelism).
 
 Basically:
 
-When set the mirrored view(flow.scope.mirrored_view), it means only can use **data parallelism**.Such as set four solo device nodes in job function. Thus the model will be copy and paste to all devices but data will be cut in to four part and send to each device.
+When set the mirrored view (`flow.scope.mirrored_view`), it means we can only use **data parallelism**. For example we set four single device nodes in job function, the model will be copied and pasted to all devices, the data will be divided into four parts and send to each device.
 
-When set consistent view(flow.scope.consistent_view), It means no limit. OneFlow **can choose use data parallelism, model parallelism or hybrid parallelism.**
+When set consistent view (`flow.scope.consistent_view`), OneFlow **can choose data parallelism, model parallelism or hybrid parallelism.**
 
 
 
-## Frame developing
+## Framework developing
 
 ### 1.Boxing
 
-The model responsible for the logic switching different between different parallelism properties of tensor transformation mechanism/functionfor. We called it  **Boxing**.
+The module responsible for converting between different parallelism properties of logical tensor. We called it  **Boxing**.
 
-Such as: When the upstream and downstream of the op has different parallelism characteristics (such as parallelism number different). OneFlow will use Boxing automatic processing all kinds of data conversion and transfer process.
+Such as: When the op of upstream and downstream has different parallelism feature (such as parallelism number different). OneFlow will use Boxing to automatic process the data conversion and transmission.
 
 
 
 ### 2.SBP
 
-In fact, all forwards or bcakward operations in neural network can calculate by matrixes. Matrixes calculation always have process which according to the axis cut broadcast.OneFlow also have same step, we call it SBP. Of course, the SBP in OneFlow is not only matrixes calculations. It also corresponding to divided data in different device and broadcast.
+In fact, all forward and backward operations in neural network can be calculates by matrix. In matrix calculation, there are operations such as split and broadcast. OneFlow also have same operations, we call it SBP. Of course, the SBP in OneFlow is not only matrix calculation. It also corresponding to divided data into different devices, broadcast and some other operations.
 
 SBP means Split、broadcast、Partial sum.
 
 #### Split
 
-When parallelism operations, tensor is divided in to many sub-ensor.Different operators allow tensor to divided on different axis.Boxing will automatically process one tensor is divided in multiple axis.
+When parallelism operations, tensor is divided into many sub tensor. Different operators allow tensor to be divided on different axis. Boxing will automatically handle the splitting of tensor on different axis under multiple operations. 
 
 #### Broadcast
 
-When parallelism operator calculation, one tensor will be broadcast to many device. Make the same tensor amount in each device.
+In parallelism operator calculation, the tensor will be broadcasted to many devices. Make the same tensor amount in each device.
 
 #### Partial Sum
 
-If a operator have distributive attribute, tensor will sum part of dimension according to attribute of tensor.
+If an operator has distributive attribute, tensor will add parts of dimensions according to their attribute.
 
