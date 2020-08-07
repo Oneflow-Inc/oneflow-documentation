@@ -1,18 +1,18 @@
-Topics below will be covered in this article:
+In this article, we will cover topics below:
 
-* Using OneFlow's port to configure software and hardware environment.
+* Interfaces for software and hardware environment configuration
 
-* Using OneFlow's port to define training model.
+* Interfaces to define the neural networks
 
-* Achieving OneFlow's training job function.
+* Implementation of job function for training
 
-* Save/load the result of training model.
+* Save/load model
 
-* Achieving OneFlow's evaluation of job function.
+* Implementation of job function for evaluation
 
-This article demonstrated the core step of OneFlow by using the LeNet model to training MNIST dataset. The full example code is attached in the end.
+This article demonstrated the core steps of how to train a LeNet model by MNIST dataset using OneFlow. The full example code is attached at the end of article.
 
-Before learning, you can check the function of each code by running the following command.
+You can see the effects of each script by running the following commands.
 
 First of all, clone the documentation repository and switch to the corresponding path:
 ```shell
@@ -24,7 +24,7 @@ cd oneflow-documentation/docs/code/quick_start/
 ```shell
 python lenet_train.py
 ```
-The command above will perform traning of MNIST dataset and saving the model.
+The command above will train a model by MNIST dataset and save it.
 
 Output：
 
@@ -39,14 +39,14 @@ File mnist.npz already exist, path: ./mnist.npz
 0.23443426
 ...
 ```
-Training model is the precondition of `lenet_eval.py` and `lenet_test.py` or we can directly download and use our model which is already been trained and skip the training progress:
+A trained model is the prerequisite of `lenet_eval.py` and `lenet_test.py` or we can directly download trained model to skip the training progress:
 ```shell
-#Repository location: docs/code/quick_start/ 
+#change directory to: en/docs/code/quick_start/ 
 wget https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/quick_start/lenet_models_1.zip
 unzip lenet_models_1.zip
 ```
 
-* Model evaluation
+* Evaluation
 ```
 python lenet_eval.py
 ```
@@ -54,7 +54,7 @@ The command above using the MNIST's testing set to evaluate the training model a
 
 Output：
 
-```shell
+```text
 File mnist.npz already exist, path: ./mnist.npz
 accuracy: 99.4%
 ```
@@ -65,16 +65,16 @@ accuracy: 99.4%
 python lenet_test.py ./9.png
 # Output：prediction: 9
 ```
-The above command will using the training model we just saved to predicting the content of "9.png" or we can download our [ prepared image](https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/quick_start/mnist_raw_images.zip)to verify their training model prediction result.
+The above command will use the training model we just saved to predict the content of file "9.png". We can also download and verify more from [prepared images](https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/quick_start/mnist_raw_images.zip).
 
-## MNIST dataset introdaction
+## MNIST dataset introduction
 
-MNIST is a handwritten number database which including training set and testing set.Training set include 60000 pictures and the corresponding label.Yann LeCun and etc... has normalise the image size and pack them to binary file for download.http://yann.lecun.com/exdb/mnist/
+MNIST is a handwritten digits database including training set and testing set. Training set includes 60000 pictures and the corresponding label. Yann LeCun and others have normalized all the images and packed them into a single binary file for downloading. http://yann.lecun.com/exdb/mnist/
 
 
 ## Define training model
 
-In oneflow.nn and oneflow.layers, provide the operator to used to construct the model.
+Modules `oneflow.nn` and `oneflow.layers` provide the operators to construct the model.
 
 ```python
 def lenet(data, train=False):
@@ -117,28 +117,31 @@ def lenet(data, train=False):
 ```
 
 
-In the code above, we build up a LeNet network model.
+As the code above shows, we build up a LeNet network model.
 
-## Achieve training function
+## Implementation of job function for training
 
-OneFlow provides a decorator called `oneflow.global_function`. By using it, we can covert a Python function to job function.
+OneFlow provides a decorator named `oneflow.global_function` by which we can covert a Python function to a OneFlow **Job Function** .
 
-### Global_function decorator
+### `global_function` decorator
 
-`oneflow.global_function` decorator receive a `function_config` object as parameter. It can covert a normal Python function to job function of OneFlow and use the configuration we just done for `function_config`.
+`oneflow.global_function` decorator takes a `type` parameter to specify the type of job function. The `type="tranining"` means job function for traning otherwise `type="predict"` means for predicting. 
+
+There is also a `function_config` parameter taken by `oneflow.global_function` decorator. The `function_config` contains configuration about training.
 
 ```python
 @flow.global_function(type="train")
 def train_job(
     images: tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
     labels: tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32),
-    #achieved job function ...
+) -> tp.Numpy:
+    # Implementation of netwrok ...
 ```
 
-The `tp.Numpy.Placeholder` is place holder， `tp.Numpy` define that the job function will return a `numpy` object.
+The `tp.Numpy.Placeholder` is a placeholder. The annotation `tp.Numpy` on return type means that the job function will return a `numpy` object.
 
-### Specify the optimization feature
-We can using `flow.optimizer` to specify the parameters which need to optimization. By this way, we can specify the parameters which need to optimization and OneFlow will trade optimal parameter as target in each iteration training mission.
+### Set up optimizer
+We can use `oneflow.optimizer` to specify the parameters needed by optimization. By this way, in the process of each iteration during training, OneFlow will take the specified object as optimization goal.
 
 ```python
 @flow.global_function(type="train")
@@ -157,21 +160,23 @@ def train_job(
     return loss
 ```
 
-So Far, we using `flow.nn.sparse_softmax_cross_entropy_with_logits` to calculate the loss and trade optimal loss as target parameter.
+So Far, we use `flow.nn.sparse_softmax_cross_entropy_with_logits` to calculate the loss and specify it as optimization goal.
 
 
- **lr_scheduler** set the learning rate schedule，[0.1]means learning rate is 0.1；
+ **lr_scheduler** set the learning rate schedule, `[0.1]` means learning rate is 0.1；
 
- **flow.optimizer.SGD** specified optimizer is SGD. The momentum=0. Loss is the return value and send to 'minimize' which indicate the aim of optimizer is minimize the loss.
+ **flow.optimizer.SGD** means SGD is specified as the optimizer and `momentum=0`. The `loss` is the return value meanwhile the goal of minimization to the optimizer.
 
-## Call the jon function and interaction
+## Call the job function and get results
 
-We can start training when we called the job function.
+We can start the training by invoking the job function.
 
-The return value when we called the job function is define by the return value type in job function. It can be one or multiple.
+The return value we get when we call the job function is define by the annotation of return value type in job function. 
 
-### Example of one return value
-The job function in [lenet_train.py](../code/quick_start/lenet_train.py)：
+We can get one or multiple results after each call to job function.
+
+### Example on single return value
+The job function in [lenet_train.py](../code/quick_start/lenet_train.py):
 ```python
 @flow.global_function(type="train")
 def train_job(
@@ -188,7 +193,7 @@ def train_job(
     flow.optimizer.SGD(lr_scheduler, momentum=0).minimize(loss)
     return loss
 ```
-The return value in job function is `tp.Numpy`. When calling that, will return a `numpy` object：
+The return value in job function is a `tp.Numpy`. When calling job function, we will get a `numpy` object:
 ```python
 for epoch in range(20):
         for i, (images, labels) in enumerate(zip(train_images, train_labels)):
@@ -197,10 +202,10 @@ for epoch in range(20):
                 print(loss.mean())
 ```
 
-We called `train_job` and print `loss` each 20 time of cycle
+We call the `train_job` and print the `loss` every 20 rounds.
 
-### Example of multiple return value
-In evaluation code[lenet_eval.py](../code/quick_start/lenet_eval.py)define the job function：
+### Example on multiple return values
+In script [lenet_eval.py](../code/quick_start/lenet_eval.py), we define the job function below:
 ```python
 @flow.global_function(type="predict")
 def eval_job(
@@ -216,24 +221,24 @@ def eval_job(
     return (labels, logits)
 ```
 
-The return value of this job function is `Tuple[tp.Numpy, tp.Numpy]`. When calling it, will return a `tuple` container. There are two `numpy` object in it:
+The return value type of this job function is `Tuple[tp.Numpy, tp.Numpy]`. When we call the job function, we will get a `tuple` container. There are two `numpy` object in it:
 ```python
 for i, (images, labels) in enumerate(zip(test_images, test_labels)):
             labels, logits = eval_job(images, labels)
             acc(labels, logits)
 ```
-We called the job function and return `labels` and `logits` then use them to evaluate the accuracy of model.
+We call the job function and get `labels` and `logits` then use them to evaluate the model.
 
 
-### Synchronous and asynchronous calling
-All codes in this article is using synchronous method to called job function. In fact, OneFlow can call job function by asynchronous. More details please reference to [Obtain value from job function](../basics_topics/async_get.md).
+### Synchronous and asynchronous call
+All codes in this article only use synchronous call to get results from job function. In fact, OneFlow can call job function asynchronously. For more details, please reference to [Obtain results from job function](../basics_topics/async_get.md).
 
 
-## Initialization, saving and loading models
+## Model Initialization, saving and loading
 
-### Initialization and saving model
+### Model Initialization and saving
 
-The object structured by `oneflow.train.CheckPoint` can use for initialization, saving and loading models. During the training process, we can use `init` to initialize model and use `save` to save model.For example:
+The instantiation object of `oneflow.train.CheckPoint` can be used for models initialization, saving and loading. During the training process, we can use `init` method to initialize model and use `save` method to save model. For example:
 
 ```python
 if __name__ == '__main__':
@@ -243,11 +248,11 @@ if __name__ == '__main__':
   check_point.save('./lenet_models_1') 
 ```
 
-When save successfully, we will get a ** path ** called "lenet_models_1". This directory included directories and files corresponding with the model parameters.
+After model saved successfully, we will get a **folder** called "lenet_models_1". This folder contains directories and files corresponding with the model parameters.
 
-### Loading models
+### Model loading
 
-During the evaluation or prediction, we can use `oneflow.train.CheckPoint.load` to load the existing parameters ofmodel. For example:
+During the evaluation or prediction, we can use `oneflow.train.CheckPoint.load` to load the existing parameters of model. For example:
 
 ```python
 if __name__ == '__main__':
@@ -256,13 +261,13 @@ if __name__ == '__main__':
   #evaluation process  ...
 ```
 
-Automatically load the model we saved previously.
+Code above will automatically load the model we saved previously.
 
-## Evaluation of models
-Evaluation job function **basically is same as** train job function. The difference is in evaluation process, the model we use is already saved. Thus, do not require initialize and update model during iteration.
+## Evaluation of model
+The job function for evaluation is **basically same** as job function for training. The small difference is, in evaluation process, the model we use is already saved. Thus, initialization and update of model during iteration are not required.
 
 
-### Coding of evaluation job function
+### Job function for evaluation
 ```python
 @flow.global_function(type="predict")
 def eval_job(
@@ -278,10 +283,10 @@ def eval_job(
     return (labels, logits)
 ```
 
-Above is the coding of evolution job function and return object is a `Tuple[tp.Numpy, tp.Numpy]`. Tuple have two `numpy`  in it. We called the job function and computation accuracy according to return value.
+Code above shows defining a job function for evaluation and its return type is `Tuple[tp.Numpy, tp.Numpy]`. Tuple have two `numpy`  in it. We will call the job function and calculate the accuracy according to the return values.
 
-### Iteration evaluation
-The sample amount and correct sample amount in `acc`. We will called job function to get `labels` and `logits`：
+### Process of evaluation
+The `acc` function is used to count the total number of samples and the number of correct prediction results. We will call the job function to get paramters `labels` and `logits`:
 ```python
 g_total = 0
 g_correct = 0
@@ -297,8 +302,7 @@ def acc(labels, logits):
     g_correct += right_count
 
 ```
-Called evacuation job function:
-
+Call the job function for evaluation:
 ```python
 if __name__ == "__main__":
 
@@ -316,11 +320,10 @@ if __name__ == "__main__":
     print("accuracy: {0:.1f}%".format(g_correct * 100 / g_total))
 ```
 
-So far, Cycle call the evaluation function and output the accuracy of result of testing set.
+So far, We call the job function for evaluation looply and print the accuracy of evaluation result on testing set.
 
 ## Image prediction
-
-Modify the above evaluation code, change the evaluate date to raw images rather than the existing dataset. Then we can use model to predict the content in the image.
+After making a few changes to the code above to make the data come from the raw image rather than existing dataset, we can get a model to predict the content from image.
 
 ```python
 def load_image(file):
@@ -351,11 +354,11 @@ if __name__ == "__main__":
     main()
 ```
 
-## Complete code
+## Codes
 
-### Training model
+### Model training
 
-Name: [lenet_train.py](https://github.com/Oneflow-Inc/oneflow-documentation/blob/master/docs/code/quick_start/lenet_train.py)
+Script: [lenet_train.py](https://github.com/Oneflow-Inc/oneflow-documentation/blob/master/docs/code/quick_start/lenet_train.py)
 ```python
 #lenet_train.py
 import oneflow as flow
@@ -437,9 +440,9 @@ if __name__ == "__main__":
     print("model saved")
 ```
 
-### Evaluate model
+### Model evaluation
 
-Name: [lenet_eval.py](https://github.com/Oneflow-Inc/oneflow-documentation/blob/master/docs/code/quick_start/lenet_eval.py)
+Script: [lenet_eval.py](https://github.com/Oneflow-Inc/oneflow-documentation/blob/master/docs/code/quick_start/lenet_eval.py)
 
 Saved model: [lenet_models_1.zip](https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/quick_start/lenet_models_1.zip)
 ```python
@@ -535,9 +538,9 @@ if __name__ == "__main__":
     print("accuracy: {0:.1f}%".format(g_correct * 100 / g_total))
 ```
 
-### Number prediction
+### Digits prediction
 
-Name: [lenet_test.py](https://github.com/Oneflow-Inc/oneflow-documentation/blob/master/docs/code/quick_start/lenet_test.py)
+Script: [lenet_test.py](https://github.com/Oneflow-Inc/oneflow-documentation/blob/master/docs/code/quick_start/lenet_test.py)
 
 Saved model: [lenet_models_1.zip](https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/quick_start/lenet_models_1.zip)
 
