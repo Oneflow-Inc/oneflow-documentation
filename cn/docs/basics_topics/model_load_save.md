@@ -156,9 +156,8 @@ check_point.save('./path_to_save')
 
 ### 调用 load 加载模型
 通过调用 `CheckPoint` 对象的 `load` 方法，可以从指定的路径中加载模型。
-注意，从磁盘中加载的模型需要与当前作业函数中使用使用的网络模型匹配，否则会出错。
 
-以下代码，构造 `CheckPoint对象` 并从指定路径加载模型：
+以下代码，构造 `CheckPoint` 对象并从指定路径加载模型：
 ```python
 check_point = flow.train.CheckPoint() #构造对象
 check_point.load("./path_to_model") #加载先前保存的模型

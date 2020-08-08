@@ -8,7 +8,7 @@ For loading and saving for model, the common scenario are:
 
 Strictly speaking, we save the untrained model as `checkpoint` or `snapshot`. It is different with `model saving` of a completed model.
 
-However, no matter the model has been trained or not, we can use a **interface** to save model. Thus, like the `model`、`checkpoint`、`snapshot` we see in other framework is no difference in OneFlow. We all use `flow.train.CheckPoint` as interface.
+However, no matter the model has been trained or not, we can use the same **interface** to save model. Thus, like the `model`、`checkpoint`、`snapshot` we see in other framework is no difference in OneFlow. We all use `flow.train.CheckPoint` as the interface.
 
 In this article, we will introduce:
 
@@ -22,7 +22,7 @@ In this article, we will introduce:
 
 ## Use get_variable to create/obtain model parameters object
 
-We can use `oneflow.get_variable` to create or obtain an object, this object can be used to interact with information in global job functions. When calling the interface of `OneFlow.CheckPoint`. This object will also be stored automatically or recovered from storage devices.
+We can use `oneflow.get_variable` to create or obtain an object and this object can be used to interact with information in global job functions. When we call the interface of `OneFlow.CheckPoint`, this object will also be stored automatically or recovered from storage devices.
 
 Because of this feature, the object created by `get_variable` is used to store model parameters. In fact, there are many high levels interface in OneFlow (like `oneflow.layers.conv2d`). We use `get_variable` to create model parameters internally.
 
@@ -32,7 +32,7 @@ Because of this feature, the object created by `get_variable` is used to store m
 
 If the ` name` value already existed in the program, then get_variable will get the existing object and return.
 
-If the ` name` value doesn't exist in the program, `get_variable` will create a blob object  internally and return.
+If the `name` value doesn't exist in the program, `get_variable` will create a blob object internally and return.
 
 ### Use get_variable create object
 
@@ -52,7 +52,7 @@ def get_variable(
 )
 ```
 
-The following example using get_variable to create parameter and build the network in `oneflow.layers.conv2D` :
+The following example use `get_variable` to create parameters and build the network in `oneflow.layers.conv2D` :
 
 ```python
     #...
@@ -76,9 +76,9 @@ The following example using get_variable to create parameter and build the netwo
 
 ### Initializer setting
 
-In the previous sections, when we calling `get_variable`, we specified the method of initializing the parameters by `initializer`. In OneFlow, we provide many initializers which can be found in `oneflow/python/ops/initializer_util.py`
+In the previous sections, when we call `get_variable`, we specify the method of initializing the parameters by `initializer`. In OneFlow, we provide many initializers which can be found in `oneflow/python/ops/initializer_util.py`
 
-After setting `initializer`, the initialization is done by OneFlow framework. Exactly time is: when user call the `CheckPoint.init`, OneFlow will **initialize all the data** created by get_variable according to `initializer`.
+After we setting the `initializer`, the initialization is done by OneFlow framework. The specific time is: when user call the `CheckPoint.init`, OneFlow will **initialize all the data** created by get_variable according to `initializer`.
 
 Some common `initializer`:
 
@@ -113,18 +113,18 @@ We get the CheckPoint object by instantiating `oneflow. Train.CheckPoint()`. The
 
 * `load` : Import the model parameters from `path` and use them to initialize parameters.
 
-The prototype `init` is as follows. Before training, we need use  `init` to initialize the parameters in network.
+The prototype of `init` is as follows. Before training, we need use `init` to initialize the parameters in network.
 
 ```python
 def init(self)
 ```
 
-The prototype `save` is as follows. It can save the model under the specified  `path`.
+The prototype `save` is as follows. It can save the model under the specified `path`.
 ```python
 def save(self, path)
 ```
 
-The prototype `load` is as follows. You can load previously saved models specified by the `path`
+The prototype `load` is as follows. You can load previously saved models specified by the  `path`. 
 ```python
 def load(self, path)
 ```
@@ -149,14 +149,14 @@ check_point.save('./path_to_save')
 ```
 Attention:
 
-* The path to save must be empty, otherwise `save` will raise an error.
-* OneFlow model can save in a certain form the specified path. More details please refer to the example below.
+* The folder specified by path parameter must be empty, otherwise `save` will raise an error.
+* OneFlow model can be saved in a certain form the specified path. For more details please refer to the example below.
 * Although OneFlow do not have limitation of `save` frequency, however, if the storage frequency is too high, it will increase the burden of resources such as disk and bandwidth.
 
 ### Load model
-We can call the `CheckPoint` object's `load` method to load model from specified path. Note that the model loaded from disk needs to match the network model used in the current job function, otherwise an error will occur.
+We can call the `CheckPoint` object's `load` method to load model from specified path. 
 
-Here is an example of constructing `CheckPoint object` and loading model from a specified path:
+Here is an example of constructing `CheckPoint` object and loading model from a specified path:
 ```python
 check_point = flow.train.CheckPoint() #constructing object 
 check_point.load("./path_to_model") #load model
@@ -211,7 +211,7 @@ Assume that in the process of training, we call the following code to save model
 check_point = flow.train.CheckPoint()
 check_point.save('./lenet_models_name') 
 ```
-Then  `lenet_models_name` and the subdirectories are as follows:
+Then `lenet_models_name` and the subdirectories are as follows:
 ```
 lenet_models_name
 ├── conv1-bias
@@ -237,11 +237,11 @@ lenet_models_name
 
 We can see:
 
-* The network in job function, each variable is corresponding to a sub-directory.
+* In the network in job function, each variable is corresponding to a sub-directory.
 
 * All subdirectories above have an  `out` document. It store the parameters of network in binary form. `Out` is the default file name. We can change that by  `variable op` in the network.
 
-* `Snapshot_done` is an empty folder. If it exists, it means that the network has been trained. 
+* `Snapshot_done` is an empty folder. If it exists, it means that the network training has been finished. 
 
 * Snapshots of the training steps is stored in `System-Train-TrainStep-train_job`.
 
@@ -254,7 +254,7 @@ In model finetune and transfer learning, we always need：
 
 For this, the following procedures in `flow.train.CheckPoint.load` are as follow:
 
-* According the model in job function, traverse the saved path of the model and try to load the parameters.
+* According the model defined in job function, traverse the saved path of the model and try to load the parameters.
 
 * If the corresponding parameter is found, the parameter is loaded.
 
@@ -262,7 +262,7 @@ For this, the following procedures in `flow.train.CheckPoint.load` are as follow
 
 In the [BERT](../adv_examples/bert.md) of OneFlow Benchmark, we can see the example of finetune.
 
-Here is an example. 
+Here is a simplified example. 
 
 First we need define a model and save it to `./mlp_models_1` after training：
 ```python
@@ -335,7 +335,7 @@ WARNING! CANNOT find variable path in : ./mlp_models_1/dense3-weight/out. It wil
 0.17603233
 ...
 ```
-It means all parameters need by `dense3` layer did not find in original model and it start initialization.
+It means all parameters need by `dense3` layer did not find in the original model and initialization starts automatically.
 ### Codes
 
 The following code is from [mlp_mnist_origin.py](../code/basics_topics/mlp_mnist_origin.py). As the backbone network. Store the trained model in `./mlp_models_1`。
