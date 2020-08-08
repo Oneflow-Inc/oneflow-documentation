@@ -4,7 +4,7 @@ In OneFlow, We encapsulate the training, predicting, inferential and some other 
 
 In OneFlow, the function decorated by `@oneflow.global_function` decorator is the OneFlow's job function
 
-We mainly define the structure of the model and choose the optimization in job function. In addition, we can also pass some hyperparameters about training and environment  configuration to the job function(like the following example:`get_train_config()`), OneFlow will manage the memory, GPU and other computing resource according to our configuration.
+We mainly define the structure of the model and choose the optimization in job function. In addition, we can also pass some hyperparameters about training and environment configuration to the job function(like the following example:`get_train_config()`), OneFlow will manage the memory, GPU and other computing resource according to our configuration.
 
 In this article, we will specifically learn about:
 
