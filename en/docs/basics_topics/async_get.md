@@ -1,45 +1,43 @@
-# Obtain results from job function
+# Get results from job function
 
-In this article, we will mainly introduce how to obtain the return value from job function in OneFlow which includes:
+In this article, we will mainly introduce how to get the return value from job function in OneFlow. It covers:
 
-* How to use synchronous method obtain the return value from job function.
+* How to get the return value from job function synchronously.
 
-* How to use asynchronous method obtain the return value from job function.
+* How to get the return value from job function asynchronously.
 
-In OneFlow, we usually use the decorator called @flow.global_function to define job function. Thus, this task can be training, evaluation or prediction. By define the return value of job function. We can use both synchronous and asynchronous to get result of function.
+In OneFlow, the function decorated by `@flow.global_function` is called "Job Function". Job function can be implmented for training, evaluation or prediction. By specifing the return type of job function, we can get results from job function both synchronously and asynchronously.
 
-## Difference between synchronization and asynchronization
+## Difference between synchronous and asynchronous
 
-Normally, our trainin process is synonymous which means need wait in line. Now we will demonstrate the concept of synchronous and asynchronous and the advantages of asynchronous in OneFlow by a simple example.
+Usually, the process of training the model is synchronous. We will explain the concepts of synchronization and asynchronization, and the advantages of asynchronous execution in OneFlow.
 
-#### Synchronization
+### Synchronization
 
-During the complete process of one iteration, when the data from some step/iter completed the forward and reverse transmission process and completed the updated of weight parameters and the optimizer. Then start the training process in next step. Whereas before next step, usually we need to wait for CPU prepare the training data. Normally it will come up with some times for data preprocessing and loading.
+During synchronous training, the training of the next step cannot be started until the work of the previous step is completed. 
 
-#### Asynchronization
+### Asynchronization
 
-During the iteration with asynchronous process, it basic means open the multithreaded mode. One step does not need to wait for the previous step to finish, but it can directly process data and loading. When device is not full loading, it can start training directly. When the device is full loading, then it can start preparing work for other step.
+In asynchronous training, it is equivalent to turning on multi-threading mode. A step does not have to wait for the completion of the previous step, but can carry out data preprocessing and loading in advance.
 
-From the contrast mentioned above, OneFlow preform more efficient of using the computing resources when using the asynchronous mode. Especially when enormous amount of dataset are apply. **Open asynchronous process could narrow the time of data loading and data preparation and boost training model**.
+Through the comparison above, it can be seen that the use of asynchronous execution job function in OneFlow can effectively utilize computer resources, especially in the case of loading huge data, enabling asynchronous execution can effectively shorten the data loading and preprocessing time, and accelerate the model training.
 
+Next, we will explain how to get the results synchronously and asynchronously from job function, and how to write callback functions in asynchronous jobs. At the end of the article, we will provide a complete example.
 
+The main points are：
 
-Next, we will introduce how to obtain result in synchronous and asynchronous task and the coding of call function in asynchronous task. The complete source code will be provide in the end of page.
+* Getting results synchronously or asynchronously is determined by the return value type of job function
 
-The important things are：
+* The data type of return value is selected in  `oneflow.typing`
 
-* When define the job function, tell OneFlow synchronous or asynchronous by return value.
-
-* The data type of return value is select in  `oneflow.typing` (We called it `flow.typing`).
-
-* When call the job functions，there are some difference between synchronous and asynchronous.
+* When we call job function, the form of getting results synchronously / asynchronously is slightly different
 
 
-## Obtain result in synchronization
+## Get result synchronously
 
-When calling the job function, we will get an OneFlow object. The method `get` of this object can get result by synchronous.
+When we define a job function, if the annotation of the return type of the job function is `oneflow.typing.Numpy`, the job function will be called synchronously.
 
-For example, we defined the function below:
+For example, when we define the job function below:
 ```python
 @flow.global_function(type="train")
 def train_job(
@@ -56,61 +54,63 @@ def train_job(
     return loss
 ```
 
-In above code, by using citation in python to tell OneFlow system. The return value is `tp.Numpy` which is the `ndarray` in `numpy`.
+Through the Python annotation, OneFlow will know that the returned type of the job function is `oneflow.typing.Numpy`, which corresponds to ndarray in numpy.
 
 ```python
 loss = train_job(images, labels)
-            if i % 20 == 0:
-                print(loss.mean())
+if i % 20 == 0:
+    print(loss.mean())
 ```
 
-From the example above, we should notice that:
+From the example above, it should be noted that:
 
-* When define the job function, the return value of job function (loss) is just a place holder. It is for constructing map. Do not have data in it.
+* When we define the job function, the return value of job function (loss) is just a placeholder without data. It is for graph construction.
 
-* When define the return value as `flow.typing.Numpy`. It can tell OneFlow that when calling the job function, the real return value is `numpy` object.
+* When we specify the return value type as `flow.typing.Numpy`. OneFlow will know that when the job function is called, the real data type returned is `numpy` object.
 
-* When calling the job function `train_job(images, labels)`, We can directly get the results of job function and it is a `flow.typing.Numpy` corresponding to `numpy` objects.
+* By calling the job function `train_job(images, labels)`, we can get the result from job function directly, and the retnred value is a `numpy` object corresponding to `flow.typing.Numpy`.
 
-## Data type of `oneflow.typing` 
-`flow.typing` include all the data type can be return by the job function.  `flow.typing.Numpy` we mention before is one of them. The common data type is in the list below:
+## Data types in `oneflow.typing`
+The `oneflow.typing` contains all the data types that can be returned by the job function. The `oneflow.typing.Numpy` shown above is only one of them. The commonly used types and their corresponding meanings are listed as follows:
 
-* `flow.typing.Numpy`：corresponding to `numpy.ndarray`
-* `flow.typing.ListNumpy`：corresponding to a `list`  container. Every elements in it is  `numpy.ndarray` object. It have connections with distributed training in OneFlow. We will see the function in [The consistent and mirrored view in distributed training.](../extended_topics/consistent_mirrored.md)
-* `flow.typing.Dict`：corresponding to`Dict`，key is `str`，value is`numpy.ndarray`
-* `flow.typing.Callback`：corresponding to a callback function. It is use to call job function synchronous. We will introduce below.
+* `flow.typing.Numpy`: corresponding to a `numpy.ndarray`
+
+* `flow.typing.ListNumpy`: corresponding to a `list` container. Every element in it is a `numpy.ndarray` object. It is related to the view of OneFlow for distributed training. We will see details in [The consistent and mirrored view in distributed training.](../extended_topics/consistent_mirrored.md)
+
+* `flow.typing.Dict`: corresponding to a `dict` whose key can be string or number and value will be`numpy.ndarray`
+
+* `flow.typing.Callback`: corresponding to a callback function. It is used to call job function asynchronously. We will introduce it below.
 
 
-## Obtain result in asynchronization
+## Get result asynchronously
 
-Normally, the efficiency of asynchronization is better than synchronization. The following is introduced how to obtain the result from a job function which is asynchronous training.
+Generally speaking, the efficiency of asynchronous training is higher than that of synchronous training. The following describes how to call job function asynchronously and process the results.
 
-Basic steps include:
+The basic steps include:
 
-* Prepare callback function and achieve return the result of logic in  function of processing.
+* Prepare a callback function to process the return value from the job function. You need to specify the parameters accepted by the callback function through annotation.
 
-* To achieve job function. We use the citation to specify `flow.typing.Callback` is the return value data type. We can see in following example `Callback` can define the return data type.
+* Implementation of the job function, through the way of annotation, specified `oneflow.typing.Callback` as the return type of the job function. As we will see in the following example, we can specify the parameter type of the callback function through `oneflow.typing.Callback`.
 
-* When calling job function, regist callback on step one.
+* Call the job function and register the callback function prepared in step 1 above.
 
-* OneFlow find the suitable time to regist the callback and job function return the result to the callback.
+* The registered callback function will be called by OneFlow at the appropriate time, and the return value of job function will be passed to the callback function as a parameter.
 
-The first three step is done by the user and the final step is done by OneFlow framework.
+The first three steps are completed by users of OneFlow, and the last step is completed by OneFlow framework.
 
-### Coding of callback function
-Prototype of callback function:
+### Prepare a callback function
+Suppose the prototype of the callback function is:
 
 ```python
-def cb_func(result):
+def cb_func(result:T):
     #...
 ```
 
-The result is the return value of job function. We define the data type is T which is `Numpy`、`ListNumpy` and etc... Them can be different type. We have example in below.
+Among them, the `result` needs to be annotated to specify its type `T`, that is, numpy, listnumpy, etc. mentioned above, or their composite type. We will have corresponding examples below.
 
-`result` is the return value of job function. It must be same as the registration made by the job function.
+The `result` of callback function is actually the return value of job function. Therefore, it must be consistent with the annotation of the return value of the job function
 
-For example, in the job function below, the return is loss.
-
+For example, when we define a job function below:
 ```python
 @flow.global_function(type="train")
 def train_job(
@@ -139,9 +139,9 @@ def train_job(
     return loss
 ```
 
-Attention`-> tp.Callback[oft.Numpy]` means this job function. It return a `tp.Numpy` object and need use asynchronous calling.
+Annotation `-> tp.Callback[tp.Numpy]` means that this job function returns a `oneflow.typing.Numpy` type, and need to be called asynchronously.
 
-Thus, the callback function we defined need receive a `Numpy` data：
+Thus, the callback function we defined should accept a numpy parameter:
 ```python
 def cb_print_loss(result: tp.Numpy):
     global g_i
@@ -150,7 +150,7 @@ def cb_print_loss(result: tp.Numpy):
     g_i += 1
 ```
 
-Another example, if the job function define as below:
+Let's take a look at another example. If the job function is defined as below:
 
 ```python
 @flow.global_function(type="predict")
@@ -167,10 +167,9 @@ def eval_job(
     return (labels, logits)
 ```
 
+Annotation `-> tp.Callback[Tuple[tp.Numpy, tp.Numpy]]` means that this job function returns a `tuple` in which there are two elements whose type is `oneflow.typing.Numpy`, and the job function need to be called asynchronously.
 
-The`-> tp.Callback[Tuple[tp.Numpy, tp.Numpy]]`represent the job function. Return a  `tuple` which have two elements. Every element is `tp.Numpy` and need use asynchronous calling.
-
-Thus，the parameters in callback function should be：
+Thus, the parameter annotation of the corresponding callback function should be:
 
 ```python
 g_total = 0
@@ -188,12 +187,12 @@ def acc(arguments: Tuple[tp.Numpy, tp.Numpy]):
     g_total += labels.shape[0]
     g_correct += right_count
 ```
-`arguments` corresponding to the data type of the above jon function.
+The `arguments` corresponds to the return type of the above job function.
 
 ### Registration of callback function
-When call the job function, return a `Callback` object. We send the callback function to it. That is register.
+When we call the job function asynchronously, the job function will return a 'callback' object, and we registry the prepared callback function by passing it to that object.
 
-OneFlow will automatically register callback function when obtain the return value.
+OneFlow will automatically call the registered callback function when it gets the training results.
 
 ```python
 callbacker = train_job(images, labels)
@@ -205,12 +204,12 @@ But the above code is redundant, we recommend:
 train_job(images, labels)(cb_print_loss)
 ```
 
-## The relevant code
+## Code
 
-### Synchronous obtain a result
-In this example, use a simple Multilayer perceptron(mlp), use synchronization to obtain the only return value `loss` and print the average of loss in each 20 iterations.
+### Get single result synchronously
+We use LeNet as example in code below to get the single return value `loss` synchronously and print the loss every 20 iterations.
 
-Name：[synchronize_single_job.py](../code/basics_topics/synchronize_single_job.py)
+[synchronize_single_job.py](../code/basics_topics/synchronize_single_job.py)
 
 ```python
 # lenet_train.py
@@ -302,10 +301,10 @@ File mnist.npz already exist, path: ./mnist.npz
 model saved
 ```
 
-### Synchronous obtain multiple results
-In this example, the return object of job function is a `list `. We can use synchronization to obtain the elements like `labels` and `logits` in the `list`. And evaluate the model we trained before then print the accuracy.
+### Get mutiple results synchronously
+In this case, the job function returns a `tuple`. We get the resutls `labels` and `logits` in tuple synchronously, and evaluate the trained model in the above example, then output the accuracy rate.
 
-Name：[synchronize_batch_job.py](../code/basics_topics/synchronize_batch_job.py)
+[synchronize_batch_job.py](../code/basics_topics/synchronize_batch_job.py)
 
 ```python
 #lenet_eval.py
@@ -396,13 +395,13 @@ if __name__ == "__main__":
     print("accuracy: {0:.1f}%".format(g_correct * 100 / g_total))
 ```
 
-The model have already trained can be downloaded in: [lenet_models_1.zip](https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/basics_topics/lenet_models_1.zip)
+The trained model can be downloaded from [lenet_models_1.zip](https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/basics_topics/lenet_models_1.zip)
 
-### Asynchronous obtain a result
+### Get single result asynchronously
 
-In this example, using mlp training,  obtain the only return value `loss` by asynchronous way and print the average of loss in each 20 times of iterations.
+In this case, we take MLP as example to get the single return result loss from job function asynchronously, and the loss is printed every 20 rounds.
 
-Name：[async_single_job.py](../code/basics_topics/async_single_job.py)
+[async_single_job.py](../code/basics_topics/async_single_job.py)
 
 ```python
 import oneflow as flow
@@ -477,13 +476,12 @@ File mnist.npz already exist, path: ./mnist.npz
 ...
 ```
 
-The model have already trained can be downloaded in: [mlp_models_1.zip](https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/basics_topics/mlp_models_1.zip)
+### Get multiple results asynchronously
+In the following example, we show how to get multiple return results of the job function asynchronously, evaluate the trained model in the above example, and output the accuracy rate.
 
-### Asynchronous obtain multiple results
+[async_batch_job.py](../code/basics_topics/async_batch_job.py)
 
-In this example, the return object of job function is a `dict `. We can use asynchronization to obtain multiple return objects in `dict`. And evaluate the model we trained before then print the accuracy.
-
-Name：[async_batch_job.py](../code/basics_topics/async_batch_job.py)
+The trained model can be downloaded from [mlp_models_1.zip](https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/basics_topics/mlp_models_1.zip)
 
 ```python
 import numpy as np
