@@ -28,7 +28,7 @@ def test_job(
     return (images, labels)
 ```
 
-描述了一个测试的job函数中，输入的图片shape是(32, 1, 28, 28)，数据类型是flow.float32；输入的labels标签的shape是(32,)，类型是flow.int32
+描述了一个测试的job函数中，输入的图片shape是(32, 1, 28, 28)，数据类型是`flow.float32`；输入的labels标签的shape是(32,)，类型是`flow.int32`
 
 
 
