@@ -208,7 +208,7 @@ def train_job(
 
 之所以说 consistent 视角是 OneFlow 的一大特色，是因为在 OneFlow 的设计中，若采用 `consistent_view`，那么从用户的视角看，所使用的op、blob将获得 **逻辑上的统一**，同样以本文开头的矩阵乘法为例，我们只需要关注[矩阵乘法](#mat_mul_op)本身数学计算上的意义；而在工程上到底如何配置、采用模型并行还是数据并行等细节问题，可以使用 OneFlow 的接口轻松完成。OneFlow 内部会高效可靠地解决 **数据并行中的数据切分** 、**模型并行中的模型切分** 、**串行逻辑** 等问题。
 
- 在 OneFlow 的 consistent 视角下，可以自由选择模型并行、数据并行、流水并行或者混合并行。 
+在 OneFlow 的 consistent 视角下，可以自由选择模型并行、数据并行、流水并行或者混合并行。 
 
 ### 代码示例
 以下代码，我们采用 consistent 视角，使用2个 GPU 进行训练，consistent 策略下默认的并行方式仍然是 **数据并行**。关于如何在consistent 策略下设置 **模型并行** 及 **混合并行** 不在本文讨论范围，我们在[OneFlow的并行特色](model_mixed_parallel.md)中有专门的介绍与示例。
