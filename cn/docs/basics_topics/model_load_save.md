@@ -18,7 +18,7 @@
 
 * OneFlow 模型的存储结构
 
-* 模型的部分初始化技巧
+* 如何微调与扩展模型
 
 ## 使用 get_variable 创建/获取模型参数对象
 
@@ -26,7 +26,7 @@
 
 因为这个特点，`get_variable` 创建的对象，常用于存储模型参数。实际上，OneFlow 中很多较高层接口（如 `oneflow.layers.conv2d`），内部使用 `get_variable` 创建模型参数。
 
-### get_variable 获取/创建对象的流程
+### get_variable 创建/获取对象的流程
 
 `get_variable` 需要一个指定一个 `name` 参数，该参数作为创建对象的标识。
 
@@ -78,7 +78,7 @@ def get_variable(
 
 我们在上文中已经看到，在调用 `get_variable` 时，通过设置初始化器 `initializer` 来指定参数的初始化方式，OneFlow 中提供了多种初始化器，它们在 `oneflow/python/ops/initializer_util.py` 中。
 
-设置 `initializer` 后，初始化工作由 OneFlow 框架完成，具体时机为：当用户调用下文中的 `CheckPoint.init` 时，OneFlow 会根据`initializer` 对所有 get_variable 创建的对象进行 **数据初始化**。
+设置 `initializer` 后，初始化工作由 OneFlow 框架完成，具体时机为：当用户调用下文中的 `CheckPoint.init` 时，OneFlow 会根据 `initializer` 对所有 get_variable 创建的对象进行 **数据初始化**。
 
 以下列举部分常用的 `initializer` ：
 
@@ -126,6 +126,7 @@ def save(self, path)
 ```
 
 `load` 的原型如下，可以加载之前已经保存的，由 `path` 路径所指定的模型。
+
 ```python
 def load(self, path)
 ```
@@ -155,16 +156,15 @@ check_point.save('./path_to_save')
 
 ### 调用 load 加载模型
 通过调用 `CheckPoint` 对象的 `load` 方法，可以从指定的路径中加载模型。
-注意，从磁盘中加载的模型需要与当前作业函数中使用使用的网络模型匹配，否则会出错。
 
-以下代码，构造 `CheckPoint对象` 并从指定路径加载模型：
+以下代码，构造 `CheckPoint` 对象并从指定路径加载模型：
 ```python
 check_point = flow.train.CheckPoint() #构造对象
 check_point.load("./path_to_model") #加载先前保存的模型
 ```
 
 
-## OneFlow模型的存储结构
+## OneFlow 模型的存储结构
 OneFlow 模型是一组已经被训练好的网络的 **参数值** ，目前OneFlow的模型中没有包括网络的元图信息（Meta Graph）。
 模型所保存的路径下，有多个子目录，每个子目录对应了 `作业函数` 中模型的 `name` 。
 比如，我们先通过代码定义以下的模型：
@@ -249,15 +249,9 @@ lenet_models_name
 * `System-Train-TrainStep-train_job` 中保存有快照的训练步数
 
 
-## 模型的精调与扩展
+## 模型的微调与扩展
 
-我们在系统精调(finetune)或者迁移学习的时候常碰到以下场景：
-
-* 精调(finetune)：以一个已经训练好的骨干网络(backbone)为基础，拓展一些新的网络结构后，继续训练。原有骨干网络那部分模型需要加载原来保存的参数，而新拓展网络部分的模型需要初始化；
-
-* 迁移学习：在已经训练好的原网络基础上，按照新的优化方式重新训练，新的优化方式带来了一些额外的参数变量，比如 `momentum` 或者 `adam` ；原来的参数变量加载自原来保存的参数，而额外的参数变量需要被初始化；
-
-总之，以上情况都属于：
+在模型的微调和迁移学习中，我们经常需要：
 
 * 模型中的一部分参数加载自原有模型
 
@@ -271,11 +265,11 @@ lenet_models_name
 
 * 如果没有找到，则自动初始化，同时打印警告提醒已经自动初始化部分参数
 
-在 OneFlow Benchmark 的 [BERT](../adv_examples/bert.md) 中，可以看到精调的实际应用。
+在 OneFlow Benchmark 的 [BERT](../adv_examples/bert.md) 中，可以看到微调的实际应用。
 
 以下举一个用于阐述概念的简单例子。
 
-首先，我们先定义一个模型，形状如下，训练后保存至 `./mlp_models_1`：
+首先，我们先定义一个模型，训练后保存至 `./mlp_models_1`：
 ```python
 @flow.global_function(type="train")
 def train_job(
@@ -402,7 +396,7 @@ if __name__ == "__main__":
     check_point.save("./mlp_models_1")
 ```
 
-以下代码来自 [mlp_mnist_finetune.py](../code/basics_topics/mlp_mnist_finetune.py)，“精调”（为骨干网络增加一层`dense3`）后，加载 `./mlp_models_1`，并继续训练。
+以下代码来自 [mlp_mnist_finetune.py](../code/basics_topics/mlp_mnist_finetune.py)，“微调”（为骨干网络增加一层`dense3`）后，加载 `./mlp_models_1`，并继续训练。
 ```python
 # mlp_mnist_finetune.py
 import oneflow as flow
