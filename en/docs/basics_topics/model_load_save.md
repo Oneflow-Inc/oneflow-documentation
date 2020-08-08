@@ -388,7 +388,7 @@ if __name__ == "__main__":
     check_point.save("./mlp_models_1")
 ```
 
-The following code is from [mlp_mnist_finetune.py](../code/basics_topics/mlp_mnist_finetune.py). After finetuning (add one more layer `dense3` in backbone network).  we load  `./mlp_models_1` and train.
+The following code is from [mlp_mnist_finetune.py](../code/basics_topics/mlp_mnist_finetune.py). After finetuning (add one more layer `dense3` in backbone network).  we load  `./mlp_models_1` and train it.
 ```python
 # mlp_mnist_finetune.py
 import oneflow as flow
