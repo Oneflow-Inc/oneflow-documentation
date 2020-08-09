@@ -1,10 +1,10 @@
 # Features of parallelism in OneFlow
 
-In [Consistent and Mirrored view](consistent_mirrored.md), we have already known OneFlow provides mirrored and consistent two point of view and learned about the  `consistent` view in OneFlow have some special features.
+In [Consistent and Mirrored view](consistent_mirrored.md), we have already known OneFlow provides two types of view: mirrored and consistent view, and we learned about the  `consistent` view in OneFlow have some special features.
 
-Because in `consistent_view`, OneFlow gives the  unified view on logical side. When doing the distributed training, user can choose to use data parallelism, model parallelism or hybrid parallelism.
+Because in `consistent_view`, OneFlow provides a logically unified view. During distributed training, users can freely choose to use data parallelism, model parallelism or hybrid parallelism.
 
-In this article, we will keep going through the special ` consistent` view in OneFlow. We will learn about : 
+In this article, we will keep going through the special `consistent` view in OneFlow. We will learn about: 
 
 * Data parallelism in `consistent_view` flow chart.
 
@@ -46,7 +46,7 @@ The following figure is in consistent view, using data parallelism to achieve or
 
 ![纯数据并行](imgs/para_consistent_data.png)
 
-In data parallelism, we use two devices for training. As we use **data parallelism**, we can see that for each original logical layer, the sample is divided in average to each device. We have complete **training model** in each device. The data after splitting processed by `op`. Finally we combine the data in each device and get the complete data.
+In data parallelism, we use two devices for training. As we use **data parallelism**, we can see that for each original logical layer, the sample is divided in average to each device. We have a complete **training model** in each device. The data after splitting are processed by `op`. Finally we combine the data in each device and get the complete data.
 
 ### Model parallelism
 
@@ -54,13 +54,13 @@ In `consistent` view, we can choose model parallelism (the configuration details
 
 ![纯模型并行](imgs/para_consistent_model.png)
 
-In model parallelism example, we still use two devices for training. In each layer of original logic model is processed by `op  `on **part of model** and **complete data**. Then combine the output and get whole results.
+In model parallelism example, we still use two devices for training. In each layer of original logic model is processed by `op` on **part of model** and **complete data**. Then they are combined and we get the complete results.
 
 One thing we need to mention is in above figure. The output from each device on layer 0 **cannot** use as the input in layer 1: Because in model parallelism, in order to complete the operation. We need partial model and **complete** data. To solve this problem, OneFlow use `boxing` mechanism.
 
-`boxing` will count the data in each node in distributed training and divide or assemble data properly then send to corresponding GPU. Except the model assembling in model parallelism. The reverse gradient synchronization in data parallelism will also use `boxing`  to solve problem.
+`boxing` will count the data in each node in distributed training and divide or assemble data properly then send to corresponding GPU. Besides the model assembling in model parallelism, `boxing` is also used for reverse gradient synchronization in data parallelism.
 
-The algorithm in `boxing` is complex. But it is transparent to users. The reason of adding `boxing` is to keep user from confused. In this article, we only need to remember that OneFlow will automatically solve the data distribution issue.
+The algorithm in `boxing` is complex. But it is transparent to users. The Illustration of boxing is just to prevent users from being confused. In this article, we only need to remember that OneFlow will automatically solve the data distribution issue.
 
 ## Choose the optimal parallelism method
 
@@ -70,13 +70,13 @@ To be concluded:
 
 * In data parallelism case, the information need to synced is **gradient** in backpropagation. Thus, we need to make sure the synchronization's speed in different nodes is faster than the calculation's speed in side nodes. For example, the **Convolution Layer** has fewer parameters, but it need large scale of calculation. It is suitable for data parallelism.
 
-* In model parallelism, we can send the complete model in logical to **each device**, which can deal with the oversize model problem. Thus it is suitable for the neural network with massive parameters (like fully connected layer) to use model parallelism.
+* In model parallelism, we can send the complete model in logical to **each device**, which can be dealt with the oversize model problem. Thus it is suitable for the neural network with massive parameters (like fully connected layer) to use model parallelism.
 
 In fact, we can use **hybrid parallelism**, it means OneFlow uses different parallelism in different parts of training process. For example, at the beginning of the neural network, which have few parameters and need large calculation. We better use data parallelism. But the layer like fully connected layer which have many parameters, we should use model parallelism. The following figure is the demonstration for the neural network in begin of the article which use **hybrid parallelism**.
 
 ![混合并行](imgs/para_consistent_mixed.png)
 
-Currently, other popular frameworks either do not support mixed parallelism or require deep customization. But in OneFlow, the hybrid parallelism distributed training can be configured through simple settings, and the distributed system can also be deeply optimized with the ultra-high degree of freedom "network relay" parallel mode.
+Currently, other popular frameworks either do not support mixed parallelism or require deep customization. But in OneFlow, the hybrid parallelism distributed training can be configured through simple settings, and the distributed system can also be deeply optimized with the ultra-high degree of freedom pipelining mode.
 
 ## Hybrid parallelism example:
 
@@ -181,19 +181,19 @@ def mlp(data):
                              )
 ```
 
-You may curious about why `split(axis=0)` is column cutting. We need to explain is in OneFlow, `dense` is column storage. Thus the `flow.distribute.split(axis=0)` in above code is column splitting.
+You may be curious about why `split(axis=0)` is column cutting. We need to explain is in OneFlow, `dense` is column storage. Thus the `flow.distribute.split(axis=0)` in above code do be split by column.
 
-In addition, `flow.layers.dense`  use `model_distribute`  to set parallelism mode, it use the common `get_variable` to create `blob` in basic level from inner, and internally calls the more general interface `get_variable` to create `blob`, while the `get_variable`  interface sets the parallelism mode with the parameter named `distribute`.
+In addition, `flow.layers.dense`  use `model_distribute`  to set parallelism mode, it use the common `get_variable` to create `blob` in basic level from inner, and internally calls the more general interface `get_variable` to create `blob`, The `get_variable` interface has a parameter named `distribute` to set the parallelism mode.
 
-As you can see, we can change the single machine training program to a distributed, hybrid parallel program with few modifications, which is one of the features that sets OneFlow apart from other frameworks. 
+As you can see, we can change the single machine training program to a distributed, hybrid parallel program with few modifications, which is one of the features that distinguishes OneFlow from other frameworks.
 
-## Flow parallelism example
+## Pipelining example
 
-Besides the model parallelism, OneFlow also provides a more flexible parallelism method called flow parallelism, it allow user use  `scope.placement` to specify the device of the operator.
+Besides the model parallelism, OneFlow also provides a more flexible parallelism method called pipelining, it allow user use  `scope.placement` to specify the device of the operator.
 
-In flow parallelism, the part of layers of whole network are on one device and other layers are on other devices. They work as relay, switch between devices in different phases.
+In pipelining, the part of layers of whole network are on one device and other layers are on other devices. They work as relay, switch between devices in different phases.
 
-In the following example, we change few code in "Using consistent view in OneFlow" of  [Consistent and Mirrored view](consistent_mirrored.md) and demonstrate flow parallelism.
+In the following example, we change few code in "Using consistent view in OneFlow" of  [Consistent and Mirrored view](consistent_mirrored.md) and demonstrate pipelining.
 
 ### Code Example
 
@@ -312,14 +312,14 @@ There are only two important lines of code and they have same effect:
         )
 ```
 
-The first parameter in `scope.placement` is to specify `cpu` or `gpu`. The second parameter is to specify machine number and device. Like we use the second device on first machine, it should be:
+The first parameter in `scope.placement` is to specify `cpu` or `gpu`. The second parameter is to specify machine number and device. Like we use the device 2 on machine 1, it should be:
 
 ```python
   with flow.scope.placement("gpu", "1:2"):
     # ...
 ```
 
-Flow parallelism can allow user to specify device for each op. It is very useful for user who master the distributed training to **optimize deeply**.
+Pipelining can allow user to specify device for each op. It is very useful for user who master the distributed training to **optimize deeply**.
 
-In addition, OneFlow also provides `oneflow.unpack`, `oneflow.pack`. Combine those with the features of task scheduling in OneFlow. It will make the flow parallelism easier to use and more efficient. We will introduce these in other article.
+In addition, OneFlow also provides `oneflow.unpack`, `oneflow.pack`. Combined with the own features of task scheduling in OneFlow, they will make the pipelining easier to use and more efficient. We will introduce these in other article.
 
