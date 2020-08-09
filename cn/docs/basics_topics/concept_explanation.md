@@ -1,12 +1,12 @@
 # OneFlow 概念清单
 
-本文将对OneFlow中涉及到的，常用的一些概念/名词做一个概括性的解释。主要内容针对算法工程师和框架开发者分为以下两部分：
+本文将对 OneFlow 中涉及到的，常用的一些概念/名词做一个概括性的解释。主要内容针对算法工程师和框架开发者分为以下两部分：
 
 -  **算法开发** 
 
 -  **框架开发** 
 
-在算法开发部分，我们将解释深度学习算法开发，模型训练等过程中常用的一些概念和名词，而在框架开发部分，我们则侧重于OneFlow框架内部设计概念，框架开发相关的底层概念等介绍。
+在算法开发部分，我们将解释深度学习算法开发，模型训练等过程中常用的一些概念和名词，而在框架开发部分，我们则侧重于 OneFlow 框架内部设计概念，框架开发相关的底层概念等介绍。
 
 
 
@@ -14,7 +14,7 @@
 
 ### 1.Placeholder
 
-Placeholder即 **数据占位符** ，此概念用于描述输入/输出的数据形状，而并不是实体的数据。
+Placeholder 即 **数据占位符** ，此概念用于描述输入/输出的数据形状，而并不是实体的数据。
 
 例如：
 
@@ -28,15 +28,15 @@ def test_job(
     return (images, labels)
 ```
 
-描述了一个测试的job函数中，输入的图片shape是(32, 1, 28, 28)，数据类型是`flow.float32`；输入的labels标签的shape是(32,)，类型是`flow.int32`
+描述了一个测试的 job 函数中，输入的图片 shape 是(32, 1, 28, 28)，数据类型是 `flow.float32`；输入的 labels 标签的 shape 是(32,)，类型是 `flow.int32`
 
 
 
 ### 2.Tensor和Blob
 
-在其他框架中常用Tensor这个概念，譬如pytorch中的Tensor，其中包含了数据值和类型(data,dtype)、梯度grad、存放的设备类型device等属性。利用Tensor可以用来构造和描述前向/反向过程中的计算图。
+在其他框架中常用 Tensor 这个概念，譬如 pytorch 中的 Tensor，其中包含了数据值和类型(data, dtype)、梯度 grad、存放的设备类型 device 等属性。利用 Tensor 可以用来构造和描述前向/反向过程中的计算图。
 
-而在OneFlow中，底层也使用了Tensor的概念，不过OneFlow中的Tensor和pytorch/tensorflow中的有些不同，为了对分布式和并行提供充分的支持，OneFlow中的Tensor更为复杂，类型和属性更多（譬如：逻辑/物理、设备、分布式相关的属性），而且一个逻辑上统一的Tensor可能在实际计算过程中，被拆分到了不同的设备上，所以为了简化描述，OneFlow中屏蔽了各种具体类型的Tensor，其上层由一个统一的概念—Blob作为定义。
+而在 OneFlow 中，底层也使用了 Tensor 的概念，不过 OneFlow 中的 Tensor 和 pytorch/tensorflow 中的有些不同，为了对分布式和并行提供充分的支持，OneFlow 中的Tensor 更为复杂，类型和属性更多（譬如：逻辑/物理、设备、分布式相关的属性），而且一个逻辑上统一的 Tensor 可能在实际计算过程中，被拆分到了不同的设备上，所以为了简化描述，OneFlow 中屏蔽了各种具体类型的 Tensor，其上层由一个统一的概念— Blob 作为定义。
 
 
 
@@ -54,13 +54,13 @@ Blob可能只是占位符Placeholder，也可能是具体的包含数值的单�
 
 在 OneFlow 中，我们将训练、验证、预测/推理等具体任务统称为作业函数(job function)，作业函数联系用户的业务逻辑与 OneFlow 管理的计算资源。
 
-在 OneFlow 中，任何被定义为作业函数的方法体都需要用装饰器 `@oneflow.global_function` 修饰，通过此装饰器，我们不仅能定义作业的类型(如：`type="train"`)，同时将为作业绑定一个`FunctionConfig`对象用于设置Job作业运行时所需的配置，使得 OneFlow 能方便地为我们管理内存、GPU等计算资源。
+在 OneFlow 中，任何被定义为作业函数的方法体都需要用装饰器 `@oneflow.global_function` 修饰，通过此装饰器，我们不仅能定义作业的类型(如：`type="train"`)，同时将为作业绑定一个 `FunctionConfig` 对象用于设置Job作业运行时所需的配置，使得 OneFlow 能方便地为我们管理内存、GPU 等计算资源。
 
 
 
  **为什么要用global_function而不用function？** 
 
-在OneFlow设计之初，就是为了解决分布式多卡环境下的深度学习任务，在此种情况下，设置 `global_function` 即意味着对多卡进行全局配置。
+在 OneFlow 设计之初，就是为了解决分布式多卡环境下的深度学习任务，在此种情况下，设置 `global_function` 即意味着对多卡进行全局配置。
 
 
 
@@ -68,7 +68,7 @@ Blob可能只是占位符Placeholder，也可能是具体的包含数值的单�
 
 #### layer
 
-Layer即层，layer的概念和tensorflow、pytorch等主流深度学习框架类似，用来描述神经网络模型中的一个层级如：conv2d卷积层、batch_normalization层、dense全连接层、layer_norm正则化层等。层的存在简化了神经网络模型的搭建过程，譬如你可以用简单的几行代码搭建出Lenet：
+Layer 即层，layer 的概念和 tensorflow、pytorch 等主流深度学习框架类似，用来描述神经网络模型中的一个层级如：conv2d 卷积层、batch_normalization 层、dense 全连接层、layer_norm 正则化层等。层的存在简化了神经网络模型的搭建过程，譬如你可以用简单的几行代码搭建出 Lenet：
 
 ```python
 def lenet(data, train=False):
@@ -110,27 +110,27 @@ def lenet(data, train=False):
     return flow.layers.dense(hidden, 10, kernel_initializer=initializer, name="dense2")
 ```
 
-layer底层是由各种算子拼接而成，譬如：`layers.conv2d`其实是由 `conv2d` 算子和 `variable` 算子组成。
+layer 底层是由各种算子拼接而成，譬如：`layers.conv2d` 其实是由 `conv2d` 算子和 `variable` 算子组成。
 
 #### op
 
-Operator即算子（简称为op），是OneFlow中的 **基本运算单元** 。上面例子中layer之间的计算全部由各种算子叠加完成。譬如`flow.nn.max_pool2d`就是一种算子，`flow.reshape`是另一种算子。
+Operator即算子（简称为op），是 OneFlow 中的 **基本运算单元** 。上面例子中 layer 之间的计算全部由各种算子叠加完成。譬如 `flow.nn.max_pool2d` 就是一种算子，`flow.reshape` 是另一种算子。
 
 
 
 ### 5.Consistent/Mirrored View
 
-OneFlow中采取了两种视角： **Mirrored View** 和 **Consistent View** 来描述分布式情况下数据和模型的分布，不同的view对应了不同的并行策略。
+OneFlow 中采取了两种视角： **Mirrored View** 和 **Consistent View** 来描述分布式情况下数据和模型的分布，不同的 view 对应了不同的并行策略。
 
-Mirrored View来源于MPI分布式计算中的镜像策略，用于描述数据并行时，模型镜像到多卡的行为；
+Mirrored View 来源于 MPI 分布式计算中的镜像策略，用于描述数据并行时，模型镜像到多卡的行为；
 
-Consistent View则表示将分布式环境下的多机多卡视为一个整体，采取此策略时，OneFlow会为用户屏蔽掉具体的执行方式，内部将以最优化的策略选择并行方式（可能是数据并行/模型并行或混合并行）
+Consistent View 则表示将分布式环境下的多机多卡视为一个整体，采取此策略时，OneFlow 会为用户屏蔽掉具体的执行方式，内部将以最优化的策略选择并行方式（可能是数据并行/模型并行或混合并行）
 
 简单来说：
 
-当设置mirrored view时（`flow.scope.mirrored_view`）表示只能使用 **数据并行** 的方式。譬如在job funciton中设置了4台单卡节点，则模型会被完整的复制/镜像到4台节点的GPU卡上，数据则会切分为4份分别喂给4台节点上的GPU卡。
+当设置 mirrored view 时（ `flow.scope.mirrored_view` ）表示只能使用 **数据并行** 的方式。譬如在 job function 中设置了4台单卡节点，则模型会被完整的复制/镜像到4台节点的GPU卡上，数据则会切分为4份分别喂给4台节点上的GPU卡。
 
-当设置consistent view时(`flow.scope.consistent_view`)，则表示没有限制，OneFlow**可以自由选择模型并行、数据并行或者两者共存的混合并行。**
+当设置 consistent view 时( `flow.scope.consistent_view` )，则表示没有限制，OneFlow **可以自由选择模型并行、数据并行或者两者共存的混合并行。**
 
 
 
@@ -138,21 +138,21 @@ Consistent View则表示将分布式环境下的多机多卡视为一个整体�
 
 ### 1.Boxing
 
-负责在逻辑张量的不同并行属性之间转换的机制/功能模块，我们称之为 **Boxing** 。
+负责在运行时根据并行属性转换张量的模块，我们称之为 **Boxing**。
 
-例如：当上下游的op具有不同的并行特性(如并行数不同)，OneFlow将利用Boxing自动处理各种数据转换和传输过程。
+例如：当上下游的op具有不同的并行特性(如并行数不同)，OneFlow 将利用 Boxing 自动处理各种数据转换和传输过程。
 
 
 
 ### 2.SBP
 
-本质上，神经网络前向后向过程中的大多数操作，都可以归纳为矩阵计算，在矩阵计算中常有根据axis切分、广播等操作。同样OneFlow中也有类似的操作，我们称为SBP，当然，OneFlow中的SBP不仅仅是简单的矩阵运算，其还对应了数据在不同物理GPU上的划分、广播等实际操作。
+本质上，神经网络前向后向过程中的大多数操作，都可以归纳为矩阵计算，在矩阵计算中常有根据axis切分、广播等操作。同样 OneFlow 中也有类似的操作，我们称为SBP，当然，OneFlow 中的 SBP 不仅仅是简单的矩阵运算，其还对应了数据在不同物理 GPU 上的划分、广播等实际操作。
 
-SBP即Split、broadcast、Partial sum的缩写。其中Split表示切分；broadcast表示广播；Partial sum表示部分求和。
+SBP即 Split、broadcast、Partial sum 的缩写。其中 Split 表示切分；broadcast 表示广播；Partial sum 表示部分求和。
 
 #### Split
 
-在并行op计算时，张量被split切分为多个子张量。不同的op算符允许张量在不同的axis轴上进行拆分。Boxing机制将自动处理一个张量在多种op操作下在不同轴上切分的情况。
+在并行op计算时，张量被 split 切分为多个子张量。不同的op算符允许张量在不同的 axis 轴上进行拆分。Boxing 机制将自动处理一个张量在多种op操作下在不同轴上切分的情况。
 
 #### Broadcast
 

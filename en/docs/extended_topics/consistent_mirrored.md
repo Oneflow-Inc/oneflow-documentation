@@ -1,6 +1,6 @@
 ## The view of Consistent and Mirrored
 
-In distributed training, OneFlow provides two aspects for determining the relationship between data and model. There are `consistent` strategy and `mirrored` strategy.
+In distributed training, OneFlow provides two aspects for determining the relationship between data and model. There are `consistent` view and `mirrored` view.
 
 In this article, we will introduce:
 
@@ -13,7 +13,7 @@ In this article, we will introduce:
 ## Data parallelism and model parallelism.
 In order to better understand  `consistent` and `mirrored` in OneFlow. We need to understand the difference between **data parallelism **and **model parallelism** in distributed training.
 
-To further demonstrate the difference between data parallelism and model parallelism, we will introduce a simple operator(In OneFlow, the logical calculation will regard as operator): matrix multiplication. 
+To further demonstrate the difference between data parallelism and model parallelism, we will introduce a simple operator(In OneFlow, the logical calculation will be regarded as operator): matrix multiplication. 
 
 We assume that in model training, there is an input matrix I, and the output matrix O is obtained by matrix multiplication of matrix I and matrix W. 
 
@@ -21,7 +21,7 @@ We assume that in model training, there is an input matrix I, and the output mat
 
 As the description above, size of I is (N, C1), size of W is (C1, C2) and size of O is (N, C2).
 
-Combined machine learning logic. We can give some definitions to the matrixes above:
+Combined machine learning logic, we can give some definitions to the matrixes above:
 
 * Matrix I is the input object, each row is a sample and each column represents the features of sample.
 
@@ -66,16 +66,16 @@ In [use OneFlow build neural network](../basics_topics/build_nn_with_op_and_laye
 
 Actually, in the view of parallelism, the  `Placeholder` of OneFlow can be divided to two types: Use `oneflow.typing.Numpy.Placeholder` and `oneflow.typing.ListNumpy.Placeholder` to construct the placeholder, which is corresponding to `Consistent`  and `Mirrored`.
 
-We will explain the detailed examples in below.
+We will explain in details in the examples below.
 
 
-## Using mirrored strategy in OneFlow
+## Using mirrored view in OneFlow
 
-Other framework like TensorFlow or Pytorch supports mirrored strategy. The mirrored strategy of OneFlow is similar to them.
+Other framework like TensorFlow or Pytorch supports mirrored view. The mirrored view of OneFlow is similar to them.
 
-In mirrored strategy, the model are copied in each GPU, the graph building of each node is the same, thus we can only use **data parallelism**.
+In mirrored view, the model are copied in each GPU, the graph building of each node is the same, thus we can only use **data parallelism**.
 
-In OneFlow, the default strategy is consistent strategy, so you should use `default_logical_view` of  `flow.function_config()` to define:
+In OneFlow, the default strategy is consistent view, so you should use `default_logical_view` of  `flow.function_config()` to define:
 
 ```python
     func_config = flow.function_config()
@@ -84,12 +84,12 @@ In OneFlow, the default strategy is consistent strategy, so you should use `defa
 
 In `mirrored_view`, we can only use **data parallelism**. When we call the job function, we need divide the data in average according to amount of the devices and put the data after dividing into `list`. Every element in `list` is the data to send to **each device**.
 
-The return value type of job function is `oneflow.typing.ListNumpy`. Every element in  `list`is corresponding to the results of each device.
+The return value type of job function is `oneflow.typing.ListNumpy`. Every element in  `list` is corresponding to the results of each device.
 
 **Combined all **elements in the `list` can make a complete BATCH.
 
 ### Code Example
-In the following code, we use `mirrored_strategy` with two devices to train.
+In the following code, we use `mirrored_view` with two devices to train.
 
 Complete Code: [mirrored_strategy.py](../code/extended_topics/mirrored_strategy.py)
 
@@ -175,7 +175,7 @@ def train_job(
 ) -> tp.ListNumpy:
 ```
 
-* The data after dividing need to be stored in the `list` and pass to training functions. The number of elements in `list` need to be same as the **amount of devices in training**. OneFlow will pass the data according to the order of the elements in `list ` to each device(the number i element in `list` is corresponding to number i device):
+* The data after dividing need to be stored in the `list` and passed to training functions. The number of elements in `list` need to be same as the **amount of devices in training**. OneFlow will pass the data according to the order of the elements in `list ` to each device(the number i element in `list` is corresponding to number i device):
 ```python
   images1 = images[:BATCH_SIZE_PER_GPU]
   images2 = images[BATCH_SIZE_PER_GPU:]
@@ -195,23 +195,23 @@ def train_job(
       print(total_loss.mean())
 ```
 
-## Use consistent strategy in OneFlow
-We have already learned about the mirrored strategy. In `mirrored_view`, sample will be distributed in average to many same models to train. The results of each nodes need to be assembled to get the complete batch.
+## Use consistent view in OneFlow
+We have already learned about the mirrored view. In `mirrored_view`, sample will be distributed in average to many same models to train. The results of each nodes need to be assembled to get the complete batch.
 
-In addition to mirrored strategy, OneFlow also provides consistent strategy. Consistent strategy is one of the features of OneFlow. Compared with mirrored strategy, it has a great advantage
+In addition to mirrored view, OneFlow also provides consistent view. Consistent view is one of the features of OneFlow. Compared with mirrored view, it has a great advantage
 
-OneFlow will use consistent strategy as default. We can declare it explicitly as the following code. 
+OneFlow will use consistent view as default. We can declare it explicitly as the following code. 
 ```python
   config = flow.function_config()
   config.default_distribute_strategy(flow.scope.consistent_view())
 ```
 
-The reason why consistent strategy is the main feature of OneFlow is that in OneFlow design, if we use `consistent_strategy`, the op and blob can **get consistently in logic level** from user's point of view. We use matrix multiplication as an example in the beginning of article, we only need focus on matrix multiplication itself on mathematics level. But in project, the issue of how to config and use model parallelism or data parallelism can be easily done in OneFlow. OneFlow will handle **The data division in data parallelism**, **model division in model parallelism** and **serial logic** issue quickly and efficiently. 
+The reason why consistent view is the main feature of OneFlow is that in OneFlow design, if we use `consistent_view`, the op and blob can **get consistently in logic level** from user's point of view. We use matrix multiplication as an example in the beginning of article, we only need focus on matrix multiplication itself on mathematics level. But in project, the issue of how to config and use model parallelism or data parallelism can be easily done in OneFlow. OneFlow will handle **The data division in data parallelism**, **model division in model parallelism** and **serial logic** issue quickly and efficiently. 
 
-In consistent strategy in OneFlow, we can choose either model parallelism or data parallelism or hybrid parallelism freely. 
+In consistent view of OneFlow, we can choose either model parallelism or data parallelism or hybrid parallelism freely. 
 
 ### Code Example
-In the following code, we use consistent strategy and use two devices to train. The default parallelism method is **data parallelism** in consistent strategy. The issue of how to set **model parallelism** and **hybrid parallelism** in consistent strategy will not be discussed in this section. We have special introduction of that in [parallels characters of OneFlow](model_mixed_parallel.md).
+In the following code, we use consistent view and use two devices to train. The default parallelism method is **data parallelism** in consistent view. The issue of how to set **model parallelism** and **hybrid parallelism** in consistent view will not be discussed in this section. We have special introduction of that in [parallels features of OneFlow](model_mixed_parallel.md).
 
 Complete code: [consistent_strategy.py](../code/extended_topics/consistent_strategy.py)
 
@@ -297,7 +297,7 @@ In above code:
 flow.config.gpu_device_num(2)
 ```
 
-* Use  `tp.Numpy.Placeholder` to define the placeholder in consistent strategy. Because the blob of `Numpy.Placeholder` represent the op and placeholder in logic. Thus. the BATCH_SIZE is the sum of samples, without artificial split or combination
+* Use  `tp.Numpy.Placeholder` to define the placeholder in consistent view. Because the blob of `Numpy.Placeholder` represent the op and placeholder in logic. Thus. the BATCH_SIZE is the sum of samples, without artificial split or combination
 ```python
 @flow.global_function(type="train")
 def train_job(
@@ -306,7 +306,7 @@ def train_job(
 ) -> tp.Numpy:
 ```
 
-* The job function is called directly to obtain the training results, which have been completed by OneFlow in distributed process of splitting and combining. Under the consistent strategy, there are few differences between single machine training program and distributed training program. 
+* The job function is called directly to obtain the training results, which have been completed by OneFlow in distributed process of splitting and combining. Under the consistent view, there are few differences between single machine training program and distributed training program. 
 ```python
 for i, (images, labels) in enumerate(zip(train_images, train_labels)):
   loss = train_job(images, labels)
@@ -317,6 +317,6 @@ for i, (images, labels) in enumerate(zip(train_images, train_labels)):
 ## More extended
 With the development of machine learning theory and practice, there are many models which is unable to train in single device. There are also more and more models that can not complete the training well only by data parallelism.
 
-Adopting `consistent` in OneFlow, the above problems can be solved well through free selection and combination of parallel methods. We will introduce in [parallel characteristic of OneFlow](model_mixed_parallel.md).
+Adopting `consistent` view in OneFlow, the above problems can be solved well through free selection and combination of parallel methods. We will introduce in [parallel features of OneFlow](model_mixed_parallel.md).
 
 

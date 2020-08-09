@@ -13,7 +13,7 @@
 ## 数据并行与模型并行
 为了更好地理解OneFlow中的 `consistent` 和 `mirrored` 视角，我们需要了解分布式任务中的 **数据并行** 、**模型并行** 两种并行方式的区别。
 
-为了更直观地展示两者的差别，我们先看一个简单的 op (在 OneFlow 中，逻辑上的运算都被抽象为了 operator ，称作 op)：矩阵乘法。
+为了更直观地展示两者的差别，我们先看一个简单的 op (在 OneFlow 中，逻辑上的运算都被抽象为了 operator，称作 op)：矩阵乘法。
 
 我们假定在模型训练中，存在一个输入矩阵 I ，通过矩阵 I 与矩阵 W 做矩阵乘法，得到输出矩阵 O 。
 
@@ -198,7 +198,7 @@ def train_job(
 ## 在 OneFlow 中使用 consistent 视角
 我们已经了解了 mirrored 视角，知道在 `mirrored_view` 视角下，样本会被平均分配到多个完全一样的模型上进行分布式训练，各个训练节点上的结果，需要组装才能得到真正完整的 BATCH，对应了逻辑上的 op 与 Blob。
 
-除了 mirroed 视角外，OneFlow 还提供了 consistent 视角。 consistent 视角是 OneFlow 的一大特色，与 mirrored 视角相比有很大的优势。 
+除了 mirrored 视角外，OneFlow 还提供了 consistent 视角。consistent 视角是 OneFlow 的一大特色，与 mirrored 视角相比有很大的优势。 
 
 默认情况下 OneFlow 采取的是 consistent 视角，如果想显式声明，也可以通过代码设置：
 ```python
@@ -211,7 +211,7 @@ def train_job(
 在 OneFlow 的 consistent 视角下，可以自由选择模型并行、数据并行、流水并行或者混合并行。 
 
 ### 代码示例
-以下代码，我们采用 consistent 视角，使用2个 GPU 进行训练，consistent 策略下默认的并行方式仍然是 **数据并行**。关于如何在consistent 策略下设置 **模型并行** 及 **混合并行** 不在本文讨论范围，我们在[OneFlow的并行特色](model_mixed_parallel.md)中有专门的介绍与示例。
+以下代码，我们采用 consistent 视角，使用2个 GPU 进行训练，consistent 策略下默认的并行方式仍然是 **数据并行**。关于如何在 consistent 策略下设置 **模型并行** 及 **混合并行** 不在本文讨论范围，我们在[OneFlow的并行特色](model_mixed_parallel.md)中有专门的介绍与示例。
 
 完整代码：[consistent_strategy.py](../code/extended_topics/consistent_strategy.py)
 

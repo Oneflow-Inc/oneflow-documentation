@@ -16,7 +16,7 @@ In this article, we will introduce:
 
 * Support for  `consistent view`, the whole network only need a logic input and output.
 
-* Provide a `mirrored view` compatible with other frameworks. Users who are familiar with the distributed training of other frameworks can start it quickly. 
+* A `mirrored view` is provided compatible with other frameworks. Users who are familiar with the distributed training of other frameworks can start it quickly. 
 
 * Only a few lines of configuration code are needed to switch a program from single machine to distributed system.
 
@@ -24,7 +24,7 @@ In this article, we will introduce:
 
 By the distributed training interface of OneFlow, you only need few configuration(Specify the distributed computing nodes IP and the number of devices) to realize distributed training network.
 
-In another word, it make single machine program and distributed machine program almost the same. User just need to focus on **job logic ** and **structures of model** without worrying about distribution execution. **OneFlow will automatically deal with tasks scheduling, resources parallelism  and other issue.**
+In another word, it make single machine program and distributed machine program almost the same. User just need to focus on **job logic** and **structures of model** without worrying about distribution execution. **OneFlow will automatically deal with tasks scheduling, resources parallelism  and other issue.**
 
 Here is an example to change a program running on a single machine to run on a distributed system with few configurations. 
 
@@ -58,13 +58,13 @@ if __name__ == '__main__':
 
 ### Configuration of ports and device
 
-In  `oneflow.config` , we provide distributed program related interface. We mainly use two of them:
+In  `oneflow.config` , we provide the interfaces related to distributed program. We mainly use two of them:
 
-* `oneflow.config.gpu_device_num` : set the number of device. This will apply to all machine.
+* `oneflow.config.gpu_device_num` : set the number of device. This will apply to all machines.
 
-* `oneflow.config.ctrl_port` :set the port number of communications, all the machine will apply the same port. 
+* `oneflow.config.ctrl_port` : set the port number of communications, all the machines will apply the same port. 
 
-The following demo we set all machine use one device and use port 9988 to communicate. User can change the configuration according to the environment.
+The following demo we set all machines use one device and use port 9988 to communicate. User can change the configuration according to the actual situation.
 ```python
 #device number
 flow.config.gpu_device_num(1)
@@ -81,20 +81,20 @@ flow.config.gpu_device_num(2)
 
 Then we need to config the connection between the machines in network. In OneFlow, the distributed machine called `node`.
 
-The network information of each node is stored as a `dict`. The key "addr" is corresponding to IP of this node. All the nodes are stored in a  `list`, use  `flow.env.machine` to connect OneFlow. OneFlow will automatically generate the connection between nodes.
+The network information of each node is stored as a `dict`. The key "addr" is corresponding to IP of this node. All the nodes are stored in a `list`, use  `flow.env.machine` to connect OneFlow. OneFlow will automatically generate the connection between nodes.
 
 ```python
 nodes = [{"addr":"192.168.1.12"}, {"addr":"192.168.1.11"}]
 flow.env.machine(nodes)
 ```
 
-In the code above, we have two nodes in our distribution system. The IP is "192.168.1.12" and "192.168.1.11".
+In the code above, we have two nodes in our distributed system. The IP is "192.168.1.12" and "192.168.1.11".
 
 It should be noted that the node 0 in list (in the above code is 192.168.1.12) is called `master node`. After the whole distributed training system starting, it will create the graph  and other nodes are waiting. When the graph is created, all nodes will receive a notice to know the other nodes they are in contact with and work together with decentralized way.
 
-During the training process, `master node`  will remain the standard output and store the  model. Other nodes are responsible for calculation.
+During the training process, `master node`  will remain the standard output and store the model. Other nodes are responsible for calculation.
 
-We can wrap the configuration code for distributed training as a function, which is easy to be call:
+We can wrap the configuration code for distributed training as a function, which is easy to be called:
 
 ```python
 def config_distributed():
@@ -112,7 +112,7 @@ def config_distributed():
 ### Complete code of distributed training
 After adding the configurations code, we can change the single machine program to the distributed training program. Just run the same program in all nodes.
 
-We can compare the distributed training program with **single machine training program**. We will find that we only add `config_distributed`  function and called it.
+We can compare the distributed training program with **single machine training program**. We will find that we only add `config_distributed`  function and call it.
 
 Code: [distributed_train.py](../code/basics_topics/distributed_train.py)
 
