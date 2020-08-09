@@ -64,14 +64,14 @@
 ### 两类占位符
 在[使用OneFlow搭建神经网络](../basics_topics/build_nn_with_op_and_layer.md)及[定义与调用作业函数](./job_function_define_call.md)中已经介绍了 **数据占位符** 与 **Blob** 的概念。
 
-实际上，针对并行，OneFlow的数据占位符还可以细分为两类：分别通过接口 `oneflow.typing.Numpy.Placeholder` 和 `oneflow.typing.ListNumpy.Placeholder` 构造的占位符，分别对应 `Consistent`  与 `Mirrored`情况。
+实际上，针对并行，OneFlow的数据占位符还可以细分为	两类：分别通过接口 `oneflow.typing.Numpy.Placeholder` 和 `oneflow.typing.ListNumpy.Placeholder` 构造的占位符，分别对应 `Consistent`  与 `Mirrored`情况。
 
 我们将在下文中看到它们的具体应用。
 
 
 ## 在 OneFlow 中使用 mirrored 视角
 
-其它的框架，如 TensorFlow、Pytorch 均支持 `mirroed strategy`；OneFlow 的 mirrored 视角与它们类似。
+其它的框架，如 TensorFlow、Pytorch 均支持 `mirroed view`；OneFlow 的 mirrored 视角与它们类似。
 
 在 mirrored 视角下，模型被镜像复制到每张卡上，每个节点的模型构图是完全相同的，只能采用 **数据并行** 。
 
