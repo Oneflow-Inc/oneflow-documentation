@@ -162,7 +162,7 @@ def train_job(
 
  **lr_scheduler** 设定了学习率计划，[0.1]表明初始学习率为0.1；
 
- **flow.optimizer.SGD** 则指定了优化器为sgd，其动量momentum=0；loss作为参数传递给minimize表明优化器将以最小化loss为目标。
+ **flow.optimizer.SGD** 则指定了优化器为sgd；loss作为参数传递给minimize表明优化器将以最小化loss为目标。
 
 ## 调用作业函数并交互
 

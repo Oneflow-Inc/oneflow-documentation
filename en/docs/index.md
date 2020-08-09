@@ -1,36 +1,36 @@
 # OneFlow New Generation Deep Learning Framework
 
-## What is OneFlow
-OneFlow is an open source, using new frame design and the world's leading deep learning framework.
+## What
+OneFlow is an open source deep learning framework using new frame design and the world's leading technology on distributed system.
 
-## Why we choose OneFlow
+## Why
 
 * New experience of distributed training. Make multi-machines and multi-cards simple as solo card.
 
-* Perfectly fit one-stop platform(k8s + docker)
+* Perfectly support container framework(k8s + docker)
 
-* Support super scale model
+* Support huge model in naive way
 
-* Zero cost when running and linear speedup
+* Zero-copy during runtime
+
+* Linear speedup
 
 * Flexible support for multiple deep learning compiler
 
 * Automatic mixed precision
 
-* Neutral aspects and wide cooperation
+* Continuous improvement in operator library, model library, etc.
 
-* Keep improve operator set, model library
+We are trying to build a deep learning framework that will amaze everyone. We look forward to your use, feedbacks and participation.
 
-We are trying to build a deep learning framework which meet all imagine of developers. We expected the trials, feedbacks and cooperations from all developers.
+## How to start
 
-## Where to start
+How to install and quickstart of OneFlow can be learnt in [quick start](build_ship/install.md).
 
-We can learn how to install and quick use of OneFlow in [quick start](build_ship/install.md).
+How to use OneFlow to tackle the common task of machine learning can be found in [basic topics](basics_topics/data_input.md). Such as, building network,  hyper-parameters configuration, loading data, distributed training and so on.
 
-In [basic topics](basics_topics/data_input.md), we will introduce how to use OneFlow to finish the common task of machine learning. Such as, how to build network, configuration of parameters, loading data and distributed training.
+The topics about characteristics of OneFlow can be found in [extended topic](extended_topics/job_function_define_call.md). Such as, the format of OneFlow's data set, parallelism view of OneFlow and how to debug OneFlow framework by vscode.
 
-In [extended topic](extended_topics/job_function_define_call.md). We introduce the characteristics of OneFlow. Such as, the format of OneFlow's data set, parallelism strategy of OneFlow and how can developers use VS code to debugging OneFlow framework.
+In [advance examples](adv_examples/resnet.md), we introduce models in [OneFlow Model Zoo repository](https://github.com/Oneflow-Inc/OneFlow-Benchmark). It is helpful for users to understand the models and other details.
 
-In[ advance examples](adv_examples/resnet.md), we introduce each model in [OneFlow Model Zoo repository](https://github.com/Oneflow-Inc/OneFlow-Benchmark). It is helpful for users to understand the models and other details.
-
-Finally, we expecting all developers and all machine learning fans to participated in [OneFlow open sources project](contribute/intro.md). Creating and sharing. Build the perfect deep learning frame work together.
+We look forward to machine learning developers and geeks to  participate in the [OneFlow open sources project](contribute/intro.md). Perfect deep learning framework will come from our joint efforts.
