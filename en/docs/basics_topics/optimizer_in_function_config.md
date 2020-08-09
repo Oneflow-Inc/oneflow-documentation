@@ -66,7 +66,7 @@ Use `config.default_logical_view(flow.scope.consistent_view())` to set the defau
 
 The `oneflow.function_config()` usually sets options related to computing resources, devices, and cluster scheduling. In contrast, we should set the optimizer, learning rate and hyperparameters inner the `job function`. 
 
-## Exaple of configuration
+## Example of configuration
 
 ### Configuration for predicting/inference
 
