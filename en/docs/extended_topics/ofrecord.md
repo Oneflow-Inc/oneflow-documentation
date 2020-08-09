@@ -4,7 +4,7 @@ Deep Learning applications need complex multi-stage data preprocessing pipeline,
 
 The data format definition of `OFRecord` refers to Tensorflow's [TFRecord](https://www.tensorflow.org/tutorials/load_data/tfrecord), you can quickly start OneFlow's `OFRecord` if you are familiar with `TFRecord`.
 
-In this section we will introduce：
+In this article we will introduce：
 
 * The data type used in OFRecord
 
@@ -59,9 +59,9 @@ message OFRecord {
 
 Let's explain the above important data types at first：
 
-* OFRecord: is the instantiated object of OFRecord, which can be used to store all data that need to be serialized. It consists of many string->Feature key-value object.
+* OFRecord: is the instantiated object of OFRecord, which can be used to store all data that need to be serialized. It is composed of many key-value pairs of string->Feature;
 
-* Feature: Feature can store any of a type of BytesList, FloatList, DoubleList, Int32List, Int64List;
+* Feature: Feature can store any of the types of BytesList, FloatList, DoubleList, Int32List, Int64List;
 
 * OFRecord, Feature, XXXList and other types are used to generate corresponding interfaces of the same name by `Protocol Buffers`, making it possible to build corresponding object at the Python level.
 
@@ -248,7 +248,7 @@ import oneflow.core.record.record_pb2 as ofrecord
 import struct
 
 with open("./dataset/part-0", "rb") as f:
-    for loop in range(0,3):
+    for loop in range(0, 3):
         length = struct.unpack("q", f.read(8))
         serilizedBytes = f.read(length[0])
         ofrecord_features = ofrecord.OFRecord.FromString(serilizedBytes)
