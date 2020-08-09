@@ -165,7 +165,7 @@ So Far, we use `flow.nn.sparse_softmax_cross_entropy_with_logits` to calculate t
 
  **lr_scheduler** set the learning rate schedule, `[0.1]` means learning rate is 0.1；
 
- **flow.optimizer.SGD** means SGD is specified as the optimizer and `momentum=0`. The `loss` is the return value meanwhile the goal of minimization to the optimizer.
+ **flow.optimizer.SGD** means SGD is specified as the optimizer. The `loss` is the return value, meanwhile the goal of minimization to the optimizer.
 
 ## Call the job function and get results
 
@@ -202,7 +202,7 @@ for epoch in range(20):
                 print(loss.mean())
 ```
 
-We call the `train_job` and print the `loss` every 20 rounds.
+We call the `train_job` and print the `loss` every 20 iterations.
 
 ### Example on multiple return values
 In script [lenet_eval.py](../code/quick_start/lenet_eval.py), we define the job function below:
@@ -221,7 +221,7 @@ def eval_job(
     return (labels, logits)
 ```
 
-The return value type of this job function is `Tuple[tp.Numpy, tp.Numpy]`. When we call the job function, we will get a `tuple` container. There are two `numpy` object in it:
+The return value type of this job function is `Tuple[tp.Numpy, tp.Numpy]`. When we call the job function, we will get a `tuple` container. There are two `numpy` objects in it:
 ```python
 for i, (images, labels) in enumerate(zip(test_images, test_labels)):
             labels, logits = eval_job(images, labels)
@@ -231,7 +231,7 @@ We call the job function and get `labels` and `logits` then use them to evaluate
 
 
 ### Synchronous and asynchronous call
-All code in this article only use synchronous call to get results from job function. In fact, OneFlow can call job function asynchronously. For more details, please reference to [Obtain results from job function](../basics_topics/async_get.md).
+All code in this article only use synchronous call to get results from job function. In fact, OneFlow can call job function asynchronously. For more details, please refer to [Obtain results from job function](../basics_topics/async_get.md).
 
 
 ## Model Initialization, saving and loading

@@ -105,7 +105,7 @@ Besides the job function defined and related configuration which mentioned above
 * `if i % 20 == 0: print(loss)`: Print a loss value once every 20 iteration;
 
 This page is a just a simple example on neural network. 
-A more comprehensive  and detailed introduction of OneFlow can be found in [Convolution Neural Network for Handwriting Recognition](lenet_mnist.md). 
+A more comprehensive and detailed introduction of OneFlow can be found in [Convolution Neural Network for Handwriting Recognition](lenet_mnist.md). 
 
 In addition, you can reference to [Based topics](../basics_topics/data_input.md) to learn more about how to use OneFlow for deep learning.
 

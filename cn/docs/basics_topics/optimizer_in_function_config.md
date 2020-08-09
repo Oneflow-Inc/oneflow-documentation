@@ -15,7 +15,7 @@
 *  **学习率和超参数** - 介绍学习率的设定，学习率衰减策略，一些超参数设定
 
 
-可以在不了解 OneFlow 设计和概念的情况下，直接采用 **配置示例** 部分的训练或推理配置；更详细的说明请参考 **Optimizer 和优化算法** 、 **学习率和超参数**  以及 [optimizer api](https://oneflow-api.readthedocs.io/en/latest/optimizer.html)
+可以在不了解 OneFlow 设计和概念的情况下，直接采用 **配置示例** 部分的训练或推理配置；更详细的说明请参考[optimizer api](https://oneflow-api.readthedocs.io/en/latest/optimizer.html)
 
 
 
@@ -73,7 +73,7 @@ def train_job():
 ### 预测/推理配置
 下面我们定义了一个用于验证的作业函数(job function)：`eval_job`。
 
-我们通过 `get_eval_config()`  定义了 `eval_job()` 的配置，并将 `get_eval_config()` 作为 `@flow.global_function` 的参数，应用到 `eval_job()` 函数。同时，通过设置参数 `type="predict"` 来表明该 job function的类型—用于模型验证任务。
+我们通过 `get_eval_config()`  定义了 `eval_job()` 的配置，并将 `get_eval_config()` 作为 `@flow.global_function` 的参数，应用到 `eval_job()` 函数。同时，通过设置参数 `type="predict"` 来表明该 job function 的类型—用于模型验证任务。
 
 
 ```python
@@ -189,4 +189,4 @@ class Optimizer:
 
 一个 OneFlow 的作业函数由 `@oneflow.global_function` 修饰，解耦了网络的搭建过程和任务相关配置(function_config)，`function_config` **采取集中配置的方式，既方便任务切换，又方便集群调度配置。**
 
-在job function中，可以通过`flow.optimizer`方便地设置 Optimizer 优化器、学习率、已经超参数。当然，目前还不够全面，我们会不断完善，以支持更多的优化算法及参数设定。
+在 job function 中，可以通过 `flow.optimizer` 方便地设置 Optimizer 优化器、学习率、已经超参数。当然，目前还不够全面，我们会不断完善，以支持更多的优化算法及参数设定。

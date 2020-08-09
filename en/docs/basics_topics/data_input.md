@@ -53,7 +53,7 @@ Following output are expected:
 ```
 
 ### Code explanation
-In article [Recognition of MNIST Handwritten Digits](../quick_start/lenet_mnist.md), we have introduced that there are two two basic steps about using of job function: "define a job function" and "call a job function". We will explain how to use numpy as input of job function in 'define' and 'call' stage.
+In article [Recognition of MNIST Handwritten Digits](../quick_start/lenet_mnist.md), we have introduced that there are two basic steps about using of job function: "define a job function" and "call a job function". We will explain how to use numpy as input of job function in 'define' and 'call' stage.
 
 #### Definition phase
 When define a job function, we should specify the annotation of parameters with placeholder type in `oneflow.typing`. Declare data type and data shape of parameters.
@@ -96,7 +96,7 @@ The data pipelining of OneFlow decouples the data loading and data preprocessing
 
 * There are two kinds of data readers `data.ofrecord_reader` and `data.coco_reader` in OneFlow so far which support `OFRecord`  and coco dataset format respectivly. You can implement custom reader for specific data format.
 
-* The data preprocessing process is pipelined, which supports the combination of various data preprocessing operators. And it can also be customized.
+* The data preprocessing is pipelined, which supports the combination of various data preprocessing operators. And it can also be customized.
 
 ### Example
 The following example shows how to read `OFRecord` data and preprocess it from ImageNet dataset: 
@@ -148,7 +148,7 @@ if __name__ == "__main__":
     images, labels = test_job()
     print(images.shape, labels.shape)
 ```
-A ofrecord dataset is required to run the code above. We can making it by refering to [load and prepare OFRecord dataset](../extended_topics/how_to_make_ofdataset.md) or download the small prepared dataset which containing 64 images [part-00000](https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/basics_topics/part-00000) .
+An ofrecord dataset is required to run the code above. We can refer to [load and prepare OFRecord dataset](../extended_topics/how_to_make_ofdataset.md) or download the small prepared dataset which containing 64 images [part-00000](https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/basics_topics/part-00000) .
 
 We should replace the `/path/to/ImageNet/ofrecord` with the path to the folder containing `part-00000` file in the above code, and then run the script.
 ```

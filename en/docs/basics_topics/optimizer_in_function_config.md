@@ -6,13 +6,13 @@ The main content in this article:
 
 - The `global_function` decorator - we will introduce the concept and design of global function decorator in OneFlow
 
-- The configuration example - we will show sample configurations of job function for training and inferencing
+- The configuration example - we will show example of configurations of job function for training and inferencing
 
 - The commonly used optimizer and optimization algorithm in OneFlow 
 
 - How to set learning rate and other hyperparameters
 
-We can use training and inferencing configuration in **Sample configutraion** section later without knowing the details of OneFlow. For more detials please refer to  **Optimizer and Optimization algorithm** 、 **learning rate , hyperparameters**  and [optimizer api](https://oneflow-api.readthedocs.io/en/latest/optimizer.html)
+We can use training and inferencing configuration in **Example of configutraion** section later without knowing the details of OneFlow. For more detials please refer to [optimizer api](https://oneflow-api.readthedocs.io/en/latest/optimizer.html)
 
 
 ## Job function and its configuration
@@ -66,7 +66,7 @@ Use `config.default_logical_view(flow.scope.consistent_view())` to set the defau
 
 The `oneflow.function_config()` usually sets options related to computing resources, devices, and cluster scheduling. In contrast, we should set the optimizer, learning rate and hyperparameters inner the `job function`. 
 
-## Sample configuration
+## Exaple of configuration
 
 ### Configuration for predicting/inference
 
@@ -86,7 +86,7 @@ def eval_job():
 ```
 ### Configuration for training
 
-Same as above, we decorate the `train_job()` by `@flow.global_function` in follwoing way then we get a job function for training. We can set the optimizer, learning rate and hyperparameters inner the job function. 
+Same as above, we decorate the `train_job()` by `@flow.global_function` in following way then we get a job function for training. We can set the optimizer, learning rate and hyperparameters inner the job function. 
 ```python
 @flow.global_function(type="train")
 def train_job(
@@ -123,7 +123,7 @@ We must choose one when we define a job function for training. For example:
 flow.optimizer.SGD(lr_scheduler, momentum=0.9, grad_clipping=flow.optimizer.grad_clipping.by_global_norm(1))
   .minimize(loss)
 ```
-We will not explain all optimizer her, for more details please refer to [optimizer api](http://183.81.182.202:8000/html/train.html#).
+We will not explain all optimizer here, for more details please refer to [optimizer api](https://oneflow-api.readthedocs.io/en/latest/optimizer.html).
 
 ## The learning rate and hyperparameters
 
@@ -178,4 +178,4 @@ class Optimizer:
 
 Job Function is the function decorated by `@oneflow.global_function`. Configurations and jobs are decoupled by that decorator. The `function_config` is used for **centralized configuration** . It is convenient for both jobs switching and cluster scheduling configuration.
 
-In the job function, we can choose the optimizer,  set learning rate  and hyperparameters by `flow.optimizer`.
+In the job function, we can choose the optimizer, set learning rate  and hyperparameters by `flow.optimizer`.

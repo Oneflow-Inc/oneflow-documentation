@@ -64,7 +64,7 @@ In contrast, `layers.conv2d` and `layers.dense` are not operator. They are layer
 ## Data block in neural network
 As mentioned above, it is inaccurate to say that "data is used as the input" in that figure. Actually, when we define a network, there is no data in 'data', it's just a placeholder.
 
- The construction process and running process of network in OneFlow are actually separate. The construction process is a process in which OneFlow builds the calculation graph according to the description of network defined by job function, but the real calculation happens at run time.
+ The construction and running process of network in OneFlow are actually separate. The construction process is a process in which OneFlow builds the calculation graph according to the description of network defined by job function, but the real calculation happens at run time.
 
 When we build the network by defining job function, we only describe the attributes and shapes(such as `shape`, `dtype`) of the nodes in network. There is no data in node, we call the node as **PlaceHolder**, OneFlow can compile and infer according to these placeholders to get the computation graph. 
 
@@ -89,4 +89,4 @@ output = flow.broadcast_add(output, fc2_biases)
 ```
 
 ## Summary
-When we build the neural network, there are caculation unit "operator" and "layer"  provided by OneFlow as calculation unit. Operator and layer take `BlobDef` as input and output. The operator overlaoding of blob simplify some statements in code.
+When we build the neural network, there are caculation unit "operator" and "layer" provided by OneFlow as calculation units. Operator and layer take `BlobDef` as input and output. The operator overlaoding of blob simplify some statements in code.
