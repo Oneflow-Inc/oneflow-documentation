@@ -9,7 +9,7 @@ In this article, we will cover these topics:
 
 ## Motivation
 
-OneFlow is born for performance and horizontal scalability, especially for multi-nodes and multi-devices scenarios. We expect that users can leverage the power of multiple machines and multiple devices in a way as easy as using a single machine with one device, and enjoy the efficiency of linear speedup.
+OneFlow is born for performance and horizontal scalability, especially for multi-nodes and multi-devices scenarios. We expect that users can leverage the power of multiple machines and multiple devices in a way as easy as using a single machine with single device, and enjoy the efficiency of linear speedup.
 
 Why does OneFlow focus on the performance and user experience in distributed scenarios? With the development of deep learning, the model becomes increasingly large, and the computing power required to train deep learning models will become higher and higher. The computing power and the memory of a single device are far from meeting the needs of deep learning model training, and multiple machines and multiple devices are required for parallelism speedup.
 
@@ -17,7 +17,7 @@ If the deep learning framework can make multiple interconnected devices work wel
 
 However, the existing frameworks usually focus on the user experience of a single device, and only handle the multi-machine and multi-devices scenarios that works for data parallelism. That is, mirroring the computation graph on a single device to multiple machines and multiple devices, synchronizing model with Allreduce.
 
-For models with a huge amount of parameters such as BERT/GPT-3, users often find it not friendly to program, hard to deploy and not efficient to train models on multiple machines and multiple devices when using existing deep learning frameworks. It is also time-consuming for users to learn how to do distributed training. They also need to care about the synchronization of models between multiple machines and multiple devices. In order to solve the above problems in distributed deep learning, both industry and academia not only improve the deep learning framework itself, but also develop a variety of third-party plugins, such as NCCL, Horovod, BytePS, HugeCTR, Mesh-tensorflow, Gpipe, etc. However, it still can’t meet users' unlimited pursuit to performance.
+For models with a huge amount of parameters such as BERT/GPT-3, users often find it not friendly to use, hard to deploy and not efficient to train models on multiple machines and multiple devices when using existing deep learning frameworks. It is also time-consuming for users to learn how to do distributed training. They also need to care about the synchronization of models between multiple machines and multiple devices. In order to solve the above problems in distributed deep learning, both industry and academia not only improve the deep learning framework itself, but also develop a variety of third-party plugins, such as NCCL, Horovod, BytePS, HugeCTR, Mesh-tensorflow, Gpipe, etc. However, it still can’t meet users' unlimited pursuit to performance.
 
 The core motivation of OneFlow is to make multi-machine and multi-devices distributed training efficiently, and at the same time, to make the distributed training experience as simple as using a single device. Let's introduce the two core ideas of OneFlow, and explain how OneFlow views deep learning training in distributed scenarios.
 
@@ -35,7 +35,7 @@ Key features:
 
 * Overlapping control and data logic
 
-OneFlow consists of two stages: Compile-time and Runtime. In the Compile-time, user-defined neural networks and the requested resource are compiled into a static graph execution plan, called "Plan", which is composed of the description of the basic execution unit `Actor`; During the runtime , each machine actually creats many Actor instances located to its own machine based on the Actor description in the Plan, and then started the Actor operating system. In the training procedure, the basic unit of OneFlow execution is Actor, which corresponds to a node of the static execution graph. The data produced and consumed between Actors are stored in the form of `Registers`, and the Actors cooperate through message passing.
+OneFlow consists of two stages: Compile-time and Runtime. In the Compile-time, user-defined neural networks and the requested resource are compiled into a static graph execution plan, which is composed of the description of the basic execution unit `Actor`; During the runtime , each machine actually creates many Actor instances located to its own machine based on the Actor description in the Plan, and then started the Actor operating system. In the training procedure, the basic unit of OneFlow execution is Actor, which corresponds to a node of the static execution graph. The data produced and consumed between Actors are stored in the form of `Registers`, and the Actors cooperate through message passing.
 
 ### Decentralized scheduling
 OneFlow implements decentralized scheduling through the Actor mechanism. In the entire static graph is composed of actors, there is no central scheduler. Each actor only cares about the producer of the data it needs (upstream Actor) and the consumer of the data it produces (downstream Actor). In this way, in the ultra-large-scale distributed training scenario, **completely decentralized scheduling** can avoid the single-point performance bottleneck with centralized scheduling.
@@ -86,7 +86,7 @@ In above, we introduced the internal finite state machine of Actors. Message pas
 
 * Whether the Registers produced by itself have free blocks to write.
 
-For a Register, if we allocate multiple free blocks for it, two adjacent Actors can work simultaneously. In this way, the overlapping of adjacent actors implements pipelining. In an ideal case, the `initiation interval` of the entire static execution graph is the execution time of the bottleneck actor's each action, the execution time of all the other actors will be hiddened through the pipelining.
+For a Register, if we allocate multiple free blocks for it, two adjacent Actors can work simultaneously. In this way, the overlapping of adjacent actors implements pipelining. In an ideal case, the `initiation interval` of the entire static execution graph is the execution time of the bottleneck actor's each action, the execution time of all the other actors will be hidden through the pipelining.
 
 Let's take an example to explain how the pipelining of the Actor system works. Figure 2 is an execution sequence diagram of a computation graph composed of 3 Actors (a, b, c). The green Regst square represents the Register block being occupied, and the white Regst square represents the free block of the same Register.
 
@@ -147,7 +147,7 @@ This stems from a unique design of OneFlow: Consistent View. For multi-machines 
 
 The user only needs to define how the deep learning model is constructed in this logical super device, and doesn’t need to worry about how OneFlow maps from the model to the physical devices.
 
-Here are two concepts: "logical" and "physical". "Logical" means that OneFlow abstracts the distributed compuation and data into a single super-device, and "physical" means that the computation and data are actually deployed on various machines and devices.
+Here are two concepts: "logical" and "physical". "Logical" means that OneFlow abstracts the distributed computation and data into a single super-device, and "physical" means that the computation and data are actually deployed on various machines and devices.
 
 The deep learning model is a computation graph composed of Ops, and each Op produces and consumes some data in the form of tensor. In a multi-machine and multi-devices environment, a logical Op is mapped to multiple physical Ops. The computation actually performed by each physical Op is a part of the logical Op computation, and a logical Tensor also is mapped to multiple physical Tensors, and each physical Tensor is a part of the logical Tensor.
 
@@ -172,7 +172,7 @@ Figure 4 a placement for pipelining parallelism
 ### SBP
 SBP is a unique concept of OneFlow. It is a combination of the initials of three words: Split, Broadcast, PartialSum (taking PartialSum as an example, in fact, it can also be a reduce operation such as PartialMin, PartialMax). The full name of SBP is SbpParallel, which represents a mapping relationship between the logic Tensor and the physical Tensor.
 
-Split means that the physical Tensor is obtained by splitting the logical Tensor along a certain dimension. An `axis` prameter is used to indicate the dimension of the split. If multiple physical Tensors are concatenated along the dimension of Split, the logical Tensor can be restored.
+Split means that the physical Tensor is obtained by splitting the logical Tensor along a certain dimension. An `axis` parameter is used to indicate the dimension of the split. If multiple physical Tensors are concatenated along the dimension of Split, the logical Tensor can be restored.
 
 Broadcast indicates that each physical Tensor is exactly a copy of the logical Tensor.
 
