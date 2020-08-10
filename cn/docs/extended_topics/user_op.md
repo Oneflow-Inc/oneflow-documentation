@@ -1,205 +1,356 @@
-# 创建新的Op
+# 自定义 Op
 
-## 背景
-本文档服务于那些需要自定义实现C++ Op的用户，通常来说，这来源于如下需求
+## 背景介绍
 
-- 自定义Op难以通过OneFlow已有的Op在Python前端组合搭配生成。
+### 自定义 op 是什么
+当 OneFlow 已有的 Python 算子及其组合无法满足构建神经网络的需求，或者 Python 层次的算子无法满足性能需求时，我们可以使用 C++ 开发 OneFlow 自定义 op。
 
-- 自定义Op可以通过OneFlow已有Op在Python前端组合搭配生成，但却满足不了性能需求。
+OneFlow 提供了一套机制，我们在这套机制下编写自定义 op 并将其注册到 OneFlow 中，就可以在 Python 中使用自定义 op。
 
-- 用户想要手动对kernel进行融合fuse，以满足某些特定的需求。
+下图展示了 OneFlow 中自定义 op 的注册机制：
 
-除上述需求之外的需求，我们推荐您在Python前端使用现有Op组合得到想要的Op。
+![OneFlow UserOp Existing System](imgs/oneflow_system_userop.png)
+
+可以看到，在 OneFlow 框架中，与自定义 op 注册有关的 Registry 有三种：
+
+* `GradRegistry`：管理梯度注册，用于反向图中自动求梯度
+
+* `OpRegistry`：管理 op 注册，用于生成前向图及构建 `Task Graph`
+
+* `KernelRegistry`：管理 kernel 注册，用于运行时执行用户编写的 kernel 逻辑
+
+在具体的编程过程中，我们其实是用 C++ 编写自定义 op，并生成动态链接库(so)文件。在 Python 中加载对应的 so 文件，就可以使用该 so 文件中的自定义 op。
+
+### 基本概念
+
+* op：逻辑上的算子，包含构图推理时的输入输出形状等信息，不包含具体的处理数据的逻辑
+
+* kernel：对于一个逻辑上的 op，在运行时，处理的逻辑会因为物理设备以及数据类型的不同。运行时的具体处理逻辑，由 kernel 完成。简单而言，op 与 kernel 是一对多的关系，我们需要为 op 所支持的所有物理设备及数据类型实现和注册 kernel
+
+* 注册：通过注册可以建立自定义 op 与 OneFlow 框架的联系。在 OneFlow 中提供了一系列名如 `REGISTER_XXX` 的宏帮助完成 op、kernel 等的注册
+
+* 加载动态库：自定义的 op 及其 kernel 等被链接为 动态库 so 文件，在 Python 中使用前需要先加载。 OneFlow 提供了 `oneflow.config.load_library` 接口加载自定义 op 的动态库文件
+
+* Python wrapper：在 Python 中调用 C++ 层实现的自定义 op，需要在 Python 层编写一个 wrapper，OneFlow 提供了 `oneflow.user_op_builder` 接口完成该工作。
 
 
+### 编写自定义 op 的步骤
+1. 实现 op 并注册：op 的实现主要用于前向图构图，包括指定 op 的名称、输入、输出、配置属性以及一些必要的用于推导 tensor 的形状与数据类型的函数
 
-对于的确需要手动实现C++ Op的用户，你需要如下步骤来让自定义Op正常工作：
+2. 实现 op 对应的 kernel 并注册：kernel 负责运行时的具体运算过程，一个 op 可能会对应多个 kernel
 
-1. 注册Op的定义： Op的定义独立于Op的实现（即Kernel），用来描述Op的功能性。通常包括Op的名称，Op的输入和输出，Op的配置属性和一些必要的用于推导Tensor的shape和data type的函数。
+3. （可选）实现 op 对应的 grad 并注册：如果自定义 op 需要支持后向展开，需要实现一个后向函数并注册
 
-2. 用C++实现Op对应的Kernel： Kernel用来描述Op的详细计算过程。对于一个Op来说，可能会对应多个Kernel。
+4. 编译链接得到 so 文件
 
-3. 书写对应的Python前端：因为OneFlow的网络构建是基于Python去书写的，所以我们需要在Python前端去书写少量代码来封装前两步所写的C++的代码。
+5. 在 Python 中加载 so 文件，并且使用 `oneflow.user_op_builder` 封装 C++ 编写的自定义 op
 
-4. （可选）注册Op对应的后向构图函数：如果训练网络中需要Op的反向，那么我们还需要去写一个函数来告诉OneFlow如何在去构建该Op对应的后向计算过程。
+6. 测试
 
-5. 测试Op：上述步骤全部执行完毕后，我们还需要对Op进行测试以保证Op的正确性，具体步骤见后续。
+## 示例
+我们将实现一个支持 cpu 及 GPU 运算的 "myrelu" 自定义 op。
+完整的代码见 [code/extended_topics/create_user_op]()。
 
-
-## 定义新的Op
-
-我们以`Relu`为例，来走一遍Op注册的流程，构建一个cpp文件`relu.cpp`用于注册Op。
-
-``` cpp
+### op 的实现与注册
+我们在 `myrelu_op.cpp` 中定义了 op 并完成了注册：
+```cpp
 #include "oneflow/core/framework/framework.h"
 
 namespace oneflow {
 
-REGISTER_USER_OP("Relu")
-    .Input("in")
-    .Output("out")
-    .SetShapeInferFn([](user_op::InferContext* ctx) -> Maybe<void> {
-      Shape* in_shape = ctx->Shape4ArgNameAndIndex("in", 0);
-      Shape* out_shape = ctx->Shape4ArgNameAndIndex("out", 0);
-      *out_shape = *in_shape;
-      return Maybe<void>::Ok();
-    });   
-    
-}
+namespace {
+
+REGISTER_USER_OP("myrelu")
+  .Input("in")
+  .Output("out")
+  .SetTensorDescInferFn(
+      [](user_op::InferContext *ctx) -> Maybe<void> {
+        *ctx->Shape4ArgNameAndIndex("out", 0) =
+            *ctx->Shape4ArgNameAndIndex("in", 0);
+        *ctx->Dtype4ArgNameAndIndex("out", 0) =
+            *ctx->Dtype4ArgNameAndIndex("in", 0);
+        return Maybe<void>::Ok();
+      });
+} // namespace
+
+} // namespace oneflow
 ```
 
-分析下上述代码：
+分析以上代码：
 
-首先是include了`oneflow/core/framework/framework.h`。`framework.h`中包括了我们创建一个Op需要的所有头文件，所以我们只需要include这一个头文件就行。
+* `oneflow/core/framework/framework.h` 中包含了我们创建一个 op 所需要的所有接口
 
-其次，为了简化类型名，我们在`namespace oneflow`下书写注册Op定义的相关代码。
+* 与自定义 op 有关的接口集中在 `oneflow::user_op` 中，使用名称空间 `oneflow` 可以简化类型名称
 
-最后，我们来看下注册的代码。`Relu`  op只有一个输入`in`，也只有一个输出`out`，其推导out tensor的形状的`ShapeInferFn`是一个lambda函数，参数为`InferContext`，返回值为`Maybe<void>`类型对象。
+* 宏 `REGISTER_USER_OP` 用于注册 op，其接受的参数（`myrelu`）其实是 OneFlow 中用于查询 op 的 ID，必须全局唯一
 
-具体到`Relu` op对应的`ShapeInferFn`，其输出的形状与输入相同，即如上述代码所示。
+* 使用 `REGISTER_USER_OP` 注册后，其实会返回一个 `OpRegistry` 类（位于 `oneflow\core\framework\user_op_registry.h`），通过调用该类方法，完成对自定义 op 的设置：
+    1. `Input("in")` 表示其有一个名为 "in" 的输入
+    2. `Output("out")` 表示其有一个名为 "out" 的输出
+    3. `SetTensorDescInferFn` 用于设置形状及数据类型推导函数，描述该算子的输出的形状及类型与输入的关系。以上代码中，输出的形状、数据类型与输入的一致
 
-
-
-## 实现Kernel
-在写完Op的定义之后，我们需要为其提供一个或多个Kernel作为实现。此处我们实现一个支持在gpu上执行float数据类型的Kernel，存放在`relu_gpu.cu`文件中。
-
-``` cpp
-#include <cuda.h>
+### cpu kernel 的实现与注册
+我们在 `myrelu_cpu_kernel.cpp` 中实现了 CPU 版本的 kernel 并注册：
+```cpp
 #include "oneflow/core/framework/framework.h"
 
-template<typename T>
-__global__ void ReluForwardGpu(const int n, const T* x, T* y) {
+namespace oneflow {
+
+namespace {
+
+template <typename T>
+void MyRelu(DeviceCtx *ctx, const int64_t n, const T *x, T *y) {
+  T zero = (T)(0);
+  for (int64_t i = 0; i != n; ++i) {
+    y[i] = std::max(x[i], zero);
+  }
+}
+
+template <DeviceType device_type, typename T>
+class ReluKernel final : public user_op::OpKernel {
+public:
+  ReluKernel() = default;
+  ~ReluKernel() = default;
+
+private:
+  void Compute(user_op::KernelComputeContext *ctx) const override {
+    const user_op::Tensor *in_tensor = ctx->Tensor4ArgNameAndIndex("in", 0);
+    user_op::Tensor *out_tensor = ctx->Tensor4ArgNameAndIndex("out", 0);
+    MyRelu<T>(ctx->device_ctx(),
+           in_tensor->shape().elem_cnt(),
+           in_tensor->dptr<T>(), 
+           out_tensor->mut_dptr<T>());
+  }
+  bool AlwaysComputeWhenAllOutputsEmpty() const override { return false; }
+};
+
+#define REGISTER_RELU_KERNEL(device, dtype)          \
+  REGISTER_USER_KERNEL("myrelu")                     \
+      .SetCreateFn<ReluKernel<device, dtype>>()      \
+      .SetIsMatchedHob(                              \
+          (user_op::HobDeviceType() == device) &     \
+          (user_op::HobDataType("out", 0)            \
+            == GetDataType<dtype>::value));
+
+REGISTER_RELU_KERNEL(DeviceType::kCPU, float)
+REGISTER_RELU_KERNEL(DeviceType::kCPU, double)
+} // namespace
+
+} // namespace oneflow
+```
+在 OneFlow 中实现 kernel， 必须定义一个继承自 `oneflow::user_op::OpKernel` 的类，并重写其中的虚函数。
+
+在以上代码中，重写了 `Compute` 与 `AlwaysComputeWhenAllOutputsEmpty` 两个虚函数，他们分别的意义是：
+
+* `Compute` 必须重写，在其中实现具体的运算逻辑
+
+* `AlwaysComputeWhenAllOutputsEmpty` 必须重写，对于绝大多数 op 而言直接返回 `false` 即可。对于极少数内部需要维护状态，因此即使输出为空也需要调用 kernel 进行计算的 op 而言，应该返回 `true`
+
+实现 kernel 类后，需要调用 `REGISTER_USER_KERNEL` 注册。`REGISTER_USER_KERNEL("myrelu")` 所接受的字符串参数，其实是一个唯一的全局 ID，OneFlow 依据它完成注册和运行时查询工作，在 Python 层封装 op 时也需要使用这个 ID。
+
+`REGISTER_USER_KERNEL("myrelu")` 会返回一个 `OpKernelRegistry` 对象，需要调用它的各个方法，设置注册信息。上文代码中涉及到
+
+* `SetCreateFn<T>()`：该模板方法的模板参数 `T`，就是我们实现的 kernel 类，OneFlow 将使用它创建 kernel 对象。
+
+* `SetIsMatchedHob`：因为一个 op 可能有多个 kernel，要想根据物理设备及数据格式的不同而选择不同的 kernel 进行计算，就需要调用 `SetIsMatchedHob` 进行设置。该方法接受一个表达式，表达式为 `true` 时，OneFlow 将调用该 kernel 完成计算。
+
+### GPU kernel 的实现与注册
+我们在 `myrelu_gpu_kernel.cpp` 中实现了 GPU 版本的 kernel 并注册：
+```cpp
+#include "oneflow/core/framework/framework.h"
+#include <cub/cub.cuh>
+
+namespace oneflow {
+namespace {
+template <typename T>
+__global__ void ReluForwardGpu(const int n, const T *x, T *y) {
   CUDA_1D_KERNEL_LOOP(i, n) { y[i] = x[i] > 0 ? x[i] : 0; }
 }
 
-class ReluGpuFloatKernel final : public oneflow::user_op::OpKernel {
- public:
-  ReluGpuFloatKernel(const oneflow::user_op::KernelInitContext& ctx) : oneflow::user_op::OpKernel(ctx) {}
+class ReluGpuFloatKernel final : public user_op::OpKernel {
+public:
+  ReluGpuFloatKernel() = default;
   ~ReluGpuFloatKernel() = default;
 
- private:
-  void Compute(oneflow::user_op::KernelContext* ctx) override {
-    const oneflow::user_op::Tensor* in_blob = ctx->Tensor4ArgNameAndIndex("in", 0);
-    oneflow::user_op::Tensor* out_blob = ctx->Tensor4ArgNameAndIndex("out", 0);
+private:
+  void Compute(user_op::KernelComputeContext *ctx) const override {
+    const user_op::Tensor *in_tensor = ctx->Tensor4ArgNameAndIndex("in", 0);
+    user_op::Tensor *out_tensor = ctx->Tensor4ArgNameAndIndex("out", 0);
 
-    int32_t n = in_blob->shape().elem_cnt();
-    const float* in_ptr = in_blob->dptr<float>();
-    float* out_ptr = out_blob->mut_dptr<float>();
-    ReluForwardGpu<float><<<32, 1024, 0, ctx->device_ctx()->cuda_stream()>>>(n, in_ptr, out_ptr);
+    int32_t n = in_tensor->shape().elem_cnt();
+    const float *in_ptr = in_tensor->dptr<float>();
+    float *out_ptr = out_tensor->mut_dptr<float>();
+    ReluForwardGpu<float>
+        <<<32, 1024, 0, ctx->device_ctx()->cuda_stream()>>>(n, in_ptr, out_ptr);
   }
+
+  bool AlwaysComputeWhenAllOutputsEmpty() const override { return false; }
 };
 
-REGISTER_USER_KERNEL("Relu")
-    .SetCreateFn([](const oneflow::user_op::KernelInitContext& ctx) {
-      return new ReluGpuFloatKernel(ctx);
-    })
-    .SetIsMatchedPred([](const oneflow::user_op::KernelRegContext& ctx) {
-      const user_op::TensorDesc* out_tensor = ctx.TensorDesc4ArgNameAndIndex("out", 0);
-      return ctx.device() == oneflow::DeviceType::kGPU
-             && out_tensor->data_type() == oneflow::DataType::kFloat;
-    });
+#define REGISTER_RELU_KERNEL(device, dtype)          \
+  REGISTER_USER_KERNEL("myrelu")                     \
+      .SetCreateFn<ReluGpuFloatKernel>()             \
+      .SetIsMatchedHob(                              \
+          (user_op::HobDeviceType() == device) &     \
+          (user_op::HobDataType("out", 0)            \
+            == GetDataType<dtype>::value));
+
+REGISTER_RELU_KERNEL(DeviceType::kGPU, float)
+REGISTER_RELU_KERNEL(DeviceType::kGPU, double)
+} // namespace
+} // namespace oneflow
 ```
 
-上述代码中，我们定义了一个类`ReluGpuFloatKernel`，继承自`oneflow::user_op::OpKernel`，构造函数参数为`oneflow::user_op::KernelInitContext`，且`override`了`Compute(KernelContext*)`函数。
+可以看到， 实现并注册 GPU kernel 的过程与 CPU kernel 几乎一致。区别主要在于：
 
-在`Compute()`中，调用了`ReluForwardGpu()`这个CUDA Kernel来在GPU上执行Relu的逻辑。
+* 因为使用了 CUDA 编程，所以包含了 CUDA 对应的头文件
 
-除了书写`ReluGpuFloatKernel`类，我们还需要把`ReluGpuFloatKernel`注册到OneFlow中去。具体而言，就是书写两个lambda函数，分别是：
+* `Compute` 内部使用了 GPU 的方法
 
-- `CreateFn`：输入`KernelInitContext`，返回要创建的Kernel即`ReluGpuFloatKernel`的指针。
-- `IsMatchPred`：输入`KernelRegContext`，返回`bool`值，代表`Relu` op在什么情况下会选择`ReluGpuFloatKernel`。上述代码中，当设备类型为`GPU`且数据类型为`float`时，就选择`ReluGpuFloatKernel`。
+* `SetIsMatchedHob` 中所匹配的设备为 GPU
 
+此外，我们马上会在下文看到，因为使用了 CUDA，我们需要使用 nvcc 编译器（而不是 g++）来编译 GPU kernel。
 
+### 编译链接选项说明
+在 `oneflow.sysconfig` 下包含了 `get_compile_flags`、`get_include`、`get_lib`、`get_link_flags` 方法分别对应自定义 op 时的：
 
-对于其他设备类型（如`CPU`）或这其他数据类型（如`double`, `int`），其书写和注册Kernel的方式也是类似的。
+- 编译选项
+- 头文件路径
+- 链接库路径
+- 链接选项
 
-
-
-## 编译Op的library 
-  你可以通过`C++`的编译器(如 `g++`)编译你的自定义op代码（`relu.cpp`）。Oneflow的PIP包中包含了需要include的头文件目录以及库文件，这些文件的路径与你本地的操作系统和机器有关。你可以使用Oneflow的python库中的sysconfig模块得到它们（oneflow使用python3）。其中， `get_include()`可以得到本机的头文件目录路径，`get_lib()`可以得到本机的动态链接库路径，下面是在Linux机器上的输出结果：
-```bash
-$ python3
+比如：
+```text
 >>> import oneflow
->>> oneflow.sysconfig.get_include()
-'/usr/local/lib/python3.6/site-packages/oneflow/include'
->>> oneflow.sysconfig.get_lib()
-'/usr/local/lib/python3.6/site-packages/oneflow'
+>>> oneflow.sysconfig.get_compile_flags()
+['-I/home/yaochi/oneflow/build/python_scripts/oneflow/include', '-DHALF_ENABLE_CPP11_USER_LITERALS=0', '-DWITH_CUDA', '-D_GLIBCXX_USE_CXX11_ABI=0']
 ```
-  oneflow.sysconfig库还包含编译选项和链接选项，可以帮助你编译生成你的自定义op动态库。假设你的Ubuntu系统上已经安装了`g++`，你可以使用下面的几行命令来生成你自己的动态库：
+
+也可以通过命令行直接获取编译、链接选项：
+```shell
+python -c "import oneflow; print(' '.join(oneflow.sysconfig.get_compile_flags()))"
+python -c "import oneflow; print(' '.join(oneflow.sysconfig.get_link_flags()))"
+```
+
+对于 GPU kernel，链接时还需要指定 `cudart` 库。
+
+### 编译、链接得到动态库
+对于这个简单示例，可以使用以下 Makefile 进行构建：
 ```bash
-OF_CFLAGS=( $(python3 -c 'import oneflow; print(" ".join(oneflow.sysconfig.get_compile_flags()))') )
-OF_LFLAGS=( $(python3 -c 'import oneflow; print(" ".join(oneflow.sysconfig.get_link_flags()))') )
-g++ -std=c++11 -shared relu.cpp -o relu.so -fPIC ${OF_CFLAGS[@]} ${OF_LFLAGS[@]} -O2
+CFLAGS = $(shell python -c "import oneflow; print(' '.join(oneflow.sysconfig.get_compile_flags()))")
+LFLAGS = $(shell python -c "import oneflow; print(' '.join(oneflow.sysconfig.get_link_flags()))")
+CUDAPATH = /usr/local/cuda-10.1/lib64
+
+all: final_relu.so
+
+myrelu_op.o: myrelu_op.cpp
+	g++ -std=c++11 -c myrelu_op.cpp \
+	-o myrelu_op.o                  \
+	-fPIC                           \
+	${CFLAGS}                       \
+	${LFLAGS}                       \
+	-O2
+
+myrelu_cpu_kernel.o: myrelu_cpu_kernel.cpp
+	g++ -std=c++11 -c myrelu_cpu_kernel.cpp \
+	-o myrelu_cpu_kernel.o                  \
+	$(CFLAGS) -fPIC
+
+myrelu_gpu_kernel.o: myrelu_gpu_kernel.cu 
+	nvcc -std=c++11 -c myrelu_gpu_kernel.cu \
+	-o myrelu_gpu_kernel.o                  \
+	$(CFLAGS) -x cu -Xcompiler -fPIC
+
+final_relu.so: myrelu_op.o myrelu_cpu_kernel.o myrelu_gpu_kernel.o
+	g++ -std=c++11 myrelu_op.o \
+	myrelu_cpu_kernel.o        \
+	myrelu_gpu_kernel.o        \
+	-shared -o final_relu.so   \
+	$(CFLAGS)                  \
+	-fPIC                      \
+	-L$(CUDAPATH)              \
+	-lcudart                   \
+	$(LFLAGS)
+
+clean:
+	rm -rf *.so *.o
 ```
-### 编译支持GPU的Op library
-  在上述的relu op的构建中，relu.cpp文件实现了`relu op`的注册，你也可以在该文件中添加relu kernel的CPU版本；`relu_gpu.cu`中实现了relu kernel的GPU-float版本。你可以使用以下命令编译你的gpu kernel的代码，并链接进你的自定义动态库中：
-```bash
-nvcc -std=c++11 -c -o relu_gpu.cu.o relu_gpu.cu ${OF_CFLAGS[@]}  -x cu -Xcompiler -fPIC
 
-g++ -std=c++11 -shared -o cuda_relu.so relu.cpp relu_gpu.cu.o  \
-  ${OF_CFLAGS[@]} -fPIC -L/usr/local/cuda-10.0/lib64 -lcudart ${OF_LFLAGS[@]}
-```
-注意： 当你的环境中的CUDA**不是**安装在`/usr/local/lib64`目录下时，你需要在第二行g++的编译命令中指定CUDA的library目录。举个例子： 添加`-L /usr/local/cuda-10.0/lib64/`， 如果你的CUDA的安装目录是在`/usr/local/cuda-10.0/`。
+我们使用 `g++` 编译 `myrelu_op.cpp`、`myrelu_cpu_kernel.cpp`，使用 `nvcc` 编译 `myrelu_gpu_kernel.cpp`，最后得到的目标文件链接为 `final_relu.so`。
 
-## 在Python使用Op 
+我们将在 Python 中加载 `final_relu.so` 并使用封装、使用自定义 op。
 
-- python加载自定义op
-Oneflow的python库提供`oneflow.config.load_library`函数来加载用户自定义的op动态库。该函数没有返回值。同时你需要编写一个函数表示该Op的python wrapper。Oneflow的python库提供了`user_op_builder`的类，用于生成一个op的wrapper。`user_op_builder`的使用方法见后续说明，对于简单的自定义my_op，可以参考下列python脚本使用和测试其正确性。
+### 在 Python 使用自定义 op 
+在 Python 中使用自定义 op 包括以下几个基本步骤：
+
+* 使用 `oneflow.config.load_library` 加载 so 文件
+
+* 使用 `oneflow.user_op_builder` 生成自定义 op 的 Python wrapper
+
+* 调用以上的 Python wrapper 得到结果
+
+以下代码在 Python 层次封装了 `myrelu` 并调用：
 ```python
 import oneflow as flow
 import numpy as np
+import oneflow.typing as tp
+
+# 加载模块
+flow.config.load_library("final_relu.so")
+
 # 默认配置
 flow.config.gpu_device_num(1)
-# 加载模块
-flow.config.load_library("relu.so")
+
 # python op wrapper function
-def relu(input_blob, op_name):
-  return flow.user_op_builder(op_name).Op("Relu").Input("in", [input_blob]).Build().RemoteBlobList()[0]
+def myrelu(input_blob):
+    op = (
+        flow.user_op_builder("op_myrelu")
+        .Op("myrelu")
+        .Input("in", [input_blob])
+        .Output("out")
+        .Build()
+    )
+    return op.InferAndTryRun().SoleOutputBlob()
 
-# 定义你的Job的配置
-my_func_config = flow.FunctionConfig()                                                                 
-my_func_config.default_distribute_strategy(flow.distribute.consistent_strategy())                      
-my_func_config.default_data_type(flow.float) 
+
 # 网络代码
-@flow.function(my_func_config)
-def MyJob(x = flow.FixedTensorDef((5,))):
-  return relu(x, "my_relu_op_name")
+@flow.global_function()
+def MyJob(x: tp.Numpy.Placeholder((5,), dtype=flow.float32)) -> tp.Numpy:
+    return myrelu(x)
 
-# 执行
-input_data = [-2,-1,0,1,2]
-output_data = MyJob(np.array(input_data, dtype=np.float32)).get().ndarray()
-print(output_data)
-
-# 期望执行结果
+if __name__ == "__main__":
+    input = np.array([-2, -1, 0, 1, 2], dtype=np.float32)
+    output = MyJob(input)
+    print(input)
+    print(output)
+```
+预期结果为：
+```text
+[-2. -1.  0.  1.  2.]
 [0. 0. 0. 1. 2.]
 ```
-- 其他测试示例
-对于复杂的自定义op单元测试或者网路测试，可以参考oneflow代码仓库中的`oneflow/python/test/ops`目录下的样例进行编写。
 
-- python op wrapper
-你可以使用`oneflow.user_op_builder`来生成你自定义op的python wrapper。`user_op_builder` 有一些特定规则来得到最终的输出blob：
-  1. `user_op_builder("your_op_name")` 构造函数，参数为这个op的实际名字
-  2. `.Op("op_type_name")` 指定这个op的type  必选项，只可调用一次
-  3. `.Input("input_arg_name", input_blob_list)`  可选项，可以调用多次，每次指定一个`input_arg_name`，同时传入一个输入的blob列表，表示这个输入参数名字对应的多个输入blob
-  4. `.Output("output_arg_name", num)` 可选项，可调用多次，每次指定一个`output_arg_name`实际对应的输出blob的数量，默认`num=1`。
-  5. `.SetAttr("attr_name", attr_value)`  可选项，可调用多次，每次指定一个attr属性的参数取值，参数取值的合法性由该op_def的attr属性判断。
-  6. `.Build()` 只可调用一次，并且在上述属性指定结束后，该方法返回一个op的python wrapper
-  7. `.RemoteBlobList()` 该方法是python op wrapper的接口，用于返回该op的输出blob的列表，列表中的每个blob中的`logical_blob_name`表示该blob是该op的哪个输出blob。列表的顺序是你在python wrapper中定义的Output()参数的顺序。当你有多个output_arg_name时，假设你定义的输出是`.Output("a", 2).Output("b",3)`，则RemoteBlobList()返回的列表长度为5，分别表示`[("a",0),("a",1),("b",0),("b",1),("b",2)]` 。
+以上代码中的：`flow.config.load_library("final_relu.so")` 为加载 so 文件。
 
-对于上述python示例中的relu函数的定义，可以有如下解释：
-```python
-def relu(input_blob, op_name):
-  return flow.user_op_builder(op_name).Op("Relu") \
-           .Input("in", [input_blob]) \
-           .Output("out") \
-           .Build().RemoteBlobList()[0]
-# flow.user_op_builder(op_name)  -- 生成一个 op_name 作为其op的名称的op
-#     .Op("Relu")             -- 这个op的类型是Relu
-#     .Input("in", [input_blob]) -- 这个op有一个input_arg_name 为 "in"，并且对应的输入blob列表是[input_blob]，表示in只对应一个blob
-#     .Output("out")             -- 这个op有一个output_arg_name 为 "out"，默认out对应的blob数量是1
-#     .Build()                   -- 生成该op的python wrapper
-#     .RemoteBlobList()[0]       -- 返回该op的唯一输出blob
-```
+我们重点介绍 `myrelu` 内部构建 python wrapper 并运行的过程。
+
+`flow.user_op_builder("op_myrelu")` 其实会返回一个名为 `op_myrelu` 的 `UserOpConfBuilder` 对象，该对象包含 `Op`、`Input` 等方法，用于封装自定义 op，具体解释如下：
+
+* `Op("myrelu")`：参数必须为 cpp 注册 op 时的字符串，OneFlow 通过该字符串建立 Python 层与 C++ 层的联系
+
+* `Input("in", [input_blob])`：对应了 op 注册时的 `Input`，第一个参数字符串必须与 C++ 注册 op 时的 `Input` 设置的字符串一致。第二个参数为输入的 blob。
+
+* `Output("out")`
+
+* `Build`
+
+
+
+## OpRegistry
+
+## OpKernelRegistry
+
+## UserOpConfBuilder
 
 ## 高级特性
 到现在为止，我们已经完成`Relu` op的构建。当然，Relu Op是一个比较简单的Op，如果我们需要构建一个比较复杂的Op，就需要使用一些额外的高级特性来协助我们。
@@ -354,6 +505,7 @@ class XKernel final : public oneflow::user_op::OpKernel {
 ### 注册Op的Grad 
 
 - 说明及示例
+
 Oneflow使用自动求导的方式进行后向计算图展开，为了对自定义的op进行后向求导，需要你注册一个后向生成函数来根据这个op的输出blob的导数计算输入blob的导数。你可以通过已有的其他op来构建这个后向展开的子图，当无法用已有op来描述后向时，你需要自己实现一个后向grad_op来表示。
 后向生成函数在c++端注册。对于relu op，其后向生成函数的示例如下：
 ```cpp
