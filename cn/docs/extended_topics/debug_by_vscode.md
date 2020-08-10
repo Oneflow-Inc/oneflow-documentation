@@ -25,7 +25,7 @@ cmake .. \
 
 * `-DCMAKE_BUILD_TYPE=Debug` 选项指定编译 Debug 版本
 
-* `-DCMAKE_EXPORT_COMPILE_COMMANDS` 选项会在 `build` 目录下生成后文clangd 配置时所需要的 `compile_commands.json` 文件。
+* `-DCMAKE_EXPORT_COMPILE_COMMANDS` 选项会在 `build` 目录下生成后文 clangd 配置时所需要的 `compile_commands.json` 文件。
 
 ### Remote - SSH
 通过 VS Code 的 Remote SSH 插件，可以通过 ssh 的方式连接远程服务器。
