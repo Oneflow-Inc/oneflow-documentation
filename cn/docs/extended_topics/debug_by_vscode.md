@@ -25,7 +25,7 @@ cmake .. \
 
 * `-DCMAKE_BUILD_TYPE=Debug` 选项指定编译 Debug 版本
 
-* `-DCMAKE_EXPORT_COMPILE_COMMANDS` 选项会在 `build` 目录下生成后文clangd配置时所需要的 `compile_commands.json` 文件。
+* `-DCMAKE_EXPORT_COMPILE_COMMANDS` 选项会在 `build` 目录下生成后文 clangd 配置时所需要的 `compile_commands.json` 文件。
 
 ### Remote - SSH
 通过 VS Code 的 Remote SSH 插件，可以通过 ssh 的方式连接远程服务器。
@@ -40,7 +40,7 @@ Remote - SSH 连接远程主机后，在插件一栏，会自动分类“远程�
 
 ![remotePlugin](imgs/plugin-remote-ssh-install.png)
 
-如上图，我们已经在远程主机安装 Python、clangd、NativeDebug 插件，用于支持远程调试 OneFlow。
+如上图，我们已经在远程主机安装 Python、clangd、Native Debug 插件，用于支持远程调试 OneFlow。
 
 但是远程主机并没（本地主机已经安装的）Go 和 HTML CSS Support 插件。
 
@@ -57,12 +57,12 @@ Remote - SSH 连接远程主机后，在插件一栏，会自动分类“远程�
 * 建议 **不要** 安装 VS Code 推荐的 ms-vscode.cpptools C/C++ 插件，因为 clangd 有可能与之冲突
 
 #### 安装 clangd 程序
-VS Code 上的插件，是通过与clangd服务程序交互，获取解析信息并显示的。因此除了安装 VS Code 上的 clangd 插件外，我们还需要在 **OneFlow源码所在的主机上** （本文中为远程Linux主机）安装clangd服务程序。
+VS Code 上的插件，是通过与 clangd 服务程序交互，获取解析信息并显示的。因此除了安装 VS Code 上的 clangd 插件外，我们还需要在 **OneFlow 源码所在的主机上** （本文中为远程 Linux 主机）安装 clangd 服务程序。
 
-我们将采用 **下载 zip 文件并解压** 的方式安装，更多安装方法，可以参考 [clangd 官方文档](https://clangd.llvm.org/installation.html)。
+我们将采用下载 zip 文件并解压的方式安装 clangd，更多安装方法，可以参考 [clangd 官方文档](https://clangd.llvm.org/installation.html)。
 
 首先，在[这个页面](https://github.com/clangd/clangd/releases/)下载与我们系统平台对应的clangd压缩包，并解压。
-解压后可先运行 clangd 测试，确保能正常运行后再进行后续配置。
+解压后可先运行 clangd 测试下，确保能正常运行后再进行后续配置。
 
 ```shell
 /path/to/clangd/bin/clangd --help
@@ -76,7 +76,7 @@ VS Code 上的插件，是通过与clangd服务程序交互，获取解析信息
 ln -s ./build/compile_commands.json compile_commands.json
 ```
 
-然后`Ctrl+Shift+P` (macOS 下 `command+shift+p`)，找到 `Open Remote Settings` 选项，打开 `settings.json` 配置文件，在其中加入以下配置：
+然后 `Ctrl+Shift+P` (macOS 下 `command+shift+p`)，找到 `Open Remote Settings` 选项，打开 `settings.json` 配置文件，在其中加入以下配置：
 
 ```json
     "clangd.path": "/path/to/bin/clangd",
@@ -91,7 +91,7 @@ ln -s ./build/compile_commands.json compile_commands.json
 #### 使用 clangd
 在 VS Code 的 View->Output 面板，下拉菜单中选择 "Clang Language Server"，可以看到 clangd 的解析输出，解析完成后。选择 C/C++ 源码中的符号，可以实现跳转。
 
-`Ctrl+Shift+P` (macOS 下 `command+shift+P`) 中通过`@符号名`或`#符号名`可以分别实现当前文件内查找符号，或工程范围内查找符号。
+按`Ctrl+P` (macOS 下 `command+P`) 后通过`@符号名`或`#符号名`可以分别实现当前文件内查找符号，或工程范围内查找符号。
 
 
 

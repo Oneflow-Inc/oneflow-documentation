@@ -1,12 +1,12 @@
 ## Loading and preparing OFRecord dataset
 
-In [data_input](../basics_topics/data_input.md) section， we know that because of the support like Multi-threading, scheduling of resources in OneFlow, the efficiency of processing data will be higher in OneFlow data-pipeline. Also, we learn about the operation in data-pipeline.
+In the article [data_input](../basics_topics/data_input.md) section, we know that because of the support of like multi-threading, scheduling of resources in OneFlow, the efficiency of processing data will be higher in OneFlow data-pipeline. Also, we learn about the operation in data-pipeline.
 
-In [OFRecord](ofrecord.md) section, we have learned about the storage format of OFRecord files.
+In the article [OFRecord](ofrecord.md), we have learned about the storage format of OFRecord files.
 
-In this section, we will focus on the loading and generating of OneFlow's OFRecord dataset. Mainly including:
+In this article, we will focus on the loading and generating of OneFlow's OFRecord dataset. It mainly includes:
 
-* The organization of OFRecord dataset
+* The hierarchy of OFRecord dataset
 
 * The multiple ways of loading OFRecord dataset
 
@@ -16,9 +16,9 @@ In this section, we will focus on the loading and generating of OneFlow's OFReco
 
 In [OFRecord](ofrecord.md) section. We have introduced the storage format of `OFRecord file `, and we also have known about what is `OFRecord file`
 
-OFRecord dataset is **the collection of OFRecord files **.According to the OneFlow convention file format, we store `multiple OFRecord files` in the same directory, then we will get OFRecord dataset.
+OFRecord dataset is **the collection of OFRecord files **. The mutiple files named by OneFlow convention, are stored to the same directory, then we get an OFRecord dataset.
 
-By default, The files in OFRecord dataset directory are uniformly named in the way of `part-xxx`, where "xxx" is the file id starting from zero, and there can be two choices of padding or non-padding.
+By default, The files in OFRecord dataset directory are uniformly named in the way of `part-xxx`, where "xxx" is the file id starting from zero, and there can be choices about padding or non-padding.
 
 Here is the example of using non-padding name style:
 
@@ -64,19 +64,19 @@ mnist_kaggle/train/
 ├── part-00015
 ```
 
-OneFlow adopts this convention, which is consistent with the default storage filename in `spark`, it is convenient to prepare and convert to OFRecord data by spark.
+OneFlow adopts this convention, which is consistent with the default storage filename in `spark`, so it is convenient to prepare OFRecord data by spark.
 
-Actually, we can specify the filename prefix(`part-`)，whether to pad the filename id, how many bits to pad. We just need to keep the same parameters when loading dataset(described below)
+Actually, we can specify the filename prefix(`part-`), whether to pad the filename id, how many bits to pad. We just need to keep the same parameters when loading dataset(described below)
 
-OneFlow provides the API interface to load OFRecord dataset, so that we can enjoy the Multi-threading, pipeline and some other advantages brought by OneFlow framework by specifying the path of dataset directory.
+OneFlow provides the API interface to load OFRecord dataset by specifying the path of dataset directory, so that we can enjoy easily the multi-threading, pipelining and some other advantages brought by OneFlow framework.
 
 ## The method to load OFRecord dataset
 
 we use `ofrecord_reader` to load and preprocess dataset. 
 
-In [Data Input](../basics_topics/data_input.md) section, we have shown how to use `ofrecord_reader` API to load OFRecord data and preprocess the data. 
+In the [Data Input](../basics_topics/data_input.md) article, we have shown how to use `ofrecord_reader` API to load OFRecord data and preprocess it. 
 
-Complete code: [of_data_pipeline.py](../code/basics_topics/of_data_pipeline.py)
+[of_data_pipeline.py](../code/basics_topics/of_data_pipeline.py)
 
 ```python
 # of_data_pipeline.py
@@ -125,7 +125,7 @@ if __name__ == "__main__":
     print(images.shape, labels.shape)
 ```
 
-The API of `ofrecord_reader` are as follows：
+The prototype of `ofrecord_reader` are as follows：
 
 ```python
 def ofrecord_reader(
@@ -150,16 +150,16 @@ def ofrecord_reader(
 - `shuffle_buffer_size` assign the buffer size when reading data
 - `shuffle_after_epoch` assign whether shuffle the sample order after each epoch
 
-The advantage of using `ofrecord_reader` is that data processing in `ofrecord_reader` is scheduled by OneFlow and enjoys the OneFlow pipeline speedup.  
+The advantage of using `ofrecord_reader` is that data processing in `ofrecord_reader` is scheduled by OneFlow and enjoys the OneFlow pipelining speedup.  
 
-We can also define a preprocessing OP for `ofrecord_reader` for specific data formats which are coupled with business logic. Giving the code more flexibility and extensibility. 
+We can also define a preprocessing OP for `ofrecord_reader` for specific data formats which are coupled with business logic to make the code more flexibility and extensibility. 
 
-- Please refer to [Data input](../basics_topics/data_input.md) to learn about data pipeline and preprocess
-- Please refer to [User op](./user_op.md) to learn about customize OP
+- Please refer to [Data input](../basics_topics/data_input.md) to learn about data pipelining and preprocess
+- Please refer to [User op](./user_op.md) to learn about customized OP
 
 ## The transition between other data format data and OFRecord dataset
 
-According to the the storage format of OFRecord file in [OFRecord](ofrecord.md) section and the filename format convention of OFRecord dataset introduced at the beginning, we can prepare OFRecord dataset by ourselves.
+According to the the storage format of OFRecord file in [OFRecord](ofrecord.md) article and the filename format convention of OFRecord dataset introduced at the beginning, we can prepare OFRecord dataset by ourselves.
 
 To prepare dataset easier, we provide Spark's jar package, which is convenient to the interconversion between OFRecord and common data formats (such as TFRecord and JSON).
 
@@ -169,7 +169,7 @@ At first, we should download Spark and Spark-oneflow-connector：
 
 * Download the [spark-2.4.0-bin-hadoop2.7](https://archive.apache.org/dist/spark/spark-2.4.0/spark-2.4.0-bin-hadoop2.7.tgz) from the official website of Spark
 
-* Download jar package at [there](https://oneflow-static.oss-cn-beijing.aliyuncs.com/oneflow-tutorial-attachments/spark-oneflow-connector-assembly-0.1.0_int64.jar), which Spark needs to support the ofrecord file format
+* Download jar package at [there](https://oneflow-static.oss-cn-beijing.aliyuncs.com/oneflow-tutorial-attachments/spark-oneflow-connector-assembly-0.1.0_int64.jar), which needed by Spark to support the ofrecord file format
 
 Then, unzip the `spark-2.4.0-bin-hadoop2.7.tgz` and configure the environment variable `SPARK_HOME`:
 
@@ -197,7 +197,7 @@ Using Python version 3.6.10 (default, May  8 2020 02:54:21)
 SparkSession available as 'spark'. >>> 
 ```
 
-We can complete the interconversion between OFRecord dataset and other data formats in launched pyspark shell.
+We can complete the data conversion between OFRecord dataset and other formats in pyspark shell.
 
 ### Use Spark to view OFRecord dataset
 
@@ -249,9 +249,9 @@ writer = dataframe.write.format("ofrecord")
 writer.save("file:///path/to/outputdir")
 ```
 
-In the above code, the `outputdir` directory will be created automatically, we will save ofrecord file in this directory. Make sure the "outputdir" directory does not exist before executing the command.
+In the above code, the `outputdir` directory will be created automatically, and the ofrecord files will be saved into this directory. Make sure the "outputdir" directory does not exist before executing the command.
 
-In addition, we can use the following command to split the data into multiple ofrecord file in conversion.
+In addition, we can use the following command to split the data into multiple ofrecord files.
 
 ```python
 reader = spark.read.format("tfrecords")
@@ -262,7 +262,7 @@ writer.save("file://path/to/outputdir")
 
 After the above command is executed, 10 ofrecord files of `part-xxx` format will be generated in "outputdir" directory.
 
-The process of converting OFRecord file to TFRecord file is similar. we just need to swap read/write side `format`:
+The process of converting OFRecord file to TFRecord file is similar. we just need to swap read/write side of `format`:
 
 ```python
 reader = spark.read.format("ofrecord")
