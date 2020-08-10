@@ -13,11 +13,11 @@ OneFlow 提供了一套机制，我们在这套机制下编写自定义 op 并�
 
 可以看到，在 OneFlow 框架中，与自定义 op 注册有关的 Registry 有三种：
 
-* `GradRegistry`：管理梯度注册，用于反向图中自动求梯度
+* `OpGradRegistry`：管理梯度注册，用于反向图中自动求梯度
 
 * `OpRegistry`：管理 op 注册，用于生成前向图及构建 `Task Graph`
 
-* `KernelRegistry`：管理 kernel 注册，用于运行时执行用户编写的 kernel 逻辑
+* `OpKernelRegistry`：管理 kernel 注册，用于运行时执行用户编写的 kernel 逻辑
 
 在具体的编程过程中，我们其实是用 C++ 编写自定义 op，并生成动态链接库(so)文件。在 Python 中加载对应的 so 文件，就可以使用该 so 文件中的自定义 op。
 
@@ -334,226 +334,45 @@ if __name__ == "__main__":
 
 我们重点介绍 `myrelu` 内部构建 python wrapper 并运行的过程。
 
-`flow.user_op_builder("op_myrelu")` 其实会返回一个名为 `op_myrelu` 的 `UserOpConfBuilder` 对象，该对象包含 `Op`、`Input` 等方法，用于封装自定义 op，具体解释如下：
+`flow.user_op_builder("op_myrelu")` 其实会返回一个名为 `op_myrelu` 的 `UserOpConfBuilder` 对象。
 
-* `Op("myrelu")`：参数必须为 cpp 注册 op 时的字符串，OneFlow 通过该字符串建立 Python 层与 C++ 层的联系
+```python
+    op = (
+        flow.user_op_builder("op_myrelu")
+        .Op("myrelu")
+        .Input("in", [input_blob])
+        .Output("out")
+        .Build()
+    )
+```
 
-* `Input("in", [input_blob])`：对应了 op 注册时的 `Input`，第一个参数字符串必须与 C++ 注册 op 时的 `Input` 设置的字符串一致。第二个参数为输入的 blob。
+该对象包含 `Op`、`Input` 等方法，用于封装自定义 op，具体解释如下：
 
-* `Output("out")`
+* `Op("myrelu")`：参数必须为 cpp 注册 op 时的字符串，OneFlow 通过该字符串建立 Python 层与 C++ 层的联系。
 
-* `Build`
+* `Input("in", [input_blob])`：对应了 C++ 中 op 注册时的 `Input`，第一个参数字符串必须与 C++ 注册 op 时的 `Input` 设置的字符串一致。第二个参数为输入的 blob。
 
+* `Output("out")`：对应了 C++ 中 op 注册时的 `Output`。
+
+* `Build`：以上设置完成后，调用 `Build` 可以得到自定义 op 的 Python wrapper
+
+以下代码，将获取自定义 op 的输出 blob：
+```python
+return op.InferAndTryRun().SoleOutputBlob()
+```
+
+其中的 `InferAndTryRun` 完成推导，返回 `UserOp`，如果返回的 blob 只有一个输出，则使用 `SoleOutputBlob` 即可获取该唯一输出，否则，可以使用 `RemoteBlobList` 获取包含多个 blob 的列表。
+
+## 高级特性
+到现在为止，我们已经完成 `myrelu` op的构建，这是一个比较简单的 op，如果我们需要构建更复杂的 op，就需要使用一些额外的高级特性。
+我们将从 op 注册、 kernel 注册、gradient 注册及 Python 层的封装三个方面介绍。
 
 
 ## OpRegistry
 
 ## OpKernelRegistry
 
+## OpGradRegistry
+
 ## UserOpConfBuilder
 
-## 高级特性
-到现在为止，我们已经完成`Relu` op的构建。当然，Relu Op是一个比较简单的Op，如果我们需要构建一个比较复杂的Op，就需要使用一些额外的高级特性来协助我们。
-
-### Op Registration
-
-#### Attribute
-
-有的Op需要有配置属性，例如`Conv` op需要配置其`padding`的方式、`Reshape` op需要配置一个`tensor shape`。当Op被添加到Graph中时，我们就需要给这些属性设置合理的值了。
-
-在OneFlow中，你可以在注册Op时指明其需要的属性Attr，此处我们以`Reshape`  op为例：
-
-```cpp
-REGISTER_USER_OP("Reshape")
-    .Input("in")
-    .Output("out")
-    .Attr("shape", UserOpAttrType::kAtShape)
-    .SetShapeInferFn([](user_op::InferContext* ctx) -> Maybe<void> {
-      const Shape* in_shape = ctx->Shape4ArgNameAndIndex("in", 0);
-      Shape* out_shape = ctx->Shape4ArgNameAndIndex("out", 0);
-      Shape conf_shape = ctx->GetAttr<Shape>("shape");
-      CHECK_EQ(in_shape->NumAxes(), conf_shape.NumAxes());
-      *out_shape = conf_shape;
-      return Maybe<void>::Ok();
-    });
-```
-
-上述代码中，我们为`Reshape` op配置了一个attribute，名字为`shape`，其类型是`UserOpAttrType::kAtShape`。
-
-在OneFlow中，我们目前支持了如下几种AttrType：
-
-| UserOpAttrType | 对应的C++数据类型    |
-| -------------- | -------------------- |
-| kAtInt32       | int32_t              |
-| kAtInt64       | int64_t              |
-| kAtBool        | bool                 |
-| kAtFloat       | float                |
-| kAtDouble      | double               |
-| kAtShape       | oneflow::Shape       |
-| kAtListInt32   | std::vector<int32_t> |
-| kAtListInt64   | std::vector<int64_t> |
-| kAtListFloat   | std::vector< float > |
-
-在`Reshape` op注册的`ShapeInferFn`中，其就把`shape`对应的Attr的值（`oneflow::Shape`类型）赋给了`out` tensor对应的`out_shape`。
-
-
-
-除了指定Attr的类型，我们还可以为其配置一个默认值，默认值的类型即表格中对应的C++数据类型，如：
-
-``` cpp
-.Attr("is_transpose", UserOpAttrType::kAtBool, false)
-    
-.Attr("size", UserOpAttrType::kAtInt32, 10)
-    
-.Attr("vector_of_size", UserOpAttrType::kAtListInt32, std::vector<int32_t>{10, 11, 12})
-```
-
-
-
-#### Check Attribute Function
-
-对于某些Attribute来说，其需要更详细的划定取值范围，这时就需要在注册Op时通过`CheckAttrFn`来指定其取值范围。
-
-例如，对于`Conv` op来说，其有一个配置选项`data_format`，其类型是string字符串，但取值只能是`channels_first`或`channels_last`这两个，除此之外都不合法，所以我们需要指定其范围，注册Op时就需要如下指定：
-
-```cpp
-.Attr("data_format", UserOpAttrType::kAtString, std::string("NCHW"))
-.SetCheckAttrFn([](const user_op::UserOpDefWrapper& def,
-                   const user_op::UserOpConfWrapper& conf) -> Maybe<void> {
-   std::string data_format = conf.attr<std::string>("data_format");
-   if (data_format == "channels_first" || data_format == "channels_last") { return Maybe<void>::Ok(); }
-   return oneflow::Error::CheckFailed()
-         << "data_format value: " << data_format << " for Conv op is illegal.";
-})
-```
-
-
-
-#### Multiple In/Out
-
-对于有些Op来说，其共享同一个name的 in/out tensor可能有多个，例如对于`Add` op来说，其`input`这个 name下可能对应有多个tensor，这时我们就需要在注册Op时指定其对应的输入输出的个数。
-
-OneFlow框架支持对Op的Input/Output做如下配置：
-
-```cpp
-.Input("input") // input 必须对应有1个tensor
-
-.Input("input", 5) // input 必须对应有5个tensor
-    
-.InputWithMinimum("input", 5) // input 必须对应至少5个tensor
-    
-.OptionalInput("input") // input 可能没有对应的tensor，若有则须对应1个tensor
-    
-.OptionalInput("input", 5) // input 可能没有对应的tensor，若有则须对应5个tensor
-    
-.OptionalInputWithMininum("input", 5) // input 可能没有对应的tensor，若有则须对应至少5个tensor
-    
-    
-// Output与Input用法相同
-```
-
-
-
-#### DataType Infer Function
-
-多数Op的input tensor和output tensor的类型相同，但对于一些特殊Op（如`Cast` op）来说，其需要传入一个data_type infer function来推导output tensor的类型。
-
-``` cpp
-.SetDataTypeInferFn([](user_op::InferContext* ctx) {
-      DataType* out_tensor_type = ctx->Dtype4ArgNameAndIndex("out", 0);
-      *out_tensor_type = DataType::kDouble;
-      return Maybe<void>::Ok();
-    })
-```
-
-上述代码就是把out tensor的数据类型设置为`double`。
-
-对于无需更改数据类型的Op，也无需在注册Op时指定`SetDataTypeInferFn()`，因为OneFlow框架提供的默认实现就是让output tensors 和 input tensors 的数据类型一致。
-
-### Kernel Registration
-
-#### Temporary Buffer Size Infer Function
-
-对于一些Op来说，其某种实现（即Kernel）可能会需要一些额外的buffer来存储一些临时数据。
-
-在OneFlow框架中，这些临时的buffer也是作为tensor来在`Compute`函数中使用的。
-
-而需要多大的临时buffer，就得我们在注册Kernel时指定了。
-
-``` cpp
-REGISTER_USER_KERNEL("XOp")
-    .SetCreateFn([](const oneflow::user_op::KernelInitContext& ctx) { return new XKernel(ctx); })
-    .SetIsMatchedPred(...)
-    .SetInferTmpSizeFn([](const oneflow::user_op::InferContext*) { return 1024; });
-// XOp 对应的 XKernel 需要1024Byte大小的buffer
-
-class XKernel final : public oneflow::user_op::OpKernel {
-...
-  void Compute(oneflow::user_op::KernelContext* ctx) override {
-    ...
-    oneflow::user_op::Tensor* tmp = ctx->Tensor4ArgNameAndIndex("tmp_buffer", 0);
-    // 访问1024Byte的tensor
-    ...
-  }
-};
-```
-
-
-
-
-
-### 注册Op的Grad 
-
-- 说明及示例
-
-Oneflow使用自动求导的方式进行后向计算图展开，为了对自定义的op进行后向求导，需要你注册一个后向生成函数来根据这个op的输出blob的导数计算输入blob的导数。你可以通过已有的其他op来构建这个后向展开的子图，当无法用已有op来描述后向时，你需要自己实现一个后向grad_op来表示。
-后向生成函数在c++端注册。对于relu op，其后向生成函数的示例如下：
-```cpp
-#include "oneflow/core/framework/framework.h"
-
-namespace oneflow {
-
-REGISTER_USER_OP_GRAD("Relu").SetBackwardOpConfGenFn([](user_op::BackwardOpConfContext* ctx) {
-  const auto relu_grad_op_name = ctx->FwOp().op_name() + "_grad";
-  ctx->DefineOp(relu_grad_op_name, [&ctx](user_op::BackwardOpBuilder& builder) {
-    return builder.OpTypeName("relu_grad")
-        .InputBind("y", ctx->FwOp().output("out", 0))
-        .InputBind("dy", ctx->FwOp().output_grad("out", 0))
-        .Output("dx")
-        .Build();
-  });
-  ctx->FwOp().InputGradBind(user_op::OpArg("in", 0), [&ctx, &relu_grad_op_name]() {
-    return ctx->GetOp(relu_grad_op_name).output("dx", 0);
-  });
-});
-
-}  // namespace oneflow
-```
-- 后向生成函数的步骤：
-
-宏`REGISTER_USER_OP_GRAD(op_type_name).SetBackwardOpConfGenFn(fn);`用来注册你的自定义op的后向生成函数，其中fn函数带有一个`BackwardOpConfContext* ctx`参数，带有生成Op需要的信息。
-
-在生成后向图的函数中，图里的blob是由一个叫logical blob name的字符串表示的，其中包含了产生这个blob的op的name，以及这个blob在这个op里的name。后向生成函数的任务是对前向op的输入blob，生成一个op的子图，这个子图接收前向op的输入输出blob以及输出blob的导数（梯度/grad）blob，子图的最终输出是前向op输入blob对应的导数（梯度）blob，因此针对每个（可能）需要生成梯度的blob，都需要构建一个由其他op组成的子图，并将子图的输出blob与这个需要生成梯度的blob绑定。编写这个生成子图的过程通常包含下面几步：
-  1. 使用`ctx->DefineOp()`和`BackwardOpBuilder`来构建这个子图中的new_op，通常这些new_op的输入是前向op的in/out或者out对应的out_grad；
-  2. 使用`ctx->FwOp().InputGradBind()`和`ctx->GetOp()`将前向op的输入blob绑定到子图的输出blob的logical blob name上；
-
-- 可能用到的接口介绍：
-  1. `ctx->FwOp()`：获取前向Op
-    * `.InputGradBind(input_arg, grad_get_fn)` 会自动判断前向op的输入是否需要生成后向的梯度，如果需要会触发`grad_get_fn`的执行，进行前向输入和后向梯度的绑定，其中`grad_get_fn`中都会调用`ctx->GetOp()`来触发之前定义的op的创建并获取结果；
-    * `.input(arg_name,index)` 得到输入的logical blob name
-    * `.output(arg_name,index)` 得到输出的logical blob name
-    * `.output_grad(output_arg_name, index)` 返回前向op的输出对应的后向梯度blob的logical blob name
-    * `.attr(attr_name)` 得到op的属性值
-    * `.arg_tensor_desc(arg_name, index)` 返回前向op的输入/输出对应的TensorDesc，包含shape、dtype信息
-  2. `ctx->DefineOp(op_name, build_fn)`:定义名为`op_name`的Op的创建函数`build_fn`
-    * 当调用`ctx->GetOp(op_name)`会触发`build_fn`进行Op创建，如果Op已经被创建过，那么这里直接获取创建的结果；
-  3. `BackwardOpBuilder`: 创建Op的类
-    * `.OpTypeName(op_type_name)`  指定这个op的type
-    * `.InputBind(arg_name, logical_blob_name)`  可选项，可以调用多次，每次指定一个input_arg_name，同时传入一个logical_blob_name，表明这个input arg name对应的blob。如果该input_arg_name对应多个输入blob，则调用`.Input()`的顺序就是其对应的index顺序
-    * `.Output(arg_name, num)`  可选项，可调用多次，每次指定一个`output_arg_name`实际对应的输出blob的数量，也可以调用 `.Output(arg_name)`，表示`num = 1`
-    * `.Attr(attr_name, val)` 可选项，可调用多次，每次指定一个attr属性的属性名称和参数值，表示对这个attr赋值为val
-    * `.Build()`  返回结果，表示你构建完毕的新op
-  4. `ctx->GetOp(op_name)`: 得到`op_name`对应Op创建好后返回的结果，Op只有被`ctx->GetOp`获取时才会被真正创建，这里实现了Op子图的惰性创建过程
-    * `.input(arg_name,index)` 得到输入的logical blob name
-    * `.output(arg_name,index)` 得到输出的logical blob name
-    * `.attr(attr_name)` 得到op的属性值
