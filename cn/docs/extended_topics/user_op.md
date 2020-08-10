@@ -363,16 +363,131 @@ return op.InferAndTryRun().SoleOutputBlob()
 
 其中的 `InferAndTryRun` 完成推导，返回 `UserOp`，如果返回的 blob 只有一个输出，则使用 `SoleOutputBlob` 即可获取该唯一输出，否则，可以使用 `RemoteBlobList` 获取包含多个 blob 的列表。
 
-## 高级特性
-到现在为止，我们已经完成 `myrelu` op的构建，这是一个比较简单的 op，如果我们需要构建更复杂的 op，就需要使用一些额外的高级特性。
-我们将从 op 注册、 kernel 注册、gradient 注册及 Python 层的封装三个方面介绍。
+到现在为止，我们已经完成 `myrelu` op的构建，这是一个比较简单的 op，如果我们需要构建更复杂的 op，就需要在注册过程中使用一些额外的高级特性。
+我们将从 op 注册、 kernel 注册、gradient 注册及 Python 层的封装几个方面介绍。
 
 
-## OpRegistry
+## OpRegistry 详细介绍
 
-## OpKernelRegistry
+### `Attr` 方法
+有些 op 除了输入输出外，还需要有配置属性，比如 `reshape` 需要配置形状， `conv` 类算在需要配置对齐方式。我们可以在注册时使用 `Attr` 方法，为 op 设置属性，其原型为：
+```cpp
+OpRegistry& Attr(const std::string& name, 
+                 UserOpAttrType type);
+```
+我们只需指定属性的名字和类型即可。
+比如：
 
-## OpGradRegistry
+```cpp
+REGISTER_USER_OP("reshape")
+    .Input("in")
+    .Output("out")
+    .Attr("shape", UserOpAttrType::kAtShape)
+```
 
-## UserOpConfBuilder
+```cpp
+REGISTER_USER_OP("conv2d")
+    .Input("in")
+    .Input("weight")
+    .Output("out")
+    .Attr("padding_before", UserOpAttrType::kAtListInt32)
+```
+
+OneFlow 目前支持了如下几种 UserOpAttrType：
+
+| UserOpAttrType | 对应的C++数据类型     |
+| -------------- | -------------------- |
+| kAtInt32       | int32_t              |
+| kAtInt64       | int64_t              |
+| kAtBool        | bool                 |
+| kAtFloat       | float                |
+| kAtDouble      | double               |
+| kAtShape       | oneflow::Shape       |
+| kAtListInt32   | std::vector<int32_t> |
+| kAtListInt64   | std::vector<int64_t> |
+| kAtListFloat   | std::vector< float > |
+
+
+此外，我们还可以多传递一个参数，为属性配置默认值，默认值的类型即表格中对应的C++数据类型，如：
+
+``` cpp
+.Attr("is_transpose", UserOpAttrType::kAtBool, false)
+    
+.Attr("size", UserOpAttrType::kAtInt32, 10)
+    
+.Attr("vector_of_size", UserOpAttrType::kAtListInt32, std::vector<int32_t>{10, 11, 12})
+```
+
+### `SetCheckAttrFn` 方法
+对于某些属性来说，需要更精确地限制取值范围。我们可以通过在注册 op 时使用 `SetCheckAttrFn` 方法来指定取值范围。
+
+例如，对于 `conv` op来说，其有一个配置选项 `data_format`，其类型是 string 字符串，但取值只能是 `channels_first` 或 `channels_last`，除此之外都不合法：
+
+```cpp
+.Attr("data_format", UserOpAttrType::kAtString, std::string("NCHW"))
+.SetCheckAttrFn(
+  [](const user_op::UserOpDefWrapper& def,
+    const user_op::UserOpConfWrapper& conf) -> Maybe<void> {
+   std::string data_format = conf.attr<std::string>("data_format");
+   if (data_format == "channels_first" || data_format == "channels_last") { 
+     return Maybe<void>::Ok(); 
+   }
+   return oneflow::Error::CheckFailed()
+         << "data_format value: " 
+         << data_format 
+         << " for Conv op is illegal.";
+})
+```
+
+设置一个用于检查的函数，当属性值符合要求时，返回 `Maybe<void>::Ok()`；否则返回 `oneflow::Error::CheckFailed()`。
+
+### 多输入/输出
+对于有些 op 来说，可能有多个输入或者输出，这时我们就需要在注册 op 时指定其对应的输入输出的个数。
+
+以 Input 为例：
+
+```cpp
+// input 必须对应有1个 blob
+.Input("input")        
+
+// input 必须对应有5个 blob
+.Input("input", 5) 
+
+// input 必须对应至少5个 blob
+.InputWithMinimum("input", 5) 
+
+// input 可能没有对应的 blob，若有则须对应1个 
+.OptionalInput("input") 
+
+// input 可能没有对应的 blob，若有则须对应5个  
+.OptionalInput("input", 5) 
+
+// input 可能没有对应的 blob，若有则须对应至少5个
+.OptionalInputWithMininum("input", 5) 
+```
+输出设置 `Output` 与 `Input` 类似。
+
+### SetGetSbpFn 方法
+`SetGetSbpFn` 用于设置该 `op` 的 [SBP](../basics_topics/essentials_of_oneflow.md#sbp)。
+以 "add_n" op 为例：
+```cpp
+REGISTER_USER_OP("add_n")
+    .InputWithMinimum("in", 2)
+    .Output("out")
+    .SetGetSbpFn([](user_op::SbpContext* ctx) {
+      int64_t num_axes = ctx->LogicalTensorDesc4InputArgNameAndIndex("in", 0).shape().NumAxes();
+      for (int64_t i = 0; i < num_axes; ++i) {
+        ctx->NewBuilder().Split(ctx->inputs(), i).Split(user_op::OpArg("out", 0), i).Build();
+      }
+      ctx->NewBuilder().PartialSum(ctx->inputs()).PartialSum(user_op::OpArg("out", 0)).Build();
+      return Maybe<void>::Ok();
+    });
+```
+
+
+## OpKernelRegistry 详细介绍
+
+## OpGradRegistry 详细介绍
+
+## UserOpConfBuilder 详细介绍
 
