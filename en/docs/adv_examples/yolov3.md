@@ -2,9 +2,9 @@
 
 ## 1. Introduction
 
-[YOLO](https://pjreddie.com/darknet/yolo/) series of algorithms (v1~v3), is the first single-stage object detection network, YOLO — You Only Look Once indicates its single-stage feature. It is precisely because of the simple network and fast single-stage efficiency that it is different from the two-stage detector represented by Faster-RCNN. Since its introduction, it has become popular in the field of the target detection with its fast speed and high accuracy, and has been widely used and praised. 
+[YOLO](https://pjreddie.com/darknet/yolo/) series of algorithms (v1~v3), is the first single-stage object detection network, YOLO — You Only Look Once indicates its single-stage feature. Because the network is simple and the single-stage efficiency is fast, it is distinguished from the two-stage target detector represented by Faster-RCNN. Since it was released, it has become popular in the field of the target detection with its fast speed and high accuracy, and has been widely used and praised. 
 
-While Yolov3 is the classic and comprehensive one(of course, the official also launched Yolov4 recently). It takes Darknet-53 with residual network as the backbone, and integrates features such as multi-scale, 3-way output feature map and upsampling, which greatly improved the model accuracy and small target detection capability. 
+While Yolov3 is the classic and comprehensive one(of course, the official also released Yolov4 recently). It takes Darknet-53 with residual network as the backbone, and integrates features such as multi-scale, 3-way output feature map and upsampling, which greatly improves the model accuracy and small target detection capability. 
 
 ![detected_kite](imgs/detected_000004.jpg)
 
@@ -14,7 +14,7 @@ In this article, we provide an OneFlow implementation of Yolov3. The difference 
 
 ## 2. Quick Start
 
-Before we start, please make sure you have installed [oneflow](https://github.com/Oneflow-Inc/oneflow) properly. 
+Before we start, please make sure you have installed [OneFlow](https://github.com/Oneflow-Inc/oneflow) properly. 
 
 1. Git clone [this repository](https://github.com/Oneflow-Inc/oneflow_yolov3)
 
@@ -64,7 +64,7 @@ After executing the script, we will generate the images with bounding box under 
  Parameters description 
 - --pretrained_model    Pretrain model path
 
-- --label_path                  Coco label path
+- --label_path                 Coco label path
 
 - --input_dir                    The path of images folder to be detected
 
@@ -86,7 +86,7 @@ Yolov3 supports arbitrary object detection dataset. In the below we use [COCO201
 
 Download COCO2014 training dataset and validation dataset. unzip it and put `train2014` and `val2014` under the `data/COCO/images` directory. 
 
-(If you have downloaded COCO2014 dataset locally, you can use ln soft link images to the parent directory of `train2014` and `val2014`)
+(If you have downloaded COCO2014 dataset locally, you can create a soft link of images to the parent directory of `train2014` and `val2014`)
 
 Prepare resource file: `labels`, `5k.part`, `trainvalno5k.part`
 
@@ -130,7 +130,7 @@ sh yolo_train.sh
 Then we start training, more detailed parameters are described as follows: 
 
 - --gpu_num_per_node    The amount of devices on each machine
-- --batch_size  batch         The batch size
+- --batch_size                     The batch size
 - --base_lr                           The base learning rate
 - --classes                           The number of target categories (COCO 80; VOC 20)
 - --model_save_dir            The model storage path
