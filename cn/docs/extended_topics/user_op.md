@@ -484,10 +484,158 @@ REGISTER_USER_OP("add_n")
     });
 ```
 
-
 ## OpKernelRegistry 详细介绍
+### SetInferTmpSizeFn 方法
+某些 op 的 kernel 实现过程中，在 `Compute` 计算过程中可能需要一些额外的 buffer 用于存储临时数据。
+
+我们可以在注册 kernel 时通过 `SetInferTmpSizeFn` 方法指定 buffer 大小，在 `Compute` 函数中获取该 buffer 并使用。
+
+以下代码注册 kernel 时，通过 `SetInferTmpSizeFn` 指定 buffer 大小为 1024 字节：
+
+``` cpp
+REGISTER_USER_KERNEL("XOp")
+    .SetInferTmpSizeFn(
+      [](const oneflow::user_op::InferContext*) {
+         return 1024; 
+      });
+```
+
+一旦通过 `SetInferTmpSizeFn` 设置了 buffer 大小，在 `Compute` 中就可以通过调用 `KernelContext::Tensor4ArgNameAndIndex` 方法，获取该缓冲区，该缓冲区封装为 `oneflow::user_op::Tensor`，可以通过调用 `dptr` 或 `mut_dptr` 方法转为其它类型的指针。
+
+```cpp
+class XKernel final : public oneflow::user_op::OpKernel {
+  void Compute(oneflow::user_op::KernelContext* ctx) override {
+    oneflow::user_op::Tensor* tmp = ctx->Tensor4ArgNameAndIndex("tmp_buffer", 0);
+
+    //转换后得到 1024 字节的 char* 缓冲区
+    char* pBuff = tmp->mut_dptr<char>();
+
+    ...
+  }
+};
+```
 
 ## OpGradRegistry 详细介绍
+
+Oneflow 在后向计算图展开过程中会自动求导，为了对自定义的 op 进行自动后向求导，我们需要通过宏 `REGISTER_USER_OP_GRAD` 进行注册。
+
+注册过程主要是设置一个后向生成函数，在该函数中，根据这个 op 的输出的导数计算输入的导数。
+
+
+我们可以通过已有的其他 op 来构建这个后向展开的子图，当无法用已有 op 来描述后向时，则需要自己实现一个后向 grad_op 来表示。
+
+后向生成函数的任务是根据前向 op 的输入生成一个子图，这个子图接收前向 op 的输入输出以及输出的梯度。
+
+该子图的最终输出是前向 op 输入 blo b对应的梯度。
+
+因此针对每个（可能）需要生成梯度的 blob，我们都需要构建子图，并将子图的输出与这个需要生成梯度的 blob 绑定。
+
+编写这个生成子图的过程通常包含下面几步：
+
+1. 使用 `ctx->DefineOp()` 和 `BackwardOpBuilder` 来构建这个子图中的 new_op，通常这些 new_op 的输入是前向 op 的输入或输出，或者是它们对应的梯度；
+
+2. 使用`ctx->FwOp().InputGradBind()`和`ctx->GetOp()`将前向op的输入 blob 绑定到子图的输出 blob 上。
+
+以下，针对我们实现的 `myrelu` op，其后向生成函数的注册示例如下：
+```cpp
+#include "oneflow/core/framework/framework.h"
+
+namespace oneflow {
+
+REGISTER_USER_OP_GRAD("myrelu")
+  .SetBackwardOpConfGenFn(
+    [](user_op::BackwardOpConfContext* ctx) {
+      const auto relu_grad_op_name = \
+        ctx->FwOp().op_name() + "_grad";
+      ctx->DefineOp(relu_grad_op_name, 
+        [&ctx](user_op::BackwardOpBuilder& builder) {
+          return builder.OpTypeName("myrelu_grad")
+              .InputBind("y", ctx->FwOp().output("out", 0))
+              .InputBind("dy", ctx->FwOp().output_grad("out", 0))
+              .Output("dx")
+              .Build();
+        });
+      ctx->FwOp().InputGradBind(user_op::OpArg("in", 0), 
+        [&ctx, &relu_grad_op_name]() {
+          return ctx->GetOp(relu_grad_op_name)
+                .output("dx", 0);
+        });
+  });
+
+}  // namespace oneflow
+```
+
+宏 `REGISTER_USER_OP_GRAD("myrelu")` 接受的字符串就是 op 的全局唯一名称，需要与 `REGISTER_USER_OP` 注册时的参数一致。
+
+`REGISTER_USER_OP_GRAD("myrelu")` 会返回一个 `oneflow::user_op::OpGradRegistry` 对象，我们通过调用它的方法，设置自定义 op 的后向生成函数。
+
+### SetBackwardOpConfGenFn 方法
+我们使用 `OpGradRegistry::SetBackwardOpConfGenFn(fn)` 设置后向生成函数 `fn`，后向生成函数 `fn` 的函数原型如下：
+```cpp
+void fn(BackwardOpConfContext* ctx);
+```
+
+`BackwardOpConfContext* ctx` 带有生成 op 所需要的信息。
+
+### BackwardOpConfContext 详细介绍
+* `UserOpWrapper& FwOp();`：获取前向 op
+
+* `GetOp(op_name)`: 根据 `op_name` 创建并获取对应的 `op`，`GetOp` 采用延迟创建机制(lazy init)，只有 `GetOp` 被调用时，对应的 op 才会被真正创建
+
+* `void DefineOp(op_name, fn)`：定义名为 `op_name` 的 Op 的创建函数 `fn`。当调用 `ctx->GetOp(op_name)` 时， 在 OneFlow 框架中会触发 `fn` 进行 Op 创建，如果 Op 已经被创建过，那么这里直接获取创建的结果。`fn` 函数接收一个 `BackwardOpBuilder` 参数，用于构建反向 op，我们接下来介绍 `BackwardOpBuilder`。
+
+
+### BackwardOpBuilder 详细介绍
+
+`BackwardOpBuilder` 用于构建一个反向 op。以上午中的代码片段为例
+```cpp
+[&ctx](user_op::BackwardOpBuilder& builder) {
+  return builder.OpTypeName("myrelu_grad")
+      .InputBind("y", ctx->FwOp().output("out", 0))
+      .InputBind("dy", ctx->FwOp().output_grad("out", 0))
+      .Output("dx")
+      .Build();
+});
+```
+我们在这个函数中，构建了一个反向 op "myrelu_grad"。
+各个接口的作用如下：
+
+* `OpTypeName("myrelu_grad")` 指定这个反向 op 的全局唯一名称
+
+* `InputBind(arg_name, blob)` 将 `arg_name` 与 指定的 `blob` 进行绑定，可以调用多次，如果该 `arg_name` 对应多个输入blob，则调用 `Input` 的顺序就是其对应的 index 顺序
+
+* `Output(arg_name, num)` 指定一个 `arg_name` 实际对应的输出blob 的数量，如果不填 `num`，则 `num` 默认为1
+
+* `Attr(attr_name, val)` op 设置属性值，与注册 op 时的用法一样
+
+* `Build()` 完成各种设置后，通过调用 `Build` 完成反向 op 的构建
+
+
+### UserOpWrapper 详细介绍
+调用 `ctx->FwOp()` 会返回 `UserOpWrapper` 对象，通过调用 `UserOpWrapper` 的方法，完成梯度绑定。
+
+```cpp
+ctx->FwOp().InputGradBind(
+  user_op::OpArg("in", 0), 
+  [&ctx, &relu_grad_op_name]() {
+    return ctx->GetOp(relu_grad_op_name)
+          .output("dx", 0);
+  });
+```
+
+`UserOpWrapper` 的常见方法有：
+
+* `InputGradBind(input, grad_fn)`：绑定前向 op 的输入与获取梯度的函数 `grad_fn`。 OneFlow 会自动判断 `input` 是否需要生成后向的梯度，如果需要则触发 `grad_fn`；
+
+* `input(arg_name, index)`：得到输入 `arg_name` 对应的 blob
+
+* `output(arg_name,index)`：得到输出 `arg_name` 对应的 blob
+
+* `output_grad(output_arg_name, index)`： 返回前向 op 的输出 `output_arg_name` 对应的后向梯度的blob
+
+* `attr(attr_name)`：获取属性 `attr_name` 对应的值
+
+* `arg_tensor_desc(arg_name, index)`：返回前向 op 的输入/输出对应的 tensor 信息，包含 `shape`、`dtype` 等
 
 ## UserOpConfBuilder 详细介绍
 
