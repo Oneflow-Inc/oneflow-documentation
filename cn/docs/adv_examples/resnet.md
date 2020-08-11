@@ -4,27 +4,27 @@
 
  **图像分类** 是指将图像信息中所反映的不同特征，把不同类别的目标区分开来的图像处理方法，是计算机视觉中其他任务，比如目标检测、语义分割、人脸识别等高层视觉任务的基础。
 
-ImageNet大规模视觉识别挑战赛（ILSVRC），常称为ImageNet竞赛，包括图像分类、物体定位，以及物体检测等任务，是推动计算机视觉领域发展最重要的比赛之一。
+ImageNet 大规模视觉识别挑战赛（ILSVRC），常称为 ImageNet 竞赛，包括图像分类、物体定位，以及物体检测等任务，是推动计算机视觉领域发展最重要的比赛之一。
 
-在2012年的ImageNet竞赛中，深度卷积网络AlexNet横空出世。以超出第二名10%以上的top-5准确率，勇夺ImageNet2012比赛的冠军。从此，以 **CNN（卷积神经网络）** 为代表的深度学习方法开始在计算机视觉领域的应用开始大放异彩，更多的更深的CNN网络被提出，比如ImageNet2014比赛的冠军VGGNet, ImageNet2015比赛的冠军ResNet。
+在2012年的 ImageNet 竞赛中，深度卷积网络 AlexNet 横空出世。以超出第二名10%以上的top-5准确率，勇夺 ImageNet2012 比赛的冠军。从此，以 **CNN（卷积神经网络）** 为代表的深度学习方法开始在计算机视觉领域的应用开始大放异彩，更多的更深的CNN网络被提出，比如 ImageNet2014 比赛的冠军 VGGNet, ImageNet2015 比赛的冠军 ResNet。
 
 
 
 ### ResNet
 
-[ResNet](https://arxiv.org/abs/1512.03385) 是2015年ImageNet竞赛的冠军。目前，ResNet相对对于传统的机器学习分类算法而言，效果已经相当的出色，之后大量的检测，分割，识别等任务也都在ResNet基础上完成。
+[ResNet](https://arxiv.org/abs/1512.03385) 是2015年ImageNet竞赛的冠军。目前，ResNet 相对对于传统的机器学习分类算法而言，效果已经相当的出色，之后大量的检测，分割，识别等任务也都在 ResNet 基础上完成。
 
-中，提供ResNet50 v1.5的OneFlow实现。我们在ImageNet-2012数据集上训练90轮后，验证集上的准确率能够达到：77.318%(top1)，93.622%(top5)。
+[OneFlow-Benchmark](https://github.com/Oneflow-Inc/OneFlow-Benchmark) 仓库中，提供 ResNet50 v1.5 的 OneFlow 实现。我们在 ImageNet-2012 数据集上训练90轮后，验证集上的准确率能够达到：77.318%(top1)，93.622%(top5)。
 
-更详细的网络参数对齐工作，见[OneFlow-Benchmark的cnns](https://github.com/Oneflow-Inc/OneFlow-Benchmark/blob/master/Classification/cnns)部分
+更详细的网络参数对齐工作，见 [OneFlow-Benchmark的cnns](https://github.com/Oneflow-Inc/OneFlow-Benchmark/blob/master/Classification/cnns) 部分
 
 ![resnet50_validation_acuracy](imgs/resnet50_validation_acuracy.png)
 
 
 
-**关于ResNet50 v1.5的说明：**
+**关于 ResNet50 v1.5 的说明：**
 
-> ResNet50 v1.5是原始[ResNet50 v1](https://arxiv.org/abs/1512.03385)的一个改进版本，相对于原始的模型，精度稍有提升 (~0.5% top1)，详细说明参见[这里](https://github.com/NVIDIA/DeepLearningExamples/tree/master/MxNet/Classification/RN50v1.5) 。
+> ResNet50 v1.5 是原始 [ResNet50 v1](https://arxiv.org/abs/1512.03385) 的一个改进版本，相对于原始的模型，精度稍有提升 (~0.5% top1)，详细说明参见[这里](https://github.com/NVIDIA/DeepLearningExamples/tree/master/MxNet/Classification/RN50v1.5) 。
 >
 
 
@@ -33,7 +33,7 @@ ImageNet大规模视觉识别挑战赛（ILSVRC），常称为ImageNet竞赛，�
 
 
 
-下面，本文就以上面的ResNet50 为例，一步步展现如何使用OneFlow进行ResNet50网络的训练和预测。
+下面，本文就以上面的 ResNet50 为例，一步步展现如何使用 OneFlow 进行 ResNet50 网络的训练和预测。
 
 主要内容包括：
 
@@ -56,11 +56,11 @@ ImageNet大规模视觉识别挑战赛（ILSVRC），常称为ImageNet竞赛，�
 
 ## 准备工作 Requirements
 
-别担心，使用OneFlow非常容易，只要准备好下面三步，即可开始OneFlow的图像识别之旅。
+别担心，使用 OneFlow 非常容易，只要准备好下面三步，即可开始 OneFlow 的图像识别之旅。
 
-- 安装OneFlow，安装方式参考[OneFlow项目主页](https://github.com/Oneflow-Inc/oneflow)
+- 安装 OneFlow，安装方式参考 [OneFlow项目主页](https://github.com/Oneflow-Inc/oneflow)
 
-- 克隆/下载[OneFlow-Benchmark](https://github.com/Oneflow-Inc/OneFlow-Benchmark)仓库。
+- 克隆/下载 [OneFlow-Benchmark](https://github.com/Oneflow-Inc/OneFlow-Benchmark) 仓库。
 
   `git clone git@github.com:Oneflow-Inc/OneFlow-Benchmark.git`
 
@@ -68,30 +68,30 @@ ImageNet大规模视觉识别挑战赛（ILSVRC），常称为ImageNet竞赛，�
 
 - 准备数据集（可选）
 
-  - 直接使用synthetic虚拟合成数据集
-  - 下载我们制作的Imagenet(2012)[迷你数据集](https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/dataset/imagenet/mini-imagenet.zip) 解压放入data目录
-  - 或者：制作完整OFRecord格式的ImageNet数据集（见下文进阶部分）
+  - 直接使用 synthetic 虚拟合成数据集
+  - 下载我们制作的 Imagenet(2012) [迷你数据集](https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/dataset/imagenet/mini-imagenet.zip) 解压放入data目录
+  - 或者：制作完整 OFRecord 格式的 ImageNet 数据集（见下文进阶部分）
 
-我们提供了通用脚本：train.sh和inference.sh，它们适用于此仓库下所有cnn网络模型的训练、验证、推理。您可以通过设置参数使用不同的模型、数据集来训练/推理。
+我们提供了通用脚本：`train.sh` 和 `inference.sh`，它们适用于此仓库下所有cnn网络模型的训练、验证、推理。您可以通过设置参数使用不同的模型、数据集来训练/推理。
 
  **关于模型的说明：** 
 
-> 默认情况下，我们使用resnet50，您也可以通过改动脚本中的--model参数指定其他模型，如：--model="resnet50"，--model="vgg"等。
+> 默认情况下，我们使用resnet50，您也可以通过改动脚本中的--model参数指定其他模型，如：`--model="resnet50"`，`--model="vgg"` 等。
 
 **关于数据集的说明：**
 
 
-> 1）为了使读者快速上手，我们提供了synthetic虚拟合成数据，“合成数据”是指不通过磁盘加载数据，而是直接在内存中生成一些随机数据，作为神经网络的数据输入源。
+> 1）为了使读者快速上手，我们提供了 synthetic 虚拟合成数据，“合成数据”是指不通过磁盘加载数据，而是直接在内存中生成一些随机数据，作为神经网络的数据输入源。
 >
-> 2）同时，我们提供了一个小的迷你示例数据集。直接下载解压至cnn项目的root目录，即可快速开始训练。读者可以在熟悉了流程后，参考数据集制作部分，制作完整的Imagenet2012数据集。
+> 2）同时，我们提供了一个小的迷你示例数据集。直接下载解压至 cnn 项目的 data 目录，即可快速开始训练。读者可以在熟悉了流程后，参考数据集制作部分，制作完整的 Imagenet2012 数据集。
 >
-> 3）使用OFRcord格式的数据集可以提高数据加载效率（但这非必须，参考[数据输入](../basics_topics/data_input.md)，oneflow支持直接加载numpy数据）。
+> 3）使用 OFRcord 格式的数据集可以提高数据加载效率（但这非必须，参考[数据输入](../basics_topics/data_input.md)，OneFlow 支持直接加载 numpy 数据）。
 
 
 
 ## 快速开始 Quick Start
 
-那么接下来，立马开始OneFlow的图像识别之旅吧！
+那么接下来，立马开始 OneFlow 的图像识别之旅吧！
 
 首先，切换到目录：
 
@@ -126,7 +126,7 @@ data/fish.jpg
 0.87059885 goldfish, Carassius auratus
 ```
 
-可见，模型判断这张图片有87.05%的概率是金鱼goldfish。
+可见，模型判断这张图片有87.05%的概率是金鱼 goldfish。
 
 ### 训练和验证（Train & Validation）
 
@@ -155,7 +155,7 @@ data/fish.jpg
 
   >  为了方便运行演示，我们默认使用synthetic虚拟合成数据集，使您可以快速看到模型运行的效果
 
-  同样，你也可以使用[迷你示例数据集](https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/dataset/imagenet/mini-imagenet.zip)，下载解压后放入cnn项目的root目录即可，然后修改训练脚本如下：
+  同样，你也可以使用[迷你示例数据集](https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/dataset/imagenet/mini-imagenet.zip)，下载解压后放入 cnn 项目的 data 目录即可，然后修改训练脚本如下：
 
   ```shell
   rm -rf core.* 
@@ -181,15 +181,15 @@ data/fish.jpg
       --model="resnet50"
   ```
 
-  运行此脚本，将在仅有50张金鱼图片的迷你imagenet数据集上，训练出一个分类模型，利用它，你可以对金鱼图片进行分类。
+  运行此脚本，将在仅有50张金鱼图片的迷你 ImageNet 数据集上，训练出一个分类模型，利用它，你可以对金鱼图片进行分类。
 
-  不要着急，如果您需要在完整的ImageNet2012数据集上进行训练，请参考：[OneFlow-Benchmark](https://github.com/Oneflow-Inc/OneFlow-Benchmark/blob/master/Classification/cnns)仓库。
+  不要着急，如果您需要在完整的 ImageNet2012 数据集上进行训练，请参考：[OneFlow-Benchmark](https://github.com/Oneflow-Inc/OneFlow-Benchmark/blob/master/Classification/cnns)仓库。
   
   
 
 ### 评估(Evaluate)
 
-你可以使用自己训练好的模型，或者我们提供的[resnet50_v1.5_model](https://oneflow-public.oss-cn-beijing.aliyuncs.com/model_zoo/resnet_v15_of_best_model_val_top1_77318.tgz ) （解压后放入当前目录），对resnet50模型的精度进行评估。
+你可以使用自己训练好的模型，或者我们提供的 [resnet50_v1.5_model](https://oneflow-public.oss-cn-beijing.aliyuncs.com/model_zoo/resnet_v15_of_best_model_val_top1_77318.tgz ) （解压后放入当前目录），对resnet50模型的精度进行评估。
 
 只需运行：
 
@@ -209,11 +209,11 @@ validation: epoch 0, iter 195, top_1: 0.773237, top_k: 0.936078, samples/s: 1692
 validation: epoch 0, iter 195, top_1: 0.773297, top_k: 0.936018, samples/s: 1686.896
 ```
 
-> 执行sh evaluate.sh前，确保准备了imagenet(2012)的验证集，验证集制作方法请参考：[OneFlow-Benchmark](https://github.com/Oneflow-Inc/OneFlow-Benchmark/blob/master/Classification/cnns)仓库。
+> 执行 `sh evaluate.sh` 前，确保准备了 ImageNet(2012) 的验证集，验证集制作方法请参考：[OneFlow-Benchmark](https://github.com/Oneflow-Inc/OneFlow-Benchmark/blob/master/Classification/cnns)仓库。
 
-从3轮的评估结果来看，我们的模型在Imagenet(2012)上已经达到了77.32+%的top_1精度。
+从3轮的评估结果来看，我们的模型在 ImageNet(2012) 上已经达到了77.32+%的 top1 精度。
 
-最后，恭喜你！完成了Resnet模型在ImageNet上完整的训练/验证、推理和评估，为自己鼓个掌吧！
+最后，恭喜你！完成了 Resnet 模型在 ImageNet 上完整的训练/验证、推理和评估，为自己鼓个掌吧！
 
 
 
@@ -221,14 +221,14 @@ validation: epoch 0, iter 195, top_1: 0.773297, top_k: 0.936018, samples/s: 1686
 
 ### 分布式训练
 
-**简单而易用的分布式，是OneFlow的主打特色之一。**
+**简单而易用的分布式，是 OneFlow 的主打特色之一。**
 
-OneFlow框架从底层设计上，就原生支持高效的分布式训练。尤其对于分布式的数据并行，用户完全不用操心算法从单机单卡扩展到多机多卡时，数据如何划分以及同步的问题。也就是说，使用OneFlow，用户以单机单卡的视角写好算法，**自动具备多机多卡分布式数据并行的能力。**
+OneFlow 框架从底层设计上，就原生支持高效的分布式训练。尤其对于分布式的数据并行，用户完全不用操心算法从单机单卡扩展到多机多卡时，数据如何划分以及同步的问题。也就是说，使用 OneFlow，用户以单机单卡的视角写好的代码，**自动具备多机多卡分布式数据并行的能力。**
 
 
 #### 如何配置并运行分布式训练？
 
-还是以上面"快速开始"部分演示的代码为例，在`train.sh`中，只要用`--num_nodes` 指定节点（机器）个数，同时用`--node_ips`指定节点的ip地址，然后用`--gpu_num_per_node`指定每个节点上使用的卡数，就轻松地完成了分布式的配置。
+还是以上面"快速开始"部分演示的代码为例，在 `train.sh` 中，只要用 `--num_nodes` 指定节点（机器）个数，同时用 `--node_ips` 指定节点的 IP 地址，然后用 `--gpu_num_per_node` 指定每个节点上使用的卡数，就轻松地完成了分布式的配置。
 
 例如，想要在2机8卡上进行分布式训练，像下面这样配置：
 
@@ -248,23 +248,23 @@ python3 of_cnn_train_val.py \
 ./train.sh
 ```
 
-程序启动后，通过`watch -n 0.1 nvidia-smi`命令可以看到，两台机器的GPU都开始了工作。一段时间后，会在`--node_ips`设置中的第一台机器的屏幕上，打印输出。
+程序启动后，通过 `watch -n 0.1 nvidia-smi` 命令可以看到，两台机器的 GPU 都开始了工作。一段时间后，会在 `--node_ips` 设置中的第一台机器的屏幕上，打印输出。
 
 
 ### 混合精度训练与预测
 
-目前，OneFlow已经原生支持半精度/全精度的混合精度训练。训练时，模型参数（权重）使用float16进行训练，同时保留float32用作梯度更新和计算过程。由于参数的存储减半，会带来训练速度的提升。
+目前，OneFlow 已经原生支持 float16/float32 的混合精度训练。训练时，模型参数（权重）使用 float16 进行训练，同时保留 float32 用作梯度更新和计算过程。由于参数的存储减半，会带来训练速度的提升。
 
-在OneFlow中开启半精度/全精度的混合精度训练模式，ResNet50的训练速度理论上能达到`1.7`倍的加速。
+在 OneFlow 中开启 float16/float32 的混合精度训练模式，ResNet50 的训练速度理论上能达到`1.7`倍的加速。
 
 
-#### 如何开启半精度/全精度混合精度训练？
+#### 如何开启 float16 / float32 混合精度训练？
 
-只需要在`train.sh`脚本中添加参数`--use_fp16=True`即可。
+只需要在 `train.sh` 脚本中添加参数 `--use_fp16=True` 即可。
 
 #### 混合精度模型
 
-我们为您提供了一个在Imagenet2012完整训练了90个epoch的混合精度模型，top_1：77.33%
+我们为您提供了一个在 ImageNet2012 完整训练了90个 epoch 的混合精度模型，Top_1：77.33%
 
 您可以直接下载使用：[resnet50_v15_fp16](https://oneflow-public.oss-cn-beijing.aliyuncs.com/model_zoo/resnet_fp16_of_best_model_val_top1_77330.zip)
 
@@ -274,7 +274,7 @@ python3 of_cnn_train_val.py \
 
 ### 参数对齐
 
-Oneflow的ResNet50实现，为了保证和[英伟达的Mxnet版实现](https://github.com/NVIDIA/DeepLearningExamples/tree/master/MxNet/Classification/RN50v1.5)对齐，我们从learning rate学习率，优化器Optimizer的选择，数据增强的图像参数设定，到更细的每一层网络的形态，bias,weight初始化等都做了细致且几乎完全一致的对齐工作。具体的参数对齐工作，请参考：[OneFlow-Benchmark](https://github.com/Oneflow-Inc/OneFlow-Benchmark/blob/master/Classification/cnns)仓库
+OneFlow 的 ResNet50 实现，为了保证和[英伟达的 Mxnet 版实现](https://github.com/NVIDIA/DeepLearningExamples/tree/master/MxNet/Classification/RN50v1.5)对齐，我们从 learning rate 学习率，优化器 Optimizer 的选择，数据增强的图像参数设定，到更细的每一层网络的形态，bias，weight 初始化等都做了细致且几乎完全一致的对齐工作。具体的参数对齐工作，请参考：[OneFlow-Benchmark](https://github.com/Oneflow-Inc/OneFlow-Benchmark/blob/master/Classification/cnns) 仓库
 
 
 
@@ -282,15 +282,15 @@ Oneflow的ResNet50实现，为了保证和[英伟达的Mxnet版实现](https://g
 
 #### 用于图像分类数据集简介
 
-用于图像分类的公开数据集有CIFAR，ImageNet等等，这些数据集中，是以jpeg的格式提供原始的图片。
+用于图像分类的公开数据集有CIFAR，ImageNet 等等，这些数据集中，是以 jpeg 的格式提供原始的图片。
 
 - [CIFAR](http://www.cs.toronto.edu/~kriz/cifar.html)
-  是由Hinton 的学生Alex Krizhevsky 和Ilya Sutskever 整理的一个用于识别普适物体的小型数据集。包括CIFAR-10和CIFAR-100。
+  是由Hinton 的学生 Alex Krizhevsky 和 Ilya Sutskever 整理的一个用于识别普适物体的小型数据集。包括CIFAR-10和CIFAR-100。
 
 - [ImageNet](http://image-net.org/index) 
-  ImageNet数据集，一般是指2010-2017年间大规模视觉识别竞赛(ILSVRC)的所使用的数据集的统称。ImageNet数据从2010年来稍有变化，常用ImageNet-2012数据集包含1000个类别，其中训练集包含1,281,167张图片，每个类别数据732至1300张不等，验证集包含50,000张图片，平均每个类别50张图片。
+  ImageNet 数据集，一般是指2010-2017年间大规模视觉识别竞赛 (ILSVRC) 的所使用的数据集的统称。ImageNet 数据从2010年来稍有变化，常用 ImageNet-2012 数据集包含1000个类别，其中训练集包含1,281,167张图片，每个类别数据732至1300张不等，验证集包含50,000张图片，平均每个类别50张图片。
 
-完整的ImageNet(2012)制作过程，请参考tools目录下的[README说明](https://github.com/Oneflow-Inc/OneFlow-Benchmark/blob/master/Classification/cnns/tools/README.md)
+完整的 ImageNet(2012)制作过程，请参考 tools 目录下的[README说明](https://github.com/Oneflow-Inc/OneFlow-Benchmark/blob/master/Classification/cnns/tools/README.md)
 
 
 
@@ -298,7 +298,7 @@ Oneflow的ResNet50实现，为了保证和[英伟达的Mxnet版实现](https://g
 
 #### 简介
 
- **ONNX (Open Neural Network Exchange)**  是一种较为广泛使用的神经网络中间格式，通过 ONNX 格式，OneFlow 模型可以被许多部署框架（如 OpenVINO、ONNX Runtime 和移动端的 ncnn、tnn、TEngine 等）所使用。这一节介绍如何将训练好的 resnet50 v1.5 模型转换为 ONNX 模型并验证正确性。
+ **ONNX (Open Neural Network Exchange)**  是一种较为广泛使用的神经网络中间格式，通过 ONNX 格式，OneFlow 模型可以被许多部署框架（如 OpenVINO、ONNX Runtime 和移动端的 ncnn、tnn、TEngine 等）所使用。这一节介绍如何将训练好的 ResNet50 v1.5 模型转换为 ONNX 模型并验证正确性。
 
 #### 快速上手
 
@@ -308,7 +308,7 @@ Oneflow的ResNet50实现，为了保证和[英伟达的Mxnet版实现](https://g
 
  **步骤二：** 执行：`python3 resnet_to_onnx.py `
 
-此代码将完成OneFlow模型->ONNX模型的转化，然后使用ONNX Runtime加载转换后的模型对单张图片进行测试。测试图片如下：
+此代码将完成 OneFlow 模型 -> ONNX 模型的转化，然后使用 ONNX Runtime 加载转换后的模型对单张图片进行测试。测试图片如下：
 
 <div align="center">
     <img src="imgs/tiger.jpg" align='center'/>
@@ -328,11 +328,11 @@ Class: tiger, Panthera tigris; score: 0.8112028241157532
 
 #### 如何生成 ONNX 模型
 
-上面的示例代码，介绍了如何转换resnet模型至onnx模型，并给出了一个利用onnx runtime进行预测的例子，同样，你也可以利用下面的步骤来完成自己训练的resnet或其他模型的转换。
+上面的示例代码，介绍了如何转换 OneFlow 的 ResNet 模型至 ONNX 模型，并给出了一个利用 onnx runtime 进行预测的例子，同样，你也可以利用下面的步骤来完成自己训练的 ResNet 或其他模型的转换。
 
 **步骤一：将模型权重保存到本地**
 
-首先指定待转换的OneFlow模型路径，然后指定转换后的ONNX模型存放路径，例如示例中：
+首先指定待转换的 OneFlow 模型路径，然后指定转换后的 ONNX 模型存放路径，例如示例中：
 
 ```python
 #set up your model path
@@ -342,13 +342,13 @@ onnx_model_dir = 'onnx/model'
 
 **步骤二：新建一个用于推理的 job function**
 
-然后新建一个用于推理的 job function，它只包含网络结构本身，不包含读取 OFRecord 的算子，并且直接接受 numpy 数组形式的输入。可参考 resnet\_to\_onnx.py 中的 `InferenceNet`
+然后新建一个用于推理的 job function，它只包含网络结构本身，不包含读取 OFRecord 的算子，并且直接接受 numpy 数组形式的输入。可参考 `resnet\_to\_onnx.py` 中的 `InferenceNet`。
 
-**步骤三：调用 flow.onnx.export 方法**
+**步骤三：调用 `flow.onnx.export `方法**
 
-接下来代码中会调用`oneflow_to_onnx()`方法，此方法包含了核心的模型转换方法： `flow.onnx.export()` 
+接下来代码中会调用 `oneflow_to_onnx()` 方法，此方法包含了核心的模型转换方法： `flow.onnx.export()` 
 
- **flow.onnx.export** 将从 OneFlow 网络得到 ONNX 模型，它的第一个参数是上文所说的专用于推理的 job function，第二个参数是OneFlow模型路径，第三个参数是（转换后）ONNX模型的存放路径
+ **`flow.onnx.export`** 将从 OneFlow 网络得到 ONNX 模型，它的第一个参数是上文所说的专用于推理的 job function，第二个参数是 OneFlow 模型路径，第三个参数是（转换后）ONNX 模型的存放路径
 
 ```python
 onnx_model = oneflow_to_onnx(InferenceNet, flow_weights_path, onnx_model_dir, external_data=False)
