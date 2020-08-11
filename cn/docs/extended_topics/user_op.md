@@ -49,7 +49,7 @@ OneFlow 提供了一套机制，我们在这套机制下编写自定义 op 并�
 
 ## 示例
 我们将实现一个支持 cpu 及 GPU 运算的 "myrelu" 自定义 op。
-完整的代码见 [code/extended_topics/create_user_op]()。
+完整的代码见 [code/extended_topics/create_user_op](https://github.com/Oneflow-Inc/oneflow-documentation/tree/master/cn/docs/code/extended_topics/create_user_op)。
 
 ### op 的实现与注册
 我们在 `myrelu_op.cpp` 中定义了 op 并完成了注册：
@@ -638,4 +638,33 @@ ctx->FwOp().InputGradBind(
 * `arg_tensor_desc(arg_name, index)`：返回前向 op 的输入/输出对应的 tensor 信息，包含 `shape`、`dtype` 等
 
 ## UserOpConfBuilder 详细介绍
+在 OneFlow 的 Python 前端中，提供了 `UserOpConfBuilder` 构建自定义 op 的 wrapper，在上文 [在 Python 中使用自定义 op](./user_op.md#python-op) 中已经使用。在这里我们总结下 Python 层的 `UserOpConfBuilder` 的各方法接口与 C++ 层的对应关系。
 
+```python
+return (
+    flow.user_op_builder(name)
+    .Op("cast")
+    .Input("in", [x])
+    .Output("out")
+    .Attr("dtype", dtype)
+    .Build()
+    .InferAndTryRun()
+    .RemoteBlobList()[0]
+)
+```
+
+* `Op(op_type_name)`：`op_type_name` 为 C++ 中注册的 全局唯一的 op 名
+
+* `Input(input_name, input_blob_list)`：输入，`input_name` 应与 C++ 中注册 op 时 `Input` 的第一个参数一致
+
+* `Output(output_name, num=1)`：输出，`output_name` 及 `num` 应与 C++ 中注册 op 时的 `Output` 一致
+
+* `Attr(attr_name, attr_value)`：设置属性，`attr_name` 对应了 C++ 注册时使用 `OpRegistry::Attr` 声明的属性，且 `attr_value` 类型应当与声明时的属性类型一致
+
+* `Build()`：构建得到 Python 层的 user op
+
+通过调用 user op 中的 `InferAndTryRun` 可以完成推导，然后通过调用 `RemoteBlobList` 或者 `SoleOutputBlob` 方法，可以获取计算结果。
+
+* `RemoteBlobList`：获取所有输出，适用于有多个输出的 op，所有的 op 防止在一个 list 中
+
+* `SoleOutputBlob`：获取唯一的输出，适用于只有一个输出的 op
