@@ -1,37 +1,37 @@
 ## YoloV3
 
-## 1.简介
+## 1. Introduction
 
-[YOLO](https://pjreddie.com/darknet/yolo/)系列的算法(经典的v1~v3)，是单阶段目标检测网络的开山鼻祖，YOLO—You only look once，表明其单阶段的特征，正是由于网络简单，单阶段的效率较快，使其区别于Faster-RCNN为代表的两阶段目标检测器，从一开始推出至今，便以速度快和较高的准确率而风靡目标检测领域，受到广泛使用和好评。
+[YOLO](https://pjreddie.com/darknet/yolo/) series of algorithms (v1~v3), is the first single-stage object detection network, YOLO — You Only Look Once indicates its single-stage feature. It is precisely because of the simple network and fast single-stage efficiency that it is different from the two-stage detector represented by Faster-RCNN. Since its introduction, it has become popular in the field of the target detection with its fast speed and high accuracy, and has been widely used and praised. 
 
-而Yolov3是其中的经典和集大成者(当然官方最近也推出了yolov4)，其以融合了残差网络的Darknet-53为骨干网络，融合了多尺度，3路输出的feature map，上采样等特点，使其模型精度和对小目标检测能力都大为提升。
+While Yolov3 is the classic and comprehensive one(of course, the official also launched Yolov4 recently). It takes Darknet-53 with residual network as the backbone, and integrates features such as multi-scale, 3-way output feature map and upsampling, which greatly improved the model accuracy and small target detection capability. 
 
 ![detected_kite](imgs/detected_000004.jpg)
 
-本文，我们提供了YoloV3的OneFlow版实现，和其他版本实现的区别在于，我们将输出特征的nms过程写进了c++代码中，通过自定义user op的方式来调用，当然，我们也同时支持直接使用python代码处理nms。
+In this article, we provide an OneFlow implementation of Yolov3. The difference is that we handle NMS process in C++ and call it by customizing user op. Of course, we also support handling NMS process in Python.  
 
 
 
-## 2.快速开始
+## 2. Quick Start
 
-开始前，请确保您已正确安装了[oneflow](https://github.com/Oneflow-Inc/oneflow)，并且在python3环境下可以成功import oneflow。
+Before we start, please make sure you have installed [oneflow](https://github.com/Oneflow-Inc/oneflow) properly. 
 
-1.git clone[此仓库](https://github.com/Oneflow-Inc/oneflow_yolov3)到本地
+1. Git clone [this repository](https://github.com/Oneflow-Inc/oneflow_yolov3)
 
 ```shell
 git clone https://github.com/Oneflow-Inc/oneflow_yolov3.git
 ```
-2.安装python依赖库
+2. Install python dependency library
 
 ```shell
    pip install -r requirements.txt
 ```
-3.在项目root目录下，执行:
+3. Execute this script in project's root directory
 
 ```
 bash scripts/test.sh
 ```
-执行此脚本，将cpp代码中自定义的op算子编译成可调用执行的.so文件，您将在项目路径下看到：
+Execute this script to compile the operator defined in cpp code into a callable .so file. You will see in the project path.  
 
 - libdarknet.so
 
@@ -39,56 +39,56 @@ bash scripts/test.sh
 
 
 
-### 预训练模型
+### Pretrain Model
 
-我们使用了yolov3原作者提供的预训练模型—[yolov3.weight](https://pjreddie.com/media/files/yolov3.weights) ，经转换后生成了OneFlow格式的模型。下载预训练模型：[of_model_yolov3.zip](https://oneflow-public.oss-cn-beijing.aliyuncs.com/model_zoo/of_model_yolov3.zip)  ，并将解压后的of_model文件夹放置在项目root目录下，即可使用。下载预训练模型：[of_model_yolov3.zip](https://oneflow-public.oss-cn-beijing.aliyuncs.com/model_zoo/of_model_yolov3.zip)  ，并将解压后的of_model文件夹放置在项目root目录下，即可使用。
+We use the pretrain model—[yolov3.weight](https://pjreddie.com/media/files/yolov3.weights) provided by Yolov3 author, and generate the model in OneFlow format after transformation. Download pretrain model: [of_model_yolov3.zip](https://oneflow-public.oss-cn-beijing.aliyuncs.com/model_zoo/of_model_yolov3.zip), extract the `of_model` folder and put it in the root directory. 
 
 
 
-## 3. 预测/推理
+## 3. Predict/inference
 
-运行：
+Execute the following script：
 
 ```shell
 sh yolo_predict.sh
 ```
-或者：
+Or：
 ```shell
 sh yolo_predict_python_data_preprocess.sh
 ```
 
-运行脚本后，将在data/result下生成检测后带bbox标记框的图片：
+After executing the script, we will generate the images with bounding box under the `data/result`. 
 
 ![detected_kite](imgs/detected_kite.jpg)
 
-参数说明
-- --pretrained_model    预训练模型路径
+ Parameters description 
+- --pretrained_model    Pretrain model path
 
-- --label_path                  coco类别标签路径(coco.name)
+- --label_path                  Coco label path
 
-- --input_dir                    待检测图片文件夹路径
+- --input_dir                    The path of images folder to be detected
 
-- --output_dir                检测结构输出路径
+- --output_dir                 The output path of the detect structure
 
-- --image_paths              单个/多个待检测图片路径，如：
+- --image_paths             Single/multiple paths of image to be detected. Like：
 
-  --image_paths  'data/images/000002.jpg'  'data/images/000004.jpg'
+  --image_paths  'data/images/000002.jpg'  'data/images/000004.jpg' 
 
-训练同样很简单，准备好数据集后，只需要执行：`sh yolo_train.sh`即可，数据集制作过程见下文【数据集制作】部分。
+The training is also very simple. After preparing dataset, we only need to execute `sh yolo_train.sh`. The process of preparing dataset is shown in the Preparing Dataset part. 
 
 
 
-## 4. 数据集制作
+## 4. Preparing Dataset
 
-YoloV3支持任意目标检测数据集，下面我们以[COCO2014](http://cocodataset.org/#download)制作过程为例，介绍训练/验证所需的数据集制作，其它数据集如[PASCAL VOC](http://host.robots.ox.ac.uk/pascal/VOC/)或自定义数据集等，都可以采用相同格式。
+Yolov3 supports arbitrary object detection dataset. In the below we use [COCO2014](http://cocodataset.org/#download) as an example to create the training/validation dataset. Other datasets [PASCAL VOC](http://host.robots.ox.ac.uk/pascal/VOC/) or custom datasets, can be created in the same format. 
 
-### 资源文件
+### Resource file
 
-下载COCO2014训练集和验证集图片，将解压后的train2014和val2014放在data/COCO/images目录下
+Download COCO2014 training dataset and validation dataset. unzip it and put `train2014` and `val2014` under the `data/COCO/images` directory. 
 
-（如果本地已下载过COCO2014数据集，可以ln软链接images至本地train2014和val2014的父目录）
+(If you have downloaded COCO2014 dataset locally, you can use ln soft link images to the parent directory of `train2014` and `val2014`)
 
-准备资源文件：labels，5k.part，trainvalno5k.part
+Prepare resource file: `labels`, `5k.part`, `trainvalno5k.part`
 
 ```shell
 wget -c https://pjreddie.com/media/files/coco/5k.part
@@ -96,9 +96,9 @@ wget -c https://pjreddie.com/media/files/coco/trainvalno5k.part
 wget -c https://pjreddie.com/media/files/coco/labels.tgz
 ```
 
-### 脚本
+### Scripts 
 
-在data/COCO目录下执行脚本：
+Execute the script in `data/COCO` directory: 
 
 ```shell
 # get label file
@@ -113,37 +113,42 @@ find labels/train2014/ -name "*.txt"  | xargs -i cp {} images/train2014/
 find labels/val2014/   -name "*.txt"  | xargs -i cp {} images/val2014/
 ```
 
-执行脚本将自动解压缩labels.tgz文件，并在当前目录下生成5k.txt和trainvalno5k.txt，然后将labels/train2014和labels/val2014的的所有label txt文件复制到对应的训练集和验证集文件夹中( **保证图片和label在同一目录** )。
+This script will automatically unzip `labels.tgz` file, and generate `5k.txt` and `trainvalno5k.txt` in current directory. Then copy all `label.txt` files in `labels/train2014` and `labels/val2014` to the corresponding training dataset and validation dataset folders (Make sure images and label are in the same directory).
 
-至此，完成整个数据集的准备过程。
+At this point, the preparation of the whole dataset is completed. 
 
 
 
-## 5.训练
+## 5. Training
 
-修改yolo_train.sh脚本中的参数，令：--image_path_file="data/COCO/trainvalno5k.txt"并执行：
+Modify the parameter in `yolo_train.sh` script, let `--image_path_file="data/COCO/trainvalno5k.txt"` and execute: 
 
 ```shell
 sh yolo_train.sh
 ```
 
-即可开始训练过程，更详细的参数介绍如下：
+Then we start training, more detailed parameters are described as follows: 
 
-- --gpu_num_per_node    每台机器使用的gpu数量
-- --batch_size  batch         批大小
-- --base_lr                           初始学习率
-- --classes                           目标类别数量（COCO 80；VOC 20）
-- --model_save_dir            模型存放文件夹路径
-- --dataset_dir                    训练/验证集文件夹路径
-- --num_epoch                   迭代总轮数
-- --save_frequency            指定模型保存的epoch间隔
+- --gpu_num_per_node    The amount of devices on each machine
+- --batch_size  batch         The batch size
+- --base_lr                           The base learning rate
+- --classes                           The number of target categories (COCO 80; VOC 20)
+- --model_save_dir            The model storage path
+- --dataset_dir                    The path of training/validation dataset
+- --num_epoch                   The total epochs
+- --save_frequency            Specify the epoch interval for model saving
 
 
-## 说明
+## Descriptions 
 
-目前如果调用yolo_predict.sh执行，数据预处理部分对darknet有依赖，其中：predict decoder中调用load_image_color、letterbox_image函数  
-train decoder中调用load_data_detection函数  
-主要涉及以下操作，在后续的版本中会使用oneflow decoder ops替换
+At present, if we call `yolo_predict.sh`. The data preprocessing is dependent on `darknet`
+
+Among them: 
+
+In `predict decoder`, we call `load_image_color`, `letterbox_image` function. 
+
+In `train decoder`, we call `load_data_detection` function. 
+It mainly involves the following operations, which will be replaced in later versions with `OneFlow Decoder Ops`
 
 - image read
 - nhwc -> nchw
