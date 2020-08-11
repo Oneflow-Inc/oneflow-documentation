@@ -528,13 +528,13 @@ Oneflow 在后向计算图展开过程中会自动求导，为了对自定义的
 
 该子图的最终输出是前向 op 输入 blo b对应的梯度。
 
-因此针对每个（可能）需要生成梯度的 blob，我们都需要构建子图，并将子图的输出与这个需要生成梯度的 blob 绑定。
+因此针对每个（可能）需要生成梯度的前向输入，我们都需要构建生成梯度的子图，并将子图的输出的 blob 对应的前向输入的梯度绑定。
 
 编写这个生成子图的过程通常包含下面几步：
 
 1. 使用 `ctx->DefineOp()` 和 `BackwardOpBuilder` 来构建这个子图中的 new_op，通常这些 new_op 的输入是前向 op 的输入或输出，或者是它们对应的梯度；
 
-2. 使用`ctx->FwOp().InputGradBind()`和`ctx->GetOp()`将前向op的输入 blob 绑定到子图的输出 blob 上。
+2. 使用 `ctx->FwOp().InputGradBind()` 和 `ctx->GetOp()` 将前向 op 的输入的梯度绑定到子图的输出的 blob 上。
 
 以下，针对我们实现的 `myrelu` op，其后向生成函数的注册示例如下：
 ```cpp
@@ -549,14 +549,14 @@ REGISTER_USER_OP_GRAD("myrelu")
         ctx->FwOp().op_name() + "_grad";
       ctx->DefineOp(relu_grad_op_name, 
         [&ctx](user_op::BackwardOpBuilder& builder) {
-          return builder.OpTypeName("myrelu_grad")
+          return builder.OpTypeName("relu_grad")
               .InputBind("y", ctx->FwOp().output("out", 0))
               .InputBind("dy", ctx->FwOp().output_grad("out", 0))
               .Output("dx")
               .Build();
         });
       ctx->FwOp().InputGradBind(user_op::OpArg("in", 0), 
-        [&ctx, &relu_grad_op_name]() {
+        [&ctx, &relu_grad_op_name]() -> const std::string& {
           return ctx->GetOp(relu_grad_op_name)
                 .output("dx", 0);
         });
@@ -587,20 +587,20 @@ void fn(BackwardOpConfContext* ctx);
 
 ### BackwardOpBuilder 详细介绍
 
-`BackwardOpBuilder` 用于构建一个反向 op。以上午中的代码片段为例
+`BackwardOpBuilder` 用于构建一个反向 op。以上文中的代码片段为例
 ```cpp
 [&ctx](user_op::BackwardOpBuilder& builder) {
-  return builder.OpTypeName("myrelu_grad")
+  return builder.OpTypeName("relu_grad")
       .InputBind("y", ctx->FwOp().output("out", 0))
       .InputBind("dy", ctx->FwOp().output_grad("out", 0))
       .Output("dx")
       .Build();
 });
 ```
-我们在这个函数中，构建了一个反向 op "myrelu_grad"。
+我们在这个函数中，最终调用 `Build` 构建了一个反向 op。
 各个接口的作用如下：
 
-* `OpTypeName("myrelu_grad")` 指定这个反向 op 的全局唯一名称
+* `OpTypeName("relu_grad")` 指定一个前向 op 的全局唯一名称，我们将要构建的反向 op 将与其绑定
 
 * `InputBind(arg_name, blob)` 将 `arg_name` 与 指定的 `blob` 进行绑定，可以调用多次，如果该 `arg_name` 对应多个输入blob，则调用 `Input` 的顺序就是其对应的 index 顺序
 
@@ -625,7 +625,7 @@ ctx->FwOp().InputGradBind(
 
 `UserOpWrapper` 的常见方法有：
 
-* `InputGradBind(input, grad_fn)`：绑定前向 op 的输入与获取梯度的函数 `grad_fn`。 OneFlow 会自动判断 `input` 是否需要生成后向的梯度，如果需要则触发 `grad_fn`；
+* `InputGradBind(input, grad_fn)`：绑定前向 op 的输入与获取梯度的函数 `grad_fn`。 OneFlow 会自动判断 `input` 是否需要生成后向的梯度，如果需要则触发 `grad_fn` 并进行绑定；
 
 * `input(arg_name, index)`：得到输入 `arg_name` 对应的 blob
 
