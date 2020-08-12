@@ -107,7 +107,7 @@ Besides the job function defined and related configuration which mentioned above
 This page is a just a simple example on neural network. 
 A more comprehensive and detailed introduction of OneFlow can be found in [Convolution Neural Network for Handwriting Recognition](lenet_mnist.md). 
 
-In addition, you can reference to [Based topics](../basics_topics/data_input.md) to learn more about how to use OneFlow for deep learning.
+In addition, you can reference to [Basic topics](../basics_topics/data_input.md) to learn more about how to use OneFlow for deep learning.
 
 Benchmarks and related scripts for some prevalent network are also provided in repository [OneFlow-Benchmark](https://github.com/Oneflow-Inc/OneFlow-Benchmark).
 
