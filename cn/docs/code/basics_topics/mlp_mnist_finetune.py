@@ -1,15 +1,15 @@
 # mlp_mnist_finetune.py
 import oneflow as flow
-import oneflow.typing as tp
+import oneflow.typing as oft
 
 BATCH_SIZE = 100
 
 
 @flow.global_function(type="train")
 def train_job(
-    images: tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-    labels: tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32),
-) -> tp.Numpy:
+    images: oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+    labels: oft.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32),
+) -> oft.Numpy:
     with flow.scope.placement("cpu", "0:0"):
         initializer = flow.truncated_normal(0.1)
         reshape = flow.reshape(images, [images.shape[0], -1])
