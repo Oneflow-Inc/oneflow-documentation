@@ -1,15 +1,15 @@
 # feed_numpy.py
 import numpy as np
 import oneflow as flow
-import oneflow.typing as tp
+import oneflow.typing as oft
 from typing import Tuple
 
 
 @flow.global_function(type="predict")
 def test_job(
-    images: tp.Numpy.Placeholder((32, 1, 28, 28), dtype=flow.float),
-    labels: tp.Numpy.Placeholder((32,), dtype=flow.int32),
-) -> Tuple[tp.Numpy, tp.Numpy]:
+    images: oft.Numpy.Placeholder((32, 1, 28, 28), dtype=flow.float),
+    labels: oft.Numpy.Placeholder((32,), dtype=flow.int32),
+) -> Tuple[oft.Numpy, oft.Numpy]:
     # do something with images or labels
     return (images, labels)
 
