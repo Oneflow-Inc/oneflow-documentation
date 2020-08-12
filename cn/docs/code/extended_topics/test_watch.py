@@ -1,15 +1,15 @@
 # test_watch.py
 import numpy as np
 import oneflow as flow
-import oneflow.typing as tp
+import oneflow.typing as oft
 
 
-def watch_handler(y: tp.Numpy):
+def watch_handler(y: oft.Numpy):
     print("out:", y)
 
 
 @flow.global_function()
-def ReluJob(x: tp.Numpy.Placeholder((5,))) -> None:
+def ReluJob(x: oft.Numpy.Placeholder((5,))) -> None:
     y = flow.nn.relu(x)
     flow.watch(y, watch_handler)
 
