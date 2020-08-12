@@ -1,11 +1,11 @@
 # test_watch_diff.py
 import oneflow as flow
-import oneflow.typing as tp
+import oneflow.typing as oft
 
 BATCH_SIZE = 100
 
 
-def watch_diff_handler(blob: tp.Numpy):
+def watch_diff_handler(blob: oft.Numpy):
     print("watch_diff_handler:", blob, blob.shape, blob.dtype)
 
 
@@ -17,9 +17,9 @@ def get_train_config():
 
 @flow.global_function(type="train", function_config=get_train_config())
 def train_job(
-    images: tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-    labels: tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32),
-) -> tp.Numpy:
+    images: oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+    labels: oft.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32),
+) -> oft.Numpy:
     with flow.scope.placement("cpu", "0:0"):
         initializer = flow.truncated_normal(0.1)
         reshape = flow.reshape(images, [images.shape[0], -1])
