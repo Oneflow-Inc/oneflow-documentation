@@ -1,6 +1,6 @@
 
 ## Summary
-BERT(Bidirectional Encoder Representations from Transformers) is a technique for NLP. In our case, we implements BERT based on the paper [BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding](https://arxiv.org/abs/1810.04805) using OneFlow.
+BERT(Bidirectional Encoder Representations from Transformers) is a technique for NLP. In our case, we implement BERT based on the paper [BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding](https://arxiv.org/abs/1810.04805) using OneFlow.
 
 ### Model
 | **Model** | **Hidden layers** | **Hidden unit size** | **Attention heads** | **Feedforward filter size** | **Max sequence length** | **Parameters** |
@@ -9,14 +9,14 @@ BERT(Bidirectional Encoder Representations from Transformers) is a technique for
 
 There are commonly two steps in BERT:
 
-* First, BERT pre-trained is obtained by pre-training;
+* First, BERT pretrained model is obtained by pre-training;
 
-* Then, on the basis of the obtained pre-trained model, an additional layer of network is added and finetuned to get the downstream application.
+* Then, on the basis of the obtained pretrained model, an additional layer of network is added and finetuned to get the downstream application.
 
 
 ## Quickstart
 ### Get dataset
-We provide [OFRecord data set and relevant other files](https://oneflow-static.oss-cn-beijing.aliyuncs.com/oneflow-tutorial-attachments/bert_squad_dataset.zip), you can get and unzip it by running commands below:
+We provide [OFRecord dataset and relevant other files](https://oneflow-static.oss-cn-beijing.aliyuncs.com/oneflow-tutorial-attachments/bert_squad_dataset.zip), you can get and unzip it by running commands below:
 
 ```bash
 wget https://oneflow-static.oss-cn-beijing.aliyuncs.com/oneflow-tutorial-attachments/bert_squad_dataset.zip
@@ -32,7 +32,7 @@ The list of files is as follows:
 
 * train-v1.1：SQuAD training set that has been coverted to OFRecords
 
-The above files will be used in the following pre-training tasks and squad finetune.
+The above files will be used in the following pretraining tasks and squad finetune.
 
 ### BERT pretrained
 Firstly, clone the `OneFlow-Benchmark`:
@@ -42,7 +42,7 @@ git clone https://github.com/Oneflow-Inc/OneFlow-Benchmark.git
 cd OneFlow-Benchmark/LanguageModeling/BERT/
 ```
 
-Then, with the following command, we can use our pre training model and small sample set to start the BERT pre-training.
+Then, with the following command, we can use our pretraining model and small sample set to start the BERT pre-training.
 ```bash
 python ./run_pretraining.py\
     --gpu_num_per_node=1 \
@@ -121,8 +121,8 @@ average speed: 0.556(sentences/sec)
 | **Files** | **Description** | **Belongs to**|
 |:---------:|:----------:|:----------:|
 |pretrain.py、bert.py| Define the BERT model |BERT|
-|run_pretraining.py|Start BERT training. The user can configure the training environment and parameters of the bet training through the command line parameters. The specific meanings of each option will be described in the **script options** below.| BERT|
-|squad.py|定义了squad网络；|SQuAD|
+|run_pretraining.py|Start BERT training. The user can configure the training environment and parameters of the BERT training through the command line parameters. The specific meanings of each option will be described in the **script options** below.| BERT|
+|squad.py|define SQuAD network|SQuAD|
 |run_squad.py|Run the SQuAD training|SQuAD|
 |run_squad_predict.py|Run the trained SQuAD model to predict.|SQuAD|
 |npy2json.py|Script required to overt OneFlow's prediction results to json.|SQuAD|
@@ -178,7 +178,7 @@ The script `run_pretraining.py` runs the pretraining and configured by command l
 * num_attention_heads: number of attentoion heads，default to 16
 
 ### Use Wikipedia + BookCorpus dataset
-If it is necessary to carry out the pre-training of BERT from scratch, a large dataset should be used.
+If it is necessary to carry out the pretraining of BERT from scratch, a large dataset should be used.
 
 If necessary, we can download TFRecord dataset from [google-research BERT](https://github.com/google-research/bert) and then make OFRecord dataset from it by methods in the article [Loading and preparing OFRecord dataset](../extended_topics/how_to_make_ofdataset.md).
 
@@ -345,7 +345,7 @@ python ./run_squad.py\
     --model_load_dir=./squadModel
 ```
 
-### Predict and evaluatoin
+### Prediction and evaluatoin
 In order to generate [Preidiction File](https://rajpurkar.github.io/SQuAD-explorer/), we should generate npy file fist. And then we use `write_predictions` function in [google BERT's run_squad.py](https://github.com/google-research/bert/blob/master/run_squad.py) to convert it to json format.
 
 Run the script `run_squad_predict.py` to generate `all_results.npy`:
