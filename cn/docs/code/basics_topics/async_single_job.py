@@ -1,14 +1,14 @@
 import oneflow as flow
-import oneflow.typing as tp
+import oneflow.typing as oft
 
 BATCH_SIZE = 100
 
 
 @flow.global_function(type="train")
 def train_job(
-    images: tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-    labels: tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32),
-) -> tp.Callback[tp.Numpy]:
+    images: oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+    labels: oft.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32),
+) -> oft.Callback[oft.Numpy]:
     # mlp
     initializer = flow.truncated_normal(0.1)
     reshape = flow.reshape(images, [images.shape[0], -1])
@@ -34,7 +34,7 @@ def train_job(
 g_i = 0
 
 
-def cb_print_loss(result: tp.Numpy):
+def cb_print_loss(result: oft.Numpy):
     global g_i
     if g_i % 20 == 0:
         print(result.mean())
