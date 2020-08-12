@@ -1,11 +1,11 @@
 # of_data_pipeline.py
 import oneflow as flow
-import oneflow.typing as tp
+import oneflow.typing as oft
 from typing import Tuple
 
 
 @flow.global_function(type="predict")
-def test_job() -> Tuple[tp.Numpy, tp.Numpy]:
+def test_job() -> Tuple[oft.Numpy, oft.Numpy]:
     batch_size = 64
     color_space = "RGB"
     with flow.scope.placement("cpu", "0:0"):
