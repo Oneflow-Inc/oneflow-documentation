@@ -3,7 +3,7 @@ import oneflow as flow
 from PIL import Image
 import sys
 import os
-import oneflow.typing as tp
+import oneflow.typing as oft
 
 BATCH_SIZE = 1
 
@@ -61,9 +61,9 @@ def lenet(data, train=False):
 
 @flow.global_function(type="predict")
 def eval_job(
-    images: tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-    labels: tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32),
-) -> tp.Numpy:
+    images: oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+    labels: oft.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32),
+) -> oft.Numpy:
     with flow.scope.placement("gpu", "0:0"):
         logits = lenet(images, train=False)
     return logits
