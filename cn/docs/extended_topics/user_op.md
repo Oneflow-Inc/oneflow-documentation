@@ -3,6 +3,8 @@
 ## 背景介绍
 
 ### 自定义 op 是什么
+OneFlow 将各种对于数据的处理都抽象成了算子（operator），简称 op。 op 是作用在输入 tensor 上的操作，并将操作的结果写到输出 tensor 上。OneFlow 内部已经提供了比较完备的 op 算子，可以在 [ops 目录](https://github.com/Oneflow-Inc/oneflow/tree/master/oneflow/python/ops)下找到。
+
 当 OneFlow 已有的 Python 算子及其组合无法满足构建神经网络的需求，或者 Python 层次的算子无法满足性能需求时，我们可以使用 C++ 开发 OneFlow 自定义 op。
 
 OneFlow 提供了一套机制，我们在这套机制下编写自定义 op 并将其注册到 OneFlow 中，就可以在 Python 中使用自定义 op。
@@ -21,15 +23,37 @@ OneFlow 提供了一套机制，我们在这套机制下编写自定义 op 并�
 
 在具体的编程过程中，我们其实是用 C++ 编写自定义 op，并生成动态链接库(so)文件。在 Python 中加载对应的 so 文件，就可以使用该 so 文件中的自定义 op。
 
+在 [user_op_conf.proto](https://github.com/Oneflow-Inc/oneflow/blob/master/oneflow/core/framework/user_op_conf.proto) 中可以查看 user op 的数据结构：
+```text
+syntax = "proto2";
+package oneflow;
+
+import "oneflow/core/framework/user_op_attr.proto";
+
+message UserOpConf {
+  message ListString {
+    repeated string s = 1;
+  }
+  required string op_type_name = 1;
+  map<string, ListString> input = 2;
+  map<string, ListString> output = 3;
+  map<string, UserOpAttrVal> attr = 4;
+}
+```
+
+其中的 `op_type_name` 是代表 op 类别的字符串，也是指明 op 类别的全局唯一 ID，OneFlow 通过 `op_type_name` 查询并确认 op 种类，在本文的后续中会多次出现。
+
 ### 基本概念
 
-* op：逻辑上的算子，包含构图推理时的输入输出形状等信息，不包含具体的处理数据的逻辑
+* op_type_name：如上文所述，op_type_name 是 op 类别的全局唯一 ID， OneFlow 通过 op_type_name 查询并确认 op 的种类，进而实例化 op。op 的种类与 op 的关系，类似于类与对象的关系。
 
-* kernel：对于一个逻辑上的 op，在运行时，处理的逻辑会因为物理设备以及数据类型的不同。运行时的具体处理逻辑，由 kernel 完成。简单而言，op 与 kernel 是一对多的关系，我们需要为 op 所支持的所有物理设备及数据类型实现和注册 kernel
+* op：逻辑上的算子，包含构图推理时的输入输出形状等信息，不包含具体的处理数据的逻辑。
 
-* 注册：通过注册可以建立自定义 op 与 OneFlow 框架的联系。在 OneFlow 中提供了一系列名如 `REGISTER_XXX` 的宏帮助完成 op、kernel 等的注册
+* kernel：对于一个逻辑上的 op，在运行时，处理的逻辑会因为物理设备以及数据类型的不同。运行时的具体处理逻辑，由 kernel 完成。简单而言，op 与 kernel 是一对多的关系，我们需要为 op 所支持的所有物理设备及数据类型注册 kernel。
 
-* 加载动态库：自定义的 op 及其 kernel 等被链接为 动态库 so 文件，在 Python 中使用前需要先加载。 OneFlow 提供了 `oneflow.config.load_library` 接口加载自定义 op 的动态库文件
+* 注册：通过注册可以建立自定义 op 与 OneFlow 框架的联系。在 OneFlow 中提供了一系列名如 `REGISTER_XXX` 的宏帮助完成 op、kernel 等的注册。
+
+* 加载动态库：自定义的 op 及其 kernel 等被链接为 动态库 so 文件，在 Python 中使用前需要先加载。 OneFlow 提供了 `oneflow.config.load_library` 接口加载自定义 op 的动态库文件。
 
 * Python wrapper：在 Python 中调用 C++ 层实现的自定义 op，需要在 Python 层编写一个 wrapper，OneFlow 提供了 `oneflow.user_op_builder` 接口完成该工作。
 
@@ -82,7 +106,7 @@ REGISTER_USER_OP("myrelu")
 
 * 与自定义 op 有关的接口集中在 `oneflow::user_op` 中，使用名称空间 `oneflow` 可以简化类型名称
 
-* 宏 `REGISTER_USER_OP` 用于注册 op，其接受的参数（`myrelu`）其实是 OneFlow 中用于查询 op 的 ID，必须全局唯一
+* 宏 `REGISTER_USER_OP` 用于注册 op，其接受的参数 `myrelu` 是 `op_type_name`。
 
 * 使用 `REGISTER_USER_OP` 注册后，其实会返回一个 `OpRegistry` 类（位于 `oneflow\core\framework\user_op_registry.h`），通过调用该类方法，完成对自定义 op 的设置：
     1. `Input("in")` 表示其有一个名为 "in" 的输入
@@ -155,7 +179,7 @@ REGISTER_RELU_KERNEL(DeviceType::kCPU, double)
 * `SetIsMatchedHob`：因为一个 op 可能有多个 kernel，要想根据物理设备及数据格式的不同而选择不同的 kernel 进行计算，就需要调用 `SetIsMatchedHob` 进行设置。该方法接受一个表达式，表达式为 `true` 时，OneFlow 将调用该 kernel 完成计算。
 
 ### GPU kernel 的实现与注册
-我们在 `myrelu_gpu_kernel.cpp` 中实现了 GPU 版本的 kernel 并注册：
+我们在 `myrelu_gpu_kernel.cu` 中实现了 GPU 版本的 kernel 并注册：
 ```cpp
 #include "oneflow/core/framework/framework.h"
 #include <cub/cub.cuh>
@@ -276,7 +300,7 @@ clean:
 	rm -rf *.so *.o
 ```
 
-我们使用 `g++` 编译 `myrelu_op.cpp`、`myrelu_cpu_kernel.cpp`，使用 `nvcc` 编译 `myrelu_gpu_kernel.cpp`，最后得到的目标文件链接为 `final_relu.so`。
+我们使用 `g++` 编译 `myrelu_op.cpp`、`myrelu_cpu_kernel.cpp`，使用 `nvcc` 编译 `myrelu_gpu_kernel.cpp`，得到目标文件（".o" 文件），最后把得到的目标文件链接为 `final_relu.so`。
 
 我们将在 Python 中加载 `final_relu.so` 并使用封装、使用自定义 op。
 
@@ -348,9 +372,9 @@ if __name__ == "__main__":
 
 该对象包含 `Op`、`Input` 等方法，用于封装自定义 op，具体解释如下：
 
-* `Op("myrelu")`：参数必须为 cpp 注册 op 时的字符串，OneFlow 通过该字符串建立 Python 层与 C++ 层的联系。
+* `Op("myrelu")`：参数必须为之前在 C++ 注册时的 `op_type_name`，OneFlow 通过它找到已经注册的 op 类型，并实例化 op 对象。
 
-* `Input("in", [input_blob])`：对应了 C++ 中 op 注册时的 `Input`，第一个参数字符串必须与 C++ 注册 op 时的 `Input` 设置的字符串一致。第二个参数为输入的 blob。
+* `Input("in", [input_blob])`：对应了 C++ 中 op 注册时的 `Input`，第一个参数字符串必须与 C++ 注册 op 时的 `Input` 设置的字符串一致。第二个参数为输入的 blob，是一个 `list`，因为一个 op 允许有多个输入。
 
 * `Output("out")`：对应了 C++ 中 op 注册时的 `Output`。
 
@@ -519,14 +543,13 @@ class XKernel final : public oneflow::user_op::OpKernel {
 
 Oneflow 在后向计算图展开过程中会自动求导，为了对自定义的 op 进行自动后向求导，我们需要通过宏 `REGISTER_USER_OP_GRAD` 进行注册。
 
-注册过程主要是设置一个后向生成函数，在该函数中，根据这个 op 的输出的导数计算输入的导数。
-
+注册过程主要是设置一个后向生成函数，在该函数中，根据这个 op 的输出的梯度计算输入的梯度。
 
 我们可以通过已有的其他 op 来构建这个后向展开的子图，当无法用已有 op 来描述后向时，则需要自己实现一个后向 grad_op 来表示。
 
 后向生成函数的任务是根据前向 op 的输入生成一个子图，这个子图接收前向 op 的输入输出以及输出的梯度。
 
-该子图的最终输出是前向 op 输入 blo b对应的梯度。
+该子图的最终输出是前向 op 输入 blob 对应的梯度。
 
 因此针对每个（可能）需要生成梯度的前向输入，我们都需要构建生成梯度的子图，并将子图的输出的 blob 对应的前向输入的梯度绑定。
 
@@ -536,13 +559,13 @@ Oneflow 在后向计算图展开过程中会自动求导，为了对自定义的
 
 2. 使用 `ctx->FwOp().InputGradBind()` 和 `ctx->GetOp()` 将前向 op 的输入的梯度绑定到子图的输出的 blob 上。
 
-以下，针对我们实现的 `myrelu` op，其后向生成函数的注册示例如下：
+以下示例，来自 OneFlow 实现的 `relu` op，完整代码可以参考 [relu_op.cpp](https://github.com/Oneflow-Inc/oneflow/blob/master/oneflow/user/ops/relu_op.cpp)，其后向生成函数的注册示例如下：
 ```cpp
 #include "oneflow/core/framework/framework.h"
 
 namespace oneflow {
 
-REGISTER_USER_OP_GRAD("myrelu")
+REGISTER_USER_OP_GRAD("relu")
   .SetBackwardOpConfGenFn(
     [](user_op::BackwardOpConfContext* ctx) {
       const auto relu_grad_op_name = \
@@ -565,9 +588,9 @@ REGISTER_USER_OP_GRAD("myrelu")
 }  // namespace oneflow
 ```
 
-宏 `REGISTER_USER_OP_GRAD("myrelu")` 接受的字符串就是 op 的全局唯一名称，需要与 `REGISTER_USER_OP` 注册时的参数一致。
+宏 `REGISTER_USER_OP_GRAD("relu")` 接受的字符串就是 op 的全局唯一名称，需要与 `REGISTER_USER_OP` 注册时的参数一致。
 
-`REGISTER_USER_OP_GRAD("myrelu")` 会返回一个 `oneflow::user_op::OpGradRegistry` 对象，我们通过调用它的方法，设置自定义 op 的后向生成函数。
+`REGISTER_USER_OP_GRAD("relu")` 会返回一个 `oneflow::user_op::OpGradRegistry` 对象，我们通过调用它的方法，设置自定义 op 的后向生成函数。
 
 ### SetBackwardOpConfGenFn 方法
 我们使用 `OpGradRegistry::SetBackwardOpConfGenFn(fn)` 设置后向生成函数 `fn`，后向生成函数 `fn` 的函数原型如下：
@@ -640,20 +663,23 @@ ctx->FwOp().InputGradBind(
 ## UserOpConfBuilder 详细介绍
 在 OneFlow 的 Python 前端中，提供了 `UserOpConfBuilder` 构建自定义 op 的 wrapper，在上文 [在 Python 中使用自定义 op](./user_op.md#python-op) 中已经使用。在这里我们总结下 Python 层的 `UserOpConfBuilder` 的各方法接口与 C++ 层的对应关系。
 
+比如我们封装了一个 `cast` wrapper:
 ```python
-return (
-    flow.user_op_builder(name)
-    .Op("cast")
-    .Input("in", [x])
-    .Output("out")
-    .Attr("dtype", dtype)
-    .Build()
-    .InferAndTryRun()
-    .RemoteBlobList()[0]
+def cast(x, dtype, name):
+    return (
+        flow.user_op_builder(name)
+        .Op("cast")
+        .Input("in", [x])
+        .Output("out")
+        .Attr("dtype", dtype)
+        .Build()
+        .InferAndTryRun()
+        .RemoteBlobList()[0]
+    )
 )
 ```
 
-* `Op(op_type_name)`：`op_type_name` 为 C++ 中注册的 全局唯一的 op 名
+* `Op(op_type_name)`：接受的参数为 C++ 中注册时的 `op_type_name`
 
 * `Input(input_name, input_blob_list)`：输入，`input_name` 应与 C++ 中注册 op 时 `Input` 的第一个参数一致
 
@@ -665,6 +691,6 @@ return (
 
 通过调用 user op 中的 `InferAndTryRun` 可以完成推导，然后通过调用 `RemoteBlobList` 或者 `SoleOutputBlob` 方法，可以获取计算结果。
 
-* `RemoteBlobList`：获取所有输出，适用于有多个输出的 op，所有的 op 防止在一个 list 中
+* `RemoteBlobList`：获取所有输出，适用于有多个输出的 op，所有的 op 放置在一个 list 中
 
 * `SoleOutputBlob`：获取唯一的输出，适用于只有一个输出的 op
