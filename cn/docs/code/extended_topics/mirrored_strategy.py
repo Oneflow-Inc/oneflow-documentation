@@ -1,6 +1,6 @@
 import numpy as np
 import oneflow as flow
-import oneflow.typing as tp
+import oneflow.typing as oft
 
 BATCH_SIZE = 100
 GPU_NUM = 2
@@ -16,9 +16,9 @@ def get_train_config():
 
 @flow.global_function(type="train", function_config=get_train_config())
 def train_job(
-    images: tp.ListNumpy.Placeholder((BATCH_SIZE_PER_GPU, 1, 28, 28), dtype=flow.float),
-    labels: tp.ListNumpy.Placeholder((BATCH_SIZE_PER_GPU,), dtype=flow.int32),
-) -> tp.ListNumpy:
+    images: oft.ListNumpy.Placeholder((BATCH_SIZE_PER_GPU, 1, 28, 28), dtype=flow.float),
+    labels: oft.ListNumpy.Placeholder((BATCH_SIZE_PER_GPU,), dtype=flow.int32),
+) -> oft.ListNumpy:
     initializer = flow.truncated_normal(0.1)
     reshape = flow.reshape(images, [images.shape[0], -1])
     hidden = flow.layers.dense(
