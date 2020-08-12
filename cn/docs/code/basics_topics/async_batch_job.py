@@ -1,7 +1,7 @@
 import numpy as np
 import oneflow as flow
 from typing import Tuple
-import oneflow.typing as tp
+import oneflow.typing as oft
 
 BATCH_SIZE = 100
 
@@ -21,9 +21,9 @@ def mlp(data):
 
 @flow.global_function(type="predict")
 def eval_job(
-    images: tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-    labels: tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32),
-) -> tp.Callback[Tuple[tp.Numpy, tp.Numpy]]:
+    images: oft.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+    labels: oft.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32),
+) -> oft.Callback[Tuple[oft.Numpy, oft.Numpy]]:
     with flow.scope.placement("cpu", "0:0"):
         logits = mlp(images)
         loss = flow.nn.sparse_softmax_cross_entropy_with_logits(
@@ -37,7 +37,7 @@ g_total = 0
 g_correct = 0
 
 
-def acc(arguments: Tuple[tp.Numpy, tp.Numpy]):
+def acc(arguments: Tuple[oft.Numpy, oft.Numpy]):
     global g_total
     global g_correct
 
