@@ -30,8 +30,6 @@ Looking forward to your [feedbacks](https://github.com/Oneflow-Inc/oneflow/issue
 
 - If you want to know more about the characteristics of OneFlow, such as the format of OneFlow's data set, the parallelism view of OneFlow or how to debug OneFlow framework with vscode, please refer to [extended topic](extended_topics/job_function_define_call.md). 
 
-- In [advance examples](adv_examples/resnet.md), we introduce models in [OneFlow Model Zoo repository](https://github.com/Oneflow-Inc/OneFlow-Benchmark). It is helpful for users to understand the models and other details.
-
 - The [resnet example](adv_examples/resnet.md) showing how to train&evalute resnet model with OneFlow. More advance examples of deep learning applications can be found in [OneFlow Model Zoo repository](https://github.com/Oneflow-Inc/OneFlow-Benchmark). 
 
 We highly expect developers and geeks to join our [ontributor community](contribute/intro.md). Together we can build a perfect deep learning framework.
