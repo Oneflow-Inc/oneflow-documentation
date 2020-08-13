@@ -1,6 +1,6 @@
 # The Definition and Call of Job Function
 
-In OneFlow, We encapsulate the training, predicting, inferential and some other tasks into a function, which is called job function. The job function is used to connect the user's business logic and the computing resource managed by OneFlow. 
+In OneFlow, we encapsulate the training, predicting, inferential and some other tasks into a function, which is called job function. The job function is used to connect the user's business logic and the computing resource managed by OneFlow. 
 
 In OneFlow, the function decorated by `@oneflow.global_function` decorator is the OneFlow's job function
 
@@ -16,11 +16,11 @@ In this article, we will specifically learn about:
 
 The job function is divided into two phases: definition and call.
 
-It's related to OneFlow's operating mechanism. Briefly, The OneFlow Python layer API simply describes the configuration and the training environment of the model. These information will pass to the C++ backend. After being compiled, graph building and so on, the computation graph is obtained. Finally, the job function will be executed in OneFlow runtime.
+It's related to OneFlow's operating mechanism. Briefly, the OneFlow Python layer API simply describes the configuration and the training environment of the model. These information will pass to the C++ backend. After compilation, graph building and so on, the computation graph is obtained. Finally, the job function will be executed in OneFlow runtime.
 
-The definition of the job function, is actually doing the description of model and the configuration of training environment in Python. In this phase, there's no data here, we can only define the shape, data type of model's node, we call it as  **PlaceHolder **, which is convenient for model inference in the compilation and creating graph of OneFlow.
+The definition of the job function, is actually doing the description of model and the configuration of training environment in Python. In this phase, there's no data here, we can only define the shape, data type of model's node, we call it as  **PlaceHolder**, which is convenient for model inference in the compilation and creating graph of OneFlow.
 
-The job function will be called after the OneFlow runtime has started. We can pass the data by calling job function and get the results. 
+The job function will be called after the OneFlow runtime starts. We can pass the data by calling job function and get the results. 
 
 We will introduce the definition and calling method of job functions in detail as below. 
 
@@ -66,10 +66,10 @@ def train_job(
 
 ### The parameters of `oneflow.global_function`
 
-`oneflow.global_function` decorator accept two parameters, there are `type` and `function_config`. 
+`oneflow.global_function` decorator accepts two parameters, there are `type` and `function_config`. 
 
-- The parameter `type` accept a string, which can only set as `train` or `predict`. When we define a training model, we set it as `train`. We set is as `predict` when we define a model for testing or inferencing. 
-- The parameter `function_config` accept a object which is constructed by `oneflow.function_config()`. In `function_config` object, we can use it's method or attribute to config. As the following code. 
+- The parameter `type` accepts a string, which can only set as `train` or `predict`. When we define a training model, we set it as `train`. We set is as `predict` when we define a model for testing or inferencing. 
+- The parameter `function_config` accepts an object which is constructed by `oneflow.function_config()`. In `function_config` object, we can use its method or attribute to config. As the following code. 
 
 ```python
 def get_train_config():
@@ -106,17 +106,17 @@ The **Blob** has no data in definition of job function. It only plays the role o
 
 The concept of the data placeholder **Blob** is emphasized above because the return value of the job function cannot be arbitrarily specified. It must be `Blob` type object or the container which only contains the `Blob` object. 
 
-As the `loss` returned in the above code, it's type is `Blob` object
+As the `loss` returned in the above code, its type is `Blob` object
 
 The return values of job function should be annotated. As an example, `-> tp.Numpy` in above code means the function returns a `Blob` object.
 
-In Another example, we can annotate the return value type as `-> Tuple[tp.Numpy, tp.Numpy]`.It means the function return a `tuple` which contains two `Blob` object
+In another example, we can annotate the return value type as `-> Tuple[tp.Numpy, tp.Numpy]`.It means the function return a `tuple` which contains two `Blob` object
 
 You can refer to [Get the result of the job function](../basics_topics/async_get.md) for specific examples.
 
 ## The call of job function
 
-OneFlow use decorator to convert Python function into OneFlow's job function. It is transparent to user.
+OneFlow uses decorator to convert Python function into OneFlow's job function. It is transparent to user.
 
 We can call the job function just like we call a Python function. Every time we call the job function, OneFlow will complete the forward propagation, back propagation, parameter updates, and more in framework. 
 
