@@ -8,7 +8,7 @@ wget https://docs.oneflow.org/en/code/quick_start/mlp_mnist.py
 python3 mlp_mnist.py
 ```
 
-Output may looks like below:
+Output looks like below:
 ```
 2.7290366
 0.81281316
@@ -18,7 +18,7 @@ Output may looks like below:
 ...
 ```
 
-The output is a series of number each representting the loss value of each round of training. The goal of training is make loss value as small as possible. So far, you have completed a full neural network training by using OneFlow.
+The output is a series of number each representing the loss value of each round of training. The goal of training is to make loss value as small as possible. So far, you have completed a full neural network training by using OneFlow.
 
 ## Code explanation
 The following is the full code.
@@ -94,7 +94,7 @@ lr_scheduler = flow.optimizer.PiecewiseConstantScheduler([], [0.1])
 flow.optimizer.SGD(lr_scheduler, momentum=0).minimize(loss)
 ```
 
-Besides the job function defined and related configuration which mentioned above, code in this script contains all the points of how to training a neural network.
+Besides the job function defined and configuration which mentioned above, code in this script contains all the points of how to training a neural network.
 
 * `check_point.init()`: Model initialization;
 
@@ -107,10 +107,6 @@ Besides the job function defined and related configuration which mentioned above
 This page is a just a simple example on neural network. 
 A more comprehensive and detailed introduction of OneFlow can be found in [Convolution Neural Network for Handwriting Recognition](lenet_mnist.md). 
 
-In addition, you can reference to [Basic topics](../basics_topics/data_input.md) to learn more about how to use OneFlow for deep learning.
+In addition, you can refer to [Basic topics](../basics_topics/data_input.md) to learn more about how to use OneFlow for deep learning.
 
 Benchmarks and related scripts for some prevalent network are also provided in repository [OneFlow-Benchmark](https://github.com/Oneflow-Inc/OneFlow-Benchmark).
-
-
-
-

@@ -1,4 +1,4 @@
-# How to obtain data from middle layer
+# How to Obtain Data from Middle Layer
 
 OneFlow support `oneflow.watch` and `oneflow.watch_diff`. We can use them to register callback function to get data or gradient tensor in job functions at run time.
 

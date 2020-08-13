@@ -1,4 +1,4 @@
-# Features of parallelism in OneFlow
+# Features of Parallelism in OneFlow
 
 In [Consistent and Mirrored view](consistent_mirrored.md), we have already known OneFlow provides two types of view: mirrored and consistent view, and we learned about the  `consistent` view in OneFlow have some special features.
 

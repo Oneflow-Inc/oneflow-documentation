@@ -1,4 +1,4 @@
-## The view of Consistent and Mirrored
+## Consistent & Mirrored View
 
 In distributed training, OneFlow provides two aspects for determining the relationship between data and model. There are `consistent` view and `mirrored` view.
 

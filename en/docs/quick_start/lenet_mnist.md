@@ -1,3 +1,5 @@
+# Recognition of MNIST Handwritten Digits
+
 In this article, we will cover topics below:
 
 * Interfaces for software and hardware environment configuration
@@ -10,7 +12,7 @@ In this article, we will cover topics below:
 
 * Implementation of job function for evaluation
 
-This article demonstrated the core steps of how to train a LeNet model by MNIST dataset using OneFlow. The full example code is attached at the end of article.
+This article demonstrat the core steps of how to train a LeNet model by MNIST dataset using OneFlow. The full example code is attached at the end of article.
 
 You can see the effects of each script by running the following commands.
 
@@ -50,7 +52,7 @@ unzip lenet_models_1.zip
 ```
 python lenet_eval.py
 ```
-The command above using the MNIST's testing set to evaluate the training model and print the accuracy.
+The command above use the MNIST's testing set to evaluate the training model and print the accuracy.
 
 Output：
 
@@ -67,7 +69,7 @@ python lenet_test.py ./9.png
 ```
 The above command will use the training model we just saved to predict the content of file "9.png". We can also download and verify more from [prepared images](https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/quick_start/mnist_raw_images.zip).
 
-## MNIST dataset introduction
+## Introduction of MNIST dataset 
 
 MNIST is a handwritten digits database including training set and testing set. Training set includes 60000 pictures and the corresponding label. Yann LeCun and others have normalized all the images and packed them into a single binary file for downloading. http://yann.lecun.com/exdb/mnist/
 

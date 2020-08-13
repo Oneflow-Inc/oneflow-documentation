@@ -2,7 +2,7 @@
 site_name: OneFlow
 site_url: https://www.oneflow.org/
 site_description: >-
-  OneFlow 是一款分布式高效的机器学习框架
+  OneFlow a efficient distributed deep learning framework.
 # Repository
 repo_name: OneFlow
 repo_url: https://github.com/OneFlow-Inc/oneflow-documentation
@@ -88,31 +88,31 @@ nav:
     - Home: index.md
 
     - Quick Start:
-      - Installing: build_ship/install.md
-      - 3min Quick Start: quick_start/quickstart_in_3_min.md
-      - Recognition of MNIST Handwritten Numbers: quick_start/lenet_mnist.md
+      - Installation: build_ship/install.md
+      - Quick Start in 3 Minutes: quick_start/quickstart_in_3_min.md
+      - Recognition of MNIST Handwritten Digits: quick_start/lenet_mnist.md
 
     - Basic Topics :
       - Data Input: basics_topics/data_input.md
-      - Build Up Neural Network: basics_topics/build_nn_with_op_and_layer.md
+      - Build a Neural Network: basics_topics/build_nn_with_op_and_layer.md
       - Optimization Algorithm and Parameter Configuration: basics_topics/optimizer_in_function_config.md
-      - Obtain Result From Job Function: basics_topics/async_get.md
-      - Loading and Saving of Model: basics_topics/model_load_save.md
-      - Distribution Training: basics_topics/distributed_train.md
-      - Concepts in OneFlow: basics_topics/concept_explanation.md
-      - OneFlow system design: basics_topics/essentials_of_oneflow.md
+      - Get results from job function: basics_topics/async_get.md
+      - Loading and saving of model: basics_topics/model_load_save.md
+      - Distributed training: basics_topics/distributed_train.md
+      - Term & Concept Explanation: basics_topics/concept_explanation.md
+      - OneFlow System Design: basics_topics/essentials_of_oneflow.md
 
     
     - Extended Topics :
-      - Call and Definition of Job Function: extended_topics/job_function_define_call.md
-      - Strategy of Consistent and Mirrored: extended_topics/consistent_mirrored.md
-      - Feature of Mix Parallel in OneFlow : extended_topics/model_mixed_parallel.md
-      - Data Format in OFRecord: extended_topics/ofrecord.md
-      - Loading and Preparing Dataset in OFRecord: extended_topics/how_to_make_ofdataset.md
-      - Use VSCode Configure OneFlow: extended_topics/debug_by_vscode.md
+      - The Definition and Call of Job Function: extended_topics/job_function_define_call.md
+      - Consistent & Mirrored View: extended_topics/consistent_mirrored.md
+      - Features of Parallelism in OneFlow: extended_topics/model_mixed_parallel.md
+      - The OFRecord Data Format: extended_topics/ofrecord.md
+      - Loading and Preparing OFRecord Dataset: extended_topics/how_to_make_ofdataset.md
+      - Use VS Code to Debug OneFlow: extended_topics/debug_by_vscode.md
       #- User Defined OP: extended_topics/user_op.md
-      #- Eager模式和Lazy模式: extended_topics/eager_lazy_mode.md
-      - Watch and Watch Diff: extended_topics/watch_watch_diff.md
+      #- Eager/Lazy mode: extended_topics/eager_lazy_mode.md
+      - How to Obtain Data from Middle Layer: extended_topics/watch_watch_diff.md
 
     #- Advanced Examples:
       #- Image Processing:
@@ -126,5 +126,5 @@ nav:
       - API: https://oneflow-api.readthedocs.io/en/latest/
 
 
-    - Contribution:
-      - OneFlow Open Source Project: contribute/intro.md
+    - Contribute:
+      - Contribute to OneFlow: contribute/intro.md
