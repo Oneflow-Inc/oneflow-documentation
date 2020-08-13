@@ -6,10 +6,11 @@ To install latest release of OneFlow with CUDA support:
 python3 -m pip install --find-links https://oneflow-inc.github.io/nightly oneflow_cu102 --user
 ```
     
-System requirements：
+## System requirements：
 
   - Python >= 3.5
   - CUDA Toolkit Linux x86_64 Driver
+  
     | OneFlow |CUDA Driver Version|
     |---|---|
     | oneflow_cu102  | >= 440.33  |
@@ -19,7 +20,7 @@ System requirements：
     | oneflow_cu91  | >= 390.46  |
     | oneflow_cu90  | >= 384.81  |
 
-If there are error like "cannot find", please try to update `pip`:
+If there are errors like "cannot find", please try to update `pip`:
 ```shell
 python3 -m pip install --upgrade --user pip
 ```
