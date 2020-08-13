@@ -1,14 +1,14 @@
 # Features of Parallelism in OneFlow
 
-In [Consistent and Mirrored view](consistent_mirrored.md), we have already known OneFlow provides two types of view: mirrored and consistent view, and we learned about the  `consistent` view in OneFlow have some special features.
+In section [Consistent and Mirrored view](consistent_mirrored.md), we learned that OneFlow provides two types of view: mirrored and consistent view, and that the  `consistent` view in OneFlow have some special features.
 
-Because in `consistent_view`, OneFlow provides a logically unified view. During distributed training, users can freely choose to use data parallelism, model parallelism or hybrid parallelism.
+In `consistent_view`, OneFlow provides a logically unified view. During distributed training, users can choose any one of data parallelism, model parallelism and hybrid parallelism.
 
-In this article, we will keep going through the special `consistent` view in OneFlow. We will learn about: 
+In this article, we will go through the special `consistent` view in OneFlow and learn about: 
 
-* Data parallelism in `consistent_view` flow chart.
+* Data parallelism flow chart in `consistent_view`.
 
-* hybrid parallelism in `consistent_view` flow chart.
+* Hybrid parallelism flow chart in `consistent_view`.
 
 * The advantages of hybrid parallelism and the applicable scenario.
 
@@ -16,19 +16,19 @@ In this article, we will keep going through the special `consistent` view in One
 
 ## Network logical diagram in model training
 
-We need to set up a simple multi-layer network first and use this network to discuss parallelism methods. The structure like the figure shows:
+We need to set up a simple multi-layer network and use it to discuss parallelism methods. The network is shown in the figure below:
 
 ![多层网络逻辑图](imgs/para_logical.png)
 
-In each layer, we have **samples**(in grey), **models**(in blue) and **operators**(circles) which operating on both of them. To simplify our discussion, we can limit the sample and model as a **matrix**. The operator applying on them we call it **matrix multiplication**.
+In each layer, we have **samples**(in grey), **models**(in blue) and **operators**(circles) which operating on both samples and models. For simplification, assume that each sample and model is a **matrix**, and that each operator is **matrix multiplication**.
 
-Compare the figure above, we can easily get the logic of the network:
+According to the figure above, we can easily get the logic of the network:
 
-* The input of layer 0 is `Data 0` matrix and `Model 0 ` matrix. We apply `op` (matrix multiplication) and get output `Data 1`.
+* The input of layer 0 is matrix `Data 0` and matrix `Model 0 `. We apply `op` (matrix multiplication) and get output `Data 1`.
 
-* The input of layer 1 is `Data 1` matrix and `Model 1` matrix. We apply `op` and get `output`.
+* The input of layer 1 is matrix `Data 1` and matrix `Model 1`. We apply `op` and get `output`.
 
-* The layer 2 is `output` layer and `Data 2` is the output of network. Of course, it can play as input in a deeper network.
+* Layer 2 is the `output` layer and `Data 2` is the output of network which can be used as input in the next layer.
 
 In `consistent` view, OneFlow supports the data parallelism, model parallelism and hybrid parallelism. We will introduce them in order but hybrid parallelism is the key point.
 
@@ -36,29 +36,29 @@ In `consistent` view, OneFlow supports the data parallelism, model parallelism a
 
 ### Data parallelism
 
-We have already known that in consistent view. The default parallelism method is data parallelism. If we choose mirrored view, we can only use data parallelism. If numpy data is passed directly when the job function is called (instead of using OneFlow's `flow.data.xxx_reader` interface for data loading), the difference is that: 
+In consistent view, the default parallelism method is data parallelism. If we choose mirrored view, we can only use data parallelism. The difference between using numpy data directly and using OneFlow's `flow.data.xxx_reader` interface for data loading is that: 
 
-* In mirrored view, when we use data parallelism. We need to split and reorganize data according to the number of device and use `list` to pass and receive data.
+* In mirrored view, we need to split and reorganize data according to the number of device and use `list` to pass and receive data when using data parallelism. 
 
-* But in consistent view we have the consistency on logic. Splitting data and reorganizing data will be completed by OneFlow framework.
+* But in consistent view, we have the consistency on logic. Splitting and reorganizing data will be completed by OneFlow framework。
 
-The following figure is in consistent view, using data parallelism to achieve original logical network process:
+The following figure is flow chart of using data parallelism to perform original logical network process in consistent view:
 
 ![纯数据并行](imgs/para_consistent_data.png)
 
-In data parallelism, we use two devices for training. As we use **data parallelism**, we can see that for each original logical layer, the sample is divided in average to each device. We have a complete **training model** in each device. The data after splitting are processed by `op`. Finally we combine the data in each device and get the complete data.
+In data parallelism, we use two devices for training. Since we use **data parallelism**, the sample is divided equally to each device in every original logical layer. Every device has a complete **training model**. The data after splitting are processed by `op`. Finally, gather the data in each device and get the complete data.
 
 ### Model parallelism
 
-In `consistent` view, we can choose model parallelism (the configuration details we will talk about it later). The flow diagram is as follows:
+In `consistent` view, we can choose model parallelism (we will talk about the configuration details later). The flow diagram is shown below:
 
 ![纯模型并行](imgs/para_consistent_model.png)
 
-In model parallelism example, we still use two devices for training. In each layer of original logic model is processed by `op` on **part of model** and **complete data**. Then they are combined and we get the complete results.
+In the model parallelism example, we still use two devices for training. In each device, `op` operates on **part of model** and **complete data**. We gather the partial results from each device to get a complete output in each layer of the original model.
 
-One thing we need to mention is in above figure. The output from each device on layer 0 **cannot** use as the input in layer 1: Because in model parallelism, in order to complete the operation. We need partial model and **complete** data. To solve this problem, OneFlow use `boxing` mechanism.
+One thing deserves to be mentioned is that, in the above figure, the output from each device on layer 0 **cannot** be used directly as the input in layer 1. Because in model parallelism, we need partial model and **complete** data in order to complete the operation. To solve this problem, OneFlow uses `boxing` mechanism.
 
-`boxing` will count the data in each node in distributed training and divide or assemble data properly then send to corresponding GPU. Besides the model assembling in model parallelism, `boxing` is also used for reverse gradient synchronization in data parallelism.
+`boxing` will count the data in each node in distributed training and divide or assemble data properly then send them to the corresponding GPU. Besides for model assembling in model parallelism, `boxing` is also used for reversing gradient synchronization in data parallelism.
 
 The algorithm in `boxing` is complex. But it is transparent to users. The Illustration of boxing is just to prevent users from being confused. In this article, we only need to remember that OneFlow will automatically solve the data distribution issue.
 
