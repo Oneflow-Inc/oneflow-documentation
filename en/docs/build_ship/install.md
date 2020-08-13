@@ -1,6 +1,6 @@
 ## Installation
 
-To install latest release of OneFlow with CUDA support:
+Install the latest release of OneFlow with CUDA support:
 
 ```
 python3 -m pip install --find-links https://oneflow-inc.github.io/nightly oneflow_cu102 --user
@@ -20,17 +20,19 @@ python3 -m pip install --find-links https://oneflow-inc.github.io/nightly oneflo
     | oneflow_cu91  | >= 390.46  |
     | oneflow_cu90  | >= 384.81  |
 
-If there are errors like "cannot find", please try to update `pip`:
+If you meet errors like "cannot find", please try to update `pip`:
+
 ```shell
 python3 -m pip install --upgrade --user pip
 ```
+
 ## Build from source
 
-If you want to install OneFlow by building from source. Please refer to [README](https://github.com/Oneflow-Inc/oneflow/blob/develop/README.md) of OneFlow. Please read the [Troubleshooting](https://github.com/Oneflow-Inc/oneflow/blob/develop/docs/source/troubleshooting.md) for common issues you might encounter when compiling and running OneFlow.
+If you want to install OneFlow by building from source, please refer to [README](https://github.com/Oneflow-Inc/oneflow/blob/develop/README.md). Also refer to [Troubleshooting](https://github.com/Oneflow-Inc/oneflow/blob/develop/docs/source/troubleshooting.md) for common issues you might encounter when compiling and running OneFlow.
 
 ## Install OneFlow with legacy CUDA support
 
-To install OneFlow with legacy CUDA support, run one of:
+To install OneFlow with legacy CUDA support, run one of the following command:
 ```
 python3 -m pip install --find-links https://oneflow-inc.github.io/nightly oneflow_cu101 --user
 python3 -m pip install --find-links https://oneflow-inc.github.io/nightly oneflow_cu100 --user
@@ -40,7 +42,7 @@ python3 -m pip install --find-links https://oneflow-inc.github.io/nightly oneflo
 ```
 
 ## QQ channel 
-If you encounter any problems during installation, you are welcome to discuss in QQ channel or [submit issues to OneFlow](https://github.com/Oneflow-Inc/oneflow/issues).
+If you encounter any problems during the installation and want for help, please join the QQ channel or [submit issues on Github](https://github.com/Oneflow-Inc/oneflow/issues).
 
 **QQ channel ID: 331883 or scan QR code below**
 
