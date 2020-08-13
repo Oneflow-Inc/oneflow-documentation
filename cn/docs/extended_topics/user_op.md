@@ -430,6 +430,7 @@ OneFlow 目前支持了如下几种 UserOpAttrType：
 | kAtListInt32   | std::vector<int32_t> |
 | kAtListInt64   | std::vector<int64_t> |
 | kAtListFloat   | std::vector< float > |
+| kAtString      | std::string          |
 
 
 此外，我们还可以多传递一个参数，为属性配置默认值，默认值的类型即表格中对应的C++数据类型，如：
