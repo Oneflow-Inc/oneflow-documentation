@@ -1,14 +1,18 @@
 # Build a Neural Network
 
-In the article [Recognition of MNIST Handwritten Digits](../quick_start/lenet_mnist.md), we use the "layer" and "operators" in `oneflow.layers` and `oneflow.nn` to build a simple LeNet network. Now we will use a simple neural network to introduce the core of network construction in OneFlow: operator and layer.
+In the article [Recognition of MNIST Handwritten Digits](../quick_start/lenet_mnist.md), we have used "operator" in `oneflow.nn` and "layer" in `oneflow.layers` to build a LeNet neural network. Now we will use this simple neural network to introduce the core element for network construction in OneFlow: operator and layer.
 
-The code below shows a nerural network which is constructed by convolution layer, pooling layer and fully connected layer. The figure shows the input and output of operator in the network. The shape of `data` is 100x1×28×28. 
+LeNet is constructed by convolution layer, pooling layer and fully connected layer. 
 
-Firstly, `data` is used as the input of `conv2d` to the convolution calculation, and the output `conv1` is obtained. 
+<div align="center">
+<img src="imgs/lenet.png" align='center'/>
+</div>
 
-After that, `conv1` is passed as input to `max_pool2d`, and so on. 
+The figure shows the inputs, outputs and layers in the network. There are two types of elements : one is calculation which represented by the box, including "op" and "layer", like `conv2d`, `dense`, `max_pool2d` and so on; the other is data which represented by arrows.
 
-(Note: the description here is a little not accurate. It is only convenient to understand and will be explained later)
+The input of the network is `data` and it's shape is 100x1×28×28. `conv2d` takes `data` as input and produce output, then this output is used as input for `conv1`. After that the output of `conv1` is passed as input to `max_pool2d`, and so on.
+
+(Note: The input and output here is just place holder. We will explain this later.)
 
 ```python
 def lenet(data, train=False):
@@ -50,23 +54,17 @@ def lenet(data, train=False):
     return flow.layers.dense(hidden, 10, kernel_initializer=initializer, name="dense2")
 ```
 
-<div align="center">
-<img src="imgs/Lenet.png" align='center'/>
-</div>
+## Operator and Layer
+Operator is a common concept. It is the basic calculation unit in OneFlow. `reshape` and `nn.max_pool2d` used in LeNet code are two kinds of operators.
 
-There are two types of elements in this figure above. One is calculating unit which represented by the box, including "op" and "layer", like `conv2d`, `dense`, `max_pool2d` and so on. The other is the data represented by arrows. 
-
-## Operator and layer
-Operator is a common concept. It is the basic calculation unit in OneFlow. `reshape` and `nn.max_pool2d` are two kinds of operators.
-
-In contrast, `layers.conv2d` and `layers.dense` are not operator. They are layers which constructed by specific operators. For example, `layers.conv2d` is constructed by `conv2d` operator and `variable` operator. Layer can simplify the network construction procedure in the front end. For more details, you can refer to [layers api](https://oneflow-api.readthedocs.io/en/latest/layers.html).
+In contrast, `layers.conv2d` and `layers.dense` are not operator. They are layers which constructed by specific operators. For example, `layers.conv2d` is constructed by `conv2d` operator and `variable` operator. Layer can simplify the network construction procedure in the front end. For more details, please refer to [layers api](https://oneflow-api.readthedocs.io/en/latest/layers.html).
 
 ## Data block in neural network
-As mentioned above, it is inaccurate to say that "data is used as the input" in that figure. Actually, when we define a network, there is no data in 'data', it's just a placeholder.
+As mentioned above, it is inaccurate to say that `data` is used as the input. Actually, when we define a network, there is no actual data in data blob, it's just a placeholder.
 
- The construction and running process of network in OneFlow are actually separate. The construction process is a process in which OneFlow builds the calculation graph according to the description of network defined by job function, but the real calculation happens at run time.
+ The neural net construction and running process in OneFlow are actually separate. The construction process is a process in which OneFlow builds the computation graph according to the description defined with job function, but the real calculation happens at run time.
 
-When we build the network by defining job function, we only describe the attributes and shapes(such as `shape`, `dtype`) of the nodes in network. There is no data in node, we call the node as **PlaceHolder**, OneFlow can compile and infer according to these placeholders to get the computation graph. 
+When building the network by defining job function, we only describe the attributes and shapes(such as `shape`, `dtype`) of the nodes in network. There is no data in the node, we call the node as **PlaceHolder**, OneFlow can compile and infer according to these placeholders to get the computation graph. 
 
 The placeholders are usually called `Blob` in OneFlow. There is a corresponding base class `BlobDef` in OneFlow.
 
@@ -75,18 +73,18 @@ When we build network, we can print the information of `Blob`. For example, we c
 print(conv1.shape, conv1.dtype)
 ```
 
-### Operator overloading
-The `BlobDef` class implments operator overloading which means `BlobDef` supports operations such as addition, subtraction, multiplication and division and some other operations.
+### Operator Overloading
+The `BlobDef` class implements operator overloading which means `BlobDef` supports math operators such as addition, subtraction, multiplication and division and so on.
 
 Like '+' in the following code:
 
 ```
 output = output + fc2_biases
 ```
-Same as:
+which is same as:
 ```
 output = flow.broadcast_add(output, fc2_biases)
 ```
 
 ## Summary
-When we build the neural network, there are caculation unit "operator" and "layer" provided by OneFlow as calculation units. Operator and layer take `BlobDef` as input and output. The operator overlaoding of blob simplify some statements in code.
+When we build neural network, there are "operator" and "layer" provided by OneFlow as calculation units. "operator" and "layer" take `BlobDef` as input and output. Operator overloading on blob simplifies coding at python frontend.

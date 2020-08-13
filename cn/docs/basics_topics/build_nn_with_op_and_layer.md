@@ -1,8 +1,16 @@
 # 使用OneFlow搭建神经网络
 
-在之前[识别MNIST手写体数字](../quick_start/lenet_mnist.md)的例子中，我们通过 `flow.layers` 中的网络层和 `flow.nn` 中提供的算子搭建了一个简单的 lenet 网络。下面，我们将通过一个简单的神经网络，来介绍 Onflow 中网络搭建的核心—算子(op)和层(layer)。
+在之前[识别MNIST手写体数字](../quick_start/lenet_mnist.md)的例子中，我们通过 `flow.layers` 中的网络层和 `flow.nn` 中提供的算子搭建了一个简单的 lenet 网络。下面，我们将通过LeNet来介绍 Onflow 中网络搭建的核心元素—算子(op)和层(layer)。
 
-下面的代码部分是一个主要由卷积层、池化层和全连接层组成的神经网络；图示部分展示了该网络的算子(op)和算子输出的形状。
+LeNet是一个主要由卷积层、池化层和全连接层组成的神经网络。
+
+<div align="center">
+<img src="imgs/lenet.png" align='center'/>
+</div>
+
+图示部分展示了该网络的算子(op)和算子输出的形状。
+上图中有两类元素，一类是方框代表的运算单元，包括 `op` 和 `layer` 两类，比如 `conv2d` 、 `dense` 、 `max_pool2d` 等；一类是箭头代表的数据。
+
 参数 `data` 是维度为 `100x1×28×28` 的数据，`data` 首先作为 `conv2d` 的输入参与卷积计算，得到计算结果`conv1` ，然后 `conv1` 作为输入传给 `max_pool2d` ，依次类推。（注：这里的说法不准确，只是方便理解这么描述，后文会解释）
 
 ```python
@@ -44,11 +52,6 @@ def lenet(data, train=False):
         hidden = flow.nn.dropout(hidden, rate=0.5, name="dropout")
     return flow.layers.dense(hidden, 10, kernel_initializer=initializer, name="dense2")
 ```
-
-<div align="center">
-<img src="imgs/Lenet.png" align='center'/>
-</div>
-上图中有两类元素，一类是方框代表的运算单元，包括 `op` 和 `layer` 两类，比如 `conv2d` 、 `dense` 、 `max_pool2d` 等；一类是箭头代表的数据。
 
 ## op 和 layer
 算子(op)是比较常用的一种概念，是 OneFlow 中基本的运算单元，前面的 `reshape` 和 `nn.max_pool2d` 就是两种算子。
