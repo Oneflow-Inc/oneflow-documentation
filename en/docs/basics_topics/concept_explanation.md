@@ -1,4 +1,4 @@
-# Term/concept explanation
+# Term & Concept Explanation
 
 In this article, we will explain some common terms and concepts in OneFlow. The main content is divided for algorithm engineer and framework developers:
 

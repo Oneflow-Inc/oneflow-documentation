@@ -1,28 +1,36 @@
-## Install OneFlow launch edition
+## Installation
 
-Use following commands to install the latest version of OneFlow:
-```shell
+To install latest release of OneFlow with CUDA support:
+
+```
 python3 -m pip install --find-links https://oneflow-inc.github.io/nightly oneflow_cu102 --user
 ```
+    
 System requirements：
 
-* Python >= 3.5
+  - Python >= 3.5
+  - CUDA Toolkit Linux x86_64 Driver
+    | OneFlow |CUDA Driver Version|
+    |---|---|
+    | oneflow_cu102  | >= 440.33  |
+    | oneflow_cu101  | >= 418.39  |
+    | oneflow_cu100  | >= 410.48  |
+    | oneflow_cu92  | >= 396.26  |
+    | oneflow_cu91  | >= 390.46  |
+    | oneflow_cu90  | >= 384.81  |
 
-* Nvidia Linux x86_64 driver version >= 440.33
-
-If error shows that **cannot find** corresponding version, please try update `pip`：
+If there are error like "cannot find", please try to update `pip`:
 ```shell
 python3 -m pip install --upgrade --user pip
 ```
-## Install by compile source code of OneFlow
+## Build from source
 
-If you want to install by compile source code. Please reference to source code repository of OneFlow [README](https://github.com/Oneflow-Inc/oneflow/blob/develop/README.md). Before install by compile source code. We recommend you to read [Troubleshooting](https://github.com/Oneflow-Inc/oneflow/blob/develop/docs/source/troubleshooting.md).
+If you want to install OneFlow by building from source. Please refer to [README](https://github.com/Oneflow-Inc/oneflow/blob/develop/README.md) of OneFlow. Please read the [Troubleshooting](https://github.com/Oneflow-Inc/oneflow/blob/develop/docs/source/troubleshooting.md) for common issues you might encounter when compiling and running OneFlow.
 
+## Install OneFlow with legacy CUDA support
 
-
-## Install OneFlow with legacy CUDA
-Support earlier version of CUDA install commands：
-```shell
+To install OneFlow with legacy CUDA support, run one of:
+```
 python3 -m pip install --find-links https://oneflow-inc.github.io/nightly oneflow_cu101 --user
 python3 -m pip install --find-links https://oneflow-inc.github.io/nightly oneflow_cu100 --user
 python3 -m pip install --find-links https://oneflow-inc.github.io/nightly oneflow_cu92 --user
@@ -31,7 +39,7 @@ python3 -m pip install --find-links https://oneflow-inc.github.io/nightly oneflo
 ```
 
 ## QQ channel 
-If you meet any issue during installation, you are welcome to share you issue in QQ channel and let OneFlow fans to discuss：
+If you encounter any problems during installation, you are welcome to discuss in QQ channel or [submit issues to OneFlow](https://github.com/Oneflow-Inc/oneflow/issues).
 
 **QQ channel ID: 331883 or scan QR code below**
 

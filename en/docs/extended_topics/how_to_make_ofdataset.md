@@ -1,4 +1,4 @@
-## Loading and preparing OFRecord dataset
+## Loading and Preparing OFRecord Dataset
 
 In the article [data_input](../basics_topics/data_input.md) section, we know that because of the support of like multi-threading, scheduling of resources in OneFlow, the efficiency of processing data will be higher in OneFlow data-pipeline. Also, we learn about the operation in data-pipeline.
 

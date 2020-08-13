@@ -1,4 +1,4 @@
-# The definition and call of job function
+# The Definition and Call of Job Function
 
 In OneFlow, We encapsulate the training, predicting, inferential and some other tasks into a function, which is called job function. The job function is used to connect the user's business logic and the computing resource managed by OneFlow. 
 

@@ -1,4 +1,4 @@
-# The OFRecord data format
+# The OFRecord Data Format
 
 Deep Learning applications need complex multi-stage data preprocessing pipeline, the first step of data pipeline is data loading. OneFlow supports multiple data formats in data loading, among which `OFRecord` format is the native data format of OneFlow.
 

@@ -1,4 +1,4 @@
-## Use VS Code to debug OneFlow
+## Use VS Code to Debug OneFlow
 
 The developing environment of OneFlow is Linux. If we want to develop and debug OneFlow in GUI, we can use VS code with extension "Remote - SSH".
 
