@@ -1,6 +1,6 @@
 # Get results from job function
 
-In this article, we will talk about getting the returned value of a job function in OneFlow. It covers:
+In this article, we will talk about getting the return value of a job function in OneFlow. It covers:
 
 * How to get the return value from a job function synchronously.
 
@@ -207,7 +207,7 @@ train_job(images, labels)(cb_print_loss)
 ## Code
 
 ### Get single result synchronously
-We use LeNet as example in code below to get the single return value `loss` synchronously and print the loss every 20 iterations.
+We use LeNet as an example here to show how to get the return value `loss` synchronously and print the loss every 20 iterations.
 
 [synchronize_single_job.py](../code/basics_topics/synchronize_single_job.py)
 
