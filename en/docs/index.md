@@ -20,7 +20,7 @@ An open source deep learning platform with whole new frame design and the world'
 
 We are trying to build a deep learning framework that will amaze everyone! 
 
-Looking forward to your [feedbacks](https://github.com/Oneflow-Inc/oneflow/issues) and welcome to join our [ontributor community](contribute/intro.md).
+Looking forward to your [feedbacks](https://github.com/Oneflow-Inc/oneflow/issues) and welcome to join our [contributor community](contribute/intro.md).
 
 ## Get Started
 
@@ -28,8 +28,8 @@ Looking forward to your [feedbacks](https://github.com/Oneflow-Inc/oneflow/issue
 
 - Tackle the common tasks of machine learning with OneFlow in [Basic topics](basics_topics/data_input.md). Such as building network, hyper-parameters configuration, loading data, distributed training and so on.
 
-- If you want to know more about the characteristics of OneFlow, such as the format of OneFlow's data set, the parallelism view of OneFlow or how to debug OneFlow framework with vscode, please refer to [extended topic](extended_topics/job_function_define_call.md). 
+- If you want to know more about the characteristics of OneFlow, such as the format of OneFlow's dataset, the parallelism view of OneFlow or how to debug OneFlow framework with vscode, please refer to [extended topic](extended_topics/job_function_define_call.md). 
 
-- The [resnet example](adv_examples/resnet.md) showing how to train&evalute resnet model with OneFlow. More advance examples of deep learning applications can be found in [OneFlow Model Zoo repository](https://github.com/Oneflow-Inc/OneFlow-Benchmark). 
+In [advanced examples](adv_examples/resnet.md), we introduce models in [OneFlow Model Zoo repository](https://github.com/Oneflow-Inc/OneFlow-Benchmark). It is helpful for users to understand the models and other details.
 
-We highly expect developers and geeks to join our [ontributor community](contribute/intro.md). Together we can build a perfect deep learning framework.
+We highly expect developers and geeks to join our [contributor community](contribute/intro.md). Together we can build a perfect deep learning framework.
