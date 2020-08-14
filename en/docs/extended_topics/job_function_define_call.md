@@ -1,10 +1,10 @@
 # The Definition and Call of Job Function
 
-In OneFlow, we encapsulate the training, predicting, inferential and some other tasks into a function, which is called job function. The job function is used to connect the user's business logic and the computing resource managed by OneFlow. 
+In OneFlow, we encapsulate the training, inference and some other tasks into a "job function". The job function is used to connect the user's business logic and the computing resource managed by OneFlow. 
 
 In OneFlow, the function decorated by `@oneflow.global_function` decorator is the OneFlow's job function
 
-We mainly define the structure of the model and choose the optimization in job function. In addition, we can also pass some hyperparameters about training and environment configuration to the job function (like the following example: `get_train_config()`), OneFlow will manage the memory, GPU and other computing resource according to our configuration.
+We mainly define the structure of the model and choose the optimization target in job function. In addition, we can also pass some hyperparameters about training and some configuration of the environment to the job function (like the following example: `get_train_config()`), OneFlow will manage the memory, GPU and other computing resource according to our configuration.
 
 In this article, we will specifically learn about:
 
@@ -18,7 +18,7 @@ The job function is divided into two phases: definition and call.
 
 It's related to OneFlow's operating mechanism. Briefly, the OneFlow Python layer API simply describes the configuration and the training environment of the model. These information will pass to the C++ backend. After compilation, graph building and so on, the computation graph is obtained. Finally, the job function will be executed in OneFlow runtime.
 
-The definition of the job function, is actually doing the description of model and the configuration of training environment in Python. In this phase, there's no data here, we can only define the shape, data type of model's node, we call it as  **PlaceHolder**, which is convenient for model inference in the compilation and creating graph of OneFlow.
+The job function describes the model and the training environment. In this phase there's no data. We can only define the shape and data type of the nodes (as known as **PlaceHolder**) for creating and compiling the computation graph of OneFlow.
 
 The job function will be called after the OneFlow runtime starts. We can pass the data by calling job function and get the results. 
 
@@ -66,7 +66,7 @@ def train_job(
 
 ### The parameters of `oneflow.global_function`
 
-`oneflow.global_function` decorator accepts two parameters, there are `type` and `function_config`. 
+`oneflow.global_function` decorator accepts two parameters, `type` and `function_config`. 
 
 - The parameter `type` accepts a string, which can only set as `train` or `predict`. When we define a training model, we set it as `train`. We set is as `predict` when we define a model for testing or inferencing. 
 - The parameter `function_config` accepts an object which is constructed by `oneflow.function_config()`. In `function_config` object, we can use its method or attribute to config. As the following code. 
@@ -94,23 +94,23 @@ For the complete code, you can refer to [Consistent and Mirrored](consistent_mir
 
 Noted that the `images`、`logits`、`labels`、`loss` and some other objects have no data in our definition of the job function. They are used to describe **the shape and attribute of data**, which is called **PlaceHolder**.
 
-The PlaceHolder in job function's parameter, use `Numpy.Placeholder`, `ListNumpy.Placeholder`, `ListListNumpy.Placeholder` under the `oneflow.typing` to annotate the data type of job function's parameter. As we call the job function, we should pass the `numpy` object
+For the parameters of the job function, we use `Numpy.Placeholder`, `ListNumpy.Placeholder`, `ListListNumpy.Placeholder` in the `oneflow.typing` package to annotate the data type of them as `numpy.ndarray`, `Sequence[numpy.ndarray]` and `Sequence[Sequence[numpy.ndarray]]` respectively.
 
-Besides the several types under the `oneflow.typing`. The variable computed by OneFlow operators or layers, like the `reshape`、`hidden`、`logits`、`loss` and some other in above code, are also PlaceHolder.
+Besides the types of `oneflow.typing`, the variables returned from OneFlow operators or layers in the job function, like the `reshape`、`hidden`、`logits`、`loss` in the code above, are also PlaceHolder.
 
-Either of the variables mentioned above, they inherit the base class `BlobDef` directly or indirectly, we call this object type as **Blob** in OneFlow. 
+All the variables mentioned above inherit the base class `BlobDef` directly or indirectly. We call this object type as **Blob** in OneFlow. 
 
-The **Blob** has no data in definition of job function. It only plays the role of data placeholder which is convenient to framework inference.
+The **Blob** has no data when defining the job function. It only plays the role of data placeholder for building the graph.
 
 ### The return value of the job function
 
-The concept of the data placeholder **Blob** is emphasized above because the return value of the job function cannot be arbitrarily specified. It must be `Blob` type object or the container which only contains the `Blob` object. 
+The concept of the data placeholder **Blob** is emphasized above because the return value of the job function cannot be arbitrarily specified. It must be `Blob` type object or a container which only contains the `Blob` object. 
 
-As the `loss` returned in the above code, its type is `Blob` object
+For example, the `loss` returned in the above code is a `Blob` object
 
 The return values of job function should be annotated. As an example, `-> tp.Numpy` in above code means the function returns a `Blob` object.
 
-In another example, we can annotate the return value type as `-> Tuple[tp.Numpy, tp.Numpy]`.It means the function return a `tuple` which contains two `Blob` object
+As another example, we can annotate the return value type as `-> Tuple[tp.Numpy, tp.Numpy]`.It means the function returns a `tuple` which contains two `Blob` object
 
 You can refer to [Get the result of the job function](../basics_topics/async_get.md) for specific examples.
 
