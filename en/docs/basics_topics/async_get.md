@@ -1,12 +1,12 @@
 # Get results from job function
 
-In this article, we will mainly introduce how to get the return value from job function in OneFlow. It covers:
+In this article, we will talk about getting the returned value of a job function in OneFlow. It covers:
 
-* How to get the return value from job function synchronously.
+* How to get the return value from a job function synchronously.
 
-* How to get the return value from job function asynchronously.
+* How to get the return value from a job function asynchronously.
 
-In OneFlow, the function decorated by `@flow.global_function` is called "Job Function". Job function can be implmented for training, evaluation or prediction. By specifing the return type of job function, we can get results from job function both synchronously and asynchronously.
+In OneFlow, a function decorated by `@flow.global_function` is called "Job Function". Job function can be implmented for training, evaluation or prediction. By specifing the return type of job function, we can get results from job function both synchronously and asynchronously.
 
 ## Difference between synchronous and asynchronous
 
@@ -14,7 +14,7 @@ Usually, the process of training the model is synchronous. We will explain the c
 
 ### Synchronization
 
-During synchronous training, the training of the next step cannot be started until the work of the previous step is completed. 
+During synchronous training, the training of the next step cannot be started until the work of the previous step is completed.
 
 ### Asynchronization
 
@@ -557,5 +557,3 @@ Output：
 File mnist.npz already exist, path: ./mnist.npz
 accuracy: 97.6%
 ```
-
-
