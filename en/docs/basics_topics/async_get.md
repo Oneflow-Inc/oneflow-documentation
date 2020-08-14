@@ -18,7 +18,7 @@ During synchronous training, the training of the next step cannot be started unt
 
 ### Asynchronization
 
-In asynchronous training, it is equivalent to turning on multi-threading mode. A step does not have to wait for the completion of the previous step, but can carry out data preprocessing and loading in advance.
+In asynchronous training, it is equivalent to turning on multi-threading mode. A step does not have to wait until previous step completes. For instance data preprocessing and loading task could be runned in advance.
 
 Through the comparison above, it can be seen that the use of asynchronous execution job function in OneFlow can effectively utilize computer resources, especially in the case of loading huge data, enabling asynchronous execution can effectively shorten the data loading and preprocessing time, and accelerate the model training.
 
@@ -30,14 +30,14 @@ The main points are：
 
 * The data type of return value is selected in  `oneflow.typing`
 
-* When we call job function, the form of getting results synchronously / asynchronously is slightly different
+* When we call a job function, the form of getting results synchronously / asynchronously is slightly different
 
 
 ## Get result synchronously
 
 When we define a job function, if the annotation of the return type of the job function is `oneflow.typing.Numpy`, the job function will be called synchronously.
 
-For example, when we define the job function below:
+For example, when we define a job function like this:
 ```python
 @flow.global_function(type="train")
 def train_job(
@@ -54,7 +54,7 @@ def train_job(
     return loss
 ```
 
-Through the Python annotation, OneFlow will know that the returned type of the job function is `oneflow.typing.Numpy`, which corresponds to ndarray in numpy.
+Through Python annotations, OneFlow knows the type of the job function's return is `oneflow.typing.Numpy`, which corresponds to ndarray in numpy.
 
 ```python
 loss = train_job(images, labels)
@@ -64,7 +64,7 @@ if i % 20 == 0:
 
 From the example above, it should be noted that:
 
-* When we define the job function, the return value of job function (loss) is just a placeholder without data. It is for graph construction.
+* When we define the job function, the return value of job function (loss) is a placeholder for graph construction.
 
 * When we specify the return value type as `flow.typing.Numpy`. OneFlow will know that when the job function is called, the real data type returned is `numpy` object.
 
