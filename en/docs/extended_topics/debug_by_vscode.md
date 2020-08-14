@@ -1,6 +1,6 @@
 ## Use VS Code to Debug OneFlow
 
-The developing environment of OneFlow is Linux. If we want to develop and debug OneFlow in GUI, we can use VS code with extension "Remote - SSH".
+Usually we develop OneFlow on a remote Linux server. If we want to develop and debug OneFlow in GUI, we can use VS code with extension "Remote - SSH".
 
 If you are not familiar with VS code please refer to [official documentation](https://code.visualstudio.com/docs).
 
@@ -12,7 +12,7 @@ This article covers:
 
 ### Compile the Debug version of OneFlow.
 
-If we use the `Release` version of OneFlow, we may have problems with debugging because of the compiling optimization, and actual running position may not correspond to the source line.  
+If we use the `Release` version of OneFlow, we may have problems with debugging because of the compiling optimization, and actual running position may not correspond to the source line.
 
 Thus, we need to compile `Debug` version of OneFlow and generate the json file needed by clangd.
 
@@ -27,14 +27,14 @@ Above code:
 
 * `-DCMAKE_BUILD_TYPE=Debug` choose the version of Debug.
 
-* `-DCMAKE_EXPORT_COMPILE_COMMANDS` will generate a file named `compile_commands.json` in the `build` folder. The json file is  needed by clangd and we will configure it later.
+* `-DCMAKE_EXPORT_COMPILE_COMMANDS` will generate a file named `compile_commands.json` in the `build` folder. The json file is required by clangd and we will configure it later.
 
 ### Remote - SSH
 By the extension "Remote SSH" of VS Code, we can connect to a remote server through SSH.
 
 ![RemoteSSH](imgs/plugin-remote-ssh.png)
 
-We can connect to the server on which the OneFlow is running and we can debug the OneFlow on remote server **just as we debug local programs** . 
+With the help of "Remote SSH", we can attach to OneFlow running on a remote server and debug OneFlow as if we are debugging a local program.
 
 After installing the extension "Remote - SSH", press F1 and select `Remote-SSH: Connect to Host..` in the pop-up search bar. After that,we can set the SSH connection configuration and connect to the remote host.
 
@@ -58,7 +58,7 @@ Followings are required before we configure clangd:
 
 * We have already installed clangd on remote host through "Remote - SSH".
 
-* It is **NOT** recommended to install the extension "ms-vscode.cpptools C/C++" which is recommended by VS Code. Because it conflicts with clangd. 
+* It is **NOT** recommended to install the extension "ms-vscode.cpptools C/C++" which is recommended by VS Code. Because it conflicts with clangd.
 
 #### Install clangd
 The extensions on VS Code get information and display it by interacting with clangd service. Therefore, in addition to installing the clangd extension on VS Code, we also need to install clangd service program on the host (the remote Linux host in this article) where the OneFlow source code is located.
@@ -101,7 +101,7 @@ Press `Ctrl + Shift + D` (`command+shift+D` on MacOS)  or click the Run button o
 
 ![Run View](imgs/run-view.png)
 
-And then we choose `Create a launch.json file` first and next choose gdb template. 
+And then we choose `Create a launch.json file` first and next choose gdb template.
 
 ![gdb](imgs/gdb-select.png)
 
@@ -115,7 +115,7 @@ And then we can set the options:
             "type": "gdb",
             "request": "launch",
             "target": "/home/yaochi/.conda/envs/ycof/bin/python3", //python path
-            "arguments": "lenet_train.py", //script 
+            "arguments": "lenet_train.py", //script
             "cwd": "/home/yaochi/of_example", //script path
             "valuesFormatting": "parseText"
         }
