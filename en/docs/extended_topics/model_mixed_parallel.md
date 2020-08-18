@@ -64,19 +64,19 @@ The algorithm in `boxing` is complex. But it is transparent to users. The Illust
 
 ## Choose the optimal parallelism method
 
-The difference between data parallelism and model parallelism is not constant. The sample, model size and model structure decide the performance in distributed training. We need analysis  particular case.
+The difference between data parallelism and model parallelism is not constant. The sample, model size and model structure decide the performance in distributed training. We need to analyze the data to choose the optimal one.
 
 To be concluded:
 
-* In data parallelism case, the information need to synced is **gradient** in backpropagation. Thus, we need to make sure the synchronization's speed in different nodes is faster than the calculation's speed in side nodes. For example, the **Convolution Layer** has fewer parameters, but it need large scale of calculation. It is suitable for data parallelism.
+* In data parallelism case, the information needed to be synchronized is **gradient** in backpropagation. Thus, we need to make sure that synchronization of information between different nodes is faster than calculation inside nodes. For example, the **Convolution Layer** has few parameters, but it needs large scale of calculation. Therefore, it is suitable for data parallelism.
 
-* In model parallelism, we can send the complete model in logical to **each device**, which can be dealt with the oversize model problem. Thus it is suitable for the neural network with massive parameters (like fully connected layer) to use model parallelism.
+* In model parallelism, we divide the logical model equally and send them to **each device**, which will solve the oversize model problem. Thus it is suitable for the neural network with massive parameters (like fully connected layer) to use model parallelism.
 
-In fact, we can use **hybrid parallelism**, it means OneFlow uses different parallelism in different parts of training process. For example, at the beginning of the neural network, which have few parameters and need large calculation. We better use data parallelism. But the layer like fully connected layer which have many parameters, we should use model parallelism. The following figure is the demonstration for the neural network in begin of the article which use **hybrid parallelism**.
+In fact, we can use **hybrid parallelism**, it means OneFlow uses different parallelism in different parts of training process. For example, at the beginning of the neural network, it has few parameters and a lot of calculation, which makes it better to use data parallelism. For the layer with a lot of parameters, such as fully connected layer, we should use model parallelism. The following figure is the demonstration for the neural network which use **hybrid parallelism**.
 
 ![混合并行](imgs/para_consistent_mixed.png)
 
-Currently, other popular frameworks either do not support mixed parallelism or require deep customization. But in OneFlow, the hybrid parallelism distributed training can be configured through simple settings, and the distributed system can also be deeply optimized with the ultra-high degree of freedom pipelining mode.
+Currently, other popular frameworks either do not support mixed parallelism or require detailed customization. But in OneFlow, the hybrid parallelism distributed training can be configured through simple settings, and the distributed system can also be deeply optimized with the ultra-high degree of freedom pipelining mode.
 
 ## Hybrid parallelism example:
 
@@ -86,7 +86,7 @@ In `consistent`  view, we use hybrid parallelism to MLP model: the input layer a
 
 Complete Code: [hybrid_parallelism_mlp.py](../code/extended_topics/hybrid_parallelism_mlp.py)
 
-More explanations can be seen in later "code explanations"
+More explanations can be seen in "code explanations"
 
 ```python
 # hybrid_parallelism_mlp.py
@@ -181,9 +181,9 @@ def mlp(data):
                              )
 ```
 
-You may be curious about why `split(axis=0)` is column cutting. We need to explain is in OneFlow, `dense` is column storage. Thus the `flow.distribute.split(axis=0)` in above code do be split by column.
+You may be curious about why `split(axis=0)` is column cutting. To be explained, `dense` is column-oriented storage in OneFlow. Thus the `flow.distribute.split(axis=0)` in above code is split by column.
 
-In addition, `flow.layers.dense`  use `model_distribute`  to set parallelism mode, it use the common `get_variable` to create `blob` in basic level from inner, and internally calls the more general interface `get_variable` to create `blob`, The `get_variable` interface has a parameter named `distribute` to set the parallelism mode.
+In addition, `flow.layers.dense`  use `model_distribute`  to set parallelism mode, it use the common `get_variable` to create `blob` in basic level from inner, and internally calls the more general interface `get_variable` to create `blob`. The `get_variable` interface uses a parameter named `distribute` to set the parallelism mode.
 
 As you can see, we can change the single machine training program to a distributed, hybrid parallel program with few modifications, which is one of the features that distinguishes OneFlow from other frameworks.
 
@@ -191,15 +191,15 @@ As you can see, we can change the single machine training program to a distribut
 
 Besides the model parallelism, OneFlow also provides a more flexible parallelism method called pipelining, it allow user use  `scope.placement` to specify the device of the operator.
 
-In pipelining, the part of layers of whole network are on one device and other layers are on other devices. They work as relay, switch between devices in different phases.
+In pipelining, some parts of layers of the whole network are on one device and some are on other devices. They work consecutively as relay, switch between devices in different phases.
 
-In the following example, we change few code in "Using consistent view in OneFlow" of  [Consistent and Mirrored view](consistent_mirrored.md) and demonstrate pipelining.
+In the following example, we change a few codes in "Using consistent view in OneFlow" of  [Consistent and Mirrored view](consistent_mirrored.md) and demonstrate pipelining.
 
 ### Code Example
 
 Complete Code: [hybrid_parallelism_lenet.py](../code/extended_topics/hybrid_parallelism_lenet.py)
 
-More details please refer to code explanation later.
+Please refer to code explanation later for more details.
 
 ```python
 # hybrid_parallelism_lenet.py
@@ -288,9 +288,9 @@ if __name__ == "__main__":
 
 ### Code explanation
 
-There are only two important lines of code and they have same effect:
+There are only two important lines of code and they have similar effect:
 
-* Use `oneflow.scope.placement` to specify the operator run on number 0 device in  `hidden` layer.
+* Use `oneflow.scope.placement` to specify the operator run on device 0 in  `hidden` layer.
 
 ```python
   with flow.scope.placement("gpu", "0:0"):
@@ -303,7 +303,7 @@ There are only two important lines of code and they have same effect:
         
 ```
 
-* Use  `oneflow.scope.placement` to specify the operator in ` output ` layer run on number 1 device. 
+* Use  `oneflow.scope.placement` to specify the operator in ` output ` layer run on device 1. 
 
 ```python
   with flow.scope.placement("gpu", "0:1"):
@@ -312,14 +312,14 @@ There are only two important lines of code and they have same effect:
         )
 ```
 
-The first parameter in `scope.placement` is to specify `cpu` or `gpu`. The second parameter is to specify machine number and device. Like we use the device 2 on machine 1, it should be:
+The first parameter in `scope.placement` is to specify `cpu` or `gpu`. The second parameter is to specify machine number and device. For example, if we use the device 2 on machine 1, it should be:
 
 ```python
   with flow.scope.placement("gpu", "1:2"):
     # ...
 ```
 
-Pipelining can allow user to specify device for each op. It is very useful for user who master the distributed training to **optimize deeply**.
+Pipelining can allow user to specify which device to be used for each op. It is very useful for user who master the distributed training to **optimize deeply**.
 
-In addition, OneFlow also provides `oneflow.unpack`, `oneflow.pack`. Combined with the own features of task scheduling in OneFlow, they will make the pipelining easier to use and more efficient. We will introduce these in other article.
+In addition, OneFlow also provides API `oneflow.unpack`, `oneflow.pack`. Combined with the own features of task scheduling in OneFlow, they make the pipelining easier to be used and more efficient. We will introduce them in other article.
 
