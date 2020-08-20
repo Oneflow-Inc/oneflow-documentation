@@ -1,6 +1,6 @@
 ## Loading and Preparing OFRecord Dataset
 
-In article [data_input](../basics_topics/data_input.md), we know that multi-threading, scheduling of resources and orthe supporting process increase the efficiency of processing data in OneFlow data-pipeline. Also, we learn about the operation in data-pipeline.
+In article [data_input](../basics_topics/data_input.md), we know that multi-threading, scheduling of resources and other supporting process increase the efficiency of processing data in OneFlow data-pipeline. Also, we learn about the operation in data-pipeline.
 
 In article [OFRecord](ofrecord.md), we learn about the storage format of OFRecord files.
 
@@ -16,7 +16,7 @@ In this article, we will focus on the loading and generating of OneFlow's OFReco
 
 In article [OFRecord](ofrecord.md), we introduce what `OFRecord file ` is and the storage format of `OFRecord file`.
 
-OFRecord dataset is **the collection of OFRecord files **. The collection of mutiple files that named by OneFlow convention, and that stored in the same directory, is an OFRecord dataset.
+OFRecord dataset is **the collection of OFRecord files**. The collection of mutiple files that named by OneFlow convention, and that stored in the same directory, is an OFRecord dataset.
 
 By default, The files in OFRecord dataset directory are uniformly named in the way of `part-xxx`, where "xxx" is the file id starting from zero, and there can be choices about padding or non-padding.
 
