@@ -59,7 +59,7 @@ message OFRecord {
 
 Firstly let's explain the above important data types in details：
 
-* OFRecord: the instantiated object of OFRecord, which can be used to store all datas that need to be serialized. It is composed of many key-value pairs of string->Feature;
+* OFRecord: the instantiated object of OFRecord, which can be used to store all data that need to be serialized. It is composed of many key-value pairs of string->Feature;
 
 * Feature: can store one of the data type including BytesList, FloatList, DoubleList, Int32List, Int64List;
 
