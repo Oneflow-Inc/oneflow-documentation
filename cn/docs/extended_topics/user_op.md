@@ -72,7 +72,7 @@ message UserOpConf {
 6. 测试
 
 ## 示例
-我们将实现一个支持 cpu 及 GPU 运算的 "myrelu" 自定义 op。
+我们将实现一个支持 CPU 及 GPU 运算的 "myrelu" 自定义 op。
 完整的代码见 [code/extended_topics/create_user_op](https://github.com/Oneflow-Inc/oneflow-documentation/tree/master/cn/docs/code/extended_topics/create_user_op)。
 
 ### op 的实现与注册
@@ -113,7 +113,7 @@ REGISTER_USER_OP("myrelu")
     2. `Output("out")` 表示其有一个名为 "out" 的输出
     3. `SetTensorDescInferFn` 用于设置形状及数据类型推导函数，描述该算子的输出的形状及类型与输入的关系。以上代码中，输出的形状、数据类型与输入的一致
 
-### cpu kernel 的实现与注册
+### CPU kernel 的实现与注册
 我们在 `myrelu_cpu_kernel.cpp` 中实现了 CPU 版本的 kernel 并注册：
 ```cpp
 #include "oneflow/core/framework/framework.h"
@@ -170,7 +170,7 @@ REGISTER_RELU_KERNEL(DeviceType::kCPU, double)
 
 * `AlwaysComputeWhenAllOutputsEmpty` 必须重写，对于绝大多数 op 而言直接返回 `false` 即可。对于极少数内部需要维护状态，因此即使输出为空也需要调用 kernel 进行计算的 op 而言，应该返回 `true`
 
-实现 kernel 类后，需要调用 `REGISTER_USER_KERNEL` 注册。`REGISTER_USER_KERNEL("myrelu")` 所接受的字符串参数，其实是一个唯一的全局 ID，OneFlow 依据它完成注册和运行时查询工作，在 Python 层封装 op 时也需要使用这个 ID。
+实现 kernel 类后，需要调用 `REGISTER_USER_KERNEL` 注册。`REGISTER_USER_KERNEL("myrelu")` 所接受的字符串参数，就是 `op_type_name`， 依据 `op_type_name` 完成注册和运行时的查询工作，在 Python 层封装 op 时也需要使用这个 `op_type_name`。
 
 `REGISTER_USER_KERNEL("myrelu")` 会返回一个 `OpKernelRegistry` 对象，需要调用它的各个方法，设置注册信息。上文代码中涉及到
 
@@ -541,56 +541,128 @@ class XKernel final : public oneflow::user_op::OpKernel {
 
 ## OpGradRegistry 详细介绍
 
-Oneflow 在后向计算图展开过程中会自动求导，为了对自定义的 op 进行自动后向求导，我们需要通过宏 `REGISTER_USER_OP_GRAD` 进行注册。
+Oneflow 在后向计算图展开过程中会自动求导，OneFlow 框架采用 [Automatic Differentiation](https://en.wikipedia.org/wiki/Automatic_differentiation) 方法求导，即利用链式法则自动求出整个表达式的梯度。
 
-注册过程主要是设置一个后向生成函数，在该函数中，根据这个 op 的输出的梯度计算输入的梯度。
+为了对自定义的 op 进行自动求导，我们需要通过宏 `REGISTER_USER_OP_GRAD` 进行注册。从数学角度上看，注册过程就是我们为自定义的 op，指定后向求导的计算方法。从编程角度看，就是为自定义 op 设置一个后向生成函数，在该函数中，编写代码，指定这个 op 的输入梯度的计算方法。
 
-我们可以通过已有的其他 op 来构建这个后向展开的子图，当无法用已有 op 来描述后向时，则需要自己实现一个后向 grad_op 来表示。
+为计算自定义 op 的梯度，我们需要根据自定义 op 的输入、输出以及输出的梯度，构造出输入的梯度。在大多数情况下，我们可以通过 OneFlow 中已有的算子及其组合形式，表示出输入的梯度的计算过程。
 
-后向生成函数的任务是根据前向 op 的输入生成一个子图，这个子图接收前向 op 的输入输出以及输出的梯度。
+编写代码，表示输入的梯度的计算过程，通常包含下面几步：
 
-该子图的最终输出是前向 op 输入 blob 对应的梯度。
+1. 使用 `ctx->DefineOp()` 和 `BackwardOpBuilder` 来表示计算输入的梯度的方法，因为输入的梯度计算可能是多种运算的组合，因此 `DefineOp` 及 `BackwardOpBuilder` 可能被多次使用；
 
-因此针对每个（可能）需要生成梯度的前向输入，我们都需要构建生成梯度的子图，并将子图的输出的 blob 对应的前向输入的梯度绑定。
+2. 经过上一步定义了计算过程后，最终在某个算子的输出中，记录了需要的梯度。我们需要调用 `ctx->FwOp().InputGradBind()` 方法，将上一步的计算结果和自定义 op 的输入梯度绑定。
 
-编写这个生成子图的过程通常包含下面几步：
+以下示例（包含测试在内的完整代码见 [仓库的 myop_grad 目录](https://github.com/Oneflow-Inc/oneflow-documentation/tree/master/cn/docs/code/extended_topics/myop_grad)），我们将针对一个名为 `myop` 的自定义 op 来注册其后向生成函数。这个 op 仅用于本文展示注册过程，不考虑实际用途，`myop` 的计算功能设定为计算 `3*x*x`。
 
-1. 使用 `ctx->DefineOp()` 和 `BackwardOpBuilder` 来构建这个子图中的 new_op，通常这些 new_op 的输入是前向 op 的输入或输出，或者是它们对应的梯度；
+那么，容易得到其前向传播和后向传播的关系如下图所示，即反向过程中，`x` 的梯度计算公式为 `6*x*dy`：
 
-2. 使用 `ctx->FwOp().InputGradBind()` 和 `ctx->GetOp()` 将前向 op 的输入的梯度绑定到子图的输出的 blob 上。
+<div align="center">
+  <img src="imgs/chainrule.png">
+  </img>
+</div>
 
-以下示例，来自 OneFlow 实现的 `relu` op，完整代码可以参考 [relu_op.cpp](https://github.com/Oneflow-Inc/oneflow/blob/master/oneflow/user/ops/relu_op.cpp)，其后向生成函数的注册示例如下：
+`myop` 的前向 op 定义如下：
 ```cpp
-#include "oneflow/core/framework/framework.h"
+REGISTER_USER_OP("myop").Input("in").Output("out").SetTensorDescInferFn(
+    [](user_op::InferContext *ctx) -> Maybe<void> {
+      *ctx->Shape4ArgNameAndIndex("out", 0) =
+          *ctx->Shape4ArgNameAndIndex("in", 0);
+      *ctx->Dtype4ArgNameAndIndex("out", 0) =
+          *ctx->Dtype4ArgNameAndIndex("in", 0);
+      return Maybe<void>::Ok();
+    });
+```
+即 `myop` 包含唯一的输入 `in` 和唯一的输出 `out`。
 
-namespace oneflow {
-
-REGISTER_USER_OP_GRAD("relu")
-  .SetBackwardOpConfGenFn(
+`myop` 的反向梯度注册代码如下：
+```cpp
+REGISTER_USER_OP_GRAD("myop").SetBackwardOpConfGenFn(
     [](user_op::BackwardOpConfContext* ctx) {
-      const auto relu_grad_op_name = \
-        ctx->FwOp().op_name() + "_grad";
-      ctx->DefineOp(relu_grad_op_name, 
+
+      const auto op1_name = ctx->FwOp().op_name() + "_grad1";
+      
+      // 算子 op1_name 用于计算 myop.in*(myop.out的梯度)
+      ctx->DefineOp(op1_name, 
         [&ctx](user_op::BackwardOpBuilder& builder) {
-          return builder.OpTypeName("relu_grad")
-              .InputBind("y", ctx->FwOp().output("out", 0))
-              .InputBind("dy", ctx->FwOp().output_grad("out", 0))
-              .Output("dx")
+          return builder.OpTypeName("multiply")
+              .InputBind("x", ctx->FwOp().input("in", 0)) //multiply.x <- myop.in
+              .InputBind("y", ctx->FwOp().output_grad("out", 0)) //multiply.y <- myop.out的梯度
+              .Output("out")
               .Build();
         });
+
+      const auto op2_name = ctx->FwOp().op_name() + "_grad2";
+      // 算子 op2_name 用于计算 6*op1_name
+      ctx->DefineOp(op2_name, 
+        [&ctx, &op1_name](user_op::BackwardOpBuilder& builder) {
+          return builder.OpTypeName("scalar_mul")
+              .InputBind("in", ctx->GetOp(op1_name).output("out", 0))
+              .Attr("has_float_operand", true)
+              .Attr("has_int_operand", false)
+              .Attr("float_operand", static_cast<double>(6))
+              .Attr("int_operand", static_cast<int64_t>(6))
+              .Output("out")
+              .Build();
+        });
+      
+      // (myop.in的梯度) <- op1_name.out
       ctx->FwOp().InputGradBind(user_op::OpArg("in", 0), 
-        [&ctx, &relu_grad_op_name]() -> const std::string& {
-          return ctx->GetOp(relu_grad_op_name)
-                .output("dx", 0);
+        [&ctx, &op2_name]() -> const std::string& {
+          return ctx->GetOp(op2_name)
+                .output("out", 0);
         });
   });
-
-}  // namespace oneflow
 ```
 
-宏 `REGISTER_USER_OP_GRAD("relu")` 接受的字符串就是 op 的全局唯一名称，需要与 `REGISTER_USER_OP` 注册时的参数一致。
+宏 `REGISTER_USER_OP_GRAD("myop")` 接受的字符串参数是 `op_type_name`，需要与 `REGISTER_USER_OP` 注册时的一致。
 
-`REGISTER_USER_OP_GRAD("relu")` 会返回一个 `oneflow::user_op::OpGradRegistry` 对象，我们通过调用它的方法，设置自定义 op 的后向生成函数。
+`REGISTER_USER_OP_GRAD("myop")` 会返回一个 `oneflow::user_op::OpGradRegistry` 对象，我们通过调用它的方法，设置自定义 op 的后向生成函数。
+
+以上梯度注册的过程中，我们最终要求的 `myop` 的输入的梯度的表达式为 `6*x*dy`，可以从代码中看到这个求解过程。
+
+首先，定义了 `op1_name`，利用已有的算子 `multiply` 求解 `x*dy`：
+```cpp
+// 算子 op1_name 用于计算 myop.in*(myop.out的梯度)
+ctx->DefineOp(op1_name, 
+  [&ctx](user_op::BackwardOpBuilder& builder) {
+    return builder.OpTypeName("multiply")
+        .InputBind("x", ctx->FwOp().input("in", 0)) //multiply.x <- myop.in
+        .InputBind("y", ctx->FwOp().output_grad("out", 0)) //multiply.y <- myop.out的梯度
+        .Output("out")
+        .Build();
+  });
+```
+
+然后，定义了 `op2_name`，利用已有的算子 `op2_name` 求解 `6*op1_name`，即 `6*x*dy`。
+
+```cpp
+// 算子 op2_name 用于计算 6*op1_name
+ctx->DefineOp(op2_name, 
+  [&ctx, &op1_name](user_op::BackwardOpBuilder& builder) {
+    return builder.OpTypeName("scalar_mul")
+        .InputBind("in", ctx->GetOp(op1_name).output("out", 0))
+        .Attr("has_float_operand", true)
+        .Attr("has_int_operand", false)
+        .Attr("float_operand", static_cast<double>(6))
+        .Attr("int_operand", static_cast<int64_t>(6))
+        .Output("out")
+        .Build();
+  });
+```
+
+最后，将 `op2_name` 的输出结果（即 `6*x*dy`）绑定到 `myop` 的输入的梯度上，完成注册。
+
+```cpp
+// (myop.in的梯度) <- op1_name.out
+ctx->FwOp().InputGradBind(user_op::OpArg("in", 0), 
+  [&ctx, &op2_name]() -> const std::string& {
+    return ctx->GetOp(op2_name)
+          .output("out", 0);
+  });
+```
+
+以上是完整的注册梯度的流程，以下分别介绍相关的类及方法。
 
 ### SetBackwardOpConfGenFn 方法
 我们使用 `OpGradRegistry::SetBackwardOpConfGenFn(fn)` 设置后向生成函数 `fn`，后向生成函数 `fn` 的函数原型如下：
@@ -601,6 +673,8 @@ void fn(BackwardOpConfContext* ctx);
 `BackwardOpConfContext* ctx` 带有生成 op 所需要的信息。
 
 ### BackwardOpConfContext 详细介绍
+`BackwardOpConfContext` 类中的常用方法及其作用如下：
+
 * `UserOpWrapper& FwOp();`：获取前向 op
 
 * `GetOp(op_name)`: 根据 `op_name` 创建并获取对应的 `op`，`GetOp` 采用延迟创建机制(lazy init)，只有 `GetOp` 被调用时，对应的 op 才会被真正创建
@@ -612,22 +686,23 @@ void fn(BackwardOpConfContext* ctx);
 
 `BackwardOpBuilder` 用于构建一个反向 op。以上文中的代码片段为例
 ```cpp
-[&ctx](user_op::BackwardOpBuilder& builder) {
-  return builder.OpTypeName("relu_grad")
-      .InputBind("y", ctx->FwOp().output("out", 0))
-      .InputBind("dy", ctx->FwOp().output_grad("out", 0))
-      .Output("dx")
-      .Build();
-});
+ctx->DefineOp(op1_name, 
+  [&ctx](user_op::BackwardOpBuilder& builder) {
+    return builder.OpTypeName("multiply")
+        .InputBind("x", ctx->FwOp().input("in", 0)) //multiply.x <- myop.in
+        .InputBind("y", ctx->FwOp().output_grad("out", 0)) //multiply.y <- myop.out的梯度
+        .Output("out")
+        .Build();
+  });
 ```
-我们在这个函数中，最终调用 `Build` 构建了一个反向 op。
+我们在这个函数中，最终调用 `Build` 构建了一个用于计算 `x*dy` 的反向 op。
 各个接口的作用如下：
 
-* `OpTypeName("relu_grad")` 指定一个前向 op 的全局唯一名称，我们将要构建的反向 op 将与其绑定
+* `OpTypeName("multiply")` 指定一个 op 的 `op_type_name`，使用这个 op 来帮助我们进行反向梯度的计算
 
-* `InputBind(arg_name, blob)` 将 `arg_name` 与 指定的 `blob` 进行绑定，可以调用多次，如果该 `arg_name` 对应多个输入blob，则调用 `Input` 的顺序就是其对应的 index 顺序
+* `InputBind(arg_name, blob)` 将 `multiply` 的输入 `arg_name` 与 指定的 `blob` 进行绑定，可以调用多次，如果该 `arg_name` 对应多个输入blob，则调用 `Input` 的顺序就是其对应的 index 顺序
 
-* `Output(arg_name, num)` 指定一个 `arg_name` 实际对应的输出blob 的数量，如果不填 `num`，则 `num` 默认为1
+* `Output(arg_name, num)` 指定一个 `arg_name` 实际对应的输出 blob 的数量，如果不填 `num`，则 `num` 默认为1
 
 * `Attr(attr_name, val)` op 设置属性值，与注册 op 时的用法一样
 
@@ -635,14 +710,13 @@ void fn(BackwardOpConfContext* ctx);
 
 
 ### UserOpWrapper 详细介绍
-调用 `ctx->FwOp()` 会返回 `UserOpWrapper` 对象，通过调用 `UserOpWrapper` 的方法，完成梯度绑定。
+调用 `ctx->FwOp()` 会返回代表前向自定义 op，即 `myop` 的 `UserOpWrapper` 对象，通过调用 `UserOpWrapper` 的方法，完成梯度绑定。
 
 ```cpp
-ctx->FwOp().InputGradBind(
-  user_op::OpArg("in", 0), 
-  [&ctx, &relu_grad_op_name]() {
-    return ctx->GetOp(relu_grad_op_name)
-          .output("dx", 0);
+ctx->FwOp().InputGradBind(user_op::OpArg("in", 0), 
+  [&ctx, &op2_name]() -> const std::string& {
+    return ctx->GetOp(op2_name)
+          .output("out", 0);
   });
 ```
 
@@ -654,11 +728,15 @@ ctx->FwOp().InputGradBind(
 
 * `output(arg_name,index)`：得到输出 `arg_name` 对应的 blob
 
-* `output_grad(output_arg_name, index)`： 返回前向 op 的输出 `output_arg_name` 对应的后向梯度的blob
+* `output_grad(output_arg_name, index)`： 返回前向 op 的输出 `output_arg_name` 对应的后向梯度的 blob
 
 * `attr(attr_name)`：获取属性 `attr_name` 对应的值
 
 * `arg_tensor_desc(arg_name, index)`：返回前向 op 的输入/输出对应的 tensor 信息，包含 `shape`、`dtype` 等
+
+### 为计算梯度定制 op
+我们前文提到，在大多数情况下，可以通过已有 op 的组合，表示计算梯度的过程。但是，当某些特殊的前向 op，难以使用已有 op 描述其梯度求解过程时，我们需要为计算梯度专门设计和创建算子。这方面的例子可以参考 [relu_op.cpp](https://github.com/Oneflow-Inc/oneflow/blob/master/oneflow/user/ops/relu_op.cpp)。
+
 
 ## UserOpConfBuilder 详细介绍
 在 OneFlow 的 Python 前端中，提供了 `UserOpConfBuilder` 构建自定义 op 的 wrapper，在上文 [在 Python 中使用自定义 op](./user_op.md#python-op) 中已经使用。在这里我们总结下 Python 层的 `UserOpConfBuilder` 的各方法接口与 C++ 层的对应关系。
