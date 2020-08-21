@@ -1,6 +1,6 @@
 # Loading and saving of model
 
-For loading and saving for model, the common scenario is:
+For loading and saving for model, the common scences is:
 
 * Save the model that has been trained for a while to facilitate the next training.
 
@@ -8,7 +8,7 @@ For loading and saving for model, the common scenario is:
 
 Strictly speaking, we save the untrained model as `checkpoint` or `snapshot`. It is different with `model saving` of a completed model.
 
-However, no matter the model has been trained or not, we can use the same **interface** to save model. Thus, like the `model`、`checkpoint`、`snapshot` we see in other framework is no difference in OneFlow. We all use `flow.train.CheckPoint` as the interface.
+However, no matter the model has been trained or not, we can use the same **interface** to save model. Thus, like the `model`、`checkpoint`、`snapshot` we see in other framework is no difference in OneFlow. We use `flow.train.CheckPoint` as the interface.
 
 In this article, we will introduce:
 
@@ -22,7 +22,7 @@ In this article, we will introduce:
 
 ## Use get_variable to create/obtain model parameters object
 
-We can use `oneflow.get_variable` to create or obtain an object and this object can be used to interact with information in global job functions. When we call the interface of `OneFlow.CheckPoint`, this object will also be stored automatically or recovered from storage devices.
+We can use `oneflow.get_variable` to create or obtain an object and this object can be used to interact with information in global job functions. When we call the interfaces of `OneFlow.CheckPoint`, this object will also be stored automatically or recovered from storage devices.
 
 Because of this feature, the object created by `get_variable` is used to store model parameters. In fact, there are many high level interface in OneFlow (like `oneflow.layers.conv2d`) use `get_variable` internally to create model parameters internally.
 
@@ -113,7 +113,7 @@ We get the CheckPoint object by instantiating `oneflow.train.CheckPoint()`. Ther
 
 * `load` : Import the model parameters from `path` and use them to initialize parameters.
 
-The prototype of `init` is as follows. Before training, we need use `init` to initialize the parameters in network.
+The prototype of `init` is as follows. Before training, we need to use `init` to initialize the parameters in network.
 
 ```python
 def init(self)
@@ -255,7 +255,7 @@ In model finetune and transfer learning, we always need：
 
 For this, the following procedures in `flow.train.CheckPoint.load` are as follow:
 
-* According the model defined in job function, traverse the saved path of the model and try to load the parameters.
+* According to the model defined in job function, traverse the saved path of the model and try to load the parameters.
 
 * If the corresponding parameter is found, the parameter is loaded.
 
