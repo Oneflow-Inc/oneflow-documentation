@@ -252,7 +252,7 @@ if __name__ == '__main__':
   check_point.save('./lenet_models_1') 
 ```
 
-After model saved successfully, we will get a **folder** called "lenet_models_1". This folder contains directories and files corresponding with the model parameters.
+When the model is saved, we will get a **folder** called "lenet_models_1". This folder contains directories and files corresponding with the model parameters.
 
 ### Model loading
 
@@ -268,8 +268,7 @@ if __name__ == '__main__':
 Code above will automatically load the model we saved previously.
 
 ## Evaluation of model
-The job function for evaluation is **basically same** as job function for training. The small difference is that the model we use is already saved in evaluation process. Thus, initialization and update of model during iteration are not required.
-
+The job function for evaluation is **basically same** as job function for training. The small difference is that the model we use is already saved in evaluation process. Thus, initialization and update of model during iteration are not needed.
 
 ### Job function for evaluation
 ```python
