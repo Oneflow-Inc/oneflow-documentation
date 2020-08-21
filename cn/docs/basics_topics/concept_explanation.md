@@ -40,7 +40,7 @@ def test_job(
 
 
 
-Blob在 OneFlow 中有对应的基类 `BlobDef`，搭建网络时可以打印 `Blob` 的属性，比如一下代码打印 `conv1` 的 `shape` 和 `dtype` ：
+Blob在 OneFlow 中有对应的基类 `BlobDef`，搭建网络时可以打印 `Blob` 的属性，比如以下代码打印 `conv1` 的 `shape` 和 `dtype` ：
 
 ```python
 print(conv1.shape, conv1.dtype)
