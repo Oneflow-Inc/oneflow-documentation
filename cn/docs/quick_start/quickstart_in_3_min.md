@@ -10,15 +10,16 @@ python3 mlp_mnist.py #运行脚本
 
 我们将得到类似以下输出：
 ```
-2.7290366
-0.81281316
-0.50629824
-0.35949975
-0.35245502
+Epoch [1/20], Loss: 2.3155
+Epoch [1/20], Loss: 0.7955
+Epoch [1/20], Loss: 0.4653
+Epoch [1/20], Loss: 0.2064
+Epoch [1/20], Loss: 0.2683
+Epoch [1/20], Loss: 0.3167
 ...
 ```
 
-输出的是一串数字，每个数字代表了每一轮训练后的损失值，训练的目标是损失值越小越好。到此您已经用 OneFlow 完成了一个完整的神经网络的训练。
+输出的是一串数字，每个数字代表了训练的损失值，训练的目标是损失值越小越好。到此您已经用 OneFlow 完成了一个完整的神经网络的训练。
 
 ## 代码解读
 下面是完整代码。
@@ -26,9 +27,9 @@ python3 mlp_mnist.py #运行脚本
 # mlp_mnist.py
 import oneflow as flow
 import oneflow.typing as tp
+import numpy as np
 
 BATCH_SIZE = 100
-
 
 @flow.global_function(type="train")
 def train_job(
@@ -36,23 +37,24 @@ def train_job(
     labels: tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32),
 ) -> tp.Numpy:
     with flow.scope.placement("cpu", "0:0"):
-        initializer = flow.truncated_normal(0.1)
         reshape = flow.reshape(images, [images.shape[0], -1])
+        initializer1 = flow.random_uniform_initializer(-1/28.0, 1/28.0)
         hidden = flow.layers.dense(
             reshape,
-            512,
+            500,
             activation=flow.nn.relu,
-            kernel_initializer=initializer,
+            kernel_initializer=initializer1,
+            bias_initializer=initializer1,
             name="dense1",
         )
+        initializer2 = flow.random_uniform_initializer(-np.sqrt(1/500.0), np.sqrt(1/500.0))
         logits = flow.layers.dense(
-            hidden, 10, kernel_initializer=initializer, name="dense2"
+            hidden, 10, kernel_initializer=initializer2, bias_initializer=initializer2, name="dense2"
         )
         loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits)
 
-    lr_scheduler = flow.optimizer.PiecewiseConstantScheduler([], [0.1])
-    flow.optimizer.SGD(lr_scheduler, momentum=0).minimize(loss)
-
+    lr_scheduler = flow.optimizer.PiecewiseConstantScheduler([], [0.001])
+    flow.optimizer.Adam(lr_scheduler).minimize(loss)
     return loss
 
 
@@ -63,10 +65,12 @@ if __name__ == "__main__":
     (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(
         BATCH_SIZE, BATCH_SIZE
     )
-    for i, (images, labels) in enumerate(zip(train_images, train_labels)):
-        loss = train_job(images, labels)
-        if i % 20 == 0:
-            print(loss.mean())
+    for epoch in range(20):
+        for i, (images, labels) in enumerate(zip(train_images, train_labels)):
+            loss = train_job(images, labels)
+            if i % 20 == 0:
+                print('Epoch [{}/{}], Loss: {:.4f}'
+                      .format(epoch + 1, 20, loss.mean()))
 ```
 
 接下来让我们简单介绍下这段代码。
@@ -86,9 +90,10 @@ def train_job(
 * 一部分是这个神经网络本身的结构和相关参数，这些在上文提到的作业函数里定义；
 
 * 另外一部分是使用什么样的配置去训练这个网络，比如 `learning rate` 、模型优化更新的方法。这些job function里配置如下：
-
-  `lr_scheduler = flow.optimizer.PiecewiseConstantScheduler([], [0.1])`
-  `flow.optimizer.SGD(lr_scheduler, momentum=0).minimize(loss)`
+```python
+    lr_scheduler = flow.optimizer.PiecewiseConstantScheduler([], [0.001])
+    flow.optimizer.Adam(lr_scheduler).minimize(loss)
+```
 
 这段代码里包含了训练一个神经网络的所有元素，除了上面说的作业函数及其配置之外：
 
@@ -98,7 +103,7 @@ def train_job(
 
 - ` train_job(images, labels)`: 返回每一次训练的损失值；
 
-- `print(loss.mean())`: 每训练20次，打印一次损失值。
+- `print(..., loss.mean())`: 每训练20次，打印一次损失值。
 
 
 
@@ -107,7 +112,3 @@ def train_job(
 
 
 我们同时还提供了一些经典网络的[样例代码](https://github.com/Oneflow-Inc/OneFlow-Benchmark)及数据供参考。
-
-
-
-
