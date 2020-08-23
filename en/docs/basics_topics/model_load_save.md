@@ -1,14 +1,14 @@
 # Loading and saving of model
 
-For loading and saving for model, the common scenario is:
+For loading and saving for model, the common scenes is:
 
 * Save the model that has been trained for a while to facilitate the next training.
 
 * Save trained model for reproduction(Such as Model Serving). 
 
-Strictly speaking, we save the untrained model as `checkpoint` or `snapshot`. It is different with `model saving` of a completed model.
+Strictly speaking, we save the untrained model as `checkpoint` or `snapshot`. It is different from `model saving` of a completed model.
 
-However, no matter the model has been trained or not, we can use the same **interface** to save model. Thus, like the `model`、`checkpoint`、`snapshot` we see in other framework is no difference in OneFlow. We all use `flow.train.CheckPoint` as the interface.
+However, no matter the model has been trained or not, we can use the same **interface** to save model. Thus, like the `model`、`checkpoint`、`snapshot` we see in other framework is no difference in OneFlow. We  use `flow.train.CheckPoint` as the interface.
 
 In this article, we will introduce:
 
@@ -24,13 +24,13 @@ In this article, we will introduce:
 
 We can use `oneflow.get_variable` to create or obtain an object and this object can be used to interact with information in global job functions. When we call the interface of `OneFlow.CheckPoint`, this object will also be stored automatically or recovered from storage devices.
 
-Because of this feature, the object created by `get_variable` is used to store model parameters. In fact, there are many high level interface in OneFlow (like `oneflow.layers.conv2d`) use `get_variable` internally to create model parameters internally.
+Because of this feature, the object created by `get_variable` is used to store model parameters. In fact, there are many high level interfaces in OneFlow (like `oneflow.layers.conv2d`) use `get_variable` internally to create model parameters.
 
 ### Process of get_variable create/obtain object
 
 The `get_variable`  requires a specified `name` as the identity of the created object. 
 
-If the `name` value already existed in the program, then get_variable will get the existing object and return.
+If the `name` value already existed in the program, then get_variable will get the existed object and return.
 
 If the `name` value doesn't exist in the program, `get_variable` will create a blob object internally and return.
 
@@ -52,7 +52,7 @@ def get_variable(
 )
 ```
 
-The following example use `get_variable` to create parameters and build the network with `oneflow.layers.conv2D`:
+The following example use `get_variable` to create parameters and build the network with `oneflow.layers.conv2d`:
 
 ```python
     #...
@@ -70,7 +70,7 @@ The following example use `get_variable` to create parameters and build the netw
 
     output = flow.nn.conv2d(
         inputs, weight, strides, padding, data_format, dilation_rate, groups=groups, name=name
-    )z
+    )
     #...
 ```
 
@@ -113,7 +113,7 @@ We get the CheckPoint object by instantiating `oneflow.train.CheckPoint()`. Ther
 
 * `load` : Import the model parameters from `path` and use them to initialize parameters.
 
-The prototype of `init` is as follows. Before training, we need use `init` to initialize the parameters in network.
+The prototype of `init` is as follows. Before training, we need to use `init` to initialize the parameters in network.
 
 ```python
 def init(self)
@@ -240,7 +240,7 @@ We can see:
 
 * In the network in job function, each variable is corresponding to a sub-directory.
 
-* All subdirectories above have an  `out` document. It stores the parameters of network in binary form. `Out` is the default file name. We can change that by `variable op` in the network.
+* All subdirectories above have an  `out` document. It stores the parameters of network in binary form. `out` is the default file name. We can change that by `variable op` in the network.
 
 * `Snapshot_done` is an empty folder. If it exists, it means that the network training has been finished. 
 
