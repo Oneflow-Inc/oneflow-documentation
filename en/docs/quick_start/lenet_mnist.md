@@ -1,6 +1,6 @@
 # Recognition of MNIST Handwritten Digits
 
-In this article, we will cover topics below:
+This article covers topics below:
 
 * Interfaces for software and hardware environment configuration
 
@@ -8,18 +8,18 @@ In this article, we will cover topics below:
 
 * Implementation of job function for training
 
-* Save/load model
+* How to save/load model
 
 * Implementation of job function for evaluation
 
-This article demonstrat the core steps of how to train a LeNet model by MNIST dataset using OneFlow. The full example code is attached at the end of article.
+This article demonstrates the core steps of how to train a LeNet model by MNIST dataset using OneFlow. The full example code is attached at the end of article.
 
-You can see the effects of each script by running the following commands.
+You can see the effects of each script by running the following commands (GPU device is required).
 
 First of all, clone the documentation repository and switch to the corresponding path:
 ```shell
 git clone https://github.com/Oneflow-Inc/oneflow-documentation.git
-cd oneflow-documentation/docs/code/quick_start/
+cd oneflow-documentation/en/docs/code/quick_start/
 ```
 
 * Training model
@@ -30,7 +30,7 @@ The command above will train a model by MNIST dataset and save it.
 
 Output：
 
-```she
+```shell
 File mnist.npz already exist, path: ./mnist.npz
 5.9947124
 1.0865117
@@ -41,7 +41,9 @@ File mnist.npz already exist, path: ./mnist.npz
 0.23443426
 ...
 ```
-A trained model is the prerequisite of `lenet_eval.py` and `lenet_test.py` or we can directly download trained model to skip the training progress:
+
+> A trained model is the prerequisite of `lenet_eval.py` and `lenet_test.py` or we can directly download trained model to skip the training progress:
+
 ```shell
 #change directory to: en/docs/code/quick_start/ 
 wget https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/quick_start/lenet_models_1.zip
@@ -52,7 +54,7 @@ unzip lenet_models_1.zip
 ```
 python lenet_eval.py
 ```
-The command above use the MNIST's testing set to evaluate the training model and print the accuracy.
+The command above use the MNIST's testing set to evaluate the trained model and print the accuracy.
 
 Output：
 
@@ -67,7 +69,7 @@ accuracy: 99.4%
 python lenet_test.py ./9.png
 # Output：prediction: 9
 ```
-The above command will use the training model we just saved to predict the content of file "9.png". We can also download and verify more from [prepared images](https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/quick_start/mnist_raw_images.zip).
+The above command will use the trained model we just saved to predict the content of file "9.png". We can also download and verify more from [prepared images](https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/quick_start/mnist_raw_images.zip).
 
 ## Introduction of MNIST dataset 
 
@@ -165,15 +167,15 @@ def train_job(
 So Far, we use `flow.nn.sparse_softmax_cross_entropy_with_logits` to calculate the loss and specify it as optimization goal.
 
 
- **lr_scheduler** set the learning rate schedule, `[0.1]` means learning rate is 0.1；
+ **lr_scheduler** sets the learning rate schedule, and `[0.1]` means learning rate is 0.1；
 
- **flow.optimizer.SGD** means SGD is specified as the optimizer. The `loss` is the return value, meanwhile the goal of minimization to the optimizer.
+ **flow.optimizer.SGD** means SGD is specified as the optimizer. The `loss` is the goal of minimization to the optimizer, meanwhile the return type (not requried).
 
 ## Call the job function and get results
 
-We can start the training by invoking the job function.
+We can start training by invoking the job function.
 
-The return value we get when we call the job function is define by the annotation of return value type in job function. 
+The return value we get when we call the job function is defined by the annotation of return value type in job function. 
 
 We can get one or multiple results after each call to job function.
 
@@ -233,7 +235,7 @@ We call the job function and get `labels` and `logits` then use them to evaluate
 
 
 ### Synchronous and asynchronous call
-All code in this article only use synchronous call to get results from job function. In fact, OneFlow can call job function asynchronously. For more details, please refer to [Obtain results from job function](../basics_topics/async_get.md).
+All code in this article only call synchronously to get results from job function. In fact, OneFlow can call job function asynchronously. For more details, please refer to [Obtain results from job function](../basics_topics/async_get.md).
 
 
 ## Model Initialization, saving and loading
@@ -250,7 +252,7 @@ if __name__ == '__main__':
   check_point.save('./lenet_models_1') 
 ```
 
-After model saved successfully, we will get a **folder** called "lenet_models_1". This folder contains directories and files corresponding with the model parameters.
+When the model is saved, we will get a **folder** called "lenet_models_1". This folder contains directories and files corresponding with the model parameters.
 
 ### Model loading
 
@@ -266,8 +268,7 @@ if __name__ == '__main__':
 Code above will automatically load the model we saved previously.
 
 ## Evaluation of model
-The job function for evaluation is **basically same** as job function for training. The small difference is, in evaluation process, the model we use is already saved. Thus, initialization and update of model during iteration are not required.
-
+The job function for evaluation is **basically same** as job function for training. The small difference is that the model we use is already saved in evaluation process. Thus, initialization and update of model during iteration are not needed.
 
 ### Job function for evaluation
 ```python
@@ -285,7 +286,7 @@ def eval_job(
     return (labels, logits)
 ```
 
-Code above shows defining a job function for evaluation and its return type is `Tuple[tp.Numpy, tp.Numpy]`. Tuple have two `numpy`  in it. We will call the job function and calculate the accuracy according to the return values.
+Code above is the implementation of job function for evaluation and its return type is declared as `Tuple[tp.Numpy, tp.Numpy]`. Tuple have two `numpy`  in it. We will call the job function and calculate the accuracy according to the return values.
 
 ### Process of evaluation
 The `acc` function is used to count the total number of samples and the number of correct prediction results. We will call the job function to get paramters `labels` and `logits`:
