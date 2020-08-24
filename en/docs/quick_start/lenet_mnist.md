@@ -12,7 +12,7 @@ This article covers topics below:
 
 * Implementation of job function for evaluation
 
-This article demonstrates the core steps of how to train a LeNet model by MNIST dataset using OneFlow. The full example code is attached at the end of article.
+This article demonstrates the key steps of how to train a LeNet model with MNIST dataset using OneFlow. The full example code is attached at the end of article.
 
 You can see the effects of each script by running the following commands (GPU device is required).
 
@@ -26,7 +26,7 @@ cd oneflow-documentation/en/docs/code/quick_start/
 ```shell
 python lenet_train.py
 ```
-The command above will train a model by MNIST dataset and save it.
+The commands above will train a model with MNIST dataset and save it.
 
 Output：
 
@@ -42,7 +42,7 @@ File mnist.npz already exist, path: ./mnist.npz
 ...
 ```
 
-> A trained model is the prerequisite of `lenet_eval.py` and `lenet_test.py` or we can directly download trained model to skip the training progress:
+> A trained model is the prerequisite of `lenet_eval.py` and `lenet_test.py`. We can directly download a trained model to skip the training progress:
 
 ```shell
 #change directory to: en/docs/code/quick_start/ 
@@ -54,7 +54,7 @@ unzip lenet_models_1.zip
 ```
 python lenet_eval.py
 ```
-The command above use the MNIST's testing set to evaluate the trained model and print the accuracy.
+The command above uses the MNIST's testing set to evaluate the trained model and print out the accuracy.
 
 Output：
 
@@ -69,11 +69,11 @@ accuracy: 99.4%
 python lenet_test.py ./9.png
 # Output：prediction: 9
 ```
-The above command will use the trained model we just saved to predict the content of file "9.png". We can also download and verify more from [prepared images](https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/quick_start/mnist_raw_images.zip).
+The above command will use the trained model to predict the content of file "9.png". We can also download and verify more from [prepared images](https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/quick_start/mnist_raw_images.zip).
 
 ## Introduction of MNIST dataset 
 
-MNIST is a handwritten digits database including training set and testing set. Training set includes 60000 pictures and the corresponding label. Yann LeCun and others have normalized all the images and packed them into a single binary file for downloading. http://yann.lecun.com/exdb/mnist/
+MNIST is a handwritten digits database including training set and testing set. Training set includes 60000 pictures and their corresponding label. Yann LeCun and others have normalized all the images and packed them into a single binary file for downloading. http://yann.lecun.com/exdb/mnist/
 
 
 ## Define training model
@@ -121,7 +121,7 @@ def lenet(data, train=False):
 ```
 
 
-As the code above shows, we build up a LeNet network model.
+As the code showing above, we build up a LeNet network model.
 
 ## Implementation of job function for training
 
@@ -129,7 +129,7 @@ OneFlow provides a decorator named `oneflow.global_function` by which we can cov
 
 ### `global_function` decorator
 
-`oneflow.global_function` decorator takes a `type` parameter to specify the type of job function. The `type="tranining"` means job function for traning otherwise `type="predict"` means for predicting. 
+`oneflow.global_function` decorator takes a `type` parameter to specify the type of job function. The `type="tranining"` means that the job function is for traning and `type="predict"` is for predicting. 
 
 There is also a `function_config` parameter taken by `oneflow.global_function` decorator. The `function_config` contains configuration about training.
 
@@ -169,7 +169,7 @@ So Far, we use `flow.nn.sparse_softmax_cross_entropy_with_logits` to calculate t
 
  **lr_scheduler** sets the learning rate schedule, and `[0.1]` means learning rate is 0.1；
 
- **flow.optimizer.SGD** means SGD is specified as the optimizer. The `loss` is the goal of minimization to the optimizer, meanwhile the return type (not requried).
+ **flow.optimizer.SGD** means SGD is specified as the optimizer. The `loss` is the goal of minimization to the optimizer and the return type (not requried).
 
 ## Call the job function and get results
 
@@ -177,7 +177,7 @@ We can start training by invoking the job function.
 
 The return value we get when we call the job function is defined by the annotation of return value type in job function. 
 
-We can get one or multiple results after each call to job function.
+We can get one or multiple results after each call of job function.
 
 ### Example on single return value
 The job function in [lenet_train.py](../code/quick_start/lenet_train.py):
@@ -265,7 +265,7 @@ if __name__ == '__main__':
   #evaluation process  ...
 ```
 
-Code above will automatically load the model we saved previously.
+Code above will automatically load the saved model.
 
 ## Evaluation of model
 The job function for evaluation is **basically same** as job function for training. The small difference is that the model we use is already saved in evaluation process. Thus, initialization and update of model during iteration are not needed.
@@ -323,10 +323,10 @@ if __name__ == "__main__":
     print("accuracy: {0:.1f}%".format(g_correct * 100 / g_total))
 ```
 
-So far, We call the job function for evaluation looply and print the accuracy of evaluation result on testing set.
+So far, we call the job function for evaluation looply and print the accuracy of evaluation result on testing set.
 
 ## Image prediction
-After making a few changes to the code above to make the data come from the raw image rather than existing dataset, we can get a model to predict the content from image.
+After making a few changes to the code above, it will take the data from the raw images rather than existing dataset. Then we can get a model to predict the content from the images.
 
 ```python
 def load_image(file):
