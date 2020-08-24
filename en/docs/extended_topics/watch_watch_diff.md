@@ -1,16 +1,16 @@
 # How to Obtain Data from Middle Layer
 
-OneFlow support `oneflow.watch` and `oneflow.watch_diff`. We can use them to register callback function to get data or gradient tensor in job functions at run time.
+OneFlow support `oneflow.watch` and `oneflow.watch_diff`. We can use them to register a callback function to get data and gradient tensor in job functions at runtime.
 
 ## Using guidance
 
 To get data or gradient tensor in job function, we need to follow these steps:
 
-* Write a callback function and the parameters of the callback function should be annotated to indicate the data type. The logic of callback function need to be config by user themselves.
+* Write a callback function and the parameters of the callback function should be annotated to indicate the data type. The logic of the callback function need to be set up by user themselves.
 
-* When we define the job functions, we use `oneflow.watch` or `oneflow.watch_diff` to register callback function. By the former one we can obtain the data tensor and by the latter one we get corresponding gradient.
+* When defining the job functions, we use `oneflow.watch` or `oneflow.watch_diff` to register callback function. We obtain data tensor from the former one and their corresponding gradient from the latter one.
 
-* OneFlow will call the callback function at appropriate time at run time.
+* OneFlow will call the callback function at an appropriate time at runtime.
 
 Take `oneflow.watch` as example:
 
@@ -25,13 +25,13 @@ def foo() -> T:
     #...
 ```
 
-The T in above code is the data type in `oneflow.typing`. Like  `oneflow.typing.Numpy`. More details please refer to [The definition and call of job function](job_function_define_call.md)
+The T in the code above is the data type in `oneflow.typing`. Like  `oneflow.typing.Numpy`. Please refer to [The definition and call of job function](job_function_define_call.md) for more details.
 
 We will use the following examples to demonstrate how to use  `watch` and `watch_diff`.
 
 ## Use watch to obtain the data when running
 
-The following is an example too demonstrate how to use `oneflow.watch` to obtain the data from middle layer in OneFlow.
+The following is an example to demonstrate how to use `oneflow.watch` to obtain the data from middle layer in OneFlow.
 ```python
 # test_watch.py
 import numpy as np
@@ -60,16 +60,16 @@ Run [above code](../code/extended_topics/test_watch.py):
 python3 test_watch.py
 ```
 
-We can get results like followings:
+We can get results like the followings:
 ```
 in: [ 0.15727027  0.45887455  0.10939325  0.66666406 -0.62354755]
 out: [0.15727027 0.45887455 0.10939325 0.66666406 0.        ]
 ```
 
 ### Code explanation
-In the example, we focus on `y` in `ReluJob`. Thus, we call `flow.watch(y, watch_handler)` to monitor `y`. The function `oneflow.watch` need two parameters:
+In the example, we focus on `y` in `ReluJob`. Thus, we call `flow.watch(y, watch_handler)` to monitor `y`. The function `oneflow.watch` needs two parameters:
 
-* The first parameter is y which we are focus on.
+* The first parameter is y which we focus on.
 
 * The second parameter is a callback function. When OneFlow use device resources to execute `ReluJob`, it will send `y` as a parameter to callback function. We define our callback function  `watch_handler` to print out its parameters.
 
@@ -77,7 +77,7 @@ User can use customized callback function to process the data from OneFlow accor
 
 ## Use watch_diff to obtain gradient when running
 ### `test_watch_diff.py`
-The following is an example to demonstrate how to use `oneflow.watch_diff` to obtain the gradient at run time.
+The following is an example to demonstrate how to use `oneflow.watch_diff` to obtain the gradient at runtime.
 ```python
 # test_watch_diff.py
 import oneflow as flow
@@ -147,7 +147,7 @@ We should have the following results:
   -1.18361652e-01  1.20161276e-03]] (100, 10) float32
 ```
 ### Code explanation
-In the example above, we use `oneflow.watch_diff` to obtain the gradient. The processe is same as the example which using `oneflow.watch`  to obtain data tensor.
+In the example above, we use `oneflow.watch_diff` to obtain the gradient. The processe is the same as the example which using `oneflow.watch`  to obtain data tensor.
 
 First, we define the callback function:
 ```python
@@ -160,4 +160,4 @@ Then we use `oneflow.watch_diff` to register the callback function in job functi
 flow.watch_diff(logits, watch_diff_handler)
 ```
 
-When running, OneFlow framework will call `watch_diff_handler` and send the gradient corresponding to `logits` above to `watch_diff_handler`.
+When running, OneFlow framework will call `watch_diff_handler` and send the gradient corresponding with `logits` to `watch_diff_handler`.
