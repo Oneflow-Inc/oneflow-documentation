@@ -1,10 +1,10 @@
-As an open source infrastructure with prominent core competitiveness and high barriers, OneFlow is still in rapid iteration and improvement. 
+As an open source infrastructure framework with prominent competitiveness and solid foundation, OneFlow is still in rapid development and improvement. 
 
 OneFlow can't grow without the friends who love open source. Every line of code you contribute, every issue you submit, every bug you report, even every question you ask, is precious to OneFlow. 
 
 ## Grow up with OneFlow
 
-Whether it's contributing code, adding API docstring, fixing bugs and submiting issues, reviewing code ...
+Contributing code, adding API docstring, fixing bugs and submiting issues, reviewing code ...
 
 OneFlow looks forward to your help in every way. 
 
@@ -14,7 +14,7 @@ You can participate in OneFlow's open source project by choosing one or more of 
 * Contribute test cases
 * Improve documentation
 * Review pull requests from others
-* Recommend OneFlow to people who in need
+* Recommend OneFlow to people who need it
 * Participate in OneFlow's group discussion
 * …… All the things you can think of to make OneFlow better
 
@@ -23,9 +23,9 @@ You can participate in OneFlow's open source project by choosing one or more of 
 
 Our main open source code repository are：
 
-* [oneflow](https://github.com/Oneflow-Inc/oneflow): contains code of OneFlow framework
+* [oneflow](https://github.com/Oneflow-Inc/oneflow): It contains codes of OneFlow framework.
 
-* [OneFlow-Benchmark](https://github.com/Oneflow-Inc/OneFlow-Benchmark): provides OneFlow deep learning benchmark examples for CV, CTR and NLP, and more models are on the way and will be provided here when ready.
+* [OneFlow-Benchmark](https://github.com/Oneflow-Inc/OneFlow-Benchmark): It provides OneFlow deep learning benchmark examples for CV, CTR and NLP, and more models are on the way and will be provided here when ready.
 
 You can also find or create more OneFlow open source projects [here](https://github.com/Oneflow-Inc).
 
@@ -33,9 +33,9 @@ You can also find or create more OneFlow open source projects [here](https://git
 
 OneFlow has reproduced and tested a lot of popular models, some related scripts and documents are placed in [OneFlow-Benchmark](https://github.com/Oneflow-Inc/OneFlow-Benchmark) repository. 
 
-But there are more models that are not covered by OneFlow, we are looking forward to you to bring them to OneFlow. 
+But there are more models that are not covered by OneFlow, we are looking forward to your help to bring them to OneFlow. 
 
-We also strongly welcome using OneFlow in your own original research and share it in [OneFlow-Benchmark](https://github.com/Oneflow-Inc/OneFlow-Benchmark) repository.
+We also strongly encourage using OneFlow in your own original research and sharing it in [OneFlow-Benchmark](https://github.com/Oneflow-Inc/OneFlow-Benchmark) repository.
 
 ## Improve documentation
 
@@ -51,6 +51,6 @@ We are looking forward to your help in adding `docstring` and `function annotati
 
 ## Review
 
-We are committed to building OneFlow into a basic software product full of industrial beauty with the mentality of creating artworks. This process is also inseparable from the open source community's code review of OneFlow.
+We are committed to building OneFlow into a basic software product full of industrial beauty with the mentality of creating artworks. This process is also inseparable with code review from open source community.
 
 We are looking forward to your submission of more issues, pull requests and reviews in each repository. We are also looking forward to your participation. 
