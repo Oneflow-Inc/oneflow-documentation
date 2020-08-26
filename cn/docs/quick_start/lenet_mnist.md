@@ -430,6 +430,7 @@ if __name__ == "__main__":
     )
 
     for epoch in range(20):
+        flow.data.shuffle2(train_images, train_labels)
         for i, (images, labels) in enumerate(zip(train_images, train_labels)):
             loss = train_job(images, labels)
             if i % 20 == 0:
