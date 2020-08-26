@@ -15,23 +15,23 @@ myrelu_op.o: myrelu_op.cpp
 myrelu_cpu_kernel.o: myrelu_cpu_kernel.cpp
 	g++ -std=c++11 -c myrelu_cpu_kernel.cpp \
 	-o myrelu_cpu_kernel.o                  \
-	$(CFLAGS) -fPIC
+	${CFLAGS} -fPIC
 
 myrelu_gpu_kernel.o: myrelu_gpu_kernel.cu 
 	nvcc -std=c++11 -c myrelu_gpu_kernel.cu \
 	-o myrelu_gpu_kernel.o                  \
-	$(CFLAGS) -x cu -Xcompiler -fPIC
+	${CFLAGS} -x cu -Xcompiler -fPIC
 
 final_relu.so: myrelu_op.o myrelu_cpu_kernel.o myrelu_gpu_kernel.o
 	g++ -std=c++11 myrelu_op.o \
 	myrelu_cpu_kernel.o        \
 	myrelu_gpu_kernel.o        \
 	-shared -o final_relu.so   \
-	$(CFLAGS)                  \
+	${CFLAGS}                  \
 	-fPIC                      \
-	-L$(CUDAPATH)              \
+	-L${CUDAPATH}              \
 	-lcudart                   \
-	$(LFLAGS)
+	${LFLAGS}
 
 clean:
 	rm -rf *.so *.o
