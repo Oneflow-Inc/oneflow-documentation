@@ -15,23 +15,23 @@ myop_op.o: myop_op.cpp
 myop_cpu_kernel.o: myop_cpu_kernel.cpp
 	g++ -std=c++11 -c myop_cpu_kernel.cpp \
 	-o myop_cpu_kernel.o                  \
-	$(CFLAGS) -fPIC
+	${CFLAGS} -fPIC
 
 myop_gpu_kernel.o: myop_gpu_kernel.cu 
 	nvcc -std=c++11 -c myop_gpu_kernel.cu \
 	-o myop_gpu_kernel.o                  \
-	$(CFLAGS) -x cu -Xcompiler -fPIC
+	${CFLAGS} -x cu -Xcompiler -fPIC
 
 final_myop.so: myop_op.o myop_cpu_kernel.o myop_gpu_kernel.o
 	g++ -std=c++11 myop_op.o \
 	myop_cpu_kernel.o        \
 	myop_gpu_kernel.o        \
 	-shared -o final_myop.so \
-	$(CFLAGS)                \
+	${CFLAGS}                \
 	-fPIC                    \
-	-L$(CUDAPATH)            \
+	-L${CUDAPATH}            \
 	-lcudart                 \
-	$(LFLAGS)
+	${LFLAGS}
 
 clean:
 	rm -rf *.so *.o

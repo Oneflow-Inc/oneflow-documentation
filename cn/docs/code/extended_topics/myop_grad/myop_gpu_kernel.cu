@@ -32,7 +32,7 @@ private:
   REGISTER_USER_KERNEL("myop")                     \
       .SetCreateFn<MyOpGpuFloatKernel>()             \
       .SetIsMatchedHob(                              \
-          (user_op::HobDeviceType() == device) &     \
+          (user_op::HobDeviceTag() == device) &     \
           (user_op::HobDataType("out", 0)            \
             == GetDataType<dtype>::value));
 
@@ -40,3 +40,4 @@ REGISTER_MYOP_KERNEL(DeviceType::kGPU, float)
 REGISTER_MYOP_KERNEL(DeviceType::kGPU, double)
 } // namespace
 } // namespace oneflow
+
