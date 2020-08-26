@@ -6,7 +6,7 @@ For loading and saving for model, the common scences is:
 
 * Save trained model for reproduction(Such as Model Serving). 
 
-Strictly speaking, we save the untrained model as `checkpoint` or `snapshot`. It is different with `model saving` of a completed model.
+Strictly speaking, we save the untrained model as `checkpoint` or `snapshot`. It is different from `model saving` of a completed model.
 
 However, no matter the model has been trained or not, we can use the same **interface** to save model. Thus, like the `model`、`checkpoint`、`snapshot` we see in other framework is no difference in OneFlow. We use `flow.train.CheckPoint` as the interface.
 
@@ -30,7 +30,7 @@ Because of this feature, the object created by `get_variable` is used to store m
 
 The `get_variable`  requires a specified `name` as the identity of the created object. 
 
-If the `name` value already existed in the program, then get_variable will get the existing object and return.
+If the `name` value already existed in the program, then get_variable will get the existed object and return.
 
 If the `name` value doesn't exist in the program, `get_variable` will create a blob object internally and return.
 
@@ -49,10 +49,10 @@ def get_variable(
     model_name=None,
     random_seed=None,
     distribute=distribute_util.broadcast(),
-)
+)zzzzzzzzzzzzzzzzzzz
 ```
 
-The following example use `get_variable` to create parameters and build the network with `oneflow.layers.conv2D`:
+The following example use `get_variable` to create parameters and build the network with `oneflow.layers.conv2d`:
 
 ```python
     #...
@@ -70,7 +70,7 @@ The following example use `get_variable` to create parameters and build the netw
 
     output = flow.nn.conv2d(
         inputs, weight, strides, padding, data_format, dilation_rate, groups=groups, name=name
-    )z
+    )
     #...
 ```
 
@@ -240,7 +240,7 @@ We can see:
 
 * In the network in job function, each variable is corresponding to a sub-directory.
 
-* All subdirectories above have an  `out` document. It stores the parameters of network in binary form. `Out` is the default file name. We can change that by `variable op` in the network.
+* All sub-directories above have an  `out` document. It stores the parameters of network in binary form. `out` is the default file name. We can change that by `variable op` in the network.
 
 * `Snapshot_done` is an empty folder. If it exists, it means that the network training has been finished. 
 
