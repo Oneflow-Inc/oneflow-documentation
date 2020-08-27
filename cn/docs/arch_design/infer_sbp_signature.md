@@ -1,8 +1,13 @@
 # SBP Signature 自动推导
 在 [OneFlow 系统设计](../basics_topics/essentials_of_oneflow.md#sbp)一文中，我们已经从设计角度介绍过 SBP 的概念。
-在本文中，将结合源码更详细地介绍 SBP 以及 OneFlow 中的 SBP Signature 自动推导机制。
+在本文中，将结合源码更详细地介绍 SBP 以及 OneFlow 中的 SBP Signature 自动推导机制，包括：
 
-## SBP 与 SBP Signature
+- 数据的 SBP 属性
+- Op 的 SBP Signature 属性
+- OneFlow 自动推导 SBP Signature 的流程
+- SBP Signature 的代价模型
+
+## 基础概念介绍
 
 ### SBP
 在 [OneFlow 如何做到分布式最易用](../basics_topics/essentials_of_oneflow.md#oneflow_2) 中介绍了 OneFlow 并行特色中“逻辑上”与 “物理上”两个概念：
@@ -127,7 +132,7 @@ Y == Y0 + Y1
 
 SBP Signature 描绘了 Op 如何看待逻辑上的输入输出与物理上的映射关系。
 
-## SBP Signature List
+## 选择最优的 SBP Signature
 有了 SBP Signature 的概念后，我们可能会提出两个问题：
 
 - Op 的所有 Sbp Signature 是由 OneFlow 推导出来的吗？
@@ -135,9 +140,9 @@ SBP Signature 描绘了 Op 如何看待逻辑上的输入输出与物理上的�
 
 对于前一个问题，答案是否定的，因为 Op 输入输出的 SBP 属性的组合是否合法，与 Op 的运算规则有关，属于业务逻辑的范畴，OneFlow 不可能预先知晓所有已经存在的、还未发明的 Op 的运算规则。
 
-因此，SBP Signature 的所有可能，交给了 Op 作者，OneFlow 预留了相关接口，使得 Op 的作者可以为自己的 Op 注册合法的 SBP Signature。
+因此，SBP Signature 的所有可能，交给了 Op 作者来指定，OneFlow 预留了相关接口，使得 Op 的作者可以为自己的 Op 注册合法的 SBP Signature。
 
-以矩阵乘法 [matmul_op.cpp](https://github.com/Oneflow-Inc/oneflow/blob/master/oneflow/user/ops/matmul_op.cpp#L152) 的实现为例：
+以矩阵乘法 [matmul_op.cpp](https://github.com/Oneflow-Inc/oneflow/blob/master/oneflow/user/ops/matmul_op.cpp#L152) 为例：
 
 ```cpp
     .SetGetSbpFn([](user_op::SbpContext* ctx) -> Maybe<void> {
@@ -170,29 +175,191 @@ SBP Signature 描绘了 Op 如何看待逻辑上的输入输出与物理上的�
           .Build();
 ```
 以上代码，就注册了：
+
 - `a` 为 Split, `b` 为 Broadcast, 输出为 Split
 - `a` 为 Broadcast, `b` 为 Split, 输出为 Split
 - `a` 为 Split, `b` 为 Split, 输出为 PartialSum
 - `a` 为 PartialSum, `b` 为 Broadcast, 输出为 PartialSum
 - `a` 为 Broadcast, `b` 为 PartialSum, 输出为 PartialSum
 
-5种 SBP Signature。
+5种 SBP Signature。OneFlow 中准备了数据结构 `SbpSignatureList` 用于存放多个 SBP Signature：
+
+```text
+message SbpSignatureList {
+  repeated SbpSignature sbp_signature = 1;
+}
+```
 
 接着，我们来看第二个问题，既然一个 Op 可能存在多个 SBP Signature，那么在分布式训练时，是不是需要用户依据神经网络的情况而自己指定呢？
 
-答案是：用户可以自己指定，但绝大多数情况下并没有这个必要。因为在作业函数构图阶段，OneFlow 会根据设备信息与输入数据的情况，在所有 SBP Signature 中，自动选择一个在分布式系统中，传输代价最小的 SBP Signature。
+答案是：用户可以自己指定，但绝大多数情况下并没有这个必要。因为在作业函数构图阶段，OneFlow 会根据设备信息与输入数据的情况，在所有 SBP Signature 中，自动选择一个最优的 SBP Signature。
 
-在 OneFlow 中，依据输入的 SBP 属性，选择最优的 SBP Signature，称为 SBP Signature 推导。接下来我们将结合源码，介绍 SBP Signature 推导的细节。
+在 OneFlow 中，依据输入的 SBP 属性，选择最优的 SBP Signature，称为 **SBP Signature 推导** 。接下来我们将结合源码，介绍 SBP Signature 推导的细节。
 
 ## SBP Signature 推导
+所谓的 SBP Signature 推导，就是在多个合法 SBP Signature 中，为 Op 选择一个最优的。目前，OneFlow 对于“最优”的默认标准是传输代价最小。
+
 ### 流程概述
 
-把以下绘图
+在 Lazy 模式下，函数 `::InferOpSbpSignature` 是SBP Signature 推导的入口，在 [job_build_and_infer_ctx.cpp](https://github.com/Oneflow-Inc/oneflow/blob/master/oneflow/core/job/job_build_and_infer_ctx.cpp) 的 `JobBuildAndInferCtx::InferOpOutSbpParallel` 以及 [op_graph.cpp](https://github.com/Oneflow-Inc/oneflow/blob/master/oneflow/core/graph/op_graph.cpp) 的 `OpGraph::InferOpNodeSbpSignature` 中都会调用它。
+
+前者发生在 OneFlow 构建用户 Python 端的网络时，后者发生在 OneFlow 对用户的网络进行进一步的编译优化时。以前者为例，调用关系为：
 ```
-InferOpNodeSbpSignature/InferOpOutSbpParallel 
--> InferOpSbpSignature 
--> InferSbpSignatureIf 
--> InferSbpSignature
+JobBuildAndInferCtx::InferOpOutSbpParallel
+  -> ::InferOpSbpSignature
+    -> Operator::InferSbpSignatureIf 
+      -> Operator::InferSbpSignature
 ```
 
-### 代码解读
+各函数（方法）的接口及主要工作罗列如下，需要提前说明：下文出现的名如 `XX4YY` 的函数，均为对象转化方法(Get XX From YY)，比如 `ConstBlobDesc4Ibn` 就是根据 Ibn (input blob name) 得到 const blob description。
+
+* JobBuildAndInferCtx::InferOpOutSbpParallel
+```cpp
+Maybe<void> 
+JobBuildAndInferCtx::InferOpOutSbpParallel(Operator* op,
+                    const SbpSignature& sbp_sig_conf,
+                    const ParallelDesc& parallel_desc);
+```
+在 `JobBuildAndInferCtx::InferOpOutSbpParallel` 接受 Op、用户指定的 SBP Signature（如果有的话）、并行配置信息作为参数，并且在内部整理 Op 的输入的 SBP ，将这些信息一起传递给下一层的 `InferOpSbpSignature`。
+
+* InferOpSbpSignature
+```cpp
+Maybe<void> InferOpSbpSignature(
+    Operator* op, const SbpSignature& sbp_sig_conf, 
+    const ParallelDesc& parallel_desc,
+    const HashMap<std::string, SbpInferHint>& ibn2sbp_infer_hint,
+    std::function<Maybe<const OptInt64*>(const std::string&)> BatchAxis4BnInOp);
+```
+
+在 `InferOpSbpSignature` 中主要做准备工作：它设计了一个 cost model，为各个可选的 SBP Signature 进行打分，分数最低的 SBP Signature 意味着传输代价最小。
+
+这个函数中设计的 cost model 将会在下一层 `Operator::InferSbpSignatureIf` 中使用。
+
+* Operator::InferSbpSignatureIf
+```cpp
+Maybe<void> Operator::InferSbpSignatureIf(
+    const SbpSignature& sbp_sig_conf,
+    const std::function<int32_t(const SbpSignature&)>& CalcOrderValue4SbpSig,
+    std::function<Maybe<const SbpInferHint*>(const std::string&)> SbpInferHint4Ibn,
+    const ParallelDesc& parallel_desc);
+```
+在 `Operator::InferSbpSignatureIf` 中将根据是单机还是分布式情况进行不同处理：
+- 如果是单机情况，则输入输出均采用 Split(0) 即可
+- 如果是分布式情况，则调用下一层的 `Operator::InferSbpSignature`，根据上一层设计的 cost model，挑选出代价最小的 SBP Signature
+
+* Operator::InferSbpSignature
+```cpp
+Maybe<void> Operator::InferSbpSignature(
+    SbpSignature* sbp_signature, const SbpSignature& sbp_sig_conf,
+    const std::function<int32_t(const SbpSignature&)>& CalcOrderValue4SbpSig,
+    std::function<Maybe<const SbpInferHint*>(const std::string&)> SbpInferHint4Ibn,
+    const ParallelDesc& parallel_desc);
+```
+在 `Operator::InferSbpSignature` 中，将获取 Op 作者注册的所有SBP Signature，然后根据 cost model 对它们进行打分并排序，选择代价最小者。
+
+
+### SBP Signature 的代价模型
+
+在流程概述中，我们已经知道 SBP Signature 推导的关键在 cost model 如何评价 SBP Signature。我们结合代码重点介绍 OneFlow 如何计算 SBP Signature 的代价。
+
+在 [InferOpSbpSignature](https://github.com/Oneflow-Inc/oneflow/blob/master/oneflow/core/operator/operator.cpp)中，有对应的 cost model，用于计算 SBP Signature 的代价，采用的具体算法如下。
+
+首先， OneFlow 准备了三个函数，分别从三个角度，根据输入以及输出的 SBP 属性进行打分：
+```cpp
+  auto OrderValue4HasBatchAxis = [&](const std::string& bn,
+                                     const SbpParallel& sbp_parallel) -> int32_t {
+    const auto& batch_axis = *BatchAxis4BnInOp(bn);
+    return -1
+           * (batch_axis.has_value() && sbp_parallel.has_split_parallel()
+              && sbp_parallel.split_parallel().axis() == batch_axis.value());
+  };
+  auto OrderValue4HasNoBatchAxis = [&](const std::string& ibn,
+                                       const SbpParallel& sbp_parallel) -> int32_t {
+    const auto& batch_axis = *BatchAxis4BnInOp(ibn);
+    return -2
+           * (batch_axis.has_value() == false
+              && SbpInferHint4Ibn(ibn)->sbp_parallel().has_split_parallel() == false
+              && sbp_parallel.has_split_parallel() == false);
+  };
+  auto OrderValue4SbpHint = [&](const std::string& ibn,
+                                const SbpParallel& sbp_parallel) -> int32_t {
+    return -3 * (SbpInferHint4Ibn(ibn)->sbp_parallel() == sbp_parallel);
+  };
+```
+因为三个函数的返回值都是 “数字*bool”的形式，所以返回值为 -3，-2，-1，0中的某个。
+比如，若以下表达式为 `true`：
+```cpp
+(SbpInferHint4Ibn(ibn)->sbp_parallel() == sbp_parallel)
+```
+则意味着当前输入的 SBP 属性，与待选择的 SBP Signature 中的对应位置的 SBP 属性是一致的，那么传输代价最小，分数为-3。
+
+以上三个函数，只是对于单个 input blob 进行代价评估，之后，使用了一个 `CalcOrderValue4SbpSig` 综合以上多个函数的结果，遍历 Op 的所有输入，得到代价的综合分数：
+
+```cpp
+CalcOrderValue4SbpSig = [&](const SbpSignature& sbp_signature) -> int32_t {
+  int32_t order_value = 0;
+  for (const auto& ibn : op->input_bns()) {
+    // 待计算代价的 SBP Signature 中，对应的 SBP 属性
+    const auto& sbp_parallel_it = sbp_signature.bn_in_op2sbp_parallel().find(ibn);
+
+    // 根据 input blob 和 SBP Signature 中的 SBP，进行打分
+    order_value += OrderValue4HasBatchAxis(ibn, sbp_parallel_it->second);
+    order_value += OrderValue4HasNoBatchAxis(ibn, sbp_parallel_it->second);
+    order_value += OrderValue4SbpHint(ibn, sbp_parallel_it->second);
+  }
+  for (const auto& obn : op->output_bns()) {
+    const auto& sbp_parallel_it = sbp_signature.bn_in_op2sbp_parallel().find(obn);
+    order_value += OrderValue4HasBatchAxis(obn, sbp_parallel_it->second);
+  }
+  return order_value;
+};
+```
+
+以上准备了 cost model 的评价标准，真正的评价时机，发生在 `Operator::InferSbpSignatureIf` 中：
+```cpp
+Operator::InferSbpSignatureIf(...) {
+  if (parallel_desc.parallel_num() == 1) {
+    auto* bn2sbp = mut_sbp_signature()->mutable_bn_in_op2sbp_parallel();
+    for (const auto& ibn : input_bns()) { (*bn2sbp)[ibn].mutable_split_parallel()->set_axis(0); }
+    for (const auto& obn : output_bns()) { (*bn2sbp)[obn].mutable_split_parallel()->set_axis(0); }
+  } else if (parallel_desc.parallel_num() > 1) {
+    return InferSbpSignature(mut_sbp_signature(), 
+              sbp_sig_conf, 
+              CalcOrderValue4SbpSig,
+              SbpInferHint4Ibn, 
+              parallel_desc);
+  }
+}
+```
+其逻辑非常简单:
+
+- 当 `parallel_desc.parallel_num() == 1` 时，说明是单机情况，此时只需要将所有的输入、输出的 SBP 属性设置为 Split(0) 即可
+- 当并行数目大于1时，则调用 `Operator::InferSbpSignature`，依据 cost model，选择代价最小的 SBP Signature
+
+在 `Operator::InferSbpSignature` 中：
+```cpp
+Operator::InferSbpSignature(...){
+  // get op sbp signatures
+  ...
+  SbpSignatureList sbp_sig_list;
+  GetSbpSignaturesIf(LogicalBlobDesc4Ibn, parallel_desc, &sbp_sig_list);
+  
+  ...
+
+  // sort sbp signatures by copy cost, then return the one with least cost
+  std::vector<const SbpSignature*> sorted_sbp_signatures;
+  SortSbpSignatureListByCopyCost(filtered_sbp_sigs_by_conf,
+                    input_bns(), 
+                    SbpInferHint4Ibn,
+                    CalcOrderValue4SbpSig, 
+                    &sorted_sbp_signatures);
+  *sbp_signature = *sorted_sbp_signatures.at(0);
+  return Maybe<void>::Ok();
+}
+```
+先通过 `GetSbpSignaturesIf` 获取 Op 作者设置的所有 SBP Signature，然后调用 `SortSbpSignatureListByCopyCost`，在这个函数内部，将调用 `CalcOrderValue4SbpSig` 对所有的 SBP Signature 进行打分，并排序，排序后的结果，按代价升序放置在 `sorted_sbp_signatures` 中。
+
+因此，最终选择代价最小的 `sorted_sbp_signatures.at(0)` 作为 Op 的 SBP Signature。
+
+最后值得一提的是，默认的 cost model 虽然简单，但经过实践证明已经有非常不错的效果。此外，如果想使用自定义的标准选择 SBP Signature，只需要重写虚函数 `Operator::InferSbpSignature` 即可。
+
