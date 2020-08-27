@@ -10,17 +10,17 @@
 ## 基础概念介绍
 
 ### SBP
-在 [OneFlow 如何做到分布式最易用](../basics_topics/essentials_of_oneflow.md#oneflow_2) 中介绍了 OneFlow 并行特色中“逻辑上”与 “物理上”两个概念：
+在 [OneFlow 如何做到分布式最易用](../basics_topics/essentials_of_oneflow.md#oneflow_2) 中介绍了 OneFlow 并行特色中“逻辑视角”与 “物理视角”两个概念：
 
-> 这里先明确两个概念：“逻辑上的”和“物理上的”。“逻辑上的”表示 OneFlow 把分布式集群抽象成一个超级计算机之后的计算和数据，“物理上的”表示那些真实的部署到各个机器和设备上的计算和数据。
+OneFlow 从逻辑视角，把分布式集群抽象成一个超级计算机之后的计算和数据；从物理视角，OneFlow 关注那些真实的部署到各个机器和设备上的计算和数据。
 
-当我们进行分布式训练时，有多种方式将逻辑上的数据分发到物理设备上。可以是：
+当我们进行分布式训练时，有多种方式将逻辑视角的数据分发到物理设备上。可以是：
 
 - 数据被切分到各个物理设备（Split），这样，每个物理设备拥有逻辑上数据的一部分，物理上的数据拼接后可以得到逻辑上的数据
 - 数据被广播到各个物理设备（Broadcast），这样，每个物理设备拥有逻辑上全部的数据
 - 数据以 Partial 的方式分发到各个物理设备上，这样，每个物理设备上的数据与逻辑上的数据的形状一致，但是需要对所有物理设备上的数据经过特定运算后，才可以得到逻辑上的数据，这种分发方式有 PartialSum（物理上的数据按对应位置相加得到逻辑上的数据）、PartialMax（取物理上的数据对应位置的最大值得到逻辑上的数据）等
 
-为了表达逻辑上与物理上的数据的映射关系， OneFlow 发明了 SBP 的概念，SBP 是数据（Tensor，OneFlow 中也常称作 Blob）的属性。
+为了表达逻辑视角与物理视角上的数据映射关系， OneFlow 发明了 SBP 的概念，SBP 是数据（Tensor，OneFlow 中也常称作 Blob）的属性。
 
 以上内容的图示，可以参阅 [SBP 简单示例](https://docs.oneflow.org/basics_topics/essentials_of_oneflow.html#sbp)。
 
@@ -50,7 +50,7 @@ message SbpParallel {
 ### Operator 类
 在 OneFlow 中，对数据的操作都抽象成为了 operator，简称 Op。Op 接受一个或多个输入 Blob，进行处理后，输出一个或多个 Blob。
 
-OneFlow 将 OP 封装为 `Operator` 类，
+OneFlow 将 Op 封装为 `Operator` 类，
 在 [operator.h](https://github.com/Oneflow-Inc/oneflow/blob/master/oneflow/core/operator/operator.h) 及其对应的 cpp 文件中。
 
 ```cpp
@@ -66,7 +66,7 @@ class Operator {
 ```
 可以看到 `Operator` 的成员及方法，描述了一个 Op 所需要的诸如输入、输出等信息。
 
-也有一系列 `InferXXX` 方法，它们对应了构图时的推导工作，比如本文将要介绍的 SBP Signature 推导过程，就与 `InferSbpSignatureIf` 等方法有关。
+也有一系列 `InferXXX` 方法，它们对应了构图时的推导工作，比如本文将要介绍的 SBP Signature 推导过程，就需要调用 `InferSbpSignatureIf` 方法推导最优的SBP Signature。
 
 当然，`Operator` 还包括了我们即将介绍的 `SBP Signature` 成员：
 ```cpp
@@ -74,12 +74,13 @@ class Operator {
 ```
 
 ### SBP Signature
-Op 描述了在 **逻辑上** 如何处理数据，当分布式系统运行时，OneFlow 根据数据的 SBP 属性，将数据分发到各个物理设备，进行计算，并输出结果。
+Op 描述了在 **逻辑视角** 上如何处理数据，当分布式系统运行时，OneFlow 根据数据的 SBP 属性，将数据分发到各个物理设备，进行计算，并输出结果。
 
 对于一个孤立的数据，其 SBP 属性可以随意设置，对于一个有输入、输出数据的 Op，我们可以随意设置它的输入、输出的 SBP 属性吗？
-答案是，不可以。因为随意设置一个 Op 输入输出的 SBP 属性，可能不符合逻辑上 Op 的运算法则。
 
-我们以逻辑上的矩阵乘法为例，假设分布式系统中2个设备，研究矩阵乘法的输入、输出的 SBP 要如何组合才合法，如何组合不合法。
+不可以。因为随意设置一个 Op 输入输出的 SBP 属性，可能不符合逻辑上 Op 的运算法则。
+
+让我们以矩阵乘法为例，讨论这个问题。看看在有2个设备的分布式系统中，矩阵乘法的输入、输出的 SBP 要如何组合才合法，如何组合不合法。
 
 逻辑上，一个性质为 `(m, k)` 的矩阵 `A` 与形状为 `(k, n)` 的矩阵 `B` 相乘得到 `Y`，Y的形状必然为 `(m, n)`
 ```text
@@ -99,8 +100,8 @@ device 1:
 ```
 我们容易得到物理设备上的 `A0`、`A1` 与逻辑上的 `A` 的关系，以及 `Y0`、`Y1` 与逻辑上的 `Y` 的关系：
 ```text
-A == A0 + A1
-Y == Y0 + Y1
+A == concatenate(A0, A1)
+Y == concatenate(Y0, Y1)
 ```
 可见，按照以上的方式，将逻辑上的数据分发到各个物理设备上，是能够完成运算，并且最终得到逻辑上的正确结果的。
 
@@ -128,9 +129,9 @@ Y == Y0 + Y1
 ```
 那么，因为矩阵乘法要求左矩阵的列数目与右矩阵的行数目相等，而 `A0`、`A1` 与 `B0`、`B1` 之间无法满足这个条件，所以它们无法分配到各个物理设备上完成矩阵乘法。我们可以说， `A` 为 Split(0)， `B` 为 Split(0) 的 SBP 组合不合法。
 
-我们将上文出现的，对于某个 Op，其输入输出的 **合法的 SBP 属性组合**，称为 **SBP Signature**。
+我们将上文出现的，对于某个 Op，其输入输出的 **一个特定的、合法的 SBP 属性组合**，称为这个 Op 的一个 **SBP Signature**。
 
-SBP Signature 描绘了 Op 如何看待逻辑上的输入输出与物理上的映射关系。
+SBP Signature 描绘了 Op 如何看待逻辑视角的输入输出与物理视角的映射关系。
 
 ## 选择最优的 SBP Signature
 有了 SBP Signature 的概念后，我们可能会提出两个问题：
@@ -140,7 +141,7 @@ SBP Signature 描绘了 Op 如何看待逻辑上的输入输出与物理上的�
 
 对于前一个问题，答案是否定的，因为 Op 输入输出的 SBP 属性的组合是否合法，与 Op 的运算规则有关，属于业务逻辑的范畴，OneFlow 不可能预先知晓所有已经存在的、还未发明的 Op 的运算规则。
 
-因此，SBP Signature 的所有可能，交给了 Op 作者来指定，OneFlow 预留了相关接口，使得 Op 的作者可以为自己的 Op 注册合法的 SBP Signature。
+因此，OneFlow 将罗列所有可能的 SBP Signature 的工作，交给了 Op 作者，OneFlow 预留了相关接口，使得 Op 的作者可以为自己的 Op 注册合法的 SBP Signature。
 
 以矩阵乘法 [matmul_op.cpp](https://github.com/Oneflow-Inc/oneflow/blob/master/oneflow/user/ops/matmul_op.cpp#L152) 为例：
 
@@ -192,7 +193,7 @@ message SbpSignatureList {
 
 接着，我们来看第二个问题，既然一个 Op 可能存在多个 SBP Signature，那么在分布式训练时，是不是需要用户依据神经网络的情况而自己指定呢？
 
-答案是：用户可以自己指定，但绝大多数情况下并没有这个必要。因为在作业函数构图阶段，OneFlow 会根据设备信息与输入数据的情况，在所有 SBP Signature 中，自动选择一个最优的 SBP Signature。
+答案是：用户可以自己指定，但绝大多数情况下并没有这个必要。因为在构图阶段，OneFlow 会根据设备信息与输入数据的情况，在所有 SBP Signature 中，自动选择一个最优的 SBP Signature。
 
 在 OneFlow 中，依据输入的 SBP 属性，选择最优的 SBP Signature，称为 **SBP Signature 推导** 。接下来我们将结合源码，介绍 SBP Signature 推导的细节。
 
@@ -211,7 +212,7 @@ JobBuildAndInferCtx::InferOpOutSbpParallel
       -> Operator::InferSbpSignature
 ```
 
-各函数（方法）的接口及主要工作罗列如下，需要提前说明：下文出现的名如 `XX4YY` 的函数，均为对象转化方法(Get XX From YY)，比如 `ConstBlobDesc4Ibn` 就是根据 Ibn (input blob name) 得到 const blob description。
+各函数（方法）的接口及主要工作罗列如下，需要提前说明：下文出现的名如 `XX4YY` 的函数，均为对象转化方法(Get XX for YY)，比如 `ConstBlobDesc4Ibn` 就是根据 Ibn (input blob name) 得到 const blob description。
 
 * JobBuildAndInferCtx::InferOpOutSbpParallel
 ```cpp
@@ -286,7 +287,7 @@ Maybe<void> Operator::InferSbpSignature(
     return -3 * (SbpInferHint4Ibn(ibn)->sbp_parallel() == sbp_parallel);
   };
 ```
-因为三个函数的返回值都是 “数字*bool”的形式，所以返回值为 -3，-2，-1，0中的某个。
+因为三个函数的返回值都是 `数字*bool` 的形式，所以返回值为 -3，-2，-1，0中的某个。
 比如，若以下表达式为 `true`：
 ```cpp
 (SbpInferHint4Ibn(ibn)->sbp_parallel() == sbp_parallel)
@@ -361,5 +362,7 @@ Operator::InferSbpSignature(...){
 
 因此，最终选择代价最小的 `sorted_sbp_signatures.at(0)` 作为 Op 的 SBP Signature。
 
-最后值得一提的是，默认的 cost model 虽然简单，但经过实践证明已经有非常不错的效果。此外，如果想使用自定义的标准选择 SBP Signature，只需要重写虚函数 `Operator::InferSbpSignature` 即可。
+值得一提的是，默认的 cost model 虽然简单，但经过实践证明已经有非常不错的效果。此外，如果想使用自定义的标准选择 SBP Signature，只需要重写虚函数 `Operator::InferSbpSignature` 即可。
+
+最后，更值得一提的是，除了本文介绍的 SBP Signature 推导方法外，OneFlow 团队正在研发一种寻求全局最优解的自动并行方法，敬请期待。
 
