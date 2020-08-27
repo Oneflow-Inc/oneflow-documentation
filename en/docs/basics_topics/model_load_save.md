@@ -49,7 +49,7 @@ def get_variable(
     model_name=None,
     random_seed=None,
     distribute=distribute_util.broadcast(),
-)zzzzzzzzzzzzzzzzzzz
+)
 ```
 
 The following example use `get_variable` to create parameters and build the network with `oneflow.layers.conv2d`:
@@ -240,7 +240,7 @@ We can see:
 
 * In the network in job function, each variable is corresponding to a sub-directory.
 
-* All sub-directories above have an  `out` document. It stores the parameters of network in binary form. `out` is the default file name. We can change that by `variable op` in the network.
+* All sub-directories above have an `out` document. It stores the parameters of network in binary form. `out` is the default file name. We can change that by `variable op` in the network.
 
 * `Snapshot_done` is an empty folder. If it exists, it means that the network training has been finished. 
 
