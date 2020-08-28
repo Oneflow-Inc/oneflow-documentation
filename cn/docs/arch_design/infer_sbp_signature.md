@@ -100,14 +100,19 @@ device 1:
 ```
 我们容易得到物理设备上的 `A0`、`A1` 与逻辑上的 `A` 的关系，以及 `Y0`、`Y1` 与逻辑上的 `Y` 的关系：
 ```text
-A == concatenate(A0, A1)
-Y == concatenate(Y0, Y1)
+ A     ==     A0     +     A1
+(m, k)     (m0, k)        (m1, k)
+
+ Y     ==     Y0     +     y1
+(m, n)     (m0, n)        (m1, n)
 ```
+以上的“+”表示拼接，下同。
+
 可见，按照以上的方式，将逻辑上的数据分发到各个物理设备上，是能够完成运算，并且最终得到逻辑上的正确结果的。
 
 以上较长的篇幅，若使用 SBP 来描述，会变得异常简单： 
 
-`A` 为 Split(0)， `B` 为 Broadcast，运算结果 `Y` 为 Split(0)。
+> `A` 为 Split(0)， `B` 为 Broadcast，运算结果 `Y` 为 Split(0)。
 
 可见，对于矩阵乘法而言，其输入输出的 SBP，按以上方式组合，是合法的。对于矩阵乘法而言，合法的 SBP 组合不止这一种，比如还可以是：
 
@@ -174,6 +179,7 @@ SBP Signature 描绘了 Op 如何看待逻辑视角的输入输出与物理视�
           .PartialSum(user_op::OpArg("b", 0))
           .PartialSum(ctx->outputs())
           .Build();
+      ...
 ```
 以上代码，就注册了：
 
@@ -231,10 +237,7 @@ Maybe<void> InferOpSbpSignature(
     const HashMap<std::string, SbpInferHint>& ibn2sbp_infer_hint,
     std::function<Maybe<const OptInt64*>(const std::string&)> BatchAxis4BnInOp);
 ```
-
-在 `InferOpSbpSignature` 中主要做准备工作：它设计了一个 cost model，为各个可选的 SBP Signature 进行打分，分数最低的 SBP Signature 意味着传输代价最小。
-
-这个函数中设计的 cost model 将会在下一层 `Operator::InferSbpSignatureIf` 中使用。
+在 `InferOpSbpSignature` 中主要做准备工作：它设计了一个 cost model，为各个可选的 SBP Signature 进行打分，分数最低的 SBP Signature 意味着传输代价最小。这个函数中设计的 cost model 将会在下一层 `Operator::InferSbpSignatureIf` 中使用。
 
 * Operator::InferSbpSignatureIf
 ```cpp
@@ -245,8 +248,7 @@ Maybe<void> Operator::InferSbpSignatureIf(
     const ParallelDesc& parallel_desc);
 ```
 在 `Operator::InferSbpSignatureIf` 中将根据是单机还是分布式情况进行不同处理：
-- 如果是单机情况，则输入输出均采用 Split(0) 即可
-- 如果是分布式情况，则调用下一层的 `Operator::InferSbpSignature`，根据上一层设计的 cost model，挑选出代价最小的 SBP Signature
+如果是单机情况，则输入输出均采用 Split(0) 即可；如果是分布式情况，则调用下一层的 `Operator::InferSbpSignature`，根据上一层设计的 cost model，挑选出代价最小的 SBP Signature。
 
 * Operator::InferSbpSignature
 ```cpp
@@ -263,7 +265,7 @@ Maybe<void> Operator::InferSbpSignature(
 
 在流程概述中，我们已经知道 SBP Signature 推导的关键在 cost model 如何评价 SBP Signature。我们结合代码重点介绍 OneFlow 如何计算 SBP Signature 的代价。
 
-在 [InferOpSbpSignature](https://github.com/Oneflow-Inc/oneflow/blob/master/oneflow/core/operator/operator.cpp)中，有对应的 cost model，用于计算 SBP Signature 的代价，采用的具体算法如下。
+在 [InferOpSbpSignature](https://github.com/Oneflow-Inc/oneflow/blob/master/oneflow/core/operator/operator.cpp) 中，有对应的 cost model，用于计算 SBP Signature 的代价，采用的具体算法如下。
 
 首先， OneFlow 准备了三个函数，分别从三个角度，根据输入以及输出的 SBP 属性进行打分：
 ```cpp
@@ -294,7 +296,7 @@ Maybe<void> Operator::InferSbpSignature(
 ```
 则意味着当前输入的 SBP 属性，与待选择的 SBP Signature 中的对应位置的 SBP 属性是一致的，那么传输代价最小，分数为-3。
 
-以上三个函数，只是对于单个 input blob 进行代价评估，之后，使用了一个 `CalcOrderValue4SbpSig` 综合以上多个函数的结果，遍历 Op 的所有输入，得到代价的综合分数：
+以上三个函数，只是对于单个 input blob 进行代价评估，之后，使用了一个 `CalcOrderValue4SbpSig` 函数，遍历 Op 的所有输入，综合以上多个角度的结果，得到代价的综合分数：
 
 ```cpp
 CalcOrderValue4SbpSig = [&](const SbpSignature& sbp_signature) -> int32_t {
