@@ -35,12 +35,6 @@ REGISTER_CPU_ONLY_USER_OP("mini_decoder")
       *out_tensor_y->mut_data_type() = DataType::kDouble;
       return Maybe<void>::Ok();
     })
-    .SetInputArgModifyFn([](user_op::GetInputArgModifier GetInputArgModifierFn,
-                            const user_op::UserOpConfWrapper&) {
-      user_op::InputArgModifier* in_modifier = GetInputArgModifierFn("in", 0);
-      CHECK_NOTNULL(in_modifier);
-      in_modifier->set_requires_grad(false);
-    })
     .SetGetSbpFn([](user_op::SbpContext* ctx) -> Maybe<void> {
       ctx->NewBuilder()
           .Split(user_op::OpArg("in", 0), 0)
