@@ -39,7 +39,7 @@ class MiniReaderKernel final : public user_op::OpKernel {
   ~MiniReaderKernel() override = default;
 
   std::shared_ptr<user_op::OpKernelState> CreateOpKernelState(
-      user_op::KernelInitContext* ctx) const override {
+    user_op::KernelInitContext* ctx) const override {
     std::shared_ptr<MiniReaderWrapper> reader(new MiniReaderWrapper(ctx));
     return reader;
   }

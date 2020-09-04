@@ -3,7 +3,7 @@ import oneflow.typing as tp
 from typing import Tuple
 import numpy as np
 
-flow.config.load_library("final_output.so")
+flow.config.load_library("miniloader.so")
 
 def MiniDecoder(
     input_blob,

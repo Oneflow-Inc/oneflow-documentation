@@ -1,9 +1,8 @@
 ONEFLOW_ROOT = /home/yaochi/oneflow
-CUDAPATH = /usr/local/cuda-10.1/lib64
 CFLAGS = $(shell python -c "import oneflow; print(' '.join(oneflow.sysconfig.get_compile_flags()))") -I${ONEFLOW_ROOT} -g -O0
 LFLAGS = $(shell python -c "import oneflow; print(' '.join(oneflow.sysconfig.get_link_flags()))")
 
-all: final_output.so
+all: miniloader.so
 
 mini_reader_op.o: mini_reader_op.cpp mini_data_reader.h
 	g++ -std=c++11 -c $< \
@@ -27,13 +26,11 @@ mini_decoder_kernel.o: mini_decoder_kernels.cpp
 	-o $@                 \
 	${CFLAGS} -fPIC
 
-final_output.so: mini_reader_op.o mini_reader_kernel.o mini_decoder_op.o mini_decoder_kernel.o
+miniloader.so: mini_reader_op.o mini_reader_kernel.o mini_decoder_op.o mini_decoder_kernel.o
 	g++ -std=c++11 $^          \
-	-shared -o final_output.so \
+	-shared -o $@              \
 	${CFLAGS}                  \
 	-fPIC                      \
-	-L${CUDAPATH}              \
-	-lcudart                   \
 	${LFLAGS}
 
 clean:
