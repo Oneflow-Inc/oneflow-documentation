@@ -47,10 +47,10 @@ class MiniDecoderKernel final : public user_op::OpKernel {
   bool AlwaysComputeWhenAllOutputsEmpty() const override { return false; }
 };
 
-REGISTER_USER_KERNEL("mini_raw_decoder")                                              \
-    .SetCreateFn<MiniDecoderKernel>()                                 \
-    .SetIsMatchedHob((user_op::HobDeviceTag() == "cpu")                               \
-                      & (user_op::HobDataType("in", 0) == DataType::kDouble)           \
-                      & (user_op::HobDataType("x", 0) == DataType::kDouble) \
+REGISTER_USER_KERNEL("mini_decoder")                                              \
+    .SetCreateFn<MiniDecoderKernel>()                                             \
+    .SetIsMatchedHob((user_op::HobDeviceTag() == "cpu")                           \
+                      & (user_op::HobDataType("in", 0) == DataType::kDouble)      \
+                      & (user_op::HobDataType("x", 0) == DataType::kDouble)       \
                       & (user_op::HobDataType("y", 0) == DataType::kDouble));
 }  // namespace oneflow

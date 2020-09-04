@@ -13,7 +13,7 @@ def MiniDecoder(
         name = "Mini_Decoder_uniqueID"
     return (
         flow.user_op_builder(name)
-        .Op("mini_raw_decoder")
+        .Op("mini_decoder")
         .Input("in", [input_blob])
         .Output("x")
         .Output("y")
@@ -23,14 +23,14 @@ def MiniDecoder(
     )
 
 def MiniReader(
-    ofrecord_dir: str,
+    minidata_dir: str,
     batch_size: int = 1,
-    data_part_num: int = 1,
+    data_part_num: int = 2,
     part_name_prefix: str = "part-",
     part_name_suffix_length: int = -1,
     random_shuffle: bool = False,
-    shuffle_buffer_size: int = 1024,
     shuffle_after_epoch: bool = False,
+    shuffle_buffer_size: int = 1024,
     name = None,
 ):
     if name is None:
@@ -40,14 +40,14 @@ def MiniReader(
         flow.user_op_builder(name)
         .Op("MiniReader")
         .Output("out")
-        .Attr("data_dir", ofrecord_dir)
+        .Attr("data_dir", minidata_dir)
         .Attr("data_part_num", data_part_num)
         .Attr("batch_size", batch_size)
         .Attr("part_name_prefix", part_name_prefix)
         .Attr("random_shuffle", random_shuffle)
-        .Attr("shuffle_buffer_size", shuffle_buffer_size)
         .Attr("shuffle_after_epoch", shuffle_after_epoch)
         .Attr("part_name_suffix_length", part_name_suffix_length)
+        .Attr("shuffle_buffer_size", shuffle_buffer_size)
         .Build()
         .InferAndTryRun()
         .RemoteBlobList()[0]
@@ -63,7 +63,7 @@ def test_job() -> tp.Numpy:
         miniRecord = MiniReader(
             "./",
             batch_size=batch_size,
-            data_part_num=1,
+            data_part_num=2,
             part_name_suffix_length=3,
             random_shuffle=True,
             shuffle_after_epoch=True,
@@ -97,7 +97,7 @@ if __name__ == "__main__":
     ckpt = flow.train.CheckPoint()
     ckpt.init()
     loss = test_job()
-    for i in range(0, 5000):
+    for i in range(0, 1000):
         loss = test_job()
-        if i % 100 == 0 : print("{}/{}:{}".format(i, 5000, loss.mean()))
+        if i % 100 == 0 : print("{}/{}:{}".format(i, 1000, loss.mean()))
     ckpt.save("./test_model")

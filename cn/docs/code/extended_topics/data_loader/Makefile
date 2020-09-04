@@ -28,12 +28,12 @@ mini_decoder_kernel.o: mini_decoder_kernels.cpp
 	${CFLAGS} -fPIC
 
 final_output.so: mini_reader_op.o mini_reader_kernel.o mini_decoder_op.o mini_decoder_kernel.o
-	g++ -std=c++11 $^        \
+	g++ -std=c++11 $^          \
 	-shared -o final_output.so \
-	${CFLAGS}                \
-	-fPIC                    \
-	-L${CUDAPATH}            \
-	-lcudart                 \
+	${CFLAGS}                  \
+	-fPIC                      \
+	-L${CUDAPATH}              \
+	-lcudart                   \
 	${LFLAGS}
 
 clean:

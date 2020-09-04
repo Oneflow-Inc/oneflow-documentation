@@ -17,7 +17,7 @@ limitations under the License.
 
 namespace oneflow {
 
-REGISTER_CPU_ONLY_USER_OP("mini_raw_decoder")
+REGISTER_CPU_ONLY_USER_OP("mini_decoder")
     .Input("in")
     .Output("x")
     .Output("y")
