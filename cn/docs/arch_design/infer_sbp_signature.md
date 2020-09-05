@@ -12,7 +12,7 @@
 ### SBP
 在 [OneFlow 如何做到分布式最易用](../basics_topics/essentials_of_oneflow.md#oneflow_2) 中介绍了 OneFlow 并行特色中“逻辑视角”与 “物理视角”两个概念：
 
-OneFlow 从逻辑视角，把分布式集群抽象成一个超级计算机之后的计算和数据；从物理视角，OneFlow 关注那些真实的部署到各个机器和设备上的计算和数据。
+OneFlow 的逻辑视角，意味着 OneFlow 可以将分布式集群中各物理设备上的数据和算力，抽象成一个逻辑上的超级计算机的数据和算力；而 OneFlow 的物理视角，可以关注到那些真实的部署到各个设备上的数据和算力。
 
 当我们进行分布式训练时，有多种方式将逻辑视角的数据分发到物理设备上。可以是：
 
@@ -55,20 +55,14 @@ OneFlow 将 Op 封装为 `Operator` 类，
 
 ```cpp
 class Operator {
- public:
  ...
-   // bn_in_op <-> lbi
-  const LogicalBlobId& BnInOp2Lbi(const std::string& bn_in_op) const;
- ...
-  const std::string& op_name() const { return op_conf().name(); }
-  DeviceType device_type() const;
- ...
+};
 ```
 可以看到 `Operator` 的成员及方法，描述了一个 Op 所需要的诸如输入、输出等信息。
 
 也有一系列 `InferXXX` 方法，它们对应了构图时的推导工作，比如本文将要介绍的 SBP Signature 推导过程，就需要调用 `InferSbpSignatureIf` 方法推导最优的SBP Signature。
 
-当然，`Operator` 还包括了我们即将介绍的 `SBP Signature` 成员：
+当然，`Operator` 还包括了我们即将介绍的 `SBP Signature` 成员，它对应了最终推导的结果：
 ```cpp
   Maybe<const SbpSignature*> sbp_signature() const;
 ```
@@ -76,7 +70,7 @@ class Operator {
 ### SBP Signature
 Op 描述了在 **逻辑视角** 上如何处理数据，当分布式系统运行时，OneFlow 根据数据的 SBP 属性，将数据分发到各个物理设备，进行计算，并输出结果。
 
-对于一个孤立的数据，其 SBP 属性可以随意设置，对于一个有输入、输出数据的 Op，我们可以随意设置它的输入、输出的 SBP 属性吗？
+对于一个孤立的数据，其 SBP 属性(`SbpParallel`)可以随意设置，对于一个有输入、输出数据的 Op，我们可以随意设置它的输入、输出的 SBP 属性吗？
 
 不可以。因为随意设置一个 Op 输入输出的 SBP 属性，可能不符合逻辑上 Op 的运算法则。
 
@@ -262,12 +256,17 @@ Maybe<void> Operator::InferSbpSignature(
 
 
 ### SBP Signature 的代价模型
+SBP 的推导，发生在计算图构图过程中，目前采用的是贪心算法，基本流程是：
 
-在流程概述中，我们已经知道 SBP Signature 推导的关键在 cost model 如何评价 SBP Signature。我们结合代码重点介绍 OneFlow 如何计算 SBP Signature 的代价。
+- 通过计算图的拓扑序遍历每个 Op
+- 对于计算图的 source 节点（无输入的节点），如果是模型（variable），SBP 属性默认设置为是 Broadcast；如果是数据，SBP 属性默认为 Split
+- 除了source节点外的其他所有结点，在拓扑序遍历过程中，则会对 Op 的 SBP Signature 进行推导，寻找一个 cost model 最小的的 SBP Signature
+
+结合以上内容及在流程概述中的介绍，我们知道 SBP Signature 推导的关键在 cost model 如何评价 SBP Signature。我们将结合代码重点介绍 OneFlow 如何计算 SBP Signature 的代价。
 
 在 [InferOpSbpSignature](https://github.com/Oneflow-Inc/oneflow/blob/master/oneflow/core/operator/operator.cpp) 中，有对应的 cost model，用于计算 SBP Signature 的代价，采用的具体算法如下。
 
-首先， OneFlow 准备了三个函数，分别从三个角度，根据输入以及输出的 SBP 属性进行打分：
+首先， OneFlow 准备了三个函数，分别从三个角度，根据输入以及待选的 SBP Signature 中的 SBP 属性进行打分：
 ```cpp
   auto OrderValue4HasBatchAxis = [&](const std::string& bn,
                                      const SbpParallel& sbp_parallel) -> int32_t {
@@ -290,6 +289,7 @@ Maybe<void> Operator::InferSbpSignature(
   };
 ```
 因为三个函数的返回值都是 `数字*bool` 的形式，所以返回值为 -3，-2，-1，0中的某个。
+
 比如，若以下表达式为 `true`：
 ```cpp
 (SbpInferHint4Ibn(ibn)->sbp_parallel() == sbp_parallel)
@@ -336,7 +336,7 @@ Operator::InferSbpSignatureIf(...) {
 ```
 其逻辑非常简单:
 
-- 当 `parallel_desc.parallel_num() == 1` 时，说明是单机情况，此时只需要将所有的输入、输出的 SBP 属性设置为 Split(0) 即可
+- 当 `parallel_desc.parallel_num() == 1` 时，说明是单机单卡情况，此时 Split、Broadcast、PartialSum 是等价的，SBP 属性设置为哪种都正确，因此不妨将所有的输入、输出的 SBP 属性设置为 Split(0) 即可
 - 当并行数目大于1时，则调用 `Operator::InferSbpSignature`，依据 cost model，选择代价最小的 SBP Signature
 
 在 `Operator::InferSbpSignature` 中：
