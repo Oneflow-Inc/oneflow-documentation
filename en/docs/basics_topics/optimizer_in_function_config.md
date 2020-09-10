@@ -25,7 +25,7 @@ Functions decorated by `oneflow.global_function` will become Job Functions. Here
 
 ```python
 import oneflow as flow
-@flow.global_function(type="test", function_config = flow.function_config())
+@flow.global_function(type="predict", function_config = flow.function_config())
 def test_job():
   # build up NN here
 ```
