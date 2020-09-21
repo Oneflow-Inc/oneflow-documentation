@@ -18,8 +18,8 @@ OneFlow 内部的解码算子是采用 [OpenCV](https://opencv.org/) 来对数�
 
 - 根据对应的 `name` 读取 OFRecord 内对应的 `Feature`
 
-- 然后读取 `Feature` 内的 `BytesList` 类型数据，并进行一系列**合法性检查** 
-- 通过调用 OpenCV 库的 `imdecode` 方法对读取到的**字节流数据**进行解码，**转换成原始图片数据**
+- 然后读取 `Feature` 内的 `BytesList` 类型数据，并进行一系列 **合法性检查** 
+- 通过调用 OpenCV 库的 `imdecode` 方法对读取到的 **字节流数据** 进行解码， **转换成原始图片数据** 
 
 - 对图片进行对应的后处理
 
@@ -27,9 +27,9 @@ OneFlow 内部的解码算子是采用 [OpenCV](https://opencv.org/) 来对数�
 
 ## 将图片数据转化为OFRecord
 
-了解了 OFRecord 的解码流程后，我们可以对**整个流程进行反推**，从而对图片数据进行编码转化为 OFRecord 数据集。
+了解了 OFRecord 的解码流程后，我们可以对 **整个流程进行反推** ，从而对图片数据进行编码转化为 OFRecord 数据集。
 
-- 调用 `imencode` 将原始图片数据编码成**字节流数据**，并进行序列化
+- 调用 `imencode` 将原始图片数据编码成 **字节流数据** ，并进行序列化
 - 转换成 OFRecord 的 `Feature`，并进行序列化
 
 下面我们看两段具体的代码
@@ -45,7 +45,7 @@ def encode_img_file(filename, ext=".jpg"):
 
 然后转化成 `Feature` 的形式，并进行序列化，写入到文件中。
 
-注意，每次写入前需要将**Feature的数据长度**也给写入。
+注意，每次写入前需要将 **Feature的数据长度** 也给写入。
 
 ```python
 def ndarry2ofrecords(dsfile, dataname, encoded_data, labelname, encoded_label):
@@ -65,31 +65,29 @@ def ndarry2ofrecords(dsfile, dataname, encoded_data, labelname, encoded_label):
 - 调用 `ofrecord_features.ByteSize()` 获取数据长度
 - 将数据长度 `length` 以及数据 `serilizedBytes` 写入到文件中
 
-另外我们建议将数据写进**多个 part 文件**中， OneFlow Reader 读取的时候会使用**多线程加速**，当数据存储在多个文件时，**读取效率会大大提升**。
+另外我们建议将数据写进 **多个 part 文件** 中， OneFlow Reader 读取的时候会使用 **多线程加速** ，当数据存储在多个文件时， **读取效率会大大提升** 。
 
 ## 完整代码
 
-### 制作基于 Mnist 手写数字数据集的 OFRecord 文件
+### 制作基于 MNIST 手写数字数据集的 OFRecord 文件
 
-我们使用**Mnist手写数字数据集**来完整制作一个OFRecord格式文件，Mnist 数据集下载地址为 [Mnist数据集](https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/quick_start/mnist_raw_images.zip)
+我们使用 **MNIST手写数字数据集** 来完整制作一个OFRecord格式文件（这里我们仅取50张图片作为示例)，MNIST 示例数据集以及标签文件的下载地址为 [MNIST数据集](https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/quick_start/mnist_raw_images.zip)
 
-下载至 `img_to_ofrecord/mnist` 目录下并解压后，整个代码目录构造如下 
+下载至 `img_to_ofrecord/images` 目录下并解压后，整个代码目录构造如下 
 
 ```
 img_to_ofrecord
-├── dataset
-├── mnist
+├── images
 	├── train_set
-	├── test_set
 	├── train_label
 		├── label.txt
 ├── img2ofrecord.py
 ├── lenet_train.py
 ```
 
-其中 `mnist` 目录存放原始 Mnist 数据集以及标签文件 `label.txt` ，`dataset` 目录将用于存放制作的 OFRecord 文件，而 `img2ofrecord.py` 是将手写数字数据集转换成 OFRecord 格式文件的脚本，`lenet_train.py` 则是读取我们制作好的 OFRecord 数据集，使用 LeNet 模型进行训练。 
+其中 `images` 目录存放原始示例训练数据集以及标签文件 `label.txt` ，而 `img2ofrecord.py` 是将手写数字数据集转换成 OFRecord 格式文件的脚本，`lenet_train.py` 则是读取我们制作好的 OFRecord 数据集，使用 LeNet 模型进行训练。 
 
-完整代码：[img2ofrecord.py](NULL)
+完整代码：[img2ofrecord.py](../code/extended_topics/img_to_ofrecord/img2ofrecord.py)
 
 ```python
 # img2ofrecord.py
@@ -99,7 +97,7 @@ import six
 import struct
 import os
 import argparse
-
+import json
 
 def int32_feature(value):
     if not isinstance(value, (list, tuple)):
@@ -149,102 +147,116 @@ def ndarray2ofrecords(dsfile, dataname, encoded_data, labelname, encoded_label):
     dsfile.write(struct.pack("q", length))
     dsfile.write(serilizedBytes)
 
-
-if __name__ == "__main__":
+def parse_args():
     parser = argparse.ArgumentParser()
-
     parser.add_argument(
         '--image_root',
         type=str,
-        default='./mnist/train_set',
-        help='the directory of images')
+        default='./images/train_set',
+        help='The directory of images')
     parser.add_argument(
         '--part_num',
         type=int,
-        default='6',
-        help='the amount of OFRecord data part')
+        default='5',
+        help='The amount of OFRecord partitions')
     parser.add_argument(
         '--label_dir',
         type=str,
-        default='./mnist/train_label/label.txt',
-        help='the directory of labels')
+        default='./images/train_label/label.txt',
+        help='The directory of labels')
     parser.add_argument(
         '--img_format',
         type=str,
         default='.png',
-        help='the encode format of images')
+        help='The encode format of images')
+    parser.add_argument(
+        '--save_dir',
+        type=str,
+        default='./dataset/',
+        help='The save directory of OFRecord patitions')
     args = parser.parse_args()
-    imgs_root = args.image_root
-    part_num = args.part_num
-    label_dir = args.label_dir
-    img_format = args.img_format
+    return args 
 
+
+def printConfig(imgs_root, part_num, label_dir, img_format, save_dir): 
     print("The image root is: ", imgs_root)
     print("The amount of OFRecord data part is: ", part_num)
     print("The directory of Labels is: ", label_dir)
     print("The image format is: ", img_format)
+    print("The OFRecord save directory is: ", save_dir)
     print("Start Processing......")
 
+if __name__ == "__main__":
+    args = parse_args()
+    imgs_root = args.image_root
+    part_num = args.part_num
+    label_dir = args.label_dir
+    img_format = args.img_format
+    save_dir = args.save_dir
+
+    os.mkdir(save_dir) # Make Save Directory
+    printConfig(imgs_root, part_num, label_dir, img_format, save_dir)
+
     part_cnt = 0
-    file_cnt = 0
     # Read the labels
     with open(label_dir, 'r') as label_file:
-        labels = label_file.readlines()
+        imgs_labels = label_file.readlines()
 
-    imgfilenames = os.listdir(imgs_root)
-    file_total_cnt = len(imgfilenames)
+    file_total_cnt = len(imgs_labels)
+    assert file_total_cnt > part_num, "The amount of Files should be larger than part_num"
+    per_part_amount = file_total_cnt // part_num
 
-    for i, file in enumerate(imgfilenames):
-        ofrecord_filename = r"./dataset/part-{}".format(part_cnt)
-        label = int(labels[i].strip('\n'))  # delete the '\n' in labels
+    for cnt, img_label in enumerate(imgs_labels):
+        if cnt !=0 and cnt % per_part_amount == 0: 
+            part_cnt += 1
+        prefix_filename = os.path.join(save_dir, "part-{}")
+        ofrecord_filename = prefix_filename.format(part_cnt)
         with open(ofrecord_filename, 'ab') as f:
-            imgfile = os.path.join(imgs_root, file)
-            encoded_data = encode_img_file(imgfile, img_format)
-            ndarray2ofrecords(f, "images", encoded_data, "labels", label)
-            # print("{} feature saved".format(imgfile))
-            file_cnt += 1
-            if file_cnt == file_total_cnt // part_num:
-                file_cnt = 0
-                part_cnt += 1
+            data = json.loads(img_label.strip('\n'))
+            for img, label in data.items():
+                encoded_data = encode_img_file(img, img_format)
+                ndarray2ofrecords(f, "images", encoded_data, "labels", label)
+                print("{} feature saved".format(img))
 
     print("Process image successfully !!!")
 ```
 
-- 我们读取6万张训练图片，并分别调用 `encode_img_file`, `imgfile2label`, `ndarray2ofrecords`，来完成图像，标签的编码，并将数据写入到文件中。
+- 我们读取50张示例训练图片，并分别调用 `encode_img_file`, `imgfile2label`, `ndarray2ofrecords`，来完成图像，标签的编码，并将数据写入到文件中。
 - 我们通过命令行参数 `image_root`，`part_num`，`label_dir` 可以分别指定图片路径，数据切分个数，标签路径。
 
-我们运行该脚本，并指定数据切分成10个分段，输出如下
+我们运行该脚本，并指定数据切分成5个分段，输出如下
 
 ```shell
-$ python img2ofrecord.py --part_num=10 --img_format=.png
-The image root is:  ./mnist/train_set
-The amount of OFRecord data part is:  10
-The directory of Labels is:  ./mnist/train_label/label.txt
+$ python img2ofrecord.py --part_num=5 --save_dir=./dataset/ --img_format=.png
+The image root is:  ./images/train_set
+The amount of OFRecord data part is:  5
+The directory of Labels is:  ./images/train_label/label.txt
 The image format is:  .png
+The OFRecord save directory is:  ./dataset/
 Start Processing......
-......
-./mnist/train_set/00058991_1.png feature saved
-./mnist/train_set/00058992_4.png feature saved
-./mnist/train_set/00058993_8.png feature saved
-./mnist/train_set/00058994_4.png feature saved
-./mnist/train_set/00058995_1.png feature saved
-......
+./images/train_set/00000000_5.png feature saved
+./images/train_set/00000001_0.png feature saved
+./images/train_set/00000002_4.png feature saved
+./images/train_set/00000003_1.png feature saved
+.......
 Process image successfully !!!
 ```
 
 ### 使用自制的 OFRecord 数据集进行训练
 
-我们运行目录下的 [lenet_train.py](./img_to_ofrecord/lenet_train.py)，它将读取我们刚制作好的 OFRecord 数据集，在 Lenet 模型上进行训练
+我们运行目录下的 [lenet_train.py](../code/extended_topics/img_to_ofrecord/lenet_train.py)，它将读取我们刚制作好的 OFRecord 数据集，在 Lenet 模型上进行训练
 
 该训练脚本输出如下
 
 ```
-[5.24852]
-[0.13135958]
-[0.0759443]
-[0.07838672]
-[0.07410873]
-[0.03932165]
+[6.778578]
+[2.0212684]
+[1.3814741]
+[0.47514156]
+[0.13277876]
+[0.16388433]
+[0.03788032]
+[0.01225162]
 ......
 ```
 
