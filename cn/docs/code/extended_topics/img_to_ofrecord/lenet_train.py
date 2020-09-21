@@ -43,13 +43,13 @@ def lenet(data, train=False):
 
 
 def ofrecord_decode():
-    batch_size = 100
+    batch_size = 25
     color_space = "GRAY"
     ofrecord = flow.data.ofrecord_reader(
         "./dataset/",
         batch_size=batch_size,
         # You should set the corresponding data_part_num
-        data_part_num=10,
+        data_part_num=5,
         part_name_suffix_length=-1,
         random_shuffle=True,
         shuffle_after_epoch=True,
@@ -94,6 +94,6 @@ def train_job() -> tp.Numpy:
 if __name__ == "__main__":
     check_point = flow.train.CheckPoint()
     check_point.init()
-    for epoch in range(100 * 600):
+    for epoch in range(25 * 200):
         loss = train_job()
-        if epoch % 50 == 0: print(loss)
+        if epoch % 5 == 0: print(loss)
