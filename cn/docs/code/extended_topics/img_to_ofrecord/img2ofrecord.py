@@ -5,6 +5,7 @@ import six
 import struct
 import os
 import argparse
+import json
 
 
 def int32_feature(value):
@@ -56,61 +57,78 @@ def ndarray2ofrecords(dsfile, dataname, encoded_data, labelname, encoded_label):
     dsfile.write(serilizedBytes)
 
 
-if __name__ == "__main__":
+def parse_args():
     parser = argparse.ArgumentParser()
-
     parser.add_argument(
         '--image_root',
         type=str,
-        default='./mnist/train_set',
-        help='the directory of images')
+        default='./images/train_set/',
+        help='The directory of images')
     parser.add_argument(
         '--part_num',
         type=int,
-        default='6',
-        help='the amount of OFRecord data part')
+        default='5',
+        help='The amount of OFRecord partitions')
     parser.add_argument(
         '--label_dir',
         type=str,
-        default='./mnist/train_label/label.txt',
-        help='the directory of labels')
+        default='./images/train_label/label.txt',
+        help='The directory of labels')
     parser.add_argument(
         '--img_format',
         type=str,
         default='.png',
-        help='the encode format of images')
+        help='The encode format of images')
+    parser.add_argument(
+        '--save_dir',
+        type=str,
+        default='./dataset/',
+        help='The save directory of OFRecord patitions')
     args = parser.parse_args()
-    imgs_root = args.image_root
-    part_num = args.part_num
-    label_dir = args.label_dir
-    img_format = args.img_format
+    return args
 
+
+def printConfig(imgs_root, part_num, label_dir, img_format, save_dir):
     print("The image root is: ", imgs_root)
     print("The amount of OFRecord data part is: ", part_num)
     print("The directory of Labels is: ", label_dir)
     print("The image format is: ", img_format)
+    print("The OFRecord save directory is: ", save_dir)
     print("Start Processing......")
 
+
+if __name__ == "__main__":
+    args = parse_args()
+    imgs_root = args.image_root
+    part_num = args.part_num
+    label_dir = args.label_dir
+    img_format = args.img_format
+    save_dir = args.save_dir
+
+    if not os.path.exists(save_dir):
+        os.mkdir(save_dir)  # Make Save Directory
+    printConfig(imgs_root, part_num, label_dir, img_format, save_dir)
+
     part_cnt = 0
-    file_cnt = 0
     # Read the labels
     with open(label_dir, 'r') as label_file:
-        labels = label_file.readlines()
+        imgs_labels = label_file.readlines()
 
-    imgfilenames = os.listdir(imgs_root)
-    file_total_cnt = len(imgfilenames)
+    file_total_cnt = len(imgs_labels)
+    assert file_total_cnt > part_num, "The amount of Files should be larger than part_num"
+    per_part_amount = file_total_cnt // part_num
 
-    for i, file in enumerate(imgfilenames):
-        ofrecord_filename = r"./dataset/part-{}".format(part_cnt)
-        label = int(labels[i].strip('\n'))  # delete the '\n' in labels
+    for cnt, img_label in enumerate(imgs_labels):
+        if cnt != 0 and cnt % per_part_amount == 0:
+            part_cnt += 1
+        prefix_filename = os.path.join(save_dir, "part-{}")
+        ofrecord_filename = prefix_filename.format(part_cnt)
         with open(ofrecord_filename, 'ab') as f:
-            imgfile = os.path.join(imgs_root, file)
-            encoded_data = encode_img_file(imgfile, img_format)
-            ndarray2ofrecords(f, "images", encoded_data, "labels", label)
-            # print("{} feature saved".format(imgfile))
-            file_cnt += 1
-            if file_cnt == file_total_cnt // part_num:
-                file_cnt = 0
-                part_cnt += 1
+            data = json.loads(img_label.strip('\n'))
+            for img, label in data.items():
+                img_full_dir = os.path.join(imgs_root, img)
+                encoded_data = encode_img_file(img_full_dir, img_format)
+                ndarray2ofrecords(f, "images", encoded_data, "labels", label)
+                print("{} feature saved".format(img_full_dir))
 
     print("Process image successfully !!!")
