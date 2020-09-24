@@ -15,11 +15,23 @@
 
 这里我们仅取50张图片作为示例，相关脚本和数据集的下载地址为 [img2ofrecord](https://oneflow-static.oss-cn-beijing.aliyuncs.com/oneflow-tutorial-attachments/img2ofrecord.zip)
 
+- 下载相关压缩包并解压
+
 ```shell
 $ wget https://oneflow-static.oss-cn-beijing.aliyuncs.com/oneflow-tutorial-attachments/img2ofrecord.zip
 $ unzip img2ofrecord.zip
+```
+
+- 进入到对应目录，并运行 OFRecord 制作脚本 `img2ofrecord.py`
+
+```shell
 $ cd ./img_to_ofrecord
 $ python img2ofrecord.py --part_num=5 --save_dir=./dataset/ --img_format=.png --image_root=./images/train_set/
+```
+
+- 脚本运行过程中，将输出以下内容
+
+```shell
 The image root is:  ./images/train_set/
 The amount of OFRecord data part is:  5
 The directory of Labels is:  ./images/train_label/label.txt
