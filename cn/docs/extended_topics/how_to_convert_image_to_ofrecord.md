@@ -8,7 +8,7 @@
 - OFRecord 的编码流程
 - 制作基于 Mnist 手写数字数据集的 OFRecord 数据集
 
-## OFRecord编解码方式
+## OFRecord解码方式
 
 OneFlow 内部的解码算子是采用 [OpenCV](https://opencv.org/) 来对数据进行解码的。相关的 `.cpp` 文件在 [oneflow.user.kernels.ofrecord_decoder_kernels.cpp](https://github.com/Oneflow-Inc/oneflow/blob/master/oneflow/user/kernels/ofrecord_decoder_kernels.cpp) 
 
@@ -23,11 +23,15 @@ OneFlow 内部的解码算子是采用 [OpenCV](https://opencv.org/) 来对数�
 
 - 对图片进行对应的后处理
 
-
-
 ## 将图片数据转化为OFRecord
 
 了解了 OFRecord 的解码流程后，我们可以对 **整个流程进行反推** ，从而对图片数据进行编码转化为 OFRecord 数据集。
+
+目前，OneFlow 图片编解码支持的格式与 OpenCV 的一致，可参见 [cv::ImwriteFlags](https://docs.opencv.org/3.4/d4/da8/group__imgcodecs.html#ga292d81be8d76901bff7988d18d2b42ac)，包括：
+
+- JPEG，一种最常见的有损编码格式，可参考[JPEG](http://www.wikiwand.com/en/JPEG)
+- PNG，一种常见的无损位图编码格式，可参考 [Portable Network Graphics](http://www.wikiwand.com/en/Portable_Network_Graphics)
+- TIFF，一种可扩展的压缩编码格式，可参考 [Tagged Image File Format](http://www.wikiwand.com/en/TIFF)
 
 - 调用 `imencode` 将原始图片数据编码成 **字节流数据** ，并进行序列化
 - 转换成 OFRecord 的 `Feature`，并进行序列化
@@ -88,138 +92,6 @@ img_to_ofrecord
 其中 `images` 目录存放原始示例训练数据集以及标签文件 `label.txt` ，而 `img2ofrecord.py` 是将手写数字数据集转换成 OFRecord 格式文件的脚本，`lenet_train.py` 则是读取我们制作好的 OFRecord 数据集，使用 LeNet 模型进行训练。 
 
 完整代码：[img2ofrecord.py](../code/extended_topics/img_to_ofrecord/img2ofrecord.py)
-
-```python
-# img2ofrecord.py
-import cv2
-import oneflow.core.record.record_pb2 as ofrecord
-import six
-import struct
-import os
-import argparse
-import json
-
-def int32_feature(value):
-    if not isinstance(value, (list, tuple)):
-        value = [value]
-    return ofrecord.Feature(int32_list=ofrecord.Int32List(value=value))
-
-
-def int64_feature(value):
-    if not isinstance(value, (list, tuple)):
-        value = [value]
-    return ofrecord.Feature(int64_list=ofrecord.Int64List(value=value))
-
-
-def float_feature(value):
-    if not isinstance(value, (list, tuple)):
-        value = [value]
-    return ofrecord.Feature(float_list=ofrecord.FloatList(value=value))
-
-
-def double_feature(value):
-    if not isinstance(value, (list, tuple)):
-        value = [value]
-    return ofrecord.Feature(double_list=ofrecord.DoubleList(value=value))
-
-
-def bytes_feature(value):
-    if not isinstance(value, (list, tuple)):
-        value = [value]
-    if not six.PY2:
-        if isinstance(value[0], str):
-            value = [x.encode() for x in value]
-    return ofrecord.Feature(bytes_list=ofrecord.BytesList(value=value))
-
-
-def encode_img_file(filename, ext=".jpg"):
-    img = cv2.imread(filename)
-    encoded_data = cv2.imencode(ext, img)[1]
-    return encoded_data.tostring()
-
-
-def ndarray2ofrecords(dsfile, dataname, encoded_data, labelname, encoded_label):
-    topack = {dataname: bytes_feature(encoded_data),
-              labelname: int32_feature(encoded_label)}
-    ofrecord_features = ofrecord.OFRecord(feature=topack)
-    serilizedBytes = ofrecord_features.SerializeToString()
-    length = ofrecord_features.ByteSize()
-    dsfile.write(struct.pack("q", length))
-    dsfile.write(serilizedBytes)
-
-def parse_args():
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        '--image_root',
-        type=str,
-        default='./images/train_set',
-        help='The directory of images')
-    parser.add_argument(
-        '--part_num',
-        type=int,
-        default='5',
-        help='The amount of OFRecord partitions')
-    parser.add_argument(
-        '--label_dir',
-        type=str,
-        default='./images/train_label/label.txt',
-        help='The directory of labels')
-    parser.add_argument(
-        '--img_format',
-        type=str,
-        default='.png',
-        help='The encode format of images')
-    parser.add_argument(
-        '--save_dir',
-        type=str,
-        default='./dataset/',
-        help='The save directory of OFRecord patitions')
-    args = parser.parse_args()
-    return args 
-
-
-def printConfig(imgs_root, part_num, label_dir, img_format, save_dir): 
-    print("The image root is: ", imgs_root)
-    print("The amount of OFRecord data part is: ", part_num)
-    print("The directory of Labels is: ", label_dir)
-    print("The image format is: ", img_format)
-    print("The OFRecord save directory is: ", save_dir)
-    print("Start Processing......")
-
-if __name__ == "__main__":
-    args = parse_args()
-    imgs_root = args.image_root
-    part_num = args.part_num
-    label_dir = args.label_dir
-    img_format = args.img_format
-    save_dir = args.save_dir
-
-    os.mkdir(save_dir) # Make Save Directory
-    printConfig(imgs_root, part_num, label_dir, img_format, save_dir)
-
-    part_cnt = 0
-    # Read the labels
-    with open(label_dir, 'r') as label_file:
-        imgs_labels = label_file.readlines()
-
-    file_total_cnt = len(imgs_labels)
-    assert file_total_cnt > part_num, "The amount of Files should be larger than part_num"
-    per_part_amount = file_total_cnt // part_num
-
-    for cnt, img_label in enumerate(imgs_labels):
-        if cnt !=0 and cnt % per_part_amount == 0: 
-            part_cnt += 1
-        prefix_filename = os.path.join(save_dir, "part-{}")
-        ofrecord_filename = prefix_filename.format(part_cnt)
-        with open(ofrecord_filename, 'ab') as f:
-            data = json.loads(img_label.strip('\n'))
-            for img, label in data.items():
-                encoded_data = encode_img_file(img, img_format)
-                ndarray2ofrecords(f, "images", encoded_data, "labels", label)
-                print("{} feature saved".format(img))
-
-    print("Process image successfully !!!")
-```
 
 - 我们读取50张示例训练图片，并分别调用 `encode_img_file`, `imgfile2label`, `ndarray2ofrecords`，来完成图像，标签的编码，并将数据写入到文件中。
 - 我们通过命令行参数 `image_root`，`part_num`，`label_dir` 可以分别指定图片路径，数据切分个数，标签路径。
