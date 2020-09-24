@@ -27,6 +27,12 @@ OneFlow 内部的解码算子是采用 [OpenCV](https://opencv.org/) 来对数�
 
 了解了 OFRecord 的解码流程后，我们可以对 **整个流程进行反推** ，从而对图片数据进行编码转化为 OFRecord 数据集。
 
+目前，OneFlow 图片编解码支持的格式与 OpenCV 的一致，可参见 [cv::ImwriteFlags](https://docs.opencv.org/3.4/d4/da8/group__imgcodecs.html#ga292d81be8d76901bff7988d18d2b42ac)，包括：
+
+- JPEG，一种最常见的有损编码格式，可参考[JPEG](http://www.wikiwand.com/en/JPEG)
+- PNG，一种常见的无损位图编码格式，可参考 [Portable Network Graphics](http://www.wikiwand.com/en/Portable_Network_Graphics)
+- TIFF，一种可扩展的压缩编码格式，可参考 [Tagged Image File Format](http://www.wikiwand.com/en/TIFF)
+
 - 调用 `imencode` 将原始图片数据编码成 **字节流数据** ，并进行序列化
 - 转换成 OFRecord 的 `Feature`，并进行序列化
 
