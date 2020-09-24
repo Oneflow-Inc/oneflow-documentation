@@ -123,7 +123,7 @@ def ndarray2ofrecords(dsfile, dataname, encoded_data, labelname, encoded_label):
     dsfile.write(serilizedBytes)
 ```
 
-### 使用自制的 OFRecord 数据集进行训练
+## 使用自制的 OFRecord 数据集进行训练
 
 我们运行目录下的 [lenet_train.py](../code/extended_topics/img_to_ofrecord/lenet_train.py)，它将读取我们刚制作好的 OFRecord 数据集，在 Lenet 模型上进行训练
 
