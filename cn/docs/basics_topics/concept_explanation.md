@@ -162,3 +162,23 @@ SBP即 Split、broadcast、Partial sum 的缩写。其中 Split 表示切分；b
 
 如果一个op具有分配(distributive)属性，则张量会根据属性进行部分维度的加和操作。
 
+### 3.TensorBuffer 和 TensorList
+
+基于静态图机制，OneFlow 可以在编译时提前推理出各个算子的张量形状，并分配好内存，做到程序运行时内存零拷贝。但在某些特殊场景下，OneFlow 需要处理变长的数据，比如 DataLoader 加载的图片形状在编译时无法获知。为了处理这种变长数据，OneFlow 内部设计了两种数据结构，分别是 `TensorBuffer` 和 `TensorList` 。
+
+#### TensorBuffer
+
+TensorBuffer 是一个较为灵活的数据结构，使用的时候，我们需要指定子例的维度。OneFlow 会为每个子例生成对应的**指针**，而每个子例所分配的内存是**动态的，不连续的**。
+
+<div align="center">
+    <img src="imgs/Tensor2TensorBuffer.png" align='center'/>
+</div>
+
+#### TensorList
+
+与 TensorBuffer 类似，TensorList 也是一种较为动态的数据结构，最主要的区别在与 TensorList 的数据部分在内存是**连续的**。
+
+<div align="center">
+    <img src="imgs/TensorBuffer2TensorList.png" align='center'/>
+</div>
+
