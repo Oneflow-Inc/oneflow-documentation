@@ -168,7 +168,7 @@ SBP即 Split、broadcast、Partial sum 的缩写。其中 Split 表示切分；b
 
 #### TensorBuffer
 
-TensorBuffer 是一个较为灵活的数据结构，使用的时候，我们需要指定子例的维度。OneFlow 会为每个实例生成对应的 TensorBuffer 对象，TensorBuffer 对象间接引用内存数据，TensorBuffer 所引用的内存区域是**动态的、不连续的**。
+TensorBuffer 是一个较为灵活的数据结构，使用的时候，我们需要指定实例的维度。OneFlow 会为每个实例生成对应的 TensorBuffer 对象，TensorBuffer 对象间接引用内存数据，TensorBuffer 所引用的内存区域是**动态的、不连续的**。
 
 <div align="center">
     <img src="imgs/Tensor2TensorBuffer.png" align='center'/>
