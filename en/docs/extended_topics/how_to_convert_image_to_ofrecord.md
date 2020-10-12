@@ -141,5 +141,5 @@ The outputs of training script should like below:
 
 At this point, we have successfully completed the whole process of data set production, reading and training.
 
-**Make your OfRecord dataset and train with OneFlow now!** 
+**Make Your OfRecord Dataset and Train with OneFlow Now!** 
 
