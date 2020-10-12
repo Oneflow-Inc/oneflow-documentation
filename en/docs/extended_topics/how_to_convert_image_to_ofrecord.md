@@ -1,19 +1,18 @@
-# Convert the image files to OFRecord datasets
+# Convert The Image FilesTto OFRecord Datasets
 
-In  [OFRecord Data Format](./ofrecord.md) and  [Loading and Preparing OFRecord Dataset](./how_to_make_ofdataset.md), We learned how to convert other dataset formats to OFRecord datasets separately and how to load OFRecord datasets.
+In  [OFRecord Data Format](./ofrecord.md) and  [Loading and Preparing OFRecord Dataset](./how_to_make_ofdataset.md), we learned how to convert other dataset formats to OFRecord separately and how to load OFRecord datasets.
 
-In this article, we will explain how to make image files into OFRecord datasets. Also we provide relevant script for users to use directly or make modification base on that. Which includes: 
+In this article, we will explain how to make image files into OFRecord datasets. Also we provide relevant script for users to use directly or make modification base on that, which includes:
 
-- OFRecord datasets based on MNIST Handwritten Digits.
-
+- Make OFRecord datasets based on MNIST dataset.
 - How OFRecord Reader is encoded.
 - Training on OFRecord dataset.
 
-### OFRecord datasets based on MNIST Handwritten Digits.
+### Make OFRecord datasets based on MNIST dataset
 
-We use MNIST Handwritten Digits dataset to completely produce an OFRecord format file.
+We use MNIST Handwritten Digits dataset to produce an OFRecord format file.
 
-we only take 50 pictures for demonstration. The relevant script and datasets please refer to [img2ofrecord](https://oneflow-static.oss-cn-beijing.aliyuncs.com/oneflow-tutorial-attachments/img2ofrecord.zip).
+we only take 50 pictures for demonstration. Please refer to img2ofrecord for relevant script and dataset. [img2ofrecord](https://oneflow-static.oss-cn-beijing.aliyuncs.com/oneflow-tutorial-attachments/img2ofrecord.zip).
 
 - Download and unzip the relevant zip file
 
@@ -22,7 +21,7 @@ $ wget https://oneflow-static.oss-cn-beijing.aliyuncs.com/oneflow-tutorial-attac
 $ unzip img2ofrecord.zip
 ```
 
-- Go to the corresponding directory and run OFRecord production script `img2ofrecord.py`
+- Change directory to corresponding path and run OFRecord production script `img2ofrecord.py`
 
 ```shell
 $ cd ./img_to_ofrecord
@@ -46,11 +45,11 @@ Start Processing......
 Process image successfully !!!
 ```
 
-Thus far, we have created the OFRecord file and saved under `./dataset`.
+Thus far, we have created the OFRecord file and saved it under `./dataset`.
 
 ### Code explanation
 
-The structure of entire code directory shows as follow: 
+The hierarchy of code directory is:
 
 ```
 img_to_ofrecord
@@ -66,7 +65,7 @@ img_to_ofrecord
 ├── lenet_train.py
 ```
 
-- `images` directory holds the original training dataset and label files.
+- `images` directory holds the original training dataset and label file.
 
 The label file is stored as `json` here in following format：
 
@@ -80,11 +79,10 @@ The label file is stored as `json` here in following format：
 ......
 ```
 
-- `img2ofrecord.py` is to covert hand written dataset to OFRecord file or script.
-- `lenet_train.py` is to load the OFRecord dataset we just made and use LeNet model for training. 
+- `img2ofrecord.py`  is the script which converts image files in train_set to OFRecord dataset.
+- `lenet_train.py` is the script loading OFRecord we just made for training.
 
-Scripts that process image files and convert them to OFRecord format are`img2ofrecord.py`. The command options are as follows：
-
+The command options of `img2ofrecord.py` is:
 - `image_root` specify the root directory of the image.
 - `part_num` specify the number of OFRecord files to generate. An error is reported if the number is greater than the total number of images.
 - `label_dir` specify the directory of the label.
@@ -93,9 +91,9 @@ Scripts that process image files and convert them to OFRecord format are`img2ofr
 
 ## How OFRecord Reader is encoded
 
-The logic associated with the encoding of OFRecord files is in `img2ofrecord.py`. The encoding process is as follows：
+The code associated with the encoding of OFRecord files is in `img2ofrecord.py`. The encoding process is as follows：
 
-1. Encoding the incoming image data.
+First, encoding the incoming image data.
 
 ```python
 def encode_img_file(filename, ext=".jpg"):
@@ -104,14 +102,13 @@ def encode_img_file(filename, ext=".jpg"):
     return encoded_data.tostring()
 ```
 
-The `ext` is the image encoding format. Currently, OneFlow support the same format of encode and decode for image files as OpenCV. Please refer to [cv::ImwriteFlags](https://docs.opencv.org/3.4/d4/da8/group__imgcodecs.html#ga292d81be8d76901bff7988d18d2b42ac). Which include：
+The `ext` is the image encoding format. Currently, The format supported by ONEFLOW image encoding and decoding is consistent with that of OpenCV, which can be refered in [cv::ImwriteFlags](https://docs.opencv.org/3.4/d4/da8/group__imgcodecs.html#ga292d81be8d76901bff7988d18d2b42ac) for details.
 
 - JPEG, one of the most common lossy code formats. Please refer to  [JPEG](http://www.wikiwand.com/en/JPEG).
 - PNG, a common lossless bitmap encoding format. Please refer to [Portable Network Graphics](http://www.wikiwand.com/en/Portable_Network_Graphics).
 - TIFF, a extensible compressed encoding format. Please refer to [Tagged Image File Format](http://www.wikiwand.com/en/TIFF).
 
-2. Covert to `Feature` format then do serialization and record the length of the data into a file.
-
+Second, data is converted to the form of Feature, serialized, and the data length is written to the file.
 ```python
 def ndarray2ofrecords(dsfile, dataname, encoded_data, labelname, encoded_label):
     topack = {dataname: bytes_feature(encoded_data),
@@ -125,7 +122,8 @@ def ndarray2ofrecords(dsfile, dataname, encoded_data, labelname, encoded_label):
 
 ## Training on OFRecord dataset
 
-We run [lenet_train.py](../code/extended_topics/img_to_ofrecord/lenet_train.py) in the dictionary. It will read the OFRecord dataset that we have just created and training by the Lenet model.
+We run [lenet_train.py](../code/extended_topics/img_to_ofrecord/lenet_train.py). It will read the OFRecord dataset that we have just created and train it on the LeNet model.
+
 
 The outputs of training script should like below:
 
@@ -141,7 +139,7 @@ The outputs of training script should like below:
 ......
 ```
 
-At this point, we have successfully completed the entire process of creating, reading, and training the dataset.
+At this point, we have successfully completed the whole process of data set production, reading and training.
 
-**Get started on your OFRecord dataset and train with OneFlow!** 
+**Make your OfRecord dataset and train with OneFlow now!** 
 
