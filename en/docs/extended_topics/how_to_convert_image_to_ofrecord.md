@@ -1,4 +1,4 @@
-# Convert The Image FilesTto OFRecord Datasets
+# Convert Image Files to OFRecord Datasets
 
 In  [OFRecord Data Format](./ofrecord.md) and  [Loading and Preparing OFRecord Dataset](./how_to_make_ofdataset.md), we learned how to convert other dataset formats to OFRecord separately and how to load OFRecord datasets.
 
@@ -8,7 +8,7 @@ In this article, we will explain how to make image files into OFRecord datasets.
 - How OFRecord Reader is encoded.
 - Training on OFRecord dataset.
 
-### Make OFRecord datasets based on MNIST dataset
+### Make OFRecord Datasets Based on MNIST Dataset
 
 We use MNIST Handwritten Digits dataset to produce an OFRecord format file.
 
@@ -47,7 +47,7 @@ Process image successfully !!!
 
 Thus far, we have created the OFRecord file and saved it under `./dataset`.
 
-### Code explanation
+### Code Explanation
 
 The hierarchy of code directory is:
 
@@ -89,7 +89,7 @@ The command options of `img2ofrecord.py` is:
 - `img_format` specify the format of the image.
 - `save_dir` specify the directory where the OFRecord file will be saved.
 
-## How OFRecord Reader is encoded
+## How OFRecord Reader is Encoded
 
 The code associated with the encoding of OFRecord files is in `img2ofrecord.py`. The encoding process is as follows：
 
@@ -120,7 +120,7 @@ def ndarray2ofrecords(dsfile, dataname, encoded_data, labelname, encoded_label):
     dsfile.write(serilizedBytes)
 ```
 
-## Training on OFRecord dataset
+## Training on OFRecord Dataset
 
 We run [lenet_train.py](../code/extended_topics/img_to_ofrecord/lenet_train.py). It will read the OFRecord dataset that we have just created and train it on the LeNet model.
 
