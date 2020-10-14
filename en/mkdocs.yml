@@ -113,7 +113,7 @@ nav:
       #- User Defined OP: extended_topics/user_op.md
       #- Eager/Lazy mode: extended_topics/eager_lazy_mode.md
       - How to Obtain Data from Middle Layer: extended_topics/watch_watch_diff.md
-
+      - Convert Image Files to OFRecord Datasets: extended_topics/how_to_convert_image_to_ofrecord.md
     #- Advanced Examples:
       #- Image Processing:
        # - ResNet: adv_examples/resnet.md
