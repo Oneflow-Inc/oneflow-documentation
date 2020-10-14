@@ -17,6 +17,7 @@ use_directory_urls: false
 # Configuration
 theme:
   name: material
+  custom_dir: 'custom_theme/'
 
   # 404 page
   static_templates:
@@ -123,7 +124,7 @@ nav:
       #- Recommendation System -Wide&Deep: adv_examples/wide_deep.md
       #- Deep Faking -Generate Conflict Network: adv_examples/dcgan.md
     - API: 
-      - API: https://oneflow-api.readthedocs.io/en/latest/
+      - API: https://oneflow.readthedocs.io/en/master/
 
 
     - Contribute:
