@@ -66,16 +66,41 @@ The layer concept in OneFlow is basically the same as the layer in TensorFlow, P
 ```python
 def lenet(data, train=False):
     initializer = flow.truncated_normal(0.1)
-    conv1 = flow.layers.conv2d(data, 32, 5, padding='SAME', activation=flow.nn.relu, name='conv1',
-                               kernel_initializer=initializer)
-    pool1 = flow.nn.max_pool2d(conv1, ksize=2, strides=2, padding='SAME', name='pool1', data_format='NCHW')
-    conv2 = flow.layers.conv2d(pool1, 64, 5, padding='SAME', activation=flow.nn.relu, name='conv2',
-                               kernel_initializer=initializer)
-    pool2 = flow.nn.max_pool2d(conv2, ksize=2, strides=2, padding='SAME', name='pool2', data_format='NCHW')
+    conv1 = flow.layers.conv2d(
+        data,
+        32,
+        5,
+        padding="SAME",
+        activation=flow.nn.relu,
+        name="conv1",
+        kernel_initializer=initializer,
+    )
+    pool1 = flow.nn.max_pool2d(
+        conv1, ksize=2, strides=2, padding="SAME", name="pool1", data_format="NCHW"
+    )
+    conv2 = flow.layers.conv2d(
+        pool1,
+        64,
+        5,
+        padding="SAME",
+        activation=flow.nn.relu,
+        name="conv2",
+        kernel_initializer=initializer,
+    )
+    pool2 = flow.nn.max_pool2d(
+        conv2, ksize=2, strides=2, padding="SAME", name="pool2", data_format="NCHW"
+    )
     reshape = flow.reshape(pool2, [pool2.shape[0], -1])
-    hidden = flow.layers.dense(reshape, 512, activation=flow.nn.relu, kernel_initializer=initializer, name='dense1')
-    if train: hidden = flow.nn.dropout(hidden, rate=0.5, name="dropout")
-    return flow.layers.dense(hidden, 10, kernel_initializer=initializer, name='dense2')
+    hidden = flow.layers.dense(
+        reshape,
+        512,
+        activation=flow.nn.relu,
+        kernel_initializer=initializer,
+        name="dense1",
+    )
+    if train:
+        hidden = flow.nn.dropout(hidden, rate=0.5, name="dropout")
+    return flow.layers.dense(hidden, 10, kernel_initializer=initializer, name="dense2")
 ```
 
 Layer is composed by operators. For example: `layers.conv2d` is composed by  `conv2d` and `variable`.
@@ -129,3 +154,26 @@ In parallelism operator calculation, the tensor will be broadcasted to many devi
 #### Partial Sum
 
 If an operator has distributive property, different part of tensor can be simply added.
+
+### 3.TensorBuffer and TensorList
+
+Base on static map mechanism, OneFlow can infer the tensor shape of each operator and distribute the memory in advance when compiling. It can achieve zero copies of memory when running programs. But in some specific scenarios, OneFlow needs handle growing data. For example, the shape of the image loaded by DataLoader is  unknown when compiling. In order to handle the growing data, OneFlow have two type of data format which is `TensorBuffer` and `TensorList`.
+
+#### TensorBuffer
+
+TensorBuffer is a flexible data format. When using TensorBuffer. We need to specify the dimension of the instance. OneFlow will generate a corresponding TensorBuffer object for each instance. TensorBuffer will indirectly references memory data and the memory section is **dynamic and discontinuous**.
+
+<div align="center">
+    <img src="imgs/Tensor2TensorBuffer.png" align='center'/>
+</div>
+
+
+#### TensorList
+
+Similar with TensorBuffer, TensorList also can store the growing data. The main difference is that the data of TensorList is **continuous** in memory.
+
+<div align="center">
+    <img src="imgs/TensorBuffer2TensorList.png" align='center'/>
+</div>
+
+
