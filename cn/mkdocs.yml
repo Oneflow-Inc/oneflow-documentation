@@ -1,6 +1,6 @@
 
 site_name: OneFlow
-site_url: https://www.oneflow.org/
+site_url: https://docs.oneflow.org/
 site_description: >-
   OneFlow 是一款分布式高效的机器学习框架
 # Repository
@@ -17,6 +17,7 @@ use_directory_urls: false
 # Configuration
 theme:
   name: material
+  custom_dir: 'custom_theme/'
 
   # 404 page
   static_templates:
@@ -120,7 +121,7 @@ nav:
       - BERT: adv_examples/bert.md
       - Wide & Deep: adv_examples/wide_deep.md
     - API: 
-      - API: https://oneflow-api.readthedocs.io/en/latest/
+      - API: https://oneflow.readthedocs.io/en/master/
 
     - OneFlow 开源计划:
       - OneFlow 开源计划: contribute/intro.md
