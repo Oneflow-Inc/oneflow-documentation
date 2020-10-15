@@ -110,11 +110,13 @@ nav:
       - Features of Parallelism in OneFlow: extended_topics/model_mixed_parallel.md
       - The OFRecord Data Format: extended_topics/ofrecord.md
       - Loading and Preparing OFRecord Dataset: extended_topics/how_to_make_ofdataset.md
+      - Convert Image Files to OFRecord Datasets: extended_topics/how_to_convert_image_to_ofrecord.md
+      - How to Obtain Data from Middle Layer: extended_topics/watch_watch_diff.md
       - Use VS Code to Debug OneFlow: extended_topics/debug_by_vscode.md
       #- User Defined OP: extended_topics/user_op.md
       #- Eager/Lazy mode: extended_topics/eager_lazy_mode.md
-      - How to Obtain Data from Middle Layer: extended_topics/watch_watch_diff.md
-      - Convert Image Files to OFRecord Datasets: extended_topics/how_to_convert_image_to_ofrecord.md
+      
+     
     #- Advanced Examples:
       #- Image Processing:
        # - ResNet: adv_examples/resnet.md
