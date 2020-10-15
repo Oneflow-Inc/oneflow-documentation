@@ -2,10 +2,10 @@ import oneflow as flow
 import numpy as np
 import oneflow.typing as tp
 
-# 加载模块
+# Load modules
 flow.config.load_library("final_relu.so")
 
-# 默认配置
+# default configuration
 flow.config.gpu_device_num(1)
 
 # python op wrapper function
@@ -20,7 +20,7 @@ def myrelu(input_blob):
     return op.InferAndTryRun().SoleOutputBlob()
 
 
-# 网络代码
+# network code
 @flow.global_function()
 def MyJob(x: tp.Numpy.Placeholder((5,), dtype=flow.float32)) -> tp.Numpy:
     return myrelu(x)
