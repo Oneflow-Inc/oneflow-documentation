@@ -2,7 +2,7 @@ import oneflow as flow
 import numpy as np
 import oneflow.typing as tp
 
-# 加载模块
+# Load module
 flow.config.load_library("final_myop.so")
 
 flow.config.gpu_device_num(1)
@@ -30,7 +30,7 @@ def myop(input_blob):
     return op.InferAndTryRun().SoleOutputBlob()
 
 
-# 网络代码
+# network code
 @flow.global_function(type="train")
 def MyJob(x: tp.Numpy.Placeholder((5,), dtype=flow.float32)) -> tp.Numpy:
     x += flow.get_variable(
