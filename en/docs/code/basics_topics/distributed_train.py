@@ -21,12 +21,12 @@ def mlp(data):
 
 def config_distributed():
     print("distributed config")
-    # 每个节点的gpu使用数目
+    # Number of gpu usage per node
     flow.config.gpu_device_num(1)
-    # 通信端口
+    # communications port
     flow.env.ctrl_port(9988)
 
-    # 节点配置
+    # node configuration 
     nodes = [{"addr": "192.168.1.12"}, {"addr": "192.168.1.11"}]
     flow.env.machine(nodes)
 
