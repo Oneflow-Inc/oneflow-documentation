@@ -1,6 +1,6 @@
-这篇文章介绍了如何快速上手 OneFlow ，我们可以在3分钟内完成一个完整的神经网络训练过程。
+这篇文章将介绍如何快速上手 OneFlow ，我们可以在3分钟内完成一个完整的神经网络训练过程。
 
-## 运行一个例子
+## 运行例子
 如果已经安装好了 OneFlow ，可以使用以下命令下载[文档仓库](https://github.com/Oneflow-Inc/oneflow-documentation.git)中的[mlp_mnist.py](https://github.com/Oneflow-Inc/oneflow-documentation/blob/master/cn/docs/code/quick_start/mlp_mnist.py)脚本，并运行。
 
 ```shell
@@ -19,10 +19,11 @@ Epoch [1/20], Loss: 0.3167
 ...
 ```
 
-输出的是一串数字，每个数字代表了训练的损失值，训练的目标是损失值越小越好。到此您已经用 OneFlow 完成了一个完整的神经网络的训练。
+输出的是一串数字，每个数字代表了训练的损失值，训练的目标是损失值越小越好。到此我们已经用 OneFlow 完成了一个完整的神经网络的训练。
 
 ## 代码解读
-下面是完整代码。
+
+以下是完整代码，我们将对其关键部分进行解读。
 ```python
 # mlp_mnist.py
 import oneflow as flow
@@ -83,19 +84,19 @@ def train_job(
     labels: tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32),
 ) -> tp.Numpy:
 ```
-`train_job` 是一个被 `@flow.global_function` 修饰的函数，通常被称为作业函数(job function)。只有被 `@flow.global_function` 修饰的作业函数才能够被 OneFlow 识别，通过type来指定job的类型：type="train"为训练作业；type="predict"为验证或预测作业。
+`train_job` 是一个被 `@flow.global_function` 修饰的函数，通常称为 **作业函数** (job function)。只有作业函数才能够被 OneFlow 识别，进行训练或者预测。通过 type 来指定 job 的类型：`type="train"` 为训练作业；`type="predict"` 为预测作业。
 
-在 OneFlow 中一个神经网络的训练或者预测作业需要两部分信息：
+在 OneFlow 中，神经网络的训练或者预测需要两部分信息：
 
 * 一部分是这个神经网络本身的结构和相关参数，这些在上文提到的作业函数里定义；
 
-* 另外一部分是使用什么样的配置去训练这个网络，比如 `learning rate` 、模型优化更新的方法。这些job function里配置如下：
+* 另外一部分是使用什么样的配置去训练这个网络，比如 `learning rate` 、模型优化更新的方法。这些在 job function 里配置如下：
 ```python
     lr_scheduler = flow.optimizer.PiecewiseConstantScheduler([], [0.001])
     flow.optimizer.Adam(lr_scheduler).minimize(loss)
 ```
 
-这段代码里包含了训练一个神经网络的所有元素，除了上面说的作业函数及其配置之外：
+本文例子中包含了训练一个神经网络的所有元素，除了上面说的作业函数及其配置之外，还有：
 
 - `check_point.init()`: 初始化网络模型参数；
 
@@ -106,9 +107,22 @@ def train_job(
 - `print(..., loss.mean())`: 每训练20次，打印一次损失值。
 
 
-
-以上只是一个简单网络的示例，在[使用卷积神经网络进行手写体识别](lenet_mnist.md)中，我们对使用OneFlow的流程进行了更加全面和具体的介绍。
-另外，还可参考 OneFlow [基础专题](../basics_topics/data_input.md)中对于训练中各类问题的详细介绍。
+以上只是一个简单的示例，在[使用卷积神经网络进行手写体识别](lenet_mnist.md)中，我们对使用 OneFlow 的流程进行了更加全面和具体的介绍。
+在 OneFlow [基础专题](../basics_topics/data_input.md)中对于训练中各类问题进行了详细介绍。
 
 
 我们同时还提供了一些经典网络的[样例代码](https://github.com/Oneflow-Inc/OneFlow-Benchmark)及数据供参考。
+
+## FAQ
+- 运行本文脚本时，为什么一直卡着不动？
+> 可能是环境变量中设置了错误的代理。可以先通过先运行命令取消代理
+```
+unset http_proxy
+unset https_proxy
+unset HTTP_PROXY
+unset HTTPS_PROXY
+```
+然后再进行尝试
+
+- 我电脑无法联网，运行脚本时一直卡着不动
+> 本文脚本会自动从网络下载需要的数据文件，如果电脑无法联网，则需要点击 [这里](https://oneflow-public.oss-cn-beijing.aliyuncs.com/datasets/mnist.npz) 手工下载，并将它放置在脚本 `mlp_mnist.py` 相同路径下，然后再进行尝试
