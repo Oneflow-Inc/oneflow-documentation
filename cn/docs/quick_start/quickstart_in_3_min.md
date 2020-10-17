@@ -107,7 +107,7 @@ def train_job(
 - `print(..., loss.mean())`: 每训练20次，打印一次损失值。
 
 
-以上只是一个简单的示例，在[使用卷积神经网络进行手写体识别](lenet_mnist.md)中，我们对使用 OneFlow 的流程进行了更加全面和具体的介绍。
+以上只是一个简单的示例，在[识别 MNIST 手写体数字](lenet_mnist.md)中，我们对使用 OneFlow 的流程进行了更加全面和具体的介绍。
 在 OneFlow [基础专题](../basics_topics/data_input.md)中对于训练中各类问题进行了详细介绍。
 
 
