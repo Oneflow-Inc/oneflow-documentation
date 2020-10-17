@@ -89,7 +89,7 @@ nav:
     - 首页: index.md
 
     - 快速上手:
-      - 安装: build_ship/install.md
+      - 安装: quick_start/install.md
       - 3分钟快速上手: quick_start/quickstart_in_3_min.md
       - 识别 MNIST 手写体数字: quick_start/lenet_mnist.md
 
@@ -120,7 +120,7 @@ nav:
       - YoloV3: adv_examples/yolov3.md
       - BERT: adv_examples/bert.md
       - Wide & Deep: adv_examples/wide_deep.md
-    - API: 
+    - API:
       - API: https://oneflow.readthedocs.io/en/master/
 
     - OneFlow 开源计划:
