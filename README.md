@@ -12,7 +12,7 @@
 - [【拓展专题】](http://docs.oneflow.org/extended_topics/job_function_define_call.html)
 - [【高级应用实例】](http://docs.oneflow.org/adv_examples/resnet.html)
 - [【API】](https://oneflow-api.readthedocs.io/en/latest/)
-- [【OneFlow开源计划】](http://docs.oneflow.org/contribute/intro.html)
+- [【OneFlow 开源计划】](http://docs.oneflow.org/contribute/intro.html)
 
 本仓库包含中文文档和英文文档，分别存放于cn、en文件夹下，文档目录结构树：
 

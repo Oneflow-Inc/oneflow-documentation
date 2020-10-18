@@ -1,9 +1,9 @@
-# 实现 Dataloader
-如[数据输入](../basics_topics/data_input.md)一文所介绍，OneFlow 支持直接使用 numpy 数组以及数据流水线两种方式加载数据。
+# 自定义 Dataloader
+如[数据输入](../basics_topics/data_input.md)一文所介绍，OneFlow 支持直接使用 NumPy 数组以及 DataLoader 算子两种方式加载数据。
 
-在大型工业场景下，数据加载也容易成为训练的瓶颈。若采用数据流水线，因为有 OneFlow 内置的加速机制，可以更高效地加载和解码数据，解决这个痛点。
+在大型工业场景下，数据加载也容易成为训练的瓶颈。若使用 DataLoader 及相关预处理算子，因为有 OneFlow 内置的加速机制，可以更高效地加载和预处理数据，解决这个痛点。
 
-使用 OneFlow 的数据流水线，一般通过调用 `XXXReader` 加载文件中的数据，调用 `XXXDeocde` 对数据进行解码，他们一起协同完成 Dataloader 的功能。
+在 OneFlow 中使用 DataLoader，一般通过调用 `XXXReader` 加载文件中的数据，调用 `XXXDeocde` 等对数据进行解码或其它预处理，他们一起协同完成 Dataloader 的功能。
 
 OneFlow 目前内置了一些文件格式的 [DataLoader](https://oneflow-api.readthedocs.io/en/latest/search.html?q=reader&check_keywords=yes&area=default)。如果我们想使用数据流水线提高效率，但是加载的数据格式暂时没有内置在 OneFlow 中，此时，我们可以自己实现 DataLoader，加载自定义的数据格式。
 
@@ -24,7 +24,7 @@ OneFlow 目前内置了一些文件格式的 [DataLoader](https://oneflow-api.re
 
 本文将以 Mini Dataloader 为例，对自定义格式的 DataLoader 的实现要点，进行讲解。
 
-## Dataloader 的组成 
+## Dataloader 的组成
 完整的 Dataloader 一般包括两类 Op：
 
 - Data Reader：负责将文件系统中的数据，加载到内存中的输入流，并最终将数据设置到 Op 的输出中
@@ -35,7 +35,7 @@ OneFlow 目前内置了一些文件格式的 [DataLoader](https://oneflow-api.re
 作为示例， Mini Dataloader 处理的数据格式虽然简单，但是依然实现了 DataReader 及 Data Decoder 两类 op，其中：
 
 - `MiniReader` 负责从文件中读取数据，并按逗号分隔字符串，将文本转为浮点数据后，设置到 Op 的输出中，输出形状为每行两列
-- `MiniDecoder` 负责将以上每行两列的输出进行分割，得到2个每行1列的输出 `x` 与 `y` 
+- `MiniDecoder` 负责将以上每行两列的输出进行分割，得到2个每行1列的输出 `x` 与 `y`
 
 在 [test_mini_dataloader.py](https://github.com/Oneflow-Inc/oneflow-documentation/tree/master/cn/docs/code/extended_topics/data_loader/test_mini_dataloader.py) 中可以看到 Python 层次两者的使用：
 ```python
@@ -94,7 +94,7 @@ class MiniDataset: Dataset {
 
 class MiniParser: Parser {
   void Parse(){
-    // 将 DataSet 中的数据 设置到 Op 的输出中 
+    // 将 DataSet 中的数据 设置到 Op 的输出中
   }
 };
 ```
@@ -137,13 +137,13 @@ class MiniReaderKernel final : public user_op::OpKernel {
  public:
   //...
 
-  std::shared_ptr<user_op::OpKernelState> 
+  std::shared_ptr<user_op::OpKernelState>
   CreateOpKernelState(user_op::KernelInitContext* ctx) override{
     std::shared_ptr<MiniReaderWrapper> reader(new MiniReaderWrapper(ctx));
     return reader;
   }
 
-  void Compute(user_op::KernelComputeContext* ctx, 
+  void Compute(user_op::KernelComputeContext* ctx,
                user_op::OpKernelState* state) override {
     auto* reader = dynamic_cast<MiniReaderWrapper*>(state);
     reader->Read(ctx);
@@ -178,7 +178,7 @@ class MiniReaderWrapper final : public user_op::OpKernelState {
 
 然后，重写 `CreateOpKernelState`，在其内部创建一个 `MiniReaderWrapper` 对象：
 ```cpp
-  std::shared_ptr<user_op::OpKernelState> 
+  std::shared_ptr<user_op::OpKernelState>
   CreateOpKernelState(user_op::KernelInitContext* ctx) override{
     std::shared_ptr<MiniReaderWrapper> reader(new MiniReaderWrapper(ctx));
     return reader;
@@ -211,7 +211,7 @@ class MiniDataReader final : public DataReader<TensorBuffer> {
 };
 ```
 可以看到，除了我们自己继承自 `DataSet` 的 `MiniDataset` 类之外，OneFlow 还内置了其他的 `XXXDataSet`，它们可以在已有的 `DataSet` 基础上增加额外功能，如 `RandomShuffleDataset` 用于 shuffle，`BatchDataset` 用于批量读取数据。
-一切完成后，最后调用 `StartLoadThread`，顾名思义，启动加载线程，在 `StartLoadThread` 中，最终会触发 重写的 `MiniDataset::Next` 方法。 
+一切完成后，最后调用 `StartLoadThread`，顾名思义，启动加载线程，在 `StartLoadThread` 中，最终会触发 重写的 `MiniDataset::Next` 方法。
 
 以上 `MiniDataReader` 的构造，可以作为模板，没有特殊要求，在实现自定义的 DataLoader 过程中，不需要修改。
 
@@ -249,7 +249,7 @@ class MiniDataReader final : public DataReader<TensorBuffer> {
     sample_ptr->Resize(Shape({2}), DataType::kDouble);
     auto pNums = sample_ptr->mut_data<double>();
     pNums[0] = std::stod(numbers[0]);
-    pNums[1] = std::stod(numbers[1]); 
+    pNums[1] = std::stod(numbers[1]);
     ret.push_back(std::move(sample_ptr));
 
     return ret;
@@ -278,7 +278,7 @@ class MiniParser final : public Parser<TensorBuffer> {
              user_op::KernelComputeContext* ctx) override {
     user_op::Tensor* out_tensor = ctx->Tensor4ArgNameAndIndex("out", 0);
     double* dptr = out_tensor->mut_dptr<double>();
-    
+
     MultiThreadLoop(batch_data->size(), [&](size_t i) {
       TensorBuffer* buffer = batch_data->at(i).get();
       dptr[i*2]= *(buffer->data<double>());
@@ -311,7 +311,7 @@ REGISTER_CPU_ONLY_USER_OP("mini_decoder")
       user_op::TensorDesc* out_tensor_x = ctx->TensorDesc4ArgNameAndIndex("x", 0);
       user_op::TensorDesc* out_tensor_y = ctx->TensorDesc4ArgNameAndIndex("y", 0);
       // 设置输入输出 Blob 的属性
-      // ...      
+      // ...
     })
     .SetGetSbpFn([](user_op::SbpContext* ctx) -> Maybe<void> {
       ctx->NewBuilder()
@@ -418,4 +418,3 @@ make
 ```bash
 python test_mini_dataloader.py
 ```
-

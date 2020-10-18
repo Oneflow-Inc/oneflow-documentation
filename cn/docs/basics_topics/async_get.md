@@ -74,10 +74,9 @@ if i % 20 == 0:
 ## `oneflow.typing` 中的数据类型
 `flow.typing` 中包含了作业函数可以返回的数据类型，上文中出现的 `flow.typing.Numpy` 只是其中一种，现将其中常用的几种类型及对应意义罗列如下：
 
-* `flow.typing.Numpy`：对应了 `numpy.ndarray`
-* `flow.typing.ListNumpy`：对应了一个 `list` 容器，其中每个元素都是一个 `numpy.ndarray` 对象。与 OneFlow 进行分布式训练的视角有关，将在[分布式训练的consistent与mirrored视角](../extended_topics/consistent_mirrored.md)中看到其作用
-* `flow.typing.Dict`：对应了`Dict`字典，键为`str`类型，值为`numpy.ndarray`
-* `flow.typing.Callback`：对应了一个回调函数，用于异步调用作业函数，下文会介绍
+- `flow.typing.Numpy`：对应了 `numpy.ndarray`
+- `flow.typing.ListNumpy`：对应了一个 `list` 容器，其中每个元素都是一个 `numpy.ndarray` 对象。与 OneFlow 进行分布式训练的视角有关，将在[分布式训练的consistent与mirrored视角](../extended_topics/consistent_mirrored.md)中看到其作用
+- `flow.typing.Callback`：对应了一个回调函数，用于异步调用作业函数，下文会介绍
 
 
 ## 异步获取结果
@@ -561,4 +560,3 @@ if __name__ == "__main__":
 File mnist.npz already exist, path: ./mnist.npz
 accuracy: 97.6%
 ```
-
