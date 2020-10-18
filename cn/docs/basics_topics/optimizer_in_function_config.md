@@ -15,7 +15,7 @@
 *  **学习率和超参数** - 介绍学习率的设定，学习率衰减策略，一些超参数设定
 
 
-可以在不了解 OneFlow 设计和概念的情况下，直接采用 **配置示例** 部分的训练或推理配置；更详细的说明请参考[optimizer api](https://oneflow-api.readthedocs.io/en/latest/optimizer.html)
+可以在不了解 OneFlow 设计和概念的情况下，直接采用 **配置示例** 部分的训练或推理配置；更详细的说明请参考[optimizer api](https://oneflow.readthedocs.io/en/master/optimizer.html)
 
 
 
@@ -81,7 +81,7 @@ def get_eval_config():
   config = flow.function_config()
   config.default_data_type(flow.float)
   return config
-  
+
 @flow.global_function(type="predict", get_eval_config())
 def eval_job() -> tp.Numpy:
   # build up NN here
@@ -131,7 +131,7 @@ flow.optimizer.SGD(lr_scheduler, momentum=0.9, grad_clipping=flow.optimizer.grad
   .minimize(loss)
 ```
 
-详细请参考[optimizer api](https://oneflow-api.readthedocs.io/en/latest/optimizer.html)
+详细请参考[optimizer api](https://oneflow.readthedocs.io/en/master/optimizer.html)
 
 ## 学习率和超参数
 

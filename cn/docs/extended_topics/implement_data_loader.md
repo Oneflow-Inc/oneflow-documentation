@@ -1,13 +1,13 @@
 # 自定义 Dataloader
-如[数据输入](../basics_topics/data_input.md)一文所介绍，OneFlow 支持直接使用 NumPy 数组以及 DataLoader 算子两种方式加载数据。
+如[数据输入](../basics_topics/data_input.md)一文所介绍，OneFlow 支持直接使用 NumPy 数组以及使用 DataLoader 算子两种方式加载数据。
 
-在大型工业场景下，数据加载也容易成为训练的瓶颈。若使用 DataLoader 及相关预处理算子，因为有 OneFlow 内置的加速机制，可以更高效地加载和预处理数据，解决这个痛点。
+在大型工业场景下，数据加载容易成为训练的瓶颈。若使用 DataLoader 及相关预处理算子，因为有 OneFlow 内置的加速机制，可以更高效地加载和预处理数据，解决这个痛点。
 
 在 OneFlow 中使用 DataLoader，一般通过调用 `XXXReader` 加载文件中的数据，调用 `XXXDeocde` 等对数据进行解码或其它预处理，他们一起协同完成 Dataloader 的功能。
 
-OneFlow 目前内置了一些文件格式的 [DataLoader](https://oneflow-api.readthedocs.io/en/latest/search.html?q=reader&check_keywords=yes&area=default)。如果我们想使用数据流水线提高效率，但是加载的数据格式暂时没有内置在 OneFlow 中，此时，我们可以自己实现 DataLoader，加载自定义的数据格式。
+OneFlow 目前内置了一些文件格式的 [DataLoader](https://oneflow.readthedocs.io/en/master/search.html?q=reader&check_keywords=yes&area=default)。如果我们想使用 DataLoader 提高数据加载的效率，但是加载的数据格式暂时没有内置在 OneFlow 中，此时，我们可以自己实现 DataLoader，加载自定义的数据格式。
 
-我们实现了一个 Mini Dataloader，在仓库中可查看[完整代码](https://github.com/Oneflow-Inc/oneflow-documentation/tree/master/cn/docs/code/extended_topics/data_loader/)。
+本文实现了一个 Mini Dataloader，在仓库中可查看[完整代码](https://github.com/Oneflow-Inc/oneflow-documentation/tree/master/cn/docs/code/extended_topics/data_loader/)。
 
 作为示例，Mini Dataloader 支持的文件格式为：以逗号分隔的每行两列数字的纯文本文件(见代码中的 `part-000` 及 `part-001` 文件)：
 ```text

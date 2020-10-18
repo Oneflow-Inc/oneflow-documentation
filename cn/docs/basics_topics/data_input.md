@@ -106,7 +106,7 @@ python3 of_data_pipeline.py
     )
 ```
 
-需要指定 OFRecord 格式文件所在的目录，和一些其他参数，请参考 [data.ofrecord_reader](https://oneflow-api.readthedocs.io/en/latest/data.html#oneflow.data.ofrecord_reader)
+需要指定 OFRecord 格式文件所在的目录，和一些其他参数，请参考 [data.ofrecord_reader](https://oneflow.readthedocs.io/en/master/data.html#oneflow.data.ofrecord_reader)
 
 DataLoader 的返回值，如果是简单的基本数据类型，那么可以直接作为下游的算子的输入，否则，需要继续调用数据预处理算子，进行预处理。
 
@@ -135,4 +135,4 @@ DataLoader 的返回值，如果是简单的基本数据类型，那么可以直
 `OFRecordImageDecoderRandomCrop` 负责图片解码并随机做了裁剪，`OFRecordRawDecoder` 负责从 ofrecord 对象中直接解码出标签， `image.Resize` 把裁剪后的图片调整成224x224的大小， `CropMirrorNormalize` 把图片进行了正则化。
 
 ## 支持更多格式的 DataLoader
-OneFlow提供了一些 DataLoader 和预处理的算子，详细请参考 [oneflow.data](https://oneflow-api.readthedocs.io/en/latest/data.html)。未来会不断丰富和优化这些算子，用户也可以参考 [这篇文章](../extended_topics/implement_data_loader.md) 自定义 DataLoader 满足特定的需求。
+OneFlow 提供了一些 DataLoader 和预处理的算子，详细请参考 [oneflow.data](https://oneflow.readthedocs.io/en/master/data.html)。未来会不断丰富和优化这些算子，用户也可以参考 [这篇文章](../extended_topics/implement_data_loader.md) 自定义 DataLoader 满足特定的需求。
