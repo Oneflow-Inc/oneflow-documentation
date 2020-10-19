@@ -23,7 +23,7 @@ def config_distributed():
     print("distributed config")
     # Number of gpu usage per node
     flow.config.gpu_device_num(1)
-    # communications port
+    # control port
     flow.env.ctrl_port(9988)
 
     # node configuration 
