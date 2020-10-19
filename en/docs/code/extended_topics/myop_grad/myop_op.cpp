@@ -18,18 +18,18 @@ REGISTER_USER_OP_GRAD("myop").SetBackwardOpConfGenFn(
 
       const auto op1_name = ctx->FwOp().op_name() + "_grad1";
       
-      // 算子 op1_name 用于计算 myop.in*(myop.out的梯度)
+      // operator op1_name is for calculate myop.in*(gradient of myop.out)
       ctx->DefineOp(op1_name, 
         [&ctx](user_op::BackwardOpBuilder& builder) {
           return builder.OpTypeName("multiply")
               .InputBind("x", ctx->FwOp().input("in", 0)) //multiply.x <- myop.in
-              .InputBind("y", ctx->FwOp().output_grad("out", 0)) //multiply.y <- myop.out的梯度
+              .InputBind("y", ctx->FwOp().output_grad("out", 0)) //multiply.y <- gradient of myop.out
               .Output("out")
               .Build();
         });
 
       const auto op2_name = ctx->FwOp().op_name() + "_grad2";
-      // 算子 op2_name 用于计算 6*op1_name
+      // operator op2_name is for calculate 6*op1_name
       ctx->DefineOp(op2_name, 
         [&ctx, &op1_name](user_op::BackwardOpBuilder& builder) {
           return builder.OpTypeName("scalar_mul")
@@ -42,7 +42,7 @@ REGISTER_USER_OP_GRAD("myop").SetBackwardOpConfGenFn(
               .Build();
         });
       
-      // (myop.in的梯度) <- op1_name.out
+      // (gradient of myop.in) <- op1_name.out
       ctx->FwOp().InputGradBind(user_op::OpArg("in", 0), 
         [&ctx, &op2_name]() -> const std::string& {
           return ctx->GetOp(op2_name)
