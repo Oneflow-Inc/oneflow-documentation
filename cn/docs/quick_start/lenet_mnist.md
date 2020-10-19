@@ -214,6 +214,7 @@ def eval_job(
         )
 
     return (labels, logits)
+
 ```
 
 该作业函数的返回值类型为 `Tuple[tp.Numpy, tp.Numpy]`，则当调用时，会返回一个 `tuple` 容器，里面有2个元素，每个元素都是一个 `numpy` 对象：
@@ -275,6 +276,7 @@ def eval_job(
         )
 
     return (labels, logits)
+
 ```
 
 以上是用于校验的作业函数的实现，声明了返回值类型是 `Tuple[tp.Numpy, tp.Numpy]`， 因此返回一个 `tuple`， `tuple` 中有2个元素，每个元素都是1个 `numpy` 对象。我们将调用训练作业函数，并根据返回结果计算准确率。
@@ -358,7 +360,7 @@ if __name__ == "__main__":
 代码：[lenet_train.py](../code/quick_start/lenet_train.py)
 
 ```python
-#lenet_train.py
+# lenet_train.py
 import oneflow as flow
 import oneflow.typing as tp
 
@@ -445,7 +447,7 @@ if __name__ == "__main__":
 预训练模型：[lenet_models_1.zip](https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/quick_start/lenet_models_1.zip)
 
 ```python
-#lenet_eval.py
+# lenet_eval.py
 import numpy as np
 import oneflow as flow
 from typing import Tuple
