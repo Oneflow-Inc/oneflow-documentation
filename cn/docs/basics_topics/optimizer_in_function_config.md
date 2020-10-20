@@ -5,11 +5,11 @@
 
 文章主要内容如下：
 
--  **配置示例** - 用于训练的作业函数和用于预测的作业函数的配置示例；
+-  用于训练的作业函数和用于预测的作业函数的配置示例；
 
--  **Optimizer和优化算法** - 介绍OneFlow中常用的优化器/优化算法
+-  optimizer 及 学习策略的使用；
 
--  **学习率和超参数** - 介绍学习率的设定，学习率衰减策略，一些超参数设定
+-  由于错误配置导致的常见错误及解决方法
 
 
 可以在不了解 OneFlow 设计和概念的情况下，直接采用 **配置示例** 部分的训练或预测配置；更详细的说明请参考[optimizer API 文档](https://oneflow.readthedocs.io/en/master/optimizer.html)
@@ -76,7 +76,7 @@ def train_job(
 ## FAQ
 
 - 报错 `Check failed: job().job_conf().train_conf().has_model_update_conf()`
-> 如果作业函数的 `type` 为 `"train"`，但是没有设置 `optimizer` 及优化目标，因此在反向传播时，OneFlow 会因为不知道如何更新参数而报错。解决方法：为训练作业函数配置 `optimizer`并指定优化目标。
+> 如果作业函数的 `type` 为 `"train"`，但是没有设置 `optimizer` 及优化目标，那么在反向传播时，OneFlow 会因为不知道如何更新参数而报错。解决方法：为训练作业函数配置 `optimizer`并指定优化目标。
 
 - 报错 `Check failed: NeedBackwardOp`
-> 如果作业函数的 `type` 为 `"predict"`，却（错误地）配置了 `optimizer` 时，因为 OneFlow 不会为 `predict` 类型的作业函数生成反向图，因此此时 `optimizer` 无法拿到反向的数据。解决方法：去掉 `predict` 类型的作业函数中的 `optimizer` 相关语句。
+> 如果作业函数的 `type` 为 `"predict"`，却（错误地）配置了 `optimizer` 时，因为 OneFlow 不会为 `predict` 类型的作业函数生成反向图，所以此时 `optimizer` 无法拿到反向的数据。解决方法：去掉 `predict` 类型的作业函数中的 `optimizer` 相关语句。
