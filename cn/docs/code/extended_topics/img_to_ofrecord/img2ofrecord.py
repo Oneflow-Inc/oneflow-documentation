@@ -51,10 +51,10 @@ def ndarray2ofrecords(dsfile, dataname, encoded_data, labelname, encoded_label):
     topack = {dataname: bytes_feature(encoded_data),
               labelname: int32_feature(encoded_label)}
     ofrecord_features = ofrecord.OFRecord(feature=topack)
-    serilizedBytes = ofrecord_features.SerializeToString()
+    serializedBytes = ofrecord_features.SerializeToString()
     length = ofrecord_features.ByteSize()
     dsfile.write(struct.pack("q", length))
-    dsfile.write(serilizedBytes)
+    dsfile.write(serializedBytes)
 
 
 def parse_args():

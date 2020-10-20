@@ -51,12 +51,12 @@ for loop in range(0, 3):
     }
 
     ofrecord_features = ofrecord.OFRecord(feature=topack)
-    serilizedBytes = ofrecord_features.SerializeToString()
+    serializedBytes = ofrecord_features.SerializeToString()
 
     length = ofrecord_features.ByteSize()
 
     f.write(struct.pack("q", length))
-    f.write(serilizedBytes)
+    f.write(serializedBytes)
 
 print("Done!")
 f.close()
