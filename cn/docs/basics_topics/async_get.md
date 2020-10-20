@@ -214,7 +214,7 @@ python3 synchronize_single_job.py
 
 会有类似输出：
 
-```shell
+```text
 File mnist.npz already exist, path: ./mnist.npz
 7.3258467
 2.1435719
@@ -224,8 +224,6 @@ File mnist.npz already exist, path: ./mnist.npz
 ...
 model saved
 ```
-
-
 
 ### 同步获取多个返回结果
 
