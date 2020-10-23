@@ -1,10 +1,10 @@
 # 作业函数的定义与调用
 
-在 OneFlow 中，我们将训练、预测、推理等任务封装在一个函数中，统称为作业函数(job function)，作业函数联系用户的业务逻辑与 OneFlow 管理的计算资源。
+在 OneFlow 中，我们将训练、预测任务封装在一个函数中，统称为作业函数(job function)，作业函数联系用户的业务逻辑与 OneFlow 管理的计算资源。
 
-在 OneFlow 中，被 `@oneflow.global_function` 装饰器所修饰的 python 函数，就成为了 OneFlow 作业函数。
+在 OneFlow 中，被 `@oneflow.global_function` 装饰器所修饰的 python 函数，就是 OneFlow 作业函数。
 
-我们主要在作业函数中定义网络模型的结构、选择优化指标；此外，还可以将训练有关的超参及环境配置当做参数传递给作业函数(如:下面例子中的：`get_train_config()`)，OneFlow 会根据设置为我们管理内存、GPU等硬件资源。
+我们主要在作业函数中定义网络模型的结构、选择优化指标；此外，还可以将训练有关的超参及环境配置当做参数传递给作业函数(如:下面例子中的：`get_train_config()`)，OneFlow 会根据设置为我们管理内存、GPU 等硬件资源。
 
 本文中我们将具体学习：
 
@@ -15,9 +15,9 @@
 ## 作业函数与 OneFlow 运行流程的关系
 作业函数分为定义和调用两个阶段。
 
-这与 OneFlow 本身的运行机制有关，简化地说，OneFlow Python 层接口，只是在描述网络模型和训练环境的配置信息，这些信息将传递给底层的 C++ 代码，经过编译、构图等得到计算图，最终交给 OneFlow 运行时，由 OneFlow 运行时(runtime)执行。
+这与 OneFlow 本身的运行机制有关，简化地说，OneFlow Python 层接口，只是在描述网络模型和训练环境的配置信息，这些信息将传递给底层的 C++ 代码，经过编译、优化等工作得到计算图，最终交给 OneFlow 运行时(runtime)，由 OneFlow 运行时执行。
 
-作业函数的定义，其实是在做 Python 层的描述网络模型和训练环境的配置工作，在这个阶段，并没有实际的数据，而只能通过规定网络节点的形状、数据类型等信息，起到 **数据占位符** 的作用，方便 OneFlow 的编译构图过程进行模型推理。
+因为定义作业函数只是做描述工作，在这个阶段，并没有实际的数据，而只能通过规定网络节点的形状、数据类型等信息，起到 **数据占位符** 的作用，方便 OneFlow 的编译构图过程进行模型推理。
 
 作业函数的调用，发生在 OneFlow runtime 已经启动后，我们可以通过调用作业函数，向其传递真实的数据，并获取返回结果。
 
@@ -65,15 +65,17 @@ def train_job(
 ### `oneflow.global_function` 的参数
 `oneflow.global_function` 修饰符接受两个参数，分别是 `type` 与 `function_config`。
 
-* `type` 参数接受字符串，只能设定为 `train` 或者 `predict`，当在定义一个训练模型时，设定为 `train`，当在定义一个测试或者推理模型时，设定为 `predict`
+* `type` 参数接受字符串，只能设定为 `train` 或者 `predict`，当定义一个训练模型时，设定为 `train`，当定义测试模型时，设定为 `predict`
 
 * `function_config` 参数接受一个 `oneflow.function_config()` 所构造的对象，在 `function_config` 对象中，可以通过成员方法或属性，进行相关配置。如以下代码：
+
 ```python
 def get_train_config():
     config = flow.function_config()
     config.default_data_type(flow.float)
     return config
 ```
+
 我们设置了默认数据类型，然后，我们可以在向 `global_function` 装饰器传递这个`function_config` 对象：
 ```python
 @flow.global_function(type="train", function_config=get_train_config())
@@ -87,16 +89,16 @@ def train_job(
 ### 数据占位符
 注意，以上的 `images`、`logits`、`labels`、`loss`等对象，在我们定义作业函数时，并没有实际的数据。它们的作用只是 **描述数据的形状和属性** ，起到 **占位符** 的作用。
 
-在作业函数的参数中的数据占位符，使用`oneflow.typing`下的`Numpy.Placeholder`、`ListNumpy.Placeholder`、`ListListNumpy.Placeholder`，注解作业函数参数的类型，对应作业函数调用时，传递 `numpy` 数据对象。
+在作业函数的参数中的数据占位符，使用 `oneflow.typing` 下的`Numpy.Placeholder`、`ListNumpy.Placeholder`、`ListListNumpy.Placeholder`，注解作业函数的参数，对应作业函数调用时，传递 `numpy` 数据对象。
 
 除了`oneflow.typing`下的几种类型外，不出现在参数中，而由 OneFlow 的算子或层产生的变量，如以上代码中的`reshape`、`hidden`、`logits`、`loss`等，也都起到了数据占位符的作用。
 
-不管是以上提及的哪种变量，它们都直接或间接继承自 OneFlow 的 `BlobDef`基类，OneFlow 中把这种对象类型统称为 **Blob**。
+不管是以上提及的哪种变量，它们都直接或间接继承自 OneFlow 的 `BlobDef` 基类，OneFlow 中把这种对象类型统称为 **Blob**。
 
 **Blob** 在作业函数定义时，均无真实数据，均只起到数据占位方便框架推理的作用。
 
 ### 作业函数的返回值
-之所以在上文中强调数据占位符 **Blob** 的概念，是因为作业函数的返回值是不能任意指定的，必须是 `Blob` 类型的对象，或者仅存有 `Blob` 对象的容器。
+之所以在上文中强调数据占位符 **Blob** 的概念，是因为作业函数的返回值是不能任意指定的，必须是 `Blob` 类型的对象，或者存有 `Blob` 对象的容器。
 
 如以上代码的中所返回的 `loss`，它就是 `Blob` 类型。
 
@@ -129,4 +131,3 @@ OneFlow 利用函数修饰符将普通 Python 函数转变为 OneFlow 特有的�
 可以看到，通过调用作业函数 `train_job` 直接返回了 `numpy` 数据。
 
 以上展示的调用方式是同步方式， OneFlow 还支持异步调用，具体可以参阅专题[获取作业函数的结果](../basics_topics/async_get.md)。
-
