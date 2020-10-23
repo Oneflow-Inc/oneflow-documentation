@@ -114,6 +114,7 @@ nav:
       - 获取运行时数据: extended_topics/watch_watch_diff.md
       - 使用 VS Code 调试 OneFlow: extended_topics/debug_by_vscode.md
       - 自定义 op: extended_topics/user_op.md
+      - 自定义 DataLoader: extended_topics/implement_data_loader.md
 
     - 高级应用实例:
       - ResNet: adv_examples/resnet.md

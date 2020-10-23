@@ -1,5 +1,5 @@
-# 自定义 Dataloader
-如[数据输入](../basics_topics/data_input.md)一文所介绍，OneFlow 支持直接使用 NumPy 数组以及使用 DataLoader 算子两种方式加载数据。
+# 自定义 DataLoader
+如 [数据输入](../basics_topics/data_input.md) 一文所介绍，OneFlow 支持两种数据加载方式：直接使用 NumPy 数据或者使用 DataLoader 及其相关算子。
 
 在大型工业场景下，数据加载容易成为训练的瓶颈。若使用 DataLoader 及相关预处理算子，因为有 OneFlow 内置的加速机制，可以更高效地加载和预处理数据，解决这个痛点。
 
@@ -129,7 +129,7 @@ REGISTER_CPU_ONLY_USER_OP("MiniReader")
 ```
 可以看到，因为 Data Reader 是比较特殊的 Op，只有输出，没有输入（数据来自文件系统，而不是神经网络中的某个上游节点），因此我们只通过 `Out` 方法设置了输出，并在 `SetTensorDescInferFn` 设置了输出的性质为每行2列，数据类为 `DataType::kDouble`。同理，在设置 `SetGetSbpFn` 中设置 SBP Signature 时，只需要设置输出的 SBP 属性，我们将其设置为 Split(0)。
 
-而设置的各种属性（`data_dir`、`data_part_num` 等），沿用了 [OFRecord 数据集](../extended_topics/ofrecord.md#ofrecord) 中关于文件命名规范的要求，这使得我们在加载自定义文件格式时，可以复用 OneFlow 中已有的相关代码，让用户可以像 [加载OFRecord数据集](../extended_topics/ofrecord.md#ofrecord_1) 那样，加载我们自定义格式的文件。
+而设置的各种属性（`data_dir`、`data_part_num` 等），沿用了 [OFRecord 数据集](../extended_topics/ofrecord.md#ofrecord) 中关于文件命名规范的要求，这使得我们在加载自定义文件格式时，可以复用 OneFlow 中已有的相关代码，让用户可以像 [加载 OFRecord 数据集](../extended_topics/ofrecord.md#ofrecord_1) 那样，加载我们自定义格式的文件。
 
 接着看这个 Op 的 Kernel 实现：
 ```cpp
@@ -211,7 +211,7 @@ class MiniDataReader final : public DataReader<TensorBuffer> {
 };
 ```
 可以看到，除了我们自己继承自 `DataSet` 的 `MiniDataset` 类之外，OneFlow 还内置了其他的 `XXXDataSet`，它们可以在已有的 `DataSet` 基础上增加额外功能，如 `RandomShuffleDataset` 用于 shuffle，`BatchDataset` 用于批量读取数据。
-一切完成后，最后调用 `StartLoadThread`，顾名思义，启动加载线程，在 `StartLoadThread` 中，最终会触发 重写的 `MiniDataset::Next` 方法。
+一切完成后，最后调用 `StartLoadThread`，顾名思义，启动加载线程，在 `StartLoadThread` 中，最终会触发重写的 `MiniDataset::Next` 方法。
 
 以上 `MiniDataReader` 的构造，可以作为模板，没有特殊要求，在实现自定义的 DataLoader 过程中，不需要修改。
 
@@ -262,7 +262,7 @@ class MiniDataReader final : public DataReader<TensorBuffer> {
 int32_t PersistentInStream::ReadLine(std::string* l);
 int32_t PersistentInStream::ReadFully(char* s, size_t n);
 ```
-`ReadLine` 读取文件中的一行，至 `l` 对象；`ReadFully` 读取 `n` 个字节的数据，至 `s` 所指向的内存。若成功，均返回0。
+`ReadLine` 读取文件中的一行，至 `l` 对象；`ReadFully` 读取 `n` 个字节的数据，至 `s` 所指向的内存。均以0作为成功时的返回值。
 
 `MiniDataSet` 完成从文件到内存缓冲区的工作，接着，我们将使用 `MiniParser`，将缓冲区中的内容，设置到 Op 的输出中。
 
