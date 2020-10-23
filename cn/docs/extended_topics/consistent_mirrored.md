@@ -11,9 +11,9 @@
 * 在分布式任务中采用 `consistent` 视角及其特点
 
 ## 数据并行与模型并行
-为了更好地理解OneFlow中的 `consistent` 和 `mirrored` 视角，我们需要了解分布式任务中的 **数据并行** 、**模型并行** 两种并行方式的区别。
+为了更好地理解 OneFlow 中的 `consistent` 和 `mirrored` 视角，我们需要了解分布式任务中的 **数据并行** 、**模型并行** 两种并行方式的区别。
 
-为了更直观地展示两者的差别，我们先看一个简单的 op (在 OneFlow 中，逻辑上的运算都被抽象为了 operator，称作 op)：矩阵乘法。
+为了更直观地展示两者的差别，我们先看一个简单的 Op ：矩阵乘法。
 
 我们假定在模型训练中，存在一个输入矩阵 I ，通过矩阵 I 与矩阵 W 做矩阵乘法，得到输出矩阵 O 。
 
@@ -32,7 +32,7 @@
 当以上 I 矩阵的行 N 很大，说明样本很多；如果 W 矩阵的列 C2 很大，说明模型复杂；当样本数目、模型复杂程度复杂到一定程度时，单机单卡的硬件条件已经无法承载训练作业，就需要考虑分布式的方式训练。而在分布式系统中，我们可以选择 **数据并行** 和 **模型并行**。
 
 <a id="mat_mul_op"></a>
-为了便于理解数据并行与模型并行，我们先用下图作为矩阵相乘 op 的示例：
+为了便于理解数据并行与模型并行，我们先用下图作为矩阵相乘 Op 的示例：
 
 ![mat_mul_op](imgs/mul_op_illustrated.png)
 
@@ -88,81 +88,18 @@
 
 以上提及的 `list` 中的所有元素 **拼接在一起** ，才是一个完整的 BATCH。
 
-### 代码示例
-在以下的代码中，我们使用采用 `mirrored_view` 视角，使用2个 GPU 进行训练。
+### 代码
+在以下的脚本中，我们使用采用 `mirrored_view` 视角，使用2个 GPU 进行训练。
 
-完整代码：[mirrored_strategy.py](../code/extended_topics/mirrored_strategy.py)
+代码：[mirrored_strategy.py](../code/extended_topics/mirrored_strategy.py)
 
 重点部分的说明请见后文“代码解析”部分。
 
-```python
-import numpy as np
-import oneflow as flow
-import oneflow.typing as tp
-
-BATCH_SIZE = 100
-GPU_NUM = 2
-BATCH_SIZE_PER_GPU = int(BATCH_SIZE / GPU_NUM)
-
-
-def get_train_config():
-    config = flow.function_config()
-    config.default_data_type(flow.float)
-    config.default_logical_view(flow.scope.mirrored_view())
-    return config
-
-
-@flow.global_function(type="train", function_config=get_train_config())
-def train_job(
-    images: tp.ListNumpy.Placeholder((BATCH_SIZE_PER_GPU, 1, 28, 28), dtype=flow.float),
-    labels: tp.ListNumpy.Placeholder((BATCH_SIZE_PER_GPU,), dtype=flow.int32),
-) -> tp.ListNumpy:
-    initializer = flow.truncated_normal(0.1)
-    reshape = flow.reshape(images, [images.shape[0], -1])
-    hidden = flow.layers.dense(
-        reshape,
-        512,
-        activation=flow.nn.relu,
-        kernel_initializer=initializer,
-        name="dense1",
-    )
-    logits = flow.layers.dense(
-        hidden, 10, kernel_initializer=initializer, name="dense2"
-    )
-    loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits)
-
-    lr_scheduler = flow.optimizer.PiecewiseConstantScheduler([], [0.1])
-    flow.optimizer.SGD(lr_scheduler, momentum=0).minimize(loss)
-    return loss
-
-
-if __name__ == "__main__":
-    flow.config.gpu_device_num(2)  # 设置GPU数目
-    check_point = flow.train.CheckPoint()
-    check_point.init()
-    (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(
-        BATCH_SIZE
-    )
-
-    for i, (images, labels) in enumerate(zip(train_images, train_labels)):
-        images1 = images[:BATCH_SIZE_PER_GPU]
-        images2 = images[BATCH_SIZE_PER_GPU:]
-        labels1 = labels[:BATCH_SIZE_PER_GPU]
-        labels2 = labels[BATCH_SIZE_PER_GPU:]
-
-        imgs_list = [images1, images2]
-        labels_list = [labels1, labels2]
-
-        loss = train_job(imgs_list, labels_list)
-        total_loss = np.array([*loss[0], *loss[1]])
-        if i % 20 == 0:
-            print(total_loss.mean())
-```
-
-### 代码解析
+### 代码解读
 以上代码中：
 
 * 使用 `flow.config.gpu_device_num` 设置 GPU 数目为2 
+
 ```python
 flow.config.gpu_device_num(2)
 ```
@@ -206,90 +143,18 @@ def train_job(
   config.default_logical_view(flow.scope.consistent_view())
 ```
 
-之所以说 consistent 视角是 OneFlow 的一大特色，是因为在 OneFlow 的设计中，若采用 `consistent_view`，那么从用户的视角看，所使用的op、blob将获得 **逻辑上的统一**，同样以本文开头的矩阵乘法为例，我们只需要关注[矩阵乘法](#mat_mul_op)本身数学计算上的意义；而在工程上到底如何配置、采用模型并行还是数据并行等细节问题，可以使用 OneFlow 的接口轻松完成。OneFlow 内部会高效可靠地解决 **数据并行中的数据切分** 、**模型并行中的模型切分** 、**串行逻辑** 等问题。
+之所以说 consistent 视角是 OneFlow 的一大特色，是因为在 OneFlow 的设计中，若采用 `consistent_view`，那么从用户的视角看，分布式系统中的多个设备将获得 **逻辑上的统一**，同样以本文开头的矩阵乘法为例，我们只需要关注[矩阵乘法](#mat_mul_op)本身数学计算上的意义；而在工程上到底如何配置、采用模型并行还是数据并行等细节问题，可以使用 OneFlow 的接口轻松完成。OneFlow 内部会高效可靠地解决 **数据并行中的数据切分** 、**模型并行中的模型切分** 、**串行逻辑** 等问题。
 
 在 OneFlow 的 consistent 视角下，可以自由选择模型并行、数据并行、流水并行或者混合并行。 
 
-### 代码示例
-以下代码，我们采用 consistent 视角，使用2个 GPU 进行训练，consistent 策略下默认的并行方式仍然是 **数据并行**。关于如何在 consistent 策略下设置 **模型并行** 及 **混合并行** 不在本文讨论范围，我们在[OneFlow的并行特色](model_mixed_parallel.md)中有专门的介绍与示例。
+### 代码
+以下脚本，我们采用 consistent 视角，使用2个 GPU 进行训练，consistent 策略下默认的并行方式仍然是 **数据并行**。关于如何在 consistent 策略下设置 **模型并行** 及 **混合并行** 不在本文讨论范围，我们在[OneFlow 的并行特色](model_mixed_parallel.md)中有专门的介绍与示例。
 
-完整代码：[consistent_strategy.py](../code/extended_topics/consistent_strategy.py)
+代码：[consistent_strategy.py](../code/extended_topics/consistent_strategy.py)
 
-```python
-import numpy as np
-import oneflow as flow
-import oneflow.typing as tp
+代码中的重点将在下文介绍。
 
-BATCH_SIZE = 100
-
-
-def lenet(data, train=False):
-    initializer = flow.truncated_normal(0.1)
-    conv1 = flow.layers.conv2d(
-        data,
-        32,
-        5,
-        padding="SAME",
-        activation=flow.nn.relu,
-        kernel_initializer=initializer,
-        name="conv1",
-    )
-    pool1 = flow.nn.max_pool2d(conv1, ksize=2, strides=2, padding="SAME", name="pool1")
-    conv2 = flow.layers.conv2d(
-        pool1,
-        64,
-        5,
-        padding="SAME",
-        activation=flow.nn.relu,
-        kernel_initializer=initializer,
-        name="conv2",
-    )
-    pool2 = flow.nn.max_pool2d(conv2, ksize=2, strides=2, padding="SAME", name="pool2")
-    reshape = flow.reshape(pool2, [pool2.shape[0], -1])
-    hidden = flow.layers.dense(
-        reshape,
-        512,
-        activation=flow.nn.relu,
-        kernel_initializer=initializer,
-        name="hidden",
-    )
-    if train:
-        hidden = flow.nn.dropout(hidden, rate=0.5)
-    return flow.layers.dense(
-        hidden, 10, kernel_initializer=initializer, name="outlayer"
-    )
-
-
-@flow.global_function(type="train")
-def train_job(
-    images: tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-    labels: tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32),
-) -> tp.Numpy:
-    logits = lenet(images, train=True)
-    loss = flow.nn.sparse_softmax_cross_entropy_with_logits(
-        labels, logits, name="softmax_loss"
-    )
-    lr_scheduler = flow.optimizer.PiecewiseConstantScheduler([], [0.1])
-    flow.optimizer.SGD(lr_scheduler, momentum=0).minimize(loss)
-    return loss
-
-
-if __name__ == "__main__":
-    flow.config.gpu_device_num(2)
-    check_point = flow.train.CheckPoint()
-    check_point.init()
-    (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(
-        BATCH_SIZE
-    )
-
-    for epoch in range(50):
-        for i, (images, labels) in enumerate(zip(train_images, train_labels)):
-            loss = train_job(images, labels)
-            if i % 20 == 0:
-                print(loss.mean())
-```
-
-### 代码解析
+### 代码解读
 以上代码中：
 
 * 使用 `flow.config.gpu_device_num` 设置GPU数目：
@@ -297,7 +162,7 @@ if __name__ == "__main__":
 flow.config.gpu_device_num(2)
 ```
 
-* 使用 `tp.Numpy.Placeholder` 定义 consistent 视角下的占位符，因为`Numpy.Placeholder`产出的 Blob 代表逻辑上的 op 及数据占位符，因此此处的 BATCH_SIZE 就是整个分布式训练的样本总和，不需要人为切分或者组合
+* 使用 `tp.Numpy.Placeholder` 定义 consistent 视角下的占位符，因为 `Numpy.Placeholder` 产出的 Blob 代表逻辑上的 op 及数据占位符，因此此处的 BATCH_SIZE 就是整个分布式训练的样本总和，不需要人为切分或者组合
 ```python
 @flow.global_function(type="train")
 def train_job(
@@ -314,9 +179,9 @@ for i, (images, labels) in enumerate(zip(train_images, train_labels)):
       print(loss.mean())
 ```
 
-## 更多扩展
+## 扩展
 随着机器学习理论与实践发展，现在已经出现了很多单机无法训练的网络；也出现了越来越多仅采用数据并行无法很好完成训练的模型。
 
-采用OneFlow的 `consistent` 视角，通过自由选择及组合并行方式，可以很好地解决以上问题，我们在[OneFlow的并行特色](model_mixed_parallel.md)进行了专门的介绍。
+采用 OneFlow 的 `consistent` 视角，通过自由选择及组合并行方式，可以很好地解决以上问题，我们在 [OneFlow 的并行特色](model_mixed_parallel.md)进行了专门的介绍。
 
 
