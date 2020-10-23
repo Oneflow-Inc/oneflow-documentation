@@ -73,7 +73,7 @@ if i % 20 == 0:
 `oneflow.typing` 中包含了作业函数可以返回的数据类型，上文中出现的 `flow.typing.Numpy` 只是其中一种，现将其中常用的几种类型及对应意义罗列如下：
 
 - `oneflow.typing.Numpy`：对应了 `numpy.ndarray`，本文主要以 `oneflow.typing.Numpy` 举例
-- `oneflow.typing.ListNumpy`：对应了一个 `list` 容器，其中每个元素都是一个 `numpy.ndarray` 对象。与 OneFlow 进行分布式训练的视角有关，将在[分布式训练的consistent与mirrored视角](../extended_topics/consistent_mirrored.md)中看到其作用
+- `oneflow.typing.ListNumpy`：对应了一个 `list` 容器，其中每个元素都是一个 `numpy.ndarray` 对象。与 OneFlow 进行分布式训练的视角有关，将在[分布式训练的 consistent 与 mirrored 视角](../extended_topics/consistent_mirrored.md)中看到其作用
 - `oneflow.typing.ListListNumpy`：对应了一个 `list` 容器，其中每个元素都是一个 `TensorList` 对象，OneFlow 的某些接口需要处理或者返回多个 `TensorList` 对象。具体可以参阅 [概念清单](./concept_explanation.md#3tensorbuffer-tensorlist) 及相关 [API 文档](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=ListListNumpy)
 - `oneflow.typing.Callback`：对应了一个回调函数，用于异步调用作业函数，下文会介绍
 
