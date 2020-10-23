@@ -1,19 +1,19 @@
 
 # OneFlow 的并行特色
 
-在[Consistent 与 Mirrored 视角](consistent_mirrored.md)中，我们已经知道 OneFlow 提供了 mirrored 与 consistent 两种看待分布式系统的视角，并且提前了解了 OneFlow 的 `consistent` 视角颇具特色。
+在 [Consistent 与 Mirrored 视角](consistent_mirrored.md)中，我们已经知道 OneFlow 提供了 mirrored 与 consistent 两种看待分布式系统的视角，并且提前知道了 OneFlow 的 `consistent` 视角颇具特色。
 
 因为在 `consistent_view` 下，OneFlow 提供了逻辑上统一的视角，分布式训练时，用户可以自由选择数据并行、模型并行还是是混合并行。
 
 在本文中，继续深入介绍 OneFlow 独具特色的 `consistent` 视角，包括：
 
-* OneFlow在 `consistent_view` 下纯数据并行流程示意
+* OneFlow 在 `consistent_view` 下纯数据并行流程示意
 
-* OneFlow在 `consistent_view` 下混合并行流程示意
+* OneFlow 在 `consistent_view` 下混合并行流程示意
 
 * 混合并行的优势及适用场景
 
-* OneFlow混合并行实例
+* OneFlow 混合并行实例
 
 ## 网络模型训练的逻辑图
 我们先设定一个简单的多层网络，作为我们我们讨论并行方式的载体，其结构如下图所示：
@@ -36,11 +36,11 @@
 
 ### 纯数据并行
 
-我们已经知道，consistent 视角下，默认的并行方式是数据并行；而如果选择 mirrored 视角，则只能采用数据并行；若在调用作业函数时直接传递 `numpy` 数据(而不是使用 OneFlow 的 `flow.data.xxx_reader` 接口进行数据加载)，两者的区别在于：
+我们已经知道，consistent 视角下，默认的并行方式是数据并行；而如果选择 mirrored 视角，则只能采用数据并行；若在调用作业函数时直接传递 `numpy` 数据(而不是使用 OneFlow 的 [DataLoader 及相关算子](../basics_topics/data_input.md#dataloader))，两者的区别在于：
 
 * mirrored 视角下，采用纯数据并行，需要自己根据参与训练的卡数对数据进行切分、重组，使用 `list` 传递和接收数据；
 
-* 而 consistent 视角下提供了逻辑上的统一看待，数据的切分和重组交给了OneFlow 框架完成。
+* 而 consistent 视角下提供了逻辑上的统一看待，数据的切分和重组交给了 OneFlow 框架完成。
 
 下图是 consistent 视角下，采用纯数据并行的方式，实现原逻辑网络模型的流程示意图：
 
@@ -74,83 +74,18 @@
 
 ![混合并行](imgs/para_consistent_mixed.png)
 
-目前，其它的主流框架对于混合并行或者不支持，或者需要深度定制，而OneFlow 中可以通过简单的设置，配置混合并行的分布式训练，还可以用自由度超高的流水并行，深度优化分布式系统。
+目前，其它的主流框架对于混合并行或者不支持，或者需要深度定制，而 OneFlow 中可以通过简单的设置，配置混合并行的分布式训练，还可以用自由度超高的流水并行，深度优化分布式系统。
 
 ## 混合并行实例
-### 代码示例
-以下，在 `consistent` 视角下，我们对 MLP 模型采用了混合并行方案：输入层与隐藏层采用（默认的）数据并行；输出层采用模型并行并进行列切分。
+### 代码
+以下脚本，在 `consistent` 视角下，我们对 MLP 模型采用了混合并行方案：输入层与隐藏层采用（默认的）数据并行；输出层采用模型并行并进行列切分。
 
-完整代码：[hybrid_parallelism_mlp.py](../code/extended_topics/hybrid_parallelism_mlp.py)
+代码：[hybrid_parallelism_mlp.py](../code/extended_topics/hybrid_parallelism_mlp.py)
 
-更具体的解析在后文“代码解析”可见。
+更具体的解析在后文“代码解读”可见。
 
-```python
-# hybrid_parallel_mlp.py
-import oneflow as flow
-import oneflow.typing as tp
-
-BATCH_SIZE = 100
-
-
-def mlp(data):
-    initializer = flow.truncated_normal(0.1)
-    reshape = flow.reshape(data, [data.shape[0], -1])
-    hidden = flow.layers.dense(
-        reshape,
-        512,
-        activation=flow.nn.relu,
-        kernel_initializer=initializer,
-        name="dense1",
-    )
-    return flow.layers.dense(
-        hidden,
-        10,
-        kernel_initializer=initializer,
-        # dense为列存储，进行split(0)切分
-        model_distribute=flow.distribute.split(axis=0),
-        name="dense2",
-    )
-
-
-def get_train_config():
-    config = flow.function_config()
-    config.default_data_type(flow.float)
-    return config
-
-
-@flow.global_function(type="train", function_config=get_train_config())
-def train_job(
-    images: tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-    labels: tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32),
-) -> tp.Numpy:
-    logits = mlp(images)
-    loss = flow.nn.sparse_softmax_cross_entropy_with_logits(
-        labels, logits, name="softmax_loss"
-    )
-
-    lr_scheduler = flow.optimizer.PiecewiseConstantScheduler([], [0.1])
-    flow.optimizer.SGD(lr_scheduler, momentum=0).minimize(loss)
-    return loss
-
-
-if __name__ == "__main__":
-    flow.config.gpu_device_num(2)
-    check_point = flow.train.CheckPoint()
-    check_point.init()
-
-    (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(
-        BATCH_SIZE
-    )
-
-    for epoch in range(3):
-        for i, (images, labels) in enumerate(zip(train_images, train_labels)):
-            loss = train_job(images, labels)
-            if i % 20 == 0:
-                print(loss.mean())
-```
-
-### 代码解析
-以上代码修改自[3分钟快速上手](../quick_start/quickstart_in_3_min.md)中的示例代码，比较两份代码，也可以体会到在 OneFlow 的 `consistent_view` 下进行各种并行方案的配置是多么的简单，只需要在单机的程序上稍加修改即可。
+### 代码解读
+以上脚本修改自[3分钟快速上手](../quick_start/quickstart_in_3_min.md)中的示例代码，比较两份代码，也可以体会到在 OneFlow 的 `consistent_view` 下进行各种并行方案的配置是多么的简单，只需要在单机的程序上稍加修改即可。
 
 以上程序的关键部分有：
 
@@ -191,99 +126,15 @@ def mlp(data):
 
 在流水并行中，整个神经网络有的层次在一组物理设备上，另外一些层次在另外一组物理设备上，它们以接力的方式协同工作，分多个阶段，在设备之间流水执行。
 
-在以下示例中，我们对[Consistent 与 Mirrored 视角](consistent_mirrored.md)中的"在 OneFlow 中使用 consistent 视角"代码进行简单修改，展示了流水并行模式。
+在以下示例中，我们对 [Consistent 与 Mirrored 视角](consistent_mirrored.md)中的“在 OneFlow 中使用 consistent 视角”代码进行简单修改，展示了流水并行模式。
 
-### 代码示例
+### 代码
 
 完整代码：[hybrid_parallelism_lenet.py](../code/extended_topics/hybrid_parallelism_lenet.py)
 
-更详细的讨论可见后文的“代码解析”。
+更详细的讨论可见后文的“代码解读”。
 
-```python
-# hybrid_parallelism_lenet.py
-import oneflow as flow
-import oneflow.typing as tp
-
-BATCH_SIZE = 100
-
-
-def lenet(data, train=False):
-    initializer = flow.truncated_normal(0.1)
-    conv1 = flow.layers.conv2d(
-        data,
-        32,
-        5,
-        padding="SAME",
-        activation=flow.nn.relu,
-        kernel_initializer=initializer,
-        name="conv1",
-    )
-    pool1 = flow.nn.max_pool2d(conv1, ksize=2, strides=2, padding="SAME", name="pool1")
-    conv2 = flow.layers.conv2d(
-        pool1,
-        64,
-        5,
-        padding="SAME",
-        activation=flow.nn.relu,
-        kernel_initializer=initializer,
-        name="conv2",
-    )
-    pool2 = flow.nn.max_pool2d(conv2, ksize=2, strides=2, padding="SAME", name="pool2")
-    reshape = flow.reshape(pool2, [pool2.shape[0], -1])
-    with flow.scope.placement("gpu", "0:0"):
-        hidden = flow.layers.dense(
-            reshape,
-            512,
-            activation=flow.nn.relu,
-            kernel_initializer=initializer,
-            name="hidden",
-        )
-    if train:
-        hidden = flow.nn.dropout(hidden, rate=0.5)
-
-    with flow.scope.placement("gpu", "0:1"):
-        output = flow.layers.dense(
-            hidden, 10, kernel_initializer=initializer, name="outlayer"
-        )
-    return output
-
-
-def get_train_config():
-    config = flow.function_config()
-    config.default_data_type(flow.float)
-    return config
-
-
-@flow.global_function(type="train", function_config=get_train_config())
-def train_job(
-    images: tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-    labels: tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32),
-) -> tp.Numpy:
-    logits = lenet(images, train=True)
-    loss = flow.nn.sparse_softmax_cross_entropy_with_logits(
-        labels, logits, name="softmax_loss"
-    )
-
-    lr_scheduler = flow.optimizer.PiecewiseConstantScheduler([], [0.1])
-    flow.optimizer.SGD(lr_scheduler, momentum=0).minimize(loss)
-    return loss
-
-
-if __name__ == "__main__":
-    flow.config.gpu_device_num(2)
-    check_point = flow.train.CheckPoint()
-    check_point.init()
-    (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(
-        BATCH_SIZE
-    )
-
-    for epoch in range(50):
-        for i, (images, labels) in enumerate(zip(train_images, train_labels)):
-            loss = train_job(images, labels)
-            if i % 20 == 0:
-                print(loss.mean())
-```
-### 代码解析
+### 代码解读
 
 以上关键的代码只有2行，且他们的本质作用是类似的：
 
@@ -299,7 +150,7 @@ if __name__ == "__main__":
         )
 ```
 
-* 通过 `oneflow.scope.placement` ，指定 `output` 层的op计算运行在1号GPU上
+* 通过 `oneflow.scope.placement` ，指定 `output` 层的op计算运行在第0号主机的1号 GPU 上
 ```python
   with flow.scope.placement("gpu", "0:1"):
         output = flow.layers.dense(
@@ -307,11 +158,7 @@ if __name__ == "__main__":
         )
 ```
 
-其中 `scope.placement` 的第一个参数指定 `cpu` 还是 `gpu`，第二个参数指定机器及运算设备编号，如，“使用第1号机器的第2个 GPU”，则应该写：
-```python
-  with flow.scope.placement("gpu", "1:2"):
-    # ...
-```
+`scope.placement` 的具体使用，可参阅 [API 文档](https://oneflow.readthedocs.io/en/master/scope.html#oneflow.scope.placement)。
 
 流水并行，使得用户可以为每个 op 指定物理设备，非常适合对网络模型及分布式情况都很熟悉的用户进行 **深度优化** 。
 
