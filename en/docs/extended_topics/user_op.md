@@ -1,14 +1,14 @@
-# Build New Operator
+# Create an New Operator
 
 ## Background 
 
 ### What is a Custom Op
 
-OneFlow abstracts all kinds of data processing into  op (operator). Op is acts on the input tensor and writes the result of the operation to the output tensor. OneFlow provides comprehensive ops and can be found in the [ops directory](https://github.com/Oneflow-Inc/oneflow/tree/master/oneflow/python/ops).
+OneFlow abstracts all kinds of data processing into op (operator). Op acts on the input tensor and writes the result of the operation to the output tensor. OneFlow provides relatively comprehensive ops and they can be found [ops directory](https://github.com/Oneflow-Inc/oneflow/tree/master/oneflow/python/ops).
 
 When OneFlow's existing Python operators are not sufficient to build a neural network or when Python operators do not meet performance requirements. You can use C++ to develop custom op in OneFlow.
 
-OneFlow provides a system which you can create custom op and register it in OneFlow then use custom op in Python.
+OneFlow provides a mechanism which you can create custom op and register it in OneFlow then use custom op in Python.
 
 The following diagram demonstrates the registration system for a custom op in OneFlow.
 
@@ -16,13 +16,13 @@ The following diagram demonstrates the registration system for a custom op in On
 
 In the OneFlow framework, there are three types of registries associated with custom op.
 
-* `OpGradRegistry`：Manage gradient registration for automatic gradient calculation in converse digraph.
+* `OpGradRegistry`：Manage gradient registration for automatic gradient calculation in backward graph.
 
-* `OpRegistry`：Managing op registrations for generating forward digraph and building`Task Graph`.
+* `OpRegistry`：Managing op registrations for generating forward digraph and building `Task Graph`.
 
-* `OpKernelRegistry`：Manage kernel registrations for executing user-written kernel logic when running.
+* `OpKernelRegistry`：Manage kernel registrations for peform user logic at runtime.
 
-We actually writing your custom op in C++ and generating a dynamic link library (so file). By loading the corresponding so file in Python that you can use the custom op from the so file. 
+We actually write custom op in C++ and generate a dynamic link library (so file). By loading the corresponding so file in Python that you can use the custom op from the so file. 
 
 The data structure of user op can be  viewed at [user_op_conf.proto](https://github.com/Oneflow-Inc/oneflow/blob/master/oneflow/core/framework/user_op_conf.proto)：
 
@@ -182,7 +182,7 @@ After implementing the kernel class, you need to call `REGISTER_USER_KERNEL` to 
 
 * `SetCreateFn<T>()`: The method of this template's parameter `T`  is our implementation of the kernel class which OneFlow will use it to create the kernel object.
 
-* `SetIsMatchedHob`：Because an op may have more than one kernel. You need to call `SetIsMatchedHob` to select a different kernel for the calculation according to the physical device and data format. This method accepts an equation and when the equation is `true`. Then OneFlow will call the kernel to complete the calculation.
+* `SetIsMatchedHob`：Because an op may have more than one kernel. You need to call `SetIsMatchedHob` to select a different kernel for the calculation according to the physical device and data format. This method accepts an equation and when the equation is `true`, OneFlow will call the kernel to complete the calculation.
 
 ### Implementation and Registration of GPU Kernel
 
@@ -260,7 +260,7 @@ For example：
 ['-I/home/yaochi/oneflow/build/python_scripts/oneflow/include', '-DHALF_ENABLE_CPP11_USER_LITERALS=0', '-DWITH_CUDA', '-D_GLIBCXX_USE_CXX11_ABI=0']
 ```
 
-You can also get compile and link options directly from using command：
+You can also get compile and link options directly by using command：
 
 ```shell
 python -c "import oneflow; print(' '.join(oneflow.sysconfig.get_compile_flags()))"
@@ -371,7 +371,7 @@ The expected results are：
 [0. 0. 0. 1. 2.]
 ```
 
-In the above code: `flow.config.load_library("final_relu.so") ` is for load the so file.
+In the above code: `flow.config.load_library("final_relu.so") ` is to load the so file.
 
 We are focus on the process of building and running the python wrapper in `myrelu`.
 
@@ -387,7 +387,7 @@ We are focus on the process of building and running the python wrapper in `myrel
     )
 ```
 
-This object contains `Op`, `Input` and etc which are used to encapsulate custom op. Details explanation as follows:
+This object contains `Op`, `Input` and etc which are used to encapsulate custom op. Details explanation are as follows:
 
 * `Op("myrelu") `: The parameter must be the `op_type_name` from the previous C++ registration which OneFlow uses to find the registered op type and instantiate the op.
 
@@ -403,9 +403,9 @@ The following code will get the blob of the custom op:
 return op.InferAndTryRun().SoleOutputBlob()
 ```
 
-`InferAndTryRun` completes the derivation and returns `UserOp`. If the returned blob has only one output. Thus use `SoleOutputBlob` to get the unique output. Otherwise use `RemoteBlobList` to get a list of multiple blobes.
+`InferAndTryRun` completes the derivation and returns `UserOp`. If the returned blob has only one output. We cab use `SoleOutputBlob` to get the unique output. Otherwise use `RemoteBlobList` to get a list of multiple blobs.
 
-So far, we have built the `myrelu` which is a relatively simple op. But if we need to build a more complex op, we will need to use some additional features in the registration process.
+So far, we have built the `myrelu` which is a relatively simple op. But if we need to build a more complex op, we should use some additional features in the registration process.
 We'll introduce from op registration, kernel registration, gradient registration and Python layer wrapping.
 
 
@@ -413,7 +413,7 @@ We'll introduce from op registration, kernel registration, gradient registration
 
 ### `Attr`
 
-Some ops require configuration properties in addition to inputs and outputs.For example, the `reshape` class needs to be config the shape and the `conv` needs to be config the alignment method. We can use the `Attr` at registration to set attributes for op. For example:
+Some ops require configuration properties in addition to inputs and outputs.For example, the `reshape` needs to be configured the shape and the `conv` needs to be configured the alignment method. We can use the `Attr` at registration to set attributes for op. For example:
 
 ```cpp
 OpRegistry& Attr(const std::string& name, 
@@ -466,9 +466,9 @@ We can pass an additional parameter and configure a default value for it which i
 
 ### `SetCheckAttrFn`
 
-For some Attributes, they require a more detailed delineation of the range which can be specified by  `SetCheckAttrFn`  when registering the Op.
+For some  `Attributes`, they require a more detailed delineation of the range which can be specified by  `SetCheckAttrFn`  when registering the Op.
 
-For example, for a `Conv`, it has a configuration option called `data_format` which is a string type but the data must be `channels_first` or `channels_last`. 
+Take `Conv` op as an example, it has a configuration option called `data_format` which is a string type but the data must be `channels_first` or `channels_last`. 
 
 ```cpp
 .Attr("data_format", UserOpAttrType::kAtString, std::string("NCHW"))
@@ -490,7 +490,7 @@ Set a function to check that returns `Maybe<void>::Ok()` when the value of the a
 
 ### Multiple In/Output
 
-For some op, there may be more than one input or output and we need to specify the number of inputs and outputs when we register the it.
+For some ops, they may have multiple input or output and we need to specify the number of inputs and outputs when we register the it.
 
 Input example：
 
@@ -541,7 +541,7 @@ REGISTER_USER_OP("add_n")
 
 In some kernel implementations of op, some extra buffer may be required to store temporary data during the `Compute`.
 
-We can specify the buffer size when registering the kernel by using the `SetInferTmpSizeFn`. Then get the buffer and use it in the `Compute` function.
+We can specify the buffer size when registering the kernel by using the `SetInferTmpSizeFn`. Then we get the buffer and use it in the `Compute` function.
 
 The following code registers the kernel with `SetInferTmpSizeFn` to specify a buffer size as 1024 bytes:
 
@@ -572,13 +572,13 @@ class XKernel final : public oneflow::user_op::OpKernel {
 
 Oneflow is automatically get derivative during backward map expansion and the OneFlow framework uses [Automatic Differentiation](https://en.wikipedia.org/wiki/Automatic_differentiation) to get the derivative which means automatically find the gradient of the entire expression using the chain rule.
 
-In order to automatically get derivative a custom op, we need to register it with `REGISTER_USER_OP_GRAD`. From a mathematical point of view, the registration process is the computation of the backward derivation that we specify for our custom op. From a programming point of view, it is to set up a backward-generating function for a custom op. Within that function, write code that specifies how the input gradient of that op is to be calculated.
+In order to automatically get derivative a custom op, we need to register it with `REGISTER_USER_OP_GRAD`. From a mathematical point of view, the registration process is the computation of the backward derivation that we specify for our custom op. From a programming point of view, it is to set up a backward-generating function for a custom op. Within that function, we write code that specifies how the input gradient of that op is to be calculated.
 
-In order to calculate the gradient of a custom op, we need to construct the gradient of the input based on the input and output of the custom op. In most cases, we can represent the process of calculating the gradient of the input through the existing operators and their combination in OneFlow.
+In order to calculate the gradient of a custom op, we need to construct the gradient of the input base on the input and output of the custom op. In most cases, we can represent the process of calculating the gradient of the input through the existing operators and their combination in OneFlow.
 
 The calculation of the input gradient usually consists of the following steps:
 
-1. Use `ctx->DefineOp()` and `BackwardOpBuilder` to represent methods for calculating input gradients. Since input gradient calculations may be combinations of multiple operations. Thus `DefineOp` and `BackwardOpBuilder` may be used for multiple times.
+1. Use `ctx->DefineOp()` and `BackwardOpBuilder` to represent methods for calculating input gradients. Because input gradient calculations may be combinations of multiple operations. Therefore `DefineOp` and `BackwardOpBuilder` may be used for multiple times.
 
 2. After defining the calculation process in the previous step, the required gradient is finally recorded in the output of some operator. We need to call the `ctx->FwOp().InputGradBind()` to combine the result of the previous calculation to the input gradient of the custom op.
 
@@ -695,7 +695,7 @@ ctx->FwOp().InputGradBind(user_op::OpArg("in", 0),
   });
 ```
 
-The above is the complete process of registering a gradient and the related classes and methods will describe below.
+The above code is the complete process of registering a gradient and the related classes and methods will be described in below.
 
 ### SetBackwardOpConfGenFn
 
@@ -715,7 +715,7 @@ The common methods and their purpose used in `BackwardOpConfContext` as follows:
 
 * `GetOp(op_name)`: Create and get the corresponding `op` based on `op_name`. `GetOp` uses a lazy init mechanism and the corresponding op is not actually created until `GetOp` is called.
 
-* `void DefineOp(op_name, fn)`：Define `fn` function of the op named `op_name`. When `ctx->GetOp(op_name)` is called, `fn` is triggered in the OneFlow for Op creation and if the op has already been created. Then the result is retrieved directly. The `fn` receives a `BackwardOpBuilder` parameter for constructing the reverse op. We will introduce `BackwardOpBuilder` later on.
+* `void DefineOp(op_name, fn)`：Define `fn` of the op named `op_name`. When `ctx->GetOp(op_name)` is called, `fn` is triggered in the OneFlow for Op creation and if the op has already been created. Then the result is retrieved directly. The `fn` receives a `BackwardOpBuilder` parameter for constructing the reverse op. We will introduce `BackwardOpBuilder` later on.
 
 
 ### Detailed Introduction of BackwardOpBuilder
@@ -733,7 +733,7 @@ ctx->DefineOp(op1_name,
   });
 ```
 
-In this function, we calling `Build` to build a reverse op for computing `x*dy`.
+In this function, we call `Build` to build a reverse op for computing `x*dy`.
 The purpose of each operator is as follows:
 
 * `OpTypeName("multiply")` specifies the `op_type_name` of an op that is used to help us compute the reverse gradient.
@@ -761,13 +761,13 @@ ctx->FwOp().InputGradBind(user_op::OpArg("in", 0),
 
 Common methods for `UserOpWrapper` are:
 
-* `InputGradBind(input, grad_fn)`：Bind the input of the forward op and get the gradient function `grad_fn`.  OneFlow automatically determines whether `input` needs to generate a backward gradient and if needed, triggers `grad_fn` and binds the input.
+* `InputGradBind(input, grad_fn)`：Bind the input of the forward op and get the gradient function `grad_fn`.  OneFlow automatically determines whether input needs to generate a backward gradient, if needed, it will trigger `grad_fn` and binds the input.
 
 * `input(arg_name, index)`：Get the blob corresponding to the `arg_name` of input.
 
 * `output(arg_name,index)`：Get the blob corresponding to the `arg_name` of output.
 
-* `output_grad(output_arg_name, index)`：Returns the `output_arg_name` of the forward op which is the blob of the corresponding backward gradient.
+* `output_grad(output_arg_name, index)`：Get the `output_arg_name` of the forward op which is the blob of the corresponding backward gradient.
 
 * `attr(attr_name)`：Get the value corresponding to the `attr_name`.
 
@@ -775,7 +775,7 @@ Common methods for `UserOpWrapper` are:
 
 ### Customized Op for Calculating Gradients
 
-As we mentioned earlier, in most cases, the process of calculating a gradient can be represented by a combination of existing ops. However, when it is difficult to use an existing op to solve the gradient for a particular forward op that we need to design and create operators specifically for the gradient calculation.Example of this can be found in: [relu_op.cpp](https://github.com/Oneflow-Inc/oneflow/blob/master/oneflow/user/ops/relu_op.cpp).
+As we mentioned earlier, in most cases, the process of calculating a gradient can be represented by a combination of existing ops. However, when it is difficult to use an existing op to solve the gradient for a particular forward op that we need to design and create operators specifically for the gradient calculation. Example can be found in: [relu_op.cpp](https://github.com/Oneflow-Inc/oneflow/blob/master/oneflow/user/ops/relu_op.cpp).
 
 
 ## Detailed Introduction of UserOpConfBuilder 
@@ -811,6 +811,6 @@ def cast(x, dtype, name):
 
 The derivation can be done by calling `InferAndTryRun` in the user op and the result can be retrieved by calling `RemoteBlobList` or `SoleOutputBlob`.
 
-* `RemoteBlobList`：Gets all outputs which applies to op with multiple outputs and all ops are placed in a list.
+* `RemoteBlobList`：Get all outputs which applies to op with multiple outputs and all ops are placed in a list.
 
 * `SoleOutputBlob`：Get unique outputs which applies to op with one output.
