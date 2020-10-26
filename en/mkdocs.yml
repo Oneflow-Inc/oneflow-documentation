@@ -30,7 +30,7 @@ theme:
   # Default values, taken from mkdocs_theme.yml
   language: en
   features:
-    - tabs
+    - navigation.tabs
     #- instant
   palette:
     scheme: default
@@ -103,7 +103,7 @@ nav:
       - Term & Concept Explanation: basics_topics/concept_explanation.md
       - OneFlow System Design: basics_topics/essentials_of_oneflow.md
 
-    
+
     - Extended Topics :
       - The Definition and Call of Job Function: extended_topics/job_function_define_call.md
       - Consistent & Mirrored View: extended_topics/consistent_mirrored.md
@@ -115,8 +115,8 @@ nav:
       - Use VS Code to Debug OneFlow: extended_topics/debug_by_vscode.md
       #- User Defined OP: extended_topics/user_op.md
       #- Eager/Lazy mode: extended_topics/eager_lazy_mode.md
-      
-     
+
+
     #- Advanced Examples:
       #- Image Processing:
        # - ResNet: adv_examples/resnet.md
@@ -125,7 +125,7 @@ nav:
       #- NLP handling-BERT: adv_examples/bert.md
       #- Recommendation System -Wide&Deep: adv_examples/wide_deep.md
       #- Deep Faking -Generate Conflict Network: adv_examples/dcgan.md
-    - API: 
+    - API:
       - API: https://oneflow.readthedocs.io/en/master/
 
 
