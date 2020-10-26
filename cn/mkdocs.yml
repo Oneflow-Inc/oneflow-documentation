@@ -30,7 +30,7 @@ theme:
   # Default values, taken from mkdocs_theme.yml
   language: zh
   features:
-    - tabs
+    - navigation.tabs
     #- instant
   palette:
     scheme: default
