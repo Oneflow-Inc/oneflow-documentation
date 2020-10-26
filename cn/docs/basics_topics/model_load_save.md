@@ -6,9 +6,11 @@
 
 * 将训练好的模型保存，方便后续直接部署使用
 
-严格来说，尚未训练好的模型的保存，称为保存检查点 `checkpoint` 或者快照 `snapshot` 。与将已经训练好的模型保存 `model saving` ，在概念上，略有不同。
+严格来说，尚未训练好的模型的保存，称为 `checkpoint` 或者 `snapshot` 。与保存已训练好的模型（`model saving`） ，在概念上，略有不同。
 
-不过，无论模型是否训练完毕，我们都可以使用 **统一的接口** 将其保存，因此，我们在其它框架中看到的`model`、`checkpoint`、`snapshot`，在 OneFlow 的操作中不做区分。它们在 OneFlow 中，都通过`flow.train.CheckPoint`类作为接口操作。
+不过，在 OneFlow 中，无论模型是否训练完毕，我们都使用 **统一的接口** 将其保存，因此，在其它框架中看到的`model`、`checkpoint`、`snapshot` 等表述，在 OneFlow 中不做区分。
+
+在 OneFlow 中，`flow.train.CheckPoint`类作为接口，负责模型的初始化、加载与保存。
 
 本文将介绍：
 
@@ -20,17 +22,17 @@
 
 * 如何微调与扩展模型
 
-## 使用 get_variable 创建/获取模型参数对象
+## get_variable 创建或获取参数
 
-我们可以使用 `oneflow.get_variable` 方法创造或者获取一个对象，该对象可以用于在全局作业函数中交互信息；当调用 `oneflow.CheckPoint` 的对应接口时，该对象也会被自动地保存或从存储设备中恢复。
+我们可以使用 [oneflow.get_variable](https://oneflow.readthedocs.io/en/master/oneflow.html#oneflow.get_variable) 方法创造或者获取一个对象，该对象可以用于在全局作业函数中交互信息；当调用 `oneflow.CheckPoint` 的对应接口时，该对象也会被自动地保存或从存储设备中恢复。
 
 因为这个特点，`get_variable` 创建的对象，常用于存储模型参数。实际上，OneFlow 中很多较高层接口（如 `oneflow.layers.conv2d`），内部使用 `get_variable` 创建模型参数。
 
-### get_variable 创建/获取对象的流程
+### 流程
 
 `get_variable` 需要一个指定一个 `name` 参数，该参数作为创建对象的标识。
 
-如果 `name` 指定的值在当前上下文环境中已经存在，那么 get_variable 会取出已有对象，并返回。
+如果 `name` 指定的值在当前上下文环境中已经存在，那么 `get_variable` 会取出已有对象，并返回。
 
 如果 `name` 指定的值不存在，则 `get_varialbe` 内部会创建一个 blob 对象，并返回。
 
@@ -76,39 +78,44 @@ def get_variable(
 
 ### initializer 设置初始化方式
 
-我们在上文中已经看到，在调用 `get_variable` 时，通过设置初始化器 `initializer` 来指定参数的初始化方式，OneFlow 中提供了多种初始化器，它们在 `oneflow/python/ops/initializer_util.py` 中。
+我们在上文中已经看到，在调用 `get_variable` 时，通过设置初始化器 `initializer` 来指定参数的初始化方式，OneFlow 中提供了多种初始化器，可以在 [oneflow](https://oneflow.readthedocs.io/en/master/oneflow.html) 模块下查看。
 
-设置 `initializer` 后，初始化工作由 OneFlow 框架完成，具体时机为：当用户调用下文中的 `CheckPoint.init` 时，OneFlow 会根据 `initializer` 对所有 get_variable 创建的对象进行 **数据初始化**。
+在静态图机制下，设置 `initializer` 后，参数初始化工作由 OneFlow 框架完成，具体时机为：当用户调用下文中的 `CheckPoint.init` 时，OneFlow 会根据 `initializer` 对所有 get_variable 创建的对象进行 **数据初始化**。
 
-以下列举部分常用的 `initializer` ：
+OneFlow 目前支持的 `initializer` 列举如下，点击链接可以查看相关算法：
 
-* constant_initializer
+* [constant_initializer](https://oneflow.readthedocs.io/en/master/oneflow.html#oneflow.constant_initializer)
 
-* zeros_initializer
+* [zeros_initializer](https://oneflow.readthedocs.io/en/master/oneflow.html#oneflow.zeros_initializer)
 
-* ones_initializer
+* [ones_initializer](https://oneflow.readthedocs.io/en/master/oneflow.html#oneflow.ones_initializer)
 
-* random_uniform_initializer
+* [random_uniform_initializer](https://oneflow.readthedocs.io/en/master/oneflow.html#oneflow.random_uniform_initializer)
 
-* random_normal_initializer
+* [random_normal_initializer](https://oneflow.readthedocs.io/en/master/oneflow.html#oneflow.random_normal_initializer)
 
-* truncated_normal_initializer
+* [truncated_normal_initializer](https://oneflow.readthedocs.io/en/master/oneflow.html#oneflow.truncated_normal_initializer)
 
-* glorot_uniform_initializer
+* [glorot_uniform_initializer](https://oneflow.readthedocs.io/en/master/oneflow.html#oneflow.glorot_uniform_initializer)
 
-* variance_scaling_initializer
+* [glorot_normal_initializer](https://oneflow.readthedocs.io/en/master/oneflow.html#oneflow.glorot_normal_initializer)
 
-* kaiming_initializer
+* [variance_scaling_initializer](https://oneflow.readthedocs.io/en/master/oneflow.html#oneflow.variance_scaling_initializer)
+
+* [kaiming_initializer](https://oneflow.readthedocs.io/en/master/oneflow.html#oneflow.kaiming_initializer)
+
+* [xavier_normal_initializer](https://oneflow.readthedocs.io/en/master/oneflow.html#oneflow.xavier_normal_initializer)
+
+* [xavier_uniform_initializer](https://oneflow.readthedocs.io/en/master/oneflow.html#oneflow.xavier_uniform_initializer)
 
 
 
-
-## OneFlow 模型的 python 接口
+## OneFlow 模型的 Python 接口
 
 我们通过 `oneflow.train.CheckPoint()` 实例化得到 CheckPoint 对象。
-在 `CheckPoint` 类有三个关键方法：
+在 `CheckPoint` 类中有三个关键方法：
 
-* `init` : 根据缺省的初始化方式，初始化参数变量；
+* `init` : 根据设置的初始化方式，初始化参数变量；
 
 * `save` : 负责保存当前的模型到指定路径；
 
@@ -136,7 +143,7 @@ def load(self, path)
 如以下示例:
 
 ```python
-check_point = flow.train.CheckPoint() #构造CheckPoint对象
+check_point = flow.train.CheckPoint() #构造 CheckPoint 对象
 check_point.init() #初始化网络参数
 
 #... 调用作业函数等操作
@@ -145,14 +152,16 @@ check_point.init() #初始化网络参数
 ### 调用 save 保存模型
 
 训练过程的任意阶段，都可以通过调用 `CheckPoint` 对象的 `save` 方法来保存模型。
+
 ```python
 check_point.save('./path_to_save')
 ```
+
 注意：
 
-* `save` 参数所指定路径对应的目录要么不存在，要么应该为空目录，否则 `save` 会报错(防止覆盖掉原有保存的模型)
-* OneFlow 模型以一定的组织形式保存在指定的路径中，具体结构参见下文中的OneFlow模型的存储结构
-* 虽然OneFlow对 `save` 的频率没有限制，但是过高的保存频率，会加重磁盘及带宽等资源的负担。
+- `save` 参数所指定路径对应的目录要么不存在，要么应该为空目录，否则 `save` 会报错(防止覆盖掉原有保存的模型)
+- OneFlow 模型以一定的组织形式保存在指定的路径中，具体结构参见下文中的 OneFlow 模型的存储结构
+- 虽然 OneFlow 对 `save` 的频率没有限制，但是过高的保存频率，会加重磁盘及带宽等资源的负担。
 
 ### 调用 load 加载模型
 通过调用 `CheckPoint` 对象的 `load` 方法，可以从指定的路径中加载模型。
@@ -165,8 +174,7 @@ check_point.load("./path_to_model") #加载先前保存的模型
 
 
 ## OneFlow 模型的存储结构
-OneFlow 模型是一组已经被训练好的网络的 **参数值** ，目前OneFlow的模型中没有包括网络的元图信息（Meta Graph）。
-模型所保存的路径下，有多个子目录，每个子目录对应了 `作业函数` 中模型的 `name` 。
+OneFlow 模型是一组已经被训练好的网络的 **参数值** 。模型所保存的路径下，有多个子目录，每个子目录对应了 `作业函数` 中模型的 `name`。
 比如，我们先通过代码定义以下的模型：
 
 ```python
@@ -212,7 +220,7 @@ def lenet(data, train=False):
 假设在训练过程中，我们调用以下代码保存模型：
 ```python
 check_point = flow.train.CheckPoint()
-check_point.save('./lenet_models_name') 
+check_point.save('./lenet_models_name')
 ```
 那么 `lenet_models_name` 及其子目录结构为：
 ```
@@ -334,8 +342,8 @@ if __name__ == "__main__":
 
 会得到如下输出：
 ```text
-WARNING! CANNOT find variable path in : ./mlp_models_1/dense3-bias/out. It will be initialized. 
-WARNING! CANNOT find variable path in : ./mlp_models_1/dense3-weight/out. It will be initialized. 
+WARNING! CANNOT find variable path in : ./mlp_models_1/dense3-bias/out. It will be initialized.
+WARNING! CANNOT find variable path in : ./mlp_models_1/dense3-weight/out. It will be initialized.
 2.8365176
 0.38763675
 0.24882479
@@ -344,107 +352,24 @@ WARNING! CANNOT find variable path in : ./mlp_models_1/dense3-weight/out. It wil
 ```
 表示新增的 `dense3` 层所需的参数在原保存的模型中没有找到，并且已经自动初始化。
 
-### 完整代码
+### 代码
 
-以下代码来自 [mlp_mnist_origin.py](../code/basics_topics/mlp_mnist_origin.py)，作为“骨干网络”，将训练好的模型保存至 `./mlp_models_1`。
-```python
-# mlp_mnist_origin.py
-import oneflow as flow
-import oneflow.typing as tp
+脚本 [mlp_mnist_origin.py](../code/basics_topics/mlp_mnist_origin.py) 中构建了“骨干网络”，并将训练好的模型保存至 `./mlp_models_1`。
 
-BATCH_SIZE = 100
-
-
-@flow.global_function(type="train")
-def train_job(
-    images: tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-    labels: tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32),
-) -> tp.Numpy:
-    with flow.scope.placement("cpu", "0:0"):
-        initializer = flow.truncated_normal(0.1)
-        reshape = flow.reshape(images, [images.shape[0], -1])
-        hidden = flow.layers.dense(
-            reshape,
-            512,
-            activation=flow.nn.relu,
-            kernel_initializer=initializer,
-            name="dense1",
-        )
-        dense2 = flow.layers.dense(
-            hidden, 10, kernel_initializer=initializer, name="dense2"
-        )
-
-        loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, dense2)
-
-    lr_scheduler = flow.optimizer.PiecewiseConstantScheduler([], [0.1])
-    flow.optimizer.SGD(lr_scheduler, momentum=0).minimize(loss)
-
-    return loss
-
-
-if __name__ == "__main__":
-    check_point = flow.train.CheckPoint()
-    check_point.init()
-
-    (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(
-        BATCH_SIZE, BATCH_SIZE
-    )
-    for i, (images, labels) in enumerate(zip(train_images, train_labels)):
-        loss = train_job(images, labels)
-        if i % 20 == 0:
-            print(loss.mean())
-    check_point.save("./mlp_models_1")
+运行：
+```shell
+wget https://docs.oneflow.org/code/basics_topics/mlp_mnist_origin.py
+python3 mlp_mnist_origin.py
 ```
 
-以下代码来自 [mlp_mnist_finetune.py](../code/basics_topics/mlp_mnist_finetune.py)，“微调”（为骨干网络增加一层`dense3`）后，加载 `./mlp_models_1`，并继续训练。
-```python
-# mlp_mnist_finetune.py
-import oneflow as flow
-import oneflow.typing as tp
+训练完成后，将会在当前工作路径下得到 `mlp_models_1` 目录。
 
-BATCH_SIZE = 100
+脚本 [mlp_mnist_finetune.py](../code/basics_topics/mlp_mnist_finetune.py) 中的网络在原有基础上进行“微调”（为骨干网络增加一层`dense3`）后，加载 `./mlp_models_1`，并继续训练。
 
-
-@flow.global_function(type="train")
-def train_job(
-    images: tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-    labels: tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32),
-) -> tp.Numpy:
-    with flow.scope.placement("cpu", "0:0"):
-        initializer = flow.truncated_normal(0.1)
-        reshape = flow.reshape(images, [images.shape[0], -1])
-        hidden = flow.layers.dense(
-            reshape,
-            512,
-            activation=flow.nn.relu,
-            kernel_initializer=initializer,
-            name="dense1",
-        )
-        dense2 = flow.layers.dense(
-            hidden, 10, kernel_initializer=initializer, name="dense2"
-        )
-
-        dense3 = flow.layers.dense(
-            dense2, 10, kernel_initializer=initializer, name="dense3"
-        )
-        loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, dense3)
-
-    lr_scheduler = flow.optimizer.PiecewiseConstantScheduler([], [0.1])
-    flow.optimizer.SGD(lr_scheduler, momentum=0).minimize(loss)
-
-    return loss
-
-
-if __name__ == "__main__":
-    check_point = flow.train.CheckPoint()
-    check_point.load("./mlp_models_1")
-
-    (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(
-        BATCH_SIZE, BATCH_SIZE
-    )
-    for i, (images, labels) in enumerate(zip(train_images, train_labels)):
-        loss = train_job(images, labels)
-        if i % 20 == 0:
-            print(loss.mean())
-    check_point.save("./mlp_ext_models_1")
+运行：
+```shell
+wget https://docs.oneflow.org/code/basics_topics/mlp_mnist_finetune.py
+python3 mlp_mnist_finetune.py
 ```
+
+微调后的模型，保存在 `./mlp_ext_models_1` 中。

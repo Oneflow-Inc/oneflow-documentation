@@ -1,19 +1,18 @@
 # 将图片文件制作为 OFRecord 数据集
 
-在 [OFRecord 数据格式](./ofrecord.md) 和 [加载与准备 OFRecord 数据集](./how_to_make_ofdataset.md) 中，我们分别学习了如何将其它数据集格式转为 OFRecord 数据集，以及如何加载 OFRecord 数据集。
+在 [OFRecord 数据格式](./ofrecord.md) 和 [加载与准备 OFRecord 数据集](./how_to_make_ofdataset.md) 中，我们分别学习了 OFRecord 数据格式，以及如何将其它数据集转为 OFRecord 数据集并使用。
 
 本文，我们将介绍如何将图片文件制作为 OFRecord 数据集，并提供了相关的制作脚本，方便用户直接使用或者在此基础上修改。内容包括：
 
 - 制作基于 MNIST 手写数字数据集的 OFRecord 数据集
-
-- OFRecord Reader 的编码方式
+- OFRecord 的编解码方式
 - 在自制的 OFRecord 数据集上进行训练
 
-### 制作基于 MNIST 手写数字数据集的 OFRecord 文件
+### 用图片文件制作 OFRecord 文件
 
-我们使用 **MNIST手写数字数据集** 来完整制作一个 OFRecord 格式文件
+我们使用 [MNIST 数据集中的图片文件](https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/quick_start/mnist_raw_images.zip)来制作一个 OFRecord 格式文件。
 
-这里我们仅取50张图片作为示例，相关脚本和数据集的下载地址为 [img2ofrecord](https://oneflow-static.oss-cn-beijing.aliyuncs.com/oneflow-tutorial-attachments/img2ofrecord.zip)
+作为示例，我们仅使用了50张图片，相关脚本和数据集的下载地址为 [img2ofrecord](https://oneflow-static.oss-cn-beijing.aliyuncs.com/oneflow-tutorial-attachments/img2ofrecord.zip)
 
 - 下载相关压缩包并解压
 
@@ -68,7 +67,7 @@ img_to_ofrecord
 
 - `images` 目录存放原始示例训练数据集以及标签文件
 
-这里我们的标签文件是以 `json` 格式存储的，形式如下：
+我们的标签文件是以 `json` 格式存储的，格式如下：
 
 ```shell
 {"00000030_3.png": 3}
@@ -80,10 +79,10 @@ img_to_ofrecord
 ......
 ```
 
-- `img2ofrecord.py` 是将手写数字数据集转换成 OFRecord 格式文件的脚本
-- `lenet_train.py` 则是读取我们制作好的 OFRecord 数据集，使用 LeNet 模型进行训练。 
+- [img2ofrecord.py](../code/extended_topics/img_to_ofrecord/img2ofrecord.py) 脚本将 MNIST 图片转换成 OFRecord 数据集
+- [lenet_train.py](../code/extended_topics/img_to_ofrecord/lenet_train.py) 脚本则读取我们制作好的 OFRecord 数据集，并使用 LeNet 模型进行训练。 
 
-处理图片文件并转换为 OFRecord 格式的脚本为 `img2ofrecord.py`，其命令行选项如下：
+`img2ofrecord.py` 的命令行选项如下：
 
 - `image_root` 指定图片的根目录路径
 - `part_num` 指定生成 OFRecord 文件个数，如果该数目大于总图片数目，会报错
@@ -91,11 +90,11 @@ img_to_ofrecord
 - `img_format` 指定图片的格式
 - `save_dir` 指定 OFRecord 文件保存的目录
 
-## OFRecord 的编码流程
+## 脚本的编码流程
 
 与 OFRecord 文件编码的相关逻辑也在 `img2ofrecord.py` 内，其编码流程如下：
 
-1. 对读取进来的图片数据进行编码 
+首先，对读取进来的图片数据进行编码 
 
 ```python
 def encode_img_file(filename, ext=".jpg"):
@@ -110,7 +109,7 @@ def encode_img_file(filename, ext=".jpg"):
 - PNG，一种常见的无损位图编码格式，可参考 [Portable Network Graphics](http://www.wikiwand.com/en/Portable_Network_Graphics)
 - TIFF，一种可扩展的压缩编码格式，可参考 [Tagged Image File Format](http://www.wikiwand.com/en/TIFF)
 
-2. 转化成 `Feature` 的形式，进行序列化，并将数据长度写入到文件中
+然后，转化成 `Feature` 的形式，进行序列化，并将数据长度写入到文件中
 
 ```python
 def ndarray2ofrecords(dsfile, dataname, encoded_data, labelname, encoded_label):
@@ -141,7 +140,5 @@ def ndarray2ofrecords(dsfile, dataname, encoded_data, labelname, encoded_label):
 ......
 ```
 
-至此，我们成功完成了数据集制作，读取，训练整个流程了。
-
-**赶快动手制作你的 OFRecord 数据集并用 OneFlow 进行训练吧！**
+至此，我们成功完成了数据集制作、读取与训练整个流程。
 
