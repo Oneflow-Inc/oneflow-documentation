@@ -396,8 +396,7 @@ return op.InferAndTryRun().SoleOutputBlob()
 ### `Attr` 方法
 有些 op 除了输入输出外，还需要有配置属性，比如 `reshape` 需要配置形状， `conv` 类算在需要配置对齐方式。我们可以在注册时使用 `Attr` 方法，为 op 设置属性，其原型为：
 ```cpp
-OpRegistry& Attr(const std::string& name, 
-                 UserOpAttrType type);
+OpRegistry& Attr<cpp_type>(const std::string& name);
 ```
 我们只需指定属性的名字和类型即可。
 比如：
@@ -406,7 +405,7 @@ OpRegistry& Attr(const std::string& name,
 REGISTER_USER_OP("reshape")
     .Input("in")
     .Output("out")
-    .Attr("shape", UserOpAttrType::kAtShape)
+    .Attr<shape>("shape")
 ```
 
 ```cpp
@@ -414,33 +413,33 @@ REGISTER_USER_OP("conv2d")
     .Input("in")
     .Input("weight")
     .Output("out")
-    .Attr("padding_before", UserOpAttrType::kAtListInt32)
+    .Attr<std::vector<int32_t>>("padding_before")
 ```
 
-OneFlow 目前支持了如下几种 UserOpAttrType：
+OneFlow 目前支持了如下几种 C++ 数据类型：
 
-| UserOpAttrType | 对应的C++数据类型     |
-| -------------- | -------------------- |
-| kAtInt32       | int32_t              |
-| kAtInt64       | int64_t              |
-| kAtBool        | bool                 |
-| kAtFloat       | float                |
-| kAtDouble      | double               |
-| kAtShape       | oneflow::Shape       |
-| kAtListInt32   | std::vector<int32_t> |
-| kAtListInt64   | std::vector<int64_t> |
-| kAtListFloat   | std::vector< float > |
-| kAtString      | std::string          |
+| 对应的C++数据类型 |
+| -------------- |
+| int32_t |
+| int64_t |
+| bool    |
+| float  |
+| double |
+| oneflow::Shape |
+| std::vector<int32_t> |
+| std::vector<int64_t> |
+| std::vector< float > |
+| std::string |
 
 
 此外，我们还可以多传递一个参数，为属性配置默认值，默认值的类型即表格中对应的C++数据类型，如：
 
 ``` cpp
-.Attr("is_transpose", UserOpAttrType::kAtBool, false)
+.Attr<bool>("is_transpose", false)
     
-.Attr("size", UserOpAttrType::kAtInt32, 10)
+.Attr<int32_t>("size", 10)
     
-.Attr("vector_of_size", UserOpAttrType::kAtListInt32, std::vector<int32_t>{10, 11, 12})
+.Attr<std::vector<int32_t>>("vector_of_size", std::vector<int32_t>{10, 11, 12})
 ```
 
 ### `SetCheckAttrFn` 方法
@@ -449,7 +448,7 @@ OneFlow 目前支持了如下几种 UserOpAttrType：
 例如，对于 `conv` op来说，其有一个配置选项 `data_format`，其类型是 string 字符串，但取值只能是 `channels_first` 或 `channels_last`，除此之外都不合法：
 
 ```cpp
-.Attr("data_format", UserOpAttrType::kAtString, std::string("NCHW"))
+.Attr<std::string>("data_format", std::string("NCHW"))
 .SetCheckAttrFn(
   [](const user_op::UserOpDefWrapper& def,
     const user_op::UserOpConfWrapper& conf) -> Maybe<void> {
