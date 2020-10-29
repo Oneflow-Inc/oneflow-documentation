@@ -418,18 +418,18 @@ REGISTER_USER_OP("conv2d")
 
 OneFlow 目前支持了如下几种 C++ 数据类型：
 
-| 对应的C++数据类型 |
-| -------------- |
-| int32_t |
-| int64_t |
-| bool    |
-| float  |
-| double |
-| oneflow::Shape |
-| std::vector<int32_t> |
-| std::vector<int64_t> |
-| std::vector< float > |
-| std::string |
+| UserOpAttrType | 对应的C++数据类型 |
+| -------------- | -------------- |
+| kAtInt32 | int32_t |
+| kAtInt64 | int64_t |
+| kAtBool | bool |
+| kAtFloat | float |
+| kAtDouble | double |
+| kAtShape | oneflow::Shape |
+| kAtListInt32 | std::vector<int32_t> |
+| kAtListInt64 | std::vector<int64_t> |
+| kAtListFloat | std::vector< float > |
+| kAtString | std::string |
 
 
 此外，我们还可以多传递一个参数，为属性配置默认值，默认值的类型即表格中对应的C++数据类型，如：
