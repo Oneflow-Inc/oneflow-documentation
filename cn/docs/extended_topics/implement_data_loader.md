@@ -129,7 +129,7 @@ REGISTER_CPU_ONLY_USER_OP("MiniReader")
 ```
 可以看到，因为 Data Reader 是比较特殊的 Op，只有输出，没有输入（数据来自文件系统，而不是神经网络中的某个上游节点），因此我们只通过 `Out` 方法设置了输出，并在 `SetTensorDescInferFn` 设置了输出的性质为每行2列，数据类为 `DataType::kDouble`。同理，在设置 `SetGetSbpFn` 中设置 SBP Signature 时，只需要设置输出的 SBP 属性，我们将其设置为 Split(0)。
 
-而设置的各种属性（`data_dir`、`data_part_num` 等），沿用了 [OFRecord 数据集](../extended_topics/ofrecord.md#ofrecord) 中关于文件命名规范的要求，这使得我们在加载自定义文件格式时，可以复用 OneFlow 中已有的相关代码，让用户可以像 [加载 OFRecord 数据集](../extended_topics/ofrecord.md#ofrecord_1) 那样，加载我们自定义格式的文件。
+而设置的各种属性（`data_dir`、`data_part_num` 等），沿用了 [OFRecord 数据集](../extended_topics/ofrecord.md#ofrecord) 中关于文件命名规范的要求，这使得我们可以复用 OneFlow 中已有的相关代码，像 [加载 OFRecord 数据集](../extended_topics/how_to_make_ofdataset.md#ofrecord_1) 那样，加载我们自定义格式的文件。
 
 接着看这个 Op 的 Kernel 实现：
 ```cpp
@@ -257,7 +257,7 @@ class MiniDataReader final : public DataReader<TensorBuffer> {
 ```
 在以上代码中，我们通过调用 `in_stream_` 的 `ReadLine` 方法，将文件中的数据，读取至 `string` 对象 `sampleline` 中。然后通过 `CommaSplit` 等操作，将字符串按逗号分隔，并转为浮点数，放置到 `TensorBuffer` 对象中。
 
-指的一提的是，`in_stream_` 有2种方法从文件中读取数据，分别是：
+值得一提的是，`in_stream_` 有2种方法从文件中读取数据，分别是：
 ```cpp
 int32_t PersistentInStream::ReadLine(std::string* l);
 int32_t PersistentInStream::ReadFully(char* s, size_t n);
@@ -352,7 +352,7 @@ class MiniDecoderKernel final : public user_op::OpKernel {
 
 
 ## 自定义 DataLoader 的使用
-如[自定义 Op](./user_op.md) 一文中所描述，要使用 C++ 层编写的 Op，还需要在 Python 层封装一个 Python Wrapper，才可以在 Python 层使用。这些工作放到了 [test_mini_dataloader.py](https://github.com/Oneflow-Inc/oneflow-documentation/tree/master/cn/docs/code/extended_topics/data_loader/test_mini_dataloader.py)中：
+如 [自定义 Op](./user_op.md) 一文中所描述，要使用 C++ 层编写的 Op，还需要在 Python 层封装一个 Python Wrapper。这些工作放到了 [test_mini_dataloader.py](https://github.com/Oneflow-Inc/oneflow-documentation/tree/master/cn/docs/code/extended_topics/data_loader/test_mini_dataloader.py)中：
 ```python
 def MiniDecoder(
     input_blob,
@@ -409,6 +409,7 @@ def MiniReader(
 进入到本文对应的 [data_loader](https://github.com/Oneflow-Inc/oneflow-documentation/tree/master/cn/docs/code/extended_topics/data_loader/) 目录。
 修改 `Makefile` 文件中的 `ONEFLOW_ROOT` 变量为 OneFlow 源码路径。
 然后通过
+
 ```bash
 make
 ```
