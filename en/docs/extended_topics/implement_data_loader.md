@@ -439,7 +439,7 @@ In `test_mini_dataloader.py`, we use our implemented `MiniReader` and `MiniDecod
 
 # Compile and test Mini Dataloader
 
-Check into the corresponding directory  [data_loader](https://github.com/Oneflow-Inc/oneflow-documentation/tree/master/cn/docs/code/extended_topics/data_loader/) for this article. 
+Check into the corresponding directory  [data_loader](https://github.com/Oneflow-Inc/oneflow-documentation/tree/master/en/docs/code/extended_topics/data_loader/) for this article. 
 
 Change `Makefile`'s `ONEFLOW_ROOT` variable as the directory of OneFlow's source code. 
 
