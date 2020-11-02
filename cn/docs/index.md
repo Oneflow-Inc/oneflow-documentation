@@ -25,7 +25,7 @@ OneFlow 是开源的、采用全新架构设计，世界领先的工业级通用
 
 ## 从哪开始
 
-可以在[快速上手](build_ship/install.md)学习如何安装并快速运行 OneFlow。
+可以在[快速上手](quick_start/install.md)学习如何安装并快速运行 OneFlow。
 
 在[基础专题](basics_topics/data_input.md)中我们介绍了如何使用 OneFlow 完成机器学习的常见任务，如搭建网络、配置超参、加载数据、分布式训练等。
 

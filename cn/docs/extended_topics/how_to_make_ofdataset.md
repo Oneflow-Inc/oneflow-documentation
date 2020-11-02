@@ -1,6 +1,6 @@
-在[数据输入](../basics_topics/data_input.md)一文中我们知道了OneFlow 的数据流水线因为有 OneFlow 框架的资源调度、多线程等支持，处理数据的效率更高，并且学习了基本的数据流水线操作流程。
+在[数据输入](../basics_topics/data_input.md)一文中我们知道了使用 DataLoader 及相关算子加载数据，往往效率更高，并且学习了如何使用 DataLoader 及相关算子。
 
-在[OFrecord数据格式](ofrecord.md)中，我们学习了 OFRecord 文件的存储格式。
+在 [OFrecord 数据格式](ofrecord.md)中，我们学习了 OFRecord 文件的存储格式。
 
 本文，将围绕 OneFlow 的 OFRecord 数据集的加载与制作展开，主要包括：
 
@@ -11,11 +11,11 @@
 * OFRecord 数据集与其它数据格式的相互转化
 
 ## 什么是OFRecord数据集
-在[OFrecord数据格式](ofrecord.md)中我们已经介绍过 `OFRecord文件` 的存储格式，知道了什么是 `OFRecord文件`。
+在 [OFrecord 数据格式](ofrecord.md)中我们已经介绍过 `OFRecord 文件` 的存储格式，知道了什么是 `OFRecord文件`。
 
-OFRecord 数据集是 **OFRecord 文件的集合** 。将多个 `OFRecord文件`，按照 OneFlow 约定的文件名格式，存放在同一个目录中，就得到了OFRecord 数据集。
+OFRecord 数据集是 **OFRecord 文件的集合** 。将多个 `OFRecord文件`，按照 OneFlow 约定的文件名格式，存放在同一个目录中，就得到了 OFRecord 数据集。
 
-默认情况下，OFRecord 数据集目录中的文件，统一以 `part-xxx` 的方式命名，其中的 "xxx" 是从0开始的文件编号，可以有补齐和不补齐两种选择。
+默认情况下，OFRecord 数据集目录中的文件，统一以 `part-xxx` 的方式命名，其中的 "xxx" 是从0开始的文件编号，有补齐和不补齐两种选择。
 
 以下是没有采用补齐的命名风格示例：
 ```
@@ -58,7 +58,7 @@ mnist_kaggle/train/
 ├── part-00014
 ├── part-00015
 ```
-OneFlow 采用此约定，与`spark`的默认存储的文件名一致，方便使用 spark制作与转化 OFRecord 数据。
+OneFlow 采用此约定，与 `spark` 的默认存储的文件名一致，方便使用 spark 制作与转化 OFRecord 数据。
 
 实际上，文件名前缀(`part-`)、文件名编号是否补齐、按多少位补齐，均可以自行指定，只需要在加载数据集(下文会介绍)时，保持相关参数一致即可。
 
@@ -67,56 +67,9 @@ OneFlow 提供了加载 OFRecord 数据集的接口，使得我们只要指定�
 ## 加载OFRecord数据集的方法
 我们使用 `ofrecord_reader` 加载并预处理数据集。
 
-在[数据输入](../basics_topics/data_input.md)一文中，我们已经展示了如何使用 `ofrecord_reader` 接口加载 OFRecord 数据，并进行数据预处理：
+在[数据输入](../basics_topics/data_input.md)一文中，我们已经展示了如何使用 `ofrecord_reader` 接口加载 OFRecord 数据，并进行数据预处理。
 
-完整代码：[of_data_pipeline.py](../code/basics_topics/of_data_pipeline.py)
-
-```python
-# of_data_pipeline.py
-import oneflow as flow
-import oneflow.typing as tp
-from typing import Tuple
-
-
-@flow.global_function(type="predict")
-def test_job() -> Tuple[tp.Numpy, tp.Numpy]:
-    batch_size = 64
-    color_space = "RGB"
-    with flow.scope.placement("cpu", "0:0"):
-        ofrecord = flow.data.ofrecord_reader(
-            "./",
-            batch_size=batch_size,
-            data_part_num=1,
-            part_name_suffix_length=5,
-            random_shuffle=True,
-            shuffle_after_epoch=True,
-        )
-        image = flow.data.OFRecordImageDecoderRandomCrop(
-            ofrecord, "encoded", color_space=color_space
-        )
-        label = flow.data.OFRecordRawDecoder(
-            ofrecord, "class/label", shape=(), dtype=flow.int32
-        )
-        rsz = flow.image.Resize(
-            image, resize_x=224, resize_y=224, color_space=color_space
-        )
-
-        rng = flow.random.CoinFlip(batch_size=batch_size)
-        normal = flow.image.CropMirrorNormalize(
-            rsz,
-            mirror_blob=rng,
-            color_space=color_space,
-            mean=[123.68, 116.779, 103.939],
-            std=[58.393, 57.12, 57.375],
-            output_dtype=flow.float,
-        )
-        return normal, label
-
-
-if __name__ == "__main__":
-    images, labels = test_job()
-    print(images.shape, labels.shape)
-```
+代码见：[of_data_pipeline.py](../code/basics_topics/of_data_pipeline.py)
 
 `ofrecord_reader` 的接口如下：
 ```python
@@ -149,13 +102,13 @@ def ofrecord_reader(
 
 * `shuffle_after_epoch` 表示每轮读取完后是否需要重新打乱样本顺序
 
-使用 `ofrecord_reader` 的好处在于， `ofrecord_reader` 中的数据处理被 OneFlow 框架调度，享有 OneFlow 流水线加速。
+使用 `ofrecord_reader` 的好处在于， `ofrecord_reader` 作为一个普通算子，参与 OneFlow 构图优化，并享有 OneFlow 流水线加速。
 
-对于与业务逻辑耦合的特定数据格式，我们还可以为 `ofrecord_reader` 定义预处理 op，让程序拥有很高的灵活性和扩展性。
+对于与业务逻辑耦合的特定操作（如解码、解压等），我们还可以为 `ofrecord_reader` 定义预处理 op，让程序拥有很高的灵活性和扩展性。
 
-* 关于数据流水线及预处理可以参考[数据输入](../basics_topics/data_input.md)
+* 关于 DataLoader 及相关算子使用可以参考[数据输入](../basics_topics/data_input.md#dataloader)
 
-* 关于自定义OP可以参考[用户自定义op](user_op.md)
+* 关于自定义 Op 可以参考[用户自定义 op](user_op.md)
 
 ## 其它格式数据与 OFRecord 数据集的相互转化
 参考[OFrecord数据格式](ofrecord.md)中 OFRecord 文件的存储格式及本文开头介绍的 OFRecord 数据集的文件名格式约定，我们完全可以自己制作 OFRecord 数据集。

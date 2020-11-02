@@ -525,11 +525,11 @@ REGISTER_USER_KERNEL("XOp")
       });
 ```
 
-一旦通过 `SetInferTmpSizeFn` 设置了 buffer 大小，在 `Compute` 中就可以通过调用 `KernelContext::Tensor4ArgNameAndIndex` 方法，获取该缓冲区，该缓冲区封装为 `oneflow::user_op::Tensor`，可以通过调用 `dptr` 或 `mut_dptr` 方法转为其它类型的指针。
+一旦通过 `SetInferTmpSizeFn` 设置了 buffer 大小，在 `Compute` 中就可以通过调用 `KernelComputeContext::Tensor4ArgNameAndIndex` 方法，获取该缓冲区，该缓冲区封装为 `oneflow::user_op::Tensor`，可以通过调用 `dptr` 或 `mut_dptr` 方法转为其它类型的指针。
 
 ```cpp
 class XKernel final : public oneflow::user_op::OpKernel {
-  void Compute(oneflow::user_op::KernelContext* ctx) override {
+  void Compute(oneflow::user_op::KernelComputeContext* ctx) override {
     oneflow::user_op::Tensor* tmp = ctx->Tensor4ArgNameAndIndex("tmp_buffer", 0);
 
     //转换后得到 1024 字节的 char* 缓冲区
