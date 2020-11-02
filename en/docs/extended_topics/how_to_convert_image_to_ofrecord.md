@@ -79,8 +79,8 @@ The label file is stored as `json` here in following format：
 ......
 ```
 
-- `img2ofrecord.py`  is the script which converts image files in train_set to OFRecord dataset.
-- `lenet_train.py` is the script loading OFRecord we just made for training.
+- [img2ofrecord.py](../code/extended_topics/img_to_ofrecord/img2ofrecord.py) is the script which converts image files in train_set to OFRecord dataset.
+- [lenet_train.py](../code/extended_topics/img_to_ofrecord/lenet_train.py) is the script loading OFRecord we just made for training.
 
 The command options of `img2ofrecord.py` is:
 - `image_root` specify the root directory of the image.
