@@ -416,8 +416,8 @@ We'll introduce from op registration, kernel registration, gradient registration
 Some ops require configuration properties in addition to inputs and outputs.For example, the `reshape` needs to be configured the shape and the `conv` needs to be configured the alignment method. We can use the `Attr` at registration to set attributes for op. For example:
 
 ```cpp
-OpRegistry& Attr(const std::string& name, 
-                 UserOpAttrType type);
+OpRegistry& Attr<cpp_type>(const std::string& name);
+
 ```
 
 We just need to specify the name and type of the attribute.
@@ -427,7 +427,7 @@ For example：
 REGISTER_USER_OP("reshape")
     .Input("in")
     .Output("out")
-    .Attr("shape", UserOpAttrType::kAtShape)
+    .Attr<shape>("shape")
 ```
 
 ```cpp
@@ -435,33 +435,33 @@ REGISTER_USER_OP("conv2d")
     .Input("in")
     .Input("weight")
     .Output("out")
-    .Attr("padding_before", UserOpAttrType::kAtListInt32)
+    .Attr<std::vector<int32_t>>("padding_before")
 ```
 
-In OneFlow, we currently support the following AttrTypes:
+In OneFlow, we currently support the following C++ data:
 
 | UserOpAttrType | Corresponding C++ data types |
 | -------------- | ---------------------------- |
-| kAtInt32       | int32_t                      |
-| kAtInt64       | int64_t                      |
-| kAtBool        | bool                         |
-| kAtFloat       | float                        |
-| kAtDouble      | double                       |
-| kAtShape       | oneflow::Shape               |
-| kAtListInt32   | std::vector<int32_t>         |
-| kAtListInt64   | std::vector<int64_t>         |
-| kAtListFloat   | std::vector< float >         |
-| kAtString      | std::string                  |
+| kAtInt32 | int32_t |
+| kAtInt64 | int64_t |
+| kAtBool | bool |
+| kAtFloat | float |
+| kAtDouble | double |
+| kAtShape | oneflow::Shape |
+| kAtListInt32 | std::vector<int32_t> |
+| kAtListInt64 | std::vector<int64_t> |
+| kAtListFloat | std::vector< float > |
+| kAtString | std::string |
 
 
 We can pass an additional parameter and configure a default value for it which is the corresponding C++ datatype in the table. Such as：
 
 ``` cpp
-.Attr("is_transpose", UserOpAttrType::kAtBool, false)
+.Attr<bool>("is_transpose", false)
     
-.Attr("size", UserOpAttrType::kAtInt32, 10)
+.Attr<int32_t>("size", 10)
     
-.Attr("vector_of_size", UserOpAttrType::kAtListInt32, std::vector<int32_t>{10, 11, 12})
+.Attr<std::vector<int32_t>>("vector_of_size", std::vector<int32_t>{10, 11, 12})
 ```
 
 ### `SetCheckAttrFn`
@@ -471,7 +471,7 @@ For some  `Attributes`, they require a more detailed delineation of the range wh
 Take `Conv` op as an example, it has a configuration option called `data_format` which is a string type but the data must be `channels_first` or `channels_last`. 
 
 ```cpp
-.Attr("data_format", UserOpAttrType::kAtString, std::string("NCHW"))
+.Attr<std::string>("data_format", std::string("NCHW"))
 .SetCheckAttrFn(
   [](const user_op::UserOpDefWrapper& def,
     const user_op::UserOpConfWrapper& conf) -> Maybe<void> {
