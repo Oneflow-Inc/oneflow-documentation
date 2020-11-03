@@ -2,13 +2,13 @@
 
 As described in [Data Input](../basics_topics/data_input.md), OneFlow supports two ways to load data: one is directly use Numpy data, the other one is use DataLoader and some relative operators. 
 
-Under the large industrial scene, Data Loading can easily become the bottleneck through the training process. Since we use DataLoader and some preprocessing operators, OneFlow's acceleration mechanism helps to load and preprocess data more efficiently, which can solve the problem. 
+Under the large industrial scene, data loading can easily become the bottleneck through the training process. Since we use DataLoader and some preprocessing operators, OneFlow's acceleration mechanism helps to load and preprocess data more efficiently, which can solve that problem. 
 
-To use DataLoader in OneFlow, we usually apply `XXXReader` to load the file data, and we use `XXXDecode` to decode or preprocess the data. These two operators work together to complete the function of DataLoader.  
+To use DataLoader in OneFlow, we usually apply `XXXReader` to load the file data, and use `XXXDecode` to decode or preprocess the data. These two operators work together to complete the function of data loading.
 
-Now OneFlow has built some data format's [DataLoader](https://oneflow.readthedocs.io/en/master/search.html?q=reader&check_keywords=yes&area=default) internally. If we want to use DataLoader to promote the efficiency of data loading, however, the DataLoader for the corresponding data format is not yet built in OneFlow. At this time, we can implement our own DataLoader to load the customized data format.  
+Now OneFlow has built some [DataLoader](https://oneflow.readthedocs.io/en/master/search.html?q=reader&check_keywords=yes&area=default) internally. If we want to use DataLoader to promote the efficiency of data loading, however, the DataLoader for the corresponding data format is not yet built in OneFlow. At this time, we can implement our own DataLoader to load the customized data format.  
 
-In this article we implement a Mini Dataloader. You can check the [Complete Code](https://github.com/Oneflow-Inc/oneflow-documentation/tree/master/en/docs/code/extended_topics/data_loader/) in this repository. 
+In this article we implement a Mini Dataloader. You can check the [Code](https://github.com/Oneflow-Inc/oneflow-documentation/tree/master/en/docs/code/extended_topics/data_loader/) in this repository. 
 
 As an example, the data format that Mini Dataloader supported is : A plain text file with two columns of numbers separated by commas (See the `part-000` and `part-001` file in code): 
 
@@ -31,16 +31,16 @@ This article will take Mini Dataloader as an example to explain the key points o
 A complete Dataloader generally includes two types of Op: 
 
 - Data Reader: Which is responsible for loading the data in file system to the input stream of memory and setting the data to the Op's output. 
-- Data Decoder: The Data Decoder decodes and output the data in Data Reader Op. 
+- Data Decoder: The Data Decoder decodes and outputs the data in Data Reader Op. 
 
-For some simple data formats, which is no need for decoding. We can omit the Data Decoder and just use Data Reader. 
+For some simple data formats, which is no need for decoding, we can omit the Data Decoder and just use Data Reader. 
 
-As an example, since the data format processed by Mini Dataloader is simple. We still implement the Data Reader and Data Decoder. Among these two Ops: 
+As an example, though the data format processed by Mini Dataloader is simple, we still implement the two types of ops: Data Reader and Data Decoder. Among these two Ops: 
 
-- `MiniReader` is responsible for reading data from files and split strings by commas. Convert the text to the float and set to the Op's output. The output shape is two columns of each row. 
-- `MiniDecoder` is responsible for splitting the two columns of each row output in above and get two outputs `x` and `y`, both of them shape is one column of each row. 
+- `MiniReader` is responsible for reading data from files and split strings by commas. Convert the text to the float value and set to the Op's output. The output shape is two columns of each row. 
+- `MiniDecoder` is responsible for splitting the two columns of each row output in above and get two outputs `x` and `y`, both of their shape is one column of each row. 
 
-In [test_mini_dataloader.py](https://github.com/Oneflow-Inc/oneflow-documentation/tree/master/en/docs/code/extended_topics/data_loader/test_mini_dataloader.py) we can see the use of both Ops at Python level:
+In [test_mini_dataloader.py](https://github.com/Oneflow-Inc/oneflow-documentation/tree/master/en/docs/code/extended_topics/data_loader/test_mini_dataloader.py) we can see the usage of both Ops at Python level:
 
  ```python
     miniRecord = MiniReader(
@@ -65,12 +65,12 @@ We will introduce how to implement Data Reader and Data Decoder in C++ backend b
 
 We need to implement a class that inherits from `DataReader`, this class includes two important objects `loader_` and `parser_`, which inherits from `Dataset` and `Parser` separately. 
 
-- `loader_` 's job is to read data from the file system to buffer. The Op's author build the logic by overriding the `Next` function. 
-- `parser_` 's job is to set the data in buffer to Op's output. The Op's author build the logic by overriding the `Parser` function. 
+- `loader_` 's job is to load data from the file system to buffer. The Op's author build the logic by overriding the `Next` method. 
+- `parser_` 's job is to set the data in buffer to Op's output. The Op's author build the logic by overriding the `Parser` method. 
 
-When Data Reader Op works, it will call the relative function in `loader_` to open files in the file system, and then call the `Next` function in `loader_` to read data from the file system according to the logic built by Op's author. 
+When Data Reader Op works, it will call the relative method in `loader_` to open files in the file system, and then call the `Next` method in `loader_` to read data from the file system according to the logic built by Op's author. 
 
-The pseudocode below shows the class relationship and the calling procedure. The actual code is more complicated than the pseudocode and it's not a one-to-one relationship: 
+The pseudocode below shows the class relationship and the calling procedure. The actual code is more complicated and it is not the exact corresponding relationship: 
 
 ```c++
 class DataReader{
@@ -106,7 +106,7 @@ class MiniParser: Parser {
 };
 ```
 
-In Data Reader Op's Kernel, it will trigger the `Read` function in `DataReader` and complete the sequence of operations which is shown in the pseudocode above. 
+In Data Reader Op's Kernel, it will trigger the `Read` method in `DataReader` and complete the sequence of operations which is shown in the pseudocode above. 
 
 ## The registration of Op and Kernel
 
@@ -136,7 +136,7 @@ REGISTER_CPU_ONLY_USER_OP("MiniReader")
     });
 ```
 
-As we can see, because Data Reader is a special Op, it has only output, no input (data comes from the file system, instead of some upstream nodes), we only use `Out` function to set the output, and set the output shape as two columns per row in `SetTensorDescInferFn`, the data type is `DataType::kDouble`. In the same way, when we set SBP Signature in `SetGetSbpFn`, we only need to set output's SBP attribution. In this case, we set it as Split(0). 
+As we can see, because Data Reader is a special Op, it has only output, no input (data comes from the file system, instead of some upstream nodes), we only use `Out` method to set the output, and set the output shape as two columns per row in `SetTensorDescInferFn`, the data type is `DataType::kDouble`. In the same way, when we set SBP Signature in `SetGetSbpFn`, we only need to set output's SBP attribution. In this case, we set it as Split(0). 
 
 The other attributions (like `data_dir`, `data_part_num`, etc.) follow the requirement of file naming conventions in [The OFRecord Data Format](../extended_topics/ofrecord.md#ofrecord). It allows us to reuse some related code in OneFlow to load customized data format like [The method to load OFRecord dataset](../extended_topics/how_to_make_ofdataset.md#ofrecord_1). 
 
@@ -167,11 +167,11 @@ REGISTER_USER_KERNEL("MiniReader")
                      & (user_op::HobDataType("out", 0) == DataType::kDouble));
 ```
 
-According to the knowledge in [Customize Op](../extended_topics/user_op.md), we have known that `MiniReaderKernel::Compute` function is responsible for the Op's compute logic. However, we use an override version of `Compute` that includes two parameters here. It's necessary to introduce the second parameter `OpKernelState`. 
+According to the knowledge in [Customize Op](../extended_topics/user_op.md), we have known that `MiniReaderKernel::Compute` method is responsible for the Op's compute logic. However, we use an override version of `Compute` that includes two parameters here. It's necessary to introduce the second parameter `OpKernelState`. 
 
-When we call the `Compute`, we need to maintain other objects in addition to get information from `ctx`. This type of object does not need to be created repeatedly, but their state of information may change as `Compute` function is called multiple times. In response to this need, OneFlow provides a override version with two parameters of `Compute`. In order to use it, we need to override `CreateOpKernelState` at the same time. `CreateOpKernelState` returns a `user_op::OpKernelState` derived class object. This object will be the second parameter to be transmitted when `Compute` is called. 
+When we call the `Compute`, we need to maintain other objects in addition to get information from `ctx`. This type of object does not need to be created repeatedly, but their state of information may change as `Compute` method is called multiple times. In response to this need, OneFlow provides a override version with two parameters of `Compute`. In order to use it, we need to override `CreateOpKernelState` at the same time. `CreateOpKernelState` returns a `user_op::OpKernelState` derived class object. This object will be the second parameter when `Compute` is called.
 
-So we only need to encapsulate the information we want to maintain, in addition to the `ctx`, as a derived class of `user_op::OpKernelState`, instantiate and return it in `CreateOpKernelState`. 
+So we only need to pack the information we want to maintain, in addition to the `ctx`, as a derived class of `user_op::OpKernelState`, instantiate and return it in `CreateOpKernelState`. 
 
 In our Mini Reader's Kernel, we first implement a class `MiniReaderWarapper` that is inherited from `user_op::OpKernelState`.  It is a simple encapsulation of `MiniDataReader`, the reason why we encapsulate `MiniReaderWrapper` instead of using `MiniDataReader` directly is that to meet the requirements of OneFlow. 
 
@@ -198,7 +198,7 @@ Then, we override `CreateOpKernelState`, create a `MiniReaderwrapper` object int
   }
 ```
 
-In this way, OneFlow will call `CreateOpKernelState` function to create object automatically in appropriate time and transmit it to `Compute` as the second parameter. We can get this object in `Compute`, and use: 
+In this way, OneFlow will call `CreateOpKernelState` method to create object automatically in appropriate time and pass it to `Compute` as the second parameter. We can get this object in `Compute`, and use it: 
 
 ```c++
     auto* reader = dynamic_cast<MiniReaderWrapper*>(state);
@@ -229,15 +229,15 @@ class MiniDataReader final : public DataReader<TensorBuffer> {
 };
 ```
 
-In addition to inheriting our `Dataset`'s `MiniDataset` class, OneFlow also build other `XXXDataset`, they can add additional features in the base of existing `Dataset`. For example, `RandomShuffleDataset` can be used to shuffle data, `BatchDataset` can be used to read batch data. When it is all done, we finally call `StartLoadThread`, which is used to start the loading thread. We will trigger the override function `MiniDataset::Next` in `StartLoadThread`. 
+In addition to inheriting our `Dataset`'s `MiniDataset` class, OneFlow also build other `XXXDataset`, they can add additional features in the base of existing `Dataset`. For example, `RandomShuffleDataset` can be used to shuffle data, `BatchDataset` can be used to read batch data. When it is all done, we finally call `StartLoadThread`, which is used to start the loading thread. We will trigger the override method `MiniDataset::Next` in `StartLoadThread`. 
 
 The above construction of `MiniDataReader` can be used as a template. If you have no special requirements, you don't need to modify it in custom DataLoader. 
 
 ## MiniDataset 
 
-For `MiniDataSet`, we only need to focus on the constructor and overridden `Next` function. 
+For `MiniDataSet`, we only need to focus on the constructor and overridden `Next` method. 
 
-The constructor obtains user's settings through `Attr`. Then it will initialize the input stream according to the user's settings. In the following code, `JoinDirPath` is used to obtain all filenames according to the convention of dataset (the prefix, the amount of files, whether the filename number is complete, etc.). And `InitInStream` is to initialize the file in dataset as input stream (The member of `in_stream`), which is encapsulated by OneFlow, it will be used in `Next` function later. 
+The constructor obtains user's settings through `Attr`. Then it will initialize the input stream according to the user's settings. In the following code, `JoinDirPath` is used to obtain all filenames according to the convention of dataset (the prefix, the amount of files, whether the filename number is padded, etc.). And `InitInStream` is to initialize the file in dataset as input stream (The member of `in_stream`), which is encapsulated by OneFlow, it will be used in `Next` method later. 
 
 ```c++
   MiniDataset(user_op::KernelInitContext* ctx) {
@@ -276,22 +276,22 @@ The logic of loading from files is written in virtual function `Next`:
   }
 ```
 
-In the above code, we call `in_stream_`'s `ReadLine` function to load file data into `string` object `sampleline`. Then we call`CommaSplit` to split the string by commas, convert to float, and place it to `TensorBuffer` object. 
+In the above code, we call `in_stream_`'s `ReadLine` method to load file data into `string` object `sampleline`. Then we call`CommaSplit` to split the string by commas, convert to float value, and place it to `TensorBuffer` object. 
 
-It is worth to mentioning that `_in_stream_` has two ways to read data from files: 
+It is worth to mention that `_in_stream_` has two ways to read data from files: 
 
 ```c++
 int32_t PersistentInStream::ReadLine(std::string* l);
 int32_t PersistentInStream::ReadFully(char* s, size_t n);
 ```
 
-`ReadLine` function read a row of file to `l` object; `ReadFully` function read `n` bytes data to the memory pointed by `s`. Both functions use 0 as return value on success. 
+`ReadLine` method reads a row of file to `l` object; `ReadFully` method reads `n` bytes data to the memory pointed by `s`. Both methods use 0 as return value on success. 
 
 `MiniDataset` complete the process of file to memory buffer. In next section, we will use `MiniParser` to set the buffer's content to Op's output. 
 
 ## MiniParser
 
-`MiniPaser` inherits from `Parser`, we just need to override the `Parser` function. 
+`MiniPaser` inherits from `Parser`, we just need to rewrite the `Parser` method. 
 
 ```c++
 class MiniParser final : public Parser<TensorBuffer> {
@@ -313,7 +313,7 @@ class MiniParser final : public Parser<TensorBuffer> {
 };
 ```
 
-`Parser` includes 2 parameters, where `batch_data` is an encapsulated `vector`. Each element in this container is the data previously read by `MiniDataSet` through `Next` function. The parameter `ctx` enables us to get the information of Op. Here we mainly obtain the output through `ctx` and get the pointer `dptr` to the output buffer. 
+`Parser` includes 2 parameters, where `batch_data` is an encapsulated `vector`. Each element in this container is the data previously read by `MiniDataSet` through `Next` method. The parameter `ctx` enables us to get the information of Op. Here we mainly obtain the output through `ctx` and get the pointer `dptr` to the output buffer. 
 
 Notice that we use macro `MultiThreadLoop` in the procedure of setting `batch_data`'s data to the Op's output `dptr`. `MultiThreadLoop` allows our loop logic to be executed in multiple threads. It accept 2 parameters, the first parameter is the total number of loop; the second parameter is a callback function, its prototype is `void callback(size_t, i)`. OneFlow will create multiple threads, and call the callback function concurrently. The callback function's parameter `i` indicates the serial number of current loop, allowing us to divide data according to `i` and complete the business logic. 
 
@@ -321,11 +321,11 @@ In the above code, we get the `i`th data in buffer through `batch_data->at(i).ge
 
 ## Data Decoder Operator
 
-Data Decoder operator is a normal operator. It accept the output of `DataReader` as its input, output one or multiple Blobs after some operations. 
+Data Decoder operator is a normal operator. It accepts the output of `DataReader` as its input, outputs one or multiple Blobs after some operations. 
 
 In  [ofrecord_decoder_ops.cpp](https://github.com/Oneflow-Inc/oneflow/blob/master/oneflow/user/ops/ofrecord_decoder_ops.cpp), we can see various decoders for OFRecord data. 
 
-The data processed by our Mini Dataloader is simple, so what MiniDecoder does is very simple. It just splits two columns data output from `DataReader` into two one-column outputs as `x` and `y`. 
+The data processed by our Mini Dataloader is simple, so the work done by MiniDecoder is also very simple. It just splits two columns data output from `DataReader` into two one-column outputs as `x` and `y`. 
 
 Mini Decoder's Op is registered as: 
 
@@ -377,7 +377,7 @@ class MiniDecoderKernel final : public user_op::OpKernel {
 };
 ```
 
-We mainly get the input `in_blob` in `MiniDecoderKernel::Compute`, and then in multiple threads loop `MultiThreadLoop`, split the input data into `out_dptr_x` and `out_dptr_y`, they correspond to the output `x` and `y`. 
+We mainly get the input `in_blob` in `MiniDecoderKernel::Compute`, and then in multiple threads loop `MultiThreadLoop`, split the input data into `out_dptr_x` and `out_dptr_y`, that correspond to the output `x` and `y`. 
 
 
 
