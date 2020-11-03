@@ -1,6 +1,4 @@
-## Use VS Code to Debug OneFlow
-
-Usually we develop OneFlow on a remote Linux server. If we want to develop and debug OneFlow in GUI, we can use VS code with extension "Remote - SSH".
+This article describes how to configure VS Code to build OneFlow GUI development environment.
 
 If you are not familiar with VS code please refer to [official documentation](https://code.visualstudio.com/docs).
 
@@ -23,13 +21,13 @@ cmake .. \
 -DCMAKE_BUILD_TYPE=Debug \
 -DCMAKE_EXPORT_COMPILE_COMMANDS=1
 ```
-Above code:
 
 * `-DCMAKE_BUILD_TYPE=Debug` choose the version of Debug.
 
 * `-DCMAKE_EXPORT_COMPILE_COMMANDS` will generate a file named `compile_commands.json` in the `build` folder. The json file is required by clangd and we will configure it later.
 
 ### Remote - SSH
+This section is intended only for those who need to develop remotely. For those developer developing on local hosts ** may skip this section**.
 By the extension "Remote SSH" of VS Code, we can connect to a remote server through SSH.
 
 ![RemoteSSH](imgs/plugin-remote-ssh.png)
@@ -55,9 +53,7 @@ After some simple configuration, clangd can provide us with code completion, sym
 Followings are required before we configure clangd:
 
 * We have already compiled OneFlow and generated `compile_commands.json` file.
-
 * We have already installed clangd on remote host through "Remote - SSH".
-
 * It is **NOT** recommended to install the extension "ms-vscode.cpptools C/C++" which is recommended by VS Code. Because it conflicts with clangd.
 
 #### Install clangd
@@ -141,4 +137,4 @@ After we set the breakpoint, we can press F5 to start debugging.
 ./bin/clangd: /lib64/libc.so.6: version `GLIBC_2.18' not found (required by ./bin/clangd)
 ```
 
-We can download the older version of clangd. Older version of clangd is available on [LLVM official site](https://releases.llvm.org/download.html). Download the LLVM tools package with clangd inside.
+We can download the older version of clangd (The recommended version of this article is 9.0.0). Older version of clangd is available on [LLVM official site](https://releases.llvm.org/download.html). Download the LLVM tools package with clangd inside.
