@@ -1,6 +1,5 @@
-## Loading and Preparing OFRecord Dataset
 
-In article [data_input](../basics_topics/data_input.md), we know that multi-threading, scheduling of resources and other supporting process increase the efficiency of processing data in OneFlow data-pipeline. Also, we learn about the operation in data-pipeline.
+In [data input] (... /basics_topics/data_input.md) we learned that it is usually more efficient to load data using DataLoader and related operators. We also learned how to use DataLoader and related operators.
 
 In article [OFRecord](ofrecord.md), we learn about the storage format of OFRecord files.
 
@@ -12,7 +11,7 @@ In this article, we will focus on the loading and generating of OneFlow's OFReco
 
 * The transition between OFRecord dataset and other data formats
 
-## What is OFRecord dataset
+## What is OFRecord Dataset
 
 In article [OFRecord](ofrecord.md), we introduce what `OFRecord file ` is and the storage format of `OFRecord file`.
 
@@ -70,60 +69,13 @@ Actually, we can specify the filename prefix `part-`, whether we pad the filenam
 
 OneFlow provides the API interface to load OFRecord dataset by specifying the path of dataset directory, so that we can have the multi-threading, pipelining and some other advantages brought by OneFlow framework.
 
-## The method to load OFRecord dataset
+## The Method to Load OFRecord Dataset
 
 We use `ofrecord_reader` to load and preprocess dataset. 
 
 In article [Data Input](../basics_topics/data_input.md), we show how to use `ofrecord_reader` API to load OFRecord data and preprocess it. 
 
-[of_data_pipeline.py](../code/basics_topics/of_data_pipeline.py)
-
-```python
-# of_data_pipeline.py
-import oneflow as flow
-import oneflow.typing as tp
-from typing import Tuple
-
-
-@flow.global_function(type="predict")
-def test_job() -> Tuple[tp.Numpy, tp.Numpy]:
-    batch_size = 64
-    color_space = "RGB"
-    with flow.scope.placement("cpu", "0:0"):
-        ofrecord = flow.data.ofrecord_reader(
-            "./",
-            batch_size=batch_size,
-            data_part_num=1,
-            part_name_suffix_length=5,
-            random_shuffle=True,
-            shuffle_after_epoch=True,
-        )
-        image = flow.data.OFRecordImageDecoderRandomCrop(
-            ofrecord, "encoded", color_space=color_space
-        )
-        label = flow.data.OFRecordRawDecoder(
-            ofrecord, "class/label", shape=(), dtype=flow.int32
-        )
-        rsz = flow.image.Resize(
-            image, resize_x=224, resize_y=224, color_space=color_space
-        )
-
-        rng = flow.random.CoinFlip(batch_size=batch_size)
-        normal = flow.image.CropMirrorNormalize(
-            rsz,
-            mirror_blob=rng,
-            color_space=color_space,
-            mean=[123.68, 116.779, 103.939],
-            std=[58.393, 57.12, 57.375],
-            output_dtype=flow.float,
-        )
-        return normal, label
-
-
-if __name__ == "__main__":
-    images, labels = test_job()
-    print(images.shape, labels.shape)
-```
+Code: [of_data_pipeline.py](../code/basics_topics/of_data_pipeline.py)
 
 The prototype of `ofrecord_reader` is as follows：
 
@@ -150,12 +102,10 @@ def ofrecord_reader(
 - `shuffle_buffer_size` assign the buffer size when reading data
 - `shuffle_after_epoch` assign whether shuffle the sample order after each epoch
 
-The advantage of using `ofrecord_reader` is that data processing in `ofrecord_reader` is scheduled by OneFlow and enjoys the OneFlow pipelining speedup.  
-
-For flexibility and extensibility of the code, we can define a preprocessing OP for `ofrecord_reader` to deal with specific data formats which are coupled with business logic.
-
-- Please refer to [Data input](../basics_topics/data_input.md) to learn about data pipelining and preprocess
-- Please refer to [User op](./user_op.md) to learn about customized OP
+The benefit of using `ofrecord_reader` is that `ofrecord_reader` acts as a normal operator which participates in OneFlow composition optimization and enjoys OneFlow flowline acceleration.
+For flexibility and extensibility of the code, we can define a preprocessing OP for `ofrecord_reader` to deal with specific data formats which are coupled with operational logic (e.g. decoding, decompression and etc.).
+- For more information on DataLoader and related operator usage refer to [Data input](../basics_topics/data_input.md) .
+-  For more information on customized OP refer to [User op](./user_op.md).
 
 ## The transition between other data format data and OFRecord dataset
 
