@@ -1,20 +1,20 @@
 # Features of Parallelism in OneFlow
 
-In [Consistent and Mirrored view](consistent_mirrored.md), we have already known OneFlow provides two types of view: mirrored and consistent view, and we learned about the  `consistent` view in OneFlow have some special features.
+In [Consistent and Mirrored view](consistent_mirrored.md), we have already known OneFlow provides two types of view: mirrored and consistent view and we learned about the  `consistent` view in OneFlow have some special features.
 
-Because in `consistent_view`, OneFlow provides a logically unified view. During distributed training, users can freely choose to use data parallelism, model parallelism or hybrid parallelism.
+Because in `consistent_view`, OneFlow provides a logically consistent view. During distributed training, users can freely choose to use data parallelism, model parallelism or hybrid parallelism.
 
 In this article, we will keep going through the special `consistent` view in OneFlow. We will learn about: 
 
 * Data parallelism in `consistent_view` flow chart.
 
-* hybrid parallelism in `consistent_view` flow chart.
+* Hybrid parallelism in `consistent_view` flow chart.
 
 * The advantages of hybrid parallelism and the applicable scenario.
 
 * Example of hybrid parallelism.
 
-## Network logical diagram in model training
+## Network Logical Diagram in Model Training
 
 We need to set up a simple multi-layer network first and use this network to discuss parallelism methods. The structure like the figure shows:
 
@@ -32,11 +32,11 @@ Compare the figure above, we can easily get the logic of the network:
 
 In `consistent` view, OneFlow supports the data parallelism, model parallelism and hybrid parallelism. We will introduce them in order but hybrid parallelism is the key point.
 
-## The features of parallelism in consistent view
+## The Features of Parallelism in Consistent View
 
-### Data parallelism
+### Data Parallelism
 
-We have already known that in consistent view. The default parallelism method is data parallelism. If we choose mirrored view, we can only use data parallelism. If numpy data is passed directly when the job function is called (instead of using OneFlow's `flow.data.xxx_reader` interface for data loading), the difference is that: 
+We have already known that in consistent view. The default parallelism method is data parallelism. If we choose mirrored view, we can only use data parallelism. If you pass `numpy` data directly when you call the job function (instead of using OneFlow's [DataLoader and related operators] (... /basics_topics/data_input.md#dataloader)), the difference between the two are:
 
 * In mirrored view, when we use data parallelism. We need to split and reorganize data according to the number of device and use `list` to pass and receive data.
 
@@ -78,9 +78,9 @@ In fact, we can use **hybrid parallelism**, it means OneFlow uses different para
 
 Currently, other popular frameworks either do not support mixed parallelism or require detailed customization. But in OneFlow, the hybrid parallelism distributed training can be configured through simple settings, and the distributed system can also be deeply optimized with the ultra-high degree of freedom pipelining mode.
 
-## Hybrid parallelism example:
+## Hybrid Parallelism Example:
 
-### Code example 
+### Code 
 
 In `consistent`  view, we use hybrid parallelism to MLP model: the input layer and hidden layer use data parallelism, output layer use model parallelism.
 
@@ -88,70 +88,6 @@ Complete Code: [hybrid_parallelism_mlp.py](../code/extended_topics/hybrid_parall
 
 More explanations can be seen in "code explanations"
 
-```python
-# hybrid_parallelism_mlp.py
-import oneflow as flow
-import oneflow.typing as tp
-
-BATCH_SIZE = 100
-
-
-def mlp(data):
-    initializer = flow.truncated_normal(0.1)
-    reshape = flow.reshape(data, [data.shape[0], -1])
-    hidden = flow.layers.dense(
-        reshape,
-        512,
-        activation=flow.nn.relu,
-        kernel_initializer=initializer,
-        name="dense1",
-    )
-    return flow.layers.dense(
-        hidden,
-        10,
-        kernel_initializer=initializer,
-        # dense is stored as a column and split on axis=0
-        model_distribute=flow.distribute.split(axis=0),
-        name="dense2",
-    )
-
-
-def get_train_config():
-    config = flow.function_config()
-    config.default_data_type(flow.float)
-    return config
-
-
-@flow.global_function(type="train", function_config=get_train_config())
-def train_job(
-    images: tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-    labels: tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32),
-) -> tp.Numpy:
-    logits = mlp(images)
-    loss = flow.nn.sparse_softmax_cross_entropy_with_logits(
-        labels, logits, name="softmax_loss"
-    )
-
-    lr_scheduler = flow.optimizer.PiecewiseConstantScheduler([], [0.1])
-    flow.optimizer.SGD(lr_scheduler, momentum=0).minimize(loss)
-    return loss
-
-
-if __name__ == "__main__":
-    flow.config.gpu_device_num(2)
-    check_point = flow.train.CheckPoint()
-    check_point.init()
-
-    (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(
-        BATCH_SIZE
-    )
-
-    for epoch in range(3):
-        for i, (images, labels) in enumerate(zip(train_images, train_labels)):
-            loss = train_job(images, labels)
-            if i % 20 == 0:
-                print(loss.mean())
-```
 
 ### Code explanation
 
@@ -171,14 +107,21 @@ The crucial parts are:
 def mlp(data):
     initializer = flow.truncated_normal(0.1)
     reshape = flow.reshape(data, [data.shape[0], -1])
-    hidden = flow.layers.dense(reshape, 512, activation=flow.nn.relu, kernel_initializer=initializer, name="hidden")
-    return flow.layers.dense(hidden,
-                             10,
-                             kernel_initializer=initializer,
-                             # dense is columns storing，process split(0) cutting 
-                             model_distribute=flow.distribute.split(axis=0),
-                             name="output"
-                             )
+    hidden = flow.layers.dense(
+        reshape,
+        512,
+        activation=flow.nn.relu,
+        kernel_initializer=initializer,
+        name="dense1",
+    )
+    return flow.layers.dense(
+        hidden,
+        10,
+        kernel_initializer=initializer,
+        # dense for column storage with split(0) slicing.
+        model_distribute=flow.distribute.split(axis=0),
+        name="dense2",
+    )
 ```
 
 You may be curious about why `split(axis=0)` is column cutting. To be explained, `dense` is column-oriented storage in OneFlow. Thus the `flow.distribute.split(axis=0)` in above code is split by column.
@@ -187,7 +130,7 @@ In addition, `flow.layers.dense`  use `model_distribute`  to set parallelism mod
 
 As you can see, we can change the single machine training program to a distributed, hybrid parallel program with few modifications, which is one of the features that distinguishes OneFlow from other frameworks.
 
-## Pipelining example
+## Pipelining Example
 
 Besides the model parallelism, OneFlow also provides a more flexible parallelism method called pipelining, it allow user use  `scope.placement` to specify the device of the operator.
 
@@ -195,98 +138,14 @@ In pipelining, some parts of layers of the whole network are on one device and s
 
 In the following example, we change a few codes in "Using consistent view in OneFlow" of  [Consistent and Mirrored view](consistent_mirrored.md) and demonstrate pipelining.
 
-### Code Example
+### Code
 
 Complete Code: [hybrid_parallelism_lenet.py](../code/extended_topics/hybrid_parallelism_lenet.py)
 
 Please refer to code explanation later for more details.
 
-```python
-# hybrid_parallelism_lenet.py
-import oneflow as flow
-import oneflow.typing as tp
 
-BATCH_SIZE = 100
-
-
-def lenet(data, train=False):
-    initializer = flow.truncated_normal(0.1)
-    conv1 = flow.layers.conv2d(
-        data,
-        32,
-        5,
-        padding="SAME",
-        activation=flow.nn.relu,
-        kernel_initializer=initializer,
-        name="conv1",
-    )
-    pool1 = flow.nn.max_pool2d(conv1, ksize=2, strides=2, padding="SAME", name="pool1")
-    conv2 = flow.layers.conv2d(
-        pool1,
-        64,
-        5,
-        padding="SAME",
-        activation=flow.nn.relu,
-        kernel_initializer=initializer,
-        name="conv2",
-    )
-    pool2 = flow.nn.max_pool2d(conv2, ksize=2, strides=2, padding="SAME", name="pool2")
-    reshape = flow.reshape(pool2, [pool2.shape[0], -1])
-    with flow.scope.placement("gpu", "0:0"):
-        hidden = flow.layers.dense(
-            reshape,
-            512,
-            activation=flow.nn.relu,
-            kernel_initializer=initializer,
-            name="hidden",
-        )
-    if train:
-        hidden = flow.nn.dropout(hidden, rate=0.5)
-
-    with flow.scope.placement("gpu", "0:1"):
-        output = flow.layers.dense(
-            hidden, 10, kernel_initializer=initializer, name="outlayer"
-        )
-    return output
-
-
-def get_train_config():
-    config = flow.function_config()
-    config.default_data_type(flow.float)
-    return config
-
-
-@flow.global_function(type="train", function_config=get_train_config())
-def train_job(
-    images: tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-    labels: tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32),
-) -> tp.Numpy:
-    logits = lenet(images, train=True)
-    loss = flow.nn.sparse_softmax_cross_entropy_with_logits(
-        labels, logits, name="softmax_loss"
-    )
-
-    lr_scheduler = flow.optimizer.PiecewiseConstantScheduler([], [0.1])
-    flow.optimizer.SGD(lr_scheduler, momentum=0).minimize(loss)
-    return loss
-
-
-if __name__ == "__main__":
-    flow.config.gpu_device_num(2)
-    check_point = flow.train.CheckPoint()
-    check_point.init()
-    (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(
-        BATCH_SIZE
-    )
-
-    for epoch in range(50):
-        for i, (images, labels) in enumerate(zip(train_images, train_labels)):
-            loss = train_job(images, labels)
-            if i % 20 == 0:
-                print(loss.mean())
-```
-
-### Code explanation
+### Code Explanation
 
 There are only two important lines of code and they have similar effect:
 
@@ -311,13 +170,7 @@ There are only two important lines of code and they have similar effect:
             hidden, 10, kernel_initializer=initializer, name="outlayer"
         )
 ```
-
-The first parameter in `scope.placement` is to specify `cpu` or `gpu`. The second parameter is to specify machine number and device. For example, if we use the device 2 on machine 1, it should be:
-
-```python
-  with flow.scope.placement("gpu", "1:2"):
-    # ...
-```
+More details of `scope.placement` can be found in the [API documentation](https://oneflow.readthedocs.io/en/master/scope.html#oneflow.scope.placement).
 
 Pipelining can allow user to specify which device to be used for each op. It is very useful for user who master the distributed training to **optimize deeply**.
 
