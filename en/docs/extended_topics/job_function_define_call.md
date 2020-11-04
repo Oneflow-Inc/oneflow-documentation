@@ -12,7 +12,7 @@ In this article, we will specifically learn about:
 
 * how to get the return value of job function
 
-## The relationship between job function and running process of OneFlow
+## The Relationship Between Job Function and Running Process of OneFlow
 
 The job function is divided into two phases: definition and call.
 
@@ -24,7 +24,7 @@ The job function will be called after the OneFlow runtime starts. We can pass th
 
 We will introduce the definition and calling method of job functions in detail as below. 
 
-## The definition of job function
+## The Definition of Job Function
 
 We encapsulate the model in Python and use `oneflow.global_function` to decorate. Then the definition is completed.
 
@@ -64,7 +64,7 @@ def train_job(
     return loss
 ```
 
-### The parameters of `oneflow.global_function`
+### The Parameters of `oneflow.global_function`
 
 `oneflow.global_function` decorator accepts two parameters, `type` and `function_config`. 
 
@@ -102,7 +102,7 @@ All the variables mentioned above inherit the base class `BlobDef` directly or i
 
 The **Blob** has no data when defining the job function. It only plays the role of data placeholder for building the graph.
 
-### The return value of the job function
+### The Return Value of the Job Function
 
 The concept of the data placeholder **Blob** is emphasized above because the return value of the job function cannot be arbitrarily specified. It must be `Blob` type object or a container which only contains the `Blob` object. 
 
@@ -114,7 +114,7 @@ As another example, we can annotate the return value type as `-> Tuple[tp.Numpy,
 
 You can refer to [Get the result of the job function](../basics_topics/async_get.md) for specific examples.
 
-## The call of job function
+## The Call of Job Function
 
 OneFlow uses decorator to convert Python function into OneFlow's job function. It is transparent to user.
 
