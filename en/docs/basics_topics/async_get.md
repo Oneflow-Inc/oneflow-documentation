@@ -31,7 +31,7 @@ The main points are：
 * When we call a job function, the form of getting results synchronously / asynchronously is slightly different
 
 
-## Get result synchronously
+## Get Result Synchronously
 
 When we define a job function, if the annotation of the return type of the job function is `oneflow.typing.Numpy`, the job function will be called synchronously.
 
