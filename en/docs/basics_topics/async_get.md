@@ -1,4 +1,4 @@
-# Get results from job function
+# Get Results from Job Function
 
 In this article, we will talk about getting the return value of a job function in OneFlow. It covers:
 
@@ -8,9 +8,7 @@ In this article, we will talk about getting the return value of a job function i
 
 In OneFlow, a function decorated by `@flow.global_function` is called "Job Function". Job function can be implmented for training, evaluation or prediction. By specifing the return type of job function, we can get results from job function both synchronously and asynchronously.
 
-## Difference between synchronous and asynchronous
-
-Usually, the process of training the model is synchronous. We will explain the concepts of synchronization and asynchronization, and the advantages of asynchronous execution in OneFlow.
+## Difference Between Synchronous and Asynchronous
 
 ### Synchronization
 
@@ -54,7 +52,8 @@ def train_job(
     return loss
 ```
 
-Through Python annotations, OneFlow knows the type of the job function's return is `oneflow.typing.Numpy`, which corresponds to ndarray in numpy.
+Through Python annotations, OneFlow knows the type of the job function's return is `oneflow.typing.Numpy`, which corresponds to `ndarray` in `NumPy`.
+Then when we call the job function, it will simply return the `ndarray` object:
 
 ```python
 loss = train_job(images, labels)
@@ -66,39 +65,38 @@ From the example above, it should be noted that:
 
 * When we define the job function, the return value of job function (loss) is a placeholder for graph construction.
 
-* When we specify the return value type as `flow.typing.Numpy`. OneFlow will know that when the job function is called, the real data type returned is `numpy` object.
+* When we specify the return value type as `oneflow.typing.Numpy`. OneFlow will know that when the job function is called, the real data type returned is `NumPy ndarray` object.
 
-* By calling the job function `train_job(images, labels)`, we can get the result from job function directly, and the retnred value is a `numpy` object corresponding to `flow.typing.Numpy`.
+* By calling the job function `train_job(images, labels)`, we can get the result from job function directly, and the retnred value is a `ndarray` object corresponding to `oneflow.typing.Numpy`.
 
-## Data types in `oneflow.typing`
+## Data Types in `oneflow.typing`
 The `oneflow.typing` contains all the data types that can be returned by the job function. The `oneflow.typing.Numpy` shown above is only one of them. The commonly used types and their corresponding meanings are listed as follows:
 
-* `flow.typing.Numpy`: corresponding to a `numpy.ndarray`
+* `oneflow.typing.Numpy`: corresponding to a `numpy.ndarray`
 
 * `flow.typing.ListNumpy`: corresponding to a `list` container. Every element in it is a `numpy.ndarray` object. It is related to the view of OneFlow for distributed training. We will see details in [The consistent and mirrored view in distributed training.](../extended_topics/consistent_mirrored.md)
 
-* `flow.typing.Dict`: corresponding to a `dict` whose key can be string or number and value will be`numpy.ndarray`
+* `oneflow.typing.ListListNumpy`：corresponds to a `list` container where each element is a `TensorList` object and some interfaces to OneFlow need to process or return multiple `TensorList`. More information refer to [Term & Concept in OneFlow](. /concept_explanation.md#3tensorbuffer-tensorlist) and related [API documentation](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight= ListListNumpy)
 
-* `flow.typing.Callback`: corresponding to a callback function. It is used to call job function asynchronously. We will introduce it below.
+* `oneflow.typing.Callback`: corresponding to a callback function. It is used to call job function asynchronously. We will introduce it below.
 
+In addition, OneFlow also allows job functions to pass out data in dictionary form. For examples of `ListNumpy`, `ListNumpy`, `ListListNumpy` and how to pass out data in dictionary form please refer to  [OneFlow's Test Case](https://github.com/ Oneflow-Inc/oneflow/blob/master/oneflow/python/test/ops/test_global_function_signature.py).
 
-## Get result asynchronously
+## Get Result Asynchronously
 
 Generally speaking, the efficiency of asynchronous training is higher than that of synchronous training. The following describes how to call job function asynchronously and process the results.
 
 The basic steps include:
 
-* Prepare a callback function to process the return value from the job function. You need to specify the parameters accepted by the callback function through annotation.
+* Prepare a callback function: It is necessary to specify the parameters accepted by the callback function by annotations and implementing the logic for return value of the job function inside the callback function.
 
-* Implementation of the job function, through the way of annotation, specified `oneflow.typing.Callback` as the return type of the job function. As we will see in the following example, we can specify the parameter type of the callback function through `oneflow.typing.Callback`.
+* Implementing a Job Function: Specify `flow.typing.Callback` as the return type of the job function by annotation. As we will see in the following example that we can specify the parameter type of the callback function with `Callback`.
 
-* Call the job function and register the callback function prepared in step 1 above.
+* Call the job function: Register the callback function prepared in step 1 above.
 
-* The registered callback function will be called by OneFlow at the appropriate time, and the return value of job function will be passed to the callback function as a parameter.
+The first three steps are completed by users of OneFlow. When the program runs, the registered callback function is called by OneFlow and the return values of the job function are passed as parameters to the callback function.
 
-The first three steps are completed by users of OneFlow, and the last step is completed by OneFlow framework.
-
-### Prepare a callback function
+### Prepare a Callback Function
 Suppose the prototype of the callback function is:
 
 ```python
@@ -167,7 +165,7 @@ def eval_job(
     return (labels, logits)
 ```
 
-Annotation `-> tp.Callback[Tuple[tp.Numpy, tp.Numpy]]` means that this job function returns a `tuple` in which there are two elements whose type is `oneflow.typing.Numpy`, and the job function need to be called asynchronously.
+Annotation `-> tp.Callback[Tuple[tp.Numpy, tp.Numpy]]` means that this job function returns a `tuple` and each element is `tp.Numpy` and the job function needs to be called asynchronously.
 
 Thus, the parameter annotation of the corresponding callback function should be:
 
@@ -189,7 +187,7 @@ def acc(arguments: Tuple[tp.Numpy, tp.Numpy]):
 ```
 The `arguments` corresponds to the return type of the above job function.
 
-### Registration of callback function
+### Registration of Callback Function
 When we call the job function asynchronously, the job function will return a 'callback' object, and we registry the prepared callback function by passing it to that object.
 
 OneFlow will automatically call the registered callback function when it gets the training results.
@@ -209,88 +207,18 @@ train_job(images, labels)(cb_print_loss)
 ### Get single result synchronously
 We use LeNet as an example here to show how to get the return value `loss` synchronously and print the loss every 20 iterations.
 
-[synchronize_single_job.py](../code/basics_topics/synchronize_single_job.py)
+Code example: [synchronize_single_job.py](../code/basics_topics/synchronize_single_job.py)
 
-```python
-# lenet_train.py
-import oneflow as flow
-import oneflow.typing as tp
-
-BATCH_SIZE = 100
-
-
-def lenet(data, train=False):
-    initializer = flow.truncated_normal(0.1)
-    conv1 = flow.layers.conv2d(
-        data,
-        32,
-        5,
-        padding="SAME",
-        activation=flow.nn.relu,
-        name="conv1",
-        kernel_initializer=initializer,
-    )
-    pool1 = flow.nn.max_pool2d(conv1, ksize=2, strides=2, padding="SAME", name="pool1")
-    conv2 = flow.layers.conv2d(
-        pool1,
-        64,
-        5,
-        padding="SAME",
-        activation=flow.nn.relu,
-        name="conv2",
-        kernel_initializer=initializer,
-    )
-    pool2 = flow.nn.max_pool2d(conv2, ksize=2, strides=2, padding="SAME", name="pool2")
-    reshape = flow.reshape(pool2, [pool2.shape[0], -1])
-    hidden = flow.layers.dense(
-        reshape,
-        512,
-        activation=flow.nn.relu,
-        kernel_initializer=initializer,
-        name="dense1",
-    )
-    if train:
-        hidden = flow.nn.dropout(hidden, rate=0.5, name="dropout")
-    return flow.layers.dense(hidden, 10, kernel_initializer=initializer, name="dense2")
-
-
-@flow.global_function(type="train")
-def train_job(
-    images: tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-    labels: tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32),
-) -> tp.Numpy:
-    with flow.scope.placement("gpu", "0:0"):
-        logits = lenet(images, train=True)
-        loss = flow.nn.sparse_softmax_cross_entropy_with_logits(
-            labels, logits, name="softmax_loss"
-        )
-    lr_scheduler = flow.optimizer.PiecewiseConstantScheduler([], [0.1])
-    flow.optimizer.SGD(lr_scheduler, momentum=0).minimize(loss)
-    return loss
-
-
-if __name__ == "__main__":
-    flow.config.gpu_device_num(1)
-    check_point = flow.train.CheckPoint()
-    check_point.init()
-
-    (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(
-        BATCH_SIZE
-    )
-
-    for epoch in range(20):
-        for i, (images, labels) in enumerate(zip(train_images, train_labels)):
-            loss = train_job(images, labels)
-            if i % 20 == 0:
-                print(loss.mean())
-    check_point.save("./lenet_models_1")  # need remove the existed folder
-    print("model saved")
-```
-
-
-Output：
+Run:
 
 ```shell
+wget https://docs.oneflow.org/code/basics_topics/synchronize_single_job.py
+python3 synchronize_single_job.py
+```
+
+There would be outputs like:
+
+```text
 File mnist.npz already exist, path: ./mnist.npz
 7.3258467
 2.1435719
@@ -301,173 +229,47 @@ File mnist.npz already exist, path: ./mnist.npz
 model saved
 ```
 
-### Get mutiple results synchronously
+### 
+
+### Get Mutiple Results Synchronously
 In this case, the job function returns a `tuple`. We get the resutls `labels` and `logits` in tuple synchronously, and evaluate the trained model in the above example, then output the accuracy rate.
 
-[synchronize_batch_job.py](../code/basics_topics/synchronize_batch_job.py)
-
-```python
-#lenet_eval.py
-import numpy as np
-import oneflow as flow
-from typing import Tuple
-import oneflow.typing as tp
-
-BATCH_SIZE = 100
-
-
-def lenet(data, train=False):
-    initializer = flow.truncated_normal(0.1)
-    conv1 = flow.layers.conv2d(
-        data,
-        32,
-        5,
-        padding="SAME",
-        activation=flow.nn.relu,
-        name="conv1",
-        kernel_initializer=initializer,
-    )
-    pool1 = flow.nn.max_pool2d(conv1, ksize=2, strides=2, padding="SAME", name="pool1")
-    conv2 = flow.layers.conv2d(
-        pool1,
-        64,
-        5,
-        padding="SAME",
-        activation=flow.nn.relu,
-        name="conv2",
-        kernel_initializer=initializer,
-    )
-    pool2 = flow.nn.max_pool2d(conv2, ksize=2, strides=2, padding="SAME", name="pool2")
-    reshape = flow.reshape(pool2, [pool2.shape[0], -1])
-    hidden = flow.layers.dense(
-        reshape,
-        512,
-        activation=flow.nn.relu,
-        kernel_initializer=initializer,
-        name="dense1",
-    )
-    if train:
-        hidden = flow.nn.dropout(hidden, rate=0.5)
-    return flow.layers.dense(hidden, 10, kernel_initializer=initializer, name="dense2")
-
-
-@flow.global_function(type="predict")
-def eval_job(
-    images: tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-    labels: tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32),
-) -> Tuple[tp.Numpy, tp.Numpy]:
-    with flow.scope.placement("gpu", "0:0"):
-        logits = lenet(images, train=False)
-        loss = flow.nn.sparse_softmax_cross_entropy_with_logits(
-            labels, logits, name="softmax_loss"
-        )
-
-    return (labels, logits)
-
-
-g_total = 0
-g_correct = 0
-
-
-def acc(labels, logtis):
-    global g_total
-    global g_correct
-
-    predictions = np.argmax(logtis, 1)
-    right_count = np.sum(predictions == labels)
-    g_total += labels.shape[0]
-    g_correct += right_count
-
-
-if __name__ == "__main__":
-
-    check_point = flow.train.CheckPoint()
-    check_point.load("./lenet_models_1")
-    (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(
-        BATCH_SIZE, BATCH_SIZE
-    )
-
-    for epoch in range(1):
-        for i, (images, labels) in enumerate(zip(test_images, test_labels)):
-            labels, logtis = eval_job(images, labels)
-            acc(labels, logtis)
-
-    print("accuracy: {0:.1f}%".format(g_correct * 100 / g_total))
-```
+Code: [synchronize_batch_job.py](../code/basics_topics/synchronize_batch_job.py)
 
 The trained model can be downloaded from [lenet_models_1.zip](https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/basics_topics/lenet_models_1.zip)
+Run:
 
-### Get single result asynchronously
+```shell
+wget https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/quick_start/lenet_models_1.zip
+unzip lenet_models_1.zip
+wget https://docs.oneflow.org/code/basics_topics/synchronize_batch_job.py
+python3 synchronize_batch_job.py
+```
+
+There would be outputs like:
+
+```text
+accuracy: 99.3%
+```
+
+### 
+
+### Get Single Result Asynchronously
 
 In this case, we take MLP as example to get the single return result loss from job function asynchronously, and the loss is printed every 20 rounds.
 
-[async_single_job.py](../code/basics_topics/async_single_job.py)
+Code: [async_single_job.py](../code/basics_topics/async_single_job.py)
 
-```python
-import oneflow as flow
-import oneflow.typing as tp
-
-BATCH_SIZE = 100
-
-
-@flow.global_function(type="train")
-def train_job(
-    images: tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-    labels: tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32),
-) -> tp.Callback[tp.Numpy]:
-    # mlp
-    initializer = flow.truncated_normal(0.1)
-    reshape = flow.reshape(images, [images.shape[0], -1])
-    hidden = flow.layers.dense(
-        reshape,
-        512,
-        activation=flow.nn.relu,
-        kernel_initializer=initializer,
-        name="hidden",
-    )
-    logits = flow.layers.dense(
-        hidden, 10, kernel_initializer=initializer, name="output"
-    )
-
-    loss = flow.nn.sparse_softmax_cross_entropy_with_logits(
-        labels, logits, name="softmax_loss"
-    )
-    lr_scheduler = flow.optimizer.PiecewiseConstantScheduler([], [0.1])
-    flow.optimizer.SGD(lr_scheduler, momentum=0).minimize(loss)
-    return loss
-
-
-g_i = 0
-
-
-def cb_print_loss(result: tp.Numpy):
-    global g_i
-    if g_i % 20 == 0:
-        print(result.mean())
-    g_i += 1
-
-
-def main():
-    check_point = flow.train.CheckPoint()
-    check_point.init()
-
-    (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(
-        BATCH_SIZE
-    )
-    for epoch in range(20):
-        for i, (images, labels) in enumerate(zip(train_images, train_labels)):
-            train_job(images, labels)(cb_print_loss)
-
-    check_point.save("./mlp_models_1")  # need remove the existed folder
-
-
-if __name__ == "__main__":
-    main()
-```
-
-Output：
+Run:
 
 ```shell
+wget https://docs.oneflow.org/code/basics_topics/async_single_job.py
+python3 async_single_job.py
+```
+
+There would be outputs like:
+
+```text
 File mnist.npz already exist, path: ./mnist.npz
 3.0865736
 0.8949808
@@ -476,84 +278,30 @@ File mnist.npz already exist, path: ./mnist.npz
 ...
 ```
 
-### Get multiple results asynchronously
+
+
+### Get Multiple Results Asynchronously
 In the following example, we show how to get multiple return results of the job function asynchronously, evaluate the trained model in the above example, and output the accuracy rate.
 
-[async_batch_job.py](../code/basics_topics/async_batch_job.py)
+Code: [async_batch_job.py](../code/basics_topics/async_batch_job.py)
 
 The trained model can be downloaded from [mlp_models_1.zip](https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/basics_topics/mlp_models_1.zip)
 
-```python
-import numpy as np
-import oneflow as flow
-from typing import Tuple
-import oneflow.typing as tp
+](https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/basics_topics/mlp_models_1.zip)
 
-BATCH_SIZE = 100
-
-
-def mlp(data):
-    initializer = flow.truncated_normal(0.1)
-    reshape = flow.reshape(data, [data.shape[0], -1])
-    hidden = flow.layers.dense(
-        reshape,
-        512,
-        activation=flow.nn.relu,
-        kernel_initializer=initializer,
-        name="hidden",
-    )
-    return flow.layers.dense(hidden, 10, kernel_initializer=initializer, name="output")
-
-
-@flow.global_function(type="predict")
-def eval_job(
-    images: tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-    labels: tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32),
-) -> tp.Callback[Tuple[tp.Numpy, tp.Numpy]]:
-    with flow.scope.placement("cpu", "0:0"):
-        logits = mlp(images)
-        loss = flow.nn.sparse_softmax_cross_entropy_with_logits(
-            labels, logits, name="softmax_loss"
-        )
-
-    return (labels, logits)
-
-
-g_total = 0
-g_correct = 0
-
-
-def acc(arguments: Tuple[tp.Numpy, tp.Numpy]):
-    global g_total
-    global g_correct
-
-    labels = arguments[0]
-    logits = arguments[1]
-    predictions = np.argmax(logits, 1)
-    right_count = np.sum(predictions == labels)
-    g_total += labels.shape[0]
-    g_correct += right_count
-
-
-def main():
-    check_point = flow.train.CheckPoint()
-    check_point.load("./mlp_models_1")
-    (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(
-        BATCH_SIZE
-    )
-    for epoch in range(1):
-        for i, (images, labels) in enumerate(zip(test_images, test_labels)):
-            eval_job(images, labels)(acc)
-
-    print("accuracy: {0:.1f}%".format(g_correct * 100 / g_total))
-
-
-if __name__ == "__main__":
-    main()
-```
-Output：
+Run:
 
 ```shell
+wget https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/basics_topics/mlp_models_1.zip
+unzip mlp_models_1.zip
+wget https://docs.oneflow.org/code/basics_topics/async_batch_job.py
+python3 async_batch_job.py
+```
+
+There would be outputs like:
+
+```text
 File mnist.npz already exist, path: ./mnist.npz
 accuracy: 97.6%
 ```
+
