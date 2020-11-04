@@ -1,4 +1,4 @@
-# How to Obtain Data from Middle Layer
+# How to Obtain Runtime Data
 
 OneFlow support `oneflow.watch` and `oneflow.watch_diff`. We can use them to register a callback function to get data and gradient tensor in job functions at runtime.
 
@@ -10,22 +10,22 @@ To get data or gradient tensor in job function, we need to follow these steps:
 
 * When defining the job functions, we use `oneflow.watch` or `oneflow.watch_diff` to register callback function. We obtain data tensor from the former one and their corresponding gradient from the latter one.
 
-* OneFlow will call the callback function at an appropriate time at runtime.
+* At the appropriate time when the job function is running, the OneFlow will call the previous callback which was registered earlier and pass the monitored data to the callback function then execute the logic in the callback function.
 
 Take `oneflow.watch` as example:
 
 ```python
-def MyWatch(x: T):
+def my_watch(x: T):
     #process x
 
 @global_function()
 def foo() -> T:
     #define network ...
-    oneflow.watch(x, MyWatch)
+    oneflow.watch(x, my_watch)
     #...
 ```
 
-The T in the code above is the data type in `oneflow.typing`. Like  `oneflow.typing.Numpy`. Please refer to [The definition and call of job function](job_function_define_call.md) for more details.
+The T in the code above is the data type in `oneflow.typing`. Like  `oneflow.typing.Numpy`. Please refer to [this article](../basics_topics/async_get.md#oneflowtyping).
 
 We will use the following examples to demonstrate how to use  `watch` and `watch_diff`.
 
