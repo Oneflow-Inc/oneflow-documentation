@@ -2,7 +2,7 @@
 
 OneFlow support `oneflow.watch` and `oneflow.watch_diff`. We can use them to register a callback function to get data and gradient tensor in job functions at runtime.
 
-## Using guidance
+## Using Guidance
 
 To get data or gradient tensor in job function, we need to follow these steps:
 
@@ -29,33 +29,12 @@ The T in the code above is the data type in `oneflow.typing`. Like  `oneflow.typ
 
 We will use the following examples to demonstrate how to use  `watch` and `watch_diff`.
 
-## Use watch to obtain the data when running
+## Use watch to Obtain the Data when Running
 
 The following is an example to demonstrate how to use `oneflow.watch` to obtain the data from middle layer in OneFlow.
-```python
-# test_watch.py
-import numpy as np
-import oneflow as flow
-import oneflow.typing as tp
+Code:[test_watch.py](../code/extended_topics/test_watch.py)
 
-
-def watch_handler(y: tp.Numpy):
-    print("out:", y)
-
-
-@flow.global_function()
-def ReluJob(x: tp.Numpy.Placeholder((5,))) -> None:
-    y = flow.nn.relu(x)
-    flow.watch(y, watch_handler)
-
-
-flow.config.gpu_device_num(1)
-data = np.random.uniform(-1, 1, 5).astype(np.float32)
-print("in:", data)
-ReluJob(data)
-```
-
-Run [above code](../code/extended_topics/test_watch.py):
+Run above code:
 ```
 python3 test_watch.py
 ```
@@ -66,7 +45,7 @@ in: [ 0.15727027  0.45887455  0.10939325  0.66666406 -0.62354755]
 out: [0.15727027 0.45887455 0.10939325 0.66666406 0.        ]
 ```
 
-### Code explanation
+### Code Explanation
 In the example, we focus on `y` in `ReluJob`. Thus, we call `flow.watch(y, watch_handler)` to monitor `y`. The function `oneflow.watch` needs two parameters:
 
 * The first parameter is y which we focus on.
@@ -75,67 +54,13 @@ In the example, we focus on `y` in `ReluJob`. Thus, we call `flow.watch(y, watch
 
 User can use customized callback function to process the data from OneFlow according to their own requirements.
 
-## Use watch_diff to obtain gradient when running
-### `test_watch_diff.py`
+## Use watch_diff to Obtain Gradient when Running
+
 The following is an example to demonstrate how to use `oneflow.watch_diff` to obtain the gradient at runtime.
-```python
-# test_watch_diff.py
-import oneflow as flow
-import oneflow.typing as tp
 
-BATCH_SIZE = 100
+Code: [test_watch_diff.py](../code/extended_topics/test_watch_diff.py)
 
-
-def watch_diff_handler(blob: tp.Numpy):
-    print("watch_diff_handler:", blob, blob.shape, blob.dtype)
-
-
-def get_train_config():
-    config = flow.function_config()
-    config.default_data_type(flow.float)
-    return config
-
-
-@flow.global_function(type="train", function_config=get_train_config())
-def train_job(
-    images: tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-    labels: tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32),
-) -> tp.Numpy:
-    with flow.scope.placement("cpu", "0:0"):
-        initializer = flow.truncated_normal(0.1)
-        reshape = flow.reshape(images, [images.shape[0], -1])
-        hidden = flow.layers.dense(
-            reshape,
-            512,
-            activation=flow.nn.relu,
-            kernel_initializer=initializer,
-            name="hidden",
-        )
-        logits = flow.layers.dense(
-            hidden, 10, kernel_initializer=initializer, name="output"
-        )
-        loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits)
-
-    lr_scheduler = flow.optimizer.PiecewiseConstantScheduler([], [0.1])
-    flow.optimizer.SGD(lr_scheduler, momentum=0).minimize(loss)
-    flow.watch_diff(logits, watch_diff_handler)
-    return loss
-
-
-if __name__ == "__main__":
-    check_point = flow.train.CheckPoint()
-    check_point.init()
-
-    (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(
-        BATCH_SIZE
-    )
-    for i, (images, labels) in enumerate(zip(train_images, train_labels)):
-        loss = train_job(images, labels)
-        if i % 20 == 0:
-            print(loss.mean())
-```
-
-Run [above code](../code/extended_topics/test_watch_diff.py):
+Run above code:
 ```
 python3 test_watch.py
 ```
@@ -146,7 +71,7 @@ We should have the following results:
    7.73609674e-04  4.89911772e-02  2.47627571e-02  7.65468649e-05
   -1.18361652e-01  1.20161276e-03]] (100, 10) float32
 ```
-### Code explanation
+### Code Explanation
 In the example above, we use `oneflow.watch_diff` to obtain the gradient. The processe is the same as the example which using `oneflow.watch`  to obtain data tensor.
 
 First, we define the callback function:
