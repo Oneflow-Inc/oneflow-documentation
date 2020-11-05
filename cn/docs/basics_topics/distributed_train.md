@@ -141,4 +141,4 @@ python3 distributed_train.py
 > 分布式训练时各个机器上的通信库（nccl）请确保版本一致
 
 - 存在虚拟网卡的情况
-> 弱存在虚拟网卡，可能因为 nccl 的通信走虚拟网卡而无法通信。此时需要通过 `export NCCL_SOCKET_IFNAME=device_name` 来指定通信网卡，具体可参阅 [nccl 官方文档](https://docs.nvidia.com/deeplearning/nccl/user-guide/docs/env.html?highlight=nccl_socket_ifname#nccl-socket-ifname)
+> 若存在虚拟网卡，可能因为 nccl 的通信走虚拟网卡而无法通信。此时需要通过 `export NCCL_SOCKET_IFNAME=device_name` 来指定通信网卡，具体可参阅 [nccl 官方文档](https://docs.nvidia.com/deeplearning/nccl/user-guide/docs/env.html?highlight=nccl_socket_ifname#nccl-socket-ifname)
