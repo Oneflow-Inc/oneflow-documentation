@@ -139,5 +139,5 @@ For example, in the script:
 
 ## More Formats Support by DataLoader
 
-OneFlow provides a number of DataLoader and preprocessing operators, refer to [oneflow.data](https://oneflow.readthedocs.io/en/master/data.html) for details. These operators will be enriched and optimized in the future, but users can also refer to [this article](. /extended_topics/implement_data_loader.md) to customize the DataLoader to meet specific needs.
+OneFlow provides a number of DataLoader and preprocessing operators, refer to [oneflow.data](https://oneflow.readthedocs.io/en/master/data.html) for details. These operators will be enriched and optimized in the future, but users can also refer to [this article](../extended_topics/implement_data_loader.md) to customize the DataLoader to meet specific needs.
 
