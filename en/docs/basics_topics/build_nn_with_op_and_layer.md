@@ -8,11 +8,7 @@ LeNet is constructed by convolution layer, pooling layer and fully connected lay
 <img src="imgs/lenet.png" align='center'/>
 </div>
 
-The figure shows the inputs, outputs and layers in the network. There are two types of elements : one is calculation which represented by the box, including "op" and "layer", like `conv2d`, `dense`, `max_pool2d` and so on; the other is data which represented by arrows.
-
-The input of the network is `data` and it's shape is 100x1×28×28. `conv2d` takes `data` as input and produce output, then this output is used as input for `conv1`. After that the output of `conv1` is passed as input to `max_pool2d`, and so on.
-
-(Note: The input and output here is just place holder. We will explain this later.)
+There are two types of elements in the above diagram, one is the computing units represented by boxes which including `op` and `layer` such as `conv2d`, `dense`, `max_pool2d` and etc. The other is the data represented by arrows. It corresponds to the following code:
 
 ```python
 def lenet(data, train=False):
@@ -53,16 +49,17 @@ def lenet(data, train=False):
         hidden = flow.nn.dropout(hidden, rate=0.5, name="dropout")
     return flow.layers.dense(hidden, 10, kernel_initializer=initializer, name="dense2")
 ```
+When the job function is run, `data` is in shape of `100x1×28×28`. `data` is firstly used as input in `conv2d` to participate in the convolution calculation and obtained the result `conv1` then `conv1` is passed to `max_pool2d` as input.
 
 ## Operator and Layer
 Operator is a common concept. It is the basic calculation unit in OneFlow. `reshape` and `nn.max_pool2d` used in LeNet code are two kinds of operators.
 
-In contrast, `layers.conv2d` and `layers.dense` are not operator. They are layers which constructed by specific operators. For example, `layers.conv2d` is constructed by `conv2d` operator and `variable` operator. Layer can simplify the network construction procedure in the front end. For more details, please refer to [layers api](https://oneflow-api.readthedocs.io/en/latest/layers.html).
+In contrast, `layers.conv2d` and `layers.dense` are not operator. They are layers which constructed by specific operators. The existence of layers makes it easier to build neural networks, please refer to [oneflow.layers API](https://oneflow.readthedocs.io/en/master/layers.html) 
+
+By reading [oneflow.layers source code](https://github.com/Oneflow-Inc/oneflow/blob/master/oneflow/python/ops/layers.py), you can learn the details of building a layer of calculations from basic operators.
 
 ## Data block in neural network
-As mentioned above, it is inaccurate to say that `data` is used as the input. Actually, when we define a network, there is no actual data in data blob, it's just a placeholder.
-
- The neural net construction and running process in OneFlow are actually separate. The construction process is a process in which OneFlow builds the computation graph according to the description defined with job function, but the real calculation happens at run time.
+OneFlow's default mode is a static graph mechanism and the network is actually built and run separately. As a result, when defining the network, there is **no** real data in each variable which means they are just placeholders. The computation of the real data occurs during the call of the job function.
 
 When building the network by defining job function, we only describe the attributes and shapes(such as `shape`, `dtype`) of the nodes in network. There is no data in the node, we call the node as **PlaceHolder**, OneFlow can compile and infer according to these placeholders to get the computation graph. 
 
@@ -87,4 +84,6 @@ output = flow.broadcast_add(output, fc2_biases)
 ```
 
 ## Summary
-When we build neural network, there are "operator" and "layer" provided by OneFlow as calculation units. "operator" and "layer" take `BlobDef` as input and output. Operator overloading on blob simplifies coding at python frontend.
+Neural network builds by OneFlow require the operators or layers provided by OneFlow as compute units. The placeholder `Blob` serves as input and output for the operators and layers and operator reloading helps simplify some of the statements.
+
+The operators provided by OneFlow can be found in the API documentation: [oneflow.nn](https://oneflow.readthedocs.io/en/master/nn.html), [oneflow.math](https://oneflow. readthedocs.io/en/master/math.html), [oneflow.layers](https://oneflow.readthedocs.io/en/master/layers.html)
