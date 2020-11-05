@@ -1,4 +1,4 @@
-# Data input
+# Data Input
 Machine learning is driven by data. Data loading and preprocessing require both efficiency and scalability. OneFlow supports two methods to load data:
 
 * One way to do this is to pass a NumPy ndarray object as a parameter directly to the job function. This means that OneFlow can use NumPy data directly as input.
@@ -10,7 +10,7 @@ Working directly with NumPy data is easy and convenient but only for small amoun
 The DataLoader of OneFlow use techniques such as multi-threading and data pipelining which make data loading, data pre-processing more efficient.However, you need to [prepare dataset] (... /extended_topics/how_to_make_of_dataset.md) which already support by Oneflow or [develop you own DataLoader](../extended_topics/implement_data_loader.md) for the datatype which not support by Oneflow. Thus we recommend use that in mature projects.
 
 
-## Use numpy as data input
+## Use Numpy as Data Input
 ### Example
 We can directly use numpy ndarray as data input during training or predicting with OneFlow:
 
