@@ -86,4 +86,4 @@ output = flow.broadcast_add(output, fc2_biases)
 ## Summary
 Neural network builds by OneFlow require the operators or layers provided by OneFlow as compute units. The placeholder `Blob` serves as input and output for the operators and layers and operator reloading helps simplify some of the statements.
 
-The operators provided by OneFlow can be found in the API documentation: [oneflow.nn](https://oneflow.readthedocs.io/en/master/nn.html), [oneflow.math](https://oneflow. readthedocs.io/en/master/math.html), [oneflow.layers](https://oneflow.readthedocs.io/en/master/layers.html)
+The operators provided by OneFlow can be found in the API documentation: [oneflow.nn](https://oneflow.readthedocs.io/en/master/nn.html)、[oneflow.math](https://oneflow.readthedocs.io/en/master/math.html)、[oneflow.layers](https://oneflow.readthedocs.io/en/master/layers.html) 
