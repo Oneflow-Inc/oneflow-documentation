@@ -143,4 +143,4 @@ The result of the program will be displayed on `192.168.1.12`.
 
 - Using virtual network cards
 
-> If there is a virtual network cards, you may not be able to communicate with nccl. In this case, you need to specify the communication network cards by `export NCCL_SOCKET_IFNAME=device_name` more details please refer to [nccl official documentation](https://docs.nvidia.com/deeplearning/nccl/user-guide/docs). /env.html?highlight=nccl_socket_ifname#nccl-socket-ifname)https://docs.nvidia.com/deeplearning/nccl/user-guide/docs/env.html?highlight=nccl_socket_ifname#nccl-socket-ifname) 
+> If there is a virtual network cards, you may not be able to communicate with nccl. In this case, you need to specify the communication network cards by `export NCCL_SOCKET_IFNAME=device_name` more details please refer to [nccl official documentation](https://docs.nvidia.com/deeplearning/nccl/user-guide/docs).
