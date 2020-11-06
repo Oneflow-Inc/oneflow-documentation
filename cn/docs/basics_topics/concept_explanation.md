@@ -166,7 +166,7 @@ TensorBuffer 是一个较为灵活的数据结构，使用的时候，我们需�
 
 #### TensorList
 
-与 TensorBuffer 类似，TensorList 也是一种存放变长数据的数据结构，最主要的区别在与 TensorList 的数据部分在内存中是**连续的**。
+与 TensorBuffer 类似，TensorList 也是一种存放变长数据的数据结构，最主要的区别在与 TensorList 的数据部分在内存中是 **连续的** 。
 
 <div align="center">
     <img src="imgs/TensorBuffer2TensorList.png" align='center'/>
