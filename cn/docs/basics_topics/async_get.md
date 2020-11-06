@@ -70,7 +70,7 @@ if i % 20 == 0:
 * 通过调用作业函数 `train_job(images, labels)` 可以直接获取作业函数的运行计算结果，类型为 `oneflow.typing.Numpy` 对应的 `ndarray` 对象。
 
 ## `oneflow.typing` 中的数据类型
-`oneflow.typing` 中包含了作业函数可以返回的数据类型，上文中出现的 `flow.typing.Numpy` 只是其中一种，现将其中常用的几种类型及对应意义罗列如下：
+`oneflow.typing` 中包含了作业函数可以返回的数据类型，上文中出现的 `oneflow.typing.Numpy` 只是其中一种，现将其中常用的几种类型及对应意义罗列如下：
 
 - `oneflow.typing.Numpy`：对应了 `numpy.ndarray`，本文主要以 `oneflow.typing.Numpy` 举例
 - `oneflow.typing.ListNumpy`：对应了一个 `list` 容器，其中每个元素都是一个 `numpy.ndarray` 对象。与 OneFlow 进行分布式训练的视角有关，将在[分布式训练的 consistent 与 mirrored 视角](../extended_topics/consistent_mirrored.md)中看到其作用
