@@ -1,4 +1,4 @@
-# Loading and saving of model
+# Loading and Saving of Model
 
 For loading and saving for model, the common scences is:
 
@@ -20,13 +20,13 @@ In this article, we will introduce:
 
 * How to finetune and extend model
 
-## Use get_variable to create/obtain model parameters object
+## Use get_variable to Create/Obtain Model Parameters Object
 
-We can use `oneflow.get_variable` to create or obtain an object and this object can be used to interact with information in global job functions. When we call the interfaces of `OneFlow.CheckPoint`, this object will also be stored automatically or recovered from storage devices.
+We can use [oneflow.get_variable](https://oneflow.readthedocs.io/en/master/oneflow.html#oneflow.get_variable) to create or obtain an object and this object can be used to interact with information in global job functions. When we call the interfaces of `OneFlow.CheckPoint`, this object will also be stored automatically or recovered from storage devices.
 
 Because of this feature, the object created by `get_variable` is used to store model parameters. In fact, there are many high level interface in OneFlow (like `oneflow.layers.conv2d`) use `get_variable` internally to create model parameters internally.
 
-### Process of get_variable create/obtain object
+### Process of get_variable Create/Obtain Object
 
 The `get_variable`  requires a specified `name` as the identity of the created object. 
 
@@ -34,7 +34,7 @@ If the `name` value already existed in the program, then get_variable will get t
 
 If the `name` value doesn't exist in the program, `get_variable` will create a blob object internally and return.
 
-### Use get_variable create object
+### Use get_variable Create Object
 
 The prototype of `oneflow.get_variable` is:
 
@@ -74,7 +74,7 @@ The following example use `get_variable` to create parameters and build the netw
     #...
 ```
 
-### Initializer setting
+### Initializer Setting
 
 In the previous sections, when we call `get_variable`, we specify the method of initializing the parameters by `initializer`. In OneFlow, we provide many initializers which can be found in `oneflow/python/ops/initializer_util.py`
 
@@ -82,28 +82,36 @@ After we set the `initializer`, the initialization is done by OneFlow framework.
 
 Some commonly used `initializer`:
 
-* constant_initializer
 
-* zeros_initializer
+* [constant_initializer](https://oneflow.readthedocs.io/en/master/oneflow.html#oneflow.constant_initializer)
 
-* ones_initializer
+* [zeros_initializer](https://oneflow.readthedocs.io/en/master/oneflow.html#oneflow.zeros_initializer)
 
-* random_uniform_initializer
+* [ones_initializer](https://oneflow.readthedocs.io/en/master/oneflow.html#oneflow.ones_initializer)
 
-* random_normal_initializer
+* [random_uniform_initializer](https://oneflow.readthedocs.io/en/master/oneflow.html#oneflow.random_uniform_initializer)
 
-* truncated_normal_initializer
+* [random_normal_initializer](https://oneflow.readthedocs.io/en/master/oneflow.html#oneflow.random_normal_initializer)
 
-* glorot_uniform_initializer
+* [truncated_normal_initializer](https://oneflow.readthedocs.io/en/master/oneflow.html#oneflow.truncated_normal_initializer)
 
-* variance_scaling_initializer
+* [glorot_uniform_initializer](https://oneflow.readthedocs.io/en/master/oneflow.html#oneflow.glorot_uniform_initializer)
 
-* kaiming_initializer
+* [glorot_normal_initializer](https://oneflow.readthedocs.io/en/master/oneflow.html#oneflow.glorot_normal_initializer)
+
+* [variance_scaling_initializer](https://oneflow.readthedocs.io/en/master/oneflow.html#oneflow.variance_scaling_initializer)
+
+* [kaiming_initializer](https://oneflow.readthedocs.io/en/master/oneflow.html#oneflow.kaiming_initializer)
+
+* [xavier_normal_initializer](https://oneflow.readthedocs.io/en/master/oneflow.html#oneflow.xavier_normal_initializer)
+
+* [xavier_uniform_initializer](https://oneflow.readthedocs.io/en/master/oneflow.html#oneflow.xavier_uniform_initializer)
 
 
 
 
-## The python interface of OneFlow models
+
+## The Python Interface of OneFlow Models
 
 We get the CheckPoint object by instantiating `oneflow.train.CheckPoint()`. There are three critical methods in `CheckPoint` class:
 
@@ -129,7 +137,7 @@ The prototype of `load` is as follows. You can load previously saved models spec
 def load(self, path)
 ```
 
-### Initialize model
+### Initialize Model
 Before training, we need get the object of  `CheckPoint` and call the `init` to initialize the parameters in network.
 
 For example:
@@ -141,7 +149,7 @@ check_point.init() #initialize network parameters
 #... call job function etc.
 ```
 
-### Save model
+### Save Model
 
 At any stage of training process, we can save the model by calling the `CheckPoint` object's `save` method.
 ```python
@@ -155,7 +163,7 @@ Attention:
 
 * Although OneFlow do not have limitation of `save` frequency, however, if the storage frequency is too high, it will increase the burden of resources such as disk and bandwidth.
 
-### Load model
+### Load Model
 We can call the `CheckPoint` object's `load` method to load model from specified path. 
 
 Here is an example of constructing `CheckPoint` object and loading model from a specified path:
@@ -164,7 +172,7 @@ check_point = flow.train.CheckPoint() #constructing object
 check_point.load("./path_to_model") #load model
 ```
 
-## The structure of OneFlow model saving
+## The Structure of OneFlow Model Saving
 OneFlow model are the **parameters** of network. For now there are no meta graph information in OneFlow model. The path to save model have many sub-directories. Each of them is corresponding to the `name` of `job function` in model. For example, we define the model in the first place:
 
 ```python
@@ -246,7 +254,7 @@ We can see:
 
 * Snapshots of the training steps is stored in `System-Train-TrainStep-train_job`.
 
-## Model finetune and transfer learning
+## Model Finetune and Transfer Learning
 
 In model finetune and transfer learning, we always need：
 
@@ -339,105 +347,26 @@ WARNING! CANNOT find variable path in : ./mlp_models_1/dense3-weight/out. It wil
 It means all parameters need by `dense3` layer are not found in the original model and initialization starts automatically.
 ### Codes
 
-The following code is from [mlp_mnist_origin.py](../code/basics_topics/mlp_mnist_origin.py). As the backbone network. Trained model is stored in `./mlp_models_1`。
-```python
-# mlp_mnist_origin.py
-import oneflow as flow
-import oneflow.typing as tp
+The following code is from [mlp_mnist_origin.py](../code/basics_topics/mlp_mnist_origin.py). As the backbone network. Trained model is stored in `./mlp_models_1`.
 
-BATCH_SIZE = 100
+Run:
 
 
-@flow.global_function(type="train")
-def train_job(
-    images: tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-    labels: tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32),
-) -> tp.Numpy:
-    with flow.scope.placement("cpu", "0:0"):
-        initializer = flow.truncated_normal(0.1)
-        reshape = flow.reshape(images, [images.shape[0], -1])
-        hidden = flow.layers.dense(
-            reshape,
-            512,
-            activation=flow.nn.relu,
-            kernel_initializer=initializer,
-            name="dense1",
-        )
-        dense2 = flow.layers.dense(
-            hidden, 10, kernel_initializer=initializer, name="dense2"
-        )
-
-        loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, dense2)
-
-    lr_scheduler = flow.optimizer.PiecewiseConstantScheduler([], [0.1])
-    flow.optimizer.SGD(lr_scheduler, momentum=0).minimize(loss)
-
-    return loss
-
-
-if __name__ == "__main__":
-    check_point = flow.train.CheckPoint()
-    check_point.init()
-
-    (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(
-        BATCH_SIZE, BATCH_SIZE
-    )
-    for i, (images, labels) in enumerate(zip(train_images, train_labels)):
-        loss = train_job(images, labels)
-        if i % 20 == 0:
-            print(loss.mean())
-    check_point.save("./mlp_models_1")
+```shell
+wget https://docs.oneflow.org/code/basics_topics/mlp_mnist_origin.py
+python3 mlp_mnist_origin.py
 ```
+
+When the training is complete, you will get the `mlp_models_1` in the current working directory.
 
 The following code is from [mlp_mnist_finetune.py](../code/basics_topics/mlp_mnist_finetune.py). After finetuning (add one more layer `dense3` in backbone network), we load  `./mlp_models_1` and train it.
-```python
-# mlp_mnist_finetune.py
-import oneflow as flow
-import oneflow.typing as tp
 
-BATCH_SIZE = 100
+Run: 
 
 
-@flow.global_function(type="train")
-def train_job(
-    images: tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-    labels: tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32),
-) -> tp.Numpy:
-    with flow.scope.placement("cpu", "0:0"):
-        initializer = flow.truncated_normal(0.1)
-        reshape = flow.reshape(images, [images.shape[0], -1])
-        hidden = flow.layers.dense(
-            reshape,
-            512,
-            activation=flow.nn.relu,
-            kernel_initializer=initializer,
-            name="dense1",
-        )
-        dense2 = flow.layers.dense(
-            hidden, 10, kernel_initializer=initializer, name="dense2"
-        )
-
-        dense3 = flow.layers.dense(
-            dense2, 10, kernel_initializer=initializer, name="dense3"
-        )
-        loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, dense3)
-
-    lr_scheduler = flow.optimizer.PiecewiseConstantScheduler([], [0.1])
-    flow.optimizer.SGD(lr_scheduler, momentum=0).minimize(loss)
-
-    return loss
-
-
-if __name__ == "__main__":
-    check_point = flow.train.CheckPoint()
-    check_point.load("./mlp_models_1")
-
-    (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(
-        BATCH_SIZE, BATCH_SIZE
-    )
-    for i, (images, labels) in enumerate(zip(train_images, train_labels)):
-        loss = train_job(images, labels)
-        if i % 20 == 0:
-            print(loss.mean())
-    check_point.save("./mlp_ext_models_1")
+```shell
+wget https://docs.oneflow.org/code/basics_topics/mlp_mnist_finetune.py
+python3 mlp_mnist_finetune.py
 ```
+
+The finely tuned models are saved in `. /mlp_ext_models_1`.
