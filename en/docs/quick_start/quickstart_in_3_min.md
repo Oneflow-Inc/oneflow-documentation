@@ -21,7 +21,7 @@ Epoch [1/20], Loss: 0.3167
 
 The output is a series of numbers representing the loss values while training. The goal of training is to make the loss value as small as possible. So far, you have completed a full neural network training by using OneFlow.
 
-## Code explanation
+## Code Explanation
 The following is the full code.
 ```python
 # mlp_mnist.py
@@ -114,3 +114,21 @@ A more comprehensive and detailed introduction of OneFlow can be found in [Convo
 In addition, you can refer to [Basic topics](../basics_topics/data_input.md) to learn more about how to use OneFlow for deep learning.
 
 Benchmarks and related scripts for some prevalent networks are also provided in repository [OneFlow-Benchmark](https://github.com/Oneflow-Inc/OneFlow-Benchmark).
+
+## FAQ
+
+- Getting stuck when running this script
+
+> It may be that the incorrect proxy is set in the environment. You can cancel the proxy by first running the command
+```
+unset http_proxy
+unset https_proxy
+unset HTTP_PROXY
+unset HTTPS_PROXY
+```
+
+Then try again
+
+- My computer can't connect to the Internet and keeps getting stuck when I run the script.
+
+> This script will automatically download the required data file from the network. If your computer is not connected to the Internet, you will need to download it manually by clicking [here](https://oneflow-public.oss-cn-beijing.aliyuncs.com/datasets/mnist.npz) and placing it in the script `mlp_ mnist.py` in the same path and then try again.
