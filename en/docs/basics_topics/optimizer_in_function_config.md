@@ -23,7 +23,7 @@ If you are not familiar with `oneflow.global_function`, please refer to [Recogni
 
 
 
-## Example of configurations
+## Example of Configurations
 
 ### Configuration for prediction/inference
 
