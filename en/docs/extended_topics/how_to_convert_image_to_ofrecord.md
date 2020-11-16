@@ -139,6 +139,6 @@ The outputs of training script should like below:
 ......
 ```
 
-At this point, we have successfully completed the whole process of data set production, reading and training.
+At this point, we have successfully completed the whole process of dataset production, reading and training.
 
 
