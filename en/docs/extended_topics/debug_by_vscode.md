@@ -54,7 +54,7 @@ Followings are required before we configure clangd:
 
 * We have already compiled OneFlow and generated `compile_commands.json` file.
 * We have already installed clangd on remote host through "Remote - SSH".
-* It is **NOT** recommended to install the extension "ms-vscode.cpptools C/C++" which is recommended by VS Code. Because it conflicts with clangd.
+* It is **NOT** recommended that install the extension "ms-vscode.cpptools C/C++" which is recommended by VS Code. Because it conflicts with clangd.
 
 #### Install clangd
 The extensions on VS Code get information and display it by interacting with clangd service. Therefore, in addition to installing the clangd extension on VS Code, we also need to install clangd service program on the host (the remote Linux host in this article) where the OneFlow source code is located.
