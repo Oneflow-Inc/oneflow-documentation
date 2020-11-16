@@ -448,7 +448,7 @@ OneFlow 目前支持了如下几种 C++ 数据类型：
 例如，对于 `conv` op来说，其有一个配置选项 `data_format`，其类型是 string 字符串，但取值只能是 `channels_first` 或 `channels_last`，除此之外都不合法：
 
 ```cpp
-.Attr<std::string>("data_format", std::string("NCHW"))
+.Attr<std::string>("data_format", "NCHW")
 .SetCheckAttrFn(
   [](const user_op::UserOpDefWrapper& def,
     const user_op::UserOpConfWrapper& conf) -> Maybe<void> {
