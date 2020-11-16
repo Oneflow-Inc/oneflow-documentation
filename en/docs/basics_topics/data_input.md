@@ -1,18 +1,18 @@
 # Data Input
 Machine learning is driven by data. Data loading and preprocessing require both efficiency and scalability. OneFlow supports two methods to load data:
 
-* One way to do this is to pass a NumPy ndarray object as a parameter directly to the job function. This means that OneFlow can use NumPy data directly as input.
+* One way to do this is to pass a Numpy ndarray object as a parameter to the job function directly.
 
 * Another approach is to use [DataLoader](https://oneflow.readthedocs.io/en/master/data.html) of OneFlow and its related operators. It can load and pre-process datasets of a particular format from the file system.
 
-Working directly with NumPy data is easy and convenient but only for small amounts of data. This is because when the amount of data is too large, there may be barrier in preparing the NumPy data. Therefore, this approach is more suitable for the initial stages of the project to quickly validate and improve the algorithm.
+Working directly with Numpy data is easy and convenient but only for small amounts of data. Because when the amount of data is too large, there may be barrier in preparing the Numpy data. Therefore, this approach is more suitable for the initial stages of the project to quickly validate and improve the algorithm.
 
-The DataLoader of OneFlow use techniques such as multi-threading and data pipelining which make data loading, data pre-processing more efficient.However, you need to [prepare dataset] (... /extended_topics/how_to_make_of_dataset.md) which already support by Oneflow or [develop you own DataLoader](../extended_topics/implement_data_loader.md) for the datatype which not support by Oneflow. Thus we recommend use that in mature projects.
+The DataLoader of OneFlow use techniques such as multi-threading and data pipelining which make data loading, data pre-processing more efficient.However, you need to [prepare dataset] (... /extended_topics/how_to_make_of_dataset.md) which already supported by Oneflow or [develop you own DataLoader](../extended_topics/implement_data_loader.md) for the datatype which not supported by Oneflow. Thus we recommend use that in mature projects.
 
 
 ## Use Numpy as Data Input
 ### Example
-We can directly use numpy ndarray as data input during training or predicting with OneFlow:
+We can directly use Numpy ndarray as data input during training or predicting with OneFlow:
 
 ```python
 # feed_numpy.py
@@ -49,24 +49,24 @@ Following output are expected:
 ```
 
 ### Code Explanation
-In the above code, we defined a job function `test_job()` with `images` and `labels` as inputs and comment (note that the formal parameter is followed by “:” , not “=”) to specifies the shape and data type of the data.
+In the above code, we defined a job function `test_job()` with `images` and `labels` as inputs and annotate (note that the formal parameter is followed by “:” , not “=”) to specifies the shape and data type of the data.
 
-Thus, the example generates NumPy data randomly (`images_in` and `labels_in`) according to the shape and data type requirements of the job function.
+Thus, the example generates Numpy data randomly (`images_in` and `labels_in`) according to the shape and data type requirements of the job function.
 ```python
  images_in = np.random.uniform(-10, 10, (32, 1, 28, 28)).astype(np.float32)
   labels_in = np.random.randint(-10, 10, (32, )).astype(np.int32)
 ```
-And directly pass the NumPy data `images_in` and `labels_in` as parameters when the job function is called.
+Then directly pass the Numpy data `images_in` and `labels_in` as parameters when the job function is called.
 ```python
 images, labels = test_job(images_in, labels_in)
 ```
-The `oneflow.typing.Numpy.Placeholder` is the placeholder of NumPy `ndarray`. There are also various placeholders in OneFlow that can represent more complex forms of NumPy data. More details please refer to [The Definition and Call of Job Function](../extended_topics/job_function_define_call.md).
+The `oneflow.typing.Numpy.Placeholder` is the placeholder of Numpy `ndarray`. There are also various placeholders in OneFlow that can represent more complex forms of Numpy data. More details please refer to [The Definition and Call of Job Function](../extended_topics/job_function_define_call.md).
 
 ## Using DataLoader and Related Operators
 
 Under the [oneflow.data](https://oneflow.readthedocs.io/en/master/data.html) module, there are DataLoader operators for loading datasets and associated data preprocessing operators.DataLoader is usually named as `data.xxx_reader`, such as the existing `data.ofrecord_reader` and `data.coco_reader` which support OneFlow's native `OFRecord` format and COCO dataset.
 
-In addition, under this module, there are other data preprocessing operators that are used to process the data after DataLoader has been loaded. The following code uses `data.OFRecordImageDecoderRandomCrop` for random image cropping and `data.OFRecordRawDecoder` for image decoding. You can refer to the [API documentation](https://oneflow.readthedocs.io/en/master/index.html) for more details.
+In addition, there are other data preprocessing operators that are used to process the data after DataLoader has been loaded. The following code uses `data.OFRecordImageDecoderRandomCrop` for random image cropping and `data.OFRecordRawDecoder` for image decoding. You can refer to the [API documentation](https://oneflow.readthedocs.io/en/master/index.html) for more details.
 
 ### Examples
 
@@ -74,9 +74,9 @@ The following example reads the `OFRecord` data format file and dealing with ima
 
 This script requires an OFRecord dataset and you can make your own one according to [this article] (. /extended_topics/how_to_make_of_dataset.md).
 
-Or download the [part-00000](https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/basics_topics/part-00000) that we have prepared for you which contains 64 images. Then replace `path/to/ImageNet/ofrecord` in the script with the directory where the `part-00000` file ** is located** and run the script.
+Or you can download the [part-00000](https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/basics_topics/part-00000) that we have prepared for you which contains 64 images. Then replace `path/to/ImageNet/ofrecord` in the script with the directory where the `part-00000` file **is located** and run the script.
 
-The following is an example of running a script with our pre-prepared data set:
+The following example is running a script with our pre-prepared dataset:
 
 ```shell
 wget https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/basics_topics/part-00000
@@ -84,7 +84,7 @@ sed -i "s:path/to/ImageNet/ofrecord:./:" of_data_pipeline.py
 python3 of_data_pipeline.py
 ```
 
-Following output are expected:
+The following output are expected:
 
 ```
 (64, 3, 224, 224) (64,)
@@ -94,7 +94,7 @@ Following output are expected:
 
 There are generally two stages in using OneFlow DataLoader: **Load Data** and **Preprocessing Data**.
 
-`flow.data.ofrecord_reader` in the script  is responsible for loading data from the file system into memory.
+`flow.data.ofrecord_reader` in the script is responsible for loading data from the file system into memory.
 
 
 ```python
@@ -110,7 +110,7 @@ There are generally two stages in using OneFlow DataLoader: **Load Data** and **
 
 To specify the directory where the OFRecord file is located and some other parameters please refer to [data.ofrecord_reader](https://oneflow.readthedocs.io/en/master/data.html#oneflow.data. ofrecord_reader).
 
-If the return value of the DataLoader is a basic data type then it can be used directly as an input to the downstream operator. Otherwise the data preprocessing operator needs to be called further for preprocessing.
+If the return value of the DataLoader is a basic data type. Then it can be used directly as an input to the downstream operator. Otherwise the data preprocessing operator needs to be called further for preprocessing.
 
 For example, in the script:
 
@@ -139,5 +139,5 @@ For example, in the script:
 
 ## More Formats Support by DataLoader
 
-OneFlow provides a number of DataLoader and preprocessing operators, refer to [oneflow.data](https://oneflow.readthedocs.io/en/master/data.html) for details. These operators will be enriched and optimized in the future, but users can also refer to [this article](../extended_topics/implement_data_loader.md) to customize the DataLoader to meet specific needs.
+OneFlow provides a number of DataLoaders and preprocessing operators, refer to [oneflow.data](https://oneflow.readthedocs.io/en/master/data.html) for details. These operators will be enriched and optimized in the future, but users can also refer to [this article](../extended_topics/implement_data_loader.md) to customize the DataLoader to meet specific needs.
 
