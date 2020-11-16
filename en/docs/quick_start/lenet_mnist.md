@@ -78,7 +78,7 @@ MNIST is a handwritten digits database including training set and testing set. T
 
 ## Define Training Model
 
-Modules  [oneflow.nn](https://oneflow.readthedocs.io/en/master/nn.html) and [oneflow.layers](https://oneflow.readthedocs.io/en/master/layers.html)  provide the operators to construct the model.
+Modules [oneflow.nn](https://oneflow.readthedocs.io/en/master/nn.html) and [oneflow.layers](https://oneflow.readthedocs.io/en/master/layers.html) provide the operators to construct the model.
 
 ```python
 def lenet(data, train=False):
@@ -125,7 +125,7 @@ As the code showing above, we build up a LeNet network model.
 
 ## Implementation of Job Function for Training
 
-OneFlow provides a decorator named  [oneflow.global_function](https://oneflow.readthedocs.io/en/master/oneflow.html#oneflow.global_function)  by which we can covert a Python function to a OneFlow **Job Function** .
+OneFlow provides a decorator named [oneflow.global_function](https://oneflow.readthedocs.io/en/master/oneflow.html#oneflow.global_function)  by which we can covert a Python function to a OneFlow **Job Function** .
 
 ### `global_function` Decorator
 
