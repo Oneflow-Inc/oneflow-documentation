@@ -41,7 +41,7 @@ In this section, we will see how the operators above are split in different ways
 
 ### Data Parallelism Diagram
 
-In **data parallelism**, the sample data are divided into small parts. **The divided data** will send to each training nodes and calculate with the **complete models**. Finally, we combine the information in each node. As shown in the figure below:
+In **data parallelism**, the sample data are divided into small parts. **The divided data** will send to each training node and calculate with the **complete models**. Finally, we combine the information in each node. As shown in the figure below:
 
 ![mat_mul_op](imgs/mul_op_data_parr.png)
 
@@ -91,7 +91,7 @@ In the following code, we use `mirrored_view` with two devices to train.
 
 Complete Code: [mirrored_strategy.py](../code/extended_topics/mirrored_strategy.py)
 
-We will explain the key part of the code in detail in the following "code explanation" later section
+We will explain the key part of the code in detail in the following "code explanation" section.
 
 
 ### Code explanation
