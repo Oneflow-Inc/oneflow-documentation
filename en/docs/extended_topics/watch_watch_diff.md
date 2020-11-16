@@ -10,7 +10,7 @@ To get data or gradient tensor in job function, we need to follow these steps:
 
 * When defining the job functions, we use `oneflow.watch` or `oneflow.watch_diff` to register callback function. We obtain data tensor from the former one and their corresponding gradient from the latter one.
 
-* At the appropriate time when the job function is running, the OneFlow will call the previous callback which was registered earlier and pass the monitored data to the callback function then execute the logic in the callback function.
+* At the appropriate time when the job function is running, OneFlow will call the previous callback function which was registered earlier and pass the monitored data to the callback function then execute the logic in the callback function.
 
 Take `oneflow.watch` as example:
 
