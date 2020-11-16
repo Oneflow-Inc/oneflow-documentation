@@ -2,7 +2,7 @@
 
 In deep learning, more and more scenarios require distributed training. Since distributed systems face problems such as distributed task scheduling and complex resource parallelism in multiple cards machines. Thus distributed training usually has a certain technical threshold for users.
 
-In OneFlow, through top-level design and engineering innovation. It is [easiest use distribution system /essentials_of_oneflow.md#oneflow_2). Users can easily use OneFlow for distributed training without making any special changes to the network structure or job logic. This is the **most important feature** that make OneFlow different from other frameworks.
+In OneFlow, through top-level design and engineering innovation. It is [easiest use distribution system](./essentials_of_oneflow.md#oneflow_2). Users can easily use OneFlow for distributed training without making any special changes to the network structure or job logic. This is the **most important feature** that make OneFlow different from other frameworks.
 
 In this article, we will introduce:
 
@@ -143,4 +143,4 @@ The result of the program will be displayed on `192.168.1.12`.
 
 - Using virtual network cards
 
-> If there is a virtual network cards, you may not be able to communicate with nccl. In this case, you need to specify the communication network cards by `export NCCL_SOCKET_IFNAME=device_name`. More details please refer to [nccl official documentation](https://docs.nvidia.com/deeplearning/nccl/user-guide/docs).
+> If there are virtual network cards, you may not be able to communicate with nccl. In this case, you need to specify the communication network cards by `export NCCL_SOCKET_IFNAME=device_name`. More details please refer to [nccl official documentation](https://docs.nvidia.com/deeplearning/nccl/user-guide/docs).
