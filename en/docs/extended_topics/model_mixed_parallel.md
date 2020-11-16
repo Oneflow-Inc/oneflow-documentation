@@ -36,7 +36,7 @@ In `consistent` view, OneFlow supports the data parallelism, model parallelism a
 
 ### Data Parallelism
 
-We have already known that in consistent view. The default parallelism method is data parallelism. If we choose mirrored view, we can only use data parallelism. If you pass `numpy` data directly when you call the job function (instead of using OneFlow's [DataLoader and related operators] (... /basics_topics/data_input.md#dataloader)), the difference between the two are:
+We have already known that in consistent view. The default parallelism method is data parallelism. If we choose mirrored view, we can only use data parallelism. If you pass `numpy` data directly when you call the job function (instead of using OneFlow's [DataLoader and related operators] (... /basics_topics/data_input.md#dataloader)), the difference between them are:
 
 * In mirrored view, when we use data parallelism. We need to split and reorganize data according to the number of device and use `list` to pass and receive data.
 
