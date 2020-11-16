@@ -65,7 +65,7 @@ From the example above, it should be noted that:
 
 * When we define the job function, the return value of job function (loss) is a placeholder for graph construction.
 
-* When we specify the return value type as `oneflow.typing.Numpy`. OneFlow will know that when the job function is called, the real data type returned is `NumPy ndarray` object.
+* When we specify the return value type as `oneflow.typing.Numpy`. OneFlow will know that when the job function is called, the real data type returned is `Numpy.ndarray` object.
 
 * By calling the job function `train_job(images, labels)`, we can get the result from job function directly, and the retnred value is a `ndarray` object corresponding to `oneflow.typing.Numpy`.
 
@@ -188,7 +188,7 @@ def acc(arguments: Tuple[tp.Numpy, tp.Numpy]):
 The `arguments` corresponds to the return type of the above job function.
 
 ### Registration of Callback Function
-When we call the job function asynchronously, the job function will return a 'callback' object, and we registry the prepared callback function by passing it to that object.
+When we call the job function asynchronously, the job function will return a 'callback' object, and we register the prepared callback function by passing it to that object.
 
 OneFlow will automatically call the registered callback function when it gets the training results.
 
@@ -216,7 +216,7 @@ wget https://docs.oneflow.org/code/basics_topics/synchronize_single_job.py
 python3 synchronize_single_job.py
 ```
 
-There would be outputs like:
+There will be outputs like:
 
 ```text
 File mnist.npz already exist, path: ./mnist.npz
@@ -232,7 +232,7 @@ model saved
 ### 
 
 ### Get Mutiple Results Synchronously
-In this case, the job function returns a `tuple`. We get the resutls `labels` and `logits` in tuple synchronously, and evaluate the trained model in the above example, then output the accuracy rate.
+In this case, the job function returns a `tuple`. We get the results `labels` and `logits` in tuple synchronously. Also, we evaluate the trained model in the above example, then output the accuracy rate.
 
 Code: [synchronize_batch_job.py](../code/basics_topics/synchronize_batch_job.py)
 
@@ -246,7 +246,7 @@ wget https://docs.oneflow.org/code/basics_topics/synchronize_batch_job.py
 python3 synchronize_batch_job.py
 ```
 
-There would be outputs like:
+There will be outputs like:
 
 ```text
 accuracy: 99.3%
@@ -267,7 +267,7 @@ wget https://docs.oneflow.org/code/basics_topics/async_single_job.py
 python3 async_single_job.py
 ```
 
-There would be outputs like:
+There will be outputs like:
 
 ```text
 File mnist.npz already exist, path: ./mnist.npz
@@ -281,7 +281,7 @@ File mnist.npz already exist, path: ./mnist.npz
 
 
 ### Get Multiple Results Asynchronously
-In the following example, we show how to get multiple return results of the job function asynchronously, evaluate the trained model in the above example, and output the accuracy rate.
+In the following example, we will show how to get multiple return results of the job function asynchronously, evaluate the trained model in the above example, and get the accuracy.
 
 Code: [async_batch_job.py](../code/basics_topics/async_batch_job.py)
 
