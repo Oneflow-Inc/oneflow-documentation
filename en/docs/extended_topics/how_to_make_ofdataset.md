@@ -73,7 +73,7 @@ OneFlow provides the API interface to load OFRecord dataset by specifying the pa
 
 We use `ofrecord_reader` to load and preprocess dataset. 
 
-In article [Data Input](../basics_topics/data_input.md), we show how to use `ofrecord_reader` API to load OFRecord data and preprocess it. 
+In article [Data Input](../basics_topics/data_input.md), we have shown how to use `ofrecord_reader` API to load OFRecord data and preprocess it. 
 
 Code: [of_data_pipeline.py](../code/basics_topics/of_data_pipeline.py)
 
@@ -102,10 +102,10 @@ def ofrecord_reader(
 - `shuffle_buffer_size` assign the buffer size when reading data
 - `shuffle_after_epoch` assign whether shuffle the sample order after each epoch
 
-The benefit of using `ofrecord_reader` is that `ofrecord_reader` acts as a normal operator which participates in OneFlow composition optimization and enjoys OneFlow flowline acceleration.
+The benefit of using `ofrecord_reader` is that `ofrecord_reader` acts as a normal operator which participates in OneFlow composition optimization and enjoys OneFlow pipeline acceleration.
 For flexibility and extensibility of the code, we can define a preprocessing OP for `ofrecord_reader` to deal with specific data formats which are coupled with operational logic (e.g. decoding, decompression and etc.).
 - For more information on DataLoader and related operator usage refer to [Data input](../basics_topics/data_input.md) .
--  For more information on customized OP refer to [User op](./user_op.md).
+- For more information on customized OP please refer to [User op](./user_op.md).
 
 ## The transition between other data format data and OFRecord dataset
 
