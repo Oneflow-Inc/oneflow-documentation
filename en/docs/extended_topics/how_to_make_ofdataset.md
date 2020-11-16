@@ -1,5 +1,5 @@
 
-In [data input] (... /basics_topics/data_input.md) we learned that it is usually more efficient to load data using DataLoader and related operators. We also learned how to use DataLoader and related operators.
+In [data input] (... /basics_topics/data_input.md) we learned that it is usually more efficient to load data using DataLoader and related operators. Also, we learned how to use DataLoader and related operators.
 
 In article [OFRecord](ofrecord.md), we learn about the storage format of OFRecord files.
 
@@ -13,7 +13,7 @@ In this article, we will focus on the loading and generating of OneFlow's OFReco
 
 ## What is OFRecord Dataset
 
-In article [OFRecord](ofrecord.md), we introduce what `OFRecord file ` is and the storage format of `OFRecord file`.
+In article [OFRecord](ofrecord.md), we introduce what `OFRecord file` is and the storage format of `OFRecord file`.
 
 OFRecord dataset is **the collection of OFRecord files**. The collection of mutiple files that named by OneFlow convention, and that stored in the same directory, is an OFRecord dataset.
 
