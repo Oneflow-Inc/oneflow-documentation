@@ -107,10 +107,6 @@ Some commonly used `initializer`:
 
 * [xavier_uniform_initializer](https://oneflow.readthedocs.io/en/master/oneflow.html#oneflow.xavier_uniform_initializer)
 
-
-
-
-
 ## The Python Interface of OneFlow Models
 
 We get the CheckPoint object by instantiating `oneflow.train.CheckPoint()`. There are three critical methods in `CheckPoint` class:
@@ -359,7 +355,7 @@ python3 mlp_mnist_origin.py
 
 When the training is complete, you will get the `mlp_models_1` in the current working directory.
 
-The following code is from [mlp_mnist_finetune.py](../code/basics_topics/mlp_mnist_finetune.py). After finetuning (add one more layer `dense3` in backbone network), we load  `./mlp_models_1` and train it.
+The following code is from [mlp_mnist_finetune.py](../code/basics_topics/mlp_mnist_finetune.py). After finetuning (add one more layer `dense3` in backbone network), we load `./mlp_models_1` and train it.
 
 Run: 
 
@@ -369,4 +365,4 @@ wget https://docs.oneflow.org/code/basics_topics/mlp_mnist_finetune.py
 python3 mlp_mnist_finetune.py
 ```
 
-The finely tuned models are saved in `. /mlp_ext_models_1`.
+The finetuned models are saved in `. /mlp_ext_models_1`.
