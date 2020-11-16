@@ -132,7 +132,7 @@ As you can see, we can change the single machine training program to a distribut
 
 ## Pipelining Example
 
-Besides the model parallelism, OneFlow also provides a more flexible parallelism method called pipelining, it allow user use  `scope.placement` to specify the device of the operator.
+Besides the model parallelism, OneFlow also provides a more flexible parallelism method called pipelining, it allow user use `scope.placement` to specify the device of the operator.
 
 In pipelining, some parts of layers of the whole network are on one device and some are on other devices. They work consecutively as relay, switch between devices in different phases.
 
