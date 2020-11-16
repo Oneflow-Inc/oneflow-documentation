@@ -47,9 +47,9 @@ def eval_job() -> tp.Numpy:
 
 If you specify the `type` parameter of `@flow.global_function` to be `train`, you can get a job function for training.
 
-In the following code, `train_job` is the job function used for training and it is configured with the default `function_config` (so no parameter is passed to `function_config`).
+In the following code, `train_job` is the job function used for training and it is configured with the default `function_config` (so there is no parameter passed to `function_config`).
 
-Because OneFlow will back propagates for `train` functions. Thus you need to specify the following settings like optimizer, learning rate and other hyperparameters in the job function.
+The reason you need to specify the following settings like optimizer, learning rate and other hyperparameters in the job function is because OneFlow will back propagate for `train` functions.
 
 ```python
 @flow.global_function(type="train")
