@@ -49,17 +49,17 @@ def lenet(data, train=False):
         hidden = flow.nn.dropout(hidden, rate=0.5, name="dropout")
     return flow.layers.dense(hidden, 10, kernel_initializer=initializer, name="dense2")
 ```
-When the job function is run, `data` is in shape of `100x1×28×28`. `data` is firstly used as input in `conv2d` to participate in the convolution calculation and obtained the result `conv1` then `conv1` is passed to `max_pool2d` as input.
+When the job function is running, `data's` shape is `100x1×28×28`. `Data` is firstly used as input in `conv2d` to participate in the convolution calculation and  the result from `conv1` is passed to `max_pool2d` as input.
 
 ## Operator and Layer
 Operator is a common concept. It is the basic calculation unit in OneFlow. `reshape` and `nn.max_pool2d` used in LeNet code are two kinds of operators.
 
-In contrast, `layers.conv2d` and `layers.dense` are not operator. They are layers which constructed by specific operators. The existence of layers makes it easier to build neural networks, please refer to [oneflow.layers API](https://oneflow.readthedocs.io/en/master/layers.html) 
+In contrast, `layers.conv2d` and `layers.dense` are not operator. They are layers which constructed by specific operators. The existence of layers makes it easier to build neural networks. For more details please refer to [oneflow.layers API](https://oneflow.readthedocs.io/en/master/layers.html) 
 
 By reading [oneflow.layers source code](https://github.com/Oneflow-Inc/oneflow/blob/master/oneflow/python/ops/layers.py), you can learn the details of building a layer of calculations from basic operators.
 
 ## Data block in neural network
-OneFlow's default mode is a static graph mechanism and the network is actually built and run separately. As a result, when defining the network, there is **no** real data in each variable which means they are just placeholders. The computation of the real data occurs during the call of the job function.
+OneFlow's default mode is a static graph mechanism and the network is actually built and run separately. As a result, when defining the network, there is **no** real data in each variable, which means they are just placeholders. The computation of the real data occurs during the call of the job function.
 
 When building the network by defining job function, we only describe the attributes and shapes(such as `shape`, `dtype`) of the nodes in network. There is no data in the node, we call the node as **PlaceHolder**, OneFlow can compile and infer according to these placeholders to get the computation graph. 
 
@@ -84,6 +84,6 @@ output = flow.broadcast_add(output, fc2_biases)
 ```
 
 ## Summary
-Neural network builds by OneFlow require the operators or layers provided by OneFlow as compute units. The placeholder `Blob` serves as input and output for the operators and layers and operator reloading helps simplify some of the statements.
+Neural network builds by OneFlow require the operators or layers provided by OneFlow as computing units. The placeholder `Blob` serves as input and output for the operators and layers. Also operator reloading helps simplify some of the statements.
 
 The operators provided by OneFlow can be found in the API documentation: [oneflow.nn](https://oneflow.readthedocs.io/en/master/nn.html)、[oneflow.math](https://oneflow.readthedocs.io/en/master/math.html)、[oneflow.layers](https://oneflow.readthedocs.io/en/master/layers.html) 
