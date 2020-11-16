@@ -6,7 +6,7 @@ In this article, we will talk about getting the return value of a job function i
 
 * How to get the return value from a job function asynchronously.
 
-In OneFlow, a function decorated by `@flow.global_function` is called "Job Function". Job function can be implmented for training, evaluation or prediction. By specifing the return type of job function, we can get results from job function both synchronously and asynchronously.
+In OneFlow, a function decorated by `@flow.global_function` is called "Job Function". Job function can be implmented for training, evaluation and prediction. By specifing the return type of job function, we can get results from job function both synchronously and asynchronously.
 
 ## Difference Between Synchronous and Asynchronous
 
@@ -52,7 +52,7 @@ def train_job(
     return loss
 ```
 
-Through Python annotations, OneFlow knows the type of the job function's return is `oneflow.typing.Numpy`, which corresponds to `ndarray` in `NumPy`.
+Through Python annotations, OneFlow knows the type of the job function's return is `oneflow.typing.Numpy`, which corresponds to `ndarray` in `Numpy`.
 Then when we call the job function, it will simply return the `ndarray` object:
 
 ```python
@@ -74,7 +74,7 @@ The `oneflow.typing` contains all the data types that can be returned by the job
 
 * `oneflow.typing.Numpy`: corresponding to a `numpy.ndarray`
 
-* `flow.typing.ListNumpy`: corresponding to a `list` container. Every element in it is a `numpy.ndarray` object. It is related to the view of OneFlow for distributed training. We will see details in [The consistent and mirrored view in distributed training.](../extended_topics/consistent_mirrored.md)
+* `flow.typing.ListNumpy`: corresponding to a `list` container. Each element in it is a `numpy.ndarray` object. It is related to the view of OneFlow for distributed training. We will see details in [The consistent and mirrored view in distributed training.](../extended_topics/consistent_mirrored.md)
 
 * `oneflow.typing.ListListNumpy`：corresponds to a `list` container where each element is a `TensorList` object and some interfaces to OneFlow need to process or return multiple `TensorList`. More information refer to [Term & Concept in OneFlow](. /concept_explanation.md#3tensorbuffer-tensorlist) and related [API documentation](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight= ListListNumpy)
 
@@ -165,7 +165,7 @@ def eval_job(
     return (labels, logits)
 ```
 
-Annotation `-> tp.Callback[Tuple[tp.Numpy, tp.Numpy]]` means that this job function returns a `tuple` and each element is `tp.Numpy` and the job function needs to be called asynchronously.
+Annotation `-> tp.Callback[Tuple[tp.Numpy, tp.Numpy]]` means that this job function returns a `tuple` and each element is `tp.Numpy`. The job function needs to be called asynchronously.
 
 Thus, the parameter annotation of the corresponding callback function should be:
 
