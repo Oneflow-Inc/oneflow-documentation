@@ -5,7 +5,7 @@ In this article, we will explain some common terms and concepts in OneFlow. The 
 -  **Algorithm Development**
 -  **Framework Development**
 
-In algorithms development part, we will explain some common terms and concepts used in the process of deep learning algorithms development and in framework development part, we will focus on the inner design concepts of OneFlow and some relevant element concepts. 
+In algorithms development part, we will explain some common terms and concepts used in the process of deep learning algorithms development. And in framework development part, we will focus on the inner design concepts of OneFlow and some relevant element concepts. 
 
 ## Algorithms Development
 
