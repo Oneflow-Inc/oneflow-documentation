@@ -49,3 +49,9 @@ https://oneflow.readthedocs.io/en/master/
 - CV 相关的 CNN 分类模型： **Resnet50** 、 **VGG-16** 、 **Inception-v3** 、 **Alexnet**
 
 github地址：https://github.com/Oneflow-Inc/OneFlow-Benchmark
+
+
+## DLPerf
+此外，我们还开源了DLPerf仓库：https://github.com/Oneflow-Inc/DLPerf
+
+该仓库对各个框架的多个经典模型如ResNet50、BERT等做了训练性能评测，给出了各大框架的训练速度、加速比等指标。DLPerf中的评测覆盖了单机单卡/多机多卡、FP32/混合精度、XLA等情况，具体数据和报告可参考：[dlperf_benchmark_test_report_v1_cn](https://github.com/Oneflow-Inc/DLPerf/blob/master/reports/dlperf_benchmark_test_report_v1_cn.md)
