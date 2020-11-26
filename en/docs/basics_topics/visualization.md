@@ -1,54 +1,55 @@
-# 模型训练可视化
-OneFlow支持将训练生成的中间结果以日志文件的形式保存到本地，可视化后端通过实时读取日志文件，将训练过程产生的数据实时展示到可视化前端。
+# Visualization
+In OneFlow, we support to save a summary of data used during the training procedure into a local log file. Therefore, we can visualize the real time training data in a visualization frontend by reading the log file in the visualization backend.
 
-目前，Oneflow支持的可视化类型分为以下几种：
+Currently, our visualization support the following types of data
 
-| 可视化类型 | 描述                     |
+| Visualization Type | Description                     |
 | ---------- | ------------------------ |
-| 模型结构   | 结构图、计算图(后续支持) |
-| 标量数据   | 标量数据                 |
-| 媒体数据   | 文本、图像               |
-| 统计分析   | 数据直方图、数据分布图   |
-| 超参分析   | 超参数                   |
-| 降维分析   | 数据降维                 |
-| 异常检测   | 异常数据检测             |
+| Model Structure   | Logical Graph, Physical Graph (will come up in later version) |
+| Scalar Data   | Scalar type of data                |
+| Media Data   | Text, images               |
+| Statistical Analysis   | Histogram、scatter diagram   |
+| Hyper-parameters   | Visualize and analysis  of hyper-parameters                   |
+| Projection Embedding   | Data projection from high dimensional data to lower dimensional data             |
+| Exception Detection   | Dectection of exceptional data             |
 
-本文将介绍
-* 如何初始化summary日志文件
+In this page, we shall introduce
 
-* 如何生成结构图日志
+* how to initialize a summary writer;
 
-* 如何生成标量数据日志
+* how to generate a model graph summary;
 
-* 如何生成媒体数据日志
+* how to generate a scalar summary;
 
-* 如何生成统计分析数据日志
+* how to generate a summary for media data;
 
-* 如何生成超参分析日志
+* how to generate summary for statistical analysis;
 
-* 如何生成降维分析日志
+* how to generate summary for hyper-parameters; and
 
-* 如何生成异常检测日志
+* how to generate summary for projection embedding;
 
-本文中提到的可视化日志具体使用方式可参考test_summary.py 文件，
+* how to generate summary for exception detection.
 
-具体可视化效果参考[之江天枢人工智能开源平台](http://tianshu.org.cn/?/course)用户手册可视化部分。
+The usage of summary in this page refers to test_summary.py,
 
-## 初始化
+and the effect of visualization backend and frontend refers to the documentation of [Zhijiang Tianshu Open Source AI Platform](http://tianshu.org.cn/?/course). 
 
-首先定义一个用于存放日志文件的目录 logdir, 我们定义以下计算函数调用 flow.summary.create_summary_writer接口创建日志文件写入方法。
+## Initialization
+
+First define a file directory for saving the log logdir, then we define a function to create the log file by using the api flow.summary.create_summary_writer.
 ```python
 @flow.global_function(function_config=func_config)
 def CreateWriter():
     flow.summary.create_summary_writer(logdir)
 ```
-再调用CreateWriter()这个函数，就可以完成summary writer对象的创建啦。
+Thus we can create an object of summary writer by CreateWriter().
 
 
 
-## 生成结构图日志
+## Structural Graph Summary
 
-首先通过调用flow.summary.Graph接口生成graph对象，然后再通过调用graph.write_structure_graph方法将graph写入到日志文件。
+First we call the api flow.summary.Graph to generate a graph object, then we use the api graph.write_structure_graph to write the graph into the log file.
 
 ```python
 graph = flow.summary.Graph(logdir)
@@ -57,9 +58,9 @@ graph.write_structure_graph()
 
 
 
-## 生成标量数据日志
+## Scalar Summary
 
-通过定义flow.summary.scalar接口来创建标量数据写入方法。
+First we define a scalar data writing function by the api flow.summary.scalar.
 
 ```python
 @flow.global_function(function_config=func_config)
@@ -71,7 +72,7 @@ def ScalarJob(
     flow.summary.scalar(value, step, tag)
 ```
 
-再调用ScalarJob()这个函数，就可以将标量数据写入日志文件。
+Then we call ScalarJob() to write scalar data into the log file.
 
 ```python
 value = np.array([1], dtype=np.float32)
@@ -82,13 +83,13 @@ ScalarJob([value], [step], [tag])
 
 
 
-## 生成媒体数据日志
+## Media Data Summary
 
-这里我们支持图片和文本两种媒体数据。
+Here we support two types of media data, namely, text and images.
 
-####  文本数据日志生成
+####  Text Summary
 
-通过定义flow.summary.pb接口来创建文本数据写入方法。
+First we define a text data writing function by the api flow.summary.pb.
 
 ```python
 @flow.global_function(function_config=func_config)
@@ -99,7 +100,7 @@ def PbJob(
     flow.summary.pb(value, step=step)
 ```
 
-使用的时候，首先我们要定义一个字符串列表，然后通过调用flow.summary.text接口生成protobuf message，再将其转化成字符串，最后调用PbJob()函数将文本数据写入日志文件。
+We write the text into a list of strings. Then we create a protobuf message by using the api flow.summary.text. Finally, we translate the protobuf message into a string and use PbJob() to write the text data in to the file.
 
 ```python
 net = ["vgg16", "resnet50", "mask-rcnn", "yolov3"]
@@ -109,9 +110,9 @@ step = np.array([i], dtype=np.int64)
 PbJob([value], [step])
 ```
 
-#### 图像数据日志生成
+#### Image Summary
 
-通过定义flow.summary.images接口来创建图片数据写入方法。
+We define image summary writing function by the api flow.summary.images.
 
 ```python
 @flow.global_function(function_config=func_config)
@@ -125,7 +126,7 @@ def ImageJob(
     flow.summary.image(value, step, tag)
 ```
 
-再调用ImageJob()这个函数，就可以将图片数据写入日志文件，注意我们这里的图片是RGB三通道的jpg格式。
+Then we call the function ImageJob()  to write the image data into the file. Please note that we need to use the jpg image in RGB format.
 ```python
 import cv2
 def _read_images_by_cv(image_files):
@@ -150,9 +151,9 @@ ImageJob([images], [step], [tag])
 
 
 
-## 生成统计分析数据日志
+## Statistical Summary
 
-通过定义flow.summary.histogram接口来创建统计分析数据写入方法。
+We create the statistical summary writing method by the api flow.summary.histogram
 
 ```python
 @flow.global_function(function_config=func_config)
@@ -164,7 +165,7 @@ def HistogramJob(
     flow.summary.histogram(value, step, tag)
 ```
 
-我们通过传入value, step 和 tag，调用HistogramJob()函数即可将统计分析数据写入日志文件。
+Then by giving value, step and tag, we can call the function HistogramJob() to write statistical data into the log file.
 
 ```python
 value = np.random.rand(100, 100, 100).astype(np.float32)
@@ -175,9 +176,9 @@ HistogramJob([value], [step], [tag])
 
 
 
-## 生成超参分析日志
+## Hyper-parameters
 
-首先，创建一个包含超参数据的map harams，然后通过flow.summary.hparams函数生成protobuf message，转化成字符串之后调用PbJob()函数将超参分析数据写入日志文件。
+First we create map harams that contains the hyper-parameters, then we create the protobuf message using the api flow.summary.hparams. After that, we translate the message into a string and call the function PbJob() to write the hyper-parameters into the log file.
 
 ```python
 hparams = {
@@ -200,10 +201,9 @@ PbJob([value], [step])
 
 
 
-## 生成降维分析日志
+## Embedding Projection
 
-首先通过调用flow.summary.Projector()接口生成projector对象，然后通过projecotr.create_embedding_projector()函数创建embedding_projector对象，最后通过调用projecotr.embedding_projector()函数将降维分析日志写入日志文件。注意value 和label是需要降维的数据点信息，x代表数据库，sample_name和sample_type是x里面数据的属性。
-
+First, we create a projector object using flow.summary.Projector(). Then we create an embedding_projector object by the api projecotr.create_embedding_projector(). Finally we call the function projecotr.embedding_projector() to write the embedding projector analysis into the log file. Note that in the embedding projector, value and label refers to the data, x refers to the data set, sample_name and sample_type refers to the type of data in x.
 
 ```python
 projecotr = flow.summary.Projector(logdir)
@@ -229,9 +229,9 @@ projecotr.embedding_projector(
 
 
 
-## 生成异常检测日志
+## Exception Detection
 
-首先通过调用flow.summary.Projector()接口生成projector对象，然后通过projecotr.create_exception_projector()函数创建exception_projector对象，最后通过调用projecotr.exception_projector()函数将异常检测日志写入日志文件。
+First, we create a projector object using flow.summary.Projector(). Then we create an exception_projector object by the api projecotr.create_exception_projector(). Finally we call the function projecotr.exception_projector() to write the exception detection analysis into the log file.
 
 ```python
 projecotr = flow.summary.Projector(logdir)
