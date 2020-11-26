@@ -84,6 +84,8 @@ ScalarJob([value], [step], [tag])
 
 ## 生成媒体数据日志
 
+这里我们支持图片和文本两种媒体数据
+
 ####  文本数据日志生成
 
 通过定义flow.summary.pb接口来创建文本数据写入方法
@@ -109,33 +111,41 @@ PbJob([value], [step])
 
 #### 图像数据日志生成
 
-通过定义flow.summary.image接口来创建图像数据写入方法
+通过定义flow.summary.images接口来创建图片数据写入方法
 
 ```python
 @flow.global_function(function_config=func_config)
 def ImageJob(
     value: flow.typing.ListNumpy.Placeholder(
-    shape=(100, 2000, 2000, 4), dtype=flow.uint8
-),
+        shape=(100, 2000, 2000, 4), dtype=flow.uint8
+    ),
     step: flow.typing.ListNumpy.Placeholder((1,), dtype=flow.int64),
     tag: flow.typing.ListNumpy.Placeholder((10,), dtype=flow.int8),
 ):
-    flow.summary.image(value, step=step, tag=tag)
+    flow.summary.image(value, step, tag)
 ```
 
-
-
+再调用ImageJob()这个函数，就可以将图片数据写入日志文件，注意我们这里的图片是RGB三通道的jpg格式
 ```python
+import cv2
+def _read_images_by_cv(image_files):
+    images = [
+        cv2.cvtColor(cv2.imread(image_file), cv2.COLOR_BGR2RGB).astype(np.uint8)
+        for image_file in image_files
+    ]
+    return [cv2.resize(image, (512, 512)) for image in images]
+image1_path = "~/oneflow/image1"
+image2_path = "~/oneflow/image2"
+image_files = [
+    image1_path,
+    image2_path,
+]
 images = _read_images_by_cv(image_files)
 images = np.array(images, dtype=np.uint8)
-imageRed = np.ones([512, 512, 3]).astype(np.uint8)
-Red = np.array([0, 255, 255], dtype=np.uint8)
-imageNew = np.multiply(imageRed, Red)
-mageNew = np.expand_dims(imageNew, axis=0)
-images = np.concatenate((images, imageNew), axis=0)
 step = np.array([1], dtype=np.int64)
 tag = np.fromstring("image", dtype=np.int8)
 ImageJob([images], [step], [tag])
+
 ```
 
 
