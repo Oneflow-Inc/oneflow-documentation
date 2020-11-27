@@ -113,7 +113,8 @@ nav:
       #- Eager模式和Lazy模式: extended_topics/eager_lazy_mode.md
       - 获取运行时数据: extended_topics/watch_watch_diff.md
       - 使用 VS Code 调试 OneFlow: extended_topics/debug_by_vscode.md
-      - 自定义 op: extended_topics/user_op.md
+      - 使用 Python 扩展 Op: extended_topics/python_kernel_op.md
+      - 使用 C++ 扩展 Op: extended_topics/user_op.md
       - 自定义 DataLoader: extended_topics/implement_data_loader.md
 
     - 高级应用实例:

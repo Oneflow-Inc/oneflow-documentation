@@ -1,4 +1,4 @@
-# 自定义 Op
+# 使用 C++ 扩展 Op
 
 ## 背景介绍
 
@@ -142,7 +142,7 @@ private:
     user_op::Tensor *out_tensor = ctx->Tensor4ArgNameAndIndex("out", 0);
     MyRelu<T>(ctx->device_ctx(),
            in_tensor->shape().elem_cnt(),
-           in_tensor->dptr<T>(), 
+           in_tensor->dptr<T>(),
            out_tensor->mut_dptr<T>());
   }
   bool AlwaysComputeWhenAllOutputsEmpty() const override { return false; }
@@ -280,7 +280,7 @@ myrelu_cpu_kernel.o: myrelu_cpu_kernel.cpp
 	-o myrelu_cpu_kernel.o                  \
 	$(CFLAGS) -fPIC
 
-myrelu_gpu_kernel.o: myrelu_gpu_kernel.cu 
+myrelu_gpu_kernel.o: myrelu_gpu_kernel.cu
 	nvcc -std=c++11 -c myrelu_gpu_kernel.cu \
 	-o myrelu_gpu_kernel.o                  \
 	$(CFLAGS) -x cu -Xcompiler -fPIC
@@ -304,7 +304,7 @@ clean:
 
 我们将在 Python 中加载 `final_relu.so` 并使用封装、使用自定义 op。
 
-### 在 Python 使用自定义 op 
+### 在 Python 使用自定义 op
 在 Python 中使用自定义 op 包括以下几个基本步骤：
 
 * 使用 `oneflow.config.load_library` 加载 so 文件
@@ -436,9 +436,9 @@ OneFlow 目前支持了如下几种 C++ 数据类型：
 
 ``` cpp
 .Attr<bool>("is_transpose", false)
-    
+
 .Attr<int32_t>("size", 10)
-    
+
 .Attr<std::vector<int32_t>>("vector_of_size", std::vector<int32_t>{10, 11, 12})
 ```
 
@@ -453,12 +453,12 @@ OneFlow 目前支持了如下几种 C++ 数据类型：
   [](const user_op::UserOpDefWrapper& def,
     const user_op::UserOpConfWrapper& conf) -> Maybe<void> {
    std::string data_format = conf.attr<std::string>("data_format");
-   if (data_format == "channels_first" || data_format == "channels_last") { 
-     return Maybe<void>::Ok(); 
+   if (data_format == "channels_first" || data_format == "channels_last") {
+     return Maybe<void>::Ok();
    }
    return oneflow::Error::CheckFailed()
-         << "data_format value: " 
-         << data_format 
+         << "data_format value: "
+         << data_format
          << " for Conv op is illegal.";
 })
 ```
@@ -472,22 +472,22 @@ OneFlow 目前支持了如下几种 C++ 数据类型：
 
 ```cpp
 // input 必须对应有1个 blob
-.Input("input")        
+.Input("input")
 
 // input 必须对应有5个 blob
-.Input("input", 5) 
+.Input("input", 5)
 
 // input 必须对应至少5个 blob
-.InputWithMinimum("input", 5) 
+.InputWithMinimum("input", 5)
 
-// input 可能没有对应的 blob，若有则须对应1个 
-.OptionalInput("input") 
+// input 可能没有对应的 blob，若有则须对应1个
+.OptionalInput("input")
 
-// input 可能没有对应的 blob，若有则须对应5个  
-.OptionalInput("input", 5) 
+// input 可能没有对应的 blob，若有则须对应5个
+.OptionalInput("input", 5)
 
 // input 可能没有对应的 blob，若有则须对应至少5个
-.OptionalInputWithMininum("input", 5) 
+.OptionalInputWithMininum("input", 5)
 ```
 输出设置 `Output` 与 `Input` 类似。
 
@@ -520,7 +520,7 @@ REGISTER_USER_OP("add_n")
 REGISTER_USER_KERNEL("XOp")
     .SetInferTmpSizeFn(
       [](const oneflow::user_op::InferContext*) {
-         return 1024; 
+         return 1024;
       });
 ```
 
@@ -581,9 +581,9 @@ REGISTER_USER_OP_GRAD("myop").SetBackwardOpConfGenFn(
     [](user_op::BackwardOpConfContext* ctx) {
 
       const auto op1_name = ctx->FwOp().op_name() + "_grad1";
-      
+
       // 算子 op1_name 用于计算 myop.in*(myop.out的梯度)
-      ctx->DefineOp(op1_name, 
+      ctx->DefineOp(op1_name,
         [&ctx](user_op::BackwardOpBuilder& builder) {
           return builder.OpTypeName("multiply")
               .InputBind("x", ctx->FwOp().input("in", 0)) //multiply.x <- myop.in
@@ -594,7 +594,7 @@ REGISTER_USER_OP_GRAD("myop").SetBackwardOpConfGenFn(
 
       const auto op2_name = ctx->FwOp().op_name() + "_grad2";
       // 算子 op2_name 用于计算 6*op1_name
-      ctx->DefineOp(op2_name, 
+      ctx->DefineOp(op2_name,
         [&ctx, &op1_name](user_op::BackwardOpBuilder& builder) {
           return builder.OpTypeName("scalar_mul")
               .InputBind("in", ctx->GetOp(op1_name).output("out", 0))
@@ -605,9 +605,9 @@ REGISTER_USER_OP_GRAD("myop").SetBackwardOpConfGenFn(
               .Output("out")
               .Build();
         });
-      
+
       // (myop.in的梯度) <- op1_name.out
-      ctx->FwOp().InputGradBind(user_op::OpArg("in", 0), 
+      ctx->FwOp().InputGradBind(user_op::OpArg("in", 0),
         [&ctx, &op2_name]() -> const std::string& {
           return ctx->GetOp(op2_name)
                 .output("out", 0);
@@ -624,7 +624,7 @@ REGISTER_USER_OP_GRAD("myop").SetBackwardOpConfGenFn(
 首先，定义了 `op1_name`，利用已有的算子 `multiply` 求解 `x*dy`：
 ```cpp
 // 算子 op1_name 用于计算 myop.in*(myop.out的梯度)
-ctx->DefineOp(op1_name, 
+ctx->DefineOp(op1_name,
   [&ctx](user_op::BackwardOpBuilder& builder) {
     return builder.OpTypeName("multiply")
         .InputBind("x", ctx->FwOp().input("in", 0)) //multiply.x <- myop.in
@@ -638,7 +638,7 @@ ctx->DefineOp(op1_name,
 
 ```cpp
 // 算子 op2_name 用于计算 6*op1_name
-ctx->DefineOp(op2_name, 
+ctx->DefineOp(op2_name,
   [&ctx, &op1_name](user_op::BackwardOpBuilder& builder) {
     return builder.OpTypeName("scalar_mul")
         .InputBind("in", ctx->GetOp(op1_name).output("out", 0))
@@ -655,7 +655,7 @@ ctx->DefineOp(op2_name,
 
 ```cpp
 // (myop.in的梯度) <- op1_name.out
-ctx->FwOp().InputGradBind(user_op::OpArg("in", 0), 
+ctx->FwOp().InputGradBind(user_op::OpArg("in", 0),
   [&ctx, &op2_name]() -> const std::string& {
     return ctx->GetOp(op2_name)
           .output("out", 0);
@@ -686,7 +686,7 @@ void fn(BackwardOpConfContext* ctx);
 
 `BackwardOpBuilder` 用于构建一个反向 op。以上文中的代码片段为例
 ```cpp
-ctx->DefineOp(op1_name, 
+ctx->DefineOp(op1_name,
   [&ctx](user_op::BackwardOpBuilder& builder) {
     return builder.OpTypeName("multiply")
         .InputBind("x", ctx->FwOp().input("in", 0)) //multiply.x <- myop.in
@@ -713,7 +713,7 @@ ctx->DefineOp(op1_name,
 调用 `ctx->FwOp()` 会返回代表前向自定义 op，即 `myop` 的 `UserOpWrapper` 对象，通过调用 `UserOpWrapper` 的方法，完成梯度绑定。
 
 ```cpp
-ctx->FwOp().InputGradBind(user_op::OpArg("in", 0), 
+ctx->FwOp().InputGradBind(user_op::OpArg("in", 0),
   [&ctx, &op2_name]() -> const std::string& {
     return ctx->GetOp(op2_name)
           .output("out", 0);
