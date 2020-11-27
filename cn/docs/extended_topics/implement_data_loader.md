@@ -210,7 +210,15 @@ class MiniDataReader final : public DataReader<TensorBuffer> {
   }
 };
 ```
-可以看到，除了我们自己继承自 `DataSet` 的 `MiniDataset` 类之外，OneFlow 还内置了其他的 `XXXDataSet`，它们可以在已有的 `DataSet` 基础上增加额外功能，如 `RandomShuffleDataset` 用于 shuffle，`BatchDataset` 用于批量读取数据。
+可以看到，除了我们自己继承自 `DataSet` 的 `MiniDataset` 类之外，OneFlow 还内置了其他的 `XXXDataSet`，称为 **修饰器** 。
+
+修饰器可以在已有的 `DataSet` 基础上增加额外功能，如以上的 `BatchDataset` 用于批量读取数据。DataSet 修饰器均在 [user/data 目录](https://github.com/Oneflow-Inc/oneflow/tree/master/oneflow/user/data)，常见的修饰器有：
+
+- BatchDataset：用于批量读取数据
+- RandomShuffleDataset：用于将数据的顺序随机化
+- GroupBatchDataset：用于更定制化地组 batch，会把相同 group id 的数据实例放在同一个 batch 内，可参考[这里](https://github.com/Oneflow-Inc/oneflow/blob/267860bca25146f5053e8c878fe51231c1ced4ad/oneflow/user/data/coco_data_reader.cpp#L40)
+- DistributedTrainingDataset：用于分布式的情况下，把一个 epoch 内的数据平均分配到不同节点读取，可参考[这里](https://github.com/Oneflow-Inc/oneflow/blob/267860bca25146f5053e8c878fe51231c1ced4ad/oneflow/user/data/distributed_training_dataset.h#L55)
+
 一切完成后，最后调用 `StartLoadThread`，顾名思义，启动加载线程，在 `StartLoadThread` 中，最终会触发重写的 `MiniDataset::Next` 方法。
 
 以上 `MiniDataReader` 的构造，可以作为模板，没有特殊要求，在实现自定义的 DataLoader 过程中，不需要修改。
