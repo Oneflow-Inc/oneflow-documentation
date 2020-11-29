@@ -2,7 +2,7 @@
 
 本文将介绍如何使用 C++ 扩展 Op，与用 Python 扩展 Op 相比，使用 C++ 扩展 Op，更加灵活、可配置的选项更多，且支持使用 GPU 作为计算设备。一般可使用 Python 扩展 Op 用于快速预研，使用 C++ 扩展 Op 追求高性能。
 
-在阅读本文前，假定用于已经阅读[使用 Python 扩展 Op](./python_kernel.md) 一文，并知晓以下知识点：
+在阅读本文前，假定用于已经阅读[使用 Python 扩展 Op](./python_kernel_op.md) 一文，并知晓以下知识点：
 
 - OneFlow 中，逻辑上的运算单元 Op 的概念
 - OneFlow 中，实际负责运算的 Kernel 的概念
@@ -24,7 +24,7 @@ OneFlow 提供了一套机制，我们在这套机制下编写自定义 op 并�
 
 * `OpKernelRegistry`：管理 kernel 注册，用于运行时执行用户编写的 kernel 逻辑
 
-在具体的编程过程中，我们其实是用 C++ 编写自定义 op，并生成动态链接库(so)文件。在 Python 中加载对应的 so 文件，就可以使用该 so 文件中的自定义 op。在[使用 Python 扩展 Op](./python_kernel.md) 时，底层也是使用了这套机制，只不过这些细节被封装在了相关 API 中，对开发者透明。
+在具体的编程过程中，我们其实是用 C++ 编写自定义 op，并生成动态链接库(so)文件。在 Python 中加载对应的 so 文件，就可以使用该 so 文件中的自定义 op。在[使用 Python 扩展 Op](./python_kernel_op.md) 时，底层也是使用了这套机制，只不过这些细节被封装在了相关 API 中，对开发者透明。
 
 在 [user_op_conf.proto](https://github.com/Oneflow-Inc/oneflow/blob/master/oneflow/core/framework/user_op_conf.proto) 中可以查看 user op 的数据结构：
 ```text
@@ -333,7 +333,7 @@ if __name__ == "__main__":
 
 以上代码中的：`flow.config.load_library("final_relu.so")` 为加载 so 文件。
 
-`myrelu` 内部构建 python wrapper 与《使用 Python 扩展 Op 》中的[封装 Op 的 Python 接口](./python_kernel.md)代码功能完全一样，在此不再重复解释。
+`myrelu` 内部构建 python wrapper 与《使用 Python 扩展 Op 》中的[封装 Op 的 Python 接口](./python_kernel_op.md)代码功能完全一样，在此不再重复解释。
 
 到现在为止，我们已经完成 `myrelu` op 的构建，这是一个比较简单的 op，如果我们需要构建更复杂的 op，就需要在注册过程中使用一些额外的高级特性。
 我们将从 op 注册、 kernel 注册、gradient 注册及 Python 层的封装几个方面介绍。

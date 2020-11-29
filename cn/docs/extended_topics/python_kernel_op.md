@@ -280,4 +280,4 @@ ctx->DefineOp(grad_op_name, grad_op_func);
 
 - 本文涉及的代码可以在 [这里](https://github.com/Oneflow-Inc/oneflow-documentation/tree/master/cn/docs/code/extended_topics/python_op) 查看
 - Op 注册的更多高级设置可以参考 [这里](user_op.md#opregistry)
-- 注册反向梯度时，也可以使用已有的 Op，而无需专门定制反向 Op，可以参考 [这里](user_op.md#opgradregistry)
+- 注册反向梯度时，也可以使用已有的 Op，而无需专门定制反向 Op，可以参考 [这里](./user_op.md#opgradregistry)
