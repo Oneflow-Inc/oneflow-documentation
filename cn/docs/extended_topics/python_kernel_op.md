@@ -51,6 +51,7 @@ namespace oneflow {
 namespace {
 
 REGISTER_USER_OP("user_relu_forward")
+  .Attr<std::string>("device_sub_tag", "py")
   .Input("in")
   .Output("out")
   .SetTensorDescInferFn(
@@ -68,6 +69,7 @@ REGISTER_USER_OP("user_relu_forward")
 分析以上代码：
 
 - `oneflow/core/framework/framework.h` 中包含了我们创建一个 op 所需要的所有接口
+- `.Attr<std::string>("device_sub_tag", "py")` 是必需的，它告之 OneFlow 在使用该 Op 时默认调用Python Kernel
 - 与自定义 op 有关的接口集中在 `oneflow::user_op` 中，使用名称空间 `oneflow` 可以简化类型名称
 - 宏 `REGISTER_USER_OP` 用于注册 op，其接受的参数 `user_relu_forward` 是 `op_type_name`。
 - 使用 `REGISTER_USER_OP` 注册后，其实会返回一个 `OpRegistry` 类（位于[user_op_registry.h]()），通过调用该类方法，完成对自定义 op 的设置：
@@ -158,7 +160,8 @@ user_relu_op.py_api().cpp_def().py_kernel().build_load()
 
 @flow.global_function()
 def MyJob(x: tp.Numpy.Placeholder((5,), dtype=flow.float32)) -> tp.Numpy:
-    return user_relu_op.api.user_relu_forward(x)
+    with flow.scope.placement("cpu", "0:0"):
+        return user_relu_op.api.user_relu_forward(x)
 
 if __name__ == "__main__":
     input = np.array([-2, -1, 0, 1, 2], dtype=np.float32)
@@ -173,6 +176,11 @@ if __name__ == "__main__":
 
 ```python
 user_sigmoid_op.api.user_relu_forward(x)
+```
+
+且因为 Python Kernel 只能运行在 CPU 设备上，因此需要指定计算设备为 CPU：
+```python
+with flow.scope.placement("cpu", "0:0"):
 ```
 
 ## 为自定义 Op 提供反向计算
@@ -201,7 +209,7 @@ REGISTER_USER_OP("user_relu_backward")
     });
 ```
 
-值得注意的是，以上代码中 `.Attr<std::string>("device_sub_tag", "py")` 必不可少，因为这个 `user_relu_backward` 不是被用户直接调用，而是 OneFlow 框架自动求导中调用，我们需要设置 `device_sub_tag` 属性，告之 OneFlow 该 Op 的实现是 Python Kernel。
+值得注意的是，同前向类似，以上代码中 `.Attr<std::string>("device_sub_tag", "py")` 必不可少，它告之 OneFlow 在使用该 Op 时，默认调用 Python Kernel。
 
 同理，因为不需要用户直接调用这个 `user_relu_backward` Op，因此我们不需要在 `user_relu_py_api.py` 为 `user_relu_backward` 封装 Python 接口。可以直接实现它的 Python Kernel。
 

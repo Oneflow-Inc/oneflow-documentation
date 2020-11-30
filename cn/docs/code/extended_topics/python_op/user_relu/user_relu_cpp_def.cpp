@@ -6,6 +6,7 @@ namespace {
 REGISTER_USER_OP("user_relu_forward")
   .Input("x")
   .Output("y")
+  .Attr<std::string>("device_sub_tag", "py")
   .SetTensorDescInferFn(
       [](user_op::InferContext *ctx) -> Maybe<void> {
         *ctx->Shape4ArgNameAndIndex("y", 0) =
