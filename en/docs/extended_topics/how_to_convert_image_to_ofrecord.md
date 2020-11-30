@@ -8,9 +8,9 @@ In this article, we will explain how to make image files into OFRecord datasets.
 - How OFRecord Reader is encoded.
 - Training on OFRecord dataset.
 
-### Make OFRecord Datasets Based on MNIST Dataset
+### Make OFRecord Datasets Based on Image Files 
 
-We use MNIST Handwritten Digits dataset to produce an OFRecord format file.
+We use [MNIST Handwritten Digits dataset](https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/quick_start/mnist_raw_images.zip)  to produce an OFRecord format file.
 
 we only take 50 pictures for demonstration. Please refer to img2ofrecord for relevant script and dataset. [img2ofrecord](https://oneflow-static.oss-cn-beijing.aliyuncs.com/oneflow-tutorial-attachments/img2ofrecord.zip).
 
@@ -79,10 +79,10 @@ The label file is stored as `json` here in following format：
 ......
 ```
 
-- `img2ofrecord.py`  is the script which converts image files in train_set to OFRecord dataset.
-- `lenet_train.py` is the script loading OFRecord we just made for training.
+- [img2ofrecord.py](../code/extended_topics/img_to_ofrecord/img2ofrecord.py) is the script which converts image files in train_set to OFRecord dataset.
+- [lenet_train.py](../code/extended_topics/img_to_ofrecord/lenet_train.py) is the script loading OFRecord we just made for training.
 
-The command options of `img2ofrecord.py` is:
+The command options of `img2ofrecord.py` are:
 - `image_root` specify the root directory of the image.
 - `part_num` specify the number of OFRecord files to generate. An error is reported if the number is greater than the total number of images.
 - `label_dir` specify the directory of the label.
@@ -139,7 +139,6 @@ The outputs of training script should like below:
 ......
 ```
 
-At this point, we have successfully completed the whole process of data set production, reading and training.
+At this point, we have successfully completed the whole process of dataset production, reading and training.
 
-**Make Your OfRecord Dataset and Train with OneFlow Now!** 
 

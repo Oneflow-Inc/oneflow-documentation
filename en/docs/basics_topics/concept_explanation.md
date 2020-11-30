@@ -5,7 +5,7 @@ In this article, we will explain some common terms and concepts in OneFlow. The 
 -  **Algorithm Development**
 -  **Framework Development**
 
-In algorithms development part, we will explain some common terms and concepts used in the process of deep learning algorithms development and model training. And in framework development part, we will focus on the inner design concepts of OneFlow and some relevant element concepts. 
+In algorithms development part, we will explain some common terms and concepts used in the process of deep learning algorithms development. And in framework development part, we will focus on the inner design concepts of OneFlow and some relevant element concepts. 
 
 ## Algorithms Development
 
@@ -48,13 +48,6 @@ Blob can be Placeholder at compile time, but can also contains values at running
 In OneFlow, we call the training, evaluating, predicting and inference tasks as job function. Job function connects logic of user and computing resources that managed by OneFlow.
 
 In OneFlow, we can use decorator `@oneflow.global_function` to convert a function to a job function. By this decorator, we can not only define the type of job function(such as: `type="train"`), but also bind a `FunctionConfig` object to set the configuration of job function which can help OneFlow to manage memory and device resources.
-
-
-
- **Why use global_function?**
-
-From the beginning, OneFlow want to solve the problem of how to run the jobs on distributed environment with multiple devices. In this sense, `global_funtion` means the config applies to all hosts and all devices. 
-
 
 
 ### 4.Layer and Operator

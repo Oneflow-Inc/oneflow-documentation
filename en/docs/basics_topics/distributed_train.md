@@ -1,8 +1,8 @@
-# Distributed training
+# Distributed Training
 
-In OneFlow, you only need a few simple lines of configuration and OneFlow will automatically deal with tasks scheduling, resources parallelism and so on. Thus, we do not need to change network structure and logic of code, which makes distributed training easier to use.
+In deep learning, more and more scenarios require distributed training. Since distributed systems face problems such as distributed task scheduling and complex resource parallelism in multiple cards machines. Thus distributed training usually has a certain technical threshold for users.
 
-OneFlow's unique distributed training capability is the **most important feature** that distinguishs OneFlow from other frameworks.
+In OneFlow, through top-level design and engineering innovation. It is [easiest use distribution system](./essentials_of_oneflow.md#oneflow_2). Users can easily use OneFlow for distributed training without making any special changes to the network structure or job logic. This is the **most important feature** that make OneFlow different from other frameworks.
 
 In this article, we will introduce:
 
@@ -10,7 +10,7 @@ In this article, we will introduce:
 
 * The concept and mission of node in OneFlow.
 
-## The distribution advantage of OneFlow.
+## The Distribution Advantage of OneFlow.
 
 * OneFlow use decentralized streaming architecture. Not like  `master` and `worker` architecture, it can optimize the communication efficiency of network to the maximum extent.
 
@@ -20,15 +20,15 @@ In this article, we will introduce:
 
 * Only a few lines of configuration code are needed to switch a program platform from a single machine to a distributed system.
 
-## Configuration of the distributed training
+## Configuration of the Distributed Training
 
 By the distributed training interface of OneFlow, you only need a few configuration to specify the distributed computing nodes IP and the number of devices for performing distributed training network.
 
-In another word, it makes a single machine program and a distributed machine program almost the same in terms of complexity of coding. User just need to focus on **job logic** and **structures of model** without worrying about distribution execution. **OneFlow will automatically deal with tasks scheduling, resources parallelism as well as other issues.**
+In another word, it makes a single machine program and a distributed machine program almost the same in terms of complexity of coding. User just need to focus on **job logic** and **structures of model** without worrying about distribution execution. Everything related to distribution is handled by OneFlow.
 
 Here is an example to change a program run on a single machine to be run on a distributed system with few configurations. 
 
-### Single machine program
+### Single Machine Program
 Here is the framework of single machine training program. Because the code of each function will be presented in the distributed program below, it is not listed in detail here.
 ```python
 import numpy as np
@@ -56,7 +56,7 @@ if __name__ == '__main__':
   #...
 ```
 
-### Configuration of ports and device
+### Configuration of Ports and Device
 
 In `oneflow.config`, we provide interfaces related to distributed program. We mainly use two of them:
 
@@ -77,7 +77,7 @@ To be mentioned that, if we only have one single machine with multiple GPU devic
 flow.config.gpu_device_num(2)
 ```
 
-### Node configuration
+### Node Configuration
 
 Then we need to config the connection between the machines in network. In OneFlow, the distributed machine called `node`.
 
@@ -109,74 +109,38 @@ def config_distributed():
     flow.env.machine(n
 ```
 
-### Complete code of distributed training
+### Complete Code of Distributed Training
 After adding the configurations code, the program becomes a distributed training one. Just follow the same step as we do in a single machine program.
 
 Compared with **single machine training program**, the distributed training program only needs to call one more function named `config_distributed`.
 
-Code: [distributed_train.py](../code/basics_topics/distributed_train.py)
+Distribution script: [distributed_train.py](. /code/basics_topics/distributed_train.py)
 
-```python
-import oneflow as flow
-import oneflow.typing as tp
+Running on both `192.168.1.12` and `192.168.1.12`:
 
-BATCH_SIZE = 100
-
-
-def mlp(data):
-    initializer = flow.truncated_normal(0.1)
-    reshape = flow.reshape(data, [data.shape[0], -1])
-    hidden = flow.layers.dense(
-        reshape,
-        512,
-        activation=flow.nn.relu,
-        kernel_initializer=initializer,
-        name="hidden",
-    )
-    return flow.layers.dense(
-        hidden, 10, kernel_initializer=initializer, name="output-weight"
-    )
-
-
-def config_distributed():
-    print("distributed config")
-    # device number in each node
-    flow.config.gpu_device_num(1)
-    # communications channel
-    flow.env.ctrl_port(9988)
-
-    # node configuration 
-    nodes = [{"addr": "192.168.1.12"}, {"addr": "192.168.1.11"}]
-    flow.env.machine(nodes)
-
-
-@flow.global_function(type="train")
-def train_job(
-    images: tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-    labels: tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32),
-) -> tp.Numpy:
-    logits = mlp(images)
-    loss = flow.nn.sparse_softmax_cross_entropy_with_logits(
-        labels, logits, name="softmax_loss"
-    )
-    lr_scheduler = flow.optimizer.PiecewiseConstantScheduler([], [0.1])
-    flow.optimizer.SGD(lr_scheduler, momentum=0).minimize(loss)
-    return loss
-
-
-if __name__ == "__main__":
-    config_distributed()
-    flow.config.enable_debug_mode(True)
-    check_point = flow.train.CheckPoint()
-    check_point.init()
-    (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(
-        BATCH_SIZE, BATCH_SIZE
-    )
-    for epoch in range(1):
-        for i, (images, labels) in enumerate(zip(train_images, train_labels)):
-            loss = train_job(images, labels)
-            if i % 20 == 0:
-                print(loss.mean())
-
+```shell
+wget https://docs.oneflow.org/code/basics_topics/distributed_train.py
+python3 distributed_train.py
 ```
+The result of the program will be displayed on `192.168.1.12`.
 
+## FAQ
+
+- After running this distribution code, the program waits for a long time and does not display the calculation results。
+
+> 1. Please check the ssh configuration to ensure that the two machines can be interconnected with each other ssh-free.
+> 2. Make sure that both machines are using the same version of OneFlow and are running the exact same script program.
+> 3. Make sure the port used for training is unoccupied or replace the port with `oneflow.config.ctrl_port`.
+> 4. If a proxy is set in an environment variable, make sure the proxy works or disable it.
+
+- Run training in docker, program waits for a long time and does not show calculation results.
+
+> In default mode of docker, the machine is isolated from the ports in the container. Then use `--net=host` (host mode) or use the `-v` option for port mapping when starting the container. For details information please refer to the docker manual.
+
+- The communications library was not installed correctly
+
+> Make sure the version of the communication library (nccl) is the same on each machine during distributed training.
+
+- Using virtual network cards
+
+> If there are virtual network cards, you may not be able to communicate with nccl. In this case, you need to specify the communication network cards by `export NCCL_SOCKET_IFNAME=device_name`. More details please refer to [nccl official documentation](https://docs.nvidia.com/deeplearning/nccl/user-guide/docs).
