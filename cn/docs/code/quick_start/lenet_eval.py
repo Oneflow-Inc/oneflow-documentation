@@ -76,11 +76,7 @@ def acc(labels, logits):
 
 if __name__ == "__main__":
 
-    if flow.__version__ < "0.3.0":
-        check_point = flow.train.CheckPoint()
-        check_point.load("./lenet_models_1")
-    else:
-        flow.load_variables(flow.checkpoint.get("./lenet_models_1"))
+    flow.load_variables(flow.checkpoint.get("./lenet_models_1"))
     (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(
         BATCH_SIZE, BATCH_SIZE
     )
