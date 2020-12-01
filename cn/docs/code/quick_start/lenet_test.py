@@ -82,9 +82,11 @@ def main():
     if len(sys.argv) != 2:
         usage()
         return
-
-    check_point = flow.train.CheckPoint()
-    check_point.load("./lenet_models_1")
+    if flow.__version__ < "0.3.0":
+        check_point = flow.train.CheckPoint()
+        check_point.load("./lenet_models_1")
+    else:
+        flow.load_variables(flow.checkpoint.get("./lenet_models_1"))
 
     image = load_image(sys.argv[1])
     logits = eval_job(image, np.zeros((1,)).astype(np.int32))

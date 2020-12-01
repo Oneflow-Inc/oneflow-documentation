@@ -62,8 +62,9 @@ def train_job(
 
 if __name__ == "__main__":
     flow.config.gpu_device_num(1)
-    check_point = flow.train.CheckPoint()
-    check_point.init()
+    if flow.__version__ < "0.3.0":
+        check_point = flow.train.CheckPoint()
+        check_point.init()
 
     (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(
         BATCH_SIZE, BATCH_SIZE
