@@ -61,7 +61,11 @@ def train_job(
 
 
 if __name__ == "__main__":
-    flow.config.gpu_device_num(1)
+    from oneflow.python_gen.compatibility import with_cuda
+    if with_cuda == False:
+        flow.config.cpu_device_num(1)
+    else:
+        flow.config.gpu_device_num(1)
     check_point = flow.train.CheckPoint()
     check_point.init()
 
