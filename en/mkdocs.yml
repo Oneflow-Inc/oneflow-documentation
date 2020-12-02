@@ -113,7 +113,8 @@ nav:
       - Convert Image Files to OFRecord Datasets: extended_topics/how_to_convert_image_to_ofrecord.md
       - Obtain Runtime Data: extended_topics/watch_watch_diff.md
       - Use VS Code to Debug OneFlow: extended_topics/debug_by_vscode.md
-      - User Defined OP: extended_topics/user_op.md
+      - Extending Op with Python: extended_topics/python_kernel_op.md
+      - Extending Op with C++: extended_topics/user_op.md
       #- Eager/Lazy mode: extended_topics/eager_lazy_mode.md
 
 
