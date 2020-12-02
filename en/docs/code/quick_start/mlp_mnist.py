@@ -5,6 +5,7 @@ import numpy as np
 
 BATCH_SIZE = 100
 
+
 @flow.global_function(type="train")
 def train_job(
     images: tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
@@ -21,7 +22,8 @@ def train_job(
             bias_initializer=initializer1,
             name="dense1",
         )
-        initializer2 = flow.random_uniform_initializer(-np.sqrt(1/500.0), np.sqrt(1/500.0))
+        initializer2 = flow.random_uniform_initializer(
+            -np.sqrt(1/500.0), np.sqrt(1/500.0))
         logits = flow.layers.dense(
             hidden, 10, kernel_initializer=initializer2, bias_initializer=initializer2, name="dense2"
         )
@@ -33,9 +35,7 @@ def train_job(
 
 
 if __name__ == "__main__":
-    check_point = flow.train.CheckPoint()
-    check_point.init()
-
+    
     (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(
         BATCH_SIZE, BATCH_SIZE
     )

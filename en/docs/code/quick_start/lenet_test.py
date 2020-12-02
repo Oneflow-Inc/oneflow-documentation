@@ -83,8 +83,7 @@ def main():
         usage()
         return
 
-    check_point = flow.train.CheckPoint()
-    check_point.load("./lenet_models_1")
+    flow.load_variables(flow.checkpoint.get("./lenet_models_1"))
 
     image = load_image(sys.argv[1])
     logits = eval_job(image, np.zeros((1,)).astype(np.int32))
