@@ -1,7 +1,7 @@
 # 自定义 DataLoader
 如 [数据输入](../basics_topics/data_input.md) 一文所介绍，OneFlow 支持两种数据加载方式：直接使用 NumPy 数据或者使用 DataLoader 及其相关算子。
 
-在大型工业场景下，数据加载容易成为训练的瓶颈。若使用 DataLoader 及相关预处理算子，因为有 OneFlow 内置的加速机制，可以更高效地加载和预处理数据，解决这个痛点。
+在大型工业场景下，数据加载容易成为训练的瓶颈。在其它的框架中，数据加载流水线往往作为单独的模块存在，需要针对不同场景进行调整，通用性不高。在 OneFlow 中，DataLoader 及相关预处理算子，与其它普通算子地位等同，可以享受与其它算子一样的流水加速效果，轻松解决大规模数据加载的痛点。
 
 在 OneFlow 中使用 DataLoader，一般通过调用 `XXXReader` 加载文件中的数据，调用 `XXXDeocde` 等对数据进行解码或其它预处理，他们一起协同完成 Dataloader 的功能。
 
@@ -27,12 +27,12 @@ OneFlow 目前内置了一些文件格式的 [DataLoader](https://oneflow.readth
 ## Dataloader 的组成
 完整的 Dataloader 一般包括两类 Op：
 
-- Data Reader：负责将文件系统中的数据，加载到内存中的输入流，并最终将数据设置到 Op 的输出中
-- Data Decoder：将 Data Reader Op 的输出的数据进行解码，并输出
+- Data Reader：负责将文件系统中的数据，加载到内存中的输入流，并最终将数据设置到 Op 的输出中。它又可以细分为 Loader 与 Parser 两部分，Loader 负责从文件系统中读取原始数据，Parser 负责将原始数据组织为 Data Reader Op 的输出
+- Data Preprocessor：将 Data Reader Op 的输出的数据进行预处理，常见的预处理有图片解码、剪裁图片、解码等
 
-对于一些简单的数据格式，不需要解码，可以省略掉 Data Decoder，只使用 Data Reader 即可。
+对于一些简单的数据格式，不需要预处理，可以省略掉 Data Preprocessor，只使用 Data Reader 即可。
 
-作为示例， Mini Dataloader 处理的数据格式虽然简单，但是依然实现了 DataReader 及 Data Decoder 两类 op，其中：
+作为示例， Mini Dataloader 处理的数据格式虽然简单，但是依然实现了 DataReader 及 Data Preprocessor 两类 op，其中：
 
 - `MiniReader` 负责从文件中读取数据，并按逗号分隔字符串，将文本转为浮点数据后，设置到 Op 的输出中，输出形状为每行两列
 - `MiniDecoder` 负责将以上每行两列的输出进行分割，得到2个每行1列的输出 `x` 与 `y`
@@ -53,7 +53,7 @@ OneFlow 目前内置了一些文件格式的 [DataLoader](https://oneflow.readth
         )
 ```
 
-以下，我们将介绍 C++ 层次如何实现 Data Reader 算子与 Data Decoder 算子。
+以下，我们将介绍 C++ 层次如何实现 Data Reader 算子与 Data Preprocessor 算子。
 
 ## Data Reader 算子
 ### Data Reader 的类关系
@@ -210,7 +210,15 @@ class MiniDataReader final : public DataReader<TensorBuffer> {
   }
 };
 ```
-可以看到，除了我们自己继承自 `DataSet` 的 `MiniDataset` 类之外，OneFlow 还内置了其他的 `XXXDataSet`，它们可以在已有的 `DataSet` 基础上增加额外功能，如 `RandomShuffleDataset` 用于 shuffle，`BatchDataset` 用于批量读取数据。
+可以看到，除了我们自己继承自 `DataSet` 的 `MiniDataset` 类之外，OneFlow 还内置了其他的 `XXXDataSet`，称为 **修饰器** 。
+
+修饰器可以在已有的 `DataSet` 基础上增加额外功能，如以上的 `BatchDataset` 用于批量读取数据。DataSet 修饰器均在 [user/data 目录](https://github.com/Oneflow-Inc/oneflow/tree/master/oneflow/user/data)，常见的修饰器有：
+
+- BatchDataset：用于批量读取数据
+- RandomShuffleDataset：用于将数据的顺序随机化
+- GroupBatchDataset：用于更定制化地组 batch，会把相同 group id 的数据实例放在同一个 batch 内，可参考[这里](https://github.com/Oneflow-Inc/oneflow/blob/267860bca25146f5053e8c878fe51231c1ced4ad/oneflow/user/data/coco_data_reader.cpp#L40)
+- DistributedTrainingDataset：用于分布式的情况下，把一个 epoch 内的数据平均分配到不同节点读取，可参考[这里](https://github.com/Oneflow-Inc/oneflow/blob/267860bca25146f5053e8c878fe51231c1ced4ad/oneflow/user/data/distributed_training_dataset.h#L55)
+
 一切完成后，最后调用 `StartLoadThread`，顾名思义，启动加载线程，在 `StartLoadThread` 中，最终会触发重写的 `MiniDataset::Next` 方法。
 
 以上 `MiniDataReader` 的构造，可以作为模板，没有特殊要求，在实现自定义的 DataLoader 过程中，不需要修改。
@@ -293,10 +301,10 @@ class MiniParser final : public Parser<TensorBuffer> {
 
 在以上的代码中，我们通过 `batch_data->at(i).get()` 获取了缓冲区的第 `i` 个的数据，然后将其设置到输出的内存区的第 `i` 行的位置，一共2列。
 
-## Data Decoder 算子
-Data Decoder 算子，其实就是一种普通的算子，它接受 `DataReader` 的输出作为自己的输入，然后通过运算后，输出一个或者多个 Blob。
+## Data Preprocessor 算子
+Data Preprocessor 算子，其实就是一种普通的算子，它接受 `DataReader` 的输出作为自己的输入，然后通过运算后，输出一个或者多个 Blob。
 
-在 [ofrecord_decoder_ops.cpp](https://github.com/Oneflow-Inc/oneflow/blob/master/oneflow/user/ops/ofrecord_decoder_ops.cpp) 可以看到针对 OFRecord 数据的各种 decoder。
+在 [ofrecord_decoder_ops.cpp](https://github.com/Oneflow-Inc/oneflow/blob/master/oneflow/user/ops/ofrecord_decoder_ops.cpp) 可以看到针对 OFRecord 数据的各种预处理操作（以解码为主）。
 
 我们的 Mini Dataloader 处理的数据比较简单，因此 MiniDecoder 所做的工作也很简单，仅仅是将 `DataReader` 所输出的每行2列的数据，拆分为2个每行1列的输出 `x` 与 `y`。
 
