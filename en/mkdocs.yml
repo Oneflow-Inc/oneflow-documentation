@@ -115,6 +115,7 @@ nav:
       - Use VS Code to Debug OneFlow: extended_topics/debug_by_vscode.md
       - Extending Op with Python: extended_topics/python_kernel_op.md
       - Extending Op with C++: extended_topics/user_op.md
+      - Custom DataLoader: extended_topics/implement_data_loader.md
       #- Eager/Lazy mode: extended_topics/eager_lazy_mode.md
 
 
