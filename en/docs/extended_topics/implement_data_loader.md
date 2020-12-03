@@ -2,7 +2,7 @@
 
 As described in [Data Input](../basics_topics/data_input.md), OneFlow supports two ways to load data: one is directly use Numpy data, the other one is use DataLoader and some relative operators. 
 
-Under the large industrial scene, data loading can easily become the bottleneck through the training process. Since we use DataLoader and some preprocessing operators, OneFlow's acceleration mechanism helps to load and preprocess data more efficiently, which can solve that problem. 
+Under the large industrial scene, data loading can easily become the bottleneck through the training process. In other frameworks, the data loading pipeline often exists as a separate module that needs to be adapted for different scenarios which is not really versatile. In OneFlow, the DataLoader and other preprocessing operators are on same level as other common operators and can be accelerated in the same way as other operators which can easily solving the issue of large-scale data loading.
 
 To use DataLoader in OneFlow, we usually apply `XXXReader` to load the file data, and use `XXXDecode` to decode or preprocess the data. These two operators work together to complete the function of data loading.
 
@@ -26,14 +26,14 @@ As an example, the data format that Mini Dataloader supported is : A plain text 
 
 This article will take Mini Dataloader as an example to explain the key points of implementing customized DataLoader. 
 
-# The composition of Dataloader
+# The Composition of Dataloader
 
 A complete Dataloader generally includes two types of Op: 
 
-- Data Reader: Which is responsible for loading the data in file system to the input stream of memory and setting the data to the Op's output. 
-- Data Decoder: The Data Decoder decodes and outputs the data in Data Reader Op. 
+- Data Reader: It is responsible for taking data from the file and loading it into the input flow in memory. Then ultimately setting the data to the output of the Op. It can be divided into Loader and Parser where Loader is responsible for reading raw data from the file system and Parser is responsible for organizing the raw data into the output of a Data Reader Op.
+- Data Preprocessor: Preprocessing the output data from the Data Reader Op. Common preprocessing includes image decoding, cropping, decoding and etc.
 
-For some simple data formats, which is no need for decoding, we can omit the Data Decoder and just use Data Reader. 
+For some simple data formats, which is no need for preprocessing, we can omit the Data Decoder and just use Data Preprocessor. 
 
 As an example, though the data format processed by Mini Dataloader is simple, we still implement the two types of ops: Data Reader and Data Decoder. Among these two Ops: 
 
@@ -57,7 +57,7 @@ In [test_mini_dataloader.py](https://github.com/Oneflow-Inc/oneflow-documentatio
         )
  ```
 
-We will introduce how to implement Data Reader and Data Decoder in C++ backend below. 
+We will introduce how to implement Data Preprocessor and Data Decoder in C++ backend below. 
 
 # Data Reader operator
 
@@ -108,7 +108,7 @@ class MiniParser: Parser {
 
 In Data Reader Op's Kernel, it will trigger the `Read` method in `DataReader` and complete the sequence of operations which is shown in the pseudocode above. 
 
-## The registration of Op and Kernel
+## The Registration of Op and Kernel
 
 We register the MiniReader's Op through the code below: 
 
@@ -229,9 +229,18 @@ class MiniDataReader final : public DataReader<TensorBuffer> {
 };
 ```
 
-In addition to inheriting our `Dataset`'s `MiniDataset` class, OneFlow also build other `XXXDataset`, they can add additional features in the base of existing `Dataset`. For example, `RandomShuffleDataset` can be used to shuffle data, `BatchDataset` can be used to read batch data. When it is all done, we finally call `StartLoadThread`, which is used to start the loading thread. We will trigger the override method `MiniDataset::Next` in `StartLoadThread`. 
+As you can see, in addition to our own `MiniDataset` from `DataSet`, OneFlow also has a built-in `XXXDataSet` called **Modifier**.
 
-The above construction of `MiniDataReader` can be used as a template. If you have no special requirements, you don't need to modify it in custom DataLoader. 
+DataSet can add additional functionality to the existing `DataSet`, such as the above `BatchDataset` for batch reading. DataSet modifiers are located in the [user/data directory](https://github.com/Oneflow-Inc/oneflow/tree/master/oneflow/user/data) and common decorators are:
+
+- BatchDataset：For batch reading data.
+- RandomShuffleDataset：Used to randomize the order of data
+- GroupBatchDataset：For a more customized grouping of batches and data with the same group id are placed in the same batch. More information can be found [here](https://github.com/Oneflow-Inc/oneflow/blob/267860bca25146f5053e8c878fe51231c1ced4ad/oneflow/user/data/coco_data_reader.cpp#L40). 
+- DistributedTrainingDataset：For the distributed case where the data within an epoch is distributed equally among different nodes. More information can be found [here](https://github.com/Oneflow-Inc/oneflow/blob/267860bca25146f5053e8c878fe51231c1ced4ad/oneflow/user/data/distributed_training_dataset.h#L55)
+
+After everything is done, finally call the `StartLoadThread`. As the name implies, starting the loading thread in `StartLoadThread` and it will eventually trigger to override the `MiniDataset::Next`.
+
+The above structure of `MiniDataReader` can be used as a template with no special requirements. There is no need to modify it during the implementation of the custom DataLoader.
 
 ## MiniDataset 
 
@@ -319,11 +328,11 @@ Notice that we use macro `MultiThreadLoop` in the procedure of setting `batch_da
 
 In the above code, we get the `i`th data in buffer through `batch_data->at(i).get()`, and set it to the location of the `i`th row in the output memory area. There are two columns in total. 
 
-## Data Decoder Operator
+## Data Preprocessor Operator
 
-Data Decoder operator is a normal operator. It accepts the output of `DataReader` as its input, outputs one or multiple Blobs after some operations. 
+Data Preprocessor operator is a normal operator. It accepts the output of `DataReader` as its input, outputs one or multiple Blobs after some operations. 
 
-In  [ofrecord_decoder_ops.cpp](https://github.com/Oneflow-Inc/oneflow/blob/master/oneflow/user/ops/ofrecord_decoder_ops.cpp), we can see various decoders for OFRecord data. 
+In  [ofrecord_decoder_ops.cpp](https://github.com/Oneflow-Inc/oneflow/blob/master/oneflow/user/ops/ofrecord_decoder_ops.cpp), we can see various preprocessor for OFRecord data. 
 
 The data processed by our Mini Dataloader is simple, so the work done by MiniDecoder is also very simple. It just splits two columns data output from `DataReader` into two one-column outputs as `x` and `y`. 
 
@@ -381,7 +390,7 @@ We mainly get the input `in_blob` in `MiniDecoderKernel::Compute`, and then in m
 
 
 
-# The use of customized DataLoader
+# The Use of Customized DataLoader
 
 As  described in [customized user op](./user_op.md), if we want to use the Op built in C++ backend, we need to encapsulate a Python Wrapper in Python level. Some related work is put in [test_mini_dataloader.py](https://github.com/Oneflow-Inc/oneflow-documentation/tree/master/cn/docs/code/extended_topics/data_loader/test_mini_dataloader.py): 
 
