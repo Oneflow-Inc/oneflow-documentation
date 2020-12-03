@@ -285,5 +285,5 @@ To bind the forward input `x` to the output (`dx`) of the gradient calculation m
 ## Others
 
 - The code involved in this article can be found [here](https://github.com/Oneflow-Inc/oneflow-documentation/tree/master/cn/docs/code/extended_topics/python_op).
-- More advanced settings for Op registration can be found [here](user_op.md#opregistry)（暂时无链接）.
-- When registering a backward gradient, it is also possible to use an existing Op without the need for a custom backward Op. More information can be found [here](. /user_op.md#opgradregistry)（暂时无链接）.
+- More advanced settings for Op registration can be found [here](user_op.md#opregistry).
+- When registering a backward gradient, it is also possible to use an existing Op without the need for a custom backward Op. More information can be found [here](. /user_op.md#opgradregistry).
