@@ -6,7 +6,7 @@ import os
 import oneflow.typing as tp
 
 BATCH_SIZE = 1
-
+flow.config.enable_legacy_model_io(False)
 
 def usage():
     usageHint = """

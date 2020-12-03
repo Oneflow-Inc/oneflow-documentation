@@ -3,7 +3,7 @@ import oneflow as flow
 import oneflow.typing as tp
 
 BATCH_SIZE = 100
-
+flow.config.enable_legacy_model_io(False)
 
 @flow.global_function(type="train")
 def train_job(
@@ -36,8 +36,7 @@ def train_job(
 
 
 if __name__ == "__main__":
-    check_point = flow.train.CheckPoint()
-    check_point.load("./mlp_models_1")
+    flow.load_variables(flow.checkpoint.get("./mlp_models_1"))
 
     (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(
         BATCH_SIZE, BATCH_SIZE
@@ -46,4 +45,4 @@ if __name__ == "__main__":
         loss = train_job(images, labels)
         if i % 20 == 0:
             print(loss.mean())
-    check_point.save("./mlp_ext_models_1")
+    flow.checkpoint.save("./mlp_ext_models_1")
