@@ -5,7 +5,6 @@ import numpy as np
 
 BATCH_SIZE = 100
 
-
 @flow.global_function(type="train")
 def train_job(
     images: tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
@@ -35,7 +34,6 @@ def train_job(
 
 
 if __name__ == "__main__":
-
     (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(
         BATCH_SIZE, BATCH_SIZE
     )

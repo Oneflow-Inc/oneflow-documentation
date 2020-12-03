@@ -10,7 +10,7 @@
 
 不过，在 OneFlow 中，无论模型是否训练完毕，我们都使用 **统一的接口** 将其保存，因此，在其它框架中看到的`model`、`checkpoint`、`snapshot` 等表述，在 OneFlow 中不做区分。
 
-在 OneFlow 中，`flow.train.CheckPoint`类作为接口，负责模型的初始化、加载与保存。
+在 OneFlow 中，`flow.checkpoint` 名称空间下有模保存、加载的接口。
 
 本文将介绍：
 
@@ -24,7 +24,7 @@
 
 ## get_variable 创建或获取参数
 
-我们可以使用 [oneflow.get_variable](https://oneflow.readthedocs.io/en/master/oneflow.html#oneflow.get_variable) 方法创造或者获取一个对象，该对象可以用于在全局作业函数中交互信息；当调用 `oneflow.CheckPoint` 的对应接口时，该对象也会被自动地保存或从存储设备中恢复。
+我们可以使用 [oneflow.get_variable](https://oneflow.readthedocs.io/en/master/oneflow.html#oneflow.get_variable) 方法创造或者获取一个对象，该对象可以用于在全局作业函数中交互信息；当调用 `oneflow.get_all_variables` 和 `oneflow.load_variables` 接口时，可以获取或更新 `get_variable` 创建的对象的值。
 
 因为这个特点，`get_variable` 创建的对象，常用于存储模型参数。实际上，OneFlow 中很多较高层接口（如 `oneflow.layers.conv2d`），内部使用 `get_variable` 创建模型参数。
 
@@ -80,7 +80,7 @@ def get_variable(
 
 我们在上文中已经看到，在调用 `get_variable` 时，通过设置初始化器 `initializer` 来指定参数的初始化方式，OneFlow 中提供了多种初始化器，可以在 [oneflow](https://oneflow.readthedocs.io/en/master/oneflow.html) 模块下查看。
 
-在静态图机制下，设置 `initializer` 后，参数初始化工作由 OneFlow 框架完成，具体时机为：当用户调用下文中的 `CheckPoint.init` 时，OneFlow 会根据 `initializer` 对所有 get_variable 创建的对象进行 **数据初始化**。
+在静态图机制下，设置 `initializer` 后，参数初始化工作由 OneFlow 框架自动完成。
 
 OneFlow 目前支持的 `initializer` 列举如下，点击链接可以查看相关算法：
 
@@ -313,17 +313,7 @@ lenet_models_name/
 
 * 模型中的另一部分（新增的）参数需要初始化
 
-对此，OneFlow 的 `flow.train.CheckPoint.load` 内部，预设了以下流程：
-
-* 按照作业函数中所描述的网络模型，遍历模型保存的路径，尝试加载各个参数
-
-* 如果找到了对应的参数，则加载该参数
-
-* 如果没有找到，则自动初始化，同时打印警告提醒已经自动初始化部分参数
-
-在 OneFlow Benchmark 的 [BERT](../adv_examples/bert.md) 中，可以看到微调的实际应用。
-
-以下举一个用于阐述概念的简单例子。
+我们可以使用 `oneflow.load_variables` 完成以上操作。以下举一个用于阐述概念的简单例子。
 
 首先，我们先定义一个模型，训练后保存至 `./mlp_models_1`：
 ```python

@@ -48,7 +48,8 @@ def train_job(
             bias_initializer=initializer1,
             name="dense1",
         )
-        initializer2 = flow.random_uniform_initializer(-np.sqrt(1/500.0), np.sqrt(1/500.0))
+        initializer2 = flow.random_uniform_initializer(
+            -np.sqrt(1/500.0), np.sqrt(1/500.0))
         logits = flow.layers.dense(
             hidden, 10, kernel_initializer=initializer2, bias_initializer=initializer2, name="dense2"
         )
@@ -60,9 +61,6 @@ def train_job(
 
 
 if __name__ == "__main__":
-    check_point = flow.train.CheckPoint()
-    check_point.init()
-
     (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(
         BATCH_SIZE, BATCH_SIZE
     )
@@ -97,8 +95,6 @@ def train_job(
 ```
 
 本文例子中包含了训练一个神经网络的所有元素，除了上面说的作业函数及其配置之外，还有：
-
-- `check_point.init()`: 初始化网络模型参数；
 
 - `flow.data.load_mnist(BATCH_SIZE,BATCH_SIZE)`: 准备并加载训练数据；
 
