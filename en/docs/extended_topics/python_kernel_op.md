@@ -3,7 +3,7 @@
 ## Background Information
 OneFlow abstracts all kinds of data processing into operators. Op is act on the input tensor and writes the result of the calculation to the output tensor. A comprehensive operator is available inside OneFlow which can be found in the [ops directory](https://github.com/Oneflow-Inc/oneflow/tree/master/oneflow/python/ops).
 
-When OneFlow's existing Python operators and their combinations are not sufficient for building neural networks or when the Python level operators do not meet performance requirements. Then we can develop custom ops. OneFlow provides two ways to develop custom Ops. One is the Python based `Python Kernel` development and the other is the `C++ Kernel` development which is introduced in the article [Using C++ Extension Op](./user_op.md)
+When OneFlow's existing Python operators and their combinations are not sufficient for building neural networks or when the Python level operators do not meet performance requirements. Then we can develop custom ops. OneFlow provides two ways to develop custom Ops. One is the Python based `Python Kernel` development and the other is the `C++ Kernel` development which is introduced in the article [Extending Op with C++](./user_op.md)
 
 `Python Kernel` has a simple development process and is suitable for rapid pre-research, algorithm verification and other scenarios because it is mainly extended by Python. The `C++ Kernel` is efficient and suitable for developing operators that have proven reliability and are pursue for performance .
 
@@ -14,7 +14,7 @@ The concepts of `op_type_name`, `Op` and `Kernel` need to be understood before p
 
 - op_type_name：op_type_name is the globally unique ID of op. op_type_name is used by OneFlow to confirm op type and then to instantiate op which is used to build the calculation map. The relationship between op type and op is similar to the relationship between class and object.
 - op：Logical operators that contain information such as input and output shapes for reasoning. But do not contain specific logic for processing data.
-- kernel：The logic of logical op could be different in processing depending on the physical device and data type. The specific processing logic at runtime is done by the kernel. In brief, op has a one-to-many relationship with the kernel and we can use Python to do the specific operations which are called the `Python Kernel` or [Using C++ Extension Op](./user_op.md).
+- kernel：The logic of logical op could be different in processing depending on the physical device and data type. The specific processing logic at runtime is done by the kernel. In brief, op has a one-to-many relationship with the kernel and we can use Python to do the specific operations which are called the `Python Kernel` or [Extending Op with C++](./user_op.md).
 - The OneFlow kernel is implemented by C++ but the user interface uses Python. So you need to write the `Python Wrapper` conventionally to enable the Python Op interface to interact with the C++ kernel.
 
 ### Development Steps
