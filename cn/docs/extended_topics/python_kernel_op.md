@@ -69,7 +69,7 @@ REGISTER_USER_OP("user_relu_forward")
 分析以上代码：
 
 - `oneflow/core/framework/framework.h` 中包含了我们创建一个 op 所需要的所有接口
-- `.Attr<std::string>("device_sub_tag", "py")` 是必需的，它告之 OneFlow 在使用该 Op 时默认调用Python Kernel
+- `.Attr<std::string>("device_sub_tag", "py")` 是必需的，它告知 OneFlow 在使用该 Op 时默认调用Python Kernel
 - 与自定义 op 有关的接口集中在 `oneflow::user_op` 中，使用名称空间 `oneflow` 可以简化类型名称
 - 宏 `REGISTER_USER_OP` 用于注册 op，其接受的参数 `user_relu_forward` 是 `op_type_name`。
 - 使用 `REGISTER_USER_OP` 注册后，其实会返回一个 `OpRegistry` 类（位于[user_op_registry.h]()），通过调用该类方法，完成对自定义 op 的设置：
@@ -209,7 +209,7 @@ REGISTER_USER_OP("user_relu_backward")
     });
 ```
 
-值得注意的是，同前向类似，以上代码中 `.Attr<std::string>("device_sub_tag", "py")` 必不可少，它告之 OneFlow 在使用该 Op 时，默认调用 Python Kernel。
+值得注意的是，同前向类似，以上代码中 `.Attr<std::string>("device_sub_tag", "py")` 必不可少，它告知 OneFlow 在使用该 Op 时，默认调用 Python Kernel。
 
 同理，因为不需要用户直接调用这个 `user_relu_backward` Op，因此我们不需要在 `user_relu_py_api.py` 为 `user_relu_backward` 封装 Python 接口。可以直接实现它的 Python Kernel。
 
