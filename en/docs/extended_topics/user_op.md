@@ -1,16 +1,18 @@
-# Create an New Operator
+# Extending Op with C++
 
-## Background 
+This article introduces how to use C++ to extend Op which is more flexible and more configurable than extending Op with Python. It also supports the use of GPUs as computing devices. Generally, you can use the Python extending Op for pre-research and the C++ extending Op for higher performance.
 
-### What is a Custom Op
+Before reading this article, we assuming that you have read [Extending Op with Python](./python_kernel_op.md) and know the following points:
 
-OneFlow abstracts all kinds of data processing into op (operator). Op acts on the input tensor and writes the result of the operation to the output tensor. OneFlow provides relatively comprehensive ops and they can be found in [ops directory](https://github.com/Oneflow-Inc/oneflow/tree/master/oneflow/python/ops).
+- The concept of the logical unit of operator in OneFlow.
+- The concept of the Kernel responsible for calculations in OneFlow.
+- The concept of Op identifier `op_type_name`.
 
-When OneFlow's existing Python operators are not sufficient to build a neural network or when Python operators do not meet performance requirements. You can use C++ to develop custom op in OneFlow.
+### Op System in OneFlow
 
-OneFlow provides a mechanism with which you can create custom op and register it in OneFlow then use custom op in Python.
+OneFlow provides a mechanism which we can write and register a custom Op into OneFlow and use custom Op in Python.
 
-The following diagram demonstrates the registration system for a custom op in OneFlow.
+The following diagram illustrates the registration mechanism of a custom Op in OneFlow：
 
 ![OneFlow UserOp Existing System](imgs/oneflow_system_userop.png)
 
@@ -22,7 +24,7 @@ In the OneFlow framework, there are three types of registries associated with cu
 
 * `OpKernelRegistry`：Manage kernel registrations for performing user logic at runtime.
 
-We actually write custom op in C++ and generate a dynamic link library (so file). By loading the corresponding so file in Python that you can use the custom op.
+In programming, you're actually writing your custom Op in C++ and generating the DLL (so file) which you load in Python to use the custom op. You can use the custom op  by loading the corresponding so file in Python. This is the same mechanism that is used in [Extending Op with Python](./python_kernel_op.md). But   the details are encapsulated in the relevant APIs and are transparent to the developer.
 
 The data structure of user op can be  viewed at [user_op_conf.proto](https://github.com/Oneflow-Inc/oneflow/blob/master/oneflow/core/framework/user_op_conf.proto)：
 
@@ -43,21 +45,7 @@ message UserOpConf {
 }
 ```
 
-The `op_type_name` is a string which representing the class of op and indicate the globally unique ID of the op class. OneFlow queries and confirms the op class by `op_type_name` which will appear several times in the rest of this document.
-
-### Basic Concepts
-
-* Op_type_name：As mentioned above, op_type_name is the unique ID of op class. OneFlow queries and confirms op class by op_type_name, and then instantiates the op. The relationship between op class and op is similar to the relationship between class and object.
-
-* Op：Logical operators contain information of input and output shapes for mapping and reasoning, but do not contain logic for processing the data.
-
-* Kernel：When a logical op running,  the processing logic will affect by physical device and data type. The specific processing logic is done by the kernel. Generally op has a one-to-many relationship with the kernel and we need to register the kernel for all the physical devices and data types that op supports.
-
-* Registration：Registration can be used to establish a link between a custom op and the OneFlow framework. A series of macros named `REGISTER_XXX` are provided in OneFlow to help with registration of op.
-
-* Loading the dynamic library：The custom op and its kernel are linked as dynamic library so files that need to be loaded before using them in Python and OneFlow provides `oneflow.config.load_library` to load the so files of custom op.
-
-* Python wrapper：Calling a custom op implemented at the C++ layer in Python requires writing a wrapper at the Python layer and OneFlow provides `oneflow.user_op_builder` to do this task.
+The `op_type_name` is a string which representing the class of op and indicate the globally unique ID of the Op. 
 
 
 ### Process of Writing a Custom Op
@@ -106,19 +94,7 @@ REGISTER_USER_OP("myrelu")
 } // namespace oneflow
 ```
 
-Analysis of the above codes:
-
-* `oneflow/core/framework/framework.h` contains all the controllers we need to create an op.
-
-* Almost all the APIs related to user op are in the namespace `oneflow::user_op`, so we use the namespace `oneflow` to simplify the type name.
-
-* The macro `REGISTER_USER_OP` is used to register the op and accepts `myrelu` as `op_type_name`.
-
-* After registering with `REGISTER_USER_OP`, it actually returns an `OpRegistry` class (path: `oneflow\coreframework\user_op_registry.h`) which can be called to complete the setting of a custom op: 
-
-  1. `Input("in") ` means that it has an input named "in".
-  2. `Output("out")` means that it has an output named "out".
-  3. `SetTensorDescInferFn` is used to set the shape and data type of the inferring function which describe the relationship between the input of this operator and shape and type of the output of this operator. In the above code, the shape and data type of the output is consistent with input.
+It does exactly the same thing as [Extending Op with Python](./python_kernel_op.md) that is registers an Op named `myrelu` with `REGISTER_USER_OP` and sets both input output then derives the shape and data type of the output from the input.
 
 ### Implementation and Registration of CPU Kernel 
 
@@ -377,40 +353,11 @@ The expected results are：
 
 In the above code: `flow.config.load_library("final_relu.so") ` is to load the so file.
 
-We are focus on the process of building and running the python wrapper in `myrelu`.
+Building the python wrapper inside `myrelu` is exactly the same as the [ Python interface for wrapping Op](./python_kernel_op.md) in Extending Op with Python. 
 
-`flow.user_op_builder("op_myrelu")` actually returns a `UserOpConfBuilder` object named `op_myrelu`.
+So far, we have finished building the `myrelu` which is a relatively simple op. But if we need to build a more complex op, we will need to use some additional advanced features in the registration process.
 
-```python
-    op = (
-        flow.user_op_builder("op_myrelu")
-        .Op("myrelu")
-        .Input("in", [input_blob])
-        .Output("out")
-        .Build()
-    )
-```
-
-This object contains `Op`, `Input` and and etc methods which are used to encapsulate custom op. Details explanation are as follows:
-
-* `Op("myrelu") `: The parameter must be the `op_type_name` from the previous C++ registration which OneFlow uses to find the registered op type and instantiate the op.
-
-* `Input("in", [input_blob]) `: Corresponds to `Input` when op is registered in C++ that the first parameter must be the same as the string set by `Input` when op is registered in C++. The second parameter is the blob of the input which is a `list`. Because an op allows multiple inputs.
-
-* `Output("out") `: Corresponds to `Output` when op registered in C++.
-
-* `Build`：After the above settings are complete, call `Build` to get the Python wrapper from the custom op.
-
-The following code will get the blob of the custom op:
-
-```python
-return op.InferAndTryRun().SoleOutputBlob()
-```
-
-`InferAndTryRun` completes the derivation and returns `UserOp`. If the returned blob has only one output. We cab use `SoleOutputBlob` to get the unique output. Otherwise use `RemoteBlobList` to get a list of multiple blobs.
-
-So far, we have built the `myrelu` which is a relatively simple op. But if we need to build a more complex op, we should use some additional features in the registration process.
-We'll introduce it from the aspects of op registration, kernel registration, gradient registration and Python layer wrapping.
+We will cover from Op registration, kernel registration, gradient registration and encapsulation of the Python layer.
 
 ## Detailed Introduction of OpRegistry 
 
@@ -445,16 +392,16 @@ In OneFlow, we currently support the following C++ data:
 
 | UserOpAttrType | Corresponding C++ data types |
 | -------------- | ---------------------------- |
-| kAtInt32 | int32_t |
-| kAtInt64 | int64_t |
-| kAtBool | bool |
-| kAtFloat | float |
-| kAtDouble | double |
-| kAtShape | oneflow::Shape |
-| kAtListInt32 | std::vector<int32_t> |
-| kAtListInt64 | std::vector<int64_t> |
-| kAtListFloat | std::vector< float > |
-| kAtString | std::string |
+| kAtInt32       | int32_t                      |
+| kAtInt64       | int64_t                      |
+| kAtBool        | bool                         |
+| kAtFloat       | float                        |
+| kAtDouble      | double                       |
+| kAtShape       | oneflow::Shape               |
+| kAtListInt32   | std::vector<int32_t>         |
+| kAtListInt64   | std::vector<int64_t>         |
+| kAtListFloat   | std::vector< float >         |
+| kAtString      | std::string                  |
 
 
 We can pass an additional parameter and configure a default value for it which is the corresponding C++ datatype in the table. Such as：
@@ -573,6 +520,10 @@ class XKernel final : public oneflow::user_op::OpKernel {
 
 ## Detailed Introduction of OpGradRegistry
 
+In [Extending Op with Python](./python_kernel_op.md#op_2), we explained how to provide backwards computation for a custom Op which is registered by the `REGISTER_USER_OP_GRAD`.
+
+In fact, `REGISTER_USER_OP_GRAD` is actually defining the backward subgraph for derivation. So we don't necessarily need to specifically implement a backward Op to evaluate the gradient which like in [Providing Backward Computation for Custom Op](./python_kernel_op.md#op_2) to implement a backward Op specifically to derive the gradient. But most of the time we can use OneFlow's existing Op to describe the backward subgraph. This section supplements [Using Python Extension Op](./python_kernel_op.md#op_2) by detailing the method of backward registration and representing an inverse subgraph using an existing Op.
+
 Oneflow is automatically get gradient during backward map expansion and the OneFlow framework uses [Automatic Differentiation](https://en.wikipedia.org/wiki/Automatic_differentiation) to get the gradient which means automatically find the gradient of the entire expression using the chain rule.
 
 In order to automatically get gradient a custom op, we need to register it with `REGISTER_USER_OP_GRAD`. From a mathematical point of view, the registration process is the computation of the backward derivation that we specify for our custom op. From a programming point of view, it is to set up a backward-generating function for a custom op. Within that function, we write code that specifies how the input gradient of that op is to be calculated.
@@ -593,6 +544,7 @@ Then it is easy to obtain the relationship between its forward and backward prop
   <img src="imgs/chainrule.png">
   </img>
 </div>
+
 
 The forward op of `myop` is defined as follows:
 
@@ -778,7 +730,7 @@ Common methods for `UserOpWrapper` are:
 
 ### Customized Op for Calculating Gradients
 
-As we mentioned earlier, in most cases, the process of calculating a gradient can be represented by a combination of existing ops. However, when it is difficult to use an existing op to solve the gradient for a particular forward op that we need to design and create operators specifically for the gradient calculation. Example can be found in: [relu_op.cpp](https://github.com/Oneflow-Inc/oneflow/blob/master/oneflow/user/ops/relu_op.cpp).
+As we mentioned earlier, in most cases, the process of calculating a gradient can be represented by a combination of existing ops. However, when it is difficult to use an existing op to solve the gradient for a particular forward op that we need to design and create operators specifically for the gradient calculation. Example can be found in: [relu_op.cpp](https://github.com/Oneflow-Inc/oneflow/blob/master/oneflow/user/ops/relu_op.cpp), [Extending Op with Python](./python_kernel_op.md#op_2). The Extending Op with Python uses Python to customize the backward derivation of Op and the relu_op.cpp uses C++ to customize the backward derivation of Op.
 
 
 ## Detailed Introduction of UserOpConfBuilder 
