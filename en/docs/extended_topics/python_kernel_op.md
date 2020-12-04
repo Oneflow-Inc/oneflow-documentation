@@ -113,7 +113,7 @@ return op.InferAndTryRun().SoleOutputBlob()
 The `InferAndTryRun` completes the derivation and returns `UserOp`. If the result is only one output, use `SoleOutputBlob` to get the unique output. Otherwise use `RemoteBlobList` to get a list with multiple outputs.
 
 ## Implementing the Kernel with Python
-As described at the beginning of this article, Op is only a logical concept and the real calculations need to be done in the Kernel. In OneFlow, it can be implemented in both C++ and Python.This article only describes the accessible implementations of the Python Kernel.  To implement the Kernel in C++, please refer to [Using C++ Extension Op](./user_op.md).
+As described at the beginning of this article, Op is only a logical concept and the real calculations need to be done in the Kernel. In OneFlow, it can be implemented in both C++ and Python.This article only describes the accessible implementations of the Python Kernel.  To implement the Kernel in C++, please refer to [Extending Op with C++](./user_op.md).
 
 In order to provide the Python Kernel for the `user_relu` we set up previously, we need to create a `user_relu_py_kernel.py` file with the following contents:
 
