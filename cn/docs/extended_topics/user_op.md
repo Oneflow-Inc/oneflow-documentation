@@ -152,7 +152,7 @@ private:
   REGISTER_USER_KERNEL("myrelu")                     \
       .SetCreateFn<ReluKernel<device, dtype>>()      \
       .SetIsMatchedHob(                              \
-          (user_op::HobDeviceType() == device) &     \
+          (user_op::HobDeviceTag() == device) &     \
           (user_op::HobDataType("out", 0)            \
             == GetDataType<dtype>::value));
 
@@ -215,7 +215,7 @@ private:
   REGISTER_USER_KERNEL("myrelu")                     \
       .SetCreateFn<ReluGpuFloatKernel>()             \
       .SetIsMatchedHob(                              \
-          (user_op::HobDeviceType() == device) &     \
+          (user_op::HobDeviceTag() == device) &     \
           (user_op::HobDataType("out", 0)            \
             == GetDataType<dtype>::value));
 
