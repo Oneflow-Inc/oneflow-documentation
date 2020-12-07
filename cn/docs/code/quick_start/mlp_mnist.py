@@ -35,7 +35,9 @@ def train_job(
 
 
 if __name__ == "__main__":
-
+    check_point = flow.train.CheckPoint()
+    check_point.init()
+    
     (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(
         BATCH_SIZE, BATCH_SIZE
     )
