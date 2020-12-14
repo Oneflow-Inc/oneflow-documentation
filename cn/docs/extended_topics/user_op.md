@@ -1,11 +1,14 @@
-# 自定义 Op
+# 使用 C++ 扩展 Op
 
-## 背景介绍
+本文将介绍如何使用 C++ 扩展 Op，与用 Python 扩展 Op 相比，使用 C++ 扩展 Op，更加灵活、可配置的选项更多，且支持使用 GPU 作为计算设备。一般可使用 Python 扩展 Op 用于快速预研，使用 C++ 扩展 Op 追求高性能。
 
-### 自定义 op 是什么
-OneFlow 将各种对于数据的处理都抽象成了算子（operator），简称 op。 op 是作用在输入 tensor 上的操作，并将操作的结果写到输出 tensor 上。OneFlow 内部已经提供了比较完备的 op 算子，可以在 [ops 目录](https://github.com/Oneflow-Inc/oneflow/tree/master/oneflow/python/ops)下找到。
+在阅读本文前，假定用于已经阅读[使用 Python 扩展 Op](./python_kernel_op.md) 一文，并知晓以下知识点：
 
-当 OneFlow 已有的 Python 算子及其组合无法满足构建神经网络的需求，或者 Python 层次的算子无法满足性能需求时，我们可以使用 C++ 开发 OneFlow 自定义 op。
+- OneFlow 中，逻辑上的运算单元 Op 的概念
+- OneFlow 中，实际负责运算的 Kernel 的概念
+- Op 种类的标识符 `op_type_name` 的概念
+
+### OneFlow 中的 Op 系统
 
 OneFlow 提供了一套机制，我们在这套机制下编写自定义 op 并将其注册到 OneFlow 中，就可以在 Python 中使用自定义 op。
 
@@ -21,7 +24,7 @@ OneFlow 提供了一套机制，我们在这套机制下编写自定义 op 并�
 
 * `OpKernelRegistry`：管理 kernel 注册，用于运行时执行用户编写的 kernel 逻辑
 
-在具体的编程过程中，我们其实是用 C++ 编写自定义 op，并生成动态链接库(so)文件。在 Python 中加载对应的 so 文件，就可以使用该 so 文件中的自定义 op。
+在具体的编程过程中，我们其实是用 C++ 编写自定义 op，并生成动态链接库(so)文件。在 Python 中加载对应的 so 文件，就可以使用该 so 文件中的自定义 op。在[使用 Python 扩展 Op](./python_kernel_op.md) 时，底层也是使用了这套机制，只不过这些细节被封装在了相关 API 中，对开发者透明。
 
 在 [user_op_conf.proto](https://github.com/Oneflow-Inc/oneflow/blob/master/oneflow/core/framework/user_op_conf.proto) 中可以查看 user op 的数据结构：
 ```text
@@ -41,24 +44,9 @@ message UserOpConf {
 }
 ```
 
-其中的 `op_type_name` 是代表 op 类别的字符串，也是指明 op 类别的全局唯一 ID，OneFlow 通过 `op_type_name` 查询并确认 op 种类，在本文的后续中会多次出现。
+其中的 `op_type_name` 是代表 op 类别的字符串，也是指明 op 类别的全局唯一 ID。
 
-### 基本概念
-
-* op_type_name：如上文所述，op_type_name 是 op 类别的全局唯一 ID， OneFlow 通过 op_type_name 查询并确认 op 的种类，进而实例化 op。op 的种类与 op 的关系，类似于类与对象的关系。
-
-* op：逻辑上的算子，包含构图推理时的输入输出形状等信息，不包含具体的处理数据的逻辑。
-
-* kernel：对于一个逻辑上的 op，在运行时，处理的逻辑会因为物理设备以及数据类型的不同。运行时的具体处理逻辑，由 kernel 完成。简单而言，op 与 kernel 是一对多的关系，我们需要为 op 所支持的所有物理设备及数据类型注册 kernel。
-
-* 注册：通过注册可以建立自定义 op 与 OneFlow 框架的联系。在 OneFlow 中提供了一系列名如 `REGISTER_XXX` 的宏帮助完成 op、kernel 等的注册。
-
-* 加载动态库：自定义的 op 及其 kernel 等被链接为 动态库 so 文件，在 Python 中使用前需要先加载。 OneFlow 提供了 `oneflow.config.load_library` 接口加载自定义 op 的动态库文件。
-
-* Python wrapper：在 Python 中调用 C++ 层实现的自定义 op，需要在 Python 层编写一个 wrapper，OneFlow 提供了 `oneflow.user_op_builder` 接口完成该工作。
-
-
-### 编写自定义 op 的步骤
+### 使用 C++ 扩展 op 的步骤
 1. 实现 op 并注册：op 的实现主要用于前向图构图，包括指定 op 的名称、输入、输出、配置属性以及一些必要的用于推导 tensor 的形状与数据类型的函数
 
 2. 实现 op 对应的 kernel 并注册：kernel 负责运行时的具体运算过程，一个 op 可能会对应多个 kernel
@@ -100,18 +88,7 @@ REGISTER_USER_OP("myrelu")
 } // namespace oneflow
 ```
 
-分析以上代码：
-
-* `oneflow/core/framework/framework.h` 中包含了我们创建一个 op 所需要的所有接口
-
-* 与自定义 op 有关的接口集中在 `oneflow::user_op` 中，使用名称空间 `oneflow` 可以简化类型名称
-
-* 宏 `REGISTER_USER_OP` 用于注册 op，其接受的参数 `myrelu` 是 `op_type_name`。
-
-* 使用 `REGISTER_USER_OP` 注册后，其实会返回一个 `OpRegistry` 类（位于 `oneflow\core\framework\user_op_registry.h`），通过调用该类方法，完成对自定义 op 的设置：
-    1. `Input("in")` 表示其有一个名为 "in" 的输入
-    2. `Output("out")` 表示其有一个名为 "out" 的输出
-    3. `SetTensorDescInferFn` 用于设置形状及数据类型推导函数，描述该算子的输出的形状及类型与输入的关系。以上代码中，输出的形状、数据类型与输入的一致
+其所作工作与[使用 Python 扩展 Op ](./python_kernel_op.md#op) 完全类似。即利用 `REGISTER_USER_OP` 注册了一个名为 `myrelu` 的 Op，设置了输入、输出，并根据输入推导了输出的形状、数据类型。
 
 ### CPU kernel 的实现与注册
 我们在 `myrelu_cpu_kernel.cpp` 中实现了 CPU 版本的 kernel 并注册：
@@ -142,7 +119,7 @@ private:
     user_op::Tensor *out_tensor = ctx->Tensor4ArgNameAndIndex("out", 0);
     MyRelu<T>(ctx->device_ctx(),
            in_tensor->shape().elem_cnt(),
-           in_tensor->dptr<T>(), 
+           in_tensor->dptr<T>(),
            out_tensor->mut_dptr<T>());
   }
   bool AlwaysComputeWhenAllOutputsEmpty() const override { return false; }
@@ -280,7 +257,7 @@ myrelu_cpu_kernel.o: myrelu_cpu_kernel.cpp
 	-o myrelu_cpu_kernel.o                  \
 	$(CFLAGS) -fPIC
 
-myrelu_gpu_kernel.o: myrelu_gpu_kernel.cu 
+myrelu_gpu_kernel.o: myrelu_gpu_kernel.cu
 	nvcc -std=c++11 -c myrelu_gpu_kernel.cu \
 	-o myrelu_gpu_kernel.o                  \
 	$(CFLAGS) -x cu -Xcompiler -fPIC
@@ -304,7 +281,7 @@ clean:
 
 我们将在 Python 中加载 `final_relu.so` 并使用封装、使用自定义 op。
 
-### 在 Python 使用自定义 op 
+### 在 Python 使用自定义 op
 在 Python 中使用自定义 op 包括以下几个基本步骤：
 
 * 使用 `oneflow.config.load_library` 加载 so 文件
@@ -356,38 +333,9 @@ if __name__ == "__main__":
 
 以上代码中的：`flow.config.load_library("final_relu.so")` 为加载 so 文件。
 
-我们重点介绍 `myrelu` 内部构建 python wrapper 并运行的过程。
+`myrelu` 内部构建 python wrapper 与《使用 Python 扩展 Op 》中的[封装 Op 的 Python 接口](./python_kernel_op.md)代码功能完全一样，在此不再重复解释。
 
-`flow.user_op_builder("op_myrelu")` 其实会返回一个名为 `op_myrelu` 的 `UserOpConfBuilder` 对象。
-
-```python
-    op = (
-        flow.user_op_builder("op_myrelu")
-        .Op("myrelu")
-        .Input("in", [input_blob])
-        .Output("out")
-        .Build()
-    )
-```
-
-该对象包含 `Op`、`Input` 等方法，用于封装自定义 op，具体解释如下：
-
-* `Op("myrelu")`：参数必须为之前在 C++ 注册时的 `op_type_name`，OneFlow 通过它找到已经注册的 op 类型，并实例化 op 对象。
-
-* `Input("in", [input_blob])`：对应了 C++ 中 op 注册时的 `Input`，第一个参数字符串必须与 C++ 注册 op 时的 `Input` 设置的字符串一致。第二个参数为输入的 blob，是一个 `list`，因为一个 op 允许有多个输入。
-
-* `Output("out")`：对应了 C++ 中 op 注册时的 `Output`。
-
-* `Build`：以上设置完成后，调用 `Build` 可以得到自定义 op 的 Python wrapper
-
-以下代码，将获取自定义 op 的输出 blob：
-```python
-return op.InferAndTryRun().SoleOutputBlob()
-```
-
-其中的 `InferAndTryRun` 完成推导，返回 `UserOp`，如果返回的 blob 只有一个输出，则使用 `SoleOutputBlob` 即可获取该唯一输出，否则，可以使用 `RemoteBlobList` 获取包含多个 blob 的列表。
-
-到现在为止，我们已经完成 `myrelu` op的构建，这是一个比较简单的 op，如果我们需要构建更复杂的 op，就需要在注册过程中使用一些额外的高级特性。
+到现在为止，我们已经完成 `myrelu` op 的构建，这是一个比较简单的 op，如果我们需要构建更复杂的 op，就需要在注册过程中使用一些额外的高级特性。
 我们将从 op 注册、 kernel 注册、gradient 注册及 Python 层的封装几个方面介绍。
 
 
@@ -436,9 +384,9 @@ OneFlow 目前支持了如下几种 C++ 数据类型：
 
 ``` cpp
 .Attr<bool>("is_transpose", false)
-    
+
 .Attr<int32_t>("size", 10)
-    
+
 .Attr<std::vector<int32_t>>("vector_of_size", std::vector<int32_t>{10, 11, 12})
 ```
 
@@ -453,12 +401,12 @@ OneFlow 目前支持了如下几种 C++ 数据类型：
   [](const user_op::UserOpDefWrapper& def,
     const user_op::UserOpConfWrapper& conf) -> Maybe<void> {
    std::string data_format = conf.attr<std::string>("data_format");
-   if (data_format == "channels_first" || data_format == "channels_last") { 
-     return Maybe<void>::Ok(); 
+   if (data_format == "channels_first" || data_format == "channels_last") {
+     return Maybe<void>::Ok();
    }
    return oneflow::Error::CheckFailed()
-         << "data_format value: " 
-         << data_format 
+         << "data_format value: "
+         << data_format
          << " for Conv op is illegal.";
 })
 ```
@@ -472,22 +420,22 @@ OneFlow 目前支持了如下几种 C++ 数据类型：
 
 ```cpp
 // input 必须对应有1个 blob
-.Input("input")        
+.Input("input")
 
 // input 必须对应有5个 blob
-.Input("input", 5) 
+.Input("input", 5)
 
 // input 必须对应至少5个 blob
-.InputWithMinimum("input", 5) 
+.InputWithMinimum("input", 5)
 
-// input 可能没有对应的 blob，若有则须对应1个 
-.OptionalInput("input") 
+// input 可能没有对应的 blob，若有则须对应1个
+.OptionalInput("input")
 
-// input 可能没有对应的 blob，若有则须对应5个  
-.OptionalInput("input", 5) 
+// input 可能没有对应的 blob，若有则须对应5个
+.OptionalInput("input", 5)
 
 // input 可能没有对应的 blob，若有则须对应至少5个
-.OptionalInputWithMininum("input", 5) 
+.OptionalInputWithMininum("input", 5)
 ```
 输出设置 `Output` 与 `Input` 类似。
 
@@ -520,7 +468,7 @@ REGISTER_USER_OP("add_n")
 REGISTER_USER_KERNEL("XOp")
     .SetInferTmpSizeFn(
       [](const oneflow::user_op::InferContext*) {
-         return 1024; 
+         return 1024;
       });
 ```
 
@@ -540,6 +488,9 @@ class XKernel final : public oneflow::user_op::OpKernel {
 ```
 
 ## OpGradRegistry 详细介绍
+在[使用 Python 扩展 Op](./python_kernel_op.md#op_2)一文中，介绍了如何为自定义 Op 提供反向计算。其核心是通过宏 `REGISTER_USER_OP_GRAD` 进行注册。
+
+实际上，`REGISTER_USER_OP_GRAD` 其实是在定义用于求导的反向子图，因此，我们不一定需要专门像 [为自定义 Op 提供反向计算](./python_kernel_op.md#op_2) 那样，专门去实现一个后向 Op 来求梯度，在大部分时候，可以使用 OneFlow 已有的 Op，描述反向子图。本节作为[使用 Python 扩展 Op](./python_kernel_op.md#op_2) 的补充，详细介绍后向注册并用现有 Op 表示反向子图的方法。
 
 Oneflow 在后向计算图展开过程中会自动求导，OneFlow 框架采用 [Automatic Differentiation](https://en.wikipedia.org/wiki/Automatic_differentiation) 方法求导，即利用链式法则自动求出整个表达式的梯度。
 
@@ -581,9 +532,9 @@ REGISTER_USER_OP_GRAD("myop").SetBackwardOpConfGenFn(
     [](user_op::BackwardOpConfContext* ctx) {
 
       const auto op1_name = ctx->FwOp().op_name() + "_grad1";
-      
+
       // 算子 op1_name 用于计算 myop.in*(myop.out的梯度)
-      ctx->DefineOp(op1_name, 
+      ctx->DefineOp(op1_name,
         [&ctx](user_op::BackwardOpBuilder& builder) {
           return builder.OpTypeName("multiply")
               .InputBind("x", ctx->FwOp().input("in", 0)) //multiply.x <- myop.in
@@ -594,7 +545,7 @@ REGISTER_USER_OP_GRAD("myop").SetBackwardOpConfGenFn(
 
       const auto op2_name = ctx->FwOp().op_name() + "_grad2";
       // 算子 op2_name 用于计算 6*op1_name
-      ctx->DefineOp(op2_name, 
+      ctx->DefineOp(op2_name,
         [&ctx, &op1_name](user_op::BackwardOpBuilder& builder) {
           return builder.OpTypeName("scalar_mul")
               .InputBind("in", ctx->GetOp(op1_name).output("out", 0))
@@ -605,9 +556,9 @@ REGISTER_USER_OP_GRAD("myop").SetBackwardOpConfGenFn(
               .Output("out")
               .Build();
         });
-      
+
       // (myop.in的梯度) <- op1_name.out
-      ctx->FwOp().InputGradBind(user_op::OpArg("in", 0), 
+      ctx->FwOp().InputGradBind(user_op::OpArg("in", 0),
         [&ctx, &op2_name]() -> const std::string& {
           return ctx->GetOp(op2_name)
                 .output("out", 0);
@@ -624,7 +575,7 @@ REGISTER_USER_OP_GRAD("myop").SetBackwardOpConfGenFn(
 首先，定义了 `op1_name`，利用已有的算子 `multiply` 求解 `x*dy`：
 ```cpp
 // 算子 op1_name 用于计算 myop.in*(myop.out的梯度)
-ctx->DefineOp(op1_name, 
+ctx->DefineOp(op1_name,
   [&ctx](user_op::BackwardOpBuilder& builder) {
     return builder.OpTypeName("multiply")
         .InputBind("x", ctx->FwOp().input("in", 0)) //multiply.x <- myop.in
@@ -638,7 +589,7 @@ ctx->DefineOp(op1_name,
 
 ```cpp
 // 算子 op2_name 用于计算 6*op1_name
-ctx->DefineOp(op2_name, 
+ctx->DefineOp(op2_name,
   [&ctx, &op1_name](user_op::BackwardOpBuilder& builder) {
     return builder.OpTypeName("scalar_mul")
         .InputBind("in", ctx->GetOp(op1_name).output("out", 0))
@@ -655,7 +606,7 @@ ctx->DefineOp(op2_name,
 
 ```cpp
 // (myop.in的梯度) <- op1_name.out
-ctx->FwOp().InputGradBind(user_op::OpArg("in", 0), 
+ctx->FwOp().InputGradBind(user_op::OpArg("in", 0),
   [&ctx, &op2_name]() -> const std::string& {
     return ctx->GetOp(op2_name)
           .output("out", 0);
@@ -686,7 +637,7 @@ void fn(BackwardOpConfContext* ctx);
 
 `BackwardOpBuilder` 用于构建一个反向 op。以上文中的代码片段为例
 ```cpp
-ctx->DefineOp(op1_name, 
+ctx->DefineOp(op1_name,
   [&ctx](user_op::BackwardOpBuilder& builder) {
     return builder.OpTypeName("multiply")
         .InputBind("x", ctx->FwOp().input("in", 0)) //multiply.x <- myop.in
@@ -713,7 +664,7 @@ ctx->DefineOp(op1_name,
 调用 `ctx->FwOp()` 会返回代表前向自定义 op，即 `myop` 的 `UserOpWrapper` 对象，通过调用 `UserOpWrapper` 的方法，完成梯度绑定。
 
 ```cpp
-ctx->FwOp().InputGradBind(user_op::OpArg("in", 0), 
+ctx->FwOp().InputGradBind(user_op::OpArg("in", 0),
   [&ctx, &op2_name]() -> const std::string& {
     return ctx->GetOp(op2_name)
           .output("out", 0);
@@ -735,7 +686,7 @@ ctx->FwOp().InputGradBind(user_op::OpArg("in", 0),
 * `arg_tensor_desc(arg_name, index)`：返回前向 op 的输入/输出对应的 tensor 信息，包含 `shape`、`dtype` 等
 
 ### 为计算梯度定制 op
-我们前文提到，在大多数情况下，可以通过已有 op 的组合，表示计算梯度的过程。但是，当某些特殊的前向 op，难以使用已有 op 描述其梯度求解过程时，我们需要为计算梯度专门设计和创建算子。这方面的例子可以参考 [relu_op.cpp](https://github.com/Oneflow-Inc/oneflow/blob/master/oneflow/user/ops/relu_op.cpp)。
+我们前文提到，在大多数情况下，可以通过已有 op 的组合，表示计算梯度的过程。但是，当某些特殊的前向 op，难以使用已有 op 描述其梯度求解过程时，我们需要为计算梯度专门设计和创建算子。这方面的例子可以参考[使用 Python 扩展 Op](./python_kernel_op.md#op_2) 及[relu_op.cpp](https://github.com/Oneflow-Inc/oneflow/blob/master/oneflow/user/ops/relu_op.cpp)，前者使用 Python 定制反向求导 Op，后者使用 C++ 定制反向求导 Op。
 
 
 ## UserOpConfBuilder 详细介绍
