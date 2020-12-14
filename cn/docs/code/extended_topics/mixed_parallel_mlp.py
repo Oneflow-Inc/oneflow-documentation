@@ -5,6 +5,7 @@ import oneflow.typing as tp
 flow.config.enable_legacy_model_io(False)
 BATCH_SIZE = 100
 
+
 def mlp(data):
     initializer = flow.truncated_normal(0.1)
     reshape = flow.reshape(data, [data.shape[0], -1])

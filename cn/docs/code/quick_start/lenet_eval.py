@@ -7,6 +7,7 @@ import oneflow.typing as tp
 BATCH_SIZE = 100
 flow.config.enable_legacy_model_io(False)
 
+
 def lenet(data, train=False):
     initializer = flow.truncated_normal(0.1)
     conv1 = flow.layers.conv2d(

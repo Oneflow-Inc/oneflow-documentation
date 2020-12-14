@@ -5,6 +5,7 @@ import oneflow.typing as tp
 flow.config.enable_legacy_model_io(False)
 BATCH_SIZE = 100
 
+
 def watch_diff_handler(blob: tp.Numpy):
     print("watch_diff_handler:", blob, blob.shape, blob.dtype)
 

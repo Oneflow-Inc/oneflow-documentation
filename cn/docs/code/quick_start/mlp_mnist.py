@@ -2,9 +2,11 @@
 import oneflow as flow
 import oneflow.typing as tp
 import numpy as np
+
 flow.config.enable_legacy_model_io(False)
 
 BATCH_SIZE = 100
+
 
 @flow.global_function(type="train")
 def train_job(
@@ -13,7 +15,7 @@ def train_job(
 ) -> tp.Numpy:
     with flow.scope.placement("cpu", "0:0"):
         reshape = flow.reshape(images, [images.shape[0], -1])
-        initializer1 = flow.random_uniform_initializer(-1/28.0, 1/28.0)
+        initializer1 = flow.random_uniform_initializer(-1 / 28.0, 1 / 28.0)
         hidden = flow.layers.dense(
             reshape,
             500,
@@ -23,9 +25,14 @@ def train_job(
             name="dense1",
         )
         initializer2 = flow.random_uniform_initializer(
-            -np.sqrt(1/500.0), np.sqrt(1/500.0))
+            -np.sqrt(1 / 500.0), np.sqrt(1 / 500.0)
+        )
         logits = flow.layers.dense(
-            hidden, 10, kernel_initializer=initializer2, bias_initializer=initializer2, name="dense2"
+            hidden,
+            10,
+            kernel_initializer=initializer2,
+            bias_initializer=initializer2,
+            name="dense2",
         )
         loss = flow.nn.sparse_softmax_cross_entropy_with_logits(labels, logits)
 
@@ -42,5 +49,4 @@ if __name__ == "__main__":
         for i, (images, labels) in enumerate(zip(train_images, train_labels)):
             loss = train_job(images, labels)
             if i % 20 == 0:
-                print('Epoch [{}/{}], Loss: {:.4f}'
-                      .format(epoch + 1, 20, loss.mean()))
+                print("Epoch [{}/{}], Loss: {:.4f}".format(epoch + 1, 20, loss.mean()))

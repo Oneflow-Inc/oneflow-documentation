@@ -6,9 +6,9 @@ import numpy as np
 flow.config.enable_legacy_model_io(False)
 flow.config.load_library("miniloader.so")
 
+
 def MiniDecoder(
-    input_blob,
-    name = None,
+    input_blob, name=None,
 ):
     if name is None:
         name = "Mini_Decoder_uniqueID"
@@ -23,6 +23,7 @@ def MiniDecoder(
         .RemoteBlobList()
     )
 
+
 def MiniReader(
     minidata_dir: str,
     batch_size: int = 1,
@@ -32,7 +33,7 @@ def MiniReader(
     random_shuffle: bool = False,
     shuffle_after_epoch: bool = False,
     shuffle_buffer_size: int = 1024,
-    name = None,
+    name=None,
 ):
     if name is None:
         name = "Mini_Reader_uniqueID"
@@ -54,8 +55,10 @@ def MiniReader(
         .RemoteBlobList()[0]
     )
 
+
 config = flow.function_config()
 config.default_data_type(flow.double)
+
 
 @flow.global_function("train", config)
 def test_job() -> tp.Numpy:
@@ -70,24 +73,28 @@ def test_job() -> tp.Numpy:
             shuffle_after_epoch=True,
         )
 
-        x, y = MiniDecoder(
-             miniRecord, name="d1"
-         )
+        x, y = MiniDecoder(miniRecord, name="d1")
 
-        initializer1 = flow.random_uniform_initializer(-1/28.0, 1/28.0)
+        initializer1 = flow.random_uniform_initializer(-1 / 28.0, 1 / 28.0)
         hidden = flow.layers.dense(
-                    x,
-                    500,
-                    activation=flow.nn.relu,
-                    kernel_initializer=initializer1,
-                    bias_initializer=initializer1,
-                    name="dense1",
-                )
-        initializer2 = flow.random_uniform_initializer(-np.sqrt(1/500.0), np.sqrt(1/500.0))
-        logits = flow.layers.dense(
-        hidden, 1, kernel_initializer=initializer2, bias_initializer=initializer2, name="dense2"
+            x,
+            500,
+            activation=flow.nn.relu,
+            kernel_initializer=initializer1,
+            bias_initializer=initializer1,
+            name="dense1",
         )
-        loss = (y - logits)*(y-logits)
+        initializer2 = flow.random_uniform_initializer(
+            -np.sqrt(1 / 500.0), np.sqrt(1 / 500.0)
+        )
+        logits = flow.layers.dense(
+            hidden,
+            1,
+            kernel_initializer=initializer2,
+            bias_initializer=initializer2,
+            name="dense2",
+        )
+        loss = (y - logits) * (y - logits)
 
         lr_scheduler = flow.optimizer.PiecewiseConstantScheduler([], [0.001])
         flow.optimizer.Adam(lr_scheduler).minimize(loss)
@@ -98,5 +105,6 @@ if __name__ == "__main__":
     loss = test_job()
     for i in range(0, 1000):
         loss = test_job()
-        if i % 100 == 0 : print("{}/{}:{}".format(i, 1000, loss.mean()))
+        if i % 100 == 0:
+            print("{}/{}:{}".format(i, 1000, loss.mean()))
     ckpt.save("./test_model")

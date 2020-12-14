@@ -4,6 +4,7 @@ import oneflow.typing as tp
 
 flow.config.enable_legacy_model_io(False)
 
+
 def lenet(data, train=False):
     initializer = flow.truncated_normal(0.1)
     conv1 = flow.layers.conv2d(
@@ -56,21 +57,19 @@ def ofrecord_decode():
         shuffle_after_epoch=True,
     )
     image = flow.data.OFRecordImageDecoderRandomCrop(
-        ofrecord, "images", color_space=color_space, random_area=(0.95, 1.0), random_aspect_ratio=(0.99, 1.0)
+        ofrecord,
+        "images",
+        color_space=color_space,
+        random_area=(0.95, 1.0),
+        random_aspect_ratio=(0.99, 1.0),
     )
     labels = flow.data.OFRecordRawDecoder(
         ofrecord, "labels", shape=(1,), dtype=flow.int32
     )
-    rsz, scale, new_size = flow.image.Resize(
-        image, target_size=(28, 28), channels=1
-    )
+    rsz, scale, new_size = flow.image.Resize(image, target_size=(28, 28), channels=1)
 
     normal = flow.image.CropMirrorNormalize(
-        rsz,
-        color_space=color_space,
-        mean=[0.0],
-        std=[255.0],
-        output_dtype=flow.float,
+        rsz, color_space=color_space, mean=[0.0], std=[255.0], output_dtype=flow.float,
     )
 
     return normal, labels
@@ -95,4 +94,5 @@ def train_job() -> tp.Numpy:
 if __name__ == "__main__":
     for epoch in range(25 * 600):
         loss = train_job()
-        if epoch % 5 == 0: print(loss)
+        if epoch % 5 == 0:
+            print(loss)

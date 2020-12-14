@@ -5,6 +5,7 @@ import oneflow.typing as tp
 BATCH_SIZE = 100
 flow.config.enable_legacy_model_io(False)
 
+
 @flow.global_function(type="train")
 def train_job(
     images: tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
