@@ -2,6 +2,7 @@ import numpy as np
 import oneflow as flow
 import oneflow.typing as tp
 
+flow.config.enable_legacy_model_io(False)
 BATCH_SIZE = 100
 GPU_NUM = 2
 BATCH_SIZE_PER_GPU = int(BATCH_SIZE / GPU_NUM)
@@ -40,8 +41,6 @@ def train_job(
 
 if __name__ == "__main__":
     flow.config.gpu_device_num(2)  # 设置GPU数目
-    check_point = flow.train.CheckPoint()
-    check_point.init()
     (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(
         BATCH_SIZE
     )

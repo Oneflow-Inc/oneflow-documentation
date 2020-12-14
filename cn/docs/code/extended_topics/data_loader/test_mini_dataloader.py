@@ -3,6 +3,7 @@ import oneflow.typing as tp
 from typing import Tuple
 import numpy as np
 
+flow.config.enable_legacy_model_io(False)
 flow.config.load_library("miniloader.so")
 
 def MiniDecoder(
@@ -94,8 +95,6 @@ def test_job() -> tp.Numpy:
 
 
 if __name__ == "__main__":
-    ckpt = flow.train.CheckPoint()
-    ckpt.init()
     loss = test_job()
     for i in range(0, 1000):
         loss = test_job()

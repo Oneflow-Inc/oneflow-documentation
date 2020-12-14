@@ -2,6 +2,7 @@
 import oneflow as flow
 import oneflow.typing as tp
 
+flow.config.enable_legacy_model_io(False)
 
 def lenet(data, train=False):
     initializer = flow.truncated_normal(0.1)
@@ -92,8 +93,6 @@ def train_job() -> tp.Numpy:
 
 
 if __name__ == "__main__":
-    check_point = flow.train.CheckPoint()
-    check_point.init()
     for epoch in range(25 * 600):
         loss = train_job()
         if epoch % 5 == 0: print(loss)

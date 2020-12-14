@@ -2,6 +2,7 @@
 import oneflow as flow
 import oneflow.typing as tp
 import numpy as np
+flow.config.enable_legacy_model_io(False)
 
 BATCH_SIZE = 100
 

@@ -1,8 +1,8 @@
 import oneflow as flow
 import oneflow.typing as tp
 
+flow.config.enable_legacy_model_io(False)
 BATCH_SIZE = 100
-
 
 @flow.global_function(type="train")
 def train_job(
@@ -33,7 +33,6 @@ def train_job(
 
 g_i = 0
 
-
 def cb_print_loss(result: tp.Numpy):
     global g_i
     if g_i % 20 == 0:
@@ -42,9 +41,6 @@ def cb_print_loss(result: tp.Numpy):
 
 
 def main():
-    check_point = flow.train.CheckPoint()
-    check_point.init()
-
     (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(
         BATCH_SIZE
     )
@@ -52,7 +48,7 @@ def main():
         for i, (images, labels) in enumerate(zip(train_images, train_labels)):
             train_job(images, labels)(cb_print_loss)
 
-    check_point.save("./mlp_models_1")  # need remove the existed folder
+    flow.checkpoint.save("./mlp_models_1")  # need remove the existed folder
 
 
 if __name__ == "__main__":

@@ -3,7 +3,7 @@ import oneflow as flow
 import oneflow.typing as tp
 
 BATCH_SIZE = 100
-
+flow.config.enable_legacy_model_io(False)
 
 def lenet(data, train=False):
     initializer = flow.truncated_normal(0.1)
@@ -58,8 +58,6 @@ def train_job(
 
 if __name__ == "__main__":
     flow.config.gpu_device_num(2)
-    check_point = flow.train.CheckPoint()
-    check_point.init()
     (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(
         BATCH_SIZE
     )
