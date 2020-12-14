@@ -3,12 +3,17 @@
 使用以下命令安装 OneFlow 最新的支持CUDA的稳定版本：
 
 ```shell
-python3 -m pip install --find-links https://oneflow-inc.github.io/nightly oneflow_cu102 --user
+python3 -m pip install --find-links https://release.oneflow.info oneflow_cu102 --user
 ```
 
 使用以下命令安装 OneFlow 最新 CPU-ONLY 的版本：
 ```shell
-python3 -m pip install --find-links https://oneflow-inc.github.io/nightly oneflow_cpu --user
+python3 -m pip install --find-links https://release.oneflow.info oneflow_cpu --user
+```
+
+使用以下命令安装 OneFlow master 分支最新版本（不建议在生产环境使用）：
+```shell
+python3 -m pip install --find-links https://staging.oneflow.info/branch/master oneflow_cu102 --user
 ```
 
 如果提示 **找不到** 对应版本，请尝试升级 `pip`：
