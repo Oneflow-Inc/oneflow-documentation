@@ -1,4 +1,5 @@
 # 使用 Python 扩展 Op
+**注意** ：本文涉及的 Python Kernel 仅在 `gcc 4.8.5` 编译环境下充分测试，进一步的完善计划见 [Issue 3951](https://github.com/Oneflow-Inc/oneflow/issues/3951)。
 
 ## 背景介绍
 OneFlow 将各种对于数据的处理都抽象成了算子（operator），简称 op。 op 是作用在输入 tensor 上的操作，并将操作的结果写到输出 tensor 上。OneFlow 内部已经提供了比较完备的 op 算子，可以在 [ops 目录](https://github.com/Oneflow-Inc/oneflow/tree/master/oneflow/python/ops)下找到。
