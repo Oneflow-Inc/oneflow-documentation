@@ -16,7 +16,7 @@ In this article, we will introduce:
 
 * Support `consistent view`, the whole network only needs one logic input and output.
 
-* A `mirrored view` compatible with other frameworks is provided. Users who are familiar with the distributed training of other frameworks can learn to use it quickly. 
+* A `mirrored view` compatible with other frameworks is provided. Users who are familiar with the distributed training of other frameworks can learn to use it quickly.
 
 * Only a few lines of configuration code are needed to switch a program platform from a single machine to a distributed system.
 
@@ -26,7 +26,7 @@ By the distributed training interface of OneFlow, you only need a few configurat
 
 In another word, it makes a single machine program and a distributed machine program almost the same in terms of complexity of coding. User just need to focus on **job logic** and **structures of model** without worrying about distribution execution. Everything related to distribution is handled by OneFlow.
 
-Here is an example to change a program run on a single machine to be run on a distributed system with few configurations. 
+Here is an example to change a program run on a single machine to be run on a distributed system with few configurations.
 
 ### Single Machine Program
 Here is the framework of single machine training program. Because the code of each function will be presented in the distributed program below, it is not listed in detail here.
@@ -62,7 +62,7 @@ In `oneflow.config`, we provide interfaces related to distributed program. We ma
 
 * `oneflow.config.gpu_device_num` : set the number of device. This will be applied to all machines.
 
-* `oneflow.config.ctrl_port` : set the port number of communications. All the machines will use the same port. 
+* `oneflow.config.ctrl_port` : set the port number of communications. All the machines will use the same port.
 
 In the following demo, we set all machines to use one device and use the port 9988 for communication. User can change the configuration according to their actual situation.
 ```python
@@ -101,10 +101,10 @@ def config_distributed():
     print("distributed config")
     #number of device used in each node
     flow.config.gpu_device_num(1)
-    #communication channel 
+    #communication channel
     flow.env.ctrl_port(9988)
 
-    #node configuration 
+    #node configuration
     nodes = [{"addr":"192.168.1.12"}, {"addr":"192.168.1.11"}]
     flow.env.machine(n
 ```
@@ -114,7 +114,7 @@ After adding the configurations code, the program becomes a distributed training
 
 Compared with **single machine training program**, the distributed training program only needs to call one more function named `config_distributed`.
 
-Distribution script: [distributed_train.py](. /code/basics_topics/distributed_train.py)
+Distribution script: [distributed_train.py](../code/basics_topics/distributed_train.py)
 
 Running on both `192.168.1.12` and `192.168.1.12`:
 
