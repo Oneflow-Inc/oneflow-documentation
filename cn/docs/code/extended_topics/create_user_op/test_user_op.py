@@ -25,6 +25,7 @@ def myrelu(input_blob):
 def MyJob(x: tp.Numpy.Placeholder((5,), dtype=flow.float32)) -> tp.Numpy:
     return myrelu(x)
 
+
 if __name__ == "__main__":
     input = np.array([-2, -1, 0, 1, 2], dtype=np.float32)
     output = MyJob(input)

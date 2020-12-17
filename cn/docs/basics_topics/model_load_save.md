@@ -10,7 +10,7 @@
 
 不过，在 OneFlow 中，无论模型是否训练完毕，我们都使用 **统一的接口** 将其保存，因此，在其它框架中看到的`model`、`checkpoint`、`snapshot` 等表述，在 OneFlow 中不做区分。
 
-在 OneFlow 中，`flow.train.CheckPoint`类作为接口，负责模型的初始化、加载与保存。
+在 OneFlow 中，`flow.checkpoint` 名称空间下有模保存、加载的接口。
 
 本文将介绍：
 
@@ -24,7 +24,7 @@
 
 ## get_variable 创建或获取参数
 
-我们可以使用 [oneflow.get_variable](https://oneflow.readthedocs.io/en/master/oneflow.html#oneflow.get_variable) 方法创造或者获取一个对象，该对象可以用于在全局作业函数中交互信息；当调用 `oneflow.CheckPoint` 的对应接口时，该对象也会被自动地保存或从存储设备中恢复。
+我们可以使用 [oneflow.get_variable](https://oneflow.readthedocs.io/en/master/oneflow.html#oneflow.get_variable) 方法创造或者获取一个对象，该对象可以用于在全局作业函数中交互信息；当调用 `oneflow.get_all_variables` 和 `oneflow.load_variables` 接口时，可以获取或更新 `get_variable` 创建的对象的值。
 
 因为这个特点，`get_variable` 创建的对象，常用于存储模型参数。实际上，OneFlow 中很多较高层接口（如 `oneflow.layers.conv2d`），内部使用 `get_variable` 创建模型参数。
 
@@ -80,7 +80,7 @@ def get_variable(
 
 我们在上文中已经看到，在调用 `get_variable` 时，通过设置初始化器 `initializer` 来指定参数的初始化方式，OneFlow 中提供了多种初始化器，可以在 [oneflow](https://oneflow.readthedocs.io/en/master/oneflow.html) 模块下查看。
 
-在静态图机制下，设置 `initializer` 后，参数初始化工作由 OneFlow 框架完成，具体时机为：当用户调用下文中的 `CheckPoint.init` 时，OneFlow 会根据 `initializer` 对所有 get_variable 创建的对象进行 **数据初始化**。
+在静态图机制下，设置 `initializer` 后，参数初始化工作由 OneFlow 框架自动完成。
 
 OneFlow 目前支持的 `initializer` 列举如下，点击链接可以查看相关算法：
 
@@ -111,67 +111,107 @@ OneFlow 目前支持的 `initializer` 列举如下，点击链接可以查看相
 
 
 ## OneFlow 模型的 Python 接口
-
-我们通过 `oneflow.train.CheckPoint()` 实例化得到 CheckPoint 对象。
-在 `CheckPoint` 类中有三个关键方法：
-
-* `init` : 根据设置的初始化方式，初始化参数变量；
-
-* `save` : 负责保存当前的模型到指定路径；
-
-* `load` : 从指定`path`中导入模型值，并用这些值初始化相应的参数变量。
-
-`init` 的原型如下，在训练开始前，我们需要调用 `init` 初始化网络中的参数变量。
+**注意**：由于多版本兼容的原因，使用本节介绍的接口，在脚本中都需先配置：
 
 ```python
-def init(self)
+flow.config.enable_legacy_model_io(False)
 ```
+
+### 获取/更新 variable 对象的值
+我们可以使用以下两个接口，获取或更新作业函数中由 `oneflow.get_variable` 所创建的 `variable` 对象的值
+
+- `oneflow.get_all_variables` : 获取所有作业函数中的的 `variable` 对象
+- `oneflow.load_variables` : 更新作业函数中的 `variable` 对象
+
+`oneflow.get_all_variables` 会返回一个字典，字典的 key 就是创建 `variable` 时指定的 `name`，key 对应的 value 就是一个张量对象，该张量对象有 `numpy()` 转为 numpy 数组。
+
+比如，在作业函数中创建了名为 `myblob` 的对象：
+```python
+@flow.global_function()
+def job() -> tp.Numpy:
+    ...
+    myblob = flow.get_variable("myblob", 
+        shape=(3,3), 
+        initializer=flow.random_normal_initializer()
+        )
+    ...
+```
+如果想打印 `myblob` 的值，可以调用：
+
+```python
+...
+for epoch in range(20):
+    ...
+    job()
+    all_variables = flow.get_all_variables()
+    print(all_variables["myblob"].numpy())
+    ...
+```
+
+其中的 `flow.get_all_variables` 获取到了字典，`all_variables["myblob"].numpy()` 获取了 `myblob` 对象并将其转为 numpy 数组。
+
+与 `get_all_variables` 相反，我们可以使用 `oneflow.load_variables` 更新 varialbe 对象的值。
+`oneflow.load_variables` 的原型如下：
+
+```python
+def load_variables(value_dict, ignore_mismatch = True)
+```
+
+使用 `load_variables` 前，我们要准备一个字典，该字典的 key 为创建 `variable` 时指定的 `name`，value 是 numpy 数组；将字典传递给 `load_variables` 后，`load_variables` 会将根据 key 找到作业函数中的 variable 对象，并更新值。
+
+如以下代码：
+
+```python
+@flow.global_function(type="predict")
+def job() -> tp.Numpy:
+    myblob = flow.get_variable("myblob", 
+        shape=(3,3), 
+        initializer=flow.random_normal_initializer()
+        )
+    return myblob
+
+myvardict = {"myblob": np.ones((3,3)).astype(np.float32)}
+flow.load_variables(myvardict)
+print(flow.get_all_variables()["myblob"].numpy())
+```
+虽然我们选择了 `random_normal_initializer` 的初始化方式，但是因为 `flow.load_variables(myvardict)` 更新了 `myblob` 的值，所以最终输出结果是：
+
+```text
+[[1. 1. 1.]
+ [1. 1. 1.]
+ [1. 1. 1.]]
+```
+
+
+### 模型的保存与加载
+我们通过以下两个方法，可以保存/加载模型：
+
+- `oneflow.checkpoint.save` : 负责保存当前的模型到指定路径
+- `oneflow.checkpoint.get` :  从指定路径中导入模型
 
 `save` 的原型如下，可以将模型保存至 `path` 所指定的路径。
 ```python
-def save(self, path)
+def save(path, var_dict=None)
 ```
+可选参数 `var_dict` 如果不为 `None`，则将 `var_dict` 中指定的对象保存到指定路径。
 
-`load` 的原型如下，可以加载之前已经保存的，由 `path` 路径所指定的模型。
+`get` 的原型如下，可以加载之前已经保存的，由 `path` 路径所指定的模型。
 
 ```python
-def load(self, path)
+def get(path)
 ```
 
-### 调用 init 初始化模型
-在训练开始前，我们需要先获取 `CheckPoint` 对象，再调用其中的 `init` 方法初始其中的网络参数。
-如以下示例:
+它将返回一个字典，该字典可以用上文介绍的 `load_variables` 方法更新到模型中：
 
 ```python
-check_point = flow.train.CheckPoint() #构造 CheckPoint 对象
-check_point.init() #初始化网络参数
-
-#... 调用作业函数等操作
+flow.load_variables(flow.checkpoint.get(save_dir))
 ```
 
-### 调用 save 保存模型
-
-训练过程的任意阶段，都可以通过调用 `CheckPoint` 对象的 `save` 方法来保存模型。
-
-```python
-check_point.save('./path_to_save')
-```
-
-注意：
+**注意**：
 
 - `save` 参数所指定路径对应的目录要么不存在，要么应该为空目录，否则 `save` 会报错(防止覆盖掉原有保存的模型)
 - OneFlow 模型以一定的组织形式保存在指定的路径中，具体结构参见下文中的 OneFlow 模型的存储结构
 - 虽然 OneFlow 对 `save` 的频率没有限制，但是过高的保存频率，会加重磁盘及带宽等资源的负担。
-
-### 调用 load 加载模型
-通过调用 `CheckPoint` 对象的 `load` 方法，可以从指定的路径中加载模型。
-
-以下代码，构造 `CheckPoint` 对象并从指定路径加载模型：
-```python
-check_point = flow.train.CheckPoint() #构造对象
-check_point.load("./path_to_model") #加载先前保存的模型
-```
-
 
 ## OneFlow 模型的存储结构
 OneFlow 模型是一组已经被训练好的网络的 **参数值** 。模型所保存的路径下，有多个子目录，每个子目录对应了 `作业函数` 中模型的 `name`。
@@ -219,30 +259,38 @@ def lenet(data, train=False):
 ```
 假设在训练过程中，我们调用以下代码保存模型：
 ```python
-check_point = flow.train.CheckPoint()
-check_point.save('./lenet_models_name')
+flow.checkpoint.save('./lenet_models_name')
 ```
 那么 `lenet_models_name` 及其子目录结构为：
 ```
-lenet_models_name
+lenet_models_name/
 ├── conv1-bias
+│   ├── meta
 │   └── out
 ├── conv1-weight
+│   ├── meta
 │   └── out
 ├── conv2-bias
+│   ├── meta
 │   └── out
 ├── conv2-weight
+│   ├── meta
 │   └── out
-├── hidden-bias
+├── dense1-bias
+│   ├── meta
 │   └── out
-├── hidden-weight
+├── dense1-weight
+│   ├── meta
 │   └── out
-├── outlayer-bias
+├── dense2-bias
+│   ├── meta
 │   └── out
-├── outlayer-weight
+├── dense2-weight
+│   ├── meta
 │   └── out
 ├── snapshot_done
 └── System-Train-TrainStep-train_job
+    ├── meta
     └── out
 ```
 
@@ -250,7 +298,7 @@ lenet_models_name
 
 * 作业函数中的网络模型，每个变量对应一个子目录
 
-* 以上每个子目录中，都有一个 `out` 文件，它是以二进制的方式存储的网络参数信息。`out` 是默认文件名，可以通过设置网络中的 `variable op` 修改。
+* 以上每个子目录中，都有 `out` 和 `meta` 文件，`out` 以二进制的形式存储了网络参数的值，`meta` 以文本的形式存储了网络的结构信息
 
 * `snapshot_done` 是一个空文件，如果它存在，表示网络已经训练完成
 
@@ -265,17 +313,7 @@ lenet_models_name
 
 * 模型中的另一部分（新增的）参数需要初始化
 
-对此，OneFlow 的 `flow.train.CheckPoint.load` 内部，预设了以下流程：
-
-* 按照作业函数中所描述的网络模型，遍历模型保存的路径，尝试加载各个参数
-
-* 如果找到了对应的参数，则加载该参数
-
-* 如果没有找到，则自动初始化，同时打印警告提醒已经自动初始化部分参数
-
-在 OneFlow Benchmark 的 [BERT](../adv_examples/bert.md) 中，可以看到微调的实际应用。
-
-以下举一个用于阐述概念的简单例子。
+我们可以使用 `oneflow.load_variables` 完成以上操作。以下举一个用于阐述概念的简单例子。
 
 首先，我们先定义一个模型，训练后保存至 `./mlp_models_1`：
 ```python
@@ -327,8 +365,7 @@ def train_job(
 最后，从原来保存的模型加载参数，并开始训练：
 ```python
 if __name__ == "__main__":
-    check_point = flow.train.CheckPoint()
-    check_point.load("./mlp_models_1")
+    flow.load_variables(flow.checkpoint.get("./mlp_models_1"))
 
     (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(
         BATCH_SIZE, BATCH_SIZE
@@ -337,20 +374,10 @@ if __name__ == "__main__":
         loss = train_job(images, labels)
         if i % 20 == 0:
             print(loss.mean())
-    check_point.save("./mlp_ext_models_1")
+    flow.checkpoint.save("./mlp_ext_models_1")
 ```
 
-会得到如下输出：
-```text
-WARNING! CANNOT find variable path in : ./mlp_models_1/dense3-bias/out. It will be initialized.
-WARNING! CANNOT find variable path in : ./mlp_models_1/dense3-weight/out. It will be initialized.
-2.8365176
-0.38763675
-0.24882479
-0.17603233
-...
-```
-表示新增的 `dense3` 层所需的参数在原保存的模型中没有找到，并且已经自动初始化。
+新增的 `dense3` 层参数，在原模型中不存在，OneFlow 会自动初始化它们的值。
 
 ### 代码
 

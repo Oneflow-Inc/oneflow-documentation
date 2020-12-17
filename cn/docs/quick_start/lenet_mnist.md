@@ -230,31 +230,25 @@ for i, (images, labels) in enumerate(zip(test_images, test_labels)):
 
 ### 模型的初始化与保存
 
-`oneflow.train.CheckPoint` 类构造的对象，可以用于模型的初始化、保存与加载。
-在训练过程中，我们可以通过 `init` 方法初始化模型，通过 `save` 方法保存模型。如下例：
+通过 `flow.checkpoint.save` 方法保存模型。如下例：
 
 ```python
 if __name__ == '__main__':
-  check_point = flow.train.CheckPoint()
-  check_point.init()
   #加载数据及训练 ...
-  check_point.save('./lenet_models_1')
+  flow.checkpoint.save("./lenet_models_1")
 ```
 
 保存成功后，我们将得到名为 `lenet_models_1` 的 **目录** ，该目录中包含了与模型参数对应的子目录及文件。
 
 ### 模型的加载
 
-在预测过程中，我们可以通过 `oneflow.train.CheckPoint.load` 方法加载现有的模型参数。如下例：
+在预测过程中，我们可以通过 `flow.checkpoint.get` 从文件中加载参数值到内存，再通过 `flow.load_variables` 将参数值更新到模型上。如下例：
 
 ```python
 if __name__ == '__main__':
-  check_point = flow.train.CheckPoint()
-  check_point.load("./lenet_models_1")
+  flow.load_variables(flow.checkpoint.get("./lenet_models_1"))
   #校验过程 ...
 ```
-
-`load` 方法会加载之前保存的模型。
 
 ## 模型的校验
 用于校验的 `predict` 类型的作业函数与 `train` 类型的作业函数 **几乎没有区别** ，不同之处在于校验过程中的模型参数来自于已经保存好的模型，因此不需要初始化，不需要更新模型参数（所以也不用指定 `optimizer`）。
@@ -300,9 +294,7 @@ def acc(labels, logits):
 
 ```python
 if __name__ == "__main__":
-
-    check_point = flow.train.CheckPoint()
-    check_point.load("./lenet_models_1")
+    flow.load_variables(flow.checkpoint.get("./lenet_models_1"))
     (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(
         BATCH_SIZE, BATCH_SIZE
     )
@@ -335,9 +327,7 @@ def main():
     if len(sys.argv) != 2:
         usage()
         return
-
-    check_point = flow.train.CheckPoint()
-    check_point.load("./lenet_models_1")
+    flow.load_variables(flow.checkpoint.get("./lenet_models_1"))
 
     image = load_image(sys.argv[1])
     logits = eval_job(image, np.zeros((1,)).astype(np.int32))
