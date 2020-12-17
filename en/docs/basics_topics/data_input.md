@@ -70,7 +70,7 @@ In addition, there are other data preprocessing operators that are used to proce
 
 ### Examples
 
-The following example reads the `OFRecord` data format file and dealing with images from the ImageNet dataset. The complete code can be downloaded here: [of_data_pipeline.py](. /code/basics_topics/of_data_pipeline.py).
+The following example reads the `OFRecord` data format file and dealing with images from the ImageNet dataset. The complete code can be downloaded here: [of_data_pipeline.py](../code/basics_topics/of_data_pipeline.py).
 
 This script requires an OFRecord dataset and you can make your own one according to [this article] (. /extended_topics/how_to_make_of_dataset.md).
 
@@ -90,7 +90,7 @@ The following output are expected:
 (64, 3, 224, 224) (64,)
 ```
 
-#### Code Explanation 
+#### Code Explanation
 
 There are generally two stages in using OneFlow DataLoader: **Load Data** and **Preprocessing Data**.
 
@@ -140,4 +140,3 @@ For example, in the script:
 ## More Formats Support by DataLoader
 
 OneFlow provides a number of DataLoaders and preprocessing operators, refer to [oneflow.data](https://oneflow.readthedocs.io/en/master/data.html) for details. These operators will be enriched and optimized in the future, but users can also refer to [this article](../extended_topics/implement_data_loader.md) to customize the DataLoader to meet specific needs.
-

@@ -76,7 +76,7 @@ The `oneflow.typing` contains all the data types that can be returned by the job
 
 * `flow.typing.ListNumpy`: corresponding to a `list` container. Each element in it is a `numpy.ndarray` object. It is related to the view of OneFlow for distributed training. We will see details in [The consistent and mirrored view in distributed training.](../extended_topics/consistent_mirrored.md)
 
-* `oneflow.typing.ListListNumpy`：corresponds to a `list` container where each element is a `TensorList` object and some interfaces to OneFlow need to process or return multiple `TensorList`. More information refer to [Term & Concept in OneFlow](. /concept_explanation.md#3tensorbuffer-tensorlist) and related [API documentation](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight= ListListNumpy)
+* `oneflow.typing.ListListNumpy`：corresponds to a `list` container where each element is a `TensorList` object and some interfaces to OneFlow need to process or return multiple `TensorList`. More information refer to [Term & Concept in OneFlow](./concept_explanation.md#3tensorbuffer-tensorlist) and related [API documentation](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight= ListListNumpy)
 
 * `oneflow.typing.Callback`: corresponding to a callback function. It is used to call job function asynchronously. We will introduce it below.
 
@@ -229,7 +229,7 @@ File mnist.npz already exist, path: ./mnist.npz
 model saved
 ```
 
-### 
+###
 
 ### Get Mutiple Results Synchronously
 In this case, the job function returns a `tuple`. We get the results `labels` and `logits` in tuple synchronously. Also, we evaluate the trained model in the above example, then output the accuracy rate.
@@ -252,7 +252,7 @@ There will be outputs like:
 accuracy: 99.3%
 ```
 
-### 
+###
 
 ### Get Single Result Asynchronously
 
@@ -304,4 +304,3 @@ There would be outputs like:
 File mnist.npz already exist, path: ./mnist.npz
 accuracy: 97.6%
 ```
-
