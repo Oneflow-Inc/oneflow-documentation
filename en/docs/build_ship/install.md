@@ -1,30 +1,38 @@
-## Installation
+## Install OneFlow Stable Version 
 
-Install the latest release of OneFlow with CUDA support:
+Install the latest stable version of OneFlow with CUDA support using the following command:
 
+```shell
+python3 -m pip install --find-links https://release.oneflow.info oneflow_cu102 --user
 ```
-python3 -m pip install --find-links https://oneflow-inc.github.io/nightly oneflow_cu102 --user
+
+Install the latest CPU-ONLY version of OneFlow using the following command:
+```shell
+python3 -m pip install --find-links https://release.oneflow.info oneflow_cpu --user
 ```
-    
-## System requirements：
 
-  - Python >= 3.5
-  - CUDA Toolkit Linux x86_64 Driver
-  
-    | OneFlow |CUDA Driver Version|
-    |---|---|
-    | oneflow_cu102  | >= 440.33  |
-    | oneflow_cu101  | >= 418.39  |
-    | oneflow_cu100  | >= 410.48  |
-    | oneflow_cu92  | >= 396.26  |
-    | oneflow_cu91  | >= 390.46  |
-    | oneflow_cu90  | >= 384.81  |
+Install the latest version of the OneFlow master branch using the following command (not recommended for use in production environments):
+```shell
+python3 -m pip install --find-links https://staging.oneflow.info/branch/master oneflow_cu102 --user
+```
 
-If you meet errors like "cannot find", please try to update `pip`:
-
+If you are informed that the corresponding version cannot be found, please try upgrading `pip`:
 ```shell
 python3 -m pip install --upgrade --user pip
 ```
+
+Chinese users can use the domestic mirror to accelerate:
+```
+python3 -m pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
+```
+Detailed instructions can be found in the [pypi mirror help](https://mirror.tuna.tsinghua.edu.cn/help/pypi/)。
+
+
+System Requirements:
+
+* Python >= 3.5
+
+* CUDA driver requirements are available in the OneFlow source code repository [README](https://github.com/Oneflow-Inc/oneflow/#system-requirements)
 
 ## Build from source
 
