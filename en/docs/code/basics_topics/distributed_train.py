@@ -1,6 +1,7 @@
 import oneflow as flow
 import oneflow.typing as tp
 
+flow.config.enable_legacy_model_io(False)
 BATCH_SIZE = 100
 
 
@@ -21,12 +22,12 @@ def mlp(data):
 
 def config_distributed():
     print("distributed config")
-    # Number of gpu usage per node
+    # 每个节点的gpu使用数目
     flow.config.gpu_device_num(1)
-    # control port
+    # 通信端口
     flow.env.ctrl_port(9988)
 
-    # node configuration 
+    # 节点配置
     nodes = [{"addr": "192.168.1.12"}, {"addr": "192.168.1.11"}]
     flow.env.machine(nodes)
 
@@ -48,8 +49,6 @@ def train_job(
 if __name__ == "__main__":
     config_distributed()
     flow.config.enable_debug_mode(True)
-    check_point = flow.train.CheckPoint()
-    check_point.init()
     (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(
         BATCH_SIZE, BATCH_SIZE
     )
