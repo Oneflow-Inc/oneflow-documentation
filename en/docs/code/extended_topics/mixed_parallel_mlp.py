@@ -2,6 +2,7 @@
 import oneflow as flow
 import oneflow.typing as tp
 
+flow.config.enable_legacy_model_io(False)
 BATCH_SIZE = 100
 
 
@@ -19,7 +20,7 @@ def mlp(data):
         hidden,
         10,
         kernel_initializer=initializer,
-        #  dense for column storage，use split(0) to cut
+        # dense为列存储，进行split(0)切分
         model_distribute=flow.distribute.split(axis=0),
         name="dense2",
     )
@@ -48,9 +49,6 @@ def train_job(
 
 if __name__ == "__main__":
     flow.config.gpu_device_num(2)
-    check_point = flow.train.CheckPoint()
-    check_point.init()
-
     (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(
         BATCH_SIZE
     )
