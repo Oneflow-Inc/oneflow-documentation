@@ -1,4 +1,5 @@
 # Extending Op with Python
+**Attention** : The Python Kernel covered in this article was only fully tested under the `gcc 4.8.5` compilation environment. Further refinements are planned in [Issue 3951](https://github.com/Oneflow-Inc/oneflow/issues/3951).
 
 ## Background Information
 OneFlow abstracts all kinds of data processing into operators. Op is act on the input tensor and writes the result of the calculation to the output tensor. A comprehensive operator is available inside OneFlow which can be found in the [ops directory](https://github.com/Oneflow-Inc/oneflow/tree/master/oneflow/python/ops).
