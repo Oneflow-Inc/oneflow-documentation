@@ -117,11 +117,11 @@ To prepare dataset easier, we provide jar package from Spark, which is convenien
 
 At first, we should download Spark and Spark-oneflow-connector：
 
-* Download the [spark-2.4.0-bin-hadoop2.7](https://archive.apache.org/dist/spark/spark-2.4.0/spark-2.4.0-bin-hadoop2.7.tgz) from the official website of Spark
+* Download the [spark-2.4.7-bin-hadoop2.7.tgz](https://archive.apache.org/dist/spark/spark-2.4.7/spark-2.4.7-bin-hadoop2.7.tgz) from the official website of Spark
 
 * Download jar package [here](https://oneflow-static.oss-cn-beijing.aliyuncs.com/oneflow-tutorial-attachments/spark-oneflow-connector-assembly-0.1.0_int64.jar), which is needed by Spark to support the ofrecord file format
 
-Then unzip the `spark-2.4.0-bin-hadoop2.7.tgz` and configure the environment variable `SPARK_HOME`:
+Then unzip the `spark-2.4.7-bin-hadoop2.7.tgz` and configure the environment variable `SPARK_HOME`:
 
 ```shell
 export SPARK_HOME=path/to/spark-2.4.0-bin-hadoop2.7
@@ -140,7 +140,7 @@ pyspark --master "local[*]"\
       ____              __
      / __/__  ___ _____/ /__
     _\ \/ _ \/ _ `/ __/  '_/
-   /__ / .__/\_,_/_/ /_/\_\   version 2.4.0
+   /__ / .__/\_,_/_/ /_/\_\   version 2.4.7
       /_/
 
 Using Python version 3.6.10 (default, May  8 2020 02:54:21)
