@@ -20,7 +20,7 @@ def mlp(data):
         hidden,
         10,
         kernel_initializer=initializer,
-        # dense为列存储，进行split(0)切分
+        # dense for column storage，use split(0) to cut
         model_distribute=flow.distribute.split(axis=0),
         name="dense2",
     )
