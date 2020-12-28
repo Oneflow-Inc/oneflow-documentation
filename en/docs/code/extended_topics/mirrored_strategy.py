@@ -40,7 +40,7 @@ def train_job(
 
 
 if __name__ == "__main__":
-    flow.config.gpu_device_num(2)  # 设置GPU数目
+    flow.config.gpu_device_num(2)  # set the number of devices(GPU)
     (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(
         BATCH_SIZE
     )
