@@ -8,9 +8,9 @@ For loading and saving for model, the common scences is:
 
 Strictly speaking, we save the untrained model as `checkpoint` or `snapshot`. It is different from `model saving` of a completed model.
 
-However in Oneflow, no matter the model has been trained or not, we can use the same **interface** to save model. Thus, like the `model`、`checkpoint`、`snapshot` we see in other framework is no difference in OneFlow.
+However in Oneflow, despite the model has been trained or not, we can use the **same interface** to save model. Thus, like the `model`、`checkpoint`、`snapshot` we see in other framework is no difference in OneFlow.
 
-In OneFlow, there are interfaces for module saving and loading under the `flow.checkpoint`.
+In OneFlow, there are interfaces for model saving and loading under the `flow.checkpoint`.
 
 In this article, we will introduce:
 
@@ -38,7 +38,7 @@ If the `name` value doesn't exist in the program, `get_variable` will create a b
 
 ### Use get_variable Create Object
 
-The prototype of `oneflow.get_variable` is:
+The signature of `oneflow.get_variable` is:
 
 ```python
 def get_variable(
@@ -78,11 +78,11 @@ The following example use `get_variable` to create parameters and build the netw
 
 ### Initializer Setting
 
-In the previous sections, when we call `get_variable` and specify the method of initializing the parameters by `initializer`. In OneFlow, we provide many initializers which can be found in [oneflow](https://oneflow.readthedocs.io/en/master/oneflow.html).
+In the previous sections, when we call `get_variable`, we specify the method of initializing the parameters by `initializer`. In OneFlow, we provide many initializers which can be found in [oneflow](https://oneflow.readthedocs.io/en/master/oneflow.html).
 
-Under the static graph mechanism, parameter initialization is done automatically by the OneFlow framework after setting the `initializer`.
+Under the static graph mechanism, we set the `initializer` first, and parameter initialization will be done by the OneFlow framework automatically.
 
-The `initializers` currently supported by OneFlow are listed below. Click on the links to see the relevant algorithms:
+The `initializers` currently supported by OneFlow are listed below. Click it to see the details of algorithm:
 
 
 * [constant_initializer](https://oneflow.readthedocs.io/en/master/oneflow.html#oneflow.constant_initializer)
@@ -116,9 +116,9 @@ We can use the following interfaces to get or update the value of the `variable`
 - `oneflow.get_all_variables` : Get the `variable` of all job functions.
 - `oneflow.load_variables` : Update the `variable` in  job function.
 
-`oneflow.get_all_variables` returns a dictionary whose key is the `name` specified when creating the `variable` and the value corresponding to the key is a tensor which has `numpy()` converted to a numpy array.
+`oneflow.get_all_variables` returns a dictionary whose key is the `name` specified when creating the `variable` and the value corresponding to the key is a tensor which has `numpy()` method to convert itself to a numpy array.
 
-For example, creating an object named `myblob` is in the job function:
+For example, creating an object named `myblob`  in job function:
 
 ```python
 @flow.global_function()
@@ -145,15 +145,15 @@ for epoch in range(20):
 
 The `flow.get_all_variables` gets the dictionary and `all_variables["myblob"].numpy()` gets the `myblob` object then converts it to a numpy array.
 
-Instead of `get_all_variables`, we can use `oneflow.load_variables` to update the values of varialbe.
+By contrary, we can use `oneflow.load_variables` to update the values of variable.
 
-The prototype of `oneflow.load_variables` is as follows:
+The signature of `oneflow.load_variables` is as follows:
 
 ```python
 def load_variables(value_dict, ignore_mismatch = True)
 ```
 
-Before using `load_variables`, we have to prepare a dictionary whose key is the `name` specified when creating `variable` and value is a numpy array. After passing the dictionary to `load_variables`, `load_variables` will find the variable object in the job function based on the key and update the value.
+Before call `load_variables`, we have to prepare a dictionary whose key is the `name` specified when creating `variable` and value is a numpy array. After passing the dictionary to `load_variables`, `load_variables` will find the variable object in the job function based on the key and update the value.
 
 For example:
 
@@ -171,7 +171,7 @@ flow.load_variables(myvardict)
 print(flow.get_all_variables()["myblob"].numpy())
 ```
 
-Although we choose the `random_normal_initializer` initialization method, because `flow.load_variables(myvardict)` updates the value of `myblob`. The final output will be:
+Although we have chosen the `random_normal_initializer`  initializer,  `flow.load_variables(myvardict)` updates the value of `myblob`. The final output will be:
 
 ```text
 [[1. 1. 1.]
@@ -181,20 +181,20 @@ Although we choose the `random_normal_initializer` initialization method, becaus
 
 ### Model Saving and Loading
 
-We can save or load the model by two methods.
+We can save or load the model by methods:
 
-- `oneflow.checkpoint.save` : Responsible for saving the current model to the specified path.
-- `oneflow.checkpoint.get` :  Import a model from the specified path.
+- `oneflow.checkpoint.save` : Save the model to the specified path.
+- `oneflow.checkpoint.get` :  Load a model from the specified path.
 
-The prototype of `save` is as follows which saves the model to the path specified by `path`.
+The signature of `save` is as follows which saves the model to the path specified by `path`.
 
 ```python
 def save(path, var_dict=None)
 ```
 
-The optional parameter `var_dict` saves the object specified in `var_dict` to the specified path if it is not `None`.
+If the optional parameter `var_dict` is not `None`, `save` will save the object specified in `var_dict` to the specified `path`.
 
-The prototype of `get` is as follows which loads the previously saved model specified by the `path`.
+The signature of `get` is as follows which loads the previously saved model specified by the `path`.
 
 ```python
 def get(path)
@@ -208,11 +208,11 @@ flow.load_variables(flow.checkpoint.get(save_dir))
 
 Attention：
 
-- The path specified by the `save` should either not exist or empty. Otherwise `save` will report an error (to prevent overwriting the original saved model)
+- The path specified by the `save` should either be empty or not existed. Otherwise `save` will report an error (to prevent overwriting the existed saved model)
 - OneFlow models are stored in a specified path in a certain structure. See the storage structure of OneFlow models below for more details.
 - Although there is no limit to the frequency of `save` in OneFlow. But excessive saving frequency will increase the load on resources such as disk and bandwidth.
 
-## The Structure of OneFlow Model Saving
+## The Structure of OneFlow Saved Model
 
 OneFlow model are the **parameters** of network. For now there are no meta graph information in OneFlow model. The path to save model have many sub-directories. Each of them is corresponding to the `name` of `job function` in model. For example, we define the model in the first place:
 
@@ -314,7 +314,7 @@ In model finetune and transfer learning, we always need：
 - Load some of the parameters from original model
 - Initialize the other part of parameters in model 
 
-We can use `oneflow.load_variables` to do the operation above. Here is a simple example to illustrate the concept.
+We can use oneflow.load_variables to complete the process above. Here is a simple example to illustrate the concept.
 
 First we need define a model and save it to `./mlp_models_1` after training:
 
