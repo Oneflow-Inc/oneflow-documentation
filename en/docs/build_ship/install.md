@@ -11,7 +11,7 @@ Install the latest CPU-ONLY version of OneFlow using the following command:
 python3 -m pip install --find-links https://release.oneflow.info oneflow_cpu --user
 ```
 
-Install the latest version of the OneFlow master branch using the following command (not recommended for use in production environments):
+Install the latest version of the OneFlow master branch using the following command (not recommended for production environments):
 ```shell
 python3 -m pip install --find-links https://staging.oneflow.info/branch/master oneflow_cu102 --user
 ```
