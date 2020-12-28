@@ -100,9 +100,9 @@ Besides the job function definition and configuration which mentioned above, cod
 
 - `flow.data.load_mnist(BATCH_SIZE,BATCH_SIZE)`: Prepare and load training data.
 
-- ` train_job(images, labels)`: return the loss value for each training process.
+- ` train_job(images, labels)`: return the loss value for each iteration.
 
-- `print(..., loss.mean())`: print loss values for every 20 training processes. 
+- `print(..., loss.mean())`: print loss values for every 20 iterations.
 
 This page is just a simple example on neural network. 
 A more comprehensive and detailed introduction of OneFlow can be found in [Convolution Neural Network for Handwriting Recognition](lenet_mnist.md). 
