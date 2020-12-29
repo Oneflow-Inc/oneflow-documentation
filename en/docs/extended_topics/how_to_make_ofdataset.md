@@ -124,7 +124,8 @@ At first, we should download Spark and Spark-oneflow-connector：
 Then unzip the `spark-2.4.7-bin-hadoop2.7.tgz` and configure the environment variable `SPARK_HOME`:
 
 ```shell
-export SPARK_HOME=path/to/spark-2.4.0-bin-hadoop2.7
+export SPARK_HOME=path/to/spark-2.4.7-bin-hadoop2.7
+export PATH=$SPARK_HOME/bin:$PATH
 ```
 
 We can launch the pyspark shell with the following command：
@@ -136,15 +137,15 @@ pyspark --master "local[*]"\
 ```
 
 ```text
-... Welcome to
+Welcome to
       ____              __
      / __/__  ___ _____/ /__
     _\ \/ _ \/ _ `/ __/  '_/
    /__ / .__/\_,_/_/ /_/\_\   version 2.4.7
       /_/
 
-Using Python version 3.6.10 (default, May  8 2020 02:54:21)
-SparkSession available as 'spark'. >>> 
+Using Python version 3.6.10 (default, Mar 25 2020 18:53:43)
+SparkSession available as 'spark'.
 ```
 
 We can complete the data conversion between OFRecord dataset and other formats in pyspark shell.
