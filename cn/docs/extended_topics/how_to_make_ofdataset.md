@@ -125,6 +125,7 @@ def ofrecord_reader(
 接着，解压 `spark-2.4.7-bin-hadoop2.7.tgz`，并配置环境变量 `SPARK_HOME`:
 ```shell
 export SPARK_HOME=path/to/spark-2.4.7-bin-hadoop2.7
+export PATH=$SPARK_HOME/bin:$PATH
 ```
 
 然后，通过以下命令启动 pyspark shell：
@@ -143,7 +144,7 @@ Welcome to
    /__ / .__/\_,_/_/ /_/\_\   version 2.4.7
       /_/
 
-Using Python version 3.6.10 (default, May  8 2020 02:54:21)
+Using Python version 3.6.10 (default, Mar 25 2020 18:53:43)
 SparkSession available as 'spark'.
 >>> 
 ```
