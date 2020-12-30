@@ -24,7 +24,7 @@ Looking forward to your [feedbacks](https://github.com/Oneflow-Inc/oneflow/issue
 
 ## Get Started
 
-- Follow the [instructions](build_ship/install.md) to install OneFlow.
+- Follow the [instructions](quick_start/install.md) to install OneFlow.
 
 - Tackle the common tasks of machine learning with OneFlow in [Basic topics](basics_topics/data_input.md). Such as building network, hyper-parameters configuration, loading data, distributed training and so on.
 
