@@ -123,7 +123,7 @@ flow.config.enable_legacy_model_io(False)
 - `oneflow.get_all_variables` : 获取所有作业函数中的的 `variable` 对象
 - `oneflow.load_variables` : 更新作业函数中的 `variable` 对象
 
-`oneflow.get_all_variables` 会返回一个字典，字典的 key 就是创建 `variable` 时指定的 `name`，key 对应的 value 就是一个张量对象，该张量对象有 `numpy()` 转为 numpy 数组。
+`oneflow.get_all_variables` 会返回一个字典，字典的 key 就是创建 `variable` 时指定的 `name`，key 对应的 value 就是一个张量对象，该张量对象有 `numpy()` 方法转为 numpy 数组。
 
 比如，在作业函数中创建了名为 `myblob` 的对象：
 ```python

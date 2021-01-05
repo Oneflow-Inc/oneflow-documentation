@@ -118,13 +118,14 @@ def ofrecord_reader(
 ### spark 的安装与启动
 首先，下载 spark 及 spark-oneflow-connector：
 
-* 在 spark 官网下载[spark-2.4.0-bin-hadoop2.7](https://archive.apache.org/dist/spark/spark-2.4.0/spark-2.4.0-bin-hadoop2.7.tgz)
+* 在 spark 官网下载[spark-2.4.7-bin-hadoop2.7.tgz](https://archive.apache.org/dist/spark/spark-2.4.7/spark-2.4.7-bin-hadoop2.7.tgz)
 
 * 在[这里](https://oneflow-static.oss-cn-beijing.aliyuncs.com/oneflow-tutorial-attachments/spark-oneflow-connector-assembly-0.1.0_int64.jar)下载 jar 包，spark 需要它来支持 ofrecord 格式
 
-接着，解压 `spark-2.4.0-bin-hadoop2.7.tgz`，并配置环境变量 `SPARK_HOME`:
+接着，解压 `spark-2.4.7-bin-hadoop2.7.tgz`，并配置环境变量 `SPARK_HOME`:
 ```shell
-export SPARK_HOME=path/to/spark-2.4.0-bin-hadoop2.7
+export SPARK_HOME=path/to/spark-2.4.7-bin-hadoop2.7
+export PATH=$SPARK_HOME/bin:$PATH
 ```
 
 然后，通过以下命令启动 pyspark shell：
@@ -140,10 +141,10 @@ Welcome to
       ____              __
      / __/__  ___ _____/ /__
     _\ \/ _ \/ _ `/ __/  '_/
-   /__ / .__/\_,_/_/ /_/\_\   version 2.4.0
+   /__ / .__/\_,_/_/ /_/\_\   version 2.4.7
       /_/
 
-Using Python version 3.6.10 (default, May  8 2020 02:54:21)
+Using Python version 3.6.10 (default, Mar 25 2020 18:53:43)
 SparkSession available as 'spark'.
 >>> 
 ```

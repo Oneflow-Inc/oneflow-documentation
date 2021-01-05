@@ -47,7 +47,8 @@ def train_job(
             bias_initializer=initializer1,
             name="dense1",
         )
-        initializer2 = flow.random_uniform_initializer(-np.sqrt(1/500.0), np.sqrt(1/500.0))
+        initializer2 = flow.random_uniform_initializer(
+            -np.sqrt(1/500.0), np.sqrt(1/500.0))
         logits = flow.layers.dense(
             hidden, 10, kernel_initializer=initializer2, bias_initializer=initializer2, name="dense2"
         )
@@ -59,9 +60,6 @@ def train_job(
 
 
 if __name__ == "__main__":
-    check_point = flow.train.CheckPoint()
-    check_point.init()
-
     (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(
         BATCH_SIZE, BATCH_SIZE
     )
@@ -100,13 +98,11 @@ In OneFlow, a neural network training or prediction task needs two pieces of inf
 
 Besides the job function definition and configuration which mentioned above, code in this script contains all the points of how to train a neural network.
 
-* `check_point.init()`: Model initialization;
+- `flow.data.load_mnist(BATCH_SIZE,BATCH_SIZE)`: Prepare and load training data.
 
-* `load_data(BATCH_SIZE)`: Data loading;
+- ` train_job(images, labels)`: return the loss value for each iteration.
 
-* `loss = train_job(images, labels)`: Return the loss value of each iteration;
-
-* `print(..., loss.mean())`: Print a loss value once every 20 iterations;
+- `print(..., loss.mean())`: print loss values for every 20 iterations.
 
 This page is just a simple example on neural network. 
 A more comprehensive and detailed introduction of OneFlow can be found in [Convolution Neural Network for Handwriting Recognition](lenet_mnist.md). 
