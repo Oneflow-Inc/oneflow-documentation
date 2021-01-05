@@ -89,7 +89,7 @@ nav:
     - Home: index.md
 
     - Quick Start:
-      - Installation: build_ship/install.md
+      - Installation: quick_start/install.md
       - Quick Start in 3 Minutes: quick_start/quickstart_in_3_min.md
       - Recognition of MNIST Handwritten Digits: quick_start/lenet_mnist.md
 
