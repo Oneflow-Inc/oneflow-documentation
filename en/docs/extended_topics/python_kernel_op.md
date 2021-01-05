@@ -102,7 +102,7 @@ def user_relu_forward(x):
 This object contains methods such as `Op`, `Input` and so on which are used to encapsulate a custom op e explained below:
 
 - `Op("user_relu_forward")`：The parameter must be `op_type_name` which previously registered in C++. OneFlow finds the Op type already registered and instantiates the op object.
-- `Input("in", [input_blob])`：Corresponds to `Input` for op registration in C++. The first parameter string must match the string set in `Input` when the op is registered in C++. The second parameter is the tensor of the input which is a `list`. Because an Op allows multiple inputs.
+- `Input("in", [input_blob])`：Corresponds to `Input` for op registration in C++. The first parameter string must match the string set in `Input` when the op is registered in C++. The second parameter is the tensor of the input which is a `list` because an Op allows multiple inputs.
 - `Output("out")`：This corresponds to `Output` for op registration in C++.
 - `Build`：After the above settings, call `Build` to get the Python wrapper for the custom op
 
@@ -111,10 +111,10 @@ The following code will get the output of a custom Op:
 return op.InferAndTryRun().SoleOutputBlob()
 ```
 
-The `InferAndTryRun` completes the derivation and returns `UserOp`. If the result is only one output, use `SoleOutputBlob` to get the unique output. Otherwise use `RemoteBlobList` to get a list with multiple outputs.
+The `InferAndTryRun` completes the inference and returns `UserOp`. If the result is the sole output, use `SoleOutputBlob` to get the unique output. Otherwise use `RemoteBlobList` to get a list with multiple outputs.
 
 ## Implementing the Kernel with Python
-As described at the beginning of this article, Op is only a logical concept and the real calculations need to be done in the Kernel. In OneFlow, it can be implemented in both C++ and Python.This article only describes the accessible implementations of the Python Kernel.  To implement the Kernel in C++, please refer to [Extending Op with C++](./user_op.md).
+As described at the beginning of this article, Op is only a logical concept and the real computation need to be done in the Kernel. In OneFlow, it can be implemented in both C++ and Python.This article only describes the accessible implementations of the Python Kernel.  To implement the Kernel in C++, please refer to [Extending Op with C++](./user_op.md).
 
 In order to provide the Python Kernel for the `user_relu` we set up previously, we need to create a `user_relu_py_kernel.py` file with the following contents:
 
@@ -132,7 +132,7 @@ The above `forward` method is necessary and its implementation corresponds to ou
 - The method name must be `forward`.
 - There is only one parameter of type `tuple`. The number and order of elements in `tuple` corresponds to the `Input` of the Op registration. For example, we previously registered `Input("in")` for `user_relu`. Then `x` in `(x, ) = args` in the above code will take the value of `in`.
 - Output corresponds to `Output` when Op is registered.
-- Both parameters and return values are `numpy` objects which means cannot be strings, integers and etc.
+- Both parameters and return values are `numpy` objects which also means they cannot be strings, integers and etc.
 
 ## Using Custom Op
 After finish above, we have a directory named `user_relu` which containing three files with the following structure:
