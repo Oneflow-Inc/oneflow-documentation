@@ -34,14 +34,14 @@ user_sigmoid
 - `op_type_name_py_api.py`(以上的 `user_sigmoid_py_api.py`)文件中放置 `Python Wrapper`，通过 `oneflow.user_op_builder` 将实现的 `Python Kernel` 导出给用户使用
 - `op_type_name_py_kernel.py`(以上的 `user_sigmoid_py_kernel.py`)文件中放置 Python 实现的自定义算子的前向计算逻辑和后向计算逻辑
 
-在下文中，我们将分别介绍：
+下文中，我们将介绍如何用 Python 实现一个自定义的 user_relu Op，它包括：
 
 - 如何编写 `op_type_name_cpp_def.cpp` 文件，定义 Op 信息
 - 如何编写 `op_type_name_py_api.py` 文件，封装 Op 的 Python 接口
 - 如何编写 `op_type_name_py_kernel.py` 文件，使用 Python 实现 Op 的计算 Kernel
 - 在 OneFlow 中如何使用 `Python Kernel` 类型的自定义 Op
 
-下文中，我们将介绍如何用 Python 实现一个自定义的 `user_relu` Op。
+
 
 ## Op 的实现与注册
 首先，我们在 `user_relu_cpp_def.cpp` 中定义 op 并完成注册：
@@ -73,7 +73,7 @@ REGISTER_USER_OP("user_relu_forward")
 - `.Attr<std::string>("device_sub_tag", "py")` 是必需的，它告知 OneFlow 在使用该 Op 时默认调用Python Kernel
 - 与自定义 op 有关的接口集中在 `oneflow::user_op` 中，使用名称空间 `oneflow` 可以简化类型名称
 - 宏 `REGISTER_USER_OP` 用于注册 op，其接受的参数 `user_relu_forward` 是 `op_type_name`。
-- 使用 `REGISTER_USER_OP` 注册后，其实会返回一个 `OpRegistry` 类（位于[user_op_registry.h]()），通过调用该类方法，完成对自定义 op 的设置：
+- 使用 `REGISTER_USER_OP` 注册后，其实会返回一个 `OpRegistry` 类（位于[user_op_registry.h](https://github.com/Oneflow-Inc/oneflow/blob/master/oneflow/core/framework/user_op_registry.h))，通过调用该类方法，完成对自定义 op 的设置：
     1. `Input("in")` 表示其有一个名为 "in" 的输入
     2. `Output("out")` 表示其有一个名为 "out" 的输出
     3. `SetTensorDescInferFn` 用于设置形状及数据类型推导函数，描述该算子的输出的形状及类型与输入的关系。以上代码中，输出的形状、数据类型与输入的一致
