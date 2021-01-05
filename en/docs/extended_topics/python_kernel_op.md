@@ -78,10 +78,10 @@ Analyze the above code:
     2. `Output("out") ` indicates it has an output named "out".
     3. `SetTensorDescInferFn` is used to set the shape and data type inference function. Also to describe the  the shape and data type's relationship between the output and input. In the above code, the output shape and data type are as same as the input.
 
-The `op_type_name_cpp_def.cpp` is the only C++ file that will be used in the implementation of the `Python Kernel`. It is used to configure information of Op. At this stage, it is not possible to skip the step of configuring Op using C++ (since it is necessary for setting advanced information such as distributions). But as we can see, the file does not involve specific operations. Even if you are not familiar with C++, you can easily master it according to our examples.
+The `op_type_name_cpp_def.cpp` is the only C++ file that will be used in the implementation of the `Python Kernel`. It is used to configure information of Op. By far, we cannot remove the C++ configuration of Op since it is necessary for setting advanced information such as distributions. But as we can see, that file does not involve specific operations, so, even you are not familiar with C++, you can easily master it according to our examples.
 
 ## Wrapping Python Interface of Op
-In order for the user to use the `user_relu` we just created at the Python level. We need to create a `user_relu_py_api.py` file with the following contents:
+In order to make it easier for user to use the `user_relu` we just created at the Python level. We need to create a `user_relu_py_api.py` file with the following contents:
 
 ```python
 import oneflow as flow
@@ -99,7 +99,7 @@ def user_relu_forward(x):
 
 `flow.user_op_builder("op_myrelu")` actually returns a `UserOpConfBuilder` object named `op_myrelu`.
 
-This object contains methods such as `Op`, `Input` and etc which are used to encapsulate a custom op. Explained below:
+This object contains methods such as `Op`, `Input` and so on which are used to encapsulate a custom op e explained below:
 
 - `Op("user_relu_forward")`：The parameter must be `op_type_name` which previously registered in C++. OneFlow finds the Op type already registered and instantiates the op object.
 - `Input("in", [input_blob])`：Corresponds to `Input` for op registration in C++. The first parameter string must match the string set in `Input` when the op is registered in C++. The second parameter is the tensor of the input which is a `list`. Because an Op allows multiple inputs.
