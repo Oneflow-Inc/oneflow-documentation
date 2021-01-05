@@ -32,7 +32,7 @@ In details:
 
 - `op_type_name_cpp_def.cpp`(the  `user_sigmoid_cpp_def.cpp` above) store the definition of Op.
 - `op_type_name_py_api.py`(the `user_sigmoid_py_api.py` above) store `Python Wrapper` which export the implemented `Python Kernel` to the user by using `oneflow.user_op_builder`.
-- `op_type_name_py_kernel.py`(the `user_sigmoid_py_kernel.py` above) stores forward and backward calculation logic for custom operators implemented by Python.
+- `op_type_name_py_kernel.py`(the `user_sigmoid_py_kernel.py` above) stores forward and backward computing logic for custom operators implemented by Python.
 
 
 In the following section, we'll show how to implement a custom `user_relu` Op in Python which include:
