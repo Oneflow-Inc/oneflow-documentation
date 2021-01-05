@@ -34,14 +34,14 @@ In details:
 - `op_type_name_py_api.py`(the `user_sigmoid_py_api.py` above) store `Python Wrapper` which export the implemented `Python Kernel` to the user by using `oneflow.user_op_builder`.
 - `op_type_name_py_kernel.py`(the `user_sigmoid_py_kernel.py` above) stores forward and backward calculation logic for custom operators implemented by Python.
 
-In the following sections:
+
+In the following section, we'll show how to implement a custom `user_relu` Op in Python which include:
 
 - How to write `op_type_name_cpp_def.cpp` to define Op.
 - How to write `op_type_name_py_api.py` to encapsulate the Python interface of Op.
 - How to write the `op_type_name_py_kernel.py` and uses Python to implement Op's calculation Kernel.
 - How to use `Python Kernel` custom Op in OneFlow.
 
-In the following section, we'll show how to implement a custom `user_relu` Op in Python.
 
 ## Implementation and Registration of Op
 First, we define op in `user_relu_cpp_def.cpp` and register it.
