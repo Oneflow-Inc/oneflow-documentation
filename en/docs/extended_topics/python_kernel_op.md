@@ -1,25 +1,25 @@
 # Extending Op with Python
-**Attention** : The Python Kernel covered in this article was only fully tested under the `gcc 4.8.5` compilation environment. Further refinements are planned in [Issue 3951](https://github.com/Oneflow-Inc/oneflow/issues/3951).
+**Attention** : The Python Kernel covered in this article was only fully tested under the `gcc 4.8.5` build environment. Further refinements are planned in [Issue 3951](https://github.com/Oneflow-Inc/oneflow/issues/3951).
 
 ## Background Information
-OneFlow abstracts all kinds of data processing into operators. Op is act on the input tensor and writes the result of the calculation to the output tensor. A comprehensive operator is available inside OneFlow which can be found in the [ops directory](https://github.com/Oneflow-Inc/oneflow/tree/master/oneflow/python/ops).
+OneFlow abstracts all kinds of data processing into operators. Op is act on the input tensor and writes the result of the calculation to the output tensor. All operators available of OneFlow  can be found in the [ops directory](https://github.com/Oneflow-Inc/oneflow/tree/master/oneflow/python/ops).
 
-When OneFlow's existing Python operators and their combinations are not sufficient for building neural networks or when the Python level operators do not meet performance requirements. Then we can develop custom ops. OneFlow provides two ways to develop custom Ops. One is the Python based `Python Kernel` development and the other is the `C++ Kernel` development which is introduced in the article [Extending Op with C++](./user_op.md)
+When OneFlow's existing Python operators and their combinations are not sufficient for building neural networks or when the Python level operators do not meet performance requirements. Then we can develop custom ops. OneFlow provides two ways to develop custom Ops. One is the Python based `Python Kernel` and the other is the `C++ Kernel` which is introduced in the article [Extending Op with C++](./user_op.md)
 
-`Python Kernel` has a simple development process and is suitable for rapid pre-research, algorithm verification and other scenarios because it is mainly extended by Python. The `C++ Kernel` is efficient and suitable for developing operators that have proven reliability and are pursue for performance .
+`Python Kernel` has a simple development process and is suitable for pre-research, algorithm verification and other scenarios because it is mainly extended by Python. The `C++ Kernel` is efficient and suitable for developing operators that have been proven reliability and with performance requirement.
 
 This article introduces the background knowledge and basic concepts of operator development then demonstrates how to develop the `Python Kernel`.
 
 ### Basic Concepts
-The concepts of `op_type_name`, `Op` and `Kernel` need to be understood before proceeding with OneFlow operator development.
+The concepts of `op_type_name`, `Op` and `Kernel` need to be understood before OneFlow operator development.
 
 - op_type_name：op_type_name is the globally unique ID of op. op_type_name is used by OneFlow to confirm op type and then to instantiate op which is used to build the calculation map. The relationship between op type and op is similar to the relationship between class and object.
-- op：Logical operators that contain information such as input and output shapes for reasoning. But do not contain specific logic for processing data.
-- kernel：The logic of logical op could be different in processing depending on the physical device and data type. The specific processing logic at runtime is done by the kernel. In brief, op has a one-to-many relationship with the kernel and we can use Python to do the specific operations which are called the `Python Kernel` or [Extending Op with C++](./user_op.md).
+- op：Logical operators that contain information such as input and output shapes for reasoning. But do not contain specific computing logic for processing data.
+- kernel：The computing logic of op could be different depending on the physical device and data type. The specific processing logic at runtime is handled by kernel. In brief, op has a one-to-many relationship with the kernels and we can use Python to do the specific operations which are called the `Python Kernel` or [Extending Op with C++](./user_op.md).
 - The OneFlow kernel is implemented by C++ but the user interface uses Python. So you need to write the `Python Wrapper` conventionally to enable the Python Op interface to interact with the C++ kernel.
 
 ### Development Steps
-To extend Op with Python, we should prepare a directory named `op_type_name` where you can place the necessary files by convention.  Use [oneflow/python/test/custom_ops/user_sigmoid](https://github.com/Oneflow-Inc/oneflow/tree/master/oneflow/python/test/custom_ops/user_sigmoid) as example:
+To develop custom Op with Python, we should prepare a directory named `op_type_name` where you can place the necessary files in it.  Use [oneflow/python/test/custom_ops/user_sigmoid](https://github.com/Oneflow-Inc/oneflow/tree/master/oneflow/python/test/custom_ops/user_sigmoid) as example:
 
 ```text
 user_sigmoid
@@ -44,7 +44,7 @@ In the following sections:
 In the following section, we'll show how to implement a custom `user_relu` Op in Python.
 
 ## Implementation and Registration of Op
-First, we define op in `user_relu_cpp_def.cpp` and complete the registration.
+First, we define op in `user_relu_cpp_def.cpp` and register it.
 ```cpp
 #include "oneflow/core/framework/framework.h"
 
@@ -73,10 +73,10 @@ Analyze the above code:
 - `.Attr<std::string>("device_sub_tag", "py")` is necessary which tells OneFlow to call the Python Kernel when using this Op.
 - The interface related to the custom op is organized in `oneflow::user_op`. Using the namespace `oneflow` to simplify the type name.
 - The macro `REGISTER_USER_OP` is used to register Op which accepts an parameter `user_relu_forward` as `op_type_name`.
-- After registering with `REGISTER_USER_OP`, it actually returns an `OpRegistry` class (located in [user_op_registry.h]()). By calling this class, the setting of a custom op is accomplished:
+- After registering with `REGISTER_USER_OP`, it actually returns an `OpRegistry` class (located in [user_op_registry.h](https://github.com/Oneflow-Inc/oneflow/blob/master/oneflow/core/framework/user_op_registry.h)). By calling this class, the setting of a custom op is accomplished:
     1. `Input("in") ` indicates it has an input named "in".
-    2. `Output("out") ` indicates that it has an output named "out".
-    3. `SetTensorDescInferFn` is used to set the shape and data type derivation function. Also to describe the relationship between the shape and type of the output of the operator and the input. In the above code, the output shape and data type are same as the input.
+    2. `Output("out") ` indicates it has an output named "out".
+    3. `SetTensorDescInferFn` is used to set the shape and data type inference function. Also to describe the  the shape and data type's relationship between the output and input. In the above code, the output shape and data type are as same as the input.
 
 The `op_type_name_cpp_def.cpp` is the only C++ file that will be used in the implementation of the `Python Kernel`. It is used to configure information of Op. At this stage, it is not possible to skip the step of configuring Op using C++ (since it is necessary for setting advanced information such as distributions). But as we can see, the file does not involve specific operations. Even if you are not familiar with C++, you can easily master it according to our examples.
 
