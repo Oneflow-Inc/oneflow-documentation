@@ -2,7 +2,7 @@
 
 As described in [Data Input](../basics_topics/data_input.md), OneFlow supports two ways to load data: one is directly use Numpy data, the other one is use DataLoader and some relative operators. 
 
-Under the large industrial scene, data loading can easily become the bottleneck through the training process. In other frameworks, the data loading pipeline often exists as a separate module that needs to be adapted for different scenarios which is not really versatile. In OneFlow, the DataLoader and other preprocessing operators are on same level as other common operators and can be accelerated in the same way as other operators which can easily solving the issue of large-scale data loading.
+Under the large industrial scene, data loading can easily become the bottleneck through the training process. In other frameworks, the data loading pipeline often exists as a separate module that needs to be adapted for different scenarios which is not really versatile. In OneFlow, the DataLoader and other preprocessing operators are on same level as other common operators and can be accelerated in the same way as other operators which can easily solve the issue of large-scale data loading.
 
 To use DataLoader in OneFlow, we usually apply `XXXReader` to load the file data, and use `XXXDecode` to decode or preprocess the data. These two operators work together to complete the function of data loading.
 
@@ -30,7 +30,7 @@ This article will take Mini Dataloader as an example to explain the key points o
 
 A complete Dataloader generally includes two types of Op: 
 
-- Data Reader: It is responsible for taking data from the file and loading it into the input flow in memory. Then ultimately setting the data to the output of the Op. It can be divided into Loader and Parser where Loader is responsible for reading raw data from the file system and Parser is responsible for organizing the raw data into the output of a Data Reader Op.
+- Data Reader: It is responsible for taking data from the file and loading it into the input stream in memory. Then setting the data to the output of the Op. It can be divided into Loader and Parser where Loader is responsible for reading raw data from the file system and Parser is responsible for organizing the raw data into the output of a Data Reader Op.
 - Data Preprocessor: Preprocessing the output data from the Data Reader Op. Common preprocessing includes image decoding, cropping, decoding and etc.
 
 For some simple data formats, which is no need for preprocessing, we can omit the Data Decoder and just use Data Preprocessor. 
@@ -229,9 +229,9 @@ class MiniDataReader final : public DataReader<TensorBuffer> {
 };
 ```
 
-As you can see, in addition to our own `MiniDataset` from `DataSet`, OneFlow also has a built-in `XXXDataSet` called **Modifier**.
+As you can see, in addition to our own `MiniDataset` from `DataSet`, OneFlow also has a built-in `XXXDataSet` called **Decorator**.
 
-DataSet can add additional functionality to the existing `DataSet`, such as the above `BatchDataset` for batch reading. DataSet modifiers are located in the [user/data directory](https://github.com/Oneflow-Inc/oneflow/tree/master/oneflow/user/data) and common decorators are:
+Decorator can add functionality to the existing `DataSet`, such as the above `BatchDataset` for batch reading. DataSet decorator are located in the [user/data directory](https://github.com/Oneflow-Inc/oneflow/tree/master/oneflow/user/data) and common decorators are:
 
 - BatchDataset：For batch reading data.
 - RandomShuffleDataset：Used to randomize the order of data
@@ -240,7 +240,7 @@ DataSet can add additional functionality to the existing `DataSet`, such as the 
 
 After everything is done, finally call the `StartLoadThread`. As the name implies, starting the loading thread in `StartLoadThread` and it will eventually trigger to override the `MiniDataset::Next`.
 
-The above structure of `MiniDataReader` can be used as a template with no special requirements. There is no need to modify it during the implementation of the custom DataLoader.
+The above structure of `MiniDataReader` can be used as a template. With no special requirements, there is no need to modify it during the implementation of the custom DataLoader.
 
 ## MiniDataset 
 
