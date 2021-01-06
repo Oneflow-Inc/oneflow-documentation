@@ -135,7 +135,7 @@ The above `forward` method is necessary and its implementation corresponds to ou
 - Both parameters and return values are `numpy` objects which also means they cannot be strings, integers and etc.
 
 ## Using Custom Op
-After finish above, we have a directory named `user_relu` which containing three files with the following structure:
+After finish above, we have a directory named `user_relu` which containing three files with the following hierarchy:
 
 ```text
 user_relu/
@@ -144,7 +144,7 @@ user_relu/
 └── user_relu_py_kernel.py
 ```
 
-In the path of the `user_relu` folder, we can create a test file that calls the custom Op we just implemented as follows:
+In the path of the `user_relu` folder, we can create a test file as follows that calls the custom Op we just implemented:
 
 ```python
 import oneflow as flow
@@ -189,7 +189,7 @@ We have already done the forward calculation of the `user_relu` in the above ste
 
 The code that provides the reverse calculation for the custom Op needs to be written in the `op_type_name_cpp_def.cpp` and registered with the macro `REGISTER_USER_OP_GRAD`.
 
-From a mathematical point of view, the registration process is where we specify a backward gradient calculation method for a custom op. From a programming point of view, it is setting up a backward-generating function for a custom Op. Within that function, writing code that specifies how the input gradient of the Op is calculated.
+From a mathematical point of view, the registration process is where we specify a backward gradient calculation method for a custom op. From a programming point of view, it is setting up a backward-generating function for a custom Op that specifies how the input gradient of the Op is computed.
 
 In the following, we will implement a special Op called `user_relu_backward`. We will use this "specially tailored" Op when registering a backward gradient for `user_relu`.
 
@@ -212,7 +212,7 @@ REGISTER_USER_OP("user_relu_backward")
 
 Please pay attention that`.Attr<std::string>("device_sub_tag", "py")` must in the above code. It tells OneFlow to call the Python Kernel by default when using this Op.
 
-By the same logic, since we don't need to call `user_relu_backward`. So you don't need to wrap the Python interface to `user_relu_py_api.py` for `user_relu_backward`.  We can implement it directly in the Python Kernel.
+By the same logic, since the users don't need to call `user_relu_backward` directly. So we don't need to provide the Python wrapper for `user_relu_backward` in `user_relu_py_api.py`.  We just need to implement its Python Kernel.
 
 Implement the `backward` in `user_relu_py_kernel.py`:
 
@@ -225,7 +225,7 @@ def backward(args):
 Its parameter is a `tuple` which number and order are corresponds to `Input` for Op registration and the output corresponds to `Output` for Op registration.
 
 ### Register reverse gradient for Op.
-We need to register backward for our forwrd Op by `REGISTER_USER_OP_GRAD` in `user_relu_cpp_def.cpp`.
+We need to register backward for our forward Op by `REGISTER_USER_OP_GRAD` in `user_relu_cpp_def.cpp`.
 
 For example:
 ```c++
@@ -248,7 +248,7 @@ REGISTER_USER_OP_GRAD("user_relu_forward")
     });
 ```
 
-By `REGISTER_USER_OP_GRAD("user_relu_forward")` we registers the backward gradient rule for forward Op which takes one parameter is **forward ** `op_type_name`.
+By `REGISTER_USER_OP_GRAD("user_relu_forward")` we registers the backward gradient rule for forward Op which takes one parameter that is **forward** `op_type_name`.
 
 Then set the backward gradient rule by `SetBackwardOpConfGenFn`. Similar to Op, register the backward in `op_type_name_cpp_def.cpp` which doesn't really do the calculation. It sets the relationship between the backward calculation and the forward then telling the OneFlow framework:
 
@@ -281,7 +281,7 @@ The following code is:
       ctx->FwOp().InputGradBind(user_op::OpArg("x", 0), dx_get_func);
 ```
 
-To bind the forward input `x` to the output (`dx`) of the gradient calculation method you just set. So it can be automatically derived when training with OneFlow.
+To bind the forward input `x` to the output (`dx`) of the gradient calculation method you just set. So the gradient will be calculated by the autograd mechanism of OneFlow.
 
 ## Others
 
