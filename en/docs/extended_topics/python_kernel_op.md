@@ -173,7 +173,7 @@ if __name__ == "__main__":
 
 In the above code, the module object is created by `flow.experimental.custom_op_module` which takes two parameters. The first one is `op_type_name` and the second one is the path to the `user_relu`. The returned `module` object represents our custom Op.
 
-Next, the custom Op can be enabled by `user_sigmoid_op.py_api().cpp_def().py_kernel().build_load().` The Python interface of Op when it is enabled is defined in `user_relu_py_api.py' as (`user_relu_forward`). It is placed in the `api` namespace of the `moudle` object. Therefore, we need to call it in the following way:
+Next, the custom Op can be enabled by `user_sigmoid_op.py_api().cpp_def().py_kernel().build_load().` The Python interface of Op when it is enabled is defined in `user_relu_py_api.py as` (`user_relu_forward`). It is placed in the `api` namespace of the `moudle` object. Therefore, we need to call it in the following way:
 
 ```python
 user_sigmoid_op.api.user_relu_forward(x)
