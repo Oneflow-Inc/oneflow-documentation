@@ -11,11 +11,6 @@ python3 -m pip install --find-links https://release.oneflow.info oneflow_cu102 -
 python3 -m pip install --find-links https://release.oneflow.info oneflow_cpu --user
 ```
 
-使用以下命令安装 OneFlow master 分支最新版本（不建议在生产环境使用）：
-```shell
-python3 -m pip install --find-links https://staging.oneflow.info/branch/master oneflow_cu102 --user
-```
-
 使用以下命令安装 OneFlow 最新 master 分支（不建议生产环境下使用）：
 ```shell
 python3 -m pip install --find-links https://staging.oneflow.info/branch/master oneflow_cu102 --user

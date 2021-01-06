@@ -240,30 +240,26 @@ All code in this article only call synchronously to get results from job functio
 
 ### Model Initialization and Saving
 
-The instantiation object of `oneflow.train.CheckPoint` can be used for models initialization, saving and loading. During the training process, we can use `init` method to initialize model and use `save` method to save model. For example:
+The example of model saved by the `flow.checkpoint.save`:
+
 
 ```python
 if __name__ == '__main__':
-  check_point = flow.train.CheckPoint()
-  check_point.init()
   #data loading and training ...  
-  check_point.save('./lenet_models_1') 
+  flow.checkpoint.save("./lenet_models_1")
 ```
 
 When the model is saved, we will get a **folder** called "lenet_models_1". This folder contains directories and files corresponding with the model parameters.
 
 ### Model Loading
 
-During the evaluation or prediction, we can use `oneflow.train.CheckPoint.load` to load the existing parameters of model. For example:
+During the prediction process, we can load the parameter from the file to memory by `flow.checkpoint.get` and then update the parameter to the model by `flow.load_variables`. For example:
 
 ```python
 if __name__ == '__main__':
-  check_point = flow.train.CheckPoint()
-  check_point.load("./lenet_models_1")
+  flow.load_variables(flow.checkpoint.get("./lenet_models_1"))
   #evaluation process  ...
 ```
-
-Code above will automatically load the saved model.
 
 ## Evaluation of Model
 The job function for evaluation is **basically same** as job function for training. The small difference is that the model we use is already saved in evaluation process. Thus, initialization and update of model during iteration are not needed.
@@ -304,11 +300,10 @@ def acc(labels, logits):
 
 ```
 Call the job function for evaluation:
+
 ```python
 if __name__ == "__main__":
-
-    check_point = flow.train.CheckPoint()
-    check_point.load("./lenet_models_1")
+    flow.load_variables(flow.checkpoint.get("./lenet_models_1"))
     (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(
         BATCH_SIZE, BATCH_SIZE
     )
@@ -321,7 +316,7 @@ if __name__ == "__main__":
     print("accuracy: {0:.1f}%".format(g_correct * 100 / g_total))
 ```
 
-So far, we call the job function for evaluation looply and print the accuracy of evaluation result on testing set.
+So far, we call the job function for evaluation looply and print the accuracy of evaluation result on MNIST testing set.
 
 ## Image Prediction
 After making a few changes to the code above, it will take the data from the raw images rather than existing dataset. Then we can get a model to predict the content from the images.
@@ -340,9 +335,7 @@ def main():
     if len(sys.argv) != 2:
         usage()
         return
-
-    check_point = flow.train.CheckPoint()
-    check_point.load("./lenet_models_1")
+    flow.load_variables(flow.checkpoint.get("./lenet_models_1"))
 
     image = load_image(sys.argv[1])
     logits = eval_job(image, np.zeros((1,)).astype(np.int32))
