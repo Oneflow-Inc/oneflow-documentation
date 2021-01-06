@@ -24,7 +24,7 @@ In the OneFlow framework, there are three types of registries associated with cu
 
 * `OpKernelRegistry`：Manage kernel registrations for performing user logic at runtime.
 
-In programming, you're actually writing your custom Op in C++ and generating the DLL (so file) which you load in Python to use the custom op. You can use the custom op  by loading the corresponding so file in Python. This is the same mechanism that is used in [Extending Op with Python](./python_kernel_op.md). But   the details are encapsulated in the relevant APIs and are transparent to the developer.
+In programming, you're actually writing your custom Op in C++ and generating the DLL (so file) which you load in Python to use the custom op. You can use the custom op by loading the corresponding so file in Python. The mechanism used in [Extending Op with Python](./python_kernel_op.md) is same but the details of that are transparent to the developers.
 
 The data structure of user op can be  viewed at [user_op_conf.proto](https://github.com/Oneflow-Inc/oneflow/blob/master/oneflow/core/framework/user_op_conf.proto)：
 
@@ -94,7 +94,7 @@ REGISTER_USER_OP("myrelu")
 } // namespace oneflow
 ```
 
-It does exactly the same thing as [Extending Op with Python](./python_kernel_op.md) that is registers an Op named `myrelu` with `REGISTER_USER_OP` and sets both input output then derives the shape and data type of the output from the input.
+It does exactly the same thing as [Extending Op with Python](./python_kernel_op.md): registers an Op named `myrelu` using `REGISTER_USER_OP` and sets the input, output, and then sets the shape and data type of the output according to the input.
 
 ### Implementation and Registration of CPU Kernel 
 
@@ -522,7 +522,7 @@ class XKernel final : public oneflow::user_op::OpKernel {
 
 In [Extending Op with Python](./python_kernel_op.md#op_2), we explained how to provide backwards computation for a custom Op which is registered by the `REGISTER_USER_OP_GRAD`.
 
-In fact, `REGISTER_USER_OP_GRAD` is actually defining the backward subgraph for derivation. So we don't necessarily need to specifically implement a backward Op to evaluate the gradient which like in [Providing Backward Computation for Custom Op](./python_kernel_op.md#op_2) to implement a backward Op specifically to derive the gradient. But most of the time we can use OneFlow's existing Op to describe the backward subgraph. This section supplements [Using Python Extension Op](./python_kernel_op.md#op_2) by detailing the method of backward registration and representing an inverse subgraph using an existing Op.
+In fact, `REGISTER_USER_OP_GRAD` is actually defining the backward subgraph for derivation. So we don't necessarily need to specifically implement a backward Op to evaluate the gradient which like in [Providing Backward Computation for Custom Op](./python_kernel_op.md#op_2) to implement a backward Op specifically to derive the gradient. Most of the time we can use OneFlow's existing Op to describe the backward subgraph. This section supplements [Using Python Extension Op](./python_kernel_op.md#op_2) by introducing how to construct the backward subgraph using existing op during the gradient registration.
 
 Oneflow is automatically get gradient during backward map expansion and the OneFlow framework uses [Automatic Differentiation](https://en.wikipedia.org/wiki/Automatic_differentiation) to get the gradient which means automatically find the gradient of the entire expression using the chain rule.
 
