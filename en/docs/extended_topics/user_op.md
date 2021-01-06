@@ -357,7 +357,7 @@ Building the python wrapper inside `myrelu` is exactly the same as the [ Python 
 
 So far, we have finished building the `myrelu` which is a relatively simple op. But if we need to build a more complex op, we will need to use some additional advanced features in the registration process.
 
-We will cover from Op registration, kernel registration, gradient registration and encapsulation of the Python layer.
+We will cover the topics about op registration, kernel registration, gradient registration and Python wrapper.
 
 ## Detailed Introduction of OpRegistry 
 
