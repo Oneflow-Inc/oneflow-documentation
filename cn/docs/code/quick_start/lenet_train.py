@@ -65,7 +65,7 @@ if __name__ == "__main__":
         BATCH_SIZE, BATCH_SIZE
     )
 
-    for epoch in range(1):
+    for epoch in range(20):
         for i, (images, labels) in enumerate(zip(train_images, train_labels)):
             loss = train_job(images, labels)
             if i % 20 == 0:
