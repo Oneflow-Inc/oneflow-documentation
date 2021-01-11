@@ -3,6 +3,7 @@ import oneflow as flow
 from typing import Tuple
 import oneflow.typing as tp
 
+flow.config.enable_legacy_model_io(False)
 BATCH_SIZE = 100
 
 
@@ -50,8 +51,7 @@ def acc(arguments: Tuple[tp.Numpy, tp.Numpy]):
 
 
 def main():
-    check_point = flow.train.CheckPoint()
-    check_point.load("./mlp_models_1")
+    flow.load_variables(flow.checkpoint.get("./mlp_models_1"))
     (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(
         BATCH_SIZE
     )

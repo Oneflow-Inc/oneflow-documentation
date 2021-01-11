@@ -107,4 +107,4 @@ if __name__ == "__main__":
         loss = test_job()
         if i % 100 == 0:
             print("{}/{}:{}".format(i, 1000, loss.mean()))
-    ckpt.save("./test_model")
+    flow.checkpoint.save("./test_model")

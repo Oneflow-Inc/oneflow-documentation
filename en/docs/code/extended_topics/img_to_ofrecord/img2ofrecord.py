@@ -48,42 +48,43 @@ def encode_img_file(filename, ext=".jpg"):
 
 
 def ndarray2ofrecords(dsfile, dataname, encoded_data, labelname, encoded_label):
-    topack = {dataname: bytes_feature(encoded_data),
-              labelname: int32_feature(encoded_label)}
+    topack = {
+        dataname: bytes_feature(encoded_data),
+        labelname: int32_feature(encoded_label),
+    }
     ofrecord_features = ofrecord.OFRecord(feature=topack)
-    serilizedBytes = ofrecord_features.SerializeToString()
+    serializedBytes = ofrecord_features.SerializeToString()
     length = ofrecord_features.ByteSize()
     dsfile.write(struct.pack("q", length))
-    dsfile.write(serilizedBytes)
+    dsfile.write(serializedBytes)
 
 
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        '--image_root',
+        "--image_root",
         type=str,
-        default='./images/train_set/',
-        help='The directory of images')
+        default="./images/train_set/",
+        help="The directory of images",
+    )
     parser.add_argument(
-        '--part_num',
-        type=int,
-        default='5',
-        help='The amount of OFRecord partitions')
+        "--part_num", type=int, default="5", help="The amount of OFRecord partitions"
+    )
     parser.add_argument(
-        '--label_dir',
+        "--label_dir",
         type=str,
-        default='./images/train_label/label.txt',
-        help='The directory of labels')
+        default="./images/train_label/label.txt",
+        help="The directory of labels",
+    )
     parser.add_argument(
-        '--img_format',
-        type=str,
-        default='.png',
-        help='The encode format of images')
+        "--img_format", type=str, default=".png", help="The encode format of images"
+    )
     parser.add_argument(
-        '--save_dir',
+        "--save_dir",
         type=str,
-        default='./dataset/',
-        help='The save directory of OFRecord patitions')
+        default="./dataset/",
+        help="The save directory of OFRecord patitions",
+    )
     args = parser.parse_args()
     return args
 
@@ -111,11 +112,13 @@ if __name__ == "__main__":
 
     part_cnt = 0
     # Read the labels
-    with open(label_dir, 'r') as label_file:
+    with open(label_dir, "r") as label_file:
         imgs_labels = label_file.readlines()
 
     file_total_cnt = len(imgs_labels)
-    assert file_total_cnt > part_num, "The amount of Files should be larger than part_num"
+    assert (
+        file_total_cnt > part_num
+    ), "The amount of Files should be larger than part_num"
     per_part_amount = file_total_cnt // part_num
 
     for cnt, img_label in enumerate(imgs_labels):
@@ -123,8 +126,8 @@ if __name__ == "__main__":
             part_cnt += 1
         prefix_filename = os.path.join(save_dir, "part-{}")
         ofrecord_filename = prefix_filename.format(part_cnt)
-        with open(ofrecord_filename, 'ab') as f:
-            data = json.loads(img_label.strip('\n'))
+        with open(ofrecord_filename, "ab") as f:
+            data = json.loads(img_label.strip("\n"))
             for img, label in data.items():
                 img_full_dir = os.path.join(imgs_root, img)
                 encoded_data = encode_img_file(img_full_dir, img_format)

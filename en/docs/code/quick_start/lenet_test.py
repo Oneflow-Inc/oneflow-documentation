@@ -6,6 +6,7 @@ import os
 import oneflow.typing as tp
 
 BATCH_SIZE = 1
+flow.config.enable_legacy_model_io(False)
 
 
 def usage():
@@ -82,7 +83,6 @@ def main():
     if len(sys.argv) != 2:
         usage()
         return
-
     flow.load_variables(flow.checkpoint.get("./lenet_models_1"))
 
     image = load_image(sys.argv[1])

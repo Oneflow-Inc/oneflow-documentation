@@ -3,6 +3,7 @@ import oneflow as flow
 import oneflow.typing as tp
 
 BATCH_SIZE = 100
+flow.config.enable_legacy_model_io(False)
 
 
 def lenet(data, train=False):
@@ -54,15 +55,12 @@ def train_job(
         loss = flow.nn.sparse_softmax_cross_entropy_with_logits(
             labels, logits, name="softmax_loss"
         )
-
     lr_scheduler = flow.optimizer.PiecewiseConstantScheduler([], [0.1])
     flow.optimizer.SGD(lr_scheduler, momentum=0).minimize(loss)
     return loss
 
 
 if __name__ == "__main__":
-    flow.config.gpu_device_num(1)
-
     (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(
         BATCH_SIZE, BATCH_SIZE
     )
@@ -72,5 +70,5 @@ if __name__ == "__main__":
             loss = train_job(images, labels)
             if i % 20 == 0:
                 print(loss.mean())
-    check_point.save("./lenet_models_1")  # need remove the existed folder
+    flow.checkpoint.save("./lenet_models_1")  # need remove the existed folder
     print("model saved")
