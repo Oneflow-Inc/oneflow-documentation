@@ -24,7 +24,7 @@
 
 它们的要点在于：
 
-* 定义作业函数时，通过注解返回值类型，告之 OneFlow 是同步还是异步模式
+* 定义作业函数时，通过注解返回值类型，告知 OneFlow 是同步还是异步模式
 
 * 作业函数的返回值类型在 `oneflow.typing` 模块中选择
 
@@ -51,7 +51,7 @@ def train_job(
     return loss
 ```
 
-以上代码，通过 python 注解的方式告之 OneFlow 系统，返回的是 `tp.Numpy` （ `tp` 是 脚本中 `oneflow.typing` 的别名）类型，它对应了 `NumPy` 中的 `ndarray`。
+以上代码，通过 python 注解的方式告知 OneFlow 系统，返回的是 `tp.Numpy` （ `tp` 是 脚本中 `oneflow.typing` 的别名）类型，它对应了 `NumPy` 中的 `ndarray`。
 
 那么，当我们调用作业函数时，作业函数会直接返回 `ndarray` 对象：
 
