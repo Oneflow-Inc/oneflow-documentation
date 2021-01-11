@@ -65,7 +65,7 @@ if i % 20 == 0:
 
 * 定义作业函数时，作业函数返回的对象(上文中的 `loss`) 只是数据占位符，用于构建计算图，并没有真实数据。
 
-* 通过指定作业函数的返回值类型为 `oneflow.typing.Numpy`，可以告之 OneFlow 此作业函数调用时，返回的真实数据类型为 `NumPy ndarray` 对象
+* 通过指定作业函数的返回值类型为 `oneflow.typing.Numpy`，可以告知 OneFlow 调用此作业函数时，返回的真实数据类型为 `NumPy ndarray` 对象
 
 * 通过调用作业函数 `train_job(images, labels)` 可以直接获取作业函数的运行计算结果，类型为 `oneflow.typing.Numpy` 对应的 `ndarray` 对象。
 
@@ -134,7 +134,7 @@ def train_job(
     flow.optimizer.SGD(lr_scheduler, momentum=0).minimize(loss)
     return loss
 ```
-注解`-> tp.Callback[tp.Numpy]` 表示此作业函数，返回一个 `tp.Numpy` 类型的对象，并且需要异步调用。
+注解`-> tp.Callback[tp.Numpy]` 表示此作业函数返回一个 `tp.Numpy` 类型的对象，并且需要异步调用。
 
 那么，我们定义的回调函数，就应该接受一个 `Numpy` 类型的参数：
 ```python
@@ -161,7 +161,7 @@ def eval_job(
     return (labels, logits)
 ```
 
-其中 `-> tp.Callback[Tuple[tp.Numpy, tp.Numpy]]` 表示此作业函数，返回一个包含2个元素的 `tuple`，且每个元素都是 `tp.Numpy` 类型，并且作业函数需要异步调用。
+其中 `-> tp.Callback[Tuple[tp.Numpy, tp.Numpy]]` 表示此作业函数返回一个包含2个元素的 `tuple`，且每个元素都是 `tp.Numpy` 类型，并且作业函数需要异步调用。
 
 那么，对应的回调函数的参数注解应该为：
 ```python
