@@ -41,11 +41,11 @@ python3 -m pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/sim
 ## 安装 OneFlow with legacy CUDA
 支持其它较早版本 CUDA 的 OneFlow 的安装方法如下：
 ```shell
-python3 -m pip install --find-links https://oneflow-inc.github.io/nightly oneflow_cu101 --user
-python3 -m pip install --find-links https://oneflow-inc.github.io/nightly oneflow_cu100 --user
-python3 -m pip install --find-links https://oneflow-inc.github.io/nightly oneflow_cu92 --user
-python3 -m pip install --find-links https://oneflow-inc.github.io/nightly oneflow_cu91 --user
-python3 -m pip install --find-links https://oneflow-inc.github.io/nightly oneflow_cu90 --user
+python3 -m pip install --find-links https://release.oneflow.info oneflow_cu101 --user
+python3 -m pip install --find-links https://release.oneflow.info oneflow_cu100 --user
+python3 -m pip install --find-links https://release.oneflow.info oneflow_cu92 --user
+python3 -m pip install --find-links https://release.oneflow.info oneflow_cu91 --user
+python3 -m pip install --find-links https://release.oneflow.info oneflow_cu90 --user
 ```
 
 ## 交流QQ群
