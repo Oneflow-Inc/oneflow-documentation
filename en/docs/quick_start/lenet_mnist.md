@@ -14,7 +14,7 @@ This article covers topics below:
 
 This article demonstrates the key steps of how to train a LeNet model with MNIST dataset using OneFlow. The full example code is attached at the end of article.
 
-You can see the effects of each script by running the following commands (GPU device is required).
+You can see the effects of each script by running the following commands (The script operation rely on the default GPU No.0 on your machine. If you install the CPU version of OneFlow, the script will automatically call the CPU for training/evaluation).
 
 First of all, clone the documentation repository and switch to the corresponding path:
 ```shell
