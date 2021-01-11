@@ -10,7 +10,7 @@
 
 不过，在 OneFlow 中，无论模型是否训练完毕，我们都使用 **统一的接口** 将其保存，因此，在其它框架中看到的`model`、`checkpoint`、`snapshot` 等表述，在 OneFlow 中不做区分。
 
-在 OneFlow 中，`flow.checkpoint` 名称空间下有模保存、加载的接口。
+在 OneFlow 中，`flow.checkpoint` 名称空间下有模型保存、加载的接口。
 
 本文将介绍：
 
@@ -123,7 +123,7 @@ flow.config.enable_legacy_model_io(False)
 - `oneflow.get_all_variables` : 获取所有作业函数中的的 `variable` 对象
 - `oneflow.load_variables` : 更新作业函数中的 `variable` 对象
 
-`oneflow.get_all_variables` 会返回一个字典，字典的 key 就是创建 `variable` 时指定的 `name`，key 对应的 value 就是一个张量对象，该张量对象有 `numpy()` 方法转为 numpy 数组。
+`oneflow.get_all_variables` 会返回一个字典，字典的 key 就是创建 `variable` 时指定的 `name`，key 对应的 value 就是一个张量对象，该张量对象由 `numpy()` 方法转为 numpy 数组。
 
 比如，在作业函数中创建了名为 `myblob` 的对象：
 ```python
@@ -150,7 +150,7 @@ for epoch in range(20):
 
 其中的 `flow.get_all_variables` 获取到了字典，`all_variables["myblob"].numpy()` 获取了 `myblob` 对象并将其转为 numpy 数组。
 
-与 `get_all_variables` 相反，我们可以使用 `oneflow.load_variables` 更新 varialbe 对象的值。
+与 `get_all_variables` 相反，我们可以使用 `oneflow.load_variables` 更新 variable 对象的值。
 `oneflow.load_variables` 的原型如下：
 
 ```python
