@@ -145,7 +145,7 @@ REGISTER_RELU_KERNEL(DeviceType::kCPU, double)
 
 * `Compute` 必须重写，在其中实现具体的运算逻辑
 
-* `AlwaysComputeWhenAllOutputsEmpty` 必须重写，对于绝大多数 op 而言直接返回 `false` 即可。对于极少数内部需要维护状态，因此即使输出为空也需要调用 kernel 进行计算的 op 而言，应该返回 `true`
+* `AlwaysComputeWhenAllOutputsEmpty` 必须重写，对于绝大多数 op 而言直接返回 `false` 即可。对于极少数内部需要维护状态，即使输出为空也需要调用 kernel 进行计算的 op 而言，应该返回 `true`
 
 实现 kernel 类后，需要调用 `REGISTER_USER_KERNEL` 注册。`REGISTER_USER_KERNEL("myrelu")` 所接受的字符串参数，就是 `op_type_name`， 依据 `op_type_name` 完成注册和运行时的查询工作，在 Python 层封装 op 时也需要使用这个 `op_type_name`。
 
