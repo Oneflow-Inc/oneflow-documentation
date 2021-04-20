@@ -15,24 +15,24 @@ OneFlow 将各种对于数据的处理都抽象成了算子（operator），简�
 
 - op_type_name：op_type_name 是 op 类别的全局唯一 ID， OneFlow 通过 op_type_name 查询并确认 op 的种类，进而实例化 op，用于构建计算图。op 的种类与 op 的关系，类似于类与对象的关系。
 - op：逻辑上的算子，包含构图推理时的输入输出形状等信息，不包含具体的处理数据的逻辑。
-- kernel：对于一个逻辑上的 op，在运行时，处理的逻辑会因为物理设备以及数据类型的不同。运行时的具体处理逻辑，由 kernel 完成。简单而言，op 与 kernel 是一对多的关系，我们可以使用 Python 完成具体运算，这样的Kernel 称为 `Python Kernel`，也可以[使用 C++ 开发 Kernel](./user_op.md)。
+- kernel：对于一个逻辑上的 op，在运行时，会根据物理设备以及数据类型选择不同的处理逻辑。运行时的具体处理逻辑，由 kernel 完成。简单而言，op 与 kernel 是一对多的关系，我们可以使用 Python 完成具体运算，这样的Kernel 称为 `Python Kernel`，也可以[使用 C++ 开发 Kernel](./user_op.md)。
 - OneFlow 的内核由 C++ 实现，但是用户接口使用 Python，因此需要按照约定编写 `Python Wrapper`，使得 Python Op 接口能与 C++ 内核交互。
 
 ### 开发步骤
-使用 Python 扩展 Op，应该准备一个以 `op_type_name` 命名的目录，在该目录下，按照约定放置必需的文件，以 [oneflow/python/test/custom_ops/user_sigmoid](https://github.com/Oneflow-Inc/oneflow/tree/master/oneflow/python/test/custom_ops/user_sigmoid) 为例：
+使用 Python 扩展 Op，应该准备一个以 `op_type_name` 命名的目录，在该目录下，按照约定放置必需的文件，以 [code/extended_topics/python_op/user_relu](https://github.com/Oneflow-Inc/oneflow-documentation/tree/master/cn/docs/code/extended_topics/python_op) 为例：
 
 ```text
-user_sigmoid
-├── user_sigmoid_cpp_def.cpp
-├── user_sigmoid_py_api.py
-└── user_sigmoid_py_kernel.py
+user_relu
+├── user_relu_cpp_def.cpp
+├── user_relu_py_api.py
+└── user_relu_py_kernel.py
 ```
 
 其中：
 
-- `op_type_name_cpp_def.cpp`(以上的 `user_sigmoid_cpp_def.cpp`) 文件中放置 Op 定义信息
-- `op_type_name_py_api.py`(以上的 `user_sigmoid_py_api.py`)文件中放置 `Python Wrapper`，通过 `oneflow.user_op_builder` 将实现的 `Python Kernel` 导出给用户使用
-- `op_type_name_py_kernel.py`(以上的 `user_sigmoid_py_kernel.py`)文件中放置 Python 实现的自定义算子的前向计算逻辑和后向计算逻辑
+- `op_type_name_cpp_def.cpp`(以上的 `user_relu_cpp_def.cpp`) 文件中放置 Op 定义信息
+- `op_type_name_py_api.py`(以上的 `user_relu_py_api.py`)文件中放置 `Python Wrapper`，通过 `oneflow.user_op_builder` 将实现的 `Python Kernel` 导出给用户使用
+- `op_type_name_py_kernel.py`(以上的 `user_relu_py_kernel.py`)文件中放置 Python 实现的自定义算子的前向计算逻辑和后向计算逻辑
 
 下文中，我们将介绍如何用 Python 实现一个自定义的 user_relu Op，它包括：
 
@@ -52,15 +52,15 @@ namespace oneflow {
 namespace {
 
 REGISTER_USER_OP("user_relu_forward")
+  .Input("x")
+  .Output("y")
   .Attr<std::string>("device_sub_tag", "py")
-  .Input("in")
-  .Output("out")
   .SetTensorDescInferFn(
       [](user_op::InferContext *ctx) -> Maybe<void> {
-        *ctx->Shape4ArgNameAndIndex("out", 0) =
-            *ctx->Shape4ArgNameAndIndex("in", 0);
-        *ctx->Dtype4ArgNameAndIndex("out", 0) =
-            *ctx->Dtype4ArgNameAndIndex("in", 0);
+        *ctx->Shape4ArgNameAndIndex("y", 0) =
+            *ctx->Shape4ArgNameAndIndex("x", 0);
+        *ctx->Dtype4ArgNameAndIndex("y", 0) =
+            *ctx->Dtype4ArgNameAndIndex("x", 0);
         return Maybe<void>::Ok();
       });
 }  // namespace
@@ -74,8 +74,8 @@ REGISTER_USER_OP("user_relu_forward")
 - 与自定义 op 有关的接口集中在 `oneflow::user_op` 中，使用名称空间 `oneflow` 可以简化类型名称
 - 宏 `REGISTER_USER_OP` 用于注册 op，其接受的参数 `user_relu_forward` 是 `op_type_name`。
 - 使用 `REGISTER_USER_OP` 注册后，其实会返回一个 `OpRegistry` 类（位于[user_op_registry.h](https://github.com/Oneflow-Inc/oneflow/blob/master/oneflow/core/framework/user_op_registry.h))，通过调用该类方法，完成对自定义 op 的设置：
-    1. `Input("in")` 表示其有一个名为 "in" 的输入
-    2. `Output("out")` 表示其有一个名为 "out" 的输出
+    1. `Input("x")` 表示其有一个名为 "x" 的输入
+    2. `Output("y")` 表示其有一个名为 "y" 的输出
     3. `SetTensorDescInferFn` 用于设置形状及数据类型推导函数，描述该算子的输出的形状及类型与输入的关系。以上代码中，输出的形状、数据类型与输入的一致
 
 `op_type_name_cpp_def.cpp` 文件是实现 `Python Kernel` 过程中唯一会使用到的 C++ 文件，它用于设置 Op 的信息，在现阶段，还无法将使用 C++ 配置 Op 的步骤省略（因为设置分布式等高级信息时必需），不过可以看到，该文件并不涉及具体的运算，仅仅是用于描述 Op，即使不熟悉 C++，根据我们的示例，也可以很轻松地掌握。
@@ -90,20 +90,20 @@ def user_relu_forward(x):
     op = (
         flow.user_op_builder("myrelu")
         .Op("user_relu_forward")
-        .Input("in", [x])
-        .Output("out")
+        .Input("x", [x])
+        .Output("y")
         .Build()
     )
     return op.InferAndTryRun().SoleOutputBlob()
 ```
 
-`flow.user_op_builder("op_myrelu")` 其实会返回一个名为 `op_myrelu` 的 `UserOpConfBuilder` 对象。
+`flow.user_op_builder("myrelu")` 其实会返回一个名为 `myrelu` 的 `UserOpConfBuilder` 对象。
 
 该对象包含 `Op`、`Input` 等方法，用于封装自定义 op，具体解释如下：
 
 - `Op("user_relu_forward")`：参数必须为之前在 C++ 注册时的 `op_type_name`，OneFlow 通过它找到已经注册的 op 类型，并实例化 op 对象。
-- `Input("in", [input_blob])`：对应了 C++ 中 op 注册时的 `Input`，第一个参数字符串必须与 C++ 注册 op 时的 `Input` 设置的字符串一致。第二个参数为输入的张量，是一个 `list`，因为一个 op 允许有多个输入。
-- `Output("out")`：对应了 C++ 中 op 注册时的 `Output`。
+- `Input("x", [input_blob])`：对应了 C++ 中 op 注册时的 `Input`，第一个参数字符串必须与 C++ 注册 op 时的 `Input` 设置的字符串一致。第二个参数为输入的张量，是一个 `list`，因为一个 op 允许有多个输入。
+- `Output("y")`：对应了 C++ 中 op 注册时的 `Output`。
 - `Build`：以上设置完成后，调用 `Build` 可以得到自定义 op 的 Python wrapper
 
 以下代码，将获取自定义 op 的输出：
@@ -114,7 +114,7 @@ return op.InferAndTryRun().SoleOutputBlob()
 其中的 `InferAndTryRun` 完成推导，返回 `UserOp`，如果返回结果只有一个输出，则使用 `SoleOutputBlob` 即可获取该唯一输出，否则，可以使用 `RemoteBlobList` 获取包含多个输出的列表。
 
 ## 使用 Python 实现 Kernel
-如本文开始所描述，Op 只是逻辑上的概念，真正的计算需要 Kernel 完成，在 OneFlow 中可以既可以使用 C++ 也可以使用 Python 实现 Kernel，本文只介绍最易上手的 Python Kernel 的实现方法。使用 C++ 实现 Kernel 可以参考[使用 C++ 开发 Kernel](./user_op.md)。
+如本文开始所描述，Op 只是逻辑上的概念，真正的计算需要 Kernel 完成，在 OneFlow 中既可以使用 C++ 也可以使用 Python 实现 Kernel，本文只介绍最易上手的 Python Kernel 的实现方法。使用 C++ 实现 Kernel 可以参考[使用 C++ 开发 Kernel](./user_op.md)。
 
 为了为我们上文设置的 `user_relu` Op 提供 Python Kernel，我们需要创建一个 `user_relu_py_kernel.py` 文件，其内容如下：
 
@@ -130,7 +130,7 @@ def forward(args):
 以上的 `forward` 方法是必需实现的，它的实现对应了我们 Op 的 Python Kernel。关于它的约定有：
 
 - 方法名必需为 `forward`
-- 参数只有一个，类型为 `tuple`，`tuple` 中的元素个数和顺序，与 Op 注册时的 `Input` 对应。如我们之前为 `user_relu` 注册了 `Input("in")`，那么以上代码中 `(x, ) = args` 中的 `x` 就取到 `in` 的值
+- 参数只有一个，类型为 `tuple`，`tuple` 中的元素个数和顺序，与 Op 注册时的 `Input` 对应。如我们之前为 `user_relu` 注册了 `Input("x")`，那么以上代码中 `(x, ) = args` 中的 `x` 就取到 `Input` 的值
 - 输出与 Op 注册时的 `Output` 对应
 - 参数与返回值均为 `numpy` 对象，即不能（不会）是字符串、整型数字等其它类型
 
@@ -173,10 +173,10 @@ if __name__ == "__main__":
 
 以上代码中，先通过 `flow.experimental.custom_op_module` 创建 module 对象，它接收两个参数，第一个参数为 `op_type_name`， 第二个参数为 `user_relu` 文件夹所在的路径。返回的 `module` 对象，代表了我们自定义的 Op。
 
-接着，通过 `user_sigmoid_op.py_api().cpp_def().py_kernel().build_load()` 可以使自定义 Op 生效，生效后的 Op 的 Python 接口，就是定义在 `user_relu_py_api.py` 文件中的方法名(`user_relu_forward`)，它被放置在 `moudle` 对象的 `api` 名称空间中。因此，我们需要通过以下方式调用:
+接着，通过 `user_relu_op.py_api().cpp_def().py_kernel().build_load()` 可以使自定义 Op 生效，生效后的 Op 的 Python 接口，就是定义在 `user_relu_py_api.py` 文件中的方法名(`user_relu_forward`)，它被放置在 `moudle` 对象的 `api` 名称空间中。因此，我们需要通过以下方式调用:
 
 ```python
-user_sigmoid_op.api.user_relu_forward(x)
+user_relu_op.api.user_relu_forward(x)
 ```
 
 且因为 Python Kernel 只能运行在 CPU 设备上，因此需要指定计算设备为 CPU：
@@ -222,7 +222,7 @@ def backward(args):
     dx = (y>0)*dy
     return dx
 ```
-它的参数是一个 `tuple`，数目和顺序对应了 Op 注册时的 `Input`，输出对应了 Op 注册时的 Output。
+它的参数是一个 `tuple`，数目和顺序对应了 Op 注册时的 `Input`，输出对应了 Op 注册时的 `Output`。
 
 ### 为 Op 注册反向梯度
 我们需要在 `user_relu_cpp_def.cpp` 中，通过宏 `REGISTER_USER_OP_GRAD` 为我们的正向 Op (`user_relu_forward`) 注册反向。
