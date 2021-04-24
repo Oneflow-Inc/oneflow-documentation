@@ -76,7 +76,7 @@ def get_train_config():
     return config
 ```
 
-我们设置了默认数据类型，然后，我们可以在向 `global_function` 装饰器传递这个`function_config` 对象：
+我们设置了默认数据类型，然后，我们可以再向 `global_function` 装饰器传递这个`function_config` 对象：
 ```python
 @flow.global_function(type="train", function_config=get_train_config())
 def train_job(
@@ -91,7 +91,7 @@ def train_job(
 
 在作业函数的参数中的数据占位符，使用 `oneflow.typing` 下的`Numpy.Placeholder`、`ListNumpy.Placeholder`、`ListListNumpy.Placeholder`，注解作业函数的参数，对应作业函数调用时，传递 `numpy` 数据对象。
 
-除了`oneflow.typing`下的几种类型外，不出现在参数中，而由 OneFlow 的算子或层产生的变量，如以上代码中的`reshape`、`hidden`、`logits`、`loss`等，也都起到了数据占位符的作用。
+除了`oneflow.typing`下的几种类型之外，不出现在参数中并且由 OneFlow 的算子或层产生的变量，如以上代码中的`reshape`、`hidden`、`logits`、`loss`等，也都起到了数据占位符的作用。
 
 不管是以上提及的哪种变量，它们都直接或间接继承自 OneFlow 的 `BlobDef` 基类，OneFlow 中把这种对象类型统称为 **Blob**。
 
