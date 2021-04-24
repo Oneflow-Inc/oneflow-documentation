@@ -116,7 +116,7 @@ Compared with **single machine training program**, the distributed training prog
 
 Distribution script: [distributed_train.py](../code/basics_topics/distributed_train.py)
 
-Running on both `192.168.1.12` and `192.168.1.12`:
+Running on both `192.168.1.12` and `192.168.1.11`:
 
 ```shell
 wget https://docs.oneflow.org/code/basics_topics/distributed_train.py
