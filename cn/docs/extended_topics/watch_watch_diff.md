@@ -1,6 +1,6 @@
 # 获取运行时数据
 
-OneFlow 提供了 `oneflow.watch` 与 `oneflow.watch_diff` 接口，我们可以通过他们注册回调函数，以方便在作业函数运行过程中获取张量数据或梯度。
+OneFlow 提供了 `oneflow.watch` 与 `oneflow.watch_diff` 接口，我们可以通过它们注册回调函数，以方便在作业函数运行过程中获取张量数据或梯度。
 
 ## 使用流程
 
