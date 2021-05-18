@@ -8,7 +8,7 @@ OneFlow相关的模型转换工具
 
 oneflow_onnx工具包含两个功能，一个是将OneFlow导出ONNX，另外一个是将各个训练框架导出的ONNX模型转换为OneFlow的模型。本工程已经适配了TensorFlow/Pytorch/PaddlePaddle框架的预训练模型通过导出ONNX转换为OneFlow（我们将这一功能叫作X2OneFlow）。
 
-- OneFlow2ONNX模型支持，支持OneFlow静态图模型转为ONNX，可转换由[flow.checkpoint.save](https://docs.oneflow.org/basics_topics/model_load_save.html)方法保存下来的OneFlow模型，详情可以参考[OneFlow2ONNX模型列表](https://github.com/Oneflow-Inc/oneflow_convert_tools/tree/main/docs/oneflow2onnx/oneflow2onnx_model_zoo.md)。
+- OneFlow2ONNX模型支持，支持 OneFlow 静态图模型转为ONNX，可转换由[flow.checkpoint.save](https://docs.oneflow.org/basics_topics/model_load_save.html)方法保存下来的OneFlow模型，详情可以参考[OneFlow2ONNX模型列表](https://github.com/Oneflow-Inc/oneflow_convert_tools/tree/main/docs/oneflow2onnx/oneflow2onnx_model_zoo.md)。
 - X2OneFlow模型支持，支持将TensorFlow/Pytorch/PaddlePaddle的模型通过ONNX转换为OneFlow的模型，详情可以参考[X2OneFlow模型列表](https://github.com/Oneflow-Inc/oneflow_convert_tools/tree/main/docs/x2oneflow/x2oneflow_model_zoo.md)。
 - OneFlow2ONNX算子支持，目前稳定支持导出ONNX Opset10，部分OneFlow算子支持更低的ONNX Opset转换，详情可以参考[OneFlow2ONNX算子列表](https://github.com/Oneflow-Inc/oneflow_convert_tools/tree/main/docs/oneflow2onnx/op_list.md)。
 - X2OneFlow算子支持，目前稳定支持TensorFlow/Pytorch/PaddlePaddle中涵盖大部分CV场景的算子，详情可以参考[X2OneFlow算子列表](https://github.com/Oneflow-Inc/oneflow_convert_tools/tree/main/docs/x2oneflow/op_list.md)
