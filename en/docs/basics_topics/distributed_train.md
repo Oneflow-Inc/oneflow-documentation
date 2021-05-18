@@ -116,7 +116,7 @@ Compared with **single machine training program**, the distributed training prog
 
 Distribution script: [distributed_train.py](../code/basics_topics/distributed_train.py)
 
-Running on both `192.168.1.12` and `192.168.1.12`:
+Running on both `192.168.1.12` and `192.168.1.11`:
 
 ```shell
 wget https://docs.oneflow.org/code/basics_topics/distributed_train.py
@@ -135,7 +135,7 @@ The result of the program will be displayed on `192.168.1.12`.
 
 - Run training in docker, program waits for a long time and does not show calculation results.
 
-> In default mode of docker, the machine is isolated from the ports in the container. Then use `--net=host` (host mode) or use the `-v` option for port mapping when starting the container. For details information please refer to the docker manual.
+> In default mode of docker, the machine is isolated from the ports in the container. Then use `--net=host` (host mode) or use the `-p` option for port mapping when starting the container. For details information please refer to the docker manual.
 
 - The communications library was not installed correctly
 

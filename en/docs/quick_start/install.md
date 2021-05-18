@@ -1,4 +1,4 @@
-## Install OneFlow Stable Version 
+## Install OneFlow Stable Version
 
 Install the latest stable version of OneFlow with CUDA support using the following command:
 
@@ -42,14 +42,14 @@ If you want to install OneFlow by building from source, please refer to [README]
 
 To install OneFlow with legacy CUDA support, run one of the following command:
 ```
-python3 -m pip install --find-links https://oneflow-inc.github.io/nightly oneflow_cu101 --user
-python3 -m pip install --find-links https://oneflow-inc.github.io/nightly oneflow_cu100 --user
-python3 -m pip install --find-links https://oneflow-inc.github.io/nightly oneflow_cu92 --user
-python3 -m pip install --find-links https://oneflow-inc.github.io/nightly oneflow_cu91 --user
-python3 -m pip install --find-links https://oneflow-inc.github.io/nightly oneflow_cu90 --user
+python3 -m pip install --find-links https://release.oneflow.info oneflow_cu101 --user
+python3 -m pip install --find-links https://release.oneflow.info oneflow_cu100 --user
+python3 -m pip install --find-links https://release.oneflow.info oneflow_cu92 --user
+python3 -m pip install --find-links https://release.oneflow.info oneflow_cu91 --user
+python3 -m pip install --find-links https://release.oneflow.info oneflow_cu90 --user
 ```
 
-## QQ channel 
+## QQ channel
 If you encounter any problems during the installation and want for help, please join the QQ channel or [submit issues on Github](https://github.com/Oneflow-Inc/oneflow/issues).
 
 **QQ channel ID: 331883 or scan QR code below**

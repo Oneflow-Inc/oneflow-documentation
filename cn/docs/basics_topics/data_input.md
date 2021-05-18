@@ -60,7 +60,7 @@ python feed_numpy.py
   labels_in = np.random.randint(-10, 10, (32, )).astype(np.int32)
 ```
 
-并在调用作业函数是，直接将 NumPy 数据 `images_in` 和 `labels_in` 作为参数传递：
+并在调用作业函数时，直接将 NumPy 数据 `images_in` 和 `labels_in` 作为参数传递：
 ```python
 images, labels = test_job(images_in, labels_in)
 ```

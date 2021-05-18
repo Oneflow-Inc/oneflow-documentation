@@ -119,7 +119,7 @@ def config_distributed():
 
 分布式脚本代码：[distributed_train.py](../code/basics_topics/distributed_train.py)
 
-在 `192.168.1.12` 及 `192.168.1.12` 上 均运行：
+在 `192.168.1.12` 及 `192.168.1.11` 上 均运行：
 ```shell
 wget https://docs.oneflow.org/code/basics_topics/distributed_train.py
 python3 distributed_train.py
@@ -135,7 +135,7 @@ python3 distributed_train.py
 > 4. 如果在环境变量中设置了代理，请确保代理能够正常工作，或者取消掉代理
 
 - 在 docker 中跑训练，程序长期等待，未显示计算结果
-> docker 默认的模式下，物理机与容器中的端口是隔离的，请使用 `--net=host` host 模式，或者启动容器时使用 `-v` 选项进行端口映射。具体请查阅 docker 的手册
+> docker 默认的模式下，物理机与容器中的端口是隔离的，请使用 `--net=host` host 模式，或者启动容器时使用 `-p` 选项进行端口映射。具体请查阅 docker 的手册
 
 - 存在虚拟网卡的情况
 > 若存在虚拟网卡，可能因为 nccl 的通信走虚拟网卡而无法通信。此时需要通过 `export NCCL_SOCKET_IFNAME=device_name` 来指定通信网卡，具体可参阅 [nccl 官方文档](https://docs.nvidia.com/deeplearning/nccl/user-guide/docs/env.html?highlight=nccl_socket_ifname#nccl-socket-ifname)

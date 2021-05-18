@@ -142,7 +142,7 @@ SBP 即 Split、Broadcast、Partial sum 的缩写。其中 Split 表示切分；
 
 #### Split
 
-在并行 op 计算时，张量被 split 切分为多个子张量。不同的 op 算符允许张量在不同的 axis 轴上进行拆分。Boxing 机制将自动处理一个张量在多种 op 操作下在不同轴上切分的情况。
+在并行 op 计算时，张量被 split 切分为多个子张量。不同的 op 运算符允许张量在不同的 axis 轴上进行拆分。Boxing 机制将自动处理一个张量在多种 op 操作下在不同轴上切分的情况。
 
 #### Broadcast
 

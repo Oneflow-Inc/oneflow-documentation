@@ -116,6 +116,7 @@ nav:
       - 使用 Python 扩展 Op: extended_topics/python_kernel_op.md
       - 使用 C++ 扩展 Op: extended_topics/user_op.md
       - 自定义 DataLoader: extended_topics/implement_data_loader.md
+      - OneFlow 和 ONNX 交互: extended_topics/oneflow_convert_tools.md
 
     - 高级应用实例:
       - ResNet: adv_examples/resnet.md
