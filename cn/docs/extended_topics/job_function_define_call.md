@@ -63,11 +63,11 @@ def train_job(
 ```
 
 ### `oneflow.global_function` 的参数
-`oneflow.global_function` 修饰符接受两个参数，分别是 `type` 与 `function_config`。
+`oneflow.global_function` 修饰符接收两个参数，分别是 `type` 与 `function_config`。
 
-* `type` 参数接受字符串，只能设定为 `train` 或者 `predict`，当定义一个训练模型时，设定为 `train`，当定义测试模型时，设定为 `predict`
+* `type` 参数接收字符串，只能设定为 `train` 或者 `predict`，当定义一个训练模型时，设定为 `train`，当定义测试模型时，设定为 `predict`
 
-* `function_config` 参数接受一个 `oneflow.function_config()` 所构造的对象，在 `function_config` 对象中，可以通过成员方法或属性，进行相关配置。如以下代码：
+* `function_config` 参数接收一个 `oneflow.function_config()` 所构造的对象，在 `function_config` 对象中，可以通过成员方法或属性，进行相关配置。如以下代码：
 
 ```python
 def get_train_config():
