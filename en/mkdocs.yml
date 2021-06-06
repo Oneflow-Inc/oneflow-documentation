@@ -114,7 +114,6 @@ nav:
       - Obtain Runtime Data: extended_topics/watch_watch_diff.md
       - Use VS Code to Debug OneFlow: extended_topics/debug_by_vscode.md
       - User Defined OP: extended_topics/user_op.md
-      #- Eager/Lazy mode: extended_topics/eager_lazy_mode.md
 
 
     #- Advanced Examples:
