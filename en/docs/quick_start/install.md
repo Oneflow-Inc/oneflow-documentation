@@ -13,7 +13,7 @@ python3 -m pip install --find-links https://release.oneflow.info oneflow_cpu --u
 
 Install the latest version of the OneFlow master branch using the following command (not recommended for production environments):
 ```shell
-python3 -m pip install --find-links https://staging.oneflow.info/branch/master oneflow_cu102 --user
+python3 -m pip install oneflow --user -f https://staging.oneflow.info/branch/master/cu102
 ```
 
 If you are informed that the corresponding version cannot be found, please try upgrading `pip`:
