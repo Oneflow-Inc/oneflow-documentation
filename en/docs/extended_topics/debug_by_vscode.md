@@ -56,17 +56,6 @@ Followings are required before we configure clangd:
 * We have already installed clangd on remote host through "Remote - SSH".
 * It is **NOT** recommended that install the extension "ms-vscode.cpptools C/C++" which is recommended by VS Code. Because it conflicts with clangd.
 
-#### Install clangd
-The extensions on VS Code get information and display it by interacting with clangd service. Therefore, in addition to installing the clangd extension on VS Code, we also need to install clangd service program on the host (the remote Linux host in this article) where the OneFlow source code is located.
-
-We use the way downloading the zip file and unziping it to install clangd. For more ways to install clangd, please refer to [clangd offical site](https://clangd.llvm.org/installation.html).
-
-First, download the clangd zip file corresponding to our platform on [this site](https://github.com/clangd/clangd/releases/) and unzip it. After that, we can run clangd first to ensure clangd works well and then we can configure clangd.
-
-```shell
-/path/to/clangd/bin/clangd --help
-```
-
 #### Configure clangd in VS code
 
 Create a soft link to the `compile_commands.json` in "build" dictionary in the source root of OneFlow. We need to change to the directory of OneFlow's source root and run the command below:

@@ -53,18 +53,6 @@ Remote - SSH 连接远程主机后，在插件一栏，会自动分类“远程�
 - 已经通过 Remote - SSH 在远程主机上安装了 clangd 插件
 - **不要** 安装 VS Code 默认推荐的 ms-vscode.cpptools C/C++ 插件，因为 clangd 与之有冲突
 
-#### 安装 clangd 程序
-VS Code 上的插件，是通过与 clangd 服务程序交互，获取解析信息并显示的。因此除了安装 VS Code 上的 clangd 插件外，我们还需要在 **OneFlow 源码所在的主机上** （本文中为远程 Linux 主机）安装 clangd 服务程序。
-
-我们将采用下载 zip 文件并解压的方式安装 clangd，更多安装方法，可以参考 [clangd 官方文档](https://clangd.llvm.org/installation.html)。
-
-首先，在[这个页面](https://releases.llvm.org/9.0.0/)下载与我们系统平台对应的clangd压缩包，并解压。
-解压后可先运行 clangd 测试下，确保能正常运行后再进行后续配置。
-
-```shell
-/path/to/clangd/bin/clangd --help
-```
-
 #### 配置 VS Code 中的 clangd 插件
 
 将 build 目录下的 `compile_commands.json` 文件软链接到 OneFlow 的源码根目录下，在 OneFlow 的源码根目录下：
