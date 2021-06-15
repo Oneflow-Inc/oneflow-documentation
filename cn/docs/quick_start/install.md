@@ -3,12 +3,7 @@
 使用以下命令安装 OneFlow 最新的支持CUDA的稳定版本：
 
 ```shell
-python3 -m pip install --find-links https://release.oneflow.info oneflow_cu102 --user
-```
-
-使用以下命令安装 OneFlow 最新 CPU-ONLY 的版本：
-```shell
-python3 -m pip install --find-links https://release.oneflow.info oneflow_cpu --user
+python3 -m pip install -f https://release.oneflow.info oneflow==0.4.0+cu102 --user
 ```
 
 使用以下命令安装 OneFlow 最新 master 分支（不建议生产环境下使用）：
@@ -39,14 +34,30 @@ python3 -m pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/sim
 如果你希望通过编译源码安装 OneFlow，可以参考 OneFlow 源码仓库的 [README](https://github.com/Oneflow-Inc/oneflow/blob/develop/README.md)，在编译 OneFlow 源码之前，强烈推荐先阅读 [Troubleshooting](https://github.com/Oneflow-Inc/oneflow/blob/develop/docs/source/troubleshooting.md)。
 
 ## 安装 OneFlow with legacy CUDA
+
 支持其它较早版本 CUDA 的 OneFlow 的安装方法如下：
-```shell
-python3 -m pip install --find-links https://release.oneflow.info oneflow_cu101 --user
-python3 -m pip install --find-links https://release.oneflow.info oneflow_cu100 --user
-python3 -m pip install --find-links https://release.oneflow.info oneflow_cu92 --user
-python3 -m pip install --find-links https://release.oneflow.info oneflow_cu91 --user
-python3 -m pip install --find-links https://release.oneflow.info oneflow_cu90 --user
+
+Stable:
 ```
+python3 -m pip install --find-links https://release.oneflow.info oneflow==0.4.0+[PLATFORM] --user
+```
+
+Nightly:
+```
+python3 -m pip install oneflow --user -f https://staging.oneflow.info/branch/master/[PLATFORM]
+```
+
+其中 `[PLATFORM]` 可以是:
+
+| Platform |CUDA Driver Version| Supported GPUs |
+|---|---|---|
+| cu112  | >= 450.80.02  | GTX 10xx, RTX 20xx, A100, RTX 30xx |
+| cu111  | >= 450.80.02  | GTX 10xx, RTX 20xx, A100, RTX 30xx |
+| cu110, cu110_xla  | >= 450.36.06  | GTX 10xx, RTX 20xx, A100|
+| cu102, cu102_xla  | >= 440.33  | GTX 10xx, RTX 20xx |
+| cu101, cu101_xla  | >= 418.39  | GTX 10xx, RTX 20xx |
+| cu100, cu100_xla  | >= 410.48  | GTX 10xx, RTX 20xx |
+| cpu  | N/A | N/A |
 
 ## 交流QQ群
 安装或使用过程遇到问题，欢迎入群与众多 OneFlow 爱好者共同讨论交流：
