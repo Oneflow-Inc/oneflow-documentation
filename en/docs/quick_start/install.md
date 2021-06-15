@@ -3,12 +3,7 @@
 Install the latest stable version of OneFlow with CUDA support using the following command:
 
 ```shell
-python3 -m pip install --find-links https://release.oneflow.info oneflow_cu102 --user
-```
-
-Install the latest CPU-ONLY version of OneFlow using the following command:
-```shell
-python3 -m pip install --find-links https://release.oneflow.info oneflow_cpu --user
+python3 -m pip install -f https://release.oneflow.info oneflow==0.4.0+cu102 --user
 ```
 
 Install the latest version of the OneFlow master branch using the following command (not recommended for production environments):
@@ -41,13 +36,28 @@ If you want to install OneFlow by building from source, please refer to [README]
 ## Install OneFlow with legacy CUDA support
 
 To install OneFlow with legacy CUDA support, run one of the following command:
+
+Stable:
 ```
-python3 -m pip install --find-links https://release.oneflow.info oneflow_cu101 --user
-python3 -m pip install --find-links https://release.oneflow.info oneflow_cu100 --user
-python3 -m pip install --find-links https://release.oneflow.info oneflow_cu92 --user
-python3 -m pip install --find-links https://release.oneflow.info oneflow_cu91 --user
-python3 -m pip install --find-links https://release.oneflow.info oneflow_cu90 --user
+python3 -m pip install --find-links https://release.oneflow.info oneflow==0.4.0+[PLATFORM] --user
 ```
+
+Nightly:
+```
+python3 -m pip install oneflow --user -f https://staging.oneflow.info/branch/master/[PLATFORM]
+```
+
+All available `[PLATFORM]`:
+
+    | Platform |CUDA Driver Version| Supported GPUs |
+    |---|---|---|
+    | cu112  | >= 450.80.02  | GTX 10xx, RTX 20xx, A100, RTX 30xx |
+    | cu111  | >= 450.80.02  | GTX 10xx, RTX 20xx, A100, RTX 30xx |
+    | cu110, cu110_xla  | >= 450.36.06  | GTX 10xx, RTX 20xx, A100|
+    | cu102, cu102_xla  | >= 440.33  | GTX 10xx, RTX 20xx |
+    | cu101, cu101_xla  | >= 418.39  | GTX 10xx, RTX 20xx |
+    | cu100, cu100_xla  | >= 410.48  | GTX 10xx, RTX 20xx |
+    | cpu  | N/A | N/A |
 
 ## QQ channel
 If you encounter any problems during the installation and want for help, please join the QQ channel or [submit issues on Github](https://github.com/Oneflow-Inc/oneflow/issues).
