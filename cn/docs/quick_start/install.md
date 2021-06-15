@@ -49,15 +49,15 @@ python3 -m pip install oneflow --user -f https://staging.oneflow.info/branch/mas
 
 其中 `[PLATFORM]` 可以是:
 
-    | Platform |CUDA Driver Version| Supported GPUs |
-    |---|---|---|
-    | cu112  | >= 450.80.02  | GTX 10xx, RTX 20xx, A100, RTX 30xx |
-    | cu111  | >= 450.80.02  | GTX 10xx, RTX 20xx, A100, RTX 30xx |
-    | cu110, cu110_xla  | >= 450.36.06  | GTX 10xx, RTX 20xx, A100|
-    | cu102, cu102_xla  | >= 440.33  | GTX 10xx, RTX 20xx |
-    | cu101, cu101_xla  | >= 418.39  | GTX 10xx, RTX 20xx |
-    | cu100, cu100_xla  | >= 410.48  | GTX 10xx, RTX 20xx |
-    | cpu  | N/A | N/A |
+| Platform |CUDA Driver Version| Supported GPUs |
+|---|---|---|
+| cu112  | >= 450.80.02  | GTX 10xx, RTX 20xx, A100, RTX 30xx |
+| cu111  | >= 450.80.02  | GTX 10xx, RTX 20xx, A100, RTX 30xx |
+| cu110, cu110_xla  | >= 450.36.06  | GTX 10xx, RTX 20xx, A100|
+| cu102, cu102_xla  | >= 440.33  | GTX 10xx, RTX 20xx |
+| cu101, cu101_xla  | >= 418.39  | GTX 10xx, RTX 20xx |
+| cu100, cu100_xla  | >= 410.48  | GTX 10xx, RTX 20xx |
+| cpu  | N/A | N/A |
 
 ## 交流QQ群
 安装或使用过程遇到问题，欢迎入群与众多 OneFlow 爱好者共同讨论交流：

@@ -49,15 +49,15 @@ python3 -m pip install oneflow --user -f https://staging.oneflow.info/branch/mas
 
 All available `[PLATFORM]`:
 
-    | Platform |CUDA Driver Version| Supported GPUs |
-    |---|---|---|
-    | cu112  | >= 450.80.02  | GTX 10xx, RTX 20xx, A100, RTX 30xx |
-    | cu111  | >= 450.80.02  | GTX 10xx, RTX 20xx, A100, RTX 30xx |
-    | cu110, cu110_xla  | >= 450.36.06  | GTX 10xx, RTX 20xx, A100|
-    | cu102, cu102_xla  | >= 440.33  | GTX 10xx, RTX 20xx |
-    | cu101, cu101_xla  | >= 418.39  | GTX 10xx, RTX 20xx |
-    | cu100, cu100_xla  | >= 410.48  | GTX 10xx, RTX 20xx |
-    | cpu  | N/A | N/A |
+| Platform |CUDA Driver Version| Supported GPUs |
+|---|---|---|
+| cu112  | >= 450.80.02  | GTX 10xx, RTX 20xx, A100, RTX 30xx |
+| cu111  | >= 450.80.02  | GTX 10xx, RTX 20xx, A100, RTX 30xx |
+| cu110, cu110_xla  | >= 450.36.06  | GTX 10xx, RTX 20xx, A100|
+| cu102, cu102_xla  | >= 440.33  | GTX 10xx, RTX 20xx |
+| cu101, cu101_xla  | >= 418.39  | GTX 10xx, RTX 20xx |
+| cu100, cu100_xla  | >= 410.48  | GTX 10xx, RTX 20xx |
+| cpu  | N/A | N/A |
 
 ## QQ channel
 If you encounter any problems during the installation and want for help, please join the QQ channel or [submit issues on Github](https://github.com/Oneflow-Inc/oneflow/issues).
