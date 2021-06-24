@@ -61,9 +61,8 @@ def lenet(data, train=False):
 
 
 @flow.global_function(type="predict")
-def eval_job(
+def test_job(
     images: tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
-    labels: tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32),
 ) -> tp.Numpy:
     with flow.scope.placement("gpu", "0:0"):
         logits = lenet(images, train=False)
@@ -86,7 +85,7 @@ def main():
     flow.load_variables(flow.checkpoint.get("./lenet_models_1"))
 
     image = load_image(sys.argv[1])
-    logits = eval_job(image, np.zeros((1,)).astype(np.int32))
+    logits = test_job(image)
 
     prediction = np.argmax(logits, 1)
     print("prediction: {}".format(prediction[0]))
