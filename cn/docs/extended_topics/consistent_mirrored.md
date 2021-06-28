@@ -125,7 +125,7 @@ def train_job(
   loss = np.array(train_job(imgs_list, labels_list))
 ```
 
-* 返回的得到的结果 `loss`，是一个 `list`。正常情况下，该 `list` 中元素个数应与 **参与训练的GPU数目** 一致；`list` 中的第i个元素对应了第 i 张 GPU 卡上的运算结果。但由于OneFlow会在后台自动执行拼接操作，我们无需再在代码中进行多余的拼接步骤。只需将loss合并后进行计算并打印平均值。
+* 返回的得到的结果 `loss`，是一个 `list`。正常情况下，该 `list` 中元素个数应与 **参与训练的GPU数目** 一致；`list` 中的第i个元素对应了第 i 张 GPU 卡上的运算结果。但由于OneFlow会在后台自动执行拼接操作，我们无需再在代码中进行多余的拼接步骤。只需将loss合并后进行计算并打印其平均值。
 ```python
   total_loss = np.array([*loss[0], *loss[1]])
   if i % 20 == 0:
