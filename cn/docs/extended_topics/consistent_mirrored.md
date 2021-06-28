@@ -86,7 +86,7 @@
 
 训练函数的返回值类型，也变作了 `oneflow.typing.ListNumpy`，是一个 `list`， `list` 中的每个元素，对应了每张卡上训练结果。
 
-以上提及的 `list` 中的所有元素 **拼接在一起** ，才是一个完整的 BATCH。
+以上提及的 `list` 中的所有元素 **拼接在一起** ，才是一个完整的 BATCH。而OneFlow会自动执行这个拼接的过程，无需用户进行多余的操作。
 
 ### 代码
 在以下的脚本中，我们使用采用 `mirrored_view` 视角，使用2个 GPU 进行训练。
@@ -122,14 +122,14 @@ def train_job(
   imgs_list = [images1, images2]
   labels_list = [labels1, labels2]
 
-  loss = train_job(imgs_list, labels_list)
+  loss = np.array(train_job(imgs_list, labels_list))
 ```
 
-* 返回的得到的结果 `loss`，是一个 `list`，该 `list` 中元素个数与 **参与训练的GPU数目** 一致；`list` 中的第i个元素对应了第 i 张 GPU 卡上的运算结果。我们做了拼接后，计算并打印了 `total_loss`
+* 返回的得到的结果 `loss`，是一个 `list`。正常情况下，该 `list` 中元素个数应与 **参与训练的GPU数目** 一致；`list` 中的第i个元素对应了第 i 张 GPU 卡上的运算结果。但由于OneFlow会在后台自动执行拼接操作，我们无需再在代码中进行多余的拼接步骤。只需将loss合并后进行计算并打印平均值。
 ```python
   total_loss = np.array([*loss[0], *loss[1]])
   if i % 20 == 0:
-      print(total_loss.mean())
+      print(loss.mean())
 ```
 
 ## 在 OneFlow 中使用 consistent 视角
