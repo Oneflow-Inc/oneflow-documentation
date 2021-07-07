@@ -11,7 +11,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - run: pip3 install mkdocs mkdocs-material --user
+      - run: pip3 install --user -r requirements.txt
       - run: cd cn && python3 -m mkdocs build
       - run: cd en && python3 -m mkdocs build
       - run: mv cn/site _site
