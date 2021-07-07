@@ -3,7 +3,7 @@ name: Doc Build
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
   deploy:
