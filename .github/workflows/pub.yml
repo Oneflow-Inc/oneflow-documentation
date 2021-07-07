@@ -1,0 +1,24 @@
+name: Doc Build
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - run: pip3 install mkdocs mkdocs-material --user
+      - run: cd cn && python3 -m mkdocs build
+      - run: cd en && python3 -m mkdocs build
+      - run: mv cn/site _site
+      - run: mv en/site _site/en
+
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./_site
