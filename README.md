@@ -1,5 +1,5 @@
 # Oneflow-Documentation
-GitHub Pages(每个master commit自动部署) https://oneflow-inc.github.io/oneflow-documentation/
+
 ## Documentation
 
 此项目为 OneFlow 官方在线文档的 [github 仓库](https://github.com/Oneflow-Inc/oneflow-documentation)，你也可直接浏览我们的在线文档：http://docs.oneflow.org/
