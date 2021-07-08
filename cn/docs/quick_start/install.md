@@ -15,7 +15,7 @@ python3 -m pip install oneflow -f https://staging.oneflow.info/branch/master/cu1
 
 如果提示 **找不到** 对应版本，请尝试升级 `pip`：
 ```
-python3 -m pip install --upgrade --user pip
+python3 -m pip install --upgrade pip #--user
 ```
 
 国内用户可以使用国内镜像加速
@@ -41,7 +41,7 @@ python3 -m pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/sim
 
 Stable:
 ```
-python3 -m pip install --find-links https://release.oneflow.info oneflow==0.4.0+[PLATFORM] --user
+python3 -m pip install --find-links https://release.oneflow.info oneflow==0.4.0+[PLATFORM]
 ```
 
 Nightly:

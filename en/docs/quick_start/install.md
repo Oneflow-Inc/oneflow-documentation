@@ -13,7 +13,7 @@ python3 -m pip install oneflow -f https://staging.oneflow.info/branch/master/cu1
 
 If you are informed that the corresponding version cannot be found, please try upgrading `pip`:
 ```
-python3 -m pip install --upgrade --user pip
+python3 -m pip install --upgrade pip #--user
 ```
 
 Chinese users can use the domestic mirror to accelerate:
@@ -39,7 +39,7 @@ To install OneFlow with legacy CUDA support, run one of the following command:
 
 Stable:
 ```
-python3 -m pip install --find-links https://release.oneflow.info oneflow==0.4.0+[PLATFORM] --user
+python3 -m pip install --find-links https://release.oneflow.info oneflow==0.4.0+[PLATFORM]
 ```
 
 Nightly:
