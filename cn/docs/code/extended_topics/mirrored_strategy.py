@@ -54,7 +54,6 @@ if __name__ == "__main__":
         imgs_list = [images1, images2]
         labels_list = [labels1, labels2]
 
-        loss = train_job(imgs_list, labels_list)
-        total_loss = np.array([*loss[0], *loss[1]])
+        loss = np.array(train_job(imgs_list, labels_list))
         if i % 20 == 0:
-            print(total_loss.mean())
+            print(loss.mean())
