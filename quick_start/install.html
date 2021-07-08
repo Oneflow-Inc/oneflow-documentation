@@ -986,7 +986,7 @@
 </code></pre></div></p>
 <p>如果因为权限问题安装失败，请添加 <code>--user</code> 参数</p>
 <p>如果提示 <strong>找不到</strong> 对应版本，请尝试升级 <code>pip</code>：
-<div class="highlight"><pre><span></span><code>python3 -m pip install --upgrade --user pip
+<div class="highlight"><pre><span></span><code>python3 -m pip install --upgrade pip #--user
 </code></pre></div></p>
 <p>国内用户可以使用国内镜像加速
 <div class="highlight"><pre><span></span><code>python3 -m pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
@@ -1006,7 +1006,7 @@
 <h2 id="oneflow-with-legacy-cuda">安装 OneFlow with legacy CUDA<a class="headerlink" href="#oneflow-with-legacy-cuda" title="Permanent link">&para;</a></h2>
 <p>支持其它较早版本 CUDA 的 OneFlow 的安装方法如下：</p>
 <p>Stable:
-<div class="highlight"><pre><span></span><code>python3 -m pip install --find-links https://release.oneflow.info oneflow==0.4.0+[PLATFORM] --user
+<div class="highlight"><pre><span></span><code>python3 -m pip install --find-links https://release.oneflow.info oneflow==0.4.0+[PLATFORM]
 </code></pre></div></p>
 <p>Nightly:
 <div class="highlight"><pre><span></span><code>python3 -m pip install oneflow -f https://staging.oneflow.info/branch/master/[PLATFORM]
