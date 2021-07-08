@@ -11,6 +11,8 @@ python3 -m pip install -f https://release.oneflow.info oneflow==0.4.0+cu102
 python3 -m pip install oneflow -f https://staging.oneflow.info/branch/master/cu102
 ```
 
+如果因为权限问题安装失败，请添加 `--user` 参数
+
 如果提示 **找不到** 对应版本，请尝试升级 `pip`：
 ```shell
 python3 -m pip install --upgrade --user pip
