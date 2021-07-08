@@ -25,7 +25,7 @@ Detailed instructions can be found in the [pypi mirror help](https://mirror.tuna
 
 System Requirements:
 
-* Python >= 3.5
+* Python >= 3.6
 
 * CUDA driver requirements are available in the OneFlow source code repository [README](https://github.com/Oneflow-Inc/oneflow/#system-requirements)
 

@@ -27,7 +27,7 @@ python3 -m pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/sim
 
 系统要求：
 
-* Python >= 3.5
+* Python >= 3.6
 
 * CUDA 驱动要求详情见 OneFlow 源码仓库 [README](https://github.com/Oneflow-Inc/oneflow/#system-requirements)
 
