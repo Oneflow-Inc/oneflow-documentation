@@ -130,8 +130,8 @@ flow.config.enable_legacy_model_io(False)
 @flow.global_function()
 def job() -> tp.Numpy:
     ...
-    myblob = flow.get_variable("myblob", 
-        shape=(3,3), 
+    myblob = flow.get_variable("myblob",
+        shape=(3,3),
         initializer=flow.random_normal_initializer()
         )
     ...
@@ -164,8 +164,8 @@ def load_variables(value_dict, ignore_mismatch = True)
 ```python
 @flow.global_function(type="predict")
 def job() -> tp.Numpy:
-    myblob = flow.get_variable("myblob", 
-        shape=(3,3), 
+    myblob = flow.get_variable("myblob",
+        shape=(3,3),
         initializer=flow.random_normal_initializer()
         )
     return myblob
@@ -384,7 +384,7 @@ if __name__ == "__main__":
 脚本 [mlp_mnist_origin.py](../code/basics_topics/mlp_mnist_origin.py) 中构建了“骨干网络”，并将训练好的模型保存至 `./mlp_models_1`。
 
 运行：
-```shell
+```
 wget https://docs.oneflow.org/code/basics_topics/mlp_mnist_origin.py
 python3 mlp_mnist_origin.py
 ```
@@ -394,7 +394,7 @@ python3 mlp_mnist_origin.py
 脚本 [mlp_mnist_finetune.py](../code/basics_topics/mlp_mnist_finetune.py) 中的网络在原有基础上进行“微调”（为骨干网络增加一层`dense3`）后，加载 `./mlp_models_1`，并继续训练。
 
 运行：
-```shell
+```
 wget https://docs.oneflow.org/code/basics_topics/mlp_mnist_finetune.py
 python3 mlp_mnist_finetune.py
 ```

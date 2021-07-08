@@ -3,7 +3,7 @@ This article introduces how to quickly get start with OneFlow. We can complete a
 ## Example
 With OneFlow installed, you can run the following command to download [mlp_mnist.py](https://github.com/Oneflow-Inc/oneflow-documentation/blob/master/en/docs/code/quick_start/mlp_mnist.py) python script from [repository](https://github.com/Oneflow-Inc/oneflow-documentation.git) and run it.
 
-```shell
+```
 wget https://docs.oneflow.org/en/code/quick_start/mlp_mnist.py
 python3 mlp_mnist.py
 ```
@@ -81,7 +81,7 @@ def train_job(
     labels: tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32),
 ) -> tp.Numpy:
 ```
-`train_job` function which decorated by `@flow.global_function` is called "job function". Unless functions are decorated by `@flow.global_function`, or they can not be recognized by OneFlow. 
+`train_job` function which decorated by `@flow.global_function` is called "job function". Unless functions are decorated by `@flow.global_function`, or they can not be recognized by OneFlow.
 
 The parameter `type` is used to specify the type of job: `type="train"` means it's a training job and `type="predict"` means evaluation or prediction job.
 
@@ -104,8 +104,8 @@ Besides the job function definition and configuration which mentioned above, cod
 
 - `print(..., loss.mean())`: print loss values for every 20 iterations.
 
-This page is just a simple example on neural network. 
-A more comprehensive and detailed introduction of OneFlow can be found in [Convolution Neural Network for Handwriting Recognition](lenet_mnist.md). 
+This page is just a simple example on neural network.
+A more comprehensive and detailed introduction of OneFlow can be found in [Convolution Neural Network for Handwriting Recognition](lenet_mnist.md).
 
 In addition, you can refer to [Basic topics](../basics_topics/data_input.md) to learn more about how to use OneFlow for deep learning.
 

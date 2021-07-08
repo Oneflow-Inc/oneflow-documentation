@@ -207,7 +207,7 @@ train_job(images, labels)(cb_print_loss)
 代码链接：[synchronize_single_job.py](../code/basics_topics/synchronize_single_job.py)
 
 运行：
-```shell
+```
 wget https://docs.oneflow.org/code/basics_topics/synchronize_single_job.py
 python3 synchronize_single_job.py
 ```
@@ -234,7 +234,7 @@ model saved
 其中，预训练模型文件可以点此处下载：[lenet_models_1.zip](https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/basics_topics/lenet_models_1.zip)
 
 运行：
-```shell
+```
 wget https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/quick_start/lenet_models_1.zip
 unzip lenet_models_1.zip
 wget https://docs.oneflow.org/code/basics_topics/synchronize_batch_job.py
@@ -253,7 +253,7 @@ accuracy: 99.3%
 代码下载：[async_single_job.py](../code/basics_topics/async_single_job.py)
 
 运行：
-```shell
+```
 wget https://docs.oneflow.org/code/basics_topics/async_single_job.py
 python3 async_single_job.py
 ```
@@ -279,7 +279,7 @@ File mnist.npz already exist, path: ./mnist.npz
 
 其中，预训练模型文件可以点此处下载：[mlp_models_1.zip](https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/basics_topics/mlp_models_1.zip)
 
-```shell
+```
 wget https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/basics_topics/mlp_models_1.zip
 unzip mlp_models_1.zip
 wget https://docs.oneflow.org/code/basics_topics/async_batch_job.py

@@ -2,19 +2,19 @@
 
 使用以下命令安装 OneFlow 最新的支持CUDA的稳定版本：
 
-```shell
+```
 python3 -m pip install -f https://release.oneflow.info oneflow==0.4.0+cu102
 ```
 
 使用以下命令安装 OneFlow 最新 master 分支（不建议生产环境下使用）：
-```shell
+```
 python3 -m pip install oneflow -f https://staging.oneflow.info/branch/master/cu102
 ```
 
 如果因为权限问题安装失败，请添加 `--user` 参数
 
 如果提示 **找不到** 对应版本，请尝试升级 `pip`：
-```shell
+```
 python3 -m pip install --upgrade --user pip
 ```
 

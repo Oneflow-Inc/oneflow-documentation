@@ -15,7 +15,7 @@
 
 在运行 cmake 的时候需要加上 `Debug` 及 `CMAKE_EXPORT_COMPILE_COMMANDS` 的 flag。
 
-```shell
+```
 cmake .. \
 -DCMAKE_BUILD_TYPE=Debug \
 -DCMAKE_EXPORT_COMPILE_COMMANDS=1
@@ -57,7 +57,7 @@ Remote - SSH 连接远程主机后，在插件一栏，会自动分类“远程�
 
 将 build 目录下的 `compile_commands.json` 文件软链接到 OneFlow 的源码根目录下，在 OneFlow 的源码根目录下：
 
-```shell
+```
 ln -s ./build/compile_commands.json compile_commands.json
 ```
 
@@ -117,7 +117,7 @@ ln -s ./build/compile_commands.json compile_commands.json
 
 * clangd 的最新版本可能对 glibc 版本要求过高，导致报缺少库的错误。
 
-```shell
+```
 ./bin/clangd: /lib64/libc.so.6: version `GLIBC_2.18' not found (required by ./bin/clangd)
 ```
 

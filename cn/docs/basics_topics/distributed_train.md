@@ -120,7 +120,7 @@ def config_distributed():
 分布式脚本代码：[distributed_train.py](../code/basics_topics/distributed_train.py)
 
 在 `192.168.1.12` 及 `192.168.1.11` 上 均运行：
-```shell
+```
 wget https://docs.oneflow.org/code/basics_topics/distributed_train.py
 python3 distributed_train.py
 ```

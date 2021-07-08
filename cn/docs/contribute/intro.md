@@ -48,7 +48,7 @@ OneFlow 已经对现有的多种流行、前沿的模型，进行了复现及测
 OneFlow 的 API 文档使用 `sphinx` 提取函数原型及 docstring。
 API 文档工程在 [oneflow](https://github.com/Oneflow-Inc/oneflow) 仓库的 `docs` 目录下，可以通过以下命令生成：
 
-```shell
+```
 cd oneflow/docs && make dev
 ```
 

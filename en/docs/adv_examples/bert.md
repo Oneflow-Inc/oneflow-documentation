@@ -67,7 +67,7 @@ python ./run_pretraining.py\
     --loss_print_every_n_iter=5 \
     --model_save_dir=./bert_regresssioin_test/of \
     --warmup_batches 831 \
-    --save_last_snapshot True 
+    --save_last_snapshot True
 ```
 
 We will see the output similar to the following:
@@ -188,28 +188,28 @@ If you want to directly use the pretrained model for finetune tasks (such as the
 The conversion process is as follows:
 
 Firstly, download and unzip a BERT pretrained model of specified version, eg: `uncased_L-12_H-768_A-12`.
-```shell
+```
 wget https://storage.googleapis.com/bert_models/2020_02_20/uncased_L-12_H-768_A-12.zip
 unzip uncased_L-12_H-768_A-12.zip -d uncased_L-12_H-768_A-12
 ```
 
 And then, run commands below:
-```shell
+```
 cd uncased_L-12_H-768_A-12/
 cat > checkpoint <<ONEFLOW
-model_checkpoint_path: "bert_model.ckpt" 
-all_model_checkpoint_paths: "bert_model.ckpt" 
+model_checkpoint_path: "bert_model.ckpt"
+all_model_checkpoint_paths: "bert_model.ckpt"
 ONEFLOW
 ```
 
 It will create a file named `checkpoint` in the directory and write content below into it:
 ```
-model_checkpoint_path: "bert_model.ckpt" 
-all_model_checkpoint_paths: "bert_model.ckpt" 
+model_checkpoint_path: "bert_model.ckpt"
+all_model_checkpoint_paths: "bert_model.ckpt"
 ```
 
 Now that the TensorFlow model directory to be converted is ready, the hierarchy is:
-```shell
+```
 uncased_L-12_H-768_A-12
 ├── bert_config.json
 ├── bert_model.ckpt.data-00000-of-00001
@@ -259,7 +259,7 @@ def SQuADTrain():
 
 We run the script below to start SQuAD training to get and save a initialized model.
 
-```shell
+```
 python ./run_squad.py\
     --gpu_num_per_node=1\
     --learning_rate=3e-5\
@@ -289,7 +289,7 @@ There will be a initialized model in the path `./bert_regresssioin_test/of/last_
 ### Merge pretrained model into SQuAD
 SQuAD is extended from pretrained model of BERT. We should merge the pretrained model into SQuAD according to the method introduced in this article[Loading and saving of model](../basics_topics/model_load_save.md).
 
-```shell
+```
 cp -R ./bert_regresssioin_test/of/last_snapshot ./squadModel
 cp -R --remove-destination ./dataset/uncased_L-12_H-768_A-12_oneflow/* ./squadModel/
 ```
@@ -298,7 +298,7 @@ cp -R --remove-destination ./dataset/uncased_L-12_H-768_A-12_oneflow/* ./squadMo
 There is a folder named `System-Train-TrainStep-xxx` in the path of pretrained model folder and the file named "out" contains the count if iterations. The `leraning rate` changes dynamically with the count of iterations.
 
 In order to prevent training of finetuning from the saved iteration affecting, the binary data in the out file should be cleared to zero.
-```shell
+```
 cd System-Train-TrainStep-xxx
 xxd -r > out <<ONEFLOW
 00000000: 0000 0000 0000 0000
@@ -318,7 +318,7 @@ Start SQuAD training by running the script `run_suqad.py` with configuration bel
 
 * learning rate = 3e-5
 
-```shell
+```
 python ./run_squad.py\
     --gpu_num_per_node=4\
     --learning_rate=3e-5\
@@ -374,7 +374,7 @@ python run_squad_predict.py \
 Attention: the `model_load_dir` should be the trained model of SQuAD.
 
 After we get the `all_results.npy`file, run the script `npy2json.py` in the repository of [google bert](https://github.com/google-research/bert/)(the version of TensorFlow should be v1). The `npy2json.py` we provide is modified from google bert's `run_squad.py`:
-```shell
+```
 python npy2json.py\
   --vocab_file=./dataset/vocab.txt \
   --bert_config_file=./dataset/bert_config.json \
@@ -394,7 +394,7 @@ We will get `predictions.json` after that which can be evaluated by[evaluate-v1.
 ```bash
 python evaluate-v1.1.py \
 ./dataset/dev-v1.1.json \
-path/to/squad_base/predictions.json 
+path/to/squad_base/predictions.json
 ```
 
 ## Distributed training

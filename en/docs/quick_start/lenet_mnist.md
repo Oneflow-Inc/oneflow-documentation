@@ -8,7 +8,7 @@ This article covers topics below:
 
 * How to save/load model
 
-* Use the `predict` type for model evaluation 
+* Use the `predict` type for model evaluation
 
 * Using `predict` type for image recognition
 
@@ -17,20 +17,20 @@ This article demonstrates the key steps of how to train a LeNet model with MNIST
 You can see the effects of each script by running the following commands (The script operation rely on the default GPU No.0 on your machine. If you install the CPU version of OneFlow, the script will automatically call the CPU for training/evaluation).
 
 First of all, clone the documentation repository and switch to the corresponding path:
-```shell
+```
 git clone https://github.com/Oneflow-Inc/oneflow-documentation.git
 cd oneflow-documentation/en/docs/code/quick_start/
 ```
 
 * Training model
-```shell
+```
 python lenet_train.py
 ```
 The commands above will train a model with MNIST dataset and save it.
 
 Output：
 
-```shell
+```
 File mnist.npz already exist, path: ./mnist.npz
 5.9947124
 1.0865117
@@ -44,8 +44,8 @@ File mnist.npz already exist, path: ./mnist.npz
 
 > A trained model is the prerequisite of `lenet_eval.py` and `lenet_test.py`. We can directly download a trained model to skip the training progress:
 
-```shell
-#change directory to: en/docs/code/quick_start/ 
+```
+#change directory to: en/docs/code/quick_start/
 wget https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/quick_start/lenet_models_1.zip
 unzip lenet_models_1.zip
 ```
@@ -65,13 +65,13 @@ accuracy: 99.4%
 
 * Image recognition
 
-```shell
+```
 python lenet_test.py ./9.png
 # Output：prediction: 9
 ```
 The above command will use the trained model to predict the content of file "9.png". We can also download and verify more from [prepared images](https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/quick_start/mnist_raw_images.zip).
 
-## Introduction of MNIST Dataset 
+## Introduction of MNIST Dataset
 
 MNIST is a handwritten digits database including training set and testing set. Training set includes 60000 pictures and their corresponding label. Yann LeCun and others have normalized all the images and packed them into a single binary file for downloading. http://yann.lecun.com/exdb/mnist/
 
@@ -129,7 +129,7 @@ OneFlow provides a decorator named [oneflow.global_function](https://oneflow.rea
 
 ### `global_function` Decorator
 
- [oneflow.function_config](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.python.framework.function_util.FunctionConfig#oneflow.FunctionConfig) decorator takes a `type` parameter to specify the type of job function. The `type="tranining"` means that the job function is for traning and `type="predict"` is for predicting. 
+ [oneflow.function_config](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.python.framework.function_util.FunctionConfig#oneflow.FunctionConfig) decorator takes a `type` parameter to specify the type of job function. The `type="tranining"` means that the job function is for traning and `type="predict"` is for predicting.
 
 There is also a `function_config` parameter taken by `oneflow.global_function` decorator. The `function_config` contains configuration about training.
 
@@ -168,12 +168,12 @@ So Far, we use `flow.nn.sparse_softmax_cross_entropy_with_logits` to calculate t
 
  - **lr_scheduler** sets the learning rate schedule, and `[0.1]` means learning rate is 0.1.
  -  **flow.optimizer.SGD** means SGD is specified as the optimizer. The `loss` is the goal of minimization to the optimizer and the return type (not requried).
- 
+
 ## Calling the Job Function and Get Results
 
 We can start training by invoking the job function.
 
-The return value we get when we call the job function is defined by the annotation of return value type in job function. 
+The return value we get when we call the job function is defined by the annotation of return value type in job function.
 
 We can get one or multiple results after each call of job function.
 
@@ -245,7 +245,7 @@ The example of model saved by the `flow.checkpoint.save`:
 
 ```python
 if __name__ == '__main__':
-  #data loading and training ...  
+  #data loading and training ...
   flow.checkpoint.save("./lenet_models_1")
 ```
 
@@ -368,4 +368,3 @@ Script: [lenet_test.py](https://github.com/Oneflow-Inc/oneflow-documentation/blo
 Saved model: [lenet_models_1.zip](https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/quick_start/lenet_models_1.zip)
 
 MNIST image dataset [mnist_raw_images.zip](https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/quick_start/mnist_raw_images.zip)
-

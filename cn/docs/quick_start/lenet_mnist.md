@@ -12,13 +12,13 @@
 在学习之前，也可以通过以下命令查看各脚本功能（**脚本运行依赖 默认选择机器上的0号GPU，如果你安装的是CPU版本OneFlow，则脚本会自动调用CPU来做训练。**）。
 
 首先，同步本文档仓库并切换到对应路径：
-```shell
+```
 git clone https://github.com/Oneflow-Inc/oneflow-documentation.git
 cd oneflow-documentation/cn/docs/code/quick_start/
 ```
 
 **模型训练**
-```shell
+```
 python lenet_train.py
 ```
 以上命令将对 MNIST 数据集进行训练，并保存模型。
@@ -39,14 +39,14 @@ File mnist.npz already exist, path: ./mnist.npz
 
 > 以下的两个脚本 `lenet_eval.py` 与 `lenet_test.py` 都依赖以上训练的结果，因此需要先运行以上脚本。或者你可以直接下载我们已经训练好的模型，则可以略过以上步骤，下载方法如下：
 
-```shell
+```
 #在仓库docs/code/quick_start/目录下
 wget https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/quick_start/lenet_models_1.zip
 unzip lenet_models_1.zip
 ```
 
 **模型校验**
-```shell
+```
 python lenet_eval.py
 ```
 以上命令，使用 MNIST 测试集对刚刚生成的模型进行校验，并给出准确率。
@@ -60,7 +60,7 @@ accuracy: 99.4%
 
 **图像识别**
 
-```shell
+```
 python lenet_test.py ./9.png
 # 输出：prediction: 9
 ```

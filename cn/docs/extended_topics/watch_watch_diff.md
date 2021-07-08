@@ -37,7 +37,7 @@ def foo() -> T:
 代码：[test_watch.py](../code/extended_topics/test_watch.py)
 
 运行该程序：
-```shell
+```
 python3 test_watch.py
 ```
 
@@ -63,7 +63,7 @@ out: [0.15727027 0.45887455 0.10939325 0.66666406 0.        ]
 代码：[test_watch_diff.py](../code/extended_topics/test_watch_diff.py)
 
 运行该程序：
-```shell
+```
 python3 test_watch_diff.py
 ```
 

@@ -16,21 +16,21 @@
 
 - 下载相关压缩包并解压
 
-```shell
+```
 $ wget https://oneflow-static.oss-cn-beijing.aliyuncs.com/oneflow-tutorial-attachments/img2ofrecord.zip
 $ unzip img2ofrecord.zip
 ```
 
 - 进入到对应目录，并运行 OFRecord 制作脚本 `img2ofrecord.py`
 
-```shell
+```
 $ cd ./img_to_ofrecord
 $ python img2ofrecord.py --part_num=5 --save_dir=./dataset/ --img_format=.png --image_root=./images/train_set/
 ```
 
 - 脚本运行过程中，将输出以下内容
 
-```shell
+```
 The image root is:  ./images/train_set/
 The amount of OFRecord data part is:  5
 The directory of Labels is:  ./images/train_label/label.txt
@@ -49,7 +49,7 @@ Process image successfully !!!
 
 ### 代码解读
 
-整个代码目录构造如下 
+整个代码目录构造如下
 
 ```
 img_to_ofrecord
@@ -69,7 +69,7 @@ img_to_ofrecord
 
 我们的标签文件是以 `json` 格式存储的，格式如下：
 
-```shell
+```
 {"00000030_3.png": 3}
 {"00000034_0.png": 0}
 {"00000026_4.png": 4}
@@ -80,7 +80,7 @@ img_to_ofrecord
 ```
 
 - [img2ofrecord.py](../code/extended_topics/img_to_ofrecord/img2ofrecord.py) 脚本将 MNIST 图片转换成 OFRecord 数据集
-- [lenet_train.py](../code/extended_topics/img_to_ofrecord/lenet_train.py) 脚本则读取我们制作好的 OFRecord 数据集，并使用 LeNet 模型进行训练。 
+- [lenet_train.py](../code/extended_topics/img_to_ofrecord/lenet_train.py) 脚本则读取我们制作好的 OFRecord 数据集，并使用 LeNet 模型进行训练。
 
 `img2ofrecord.py` 的命令行选项如下：
 
@@ -94,7 +94,7 @@ img_to_ofrecord
 
 与 OFRecord 文件编码的相关逻辑也在 `img2ofrecord.py` 内，其编码流程如下：
 
-首先，对读取进来的图片数据进行编码 
+首先，对读取进来的图片数据进行编码
 
 ```python
 def encode_img_file(filename, ext=".jpg"):
@@ -141,4 +141,3 @@ def ndarray2ofrecords(dsfile, dataname, encoded_data, labelname, encoded_label):
 ```
 
 至此，我们成功完成了数据集制作、读取与训练整个流程。
-

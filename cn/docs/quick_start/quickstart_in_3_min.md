@@ -3,7 +3,7 @@
 ## 运行例子
 如果已经安装好了 OneFlow ，可以使用以下命令下载[文档仓库](https://github.com/Oneflow-Inc/oneflow-documentation.git)中的[mlp_mnist.py](https://github.com/Oneflow-Inc/oneflow-documentation/blob/master/cn/docs/code/quick_start/mlp_mnist.py)脚本，并运行。
 
-```shell
+```
 wget https://docs.oneflow.org/code/quick_start/mlp_mnist.py #下载脚本
 python3 mlp_mnist.py #运行脚本
 ```

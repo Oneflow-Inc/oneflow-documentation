@@ -4,7 +4,7 @@ For loading and saving for model, the common scences is:
 
 * Save the model that has been trained for a while to facilitate the next training.
 
-* Save trained model for reproduction(Such as Model Serving). 
+* Save trained model for reproduction(Such as Model Serving).
 
 Strictly speaking, we save the untrained model as `checkpoint` or `snapshot`. It is different from `model saving` of a completed model.
 
@@ -30,7 +30,7 @@ Because of this feature, the object created by `get_variable` is used to store m
 
 ### Process
 
-The `get_variable`  requires a specified `name` as the identity of the created object. 
+The `get_variable`  requires a specified `name` as the identity of the created object.
 
 If the `name` value already existed in the program, then get_variable will get the existed object and return.
 
@@ -124,8 +124,8 @@ For example, creating an object named `myblob`  in job function:
 @flow.global_function()
 def job() -> tp.Numpy:
     ...
-    myblob = flow.get_variable("myblob", 
-        shape=(3,3), 
+    myblob = flow.get_variable("myblob",
+        shape=(3,3),
         initializer=flow.random_normal_initializer()
         )
     ...
@@ -160,8 +160,8 @@ For example:
 ```python
 @flow.global_function(type="predict")
 def job() -> tp.Numpy:
-    myblob = flow.get_variable("myblob", 
-        shape=(3,3), 
+    myblob = flow.get_variable("myblob",
+        shape=(3,3),
         initializer=flow.random_normal_initializer()
         )
     return myblob
@@ -200,7 +200,7 @@ The signature of `get` is as follows which loads the previously saved model spec
 def get(path)
 ```
 
-It will return a dictionary that can be updated into the model using the `load_variables`. 
+It will return a dictionary that can be updated into the model using the `load_variables`.
 
 ```python
 flow.load_variables(flow.checkpoint.get(save_dir))
@@ -303,7 +303,7 @@ We can see:
 
 * In each of the subdirectories, there are `out` and `meta` files where `out` stores the values of the network parameters in binary form and `meta` stores the network structure information in text form.
 
-* `Snapshot_done` is an empty folder. If it exists, it means that the network training has been finished. 
+* `Snapshot_done` is an empty folder. If it exists, it means that the network training has been finished.
 
 * Snapshots of the training steps is stored in `System-Train-TrainStep-train_job`.
 
@@ -312,7 +312,7 @@ We can see:
 In model finetune and transfer learning, we always need：
 
 - Load some of the parameters from original model
-- Initialize the other part of parameters in model 
+- Initialize the other part of parameters in model
 
 We can use oneflow.load_variables to complete the process above. Here is a simple example to illustrate the concept.
 
@@ -391,7 +391,7 @@ The following code is from [mlp_mnist_origin.py](../code/basics_topics/mlp_mnist
 Run:
 
 
-```shell
+```
 wget https://docs.oneflow.org/code/basics_topics/mlp_mnist_origin.py
 python3 mlp_mnist_origin.py
 ```
@@ -400,10 +400,10 @@ When the training is complete, you will get the `mlp_models_1` in the current wo
 
 The following code is from [mlp_mnist_finetune.py](../code/basics_topics/mlp_mnist_finetune.py). After finetuning (add one more layer `dense3` in backbone network), we load `./mlp_models_1` and train it.
 
-Run: 
+Run:
 
 
-```shell
+```
 wget https://docs.oneflow.org/code/basics_topics/mlp_mnist_finetune.py
 python3 mlp_mnist_finetune.py
 ```
