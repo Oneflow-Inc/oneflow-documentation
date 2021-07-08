@@ -868,10 +868,10 @@
                 
                 <h2 id="install-oneflow-stable-version">Install OneFlow Stable Version<a class="headerlink" href="#install-oneflow-stable-version" title="Permanent link">&para;</a></h2>
 <p>Install the latest stable version of OneFlow with CUDA support using the following command:</p>
-<div class="highlight"><pre><span></span><code>python3 -m pip install -f https://release.oneflow.info <span class="nv">oneflow</span><span class="o">==</span><span class="m">0</span>.4.0+cu102 --user
+<div class="highlight"><pre><span></span><code>python3 -m pip install -f https://release.oneflow.info <span class="nv">oneflow</span><span class="o">==</span><span class="m">0</span>.4.0+cu102
 </code></pre></div>
 <p>Install the latest version of the OneFlow master branch using the following command (not recommended for production environments):
-<div class="highlight"><pre><span></span><code>python3 -m pip install oneflow --user -f https://staging.oneflow.info/branch/master/cu102
+<div class="highlight"><pre><span></span><code>python3 -m pip install oneflow -f https://staging.oneflow.info/branch/master/cu102
 </code></pre></div></p>
 <p>If you are informed that the corresponding version cannot be found, please try upgrading <code>pip</code>:
 <div class="highlight"><pre><span></span><code>python3 -m pip install --upgrade --user pip
@@ -897,7 +897,7 @@ Detailed instructions can be found in the <a href="https://mirror.tuna.tsinghua.
 <div class="highlight"><pre><span></span><code>python3 -m pip install --find-links https://release.oneflow.info oneflow==0.4.0+[PLATFORM] --user
 </code></pre></div></p>
 <p>Nightly:
-<div class="highlight"><pre><span></span><code>python3 -m pip install oneflow --user -f https://staging.oneflow.info/branch/master/[PLATFORM]
+<div class="highlight"><pre><span></span><code>python3 -m pip install oneflow -f https://staging.oneflow.info/branch/master/[PLATFORM]
 </code></pre></div></p>
 <p>All available <code>[PLATFORM]</code>:</p>
 <table>
