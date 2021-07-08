@@ -1165,7 +1165,7 @@
 <p>How to save/load model</p>
 </li>
 <li>
-<p>Use the <code>predict</code> type for model evaluation </p>
+<p>Use the <code>predict</code> type for model evaluation</p>
 </li>
 <li>
 <p>Using <code>predict</code> type for image recognition</p>
@@ -1175,7 +1175,7 @@
 <p>You can see the effects of each script by running the following commands (The script operation rely on the default GPU No.0 on your machine. If you install the CPU version of OneFlow, the script will automatically call the CPU for training/evaluation).</p>
 <p>First of all, clone the documentation repository and switch to the corresponding path:
 <div class="highlight"><pre><span></span><code>git clone https://github.com/Oneflow-Inc/oneflow-documentation.git
-<span class="nb">cd</span> oneflow-documentation/en/docs/code/quick_start/
+cd oneflow-documentation/en/docs/code/quick_start/
 </code></pre></div></p>
 <ul>
 <li>Training model
@@ -1185,19 +1185,19 @@ The commands above will train a model with MNIST dataset and save it.</li>
 </ul>
 <p>Output：</p>
 <div class="highlight"><pre><span></span><code>File mnist.npz already exist, path: ./mnist.npz
-<span class="m">5</span>.9947124
-<span class="m">1</span>.0865117
-<span class="m">0</span>.5317516
-<span class="m">0</span>.20937675
-<span class="m">0</span>.26428983
-<span class="m">0</span>.21764673
-<span class="m">0</span>.23443426
+5.9947124
+1.0865117
+0.5317516
+0.20937675
+0.26428983
+0.21764673
+0.23443426
 ...
 </code></pre></div>
 <blockquote>
 <p>A trained model is the prerequisite of <code>lenet_eval.py</code> and <code>lenet_test.py</code>. We can directly download a trained model to skip the training progress:</p>
 </blockquote>
-<div class="highlight"><pre><span></span><code><span class="c1">#change directory to: en/docs/code/quick_start/ </span>
+<div class="highlight"><pre><span></span><code>#change directory to: en/docs/code/quick_start/
 wget https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/quick_start/lenet_models_1.zip
 unzip lenet_models_1.zip
 </code></pre></div>
@@ -1215,7 +1215,7 @@ accuracy: 99.4%
 <li>Image recognition</li>
 </ul>
 <p><div class="highlight"><pre><span></span><code>python lenet_test.py ./9.png
-<span class="c1"># Output：prediction: 9</span>
+# Output：prediction: 9
 </code></pre></div>
 The above command will use the trained model to predict the content of file "9.png". We can also download and verify more from <a href="https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/quick_start/mnist_raw_images.zip">prepared images</a>.</p>
 <h2 id="introduction-of-mnist-dataset">Introduction of MNIST Dataset<a class="headerlink" href="#introduction-of-mnist-dataset" title="Permanent link">&para;</a></h2>
@@ -1264,7 +1264,7 @@ The above command will use the trained model to predict the content of file "9.p
 <h2 id="implementation-of-job-function-for-training">Implementation of Job Function for Training<a class="headerlink" href="#implementation-of-job-function-for-training" title="Permanent link">&para;</a></h2>
 <p>OneFlow provides a decorator named <a href="https://oneflow.readthedocs.io/en/master/oneflow.html#oneflow.global_function">oneflow.global_function</a>  by which we can covert a Python function to a OneFlow <strong>Job Function</strong> .</p>
 <h3 id="global_function-decorator"><code>global_function</code> Decorator<a class="headerlink" href="#global_function-decorator" title="Permanent link">&para;</a></h3>
-<p><a href="https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.python.framework.function_util.FunctionConfig#oneflow.FunctionConfig">oneflow.function_config</a> decorator takes a <code>type</code> parameter to specify the type of job function. The <code>type="tranining"</code> means that the job function is for traning and <code>type="predict"</code> is for predicting. </p>
+<p><a href="https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.python.framework.function_util.FunctionConfig#oneflow.FunctionConfig">oneflow.function_config</a> decorator takes a <code>type</code> parameter to specify the type of job function. The <code>type="tranining"</code> means that the job function is for traning and <code>type="predict"</code> is for predicting.</p>
 <p>There is also a <code>function_config</code> parameter taken by <code>oneflow.global_function</code> decorator. The <code>function_config</code> contains configuration about training.</p>
 <div class="highlight"><pre><span></span><code><span class="nd">@flow</span><span class="o">.</span><span class="n">global_function</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;train&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">train_job</span><span class="p">(</span><span class="n">images</span><span class="p">:</span><span class="n">tp</span><span class="o">.</span><span class="n">Numpy</span><span class="o">.</span><span class="n">Placeholder</span><span class="p">((</span><span class="n">BATCH_SIZE</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">28</span><span class="p">,</span> <span class="mi">28</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">flow</span><span class="o">.</span><span class="n">float</span><span class="p">),</span>
@@ -1296,7 +1296,7 @@ The above command will use the trained model to predict the content of file "9.p
 </ul>
 <h2 id="calling-the-job-function-and-get-results">Calling the Job Function and Get Results<a class="headerlink" href="#calling-the-job-function-and-get-results" title="Permanent link">&para;</a></h2>
 <p>We can start training by invoking the job function.</p>
-<p>The return value we get when we call the job function is defined by the annotation of return value type in job function. </p>
+<p>The return value we get when we call the job function is defined by the annotation of return value type in job function.</p>
 <p>We can get one or multiple results after each call of job function.</p>
 <h3 id="example-on-single-return-value">Example on Single Return Value<a class="headerlink" href="#example-on-single-return-value" title="Permanent link">&para;</a></h3>
 <p>The job function in <a href="../code/quick_start/lenet_train.py">lenet_train.py</a>:
@@ -1350,7 +1350,7 @@ We call the job function and get <code>labels</code> and <code>logits</code> the
 <h3 id="model-initialization-and-saving">Model Initialization and Saving<a class="headerlink" href="#model-initialization-and-saving" title="Permanent link">&para;</a></h3>
 <p>The example of model saved by the <code>flow.checkpoint.save</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
-  <span class="c1">#data loading and training ...  </span>
+  <span class="c1">#data loading and training ...</span>
   <span class="n">flow</span><span class="o">.</span><span class="n">checkpoint</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;./lenet_models_1&quot;</span><span class="p">)</span>
 </code></pre></div>
 <p>When the model is saved, we will get a <strong>folder</strong> called "lenet_models_1". This folder contains directories and files corresponding with the model parameters.</p>

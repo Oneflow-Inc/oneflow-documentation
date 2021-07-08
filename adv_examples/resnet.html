@@ -1427,7 +1427,7 @@
 </li>
 </ul>
 <p><code>git clone git@github.com:Oneflow-Inc/OneFlow-Benchmark.git</code></p>
-<p><code>cd  OneFlow-Benchmark/Classification/cnns</code> </p>
+<p><code>cd  OneFlow-Benchmark/Classification/cnns</code></p>
 <ul>
 <li>
 <p>准备数据集（可选）</p>
@@ -1439,7 +1439,7 @@
 <li>或者：制作完整 OFRecord 格式的 ImageNet 数据集（见下文进阶部分）</li>
 </ul>
 <p>我们提供了通用脚本：<code>train.sh</code> 和 <code>inference.sh</code>，它们适用于此仓库下所有cnn网络模型的训练、验证、推理。您可以通过设置参数使用不同的模型、数据集来训练/推理。</p>
-<p><strong>关于模型的说明：</strong> </p>
+<p><strong>关于模型的说明：</strong></p>
 <blockquote>
 <p>默认情况下，我们使用resnet50，您也可以通过改动脚本中的--model参数指定其他模型，如：<code>--model="resnet50"</code>，<code>--model="vgg"</code> 等。</p>
 </blockquote>
@@ -1482,12 +1482,12 @@
 Loading synthetic data.
 Saving model to ./output/snapshots/model_save-20200723124215/snapshot_initial_model.
 Init model on demand.
-train: epoch <span class="m">0</span>, iter <span class="m">10</span>, loss: <span class="m">7</span>.197278, top_1: <span class="m">0</span>.000000, top_k: <span class="m">0</span>.000000, samples/s: <span class="m">61</span>.569
-train: epoch <span class="m">0</span>, iter <span class="m">20</span>, loss: <span class="m">6</span>.177684, top_1: <span class="m">0</span>.000000, top_k: <span class="m">0</span>.000000, samples/s: <span class="m">122</span>.555
+train: epoch 0, iter 10, loss: 7.197278, top_1: 0.000000, top_k: 0.000000, samples/s: 61.569
+train: epoch 0, iter 20, loss: 6.177684, top_1: 0.000000, top_k: 0.000000, samples/s: 122.555
 Saving model to ./output/snapshots/model_save-20200723124215/snapshot_epoch_0.
-train: epoch <span class="m">0</span>, iter <span class="m">30</span>, loss: <span class="m">3</span>.988656, top_1: <span class="m">0</span>.525000, top_k: <span class="m">0</span>.812500, samples/s: <span class="m">120</span>.337
-train: epoch <span class="m">1</span>, iter <span class="m">10</span>, loss: <span class="m">1</span>.185733, top_1: <span class="m">1</span>.000000, top_k: <span class="m">1</span>.000000, samples/s: <span class="m">80</span>.705
-train: epoch <span class="m">1</span>, iter <span class="m">20</span>, loss: <span class="m">1</span>.042017, top_1: <span class="m">1</span>.000000, top_k: <span class="m">1</span>.000000, samples/s: <span class="m">118</span>.478
+train: epoch 0, iter 30, loss: 3.988656, top_1: 0.525000, top_k: 0.812500, samples/s: 120.337
+train: epoch 1, iter 10, loss: 1.185733, top_1: 1.000000, top_k: 1.000000, samples/s: 80.705
+train: epoch 1, iter 20, loss: 1.042017, top_1: 1.000000, top_k: 1.000000, samples/s: 118.478
 Saving model to ./output/snapshots/model_save-20200723124215/snapshot_epoch_1.
 ...
 </code></pre></div>
@@ -1495,27 +1495,27 @@ Saving model to ./output/snapshots/model_save-20200723124215/snapshot_epoch_1.
 <p>为了方便运行演示，我们默认使用synthetic虚拟合成数据集，使您可以快速看到模型运行的效果</p>
 </blockquote>
 <p>同样，你也可以使用<a href="https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/dataset/imagenet/mini-imagenet.zip">迷你示例数据集</a>，下载解压后放入 cnn 项目的 data 目录即可，然后修改训练脚本如下：</p>
-<div class="highlight"><pre><span></span><code>rm -rf core.* 
+<div class="highlight"><pre><span></span><code>rm -rf core.*
 rm -rf ./output/snapshots/*
 
-<span class="nv">DATA_ROOT</span><span class="o">=</span>data/imagenet/ofrecord
+DATA_ROOT=data/imagenet/ofrecord
 
-python3 of_cnn_train_val.py <span class="se">\</span>
-    --train_data_dir<span class="o">=</span><span class="nv">$DATA_ROOT</span>/train <span class="se">\</span>
-    --num_examples<span class="o">=</span><span class="m">50</span> <span class="se">\</span>
-    --train_data_part_num<span class="o">=</span><span class="m">1</span> <span class="se">\</span>
-    --val_data_dir<span class="o">=</span><span class="nv">$DATA_ROOT</span>/validation <span class="se">\</span>
-    --num_val_examples<span class="o">=</span><span class="m">50</span> <span class="se">\</span>
-    --val_data_part_num<span class="o">=</span><span class="m">1</span> <span class="se">\</span>
-    --num_nodes<span class="o">=</span><span class="m">1</span> <span class="se">\</span>
-    --gpu_num_per_node<span class="o">=</span><span class="m">1</span> <span class="se">\</span>
-    --model_update<span class="o">=</span><span class="s2">&quot;momentum&quot;</span> <span class="se">\</span>
-    --learning_rate<span class="o">=</span><span class="m">0</span>.001 <span class="se">\</span>
-    --loss_print_every_n_iter<span class="o">=</span><span class="m">1</span> <span class="se">\</span>
-    --batch_size_per_device<span class="o">=</span><span class="m">16</span> <span class="se">\</span>
-    --val_batch_size_per_device<span class="o">=</span><span class="m">10</span> <span class="se">\</span>
-    --num_epoch<span class="o">=</span><span class="m">10</span> <span class="se">\</span>
-    --model<span class="o">=</span><span class="s2">&quot;resnet50&quot;</span>
+python3 of_cnn_train_val.py \
+    --train_data_dir=$DATA_ROOT/train \
+    --num_examples=50 \
+    --train_data_part_num=1 \
+    --val_data_dir=$DATA_ROOT/validation \
+    --num_val_examples=50 \
+    --val_data_part_num=1 \
+    --num_nodes=1 \
+    --gpu_num_per_node=1 \
+    --model_update=&quot;momentum&quot; \
+    --learning_rate=0.001 \
+    --loss_print_every_n_iter=1 \
+    --batch_size_per_device=16 \
+    --val_batch_size_per_device=10 \
+    --num_epoch=10 \
+    --model=&quot;resnet50&quot;
 </code></pre></div>
 <p>运行此脚本，将在仅有50张金鱼图片的迷你 ImageNet 数据集上，训练出一个分类模型，利用它，你可以对金鱼图片进行分类。</p>
 <p>不要着急，如果您需要在完整的 ImageNet2012 数据集上进行训练，请参考：<a href="https://github.com/Oneflow-Inc/OneFlow-Benchmark/blob/master/Classification/cnns">OneFlow-Benchmark</a>仓库。</p>
@@ -1525,13 +1525,13 @@ python3 of_cnn_train_val.py <span class="se">\</span>
 <div class="highlight"><pre><span></span><code>sh evaluate.sh
 </code></pre></div>
 <p>即可获得训练好的模型在50000张验证集上的准确率：</p>
-<div class="highlight"><pre><span></span><code>Time stamp: <span class="m">2020</span>-07-27-09:28:28
+<div class="highlight"><pre><span></span><code>Time stamp: 2020-07-27-09:28:28
 Restoring model from resnet_v15_of_best_model_val_top1_77318.
-I0727 <span class="m">09</span>:28:28.773988162    <span class="m">8411</span> ev_epoll_linux.c:82<span class="o">]</span>        Use of signals is disabled. Epoll engine will not be used
+I0727 09:28:28.773988162    8411 ev_epoll_linux.c:82]        Use of signals is disabled. Epoll engine will not be used
 Loading data from /dataset/ImageNet/ofrecord/validation
-validation: epoch <span class="m">0</span>, iter <span class="m">195</span>, top_1: <span class="m">0</span>.773277, top_k: <span class="m">0</span>.936058, samples/s: <span class="m">1578</span>.325
-validation: epoch <span class="m">0</span>, iter <span class="m">195</span>, top_1: <span class="m">0</span>.773237, top_k: <span class="m">0</span>.936078, samples/s: <span class="m">1692</span>.303
-validation: epoch <span class="m">0</span>, iter <span class="m">195</span>, top_1: <span class="m">0</span>.773297, top_k: <span class="m">0</span>.936018, samples/s: <span class="m">1686</span>.896
+validation: epoch 0, iter 195, top_1: 0.773277, top_k: 0.936058, samples/s: 1578.325
+validation: epoch 0, iter 195, top_1: 0.773237, top_k: 0.936078, samples/s: 1692.303
+validation: epoch 0, iter 195, top_1: 0.773297, top_k: 0.936018, samples/s: 1686.896
 </code></pre></div>
 <blockquote>
 <p>执行 <code>sh evaluate.sh</code> 前，确保准备了 ImageNet(2012) 的验证集，验证集制作方法请参考：<a href="https://github.com/Oneflow-Inc/OneFlow-Benchmark/blob/master/Classification/cnns">OneFlow-Benchmark</a>仓库。</p>
@@ -1545,13 +1545,13 @@ validation: epoch <span class="m">0</span>, iter <span class="m">195</span>, top
 <h4 id="_4">如何配置并运行分布式训练？<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h4>
 <p>还是以上面"快速开始"部分演示的代码为例，在 <code>train.sh</code> 中，只要用 <code>--num_nodes</code> 指定节点（机器）个数，同时用 <code>--node_ips</code> 指定节点的 IP 地址，然后用 <code>--gpu_num_per_node</code> 指定每个节点上使用的卡数，就轻松地完成了分布式的配置。</p>
 <p>例如，想要在2机8卡上进行分布式训练，像下面这样配置：</p>
-<div class="highlight"><pre><span></span><code><span class="c1"># train.sh </span>
-python3 of_cnn_train_val.py <span class="se">\</span>
-    --num_nodes<span class="o">=</span><span class="m">2</span> <span class="se">\</span>
-    --node_ips<span class="o">=</span><span class="s2">&quot;192.168.1.1, 192.168.1.2&quot;</span>
-    --gpu_num_per_node<span class="o">=</span><span class="m">4</span> <span class="se">\</span>
+<div class="highlight"><pre><span></span><code># train.sh
+python3 of_cnn_train_val.py \
+    --num_nodes=2 \
+    --node_ips=&quot;192.168.1.1, 192.168.1.2&quot;
+    --gpu_num_per_node=4 \
     ...
-    --model<span class="o">=</span><span class="s2">&quot;resnet50&quot;</span>
+    --model=&quot;resnet50&quot;
 </code></pre></div>
 <p>然后分别在两台机器上，同时执行：</p>
 <div class="highlight"><pre><span></span><code>./train.sh
@@ -1577,7 +1577,7 @@ python3 of_cnn_train_val.py <span class="se">\</span>
   是由Hinton 的学生 Alex Krizhevsky 和 Ilya Sutskever 整理的一个用于识别普适物体的小型数据集。包括CIFAR-10和CIFAR-100。</p>
 </li>
 <li>
-<p><a href="http://image-net.org/index">ImageNet</a> 
+<p><a href="http://image-net.org/index">ImageNet</a>
   ImageNet 数据集，一般是指2010-2017年间大规模视觉识别竞赛 (ILSVRC) 的所使用的数据集的统称。ImageNet 数据从2010年来稍有变化，常用 ImageNet-2012 数据集包含1000个类别，其中训练集包含1,281,167张图片，每个类别数据732至1300张不等，验证集包含50,000张图片，平均每个类别50张图片。</p>
 </li>
 </ul>
@@ -1613,7 +1613,7 @@ python3 of_cnn_train_val.py <span class="se">\</span>
 <p><strong>步骤二：新建一个用于推理的 job function</strong></p>
 <p>然后新建一个用于推理的 job function，它只包含网络结构本身，不包含读取 OFRecord 的算子，并且直接接受 numpy 数组形式的输入。可参考 <code>resnet\_to\_onnx.py</code> 中的 <code>InferenceNet</code>。</p>
 <p><strong>步骤三：调用 <code>flow.onnx.export</code>方法</strong></p>
-<p>接下来代码中会调用 <code>oneflow_to_onnx()</code> 方法，此方法包含了核心的模型转换方法： <code>flow.onnx.export()</code> </p>
+<p>接下来代码中会调用 <code>oneflow_to_onnx()</code> 方法，此方法包含了核心的模型转换方法： <code>flow.onnx.export()</code></p>
 <p><strong><code>flow.onnx.export</code></strong> 将从 OneFlow 网络得到 ONNX 模型，它的第一个参数是上文所说的专用于推理的 job function，第二个参数是 OneFlow 模型路径，第三个参数是（转换后）ONNX 模型的存放路径</p>
 <div class="highlight"><pre><span></span><code><span class="n">onnx_model</span> <span class="o">=</span> <span class="n">oneflow_to_onnx</span><span class="p">(</span><span class="n">InferenceNet</span><span class="p">,</span> <span class="n">flow_weights_path</span><span class="p">,</span> <span class="n">onnx_model_dir</span><span class="p">,</span> <span class="n">external_data</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </code></pre></div>

@@ -1226,8 +1226,8 @@
 <div class="highlight"><pre><span></span><code><span class="nd">@flow</span><span class="o">.</span><span class="n">global_function</span><span class="p">()</span>
 <span class="k">def</span> <span class="nf">job</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">tp</span><span class="o">.</span><span class="n">Numpy</span><span class="p">:</span>
     <span class="o">...</span>
-    <span class="n">myblob</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">get_variable</span><span class="p">(</span><span class="s2">&quot;myblob&quot;</span><span class="p">,</span> 
-        <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span> 
+    <span class="n">myblob</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">get_variable</span><span class="p">(</span><span class="s2">&quot;myblob&quot;</span><span class="p">,</span>
+        <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span>
         <span class="n">initializer</span><span class="o">=</span><span class="n">flow</span><span class="o">.</span><span class="n">random_normal_initializer</span><span class="p">()</span>
         <span class="p">)</span>
     <span class="o">...</span>
@@ -1250,8 +1250,8 @@
 <p>如以下代码：</p>
 <p><div class="highlight"><pre><span></span><code><span class="nd">@flow</span><span class="o">.</span><span class="n">global_function</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;predict&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">job</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">tp</span><span class="o">.</span><span class="n">Numpy</span><span class="p">:</span>
-    <span class="n">myblob</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">get_variable</span><span class="p">(</span><span class="s2">&quot;myblob&quot;</span><span class="p">,</span> 
-        <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span> 
+    <span class="n">myblob</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">get_variable</span><span class="p">(</span><span class="s2">&quot;myblob&quot;</span><span class="p">,</span>
+        <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span>
         <span class="n">initializer</span><span class="o">=</span><span class="n">flow</span><span class="o">.</span><span class="n">random_normal_initializer</span><span class="p">()</span>
         <span class="p">)</span>
     <span class="k">return</span> <span class="n">myblob</span>

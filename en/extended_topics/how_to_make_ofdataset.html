@@ -980,8 +980,8 @@
 <p>Actually, we can specify the filename prefix <code>part-</code>, whether we pad the filename id and how many bits to pad. We just need to keep the same parameters when loading dataset, which will be described below.</p>
 <p>OneFlow provides the API interface to load OFRecord dataset by specifying the path of dataset directory, so that we can have the multi-threading, pipelining and some other advantages brought by OneFlow framework.</p>
 <h2 id="the-method-to-load-ofrecord-dataset">The Method to Load OFRecord Dataset<a class="headerlink" href="#the-method-to-load-ofrecord-dataset" title="Permanent link">&para;</a></h2>
-<p>We use <code>ofrecord_reader</code> to load and preprocess dataset. </p>
-<p>In article <a href="../basics_topics/data_input.html">Data Input</a>, we have shown how to use <code>ofrecord_reader</code> API to load OFRecord data and preprocess it. </p>
+<p>We use <code>ofrecord_reader</code> to load and preprocess dataset.</p>
+<p>In article <a href="../basics_topics/data_input.html">Data Input</a>, we have shown how to use <code>ofrecord_reader</code> API to load OFRecord data and preprocess it.</p>
 <p>Code: <a href="../code/basics_topics/of_data_pipeline.py">of_data_pipeline.py</a></p>
 <p>The prototype of <code>ofrecord_reader</code> is as follows：</p>
 <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">ofrecord_reader</span><span class="p">(</span>
@@ -1024,12 +1024,12 @@ For flexibility and extensibility of the code, we can define a preprocessing OP 
 </li>
 </ul>
 <p>Then unzip the <code>spark-2.4.7-bin-hadoop2.7.tgz</code> and configure the environment variable <code>SPARK_HOME</code>:</p>
-<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">SPARK_HOME</span><span class="o">=</span>path/to/spark-2.4.7-bin-hadoop2.7
-<span class="nb">export</span> <span class="nv">PATH</span><span class="o">=</span><span class="nv">$SPARK_HOME</span>/bin:<span class="nv">$PATH</span>
+<div class="highlight"><pre><span></span><code>export SPARK_HOME=path/to/spark-2.4.7-bin-hadoop2.7
+export PATH=$SPARK_HOME/bin:$PATH
 </code></pre></div>
 <p>We can launch the pyspark shell with the following command：</p>
-<div class="highlight"><pre><span></span><code>pyspark --master <span class="s2">&quot;local[*]&quot;</span><span class="se">\</span>
- --jars spark-oneflow-connector-assembly-0.1.0_int64.jar<span class="se">\</span>
+<div class="highlight"><pre><span></span><code>pyspark --master &quot;local[*]&quot;\
+ --jars spark-oneflow-connector-assembly-0.1.0_int64.jar\
  --packages org.tensorflow:spark-tensorflow-connector_2.11:1.13.1
 </code></pre></div>
 <div class="highlight"><pre><span></span><code>Welcome to

@@ -1042,9 +1042,9 @@
 <p>如果使用 <code>Release</code> 版本的 OneFlow，可能会因为编译器优化，导致在调试过程中程序实际运行位置与源码行不对应。</p>
 <p>因此我们需要编译 <code>Debug</code> 版本的 OneFlow，并且需要生成 clangd 所需要的 json 文件。</p>
 <p>在运行 cmake 的时候需要加上 <code>Debug</code> 及 <code>CMAKE_EXPORT_COMPILE_COMMANDS</code> 的 flag。</p>
-<div class="highlight"><pre><span></span><code>cmake .. <span class="se">\</span>
--DCMAKE_BUILD_TYPE<span class="o">=</span>Debug <span class="se">\</span>
--DCMAKE_EXPORT_COMPILE_COMMANDS<span class="o">=</span><span class="m">1</span>
+<div class="highlight"><pre><span></span><code>cmake .. \
+-DCMAKE_BUILD_TYPE=Debug \
+-DCMAKE_EXPORT_COMPILE_COMMANDS=1
 </code></pre></div>
 <ul>
 <li><code>-DCMAKE_BUILD_TYPE=Debug</code> 选项指定编译 Debug 版本</li>
@@ -1122,7 +1122,7 @@
 <p>clangd 的最新版本可能对 glibc 版本要求过高，导致报缺少库的错误。</p>
 </li>
 </ul>
-<div class="highlight"><pre><span></span><code>./bin/clangd: /lib64/libc.so.6: version <span class="sb">`</span>GLIBC_2.18<span class="err">&#39;</span> not found <span class="o">(</span>required by ./bin/clangd<span class="o">)</span>
+<div class="highlight"><pre><span></span><code>./bin/clangd: /lib64/libc.so.6: version `GLIBC_2.18&#39; not found (required by ./bin/clangd)
 </code></pre></div>
 <p>此时可以下载其它更低 clangd 的版本（本文推荐版本为 9.0.0），早期版本的 clangd 需要到 <a href="https://releases.llvm.org/download.html">LLVM官网</a> 下载整个LLVM工具链，其中包含有 clangd。</p>
                 

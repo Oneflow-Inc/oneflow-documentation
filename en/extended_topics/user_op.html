@@ -1342,7 +1342,7 @@ For the complete code please refer to:  <a href="https://github.com/Oneflow-Inc/
 <p>The macro <code>REGISTER_USER_OP</code> is used to register the op and accepts <code>myrelu</code> as <code>op_type_name</code>.</p>
 </li>
 <li>
-<p>After registering with <code>REGISTER_USER_OP</code>, it actually returns an <code>OpRegistry</code> class (path: <code>oneflow\coreframework\user_op_registry.h</code>) which can be called to complete the setting of a custom op: </p>
+<p>After registering with <code>REGISTER_USER_OP</code>, it actually returns an <code>OpRegistry</code> class (path: <code>oneflow\coreframework\user_op_registry.h</code>) which can be called to complete the setting of a custom op:</p>
 </li>
 <li>
 <p><code>Input("in")</code> means that it has an input named "in".</p>
@@ -1378,7 +1378,7 @@ For the complete code please refer to:  <a href="https://github.com/Oneflow-Inc/
     <span class="n">user_op</span><span class="o">::</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">out_tensor</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">-&gt;</span><span class="n">Tensor4ArgNameAndIndex</span><span class="p">(</span><span class="s">&quot;out&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
     <span class="n">MyRelu</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="p">(</span><span class="n">ctx</span><span class="o">-&gt;</span><span class="n">device_ctx</span><span class="p">(),</span>
            <span class="n">in_tensor</span><span class="o">-&gt;</span><span class="n">shape</span><span class="p">().</span><span class="n">elem_cnt</span><span class="p">(),</span>
-           <span class="n">in_tensor</span><span class="o">-&gt;</span><span class="n">dptr</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="p">(),</span> 
+           <span class="n">in_tensor</span><span class="o">-&gt;</span><span class="n">dptr</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="p">(),</span>
            <span class="n">out_tensor</span><span class="o">-&gt;</span><span class="n">mut_dptr</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="p">());</span>
   <span class="p">}</span>
   <span class="kt">bool</span> <span class="n">AlwaysComputeWhenAllOutputsEmpty</span><span class="p">()</span> <span class="k">const</span> <span class="k">override</span> <span class="p">{</span> <span class="k">return</span> <span class="nb">false</span><span class="p">;</span> <span class="p">}</span>
@@ -1409,7 +1409,7 @@ For the complete code please refer to:  <a href="https://github.com/Oneflow-Inc/
 </li>
 </ul>
 <p>After implementing the kernel class, you need to call <code>REGISTER_USER_KERNEL</code> to register it. The string parameter that <code>REGISTER_USER_KERNEL("myrelu")</code> accepts is <code>op_type_name</code> which is used to complete registration and querying. You also need to use <code>op_type_name</code> when wrapping op at the Python layer.</p>
-<p><code>REGISTER_USER_KERNEL("myrelu")</code> returns an <code>OpKernelRegistry</code> object. The methods that need to be called to set the registration information are  mention in the code above. </p>
+<p><code>REGISTER_USER_KERNEL("myrelu")</code> returns an <code>OpKernelRegistry</code> object. The methods that need to be called to set the registration information are  mention in the code above.</p>
 <ul>
 <li>
 <p><code>SetCreateFn&lt;T&gt;()</code>: The method of this template's parameter <code>T</code>  is our implementation of the kernel class which OneFlow will use it to create the kernel object.</p>
@@ -1481,7 +1481,7 @@ For the complete code please refer to:  <a href="https://github.com/Oneflow-Inc/
 <ul>
 <li>Compiling Options</li>
 <li>Dictionary of header file</li>
-<li>Dictionary of link library </li>
+<li>Dictionary of link library</li>
 <li>Linking options</li>
 </ul>
 <p>For example：</p>
@@ -1490,8 +1490,8 @@ For the complete code please refer to:  <a href="https://github.com/Oneflow-Inc/
 [&#39;-I/home/yaochi/oneflow/build/python_scripts/oneflow/include&#39;, &#39;-DHALF_ENABLE_CPP11_USER_LITERALS=0&#39;, &#39;-DWITH_CUDA&#39;, &#39;-D_GLIBCXX_USE_CXX11_ABI=0&#39;]
 </code></pre></div>
 <p>You can also get compile and link options directly by using command：</p>
-<div class="highlight"><pre><span></span><code>python -c <span class="s2">&quot;import oneflow; print(&#39; &#39;.join(oneflow.sysconfig.get_compile_flags()))&quot;</span>
-python -c <span class="s2">&quot;import oneflow; print(&#39; &#39;.join(oneflow.sysconfig.get_link_flags()))&quot;</span>
+<div class="highlight"><pre><span></span><code>python -c &quot;import oneflow; print(&#39; &#39;.join(oneflow.sysconfig.get_compile_flags()))&quot;
+python -c &quot;import oneflow; print(&#39; &#39;.join(oneflow.sysconfig.get_link_flags()))&quot;
 </code></pre></div>
 <p>For the GPU kernel, the <code>cudart</code> library also needs to be specified when linking.</p>
 <h3 id="get-dynamic-library-by-compilation-and-linking">Get Dynamic Library by Compilation and Linking<a class="headerlink" href="#get-dynamic-library-by-compilation-and-linking" title="Permanent link">&para;</a></h3>
@@ -1515,7 +1515,7 @@ myrelu_cpu_kernel.o: myrelu_cpu_kernel.cpp
     -o myrelu_cpu_kernel.o                  <span class="se">\</span>
     <span class="k">$(</span>CFLAGS<span class="k">)</span> -fPIC
 
-myrelu_gpu_kernel.o: myrelu_gpu_kernel.cu 
+myrelu_gpu_kernel.o: myrelu_gpu_kernel.cu
     nvcc -std<span class="o">=</span>c++11 -c myrelu_gpu_kernel.cu <span class="se">\</span>
     -o myrelu_gpu_kernel.o                  <span class="se">\</span>
     <span class="k">$(</span>CFLAGS<span class="k">)</span> -x cu -Xcompiler -fPIC
@@ -1697,18 +1697,18 @@ For example：</p>
 </code></pre></div>
 <h3 id="setcheckattrfn"><code>SetCheckAttrFn</code><a class="headerlink" href="#setcheckattrfn" title="Permanent link">&para;</a></h3>
 <p>For some  <code>Attributes</code>, they require a more detailed delineation of the range which can be specified by  <code>SetCheckAttrFn</code>  when registering the Op.</p>
-<p>Take <code>Conv</code> op as an example, it has a configuration option called <code>data_format</code> which is a string type but the data must be <code>channels_first</code> or <code>channels_last</code>. </p>
+<p>Take <code>Conv</code> op as an example, it has a configuration option called <code>data_format</code> which is a string type but the data must be <code>channels_first</code> or <code>channels_last</code>.</p>
 <div class="highlight"><pre><span></span><code><span class="p">.</span><span class="n">Attr</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;data_format&quot;</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">(</span><span class="s">&quot;NCHW&quot;</span><span class="p">))</span>
 <span class="p">.</span><span class="n">SetCheckAttrFn</span><span class="p">(</span>
   <span class="p">[](</span><span class="k">const</span> <span class="n">user_op</span><span class="o">::</span><span class="n">UserOpDefWrapper</span><span class="o">&amp;</span> <span class="n">def</span><span class="p">,</span>
     <span class="k">const</span> <span class="n">user_op</span><span class="o">::</span><span class="n">UserOpConfWrapper</span><span class="o">&amp;</span> <span class="n">conf</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Maybe</span><span class="o">&lt;</span><span class="kt">void</span><span class="o">&gt;</span> <span class="p">{</span>
    <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">data_format</span> <span class="o">=</span> <span class="n">conf</span><span class="p">.</span><span class="n">attr</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;data_format&quot;</span><span class="p">);</span>
-   <span class="k">if</span> <span class="p">(</span><span class="n">data_format</span> <span class="o">==</span> <span class="s">&quot;channels_first&quot;</span> <span class="o">||</span> <span class="n">data_format</span> <span class="o">==</span> <span class="s">&quot;channels_last&quot;</span><span class="p">)</span> <span class="p">{</span> 
-     <span class="k">return</span> <span class="n">Maybe</span><span class="o">&lt;</span><span class="kt">void</span><span class="o">&gt;::</span><span class="n">Ok</span><span class="p">();</span> 
+   <span class="k">if</span> <span class="p">(</span><span class="n">data_format</span> <span class="o">==</span> <span class="s">&quot;channels_first&quot;</span> <span class="o">||</span> <span class="n">data_format</span> <span class="o">==</span> <span class="s">&quot;channels_last&quot;</span><span class="p">)</span> <span class="p">{</span>
+     <span class="k">return</span> <span class="n">Maybe</span><span class="o">&lt;</span><span class="kt">void</span><span class="o">&gt;::</span><span class="n">Ok</span><span class="p">();</span>
    <span class="p">}</span>
    <span class="k">return</span> <span class="n">oneflow</span><span class="o">::</span><span class="n">Error</span><span class="o">::</span><span class="n">CheckFailed</span><span class="p">()</span>
-         <span class="o">&lt;&lt;</span> <span class="s">&quot;data_format value: &quot;</span> 
-         <span class="o">&lt;&lt;</span> <span class="n">data_format</span> 
+         <span class="o">&lt;&lt;</span> <span class="s">&quot;data_format value: &quot;</span>
+         <span class="o">&lt;&lt;</span> <span class="n">data_format</span>
          <span class="o">&lt;&lt;</span> <span class="s">&quot; for Conv op is illegal.&quot;</span><span class="p">;</span>
 <span class="p">})</span>
 </code></pre></div>
@@ -1717,22 +1717,22 @@ For example：</p>
 <p>For some ops, they may have multiple input or output and we need to specify the number of inputs and outputs when we register it.</p>
 <p>Input example：</p>
 <div class="highlight"><pre><span></span><code><span class="c1">// input must have 1 blob</span>
-<span class="p">.</span><span class="n">Input</span><span class="p">(</span><span class="s">&quot;input&quot;</span><span class="p">)</span>        
+<span class="p">.</span><span class="n">Input</span><span class="p">(</span><span class="s">&quot;input&quot;</span><span class="p">)</span>
 
 <span class="c1">// input must have 5 blobs</span>
-<span class="p">.</span><span class="n">Input</span><span class="p">(</span><span class="s">&quot;input&quot;</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span> 
+<span class="p">.</span><span class="n">Input</span><span class="p">(</span><span class="s">&quot;input&quot;</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
 
 <span class="c1">// input input must have at least 5  blobs</span>
-<span class="p">.</span><span class="n">InputWithMinimum</span><span class="p">(</span><span class="s">&quot;input&quot;</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span> 
+<span class="p">.</span><span class="n">InputWithMinimum</span><span class="p">(</span><span class="s">&quot;input&quot;</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
 
 <span class="c1">// input can have no blob or 1 blob</span>
-<span class="p">.</span><span class="n">OptionalInput</span><span class="p">(</span><span class="s">&quot;input&quot;</span><span class="p">)</span> 
+<span class="p">.</span><span class="n">OptionalInput</span><span class="p">(</span><span class="s">&quot;input&quot;</span><span class="p">)</span>
 
 <span class="c1">// input can have no blob or 5 blobs</span>
-<span class="p">.</span><span class="n">OptionalInput</span><span class="p">(</span><span class="s">&quot;input&quot;</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span> 
+<span class="p">.</span><span class="n">OptionalInput</span><span class="p">(</span><span class="s">&quot;input&quot;</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
 
 <span class="c1">// input can have no blob or at least 5 blobs</span>
-<span class="p">.</span><span class="n">OptionalInputWithMininum</span><span class="p">(</span><span class="s">&quot;input&quot;</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span> 
+<span class="p">.</span><span class="n">OptionalInputWithMininum</span><span class="p">(</span><span class="s">&quot;input&quot;</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
 </code></pre></div>
 <p>Output setting is similar to Input.</p>
 <h3 id="setgetsbpfn">SetGetSbpFn<a class="headerlink" href="#setgetsbpfn" title="Permanent link">&para;</a></h3>
@@ -1758,7 +1758,7 @@ Example of "add_n"：</p>
 <div class="highlight"><pre><span></span><code><span class="n">REGISTER_USER_KERNEL</span><span class="p">(</span><span class="s">&quot;XOp&quot;</span><span class="p">)</span>
     <span class="p">.</span><span class="n">SetInferTmpSizeFn</span><span class="p">(</span>
       <span class="p">[](</span><span class="k">const</span> <span class="n">oneflow</span><span class="o">::</span><span class="n">user_op</span><span class="o">::</span><span class="n">InferContext</span><span class="o">*</span><span class="p">)</span> <span class="p">{</span>
-         <span class="k">return</span> <span class="mi">1024</span><span class="p">;</span> 
+         <span class="k">return</span> <span class="mi">1024</span><span class="p">;</span>
       <span class="p">});</span>
 </code></pre></div>
 <p>Once the buffer size is set by <code>SetInferTmpSizeFn</code>, this buffer can be retrieved in <code>Compute</code> by calling the <code>KernelContext::Tensor4ArgNameAndIndex</code>. This buffer is encapsulated as <code>oneflow::user_op::Tensor</code> which can be converted to other types of pointers by calling the <code>dptr</code> or <code>mut_dptr</code>.</p>
@@ -1811,7 +1811,7 @@ Example of "add_n"：</p>
       <span class="k">const</span> <span class="k">auto</span> <span class="n">op1_name</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">-&gt;</span><span class="n">FwOp</span><span class="p">().</span><span class="n">op_name</span><span class="p">()</span> <span class="o">+</span> <span class="s">&quot;_grad1&quot;</span><span class="p">;</span>
 
       <span class="c1">// The operator op1_name is used to calculate the gradient of myop.in</span>
-      <span class="n">ctx</span><span class="o">-&gt;</span><span class="n">DefineOp</span><span class="p">(</span><span class="n">op1_name</span><span class="p">,</span> 
+      <span class="n">ctx</span><span class="o">-&gt;</span><span class="n">DefineOp</span><span class="p">(</span><span class="n">op1_name</span><span class="p">,</span>
         <span class="p">[</span><span class="o">&amp;</span><span class="n">ctx</span><span class="p">](</span><span class="n">user_op</span><span class="o">::</span><span class="n">BackwardOpBuilder</span><span class="o">&amp;</span> <span class="n">builder</span><span class="p">)</span> <span class="p">{</span>
           <span class="k">return</span> <span class="n">builder</span><span class="p">.</span><span class="n">OpTypeName</span><span class="p">(</span><span class="s">&quot;multiply&quot;</span><span class="p">)</span>
               <span class="p">.</span><span class="n">InputBind</span><span class="p">(</span><span class="s">&quot;x&quot;</span><span class="p">,</span> <span class="n">ctx</span><span class="o">-&gt;</span><span class="n">FwOp</span><span class="p">().</span><span class="n">input</span><span class="p">(</span><span class="s">&quot;in&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span> <span class="c1">//multiply.x &lt;- myop.in</span>
@@ -1822,7 +1822,7 @@ Example of "add_n"：</p>
 
       <span class="k">const</span> <span class="k">auto</span> <span class="n">op2_name</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">-&gt;</span><span class="n">FwOp</span><span class="p">().</span><span class="n">op_name</span><span class="p">()</span> <span class="o">+</span> <span class="s">&quot;_grad2&quot;</span><span class="p">;</span>
       <span class="c1">// The operator op2_name is used to calculate 6*op1_name.</span>
-      <span class="n">ctx</span><span class="o">-&gt;</span><span class="n">DefineOp</span><span class="p">(</span><span class="n">op2_name</span><span class="p">,</span> 
+      <span class="n">ctx</span><span class="o">-&gt;</span><span class="n">DefineOp</span><span class="p">(</span><span class="n">op2_name</span><span class="p">,</span>
         <span class="p">[</span><span class="o">&amp;</span><span class="n">ctx</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">op1_name</span><span class="p">](</span><span class="n">user_op</span><span class="o">::</span><span class="n">BackwardOpBuilder</span><span class="o">&amp;</span> <span class="n">builder</span><span class="p">)</span> <span class="p">{</span>
           <span class="k">return</span> <span class="n">builder</span><span class="p">.</span><span class="n">OpTypeName</span><span class="p">(</span><span class="s">&quot;scalar_mul&quot;</span><span class="p">)</span>
               <span class="p">.</span><span class="n">InputBind</span><span class="p">(</span><span class="s">&quot;in&quot;</span><span class="p">,</span> <span class="n">ctx</span><span class="o">-&gt;</span><span class="n">GetOp</span><span class="p">(</span><span class="n">op1_name</span><span class="p">).</span><span class="n">output</span><span class="p">(</span><span class="s">&quot;out&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
@@ -1835,7 +1835,7 @@ Example of "add_n"：</p>
         <span class="p">});</span>
 
       <span class="c1">// (the gradient of myop.in) &lt;- op1_name.out</span>
-      <span class="n">ctx</span><span class="o">-&gt;</span><span class="n">FwOp</span><span class="p">().</span><span class="n">InputGradBind</span><span class="p">(</span><span class="n">user_op</span><span class="o">::</span><span class="n">OpArg</span><span class="p">(</span><span class="s">&quot;in&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> 
+      <span class="n">ctx</span><span class="o">-&gt;</span><span class="n">FwOp</span><span class="p">().</span><span class="n">InputGradBind</span><span class="p">(</span><span class="n">user_op</span><span class="o">::</span><span class="n">OpArg</span><span class="p">(</span><span class="s">&quot;in&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
         <span class="p">[</span><span class="o">&amp;</span><span class="n">ctx</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">op2_name</span><span class="p">]()</span> <span class="o">-&gt;</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span> <span class="p">{</span>
           <span class="k">return</span> <span class="n">ctx</span><span class="o">-&gt;</span><span class="n">GetOp</span><span class="p">(</span><span class="n">op2_name</span><span class="p">)</span>
                 <span class="p">.</span><span class="n">output</span><span class="p">(</span><span class="s">&quot;out&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
@@ -1845,9 +1845,9 @@ Example of "add_n"：</p>
 <p>The string parameter accepted by <code>REGISTER_USER_OP_GRAD("myop")</code> is <code>op_type_name</code> which needs to be the same as registered with <code>REGISTER_USER_OP</code>.</p>
 <p><code>REGISTER_USER_OP_GRAD("myop")</code> returns an <code>oneflow::user_op::OpGradRegistry</code> object that we can call it to set the custom op's backward generating function.</p>
 <p>In the above gradient registration process, the expression for the gradient of <code>myop</code> is <code>6*x*dy</code> which is demonstrated in the code.</p>
-<p>First <code>op1_name</code> is defined and <code>x*dy</code> is solved by using the existing operator <code>multiply</code>: </p>
+<p>First <code>op1_name</code> is defined and <code>x*dy</code> is solved by using the existing operator <code>multiply</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="c1">//  The operator op1_name is used to calculate the gradient of myop.in</span>
-<span class="n">ctx</span><span class="o">-&gt;</span><span class="n">DefineOp</span><span class="p">(</span><span class="n">op1_name</span><span class="p">,</span> 
+<span class="n">ctx</span><span class="o">-&gt;</span><span class="n">DefineOp</span><span class="p">(</span><span class="n">op1_name</span><span class="p">,</span>
   <span class="p">[</span><span class="o">&amp;</span><span class="n">ctx</span><span class="p">](</span><span class="n">user_op</span><span class="o">::</span><span class="n">BackwardOpBuilder</span><span class="o">&amp;</span> <span class="n">builder</span><span class="p">)</span> <span class="p">{</span>
     <span class="k">return</span> <span class="n">builder</span><span class="p">.</span><span class="n">OpTypeName</span><span class="p">(</span><span class="s">&quot;multiply&quot;</span><span class="p">)</span>
         <span class="p">.</span><span class="n">InputBind</span><span class="p">(</span><span class="s">&quot;x&quot;</span><span class="p">,</span> <span class="n">ctx</span><span class="o">-&gt;</span><span class="n">FwOp</span><span class="p">().</span><span class="n">input</span><span class="p">(</span><span class="s">&quot;in&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span> <span class="c1">//multiply.x &lt;- myop.in</span>
@@ -1858,7 +1858,7 @@ Example of "add_n"：</p>
 </code></pre></div>
 <p>Then <code>op2_name</code> is defined and use the existing operator <code>op2_name</code> to solve for <code>6*op1_name</code>.</p>
 <div class="highlight"><pre><span></span><code><span class="c1">// The operator op2_name is used to calculate 6*op1_name.</span>
-<span class="n">ctx</span><span class="o">-&gt;</span><span class="n">DefineOp</span><span class="p">(</span><span class="n">op2_name</span><span class="p">,</span> 
+<span class="n">ctx</span><span class="o">-&gt;</span><span class="n">DefineOp</span><span class="p">(</span><span class="n">op2_name</span><span class="p">,</span>
   <span class="p">[</span><span class="o">&amp;</span><span class="n">ctx</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">op1_name</span><span class="p">](</span><span class="n">user_op</span><span class="o">::</span><span class="n">BackwardOpBuilder</span><span class="o">&amp;</span> <span class="n">builder</span><span class="p">)</span> <span class="p">{</span>
     <span class="k">return</span> <span class="n">builder</span><span class="p">.</span><span class="n">OpTypeName</span><span class="p">(</span><span class="s">&quot;scalar_mul&quot;</span><span class="p">)</span>
         <span class="p">.</span><span class="n">InputBind</span><span class="p">(</span><span class="s">&quot;in&quot;</span><span class="p">,</span> <span class="n">ctx</span><span class="o">-&gt;</span><span class="n">GetOp</span><span class="p">(</span><span class="n">op1_name</span><span class="p">).</span><span class="n">output</span><span class="p">(</span><span class="s">&quot;out&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
@@ -1872,7 +1872,7 @@ Example of "add_n"：</p>
 </code></pre></div>
 <p>Finally bind the output of <code>op2_name</code> (i.e., <code>6*x*dy</code>) to the input of <code>myop</code> to complete the registration.</p>
 <div class="highlight"><pre><span></span><code><span class="c1">// (the gradient of myop.in) &lt;- op1_name.out</span>
-<span class="n">ctx</span><span class="o">-&gt;</span><span class="n">FwOp</span><span class="p">().</span><span class="n">InputGradBind</span><span class="p">(</span><span class="n">user_op</span><span class="o">::</span><span class="n">OpArg</span><span class="p">(</span><span class="s">&quot;in&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> 
+<span class="n">ctx</span><span class="o">-&gt;</span><span class="n">FwOp</span><span class="p">().</span><span class="n">InputGradBind</span><span class="p">(</span><span class="n">user_op</span><span class="o">::</span><span class="n">OpArg</span><span class="p">(</span><span class="s">&quot;in&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
   <span class="p">[</span><span class="o">&amp;</span><span class="n">ctx</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">op2_name</span><span class="p">]()</span> <span class="o">-&gt;</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span> <span class="p">{</span>
     <span class="k">return</span> <span class="n">ctx</span><span class="o">-&gt;</span><span class="n">GetOp</span><span class="p">(</span><span class="n">op2_name</span><span class="p">)</span>
           <span class="p">.</span><span class="n">output</span><span class="p">(</span><span class="s">&quot;out&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
@@ -1899,7 +1899,7 @@ Example of "add_n"：</p>
 </ul>
 <h3 id="detailed-introduction-of-backwardopbuilder">Detailed Introduction of BackwardOpBuilder<a class="headerlink" href="#detailed-introduction-of-backwardopbuilder" title="Permanent link">&para;</a></h3>
 <p><code>BackwardOpBuilder</code> is used to build a reverse op. The fragment of above code is an example:</p>
-<div class="highlight"><pre><span></span><code><span class="n">ctx</span><span class="o">-&gt;</span><span class="n">DefineOp</span><span class="p">(</span><span class="n">op1_name</span><span class="p">,</span> 
+<div class="highlight"><pre><span></span><code><span class="n">ctx</span><span class="o">-&gt;</span><span class="n">DefineOp</span><span class="p">(</span><span class="n">op1_name</span><span class="p">,</span>
   <span class="p">[</span><span class="o">&amp;</span><span class="n">ctx</span><span class="p">](</span><span class="n">user_op</span><span class="o">::</span><span class="n">BackwardOpBuilder</span><span class="o">&amp;</span> <span class="n">builder</span><span class="p">)</span> <span class="p">{</span>
     <span class="k">return</span> <span class="n">builder</span><span class="p">.</span><span class="n">OpTypeName</span><span class="p">(</span><span class="s">&quot;multiply&quot;</span><span class="p">)</span>
         <span class="p">.</span><span class="n">InputBind</span><span class="p">(</span><span class="s">&quot;x&quot;</span><span class="p">,</span> <span class="n">ctx</span><span class="o">-&gt;</span><span class="n">FwOp</span><span class="p">().</span><span class="n">input</span><span class="p">(</span><span class="s">&quot;in&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span> <span class="c1">//multiply.x &lt;- myop.in</span>
@@ -1924,12 +1924,12 @@ The purpose of each operator is as follows:</p>
 <p><code>Attr(attr_name, val)</code> sets the value of the attribute which same in the registration.</p>
 </li>
 <li>
-<p>Calling <code>Build()</code> after above configuration, then the construction of the reverse op is completed. </p>
+<p>Calling <code>Build()</code> after above configuration, then the construction of the reverse op is completed.</p>
 </li>
 </ul>
 <h3 id="detailed-introduction-of-useropwrapper">Detailed Introduction of UserOpWrapper<a class="headerlink" href="#detailed-introduction-of-useropwrapper" title="Permanent link">&para;</a></h3>
 <p>Calling <code>ctx-&gt;FwOp()</code> will return the <code>UserOpWrapper</code>of <code>myop</code> and complete the gradient binding by calling the <code>UserOpWrapper</code>.</p>
-<div class="highlight"><pre><span></span><code><span class="n">ctx</span><span class="o">-&gt;</span><span class="n">FwOp</span><span class="p">().</span><span class="n">InputGradBind</span><span class="p">(</span><span class="n">user_op</span><span class="o">::</span><span class="n">OpArg</span><span class="p">(</span><span class="s">&quot;in&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> 
+<div class="highlight"><pre><span></span><code><span class="n">ctx</span><span class="o">-&gt;</span><span class="n">FwOp</span><span class="p">().</span><span class="n">InputGradBind</span><span class="p">(</span><span class="n">user_op</span><span class="o">::</span><span class="n">OpArg</span><span class="p">(</span><span class="s">&quot;in&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
   <span class="p">[</span><span class="o">&amp;</span><span class="n">ctx</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">op2_name</span><span class="p">]()</span> <span class="o">-&gt;</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span> <span class="p">{</span>
     <span class="k">return</span> <span class="n">ctx</span><span class="o">-&gt;</span><span class="n">GetOp</span><span class="p">(</span><span class="n">op2_name</span><span class="p">)</span>
           <span class="p">.</span><span class="n">output</span><span class="p">(</span><span class="s">&quot;out&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>

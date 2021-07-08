@@ -1274,7 +1274,7 @@
 <p>在学习之前，也可以通过以下命令查看各脚本功能（<strong>脚本运行依赖 默认选择机器上的0号GPU，如果你安装的是CPU版本OneFlow，则脚本会自动调用CPU来做训练。</strong>）。</p>
 <p>首先，同步本文档仓库并切换到对应路径：
 <div class="highlight"><pre><span></span><code>git clone https://github.com/Oneflow-Inc/oneflow-documentation.git
-<span class="nb">cd</span> oneflow-documentation/cn/docs/code/quick_start/
+cd oneflow-documentation/cn/docs/code/quick_start/
 </code></pre></div></p>
 <p><strong>模型训练</strong>
 <div class="highlight"><pre><span></span><code>python lenet_train.py
@@ -1294,7 +1294,7 @@
 <blockquote>
 <p>以下的两个脚本 <code>lenet_eval.py</code> 与 <code>lenet_test.py</code> 都依赖以上训练的结果，因此需要先运行以上脚本。或者你可以直接下载我们已经训练好的模型，则可以略过以上步骤，下载方法如下：</p>
 </blockquote>
-<div class="highlight"><pre><span></span><code><span class="c1">#在仓库docs/code/quick_start/目录下</span>
+<div class="highlight"><pre><span></span><code>#在仓库docs/code/quick_start/目录下
 wget https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/quick_start/lenet_models_1.zip
 unzip lenet_models_1.zip
 </code></pre></div>
@@ -1308,7 +1308,7 @@ accuracy: 99.4%
 </code></pre></div>
 <p><strong>图像识别</strong></p>
 <p><div class="highlight"><pre><span></span><code>python lenet_test.py ./9.png
-<span class="c1"># 输出：prediction: 9</span>
+# 输出：prediction: 9
 </code></pre></div>
 以上命令将使用之前训练的模型对我们准备好的 <code>9.png</code> 图片文件中的内容进行预测。
 你也可以下载我们<a href="https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/quick_start/mnist_raw_images.zip">提取好的 mnist 图片</a>，自行对更多图片文件的预测效果进行验证。</p>

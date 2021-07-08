@@ -863,12 +863,12 @@
                 
                 <h2 id="yolov3">YoloV3<a class="headerlink" href="#yolov3" title="Permanent link">&para;</a></h2>
 <h2 id="1-introduction">1. Introduction<a class="headerlink" href="#1-introduction" title="Permanent link">&para;</a></h2>
-<p><a href="https://pjreddie.com/darknet/yolo/">YOLO</a> series of algorithms (v1~v3), is the first single-stage object detection network, YOLO — You Only Look Once indicates its single-stage feature. Because the network is simple and the single-stage efficiency is fast, it is distinguished from the two-stage target detector represented by Faster-RCNN. Since it was released, it has become popular in the field of the target detection with its fast speed and high accuracy, and has been widely used and praised. </p>
-<p>While Yolov3 is the classic and comprehensive one(of course, the official also released Yolov4 recently). It takes Darknet-53 with residual network as the backbone, and integrates features such as multi-scale, 3-way output feature map and upsampling, which greatly improves the model accuracy and small target detection capability. </p>
+<p><a href="https://pjreddie.com/darknet/yolo/">YOLO</a> series of algorithms (v1~v3), is the first single-stage object detection network, YOLO — You Only Look Once indicates its single-stage feature. Because the network is simple and the single-stage efficiency is fast, it is distinguished from the two-stage target detector represented by Faster-RCNN. Since it was released, it has become popular in the field of the target detection with its fast speed and high accuracy, and has been widely used and praised.</p>
+<p>While Yolov3 is the classic and comprehensive one(of course, the official also released Yolov4 recently). It takes Darknet-53 with residual network as the backbone, and integrates features such as multi-scale, 3-way output feature map and upsampling, which greatly improves the model accuracy and small target detection capability.</p>
 <p><img alt="detected_kite" src="imgs/detected_000004.jpg" /></p>
-<p>In this article, we provide an OneFlow implementation of Yolov3. The difference is that we handle NMS process in C++ and call it by customizing user op. Of course, we also support handling NMS process in Python.  </p>
+<p>In this article, we provide an OneFlow implementation of Yolov3. The difference is that we handle NMS process in C++ and call it by customizing user op. Of course, we also support handling NMS process in Python.</p>
 <h2 id="2-quick-start">2. Quick Start<a class="headerlink" href="#2-quick-start" title="Permanent link">&para;</a></h2>
-<p>Before we start, please make sure you have installed <a href="https://github.com/Oneflow-Inc/oneflow">OneFlow</a> properly. </p>
+<p>Before we start, please make sure you have installed <a href="https://github.com/Oneflow-Inc/oneflow">OneFlow</a> properly.</p>
 <ol>
 <li>Git clone <a href="https://github.com/Oneflow-Inc/oneflow_yolov3">this repository</a></li>
 </ol>
@@ -880,7 +880,7 @@
 3. Execute this script in project's root directory</p>
 <p><div class="highlight"><pre><span></span><code>bash scripts/test.sh
 </code></pre></div>
-Execute this script to compile the operator defined in cpp code into a callable .so file. You will see in the project path.  </p>
+Execute this script to compile the operator defined in cpp code into a callable .so file. You will see in the project path.</p>
 <ul>
 <li>
 <p>libdarknet.so</p>
@@ -890,7 +890,7 @@ Execute this script to compile the operator defined in cpp code into a callable 
 </li>
 </ul>
 <h3 id="pretrain-model">Pretrain Model<a class="headerlink" href="#pretrain-model" title="Permanent link">&para;</a></h3>
-<p>We use the pretrain model—<a href="https://pjreddie.com/media/files/yolov3.weights">yolov3.weight</a> provided by Yolov3 author, and generate the model in OneFlow format after transformation. Download pretrain model: <a href="https://oneflow-public.oss-cn-beijing.aliyuncs.com/model_zoo/of_model_yolov3.zip">of_model_yolov3.zip</a>, extract the <code>of_model</code> folder and put it in the root directory. </p>
+<p>We use the pretrain model—<a href="https://pjreddie.com/media/files/yolov3.weights">yolov3.weight</a> provided by Yolov3 author, and generate the model in OneFlow format after transformation. Download pretrain model: <a href="https://oneflow-public.oss-cn-beijing.aliyuncs.com/model_zoo/of_model_yolov3.zip">of_model_yolov3.zip</a>, extract the <code>of_model</code> folder and put it in the root directory.</p>
 <h2 id="3-predictinference">3. Predict/inference<a class="headerlink" href="#3-predictinference" title="Permanent link">&para;</a></h2>
 <p>Execute the following script：</p>
 <p><div class="highlight"><pre><span></span><code>sh yolo_predict.sh
@@ -898,9 +898,9 @@ Execute this script to compile the operator defined in cpp code into a callable 
 Or：
 <div class="highlight"><pre><span></span><code>sh yolo_predict_python_data_preprocess.sh
 </code></pre></div></p>
-<p>After executing the script, we will generate the images with bounding box under the <code>data/result</code>. </p>
+<p>After executing the script, we will generate the images with bounding box under the <code>data/result</code>.</p>
 <p><img alt="detected_kite" src="imgs/detected_kite.jpg" /></p>
-<p>Parameters description 
+<p>Parameters description
 - --pretrained_model    Pretrain model path</p>
 <ul>
 <li>
@@ -916,12 +916,12 @@ Or：
 <p>--image_paths             Single/multiple paths of image to be detected. Like：</p>
 </li>
 </ul>
-<p>--image_paths  'data/images/000002.jpg'  'data/images/000004.jpg' </p>
-<p>The training is also very simple. After preparing dataset, we only need to execute <code>sh yolo_train.sh</code>. The process of preparing dataset is shown in the Preparing Dataset part. </p>
+<p>--image_paths  'data/images/000002.jpg'  'data/images/000004.jpg'</p>
+<p>The training is also very simple. After preparing dataset, we only need to execute <code>sh yolo_train.sh</code>. The process of preparing dataset is shown in the Preparing Dataset part.</p>
 <h2 id="4-preparing-dataset">4. Preparing Dataset<a class="headerlink" href="#4-preparing-dataset" title="Permanent link">&para;</a></h2>
-<p>Yolov3 supports arbitrary object detection dataset. In the below we use <a href="http://cocodataset.org/#download">COCO2014</a> as an example to create the training/validation dataset. Other datasets <a href="http://host.robots.ox.ac.uk/pascal/VOC/">PASCAL VOC</a> or custom datasets, can be created in the same format. </p>
+<p>Yolov3 supports arbitrary object detection dataset. In the below we use <a href="http://cocodataset.org/#download">COCO2014</a> as an example to create the training/validation dataset. Other datasets <a href="http://host.robots.ox.ac.uk/pascal/VOC/">PASCAL VOC</a> or custom datasets, can be created in the same format.</p>
 <h3 id="resource-file">Resource file<a class="headerlink" href="#resource-file" title="Permanent link">&para;</a></h3>
-<p>Download COCO2014 training dataset and validation dataset. unzip it and put <code>train2014</code> and <code>val2014</code> under the <code>data/COCO/images</code> directory. </p>
+<p>Download COCO2014 training dataset and validation dataset. unzip it and put <code>train2014</code> and <code>val2014</code> under the <code>data/COCO/images</code> directory.</p>
 <p>(If you have downloaded COCO2014 dataset locally, you can create a soft link of images to the parent directory of <code>train2014</code> and <code>val2014</code>)</p>
 <p>Prepare resource file: <code>labels</code>, <code>5k.part</code>, <code>trainvalno5k.part</code></p>
 <div class="highlight"><pre><span></span><code>wget -c https://pjreddie.com/media/files/coco/5k.part
@@ -929,25 +929,25 @@ wget -c https://pjreddie.com/media/files/coco/trainvalno5k.part
 wget -c https://pjreddie.com/media/files/coco/labels.tgz
 </code></pre></div>
 <h3 id="scripts">Scripts<a class="headerlink" href="#scripts" title="Permanent link">&para;</a></h3>
-<p>Execute the script in <code>data/COCO</code> directory: </p>
-<div class="highlight"><pre><span></span><code><span class="c1"># get label file</span>
+<p>Execute the script in <code>data/COCO</code> directory:</p>
+<div class="highlight"><pre><span></span><code># get label file
 tar xzf labels.tgz
 
-<span class="c1"># set up image list</span>
-paste &lt;<span class="o">(</span>awk <span class="s2">&quot;{print \&quot;</span><span class="nv">$PWD</span><span class="s2">\&quot;}&quot;</span> &lt;5k.part<span class="o">)</span> 5k.part <span class="p">|</span> tr -d <span class="s1">&#39;\t&#39;</span> &gt; 5k.txt
-paste &lt;<span class="o">(</span>awk <span class="s2">&quot;{print \&quot;</span><span class="nv">$PWD</span><span class="s2">\&quot;}&quot;</span> &lt;trainvalno5k.part<span class="o">)</span> trainvalno5k.part <span class="p">|</span> tr -d <span class="s1">&#39;\t&#39;</span> &gt; trainvalno5k.txt
+# set up image list
+paste &lt;(awk &quot;{print \&quot;$PWD\&quot;}&quot; &lt;5k.part) 5k.part | tr -d &#39;\t&#39; &gt; 5k.txt
+paste &lt;(awk &quot;{print \&quot;$PWD\&quot;}&quot; &lt;trainvalno5k.part) trainvalno5k.part | tr -d &#39;\t&#39; &gt; trainvalno5k.txt
 
-<span class="c1"># copy label txt to image dir</span>
-find labels/train2014/ -name <span class="s2">&quot;*.txt&quot;</span>  <span class="p">|</span> xargs -i cp <span class="o">{}</span> images/train2014/
-find labels/val2014/   -name <span class="s2">&quot;*.txt&quot;</span>  <span class="p">|</span> xargs -i cp <span class="o">{}</span> images/val2014/
+# copy label txt to image dir
+find labels/train2014/ -name &quot;*.txt&quot;  | xargs -i cp {} images/train2014/
+find labels/val2014/   -name &quot;*.txt&quot;  | xargs -i cp {} images/val2014/
 </code></pre></div>
 <p>This script will automatically unzip <code>labels.tgz</code> file, and generate <code>5k.txt</code> and <code>trainvalno5k.txt</code> in current directory. Then copy all <code>label.txt</code> files in <code>labels/train2014</code> and <code>labels/val2014</code> to the corresponding training dataset and validation dataset folders (Make sure images and label are in the same directory).</p>
-<p>At this point, the preparation of the whole dataset is completed. </p>
+<p>At this point, the preparation of the whole dataset is completed.</p>
 <h2 id="5-training">5. Training<a class="headerlink" href="#5-training" title="Permanent link">&para;</a></h2>
-<p>Modify the parameter in <code>yolo_train.sh</code> script, let <code>--image_path_file="data/COCO/trainvalno5k.txt"</code> and execute: </p>
+<p>Modify the parameter in <code>yolo_train.sh</code> script, let <code>--image_path_file="data/COCO/trainvalno5k.txt"</code> and execute:</p>
 <div class="highlight"><pre><span></span><code>sh yolo_train.sh
 </code></pre></div>
-<p>Then we start training, more detailed parameters are described as follows: </p>
+<p>Then we start training, more detailed parameters are described as follows:</p>
 <ul>
 <li>--gpu_num_per_node    The amount of devices on each machine</li>
 <li>--batch_size                     The batch size</li>
@@ -960,9 +960,9 @@ find labels/val2014/   -name <span class="s2">&quot;*.txt&quot;</span>  <span cl
 </ul>
 <h2 id="descriptions">Descriptions<a class="headerlink" href="#descriptions" title="Permanent link">&para;</a></h2>
 <p>At present, if we call <code>yolo_predict.sh</code>. The data preprocessing is dependent on <code>darknet</code></p>
-<p>Among them: </p>
-<p>In <code>predict decoder</code>, we call <code>load_image_color</code>, <code>letterbox_image</code> function. </p>
-<p>In <code>train decoder</code>, we call <code>load_data_detection</code> function. 
+<p>Among them:</p>
+<p>In <code>predict decoder</code>, we call <code>load_image_color</code>, <code>letterbox_image</code> function.</p>
+<p>In <code>train decoder</code>, we call <code>load_data_detection</code> function.
 It mainly involves the following operations, which will be replaced in later versions with <code>OneFlow Decoder Ops</code></p>
 <ul>
 <li>image read</li>
@@ -975,7 +975,7 @@ It mainly involves the following operations, which will be replaced in later ver
 <li>clip image</li>
 <li>random flip image and box</li>
 <li>randomize_boxes</li>
-<li>correct_boxes  </li>
+<li>correct_boxes</li>
 </ul>
                 
               

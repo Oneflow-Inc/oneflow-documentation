@@ -1157,12 +1157,12 @@ OneFlow 采用此约定，与 <code>spark</code> 的默认存储的文件名一�
 </li>
 </ul>
 <p>接着，解压 <code>spark-2.4.7-bin-hadoop2.7.tgz</code>，并配置环境变量 <code>SPARK_HOME</code>:
-<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">SPARK_HOME</span><span class="o">=</span>path/to/spark-2.4.7-bin-hadoop2.7
-<span class="nb">export</span> <span class="nv">PATH</span><span class="o">=</span><span class="nv">$SPARK_HOME</span>/bin:<span class="nv">$PATH</span>
+<div class="highlight"><pre><span></span><code>export SPARK_HOME=path/to/spark-2.4.7-bin-hadoop2.7
+export PATH=$SPARK_HOME/bin:$PATH
 </code></pre></div></p>
 <p>然后，通过以下命令启动 pyspark shell：
-<div class="highlight"><pre><span></span><code>pyspark --master <span class="s2">&quot;local[*]&quot;</span><span class="se">\</span>
- --jars spark-oneflow-connector-assembly-0.1.0_int64.jar<span class="se">\</span>
+<div class="highlight"><pre><span></span><code>pyspark --master &quot;local[*]&quot;\
+ --jars spark-oneflow-connector-assembly-0.1.0_int64.jar\
  --packages org.tensorflow:spark-tensorflow-connector_2.11:1.13.1
 </code></pre></div></p>
 <div class="highlight"><pre><span></span><code>...
@@ -1175,7 +1175,7 @@ Welcome to
 
 Using Python version 3.6.10 (default, Mar 25 2020 18:53:43)
 SparkSession available as &#39;spark&#39;.
-&gt;&gt;&gt; 
+&gt;&gt;&gt;
 </code></pre></div>
 <p>在启动的 pyspark shell 中，我们可以完成 OFRecord 数据集与其它数据格式的相互转化。</p>
 <h3 id="spark-ofrecord">使用 spark 查看 OFRecord 数据集<a class="headerlink" href="#spark-ofrecord" title="Permanent link">&para;</a></h3>

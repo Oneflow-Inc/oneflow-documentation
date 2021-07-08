@@ -1146,7 +1146,7 @@
 <p>--image_paths             单个/多个待检测图片路径，如：</p>
 </li>
 </ul>
-<p>--image_paths  'data/images/000002.jpg'  'data/images/000004.jpg' </p>
+<p>--image_paths  'data/images/000002.jpg'  'data/images/000004.jpg'</p>
 <p>训练同样很简单，准备好数据集后，只需要执行：<code>sh yolo_train.sh</code>即可，数据集制作过程见下文【数据集制作】部分。</p>
 <h2 id="4">4. 数据集制作<a class="headerlink" href="#4" title="Permanent link">&para;</a></h2>
 <p>Yolov3 支持任意目标检测数据集，下面我们以 <a href="http://cocodataset.org/#download">COCO2014</a> 制作过程为例，介绍训练/验证所需的数据集制作，其它数据集如 <a href="http://host.robots.ox.ac.uk/pascal/VOC/">PASCAL VOC</a> 或自定义数据集等，都可以采用相同格式。</p>
@@ -1160,16 +1160,16 @@ wget -c https://pjreddie.com/media/files/coco/labels.tgz
 </code></pre></div>
 <h3 id="_3">脚本<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>
 <p>在 <code>data/COCO</code> 目录下执行脚本：</p>
-<div class="highlight"><pre><span></span><code><span class="c1"># get label file</span>
+<div class="highlight"><pre><span></span><code># get label file
 tar xzf labels.tgz
 
-<span class="c1"># set up image list</span>
-paste &lt;<span class="o">(</span>awk <span class="s2">&quot;{print \&quot;</span><span class="nv">$PWD</span><span class="s2">\&quot;}&quot;</span> &lt;5k.part<span class="o">)</span> 5k.part <span class="p">|</span> tr -d <span class="s1">&#39;\t&#39;</span> &gt; 5k.txt
-paste &lt;<span class="o">(</span>awk <span class="s2">&quot;{print \&quot;</span><span class="nv">$PWD</span><span class="s2">\&quot;}&quot;</span> &lt;trainvalno5k.part<span class="o">)</span> trainvalno5k.part <span class="p">|</span> tr -d <span class="s1">&#39;\t&#39;</span> &gt; trainvalno5k.txt
+# set up image list
+paste &lt;(awk &quot;{print \&quot;$PWD\&quot;}&quot; &lt;5k.part) 5k.part | tr -d &#39;\t&#39; &gt; 5k.txt
+paste &lt;(awk &quot;{print \&quot;$PWD\&quot;}&quot; &lt;trainvalno5k.part) trainvalno5k.part | tr -d &#39;\t&#39; &gt; trainvalno5k.txt
 
-<span class="c1"># copy label txt to image dir</span>
-find labels/train2014/ -name <span class="s2">&quot;*.txt&quot;</span>  <span class="p">|</span> xargs -i cp <span class="o">{}</span> images/train2014/
-find labels/val2014/   -name <span class="s2">&quot;*.txt&quot;</span>  <span class="p">|</span> xargs -i cp <span class="o">{}</span> images/val2014/
+# copy label txt to image dir
+find labels/train2014/ -name &quot;*.txt&quot;  | xargs -i cp {} images/train2014/
+find labels/val2014/   -name &quot;*.txt&quot;  | xargs -i cp {} images/val2014/
 </code></pre></div>
 <p>执行脚本将自动解压缩 <code>labels.tgz</code> 文件，并在当前目录下生成 <code>5k.txt</code> 和 <code>trainvalno5k.txt</code>，然后将 <code>labels/train2014</code> 和 <code>labels/val2014</code> 的所有 <code>label.txt</code> 文件复制到对应的训练集和验证集文件夹中( <strong>保证图片和 label 在同一目录</strong> )。</p>
 <p>至此，完成整个数据集的准备过程。</p>
@@ -1191,21 +1191,21 @@ find labels/val2014/   -name <span class="s2">&quot;*.txt&quot;</span>  <span cl
 <h2 id="_4">说明<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
 <p>目前如果调用 <code>yolo_predict.sh</code> 执行，数据预处理部分对 <code>darknet</code> 有依赖</p>
 <p>其中：</p>
-<p><code>predict decoder</code> 中调用 <code>load_image_color</code>、<code>letterbox_image</code> 函数<br />
-<code>train decoder</code> 中调用 <code>load_data_detection</code> 函数<br />
-主要涉及以下操作，在后续的版本中会使用 <code>OneFlow decoder ops</code> 替换  </p>
+<p><code>predict decoder</code> 中调用 <code>load_image_color</code>、<code>letterbox_image</code> 函数
+<code>train decoder</code> 中调用 <code>load_data_detection</code> 函数
+主要涉及以下操作，在后续的版本中会使用 <code>OneFlow decoder ops</code> 替换</p>
 <ul>
-<li>image read  </li>
-<li>nhwc -&gt; nchw  </li>
-<li>image / 255  </li>
-<li>bgr2rgb  </li>
-<li>resize_image  </li>
-<li>fill_image   </li>
-<li>random_distort_image  </li>
-<li>clip image  </li>
-<li>random flip image and box  </li>
-<li>randomize_boxes   </li>
-<li>correct_boxes  </li>
+<li>image read</li>
+<li>nhwc -&gt; nchw</li>
+<li>image / 255</li>
+<li>bgr2rgb</li>
+<li>resize_image</li>
+<li>fill_image</li>
+<li>random_distort_image</li>
+<li>clip image</li>
+<li>random flip image and box</li>
+<li>randomize_boxes</li>
+<li>correct_boxes</li>
 </ul>
                 
               

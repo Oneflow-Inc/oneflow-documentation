@@ -1525,8 +1525,8 @@ message UserOpConf {
 [&#39;-I/home/yaochi/oneflow/build/python_scripts/oneflow/include&#39;, &#39;-DHALF_ENABLE_CPP11_USER_LITERALS=0&#39;, &#39;-DWITH_CUDA&#39;, &#39;-D_GLIBCXX_USE_CXX11_ABI=0&#39;]
 </code></pre></div></p>
 <p>也可以通过命令行直接获取编译、链接选项：
-<div class="highlight"><pre><span></span><code>python -c <span class="s2">&quot;import oneflow; print(&#39; &#39;.join(oneflow.sysconfig.get_compile_flags()))&quot;</span>
-python -c <span class="s2">&quot;import oneflow; print(&#39; &#39;.join(oneflow.sysconfig.get_link_flags()))&quot;</span>
+<div class="highlight"><pre><span></span><code>python -c &quot;import oneflow; print(&#39; &#39;.join(oneflow.sysconfig.get_compile_flags()))&quot;
+python -c &quot;import oneflow; print(&#39; &#39;.join(oneflow.sysconfig.get_link_flags()))&quot;
 </code></pre></div></p>
 <p>对于 GPU kernel，链接时还需要指定 <code>cudart</code> 库。</p>
 <h3 id="_3">编译、链接得到动态库<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>

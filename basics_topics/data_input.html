@@ -1105,7 +1105,7 @@
 <p>或者下载我们已经准备好的 <a href="https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/basics_topics/part-00000">part-00000</a> 数据文件，它包含了64张图片。并且，将脚本中的 <code>path/to/ImageNet/ofrecord</code> 替换为 <code>part-00000</code> 文件 <strong>所在的目录</strong>，然后运行脚本。</p>
 <p>以下是使用我们预先准备的数据集运行脚本的例子:</p>
 <div class="highlight"><pre><span></span><code>wget https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/basics_topics/part-00000
-sed -i <span class="s2">&quot;s:path/to/ImageNet/ofrecord:./:&quot;</span> of_data_pipeline.py
+sed -i &quot;s:path/to/ImageNet/ofrecord:./:&quot; of_data_pipeline.py
 python3 of_data_pipeline.py
 </code></pre></div>
 <p>将得到下面的输出：

@@ -1010,7 +1010,7 @@ The <code>oneflow.typing.Numpy.Placeholder</code> is the placeholder of Numpy <c
 <p>Or you can download the <a href="https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/basics_topics/part-00000">part-00000</a> that we have prepared for you which contains 64 images. Then replace <code>path/to/ImageNet/ofrecord</code> in the script with the directory where the <code>part-00000</code> file <strong>is located</strong> and run the script.</p>
 <p>The following example is running a script with our pre-prepared dataset:</p>
 <div class="highlight"><pre><span></span><code>wget https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/basics_topics/part-00000
-sed -i <span class="s2">&quot;s:path/to/ImageNet/ofrecord:./:&quot;</span> of_data_pipeline.py
+sed -i &quot;s:path/to/ImageNet/ofrecord:./:&quot; of_data_pipeline.py
 python3 of_data_pipeline.py
 </code></pre></div>
 <p>The following output are expected:</p>

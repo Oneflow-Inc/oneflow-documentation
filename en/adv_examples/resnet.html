@@ -1010,19 +1010,19 @@
                 
                 <h2 id="introduction">Introduction<a class="headerlink" href="#introduction" title="Permanent link">&para;</a></h2>
 <h3 id="image-classification-and-cnn">Image classification and CNN<a class="headerlink" href="#image-classification-and-cnn" title="Permanent link">&para;</a></h3>
-<p><strong>Image classification</strong> is an image processing method that divided different features reflected in image information into different categories of targets. It is the basis of  other tasks in computer vision, such as detection, semantic segmentation, face recognition and other high-level visual tasks. </p>
-<p>ImageNet Large-scale Visual Recognition Challenge (ILSVRC), often called ImageNet copetition, including image classification, object orientation, object detection and other tasks. It is one of the most important competition to promote the development of computer vision. </p>
-<p>In the 2012 ImageNet competition, deep convolution network Alexnet was born. With a top-5 accuracy rate more than 10% higher than the second place, it won the champion of 2012 ImageNet competition. Since then, the deep learning method represented by <strong>CNN(Convolutional neural network)</strong> has been applied in the field of computer vision. More and deeper CNN networks have been proposed, such as VGGNet, the champion of 2014 ImageNet competition, ResNet, the champion of 2015 ImageNet competition. </p>
+<p><strong>Image classification</strong> is an image processing method that divided different features reflected in image information into different categories of targets. It is the basis of  other tasks in computer vision, such as detection, semantic segmentation, face recognition and other high-level visual tasks.</p>
+<p>ImageNet Large-scale Visual Recognition Challenge (ILSVRC), often called ImageNet copetition, including image classification, object orientation, object detection and other tasks. It is one of the most important competition to promote the development of computer vision.</p>
+<p>In the 2012 ImageNet competition, deep convolution network Alexnet was born. With a top-5 accuracy rate more than 10% higher than the second place, it won the champion of 2012 ImageNet competition. Since then, the deep learning method represented by <strong>CNN(Convolutional neural network)</strong> has been applied in the field of computer vision. More and deeper CNN networks have been proposed, such as VGGNet, the champion of 2014 ImageNet competition, ResNet, the champion of 2015 ImageNet competition.</p>
 <h3 id="resnet">ResNet<a class="headerlink" href="#resnet" title="Permanent link">&para;</a></h3>
-<p><a href="https://arxiv.org/abs/1512.03385">ResNet</a> is the champion of 2015 competition. At present, compared with traditional machine learning classification algorithm, ResNet has achieved excellent results. After that, a large number of detection, segmentation, classification and other tasks are completed on the base of ResNet. </p>
-<p>In <a href="https://github.com/Oneflow-Inc/OneFlow-Benchmark">OneFlow-Benchmark</a> repository, we provide OneFlow implementation of ResNet50 v1.5. After 90 epochs of training on ImageNet-2012 dataset, the accuracy of evaluation can reach 77.318% (Top 1), 93.622% (Top 5). </p>
-<p>For more detailed network parameter alignment, you can refer to <a href="https://github.com/Oneflow-Inc/OneFlow-Benchmark/Classification/cnns">OneFlow-Benchmark's cnns</a> part. </p>
+<p><a href="https://arxiv.org/abs/1512.03385">ResNet</a> is the champion of 2015 competition. At present, compared with traditional machine learning classification algorithm, ResNet has achieved excellent results. After that, a large number of detection, segmentation, classification and other tasks are completed on the base of ResNet.</p>
+<p>In <a href="https://github.com/Oneflow-Inc/OneFlow-Benchmark">OneFlow-Benchmark</a> repository, we provide OneFlow implementation of ResNet50 v1.5. After 90 epochs of training on ImageNet-2012 dataset, the accuracy of evaluation can reach 77.318% (Top 1), 93.622% (Top 5).</p>
+<p>For more detailed network parameter alignment, you can refer to <a href="https://github.com/Oneflow-Inc/OneFlow-Benchmark/Classification/cnns">OneFlow-Benchmark's cnns</a> part.</p>
 <p><img alt="resnet50_validation_acuracy" src="imgs/resnet50_validation_acuracy.png" /></p>
 <p><strong>Some notes on ResNet50 v1.5</strong></p>
 <blockquote>
 <p>ResNet50 v1.5 is an improved version of the original <a href="https://arxiv.org/abs/1512.03385">ResNet50 v1</a>, compared with the original model, the accuracy improve slightly Top1(~0.5%), you can refer to <a href="https://github.com/NVIDIA/DeepLearningExamples/tree/master/MxNet/Classification/RN50v1.5">there</a> for more details.</p>
 </blockquote>
-<p>Next, we take the above ResNet50 network as an example to show how to use OneFlow to train and predict step by step. </p>
+<p>Next, we take the above ResNet50 network as an example to show how to use OneFlow to train and predict step by step.</p>
 <p>The main contents include：</p>
 <ul>
 <li>Preparation</li>
@@ -1034,7 +1034,7 @@
 </li>
 <li>Predict / Inference</li>
 <li>Train / Predict</li>
-<li>Evaluation </li>
+<li>Evaluation</li>
 <li>More details</li>
 <li>Distributed training</li>
 <li>Hybrid precision training and prediction</li>
@@ -1045,64 +1045,64 @@
 </ul>
 <h2 id="requirements">Requirements<a class="headerlink" href="#requirements" title="Permanent link">&para;</a></h2>
 <blockquote>
-<p>Don't worry, it is easy to use OneFlow. You can start OneFlow's image recognition journey with three steps as follow. </p>
+<p>Don't worry, it is easy to use OneFlow. You can start OneFlow's image recognition journey with three steps as follow.</p>
 <ul>
 <li>
-<p>Install OneFlow，you can refer to <a href="https://github.com/Oneflow-Inc/oneflow">OneFlow project home page</a> to finish installation. </p>
+<p>Install OneFlow，you can refer to <a href="https://github.com/Oneflow-Inc/oneflow">OneFlow project home page</a> to finish installation.</p>
 </li>
 <li>
-<p>Clone / Download <a href="https://github.com/Oneflow-Inc/OneFlow-Benchmark">OneFlow-Benchmark</a> repository. </p>
+<p>Clone / Download <a href="https://github.com/Oneflow-Inc/OneFlow-Benchmark">OneFlow-Benchmark</a> repository.</p>
 </li>
 </ul>
 <p><code>git clone git@github.com:Oneflow-Inc/OneFlow-Benchmark.git</code></p>
-<p><code>cd  OneFlow-Benchmark/Classification/cnns</code> </p>
+<p><code>cd  OneFlow-Benchmark/Classification/cnns</code></p>
 <ul>
 <li>
 <p>Preparing Dataset (optional)</p>
 </li>
 <li>
-<p>Use synthetic virtual dataset directly. </p>
+<p>Use synthetic virtual dataset directly.</p>
 </li>
 <li>Download the ImageNet 2012 <a href="https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/dataset/imagenet/mini-imagenet.zip">mini-dataset</a> we created and unzip it into the data directory</li>
 <li>Or: Make a complete OFRecord format ImageNet dataset (see the advanced section below)</li>
 </ul>
-<p>We provide general scripts: <code>train.sh</code> and <code>inference.sh</code>, which are applicable to the training, validation and inference of all cnn networks in this repository. You can train different models and dataset by setting parameters in scripts. </p>
-<p><strong>Some notes on model</strong> </p>
+<p>We provide general scripts: <code>train.sh</code> and <code>inference.sh</code>, which are applicable to the training, validation and inference of all cnn networks in this repository. You can train different models and dataset by setting parameters in scripts.</p>
+<p><strong>Some notes on model</strong></p>
 <blockquote>
-<p>By default, we use ResNet50, you can also assign other model by setting the <code>--model</code> parameter. Such as: <code>--model="resnet50"</code>, <code>--model="vgg"</code> and so on. </p>
+<p>By default, we use ResNet50, you can also assign other model by setting the <code>--model</code> parameter. Such as: <code>--model="resnet50"</code>, <code>--model="vgg"</code> and so on.</p>
 </blockquote>
 <p><strong>Description of dataset</strong></p>
 <blockquote>
-<p>1)  To get reader quickly start, we provide synthetic virtual dataset, which refers to data is generated directly in memory as a random source of neural network. </p>
-<p>2) At the same time, we provide a mini-dataset. You can download and unzip it into data directory,  you can start training quickly. After getting familiar with the process, readers can refer to the making dataset part to make a complete ImageNet 2012 dataset. </p>
-<p>3) Using OFRecord dataset can improve the efficientcy of data loading (But this is not necessary, refer to <a href="../basics_topics/data_input.html">Data Input</a>, OneFlow supports loading numpy data directly). </p>
+<p>1)  To get reader quickly start, we provide synthetic virtual dataset, which refers to data is generated directly in memory as a random source of neural network.</p>
+<p>2) At the same time, we provide a mini-dataset. You can download and unzip it into data directory,  you can start training quickly. After getting familiar with the process, readers can refer to the making dataset part to make a complete ImageNet 2012 dataset.</p>
+<p>3) Using OFRecord dataset can improve the efficientcy of data loading (But this is not necessary, refer to <a href="../basics_topics/data_input.html">Data Input</a>, OneFlow supports loading numpy data directly).</p>
 </blockquote>
 </blockquote>
 <h2 id="quick-start">Quick Start<a class="headerlink" href="#quick-start" title="Permanent link">&para;</a></h2>
 <p>So, let's start OneFlow's image classification journey !</p>
-<p>First, switch to the directory: </p>
+<p>First, switch to the directory:</p>
 <div class="highlight"><pre><span></span><code>cd OneFlow-Benchmark/Classification/cnns
 </code></pre></div>
 <h3 id="pretrained-model">Pretrained Model<a class="headerlink" href="#pretrained-model" title="Permanent link">&para;</a></h3>
 <h4 id="resnet50">resnet50<a class="headerlink" href="#resnet50" title="Permanent link">&para;</a></h4>
 <p><a href="https://oneflow-public.oss-cn-beijing.aliyuncs.com/model_zoo/resnet_v15_of_best_model_val_top1_77318.tgz">resnet50_v1.5_model</a> (validation accuracy: 77.318% top1，93.622% top5 )</p>
 <h3 id="predict-inference">Predict / Inference<a class="headerlink" href="#predict-inference" title="Permanent link">&para;</a></h3>
-<p>After downloading pretrained model, unzip it and put it into the current directory. Then execute: </p>
+<p>After downloading pretrained model, unzip it and put it into the current directory. Then execute:</p>
 <div class="highlight"><pre><span></span><code>sh inference.sh
 </code></pre></div>
-<p>This script will call the model to classify the goldfish picture: </p>
+<p>This script will call the model to classify the goldfish picture:</p>
 <div align="center">
     <img src="imgs/fish.jpg" align='center'/>
 </div>
 
-<p>The prediction is successful if the following is output. </p>
+<p>The prediction is successful if the following is output.</p>
 <div class="highlight"><pre><span></span><code>data/fish.jpg
 0.87059885 goldfish, Carassius auratus
 </code></pre></div>
-<p>As you can see, model judge this picture with 87.05% probability is goldfish. </p>
+<p>As you can see, model judge this picture with 87.05% probability is goldfish.</p>
 <h3 id="train-validation">Train &amp; Validation<a class="headerlink" href="#train-validation" title="Permanent link">&para;</a></h3>
 <ul>
-<li>Training model is also easy as we just need to execute: </li>
+<li>Training model is also easy as we just need to execute:</li>
 </ul>
 <div class="highlight"><pre><span></span><code>sh train.sh
 </code></pre></div>
@@ -1111,95 +1111,95 @@
 Loading synthetic data.
 Saving model to ./output/snapshots/model_save-20200723124215/snapshot_initial_model.
 Init model on demand.
-train: epoch <span class="m">0</span>, iter <span class="m">10</span>, loss: <span class="m">7</span>.197278, top_1: <span class="m">0</span>.000000, top_k: <span class="m">0</span>.000000, samples/s: <span class="m">61</span>.569
-train: epoch <span class="m">0</span>, iter <span class="m">20</span>, loss: <span class="m">6</span>.177684, top_1: <span class="m">0</span>.000000, top_k: <span class="m">0</span>.000000, samples/s: <span class="m">122</span>.555
+train: epoch 0, iter 10, loss: 7.197278, top_1: 0.000000, top_k: 0.000000, samples/s: 61.569
+train: epoch 0, iter 20, loss: 6.177684, top_1: 0.000000, top_k: 0.000000, samples/s: 122.555
 Saving model to ./output/snapshots/model_save-20200723124215/snapshot_epoch_0.
-train: epoch <span class="m">0</span>, iter <span class="m">30</span>, loss: <span class="m">3</span>.988656, top_1: <span class="m">0</span>.525000, top_k: <span class="m">0</span>.812500, samples/s: <span class="m">120</span>.337
-train: epoch <span class="m">1</span>, iter <span class="m">10</span>, loss: <span class="m">1</span>.185733, top_1: <span class="m">1</span>.000000, top_k: <span class="m">1</span>.000000, samples/s: <span class="m">80</span>.705
-train: epoch <span class="m">1</span>, iter <span class="m">20</span>, loss: <span class="m">1</span>.042017, top_1: <span class="m">1</span>.000000, top_k: <span class="m">1</span>.000000, samples/s: <span class="m">118</span>.478
+train: epoch 0, iter 30, loss: 3.988656, top_1: 0.525000, top_k: 0.812500, samples/s: 120.337
+train: epoch 1, iter 10, loss: 1.185733, top_1: 1.000000, top_k: 1.000000, samples/s: 80.705
+train: epoch 1, iter 20, loss: 1.042017, top_1: 1.000000, top_k: 1.000000, samples/s: 118.478
 Saving model to ./output/snapshots/model_save-20200723124215/snapshot_epoch_1.
 ...
 </code></pre></div>
 <blockquote>
-<p>To facilitate running the demonstration, we use synthetic virtual dataset by default so that you can quickly see the model in action. </p>
+<p>To facilitate running the demonstration, we use synthetic virtual dataset by default so that you can quickly see the model in action.</p>
 </blockquote>
-<p>Also, you can use <a href="https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/dataset/imagenet/mini-imagenet.zip">mini-dataset</a>, after downloading it and unzip it in data directory, and then modify the training script as follows: </p>
-<div class="highlight"><pre><span></span><code>rm -rf core.* 
+<p>Also, you can use <a href="https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/dataset/imagenet/mini-imagenet.zip">mini-dataset</a>, after downloading it and unzip it in data directory, and then modify the training script as follows:</p>
+<div class="highlight"><pre><span></span><code>rm -rf core.*
 rm -rf ./output/snapshots/*
 
-<span class="nv">DATA_ROOT</span><span class="o">=</span>data/imagenet/ofrecord
+DATA_ROOT=data/imagenet/ofrecord
 
-python3 of_cnn_train_val.py <span class="se">\</span>
-    --train_data_dir<span class="o">=</span><span class="nv">$DATA_ROOT</span>/train <span class="se">\</span>
-    --num_examples<span class="o">=</span><span class="m">50</span> <span class="se">\</span>
-    --train_data_part_num<span class="o">=</span><span class="m">1</span> <span class="se">\</span>
-    --val_data_dir<span class="o">=</span><span class="nv">$DATA_ROOT</span>/validation <span class="se">\</span>
-    --num_val_examples<span class="o">=</span><span class="m">50</span> <span class="se">\</span>
-    --val_data_part_num<span class="o">=</span><span class="m">1</span> <span class="se">\</span>
-    --num_nodes<span class="o">=</span><span class="m">1</span> <span class="se">\</span>
-    --gpu_num_per_node<span class="o">=</span><span class="m">1</span> <span class="se">\</span>
-    --model_update<span class="o">=</span><span class="s2">&quot;momentum&quot;</span> <span class="se">\</span>
-    --learning_rate<span class="o">=</span><span class="m">0</span>.001 <span class="se">\</span>
-    --loss_print_every_n_iter<span class="o">=</span><span class="m">1</span> <span class="se">\</span>
-    --batch_size_per_device<span class="o">=</span><span class="m">16</span> <span class="se">\</span>
-    --val_batch_size_per_device<span class="o">=</span><span class="m">10</span> <span class="se">\</span>
-    --num_epoch<span class="o">=</span><span class="m">10</span> <span class="se">\</span>
-    --model<span class="o">=</span><span class="s2">&quot;resnet50&quot;</span>
+python3 of_cnn_train_val.py \
+    --train_data_dir=$DATA_ROOT/train \
+    --num_examples=50 \
+    --train_data_part_num=1 \
+    --val_data_dir=$DATA_ROOT/validation \
+    --num_val_examples=50 \
+    --val_data_part_num=1 \
+    --num_nodes=1 \
+    --gpu_num_per_node=1 \
+    --model_update=&quot;momentum&quot; \
+    --learning_rate=0.001 \
+    --loss_print_every_n_iter=1 \
+    --batch_size_per_device=16 \
+    --val_batch_size_per_device=10 \
+    --num_epoch=10 \
+    --model=&quot;resnet50&quot;
 </code></pre></div>
-<p>Running this script, we will train a classfication model on the mini-ImageNet dataset with only 50 goldfish images. We can use this model to classify the goldfish image. </p>
-<p>Don't worry, if you need to train model on the complete ImageNet2012 dataset, please refer to <a href="https://github.com/Oneflow-Inc/OneFlow-Benchmark/blob/master/Classification/cnns">OneFlow-Benchmark</a> repository. </p>
+<p>Running this script, we will train a classfication model on the mini-ImageNet dataset with only 50 goldfish images. We can use this model to classify the goldfish image.</p>
+<p>Don't worry, if you need to train model on the complete ImageNet2012 dataset, please refer to <a href="https://github.com/Oneflow-Inc/OneFlow-Benchmark/blob/master/Classification/cnns">OneFlow-Benchmark</a> repository.</p>
 <h3 id="evaluate">Evaluate<a class="headerlink" href="#evaluate" title="Permanent link">&para;</a></h3>
 <p>You can evaluate the accuracy of the Resnet50 model using either your own trained model or the <a href="https://oneflow-public.oss-cn-beijing.aliyuncs.com/model_zoo/resnet_v15_of_best_model_val_top1_77318.tgz">resnet50_v1.5_model</a> (unzip it and put it in current directory) provided by us.</p>
-<p>Run this script: </p>
+<p>Run this script:</p>
 <div class="highlight"><pre><span></span><code>sh evaluate.sh
 </code></pre></div>
 <p>The accuracy of the trained model on validation dataset with 50000 images can be obtained:</p>
-<div class="highlight"><pre><span></span><code>Time stamp: <span class="m">2020</span>-07-27-09:28:28
+<div class="highlight"><pre><span></span><code>Time stamp: 2020-07-27-09:28:28
 Restoring model from resnet_v15_of_best_model_val_top1_77318.
-I0727 <span class="m">09</span>:28:28.773988162    <span class="m">8411</span> ev_epoll_linux.c:82<span class="o">]</span>        Use of signals is disabled. Epoll engine will not be used
+I0727 09:28:28.773988162    8411 ev_epoll_linux.c:82]        Use of signals is disabled. Epoll engine will not be used
 Loading data from /dataset/ImageNet/ofrecord/validation
-validation: epoch <span class="m">0</span>, iter <span class="m">195</span>, top_1: <span class="m">0</span>.773277, top_k: <span class="m">0</span>.936058, samples/s: <span class="m">1578</span>.325
-validation: epoch <span class="m">0</span>, iter <span class="m">195</span>, top_1: <span class="m">0</span>.773237, top_k: <span class="m">0</span>.936078, samples/s: <span class="m">1692</span>.303
-validation: epoch <span class="m">0</span>, iter <span class="m">195</span>, top_1: <span class="m">0</span>.773297, top_k: <span class="m">0</span>.936018, samples/s: <span class="m">1686</span>.896
+validation: epoch 0, iter 195, top_1: 0.773277, top_k: 0.936058, samples/s: 1578.325
+validation: epoch 0, iter 195, top_1: 0.773237, top_k: 0.936078, samples/s: 1692.303
+validation: epoch 0, iter 195, top_1: 0.773297, top_k: 0.936018, samples/s: 1686.896
 </code></pre></div>
 <blockquote>
-<p>Before executing <code>sh evaluate.sh</code>, make sure you have prepared the validation dataset of ImageNet 2012. Please refer to <a href="https://github.com/Oneflow-Inc/OneFlow-Benchmark/blob/master/Classification/cnns">OneFlow-Benchmark</a> repository to learn how to make validation dataset. </p>
+<p>Before executing <code>sh evaluate.sh</code>, make sure you have prepared the validation dataset of ImageNet 2012. Please refer to <a href="https://github.com/Oneflow-Inc/OneFlow-Benchmark/blob/master/Classification/cnns">OneFlow-Benchmark</a> repository to learn how to make validation dataset.</p>
 </blockquote>
-<p>From the evaluation results of the three rounds, out model has achieved 77.32+% Top1 accuracy. </p>
+<p>From the evaluation results of the three rounds, out model has achieved 77.32+% Top1 accuracy.</p>
 <p>Finally, congratulations! You complete the training / validating, inference and evaluation of ResNet model on ImageNet dataset. Applause for yourself!</p>
 <h2 id="details">Details<a class="headerlink" href="#details" title="Permanent link">&para;</a></h2>
 <h3 id="distributed-training">Distributed training<a class="headerlink" href="#distributed-training" title="Permanent link">&para;</a></h3>
 <p><strong>Simple and easy-to-use distributed training is one of OneFlow's main features</strong></p>
-<p>OneFlow is designed to support efficient distributed training natively. Especially for distributed data parallelism, user do not have to worry about how to divide and synchronize the data when the algorithm expands from single machine to multiple machines. That is to say, in OneFlow, User only need to write algorithm from the view of single machine, and the code automatically has the ability of distributed training. </p>
+<p>OneFlow is designed to support efficient distributed training natively. Especially for distributed data parallelism, user do not have to worry about how to divide and synchronize the data when the algorithm expands from single machine to multiple machines. That is to say, in OneFlow, User only need to write algorithm from the view of single machine, and the code automatically has the ability of distributed training.</p>
 <h4 id="how-to-configure-and-run-distributed-training">How to configure and run distributed training?<a class="headerlink" href="#how-to-configure-and-run-distributed-training" title="Permanent link">&para;</a></h4>
-<p>We still use the code shown in the "Quick Start", in <code>train.sh</code>, the distributed configuration is easily accomplished by specifying the number of nodes (machines) with <code>--num_nodes</code>, the IP address of the nodes with <code>--node_ips</code>, and the number of devices to be used on each node with <code>--gpu_num_per_node</code>. </p>
-<p>For example, we want to do distributed training on  2 machines with 8 devices, configure it like this: </p>
-<div class="highlight"><pre><span></span><code><span class="c1"># train.sh </span>
-python3 of_cnn_train_val.py <span class="se">\</span>
-    --num_nodes<span class="o">=</span><span class="m">2</span> <span class="se">\</span>
-    --node_ips<span class="o">=</span><span class="s2">&quot;192.168.1.1, 192.168.1.2&quot;</span>
-    --gpu_num_per_node<span class="o">=</span><span class="m">4</span> <span class="se">\</span>
+<p>We still use the code shown in the "Quick Start", in <code>train.sh</code>, the distributed configuration is easily accomplished by specifying the number of nodes (machines) with <code>--num_nodes</code>, the IP address of the nodes with <code>--node_ips</code>, and the number of devices to be used on each node with <code>--gpu_num_per_node</code>.</p>
+<p>For example, we want to do distributed training on  2 machines with 8 devices, configure it like this:</p>
+<div class="highlight"><pre><span></span><code># train.sh
+python3 of_cnn_train_val.py \
+    --num_nodes=2 \
+    --node_ips=&quot;192.168.1.1, 192.168.1.2&quot;
+    --gpu_num_per_node=4 \
     ...
-    --model<span class="o">=</span><span class="s2">&quot;resnet50&quot;</span>
+    --model=&quot;resnet50&quot;
 </code></pre></div>
-<p>Then execute the following script on the two machines at the same time: </p>
+<p>Then execute the following script on the two machines at the same time:</p>
 <div class="highlight"><pre><span></span><code>./train.sh
 </code></pre></div>
-<p>After the program starts, you can see through the command <code>watch -n 0.1 nvidia-smi</code> that both machines' devices start working. After a while, the output is printed on the screen of the first machine set by <code>--node_ips</code>. </p>
+<p>After the program starts, you can see through the command <code>watch -n 0.1 nvidia-smi</code> that both machines' devices start working. After a while, the output is printed on the screen of the first machine set by <code>--node_ips</code>.</p>
 <h3 id="hybrid-precision-training-and-predicting">Hybrid precision training and predicting<a class="headerlink" href="#hybrid-precision-training-and-predicting" title="Permanent link">&para;</a></h3>
-<p>Currently, OneFlow supports float16/float32 hybrid precision training. During training, the model parameters are trained using float16 while retaining float32 as the gradient update and calculation process. Since the storage of parameters is halved, the training speed will be improved. </p>
+<p>Currently, OneFlow supports float16/float32 hybrid precision training. During training, the model parameters are trained using float16 while retaining float32 as the gradient update and calculation process. Since the storage of parameters is halved, the training speed will be improved.</p>
 <p>By turning on the hybrid precision training mode in OneFlow, ResNet50's training speed can theoretically reach <code>1.7</code> times of acceleration.</p>
 <h4 id="how-to-turn-on-the-hybrid-precision-training-mode">How to turn on the hybrid precision training mode？<a class="headerlink" href="#how-to-turn-on-the-hybrid-precision-training-mode" title="Permanent link">&para;</a></h4>
-<p>Just add the parameter <code>--use_fp16=True</code> in the <code>train.sh</code> script. </p>
+<p>Just add the parameter <code>--use_fp16=True</code> in the <code>train.sh</code> script.</p>
 <h4 id="hybrid-precision-model">Hybrid precision model<a class="headerlink" href="#hybrid-precision-model" title="Permanent link">&para;</a></h4>
-<p>We provide a hybrid precision model after training 90 epochs on ImageNet2012 dataset, its Top_1 accuracy: 77.33%. </p>
+<p>We provide a hybrid precision model after training 90 epochs on ImageNet2012 dataset, its Top_1 accuracy: 77.33%.</p>
 <p>You can download and use it directly: <a href="https://oneflow-public.oss-cn-beijing.aliyuncs.com/model_zoo/resnet_fp16_of_best_model_val_top1_77330.zip">resnet50_v15_fp16</a></p>
 <h2 id="advanced">Advanced<a class="headerlink" href="#advanced" title="Permanent link">&para;</a></h2>
 <h3 id="parameters-alignment">Parameters alignment<a class="headerlink" href="#parameters-alignment" title="Permanent link">&para;</a></h3>
-<p>OneFlow's ResNet50 implementation is aligned with Nvidia's Mxnet edition. We've made careful and almost identical alignment from the learning rate, optimizer, image augmentation to finer per-layer network configuration, bias, weight initialization, and more. The detailed parameters alignment please refer to <a href="https://github.com/Oneflow-Inc/OneFlow-Benchmark/blob/master/Classification/cnns">OneFlow-Benchmark</a> repository. </p>
+<p>OneFlow's ResNet50 implementation is aligned with Nvidia's Mxnet edition. We've made careful and almost identical alignment from the learning rate, optimizer, image augmentation to finer per-layer network configuration, bias, weight initialization, and more. The detailed parameters alignment please refer to <a href="https://github.com/Oneflow-Inc/OneFlow-Benchmark/blob/master/Classification/cnns">OneFlow-Benchmark</a> repository.</p>
 <h3 id="preparing-dataset">Preparing dataset<a class="headerlink" href="#preparing-dataset" title="Permanent link">&para;</a></h3>
 <h4 id="introduction-of-image-classification-dataset">Introduction of image classification dataset<a class="headerlink" href="#introduction-of-image-classification-dataset" title="Permanent link">&para;</a></h4>
-<p>The public dataset used for image classification are CIFAR, ImageNet, etc. These datasets provide original images in JPEG format. </p>
+<p>The public dataset used for image classification are CIFAR, ImageNet, etc. These datasets provide original images in JPEG format.</p>
 <ul>
 <li><a href="http://www.cs.toronto.edu/~kriz/cifar.html">CIFAR</a></li>
 </ul>
@@ -1207,13 +1207,13 @@ python3 of_cnn_train_val.py <span class="se">\</span>
 <ul>
 <li><a href="http://image-net.org/index">ImageNet</a></li>
 </ul>
-<p>ImageNet dataset are generally referred to as the dataset used in large-scale visual recognition challenge (ILSVRC) between 2010-2017. The ImageNet data has changed slightly since 2010. The commonly used ImageNet-2012 dataset includes 1000 categories, its training dataset contains 1281167 pictures, ranging from 732 to 1300 per category. The validation dataset contains 50000 pictures, with an average of 50 pictures per category. </p>
-<p>For the complete process of preparing ImageNet-2012 dataset, please refer to <a href="https://github.com/Oneflow-Inc/OneFlow-Benchmark/blob/master/Classification/cnns/tools/README.md">README</a> in the tools directory. </p>
+<p>ImageNet dataset are generally referred to as the dataset used in large-scale visual recognition challenge (ILSVRC) between 2010-2017. The ImageNet data has changed slightly since 2010. The commonly used ImageNet-2012 dataset includes 1000 categories, its training dataset contains 1281167 pictures, ranging from 732 to 1300 per category. The validation dataset contains 50000 pictures, with an average of 50 pictures per category.</p>
+<p>For the complete process of preparing ImageNet-2012 dataset, please refer to <a href="https://github.com/Oneflow-Inc/OneFlow-Benchmark/blob/master/Classification/cnns/tools/README.md">README</a> in the tools directory.</p>
 <h3 id="convert-oneflow-model-to-onnx-model">Convert OneFlow model to ONNX model<a class="headerlink" href="#convert-oneflow-model-to-onnx-model" title="Permanent link">&para;</a></h3>
 <h4 id="introduction_1">Introduction<a class="headerlink" href="#introduction_1" title="Permanent link">&para;</a></h4>
-<p><strong>ONNX (Open Neural Network Exchange)</strong>  is a widely used neural network intermediate format. With the ONNX format, the OneFlow model can be used by many serving framework (like OpenVINO, ONNEX Runtime and some mobile framework: ncnn, tnn, TEgine, etc). In this section, we will introduce how to convert the trained ResNet50 v1.5 model to ONNX model and evaluate it. </p>
+<p><strong>ONNX (Open Neural Network Exchange)</strong>  is a widely used neural network intermediate format. With the ONNX format, the OneFlow model can be used by many serving framework (like OpenVINO, ONNEX Runtime and some mobile framework: ncnn, tnn, TEgine, etc). In this section, we will introduce how to convert the trained ResNet50 v1.5 model to ONNX model and evaluate it.</p>
 <h4 id="quick-start_1">Quick Start<a class="headerlink" href="#quick-start_1" title="Permanent link">&para;</a></h4>
-<p>We provide complete code: <a href="https://github.com/Oneflow-Inc/OneFlow-Benchmark/blob/master/Classification/cnns/resnet_to_onnx.py">resnet_to_onnx.py</a>, it can help you complete the transformation and testing of the model. </p>
+<p>We provide complete code: <a href="https://github.com/Oneflow-Inc/OneFlow-Benchmark/blob/master/Classification/cnns/resnet_to_onnx.py">resnet_to_onnx.py</a>, it can help you complete the transformation and testing of the model.</p>
 <p>**Step1: ** Download the pretrain model: <a href="https://oneflow-public.oss-cn-beijing.aliyuncs.com/model_zoo/resnet_v15_of_best_model_val_top1_77318.tgz">resnet50_v1.5_model</a>, unzip it and put it into current directory</p>
 <p>**Step2: ** Execute <code>python3 resnet_to_onnx.py</code></p>
 <p>This code will complete the transformation of the OneFlow model -&gt; ONNX model, and then use the ONNX Runtime to load the transformed model to test the individual images. The test picture is as follows:</p>
@@ -1231,23 +1231,23 @@ python3 of_cnn_train_val.py <span class="se">\</span>
 <span class="n">Class</span><span class="p">:</span> <span class="n">tiger</span><span class="p">,</span> <span class="n">Panthera</span> <span class="n">tigris</span><span class="p">;</span> <span class="n">score</span><span class="p">:</span> <span class="mf">0.8112028241157532</span>
 </code></pre></div>
 <h4 id="how-to-generate-onnx-model">How to generate ONNX model<a class="headerlink" href="#how-to-generate-onnx-model" title="Permanent link">&para;</a></h4>
-<p>We have introduced how to convert OneFlow's ResNet model to ONNX model and give an example of using the onnx runtime to make predictions in above example. Similarly, you can follow the steps to complete the transformation of your training ResNet model or other models. </p>
+<p>We have introduced how to convert OneFlow's ResNet model to ONNX model and give an example of using the onnx runtime to make predictions in above example. Similarly, you can follow the steps to complete the transformation of your training ResNet model or other models.</p>
 <p><strong>Step1: Save the model's weight</strong></p>
-<p>First you should specify the OneFlow model path, and then specify the transformed ONNX model storage path, like the following example. </p>
+<p>First you should specify the OneFlow model path, and then specify the transformed ONNX model storage path, like the following example.</p>
 <p>首先指定待转换的OneFlow模型路径，然后指定转换后的ONNX模型存放路径，例如示例中：</p>
 <div class="highlight"><pre><span></span><code><span class="c1">#set up your model path</span>
 <span class="n">flow_weights_path</span> <span class="o">=</span> <span class="s1">&#39;resnet_v15_of_best_model_val_top1_77318&#39;</span>
 <span class="n">onnx_model_dir</span> <span class="o">=</span> <span class="s1">&#39;onnx/model&#39;</span>
 </code></pre></div>
 <p><strong>Step2: Create a new job function for inference</strong></p>
-<p>Then, we create a new job function for inference, which only contains the network structure, except the operator to read the OFRecord, and accepts the form of numpy array input. You can refer to the <code>InferenceNet</code> in <code>resnet_to_onnx.py</code>. </p>
+<p>Then, we create a new job function for inference, which only contains the network structure, except the operator to read the OFRecord, and accepts the form of numpy array input. You can refer to the <code>InferenceNet</code> in <code>resnet_to_onnx.py</code>.</p>
 <p><strong>Step3: Call <code>flow.onnx.export</code> method</strong></p>
-<p>In the following code, we call the <code>oneflow_to_onnx()</code> method, this method includes the core model transformation method: <code>flow.onnx.export()</code>. </p>
-<p><strong><code>flow.onnx.export</code></strong> will obtain ONNX model from OneFlow network, its first parameter is the job function used to infer. The second parameter is OneFlow model path, the third parameter is the save path of ONNX model. </p>
+<p>In the following code, we call the <code>oneflow_to_onnx()</code> method, this method includes the core model transformation method: <code>flow.onnx.export()</code>.</p>
+<p><strong><code>flow.onnx.export</code></strong> will obtain ONNX model from OneFlow network, its first parameter is the job function used to infer. The second parameter is OneFlow model path, the third parameter is the save path of ONNX model.</p>
 <div class="highlight"><pre><span></span><code><span class="n">onnx_model</span> <span class="o">=</span> <span class="n">oneflow_to_onnx</span><span class="p">(</span><span class="n">InferenceNet</span><span class="p">,</span> <span class="n">flow_weights_path</span><span class="p">,</span> <span class="n">onnx_model_dir</span><span class="p">,</span> <span class="n">external_data</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </code></pre></div>
 <h4 id="evaluate-the-correctness-of-onnx-model">Evaluate the correctness of ONNX model<a class="headerlink" href="#evaluate-the-correctness-of-onnx-model" title="Permanent link">&para;</a></h4>
-<p>After the ONNX model is generated, we can use ONNX model by ONNX Runtime to verify that the OneFlow model and the ONNX model give the same results with the same inputs. The corresponding code is <code>check_equality</code> in <code>resnet_to_onnx.py</code>.   </p>
+<p>After the ONNX model is generated, we can use ONNX model by ONNX Runtime to verify that the OneFlow model and the ONNX model give the same results with the same inputs. The corresponding code is <code>check_equality</code> in <code>resnet_to_onnx.py</code>.</p>
                 
               
               

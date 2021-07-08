@@ -1009,7 +1009,7 @@ The list of files is as follows:</p>
     --loss_print_every_n_iter<span class="o">=</span><span class="m">5</span> <span class="se">\</span>
     --model_save_dir<span class="o">=</span>./bert_regresssioin_test/of <span class="se">\</span>
     --warmup_batches <span class="m">831</span> <span class="se">\</span>
-    --save_last_snapshot True 
+    --save_last_snapshot True
 </code></pre></div></p>
 <p>We will see the output similar to the following:
 <div class="highlight"><pre><span></span><code>==================================================================
@@ -1184,15 +1184,15 @@ average speed: 0.556(sentences/sec)
 unzip uncased_L-12_H-768_A-12.zip -d uncased_L-12_H-768_A-12
 </code></pre></div></p>
 <p>And then, run commands below:
-<div class="highlight"><pre><span></span><code><span class="nb">cd</span> uncased_L-12_H-768_A-12/
-cat &gt; checkpoint <span class="s">&lt;&lt;ONEFLOW</span>
-<span class="s">model_checkpoint_path: &quot;bert_model.ckpt&quot; </span>
-<span class="s">all_model_checkpoint_paths: &quot;bert_model.ckpt&quot; </span>
-<span class="s">ONEFLOW</span>
+<div class="highlight"><pre><span></span><code>cd uncased_L-12_H-768_A-12/
+cat &gt; checkpoint &lt;&lt;ONEFLOW
+model_checkpoint_path: &quot;bert_model.ckpt&quot;
+all_model_checkpoint_paths: &quot;bert_model.ckpt&quot;
+ONEFLOW
 </code></pre></div></p>
 <p>It will create a file named <code>checkpoint</code> in the directory and write content below into it:
-<div class="highlight"><pre><span></span><code>model_checkpoint_path: &quot;bert_model.ckpt&quot; 
-all_model_checkpoint_paths: &quot;bert_model.ckpt&quot; 
+<div class="highlight"><pre><span></span><code>model_checkpoint_path: &quot;bert_model.ckpt&quot;
+all_model_checkpoint_paths: &quot;bert_model.ckpt&quot;
 </code></pre></div></p>
 <p>Now that the TensorFlow model directory to be converted is ready, the hierarchy is:
 <div class="highlight"><pre><span></span><code>uncased_L-12_H-768_A-12
@@ -1238,28 +1238,28 @@ The above command saves the converted OneFlow format model in <code>./uncased_L-
     <span class="k">return</span> <span class="n">total_loss</span>
 </code></pre></div></p>
 <p>We run the script below to start SQuAD training to get and save a initialized model.</p>
-<p><div class="highlight"><pre><span></span><code>python ./run_squad.py<span class="se">\</span>
-    --gpu_num_per_node<span class="o">=</span><span class="m">1</span><span class="se">\</span>
-    --learning_rate<span class="o">=</span>3e-5<span class="se">\</span>
-    --batch_size_per_device<span class="o">=</span><span class="m">2</span><span class="se">\</span>
-    --iter_num<span class="o">=</span><span class="m">50</span><span class="se">\</span>
-    --loss_print_every_n_iter<span class="o">=</span><span class="m">50</span><span class="se">\</span>
-    --seq_length<span class="o">=</span><span class="m">384</span><span class="se">\</span>
-    --max_predictions_per_seq<span class="o">=</span><span class="m">20</span><span class="se">\</span>
-    --num_hidden_layers<span class="o">=</span><span class="m">12</span><span class="se">\</span>
-    --num_attention_heads<span class="o">=</span><span class="m">12</span><span class="se">\</span>
-    --max_position_embeddings<span class="o">=</span><span class="m">512</span><span class="se">\</span>
-    --type_vocab_size<span class="o">=</span><span class="m">2</span><span class="se">\</span>
-    --vocab_size<span class="o">=</span><span class="m">30522</span><span class="se">\</span>
-    --attention_probs_dropout_prob<span class="o">=</span><span class="m">0</span>.0<span class="se">\</span>
-    --hidden_dropout_prob<span class="o">=</span><span class="m">0</span>.0<span class="se">\</span>
-    --hidden_size_per_head<span class="o">=</span><span class="m">64</span><span class="se">\</span>
-    --use_boxing_v2<span class="o">=</span>True<span class="se">\</span>
-    --data_dir<span class="o">=</span>./dataset/train-v1.1<span class="se">\</span>
-    --data_part_num<span class="o">=</span><span class="m">1</span><span class="se">\</span>
-    --log_dir<span class="o">=</span>./bert_regresssioin_test/of<span class="se">\</span>
-    --model_save_dir<span class="o">=</span>./bert_regresssioin_test/of<span class="se">\</span>
-    --warmup_batches <span class="m">831</span><span class="se">\</span>
+<p><div class="highlight"><pre><span></span><code>python ./run_squad.py\
+    --gpu_num_per_node=1\
+    --learning_rate=3e-5\
+    --batch_size_per_device=2\
+    --iter_num=50\
+    --loss_print_every_n_iter=50\
+    --seq_length=384\
+    --max_predictions_per_seq=20\
+    --num_hidden_layers=12\
+    --num_attention_heads=12\
+    --max_position_embeddings=512\
+    --type_vocab_size=2\
+    --vocab_size=30522\
+    --attention_probs_dropout_prob=0.0\
+    --hidden_dropout_prob=0.0\
+    --hidden_size_per_head=64\
+    --use_boxing_v2=True\
+    --data_dir=./dataset/train-v1.1\
+    --data_part_num=1\
+    --log_dir=./bert_regresssioin_test/of\
+    --model_save_dir=./bert_regresssioin_test/of\
+    --warmup_batches 831\
     --save_last_snapshot True
 </code></pre></div>
 There will be a initialized model in the path <code>./bert_regresssioin_test/of/last_snapshot</code>. We will merge it with pretrained BERT model and fintune it.</p>
@@ -1271,10 +1271,10 @@ cp -R --remove-destination ./dataset/uncased_L-12_H-768_A-12_oneflow/* ./squadMo
 <h3 id="problem-on-training-times">Problem on training times<a class="headerlink" href="#problem-on-training-times" title="Permanent link">&para;</a></h3>
 <p>There is a folder named <code>System-Train-TrainStep-xxx</code> in the path of pretrained model folder and the file named "out" contains the count if iterations. The <code>leraning rate</code> changes dynamically with the count of iterations.</p>
 <p>In order to prevent training of finetuning from the saved iteration affecting, the binary data in the out file should be cleared to zero.
-<div class="highlight"><pre><span></span><code><span class="nb">cd</span> System-Train-TrainStep-xxx
-xxd -r &gt; out <span class="s">&lt;&lt;ONEFLOW</span>
-<span class="s">00000000: 0000 0000 0000 0000</span>
-<span class="s">ONEFLOW</span>
+<div class="highlight"><pre><span></span><code>cd System-Train-TrainStep-xxx
+xxd -r &gt; out &lt;&lt;ONEFLOW
+00000000: 0000 0000 0000 0000
+ONEFLOW
 </code></pre></div></p>
 <p>If you are using a pretrained model transferred from TensorFlow, you can skip this step.</p>
 <h3 id="start-squad-training">Start SQuAD training<a class="headerlink" href="#start-squad-training" title="Permanent link">&para;</a></h3>
@@ -1293,30 +1293,30 @@ xxd -r &gt; out <span class="s">&lt;&lt;ONEFLOW</span>
 <p>learning rate = 3e-5</p>
 </li>
 </ul>
-<div class="highlight"><pre><span></span><code>python ./run_squad.py<span class="se">\</span>
-    --gpu_num_per_node<span class="o">=</span><span class="m">4</span><span class="se">\</span>
-    --learning_rate<span class="o">=</span>3e-5<span class="se">\</span>
-    --batch_size_per_device<span class="o">=</span><span class="m">8</span><span class="se">\</span>
-    --iter_num<span class="o">=</span><span class="m">8310</span><span class="se">\</span>
-    --loss_print_every_n_iter<span class="o">=</span><span class="m">50</span><span class="se">\</span>
-    --seq_length<span class="o">=</span><span class="m">384</span><span class="se">\</span>
-    --max_predictions_per_seq<span class="o">=</span><span class="m">20</span><span class="se">\</span>
-    --num_hidden_layers<span class="o">=</span><span class="m">12</span><span class="se">\</span>
-    --num_attention_heads<span class="o">=</span><span class="m">12</span><span class="se">\</span>
-    --max_position_embeddings<span class="o">=</span><span class="m">512</span><span class="se">\</span>
-    --type_vocab_size<span class="o">=</span><span class="m">2</span><span class="se">\</span>
-    --vocab_size<span class="o">=</span><span class="m">30522</span><span class="se">\</span>
-    --attention_probs_dropout_prob<span class="o">=</span><span class="m">0</span>.0<span class="se">\</span>
-    --hidden_dropout_prob<span class="o">=</span><span class="m">0</span>.0<span class="se">\</span>
-    --hidden_size_per_head<span class="o">=</span><span class="m">64</span><span class="se">\</span>
-    --use_boxing_v2<span class="o">=</span>True<span class="se">\</span>
-    --data_dir<span class="o">=</span>./dataset/train-v1.1<span class="se">\</span>
-    --data_part_num<span class="o">=</span><span class="m">8</span><span class="se">\</span>
-    --log_dir<span class="o">=</span>./bert_regresssioin_test/of<span class="se">\</span>
-    --model_save_dir<span class="o">=</span>./bert_regresssioin_test/of<span class="se">\</span>
-    --warmup_batches <span class="m">831</span><span class="se">\</span>
-    --save_last_snapshot True<span class="se">\</span>
-    --model_load_dir<span class="o">=</span>./squadModel
+<div class="highlight"><pre><span></span><code>python ./run_squad.py\
+    --gpu_num_per_node=4\
+    --learning_rate=3e-5\
+    --batch_size_per_device=8\
+    --iter_num=8310\
+    --loss_print_every_n_iter=50\
+    --seq_length=384\
+    --max_predictions_per_seq=20\
+    --num_hidden_layers=12\
+    --num_attention_heads=12\
+    --max_position_embeddings=512\
+    --type_vocab_size=2\
+    --vocab_size=30522\
+    --attention_probs_dropout_prob=0.0\
+    --hidden_dropout_prob=0.0\
+    --hidden_size_per_head=64\
+    --use_boxing_v2=True\
+    --data_dir=./dataset/train-v1.1\
+    --data_part_num=8\
+    --log_dir=./bert_regresssioin_test/of\
+    --model_save_dir=./bert_regresssioin_test/of\
+    --warmup_batches 831\
+    --save_last_snapshot True\
+    --model_load_dir=./squadModel
 </code></pre></div>
 <h3 id="prediction-and-evaluatoin">Prediction and evaluatoin<a class="headerlink" href="#prediction-and-evaluatoin" title="Permanent link">&para;</a></h3>
 <p>In order to generate <a href="https://rajpurkar.github.io/SQuAD-explorer/">Preidiction File</a>, we should generate npy file fist. And then we use <code>write_predictions</code> function in <a href="https://github.com/google-research/bert/blob/master/run_squad.py">google BERT's run_squad.py</a> to convert it to json format.</p>
@@ -1344,22 +1344,22 @@ xxd -r &gt; out <span class="s">&lt;&lt;ONEFLOW</span>
 </code></pre></div>
 Attention: the <code>model_load_dir</code> should be the trained model of SQuAD.</p>
 <p>After we get the <code>all_results.npy</code>file, run the script <code>npy2json.py</code> in the repository of <a href="https://github.com/google-research/bert/">google bert</a>(the version of TensorFlow should be v1). The <code>npy2json.py</code> we provide is modified from google bert's <code>run_squad.py</code>:
-<div class="highlight"><pre><span></span><code>python npy2json.py<span class="se">\</span>
-  --vocab_file<span class="o">=</span>./dataset/vocab.txt <span class="se">\</span>
-  --bert_config_file<span class="o">=</span>./dataset/bert_config.json <span class="se">\</span>
-  --do_train<span class="o">=</span>False <span class="se">\</span>
-  --do_predict<span class="o">=</span>True <span class="se">\</span>
-  --all_results_file<span class="o">=</span>./all_results.npy <span class="se">\</span>
-  --predict_file<span class="o">=</span>./dataset/dev-v1.1.json <span class="se">\</span>
-  --max_seq_length<span class="o">=</span><span class="m">384</span> <span class="se">\</span>
-  --doc_stride<span class="o">=</span><span class="m">128</span> <span class="se">\</span>
-  --output_dir<span class="o">=</span>./squad_base/
+<div class="highlight"><pre><span></span><code>python npy2json.py\
+  --vocab_file=./dataset/vocab.txt \
+  --bert_config_file=./dataset/bert_config.json \
+  --do_train=False \
+  --do_predict=True \
+  --all_results_file=./all_results.npy \
+  --predict_file=./dataset/dev-v1.1.json \
+  --max_seq_length=384 \
+  --doc_stride=128 \
+  --output_dir=./squad_base/
 </code></pre></div></p>
 <p>Remember to set the <code>all_results_file</code> to the path of <code>all_results.npy</code> we obtained in the last step.</p>
 <p>We will get <code>predictions.json</code> after that which can be evaluated by<a href="https://rajpurkar.github.io/SQuAD-explorer/">evaluate-v1.1.py</a>.</p>
 <div class="highlight"><pre><span></span><code>python evaluate-v1.1.py <span class="se">\</span>
 ./dataset/dev-v1.1.json <span class="se">\</span>
-path/to/squad_base/predictions.json 
+path/to/squad_base/predictions.json
 </code></pre></div>
 <h2 id="distributed-training">Distributed training<a class="headerlink" href="#distributed-training" title="Permanent link">&para;</a></h2>
 <p>As described when we introduce the command line options, we can start distributed training easily by adding the options <code>node_num</code> and <code>node_list</code>:</p>

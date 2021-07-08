@@ -935,9 +935,9 @@
 <p>If we use the <code>Release</code> version of OneFlow, we may have problems with debugging because of the compiling optimization, and actual running position may not correspond to the source line.</p>
 <p>Thus, we need to compile <code>Debug</code> version of OneFlow and generate the json file needed by clangd.</p>
 <p>When we run cmake, we need add flag of <code>Debug</code> and <code>CMAKE_EXPORT_COMPILE_COMMANDS</code>.</p>
-<div class="highlight"><pre><span></span><code>cmake .. <span class="se">\</span>
--DCMAKE_BUILD_TYPE<span class="o">=</span>Debug <span class="se">\</span>
--DCMAKE_EXPORT_COMPILE_COMMANDS<span class="o">=</span><span class="m">1</span>
+<div class="highlight"><pre><span></span><code>cmake .. \
+-DCMAKE_BUILD_TYPE=Debug \
+-DCMAKE_EXPORT_COMPILE_COMMANDS=1
 </code></pre></div>
 <ul>
 <li>
@@ -1020,7 +1020,7 @@ The meaning of <code>clangd.arguments</code> and more options can be found by <c
 <p>The latest version of clangd may have special requirements of glibc. That may lead to raise some errors on missing libraries.</p>
 </li>
 </ul>
-<div class="highlight"><pre><span></span><code>./bin/clangd: /lib64/libc.so.6: version <span class="sb">`</span>GLIBC_2.18<span class="err">&#39;</span> not found <span class="o">(</span>required by ./bin/clangd<span class="o">)</span>
+<div class="highlight"><pre><span></span><code>./bin/clangd: /lib64/libc.so.6: version `GLIBC_2.18&#39; not found (required by ./bin/clangd)
 </code></pre></div>
 <p>We can download the older version of clangd (The recommended version of this article is 9.0.0). Older version of clangd is available on <a href="https://releases.llvm.org/download.html">LLVM official site</a>. Download the LLVM tools package with clangd inside.</p>
                 

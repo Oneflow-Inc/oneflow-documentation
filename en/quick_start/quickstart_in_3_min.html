@@ -924,7 +924,7 @@ Epoch [1/20], Loss: 0.3167
     <span class="n">labels</span><span class="p">:</span> <span class="n">tp</span><span class="o">.</span><span class="n">Numpy</span><span class="o">.</span><span class="n">Placeholder</span><span class="p">((</span><span class="n">BATCH_SIZE</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">flow</span><span class="o">.</span><span class="n">int32</span><span class="p">),</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tp</span><span class="o">.</span><span class="n">Numpy</span><span class="p">:</span>
 </code></pre></div>
-<code>train_job</code> function which decorated by <code>@flow.global_function</code> is called "job function". Unless functions are decorated by <code>@flow.global_function</code>, or they can not be recognized by OneFlow. </p>
+<code>train_job</code> function which decorated by <code>@flow.global_function</code> is called "job function". Unless functions are decorated by <code>@flow.global_function</code>, or they can not be recognized by OneFlow.</p>
 <p>The parameter <code>type</code> is used to specify the type of job: <code>type="train"</code> means it's a training job and <code>type="predict"</code> means evaluation or prediction job.</p>
 <p>In OneFlow, a neural network training or prediction task needs two pieces of information:</p>
 <ul>
@@ -950,8 +950,8 @@ Epoch [1/20], Loss: 0.3167
 <p><code>print(..., loss.mean())</code>: print loss values for every 20 iterations.</p>
 </li>
 </ul>
-<p>This page is just a simple example on neural network. 
-A more comprehensive and detailed introduction of OneFlow can be found in <a href="lenet_mnist.html">Convolution Neural Network for Handwriting Recognition</a>. </p>
+<p>This page is just a simple example on neural network.
+A more comprehensive and detailed introduction of OneFlow can be found in <a href="lenet_mnist.html">Convolution Neural Network for Handwriting Recognition</a>.</p>
 <p>In addition, you can refer to <a href="../basics_topics/data_input.html">Basic topics</a> to learn more about how to use OneFlow for deep learning.</p>
 <p>Benchmarks and related scripts for some prevalent networks are also provided in repository <a href="https://github.com/Oneflow-Inc/OneFlow-Benchmark">OneFlow-Benchmark</a>.</p>
 <h2 id="faq">FAQ<a class="headerlink" href="#faq" title="Permanent link">&para;</a></h2>

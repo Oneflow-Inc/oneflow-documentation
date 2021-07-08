@@ -983,7 +983,7 @@
 <p>Save the model that has been trained for a while to facilitate the next training.</p>
 </li>
 <li>
-<p>Save trained model for reproduction(Such as Model Serving). </p>
+<p>Save trained model for reproduction(Such as Model Serving).</p>
 </li>
 </ul>
 <p>Strictly speaking, we save the untrained model as <code>checkpoint</code> or <code>snapshot</code>. It is different from <code>model saving</code> of a completed model.</p>
@@ -1008,7 +1008,7 @@
 <p>We can use <a href="https://oneflow.readthedocs.io/en/master/oneflow.html#oneflow.get_variable">oneflow.get_variable</a> to create or obtain an object and this object can be used to interact with information in global job functions. When we call the interfaces of <code>oneflow.get_all_variables</code> and <code>oneflow.load_variables</code>, we can get or update the value of the object created by <code>get_variable</code>.</p>
 <p>Because of this feature, the object created by <code>get_variable</code> is used to store model parameters. In fact, there are many high level interface in OneFlow (like <code>oneflow.layers.conv2d</code>) use <code>get_variable</code> internally to create model parameters internally.</p>
 <h3 id="process">Process<a class="headerlink" href="#process" title="Permanent link">&para;</a></h3>
-<p>The <code>get_variable</code>  requires a specified <code>name</code> as the identity of the created object. </p>
+<p>The <code>get_variable</code>  requires a specified <code>name</code> as the identity of the created object.</p>
 <p>If the <code>name</code> value already existed in the program, then get_variable will get the existed object and return.</p>
 <p>If the <code>name</code> value doesn't exist in the program, <code>get_variable</code> will create a blob object internally and return.</p>
 <h3 id="use-get_variable-create-object">Use get_variable Create Object<a class="headerlink" href="#use-get_variable-create-object" title="Permanent link">&para;</a></h3>
@@ -1097,8 +1097,8 @@
 <div class="highlight"><pre><span></span><code><span class="nd">@flow</span><span class="o">.</span><span class="n">global_function</span><span class="p">()</span>
 <span class="k">def</span> <span class="nf">job</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">tp</span><span class="o">.</span><span class="n">Numpy</span><span class="p">:</span>
     <span class="o">...</span>
-    <span class="n">myblob</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">get_variable</span><span class="p">(</span><span class="s2">&quot;myblob&quot;</span><span class="p">,</span> 
-        <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span> 
+    <span class="n">myblob</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">get_variable</span><span class="p">(</span><span class="s2">&quot;myblob&quot;</span><span class="p">,</span>
+        <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span>
         <span class="n">initializer</span><span class="o">=</span><span class="n">flow</span><span class="o">.</span><span class="n">random_normal_initializer</span><span class="p">()</span>
         <span class="p">)</span>
     <span class="o">...</span>
@@ -1121,8 +1121,8 @@
 <p>For example:</p>
 <div class="highlight"><pre><span></span><code><span class="nd">@flow</span><span class="o">.</span><span class="n">global_function</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;predict&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">job</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">tp</span><span class="o">.</span><span class="n">Numpy</span><span class="p">:</span>
-    <span class="n">myblob</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">get_variable</span><span class="p">(</span><span class="s2">&quot;myblob&quot;</span><span class="p">,</span> 
-        <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span> 
+    <span class="n">myblob</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">get_variable</span><span class="p">(</span><span class="s2">&quot;myblob&quot;</span><span class="p">,</span>
+        <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span>
         <span class="n">initializer</span><span class="o">=</span><span class="n">flow</span><span class="o">.</span><span class="n">random_normal_initializer</span><span class="p">()</span>
         <span class="p">)</span>
     <span class="k">return</span> <span class="n">myblob</span>
@@ -1149,7 +1149,7 @@
 <p>The signature of <code>get</code> is as follows which loads the previously saved model specified by the <code>path</code>.</p>
 <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
 </code></pre></div>
-<p>It will return a dictionary that can be updated into the model using the <code>load_variables</code>. </p>
+<p>It will return a dictionary that can be updated into the model using the <code>load_variables</code>.</p>
 <div class="highlight"><pre><span></span><code><span class="n">flow</span><span class="o">.</span><span class="n">load_variables</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">checkpoint</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">save_dir</span><span class="p">))</span>
 </code></pre></div>
 <p>Attention：</p>
@@ -1241,7 +1241,7 @@
 <p>In each of the subdirectories, there are <code>out</code> and <code>meta</code> files where <code>out</code> stores the values of the network parameters in binary form and <code>meta</code> stores the network structure information in text form.</p>
 </li>
 <li>
-<p><code>Snapshot_done</code> is an empty folder. If it exists, it means that the network training has been finished. </p>
+<p><code>Snapshot_done</code> is an empty folder. If it exists, it means that the network training has been finished.</p>
 </li>
 <li>
 <p>Snapshots of the training steps is stored in <code>System-Train-TrainStep-train_job</code>.</p>
@@ -1251,7 +1251,7 @@
 <p>In model finetune and transfer learning, we always need：</p>
 <ul>
 <li>Load some of the parameters from original model</li>
-<li>Initialize the other part of parameters in model </li>
+<li>Initialize the other part of parameters in model</li>
 </ul>
 <p>We can use oneflow.load_variables to complete the process above. Here is a simple example to illustrate the concept.</p>
 <p>First we need define a model and save it to <code>./mlp_models_1</code> after training:</p>
@@ -1320,7 +1320,7 @@ python3 mlp_mnist_origin.py
 </code></pre></div>
 <p>When the training is complete, you will get the <code>mlp_models_1</code> in the current working directory.</p>
 <p>The following code is from <a href="../code/basics_topics/mlp_mnist_finetune.py">mlp_mnist_finetune.py</a>. After finetuning (add one more layer <code>dense3</code> in backbone network), we load <code>./mlp_models_1</code> and train it.</p>
-<p>Run: </p>
+<p>Run:</p>
 <div class="highlight"><pre><span></span><code>wget https://docs.oneflow.org/code/basics_topics/mlp_mnist_finetune.py
 python3 mlp_mnist_finetune.py
 </code></pre></div>

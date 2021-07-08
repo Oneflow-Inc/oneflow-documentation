@@ -1001,14 +1001,14 @@ $ unzip img2ofrecord.zip
 <ul>
 <li>进入到对应目录，并运行 OFRecord 制作脚本 <code>img2ofrecord.py</code></li>
 </ul>
-<div class="highlight"><pre><span></span><code>$ <span class="nb">cd</span> ./img_to_ofrecord
-$ python img2ofrecord.py --part_num<span class="o">=</span><span class="m">5</span> --save_dir<span class="o">=</span>./dataset/ --img_format<span class="o">=</span>.png --image_root<span class="o">=</span>./images/train_set/
+<div class="highlight"><pre><span></span><code>$ cd ./img_to_ofrecord
+$ python img2ofrecord.py --part_num=5 --save_dir=./dataset/ --img_format=.png --image_root=./images/train_set/
 </code></pre></div>
 <ul>
 <li>脚本运行过程中，将输出以下内容</li>
 </ul>
 <div class="highlight"><pre><span></span><code>The image root is:  ./images/train_set/
-The amount of OFRecord data part is:  <span class="m">5</span>
+The amount of OFRecord data part is:  5
 The directory of Labels is:  ./images/train_label/label.txt
 The image format is:  .png
 The OFRecord save directory is:  ./dataset/
@@ -1022,7 +1022,7 @@ Process image successfully !!!
 </code></pre></div>
 <p>至此我们 OFRecord 文件制作完毕，并保存在 <code>./dataset</code> 目录下</p>
 <h3 id="_1">代码解读<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h3>
-<p>整个代码目录构造如下 </p>
+<p>整个代码目录构造如下</p>
 <div class="highlight"><pre><span></span><code>img_to_ofrecord
 ├── images
     ├── train_set
@@ -1039,17 +1039,17 @@ Process image successfully !!!
 <li><code>images</code> 目录存放原始示例训练数据集以及标签文件</li>
 </ul>
 <p>我们的标签文件是以 <code>json</code> 格式存储的，格式如下：</p>
-<div class="highlight"><pre><span></span><code><span class="o">{</span><span class="s2">&quot;00000030_3.png&quot;</span>: <span class="m">3</span><span class="o">}</span>
-<span class="o">{</span><span class="s2">&quot;00000034_0.png&quot;</span>: <span class="m">0</span><span class="o">}</span>
-<span class="o">{</span><span class="s2">&quot;00000026_4.png&quot;</span>: <span class="m">4</span><span class="o">}</span>
-<span class="o">{</span><span class="s2">&quot;00000043_9.png&quot;</span>: <span class="m">9</span><span class="o">}</span>
-<span class="o">{</span><span class="s2">&quot;00000047_5.png&quot;</span>: <span class="m">5</span><span class="o">}</span>
-<span class="o">{</span><span class="s2">&quot;00000003_1.png&quot;</span>: <span class="m">1</span><span class="o">}</span>
+<div class="highlight"><pre><span></span><code>{&quot;00000030_3.png&quot;: 3}
+{&quot;00000034_0.png&quot;: 0}
+{&quot;00000026_4.png&quot;: 4}
+{&quot;00000043_9.png&quot;: 9}
+{&quot;00000047_5.png&quot;: 5}
+{&quot;00000003_1.png&quot;: 1}
 ......
 </code></pre></div>
 <ul>
 <li><a href="../code/extended_topics/img_to_ofrecord/img2ofrecord.py">img2ofrecord.py</a> 脚本将 MNIST 图片转换成 OFRecord 数据集</li>
-<li><a href="../code/extended_topics/img_to_ofrecord/lenet_train.py">lenet_train.py</a> 脚本则读取我们制作好的 OFRecord 数据集，并使用 LeNet 模型进行训练。 </li>
+<li><a href="../code/extended_topics/img_to_ofrecord/lenet_train.py">lenet_train.py</a> 脚本则读取我们制作好的 OFRecord 数据集，并使用 LeNet 模型进行训练。</li>
 </ul>
 <p><code>img2ofrecord.py</code> 的命令行选项如下：</p>
 <ul>
@@ -1061,7 +1061,7 @@ Process image successfully !!!
 </ul>
 <h2 id="_2">脚本的编码流程<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
 <p>与 OFRecord 文件编码的相关逻辑也在 <code>img2ofrecord.py</code> 内，其编码流程如下：</p>
-<p>首先，对读取进来的图片数据进行编码 </p>
+<p>首先，对读取进来的图片数据进行编码</p>
 <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">encode_img_file</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">ext</span><span class="o">=</span><span class="s2">&quot;.jpg&quot;</span><span class="p">):</span>
     <span class="n">img</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
     <span class="n">encoded_data</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">imencode</span><span class="p">(</span><span class="n">ext</span><span class="p">,</span> <span class="n">img</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
