@@ -69,11 +69,11 @@ python lenet_test.py ./9.png
 
 ## MNIST 数据集介绍
 
-MNIST 是一个手写数字的数据库。包括了训练集与测试集；训练集包含了60000张图片以及图片对应的标签，测试集包含了10000张图片以及图片测试的标签。Yann LeCun 等已经将图片进行了大小归一化及居中处理，并且打包为二进制文件供下载([http://yann.lecun.com/exdb/mnist/](http://yann.lecun.com/exdb/mnist/))。本文涉及的脚本会自动下载 MNIST 数据集。
+MNIST 是一个手写数字的数据集。包括了训练集与测试集；训练集包含了60000张图片以及图片对应的标签，测试集包含了10000张图片以及图片测试的标签。Yann LeCun 等已经将图片进行了大小归一化及居中处理，并且打包为二进制文件供下载([http://yann.lecun.com/exdb/mnist/](http://yann.lecun.com/exdb/mnist/))。本文涉及的脚本会自动下载 MNIST 数据集。
 
 ## 定义训练模型
 
-在 [oneflow.nn](https://oneflow.readthedocs.io/en/master/nn.html) 及 [oneflow.layers](https://oneflow.readthedocs.io/en/master/layers.html) 模块提供了常见的用于构建模型的算子。
+在 [oneflow.nn](https://oneflow.readthedocs.io/en/master/nn.html) 及 [oneflow.layers](https://oneflow.readthedocs.io/en/master/layers.html) 模块中提供了常见的用于构建模型的算子。
 
 ```python
 def lenet(data, train=False):
@@ -123,7 +123,7 @@ OneFlow 中提供了 [oneflow.global_function](https://oneflow.readthedocs.io/en
 
 ### global_function 装饰器
 
-`oneflow.global_function` 装饰器需要两个参数：`type` 与 `function_config`。`type`用于指定作业函数的类型，`type="train"` 意味着作业函数用于训练，`type="predict"` 意味着作业函数用于预测。`function_config` 参数为一个 [oneflow.function_config](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.python.framework.function_util.FunctionConfig#oneflow.FunctionConfig) 对象，可用它配置作业函数的细节。
+`oneflow.global_function` 装饰器需要两个参数：`type` 与 `function_config`。`type`用于指定作业函数的类型，`type="train"` 意味着作业函数用于训练，`type="predict"` 意味着作业函数用于预测。`function_config` 参数是一个 [oneflow.function_config](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.python.framework.function_util.FunctionConfig#oneflow.FunctionConfig) 对象，可用它配置作业函数的细节。
 
 以下代码片段展示，我们定义了一个 `train` 类型的作业函数，因为没有设置 `function_config`，所以作业函数的其它配置为默认配置。
 
@@ -196,10 +196,10 @@ for epoch in range(20):
                 print(loss.mean())
 ```
 
-我们调用了 `train_job` 并每循环20次打印1次 `loss`。
+我们调用了 `train_job` 并每循环20次打印1次 `loss.mean()`。
 
 ### 返回多个结果的例子
-在校验模型的代码 [lenet_eval.py](../code/quick_start/lenet_eval.py) 中定义的作业函数：
+在模型校验的代码 [lenet_eval.py](../code/quick_start/lenet_eval.py) 中定义的作业函数：
 ```python
 @flow.global_function(type="predict")
 def eval_job(
@@ -215,7 +215,7 @@ def eval_job(
     return (labels, logits)
 ```
 
-该作业函数的返回值类型为 `Tuple[tp.Numpy, tp.Numpy]`，则当调用时，会返回一个 `tuple` 容器，里面有2个元素，每个元素都是一个 `numpy` 对象：
+该作业函数的返回值类型为 `Tuple[tp.Numpy, tp.Numpy]`，则当调用时，会返回一个 `tuple` 元组，里面有2个元素，每个元素都是一个 `numpy` 对象：
 ```python
 for i, (images, labels) in enumerate(zip(test_images, test_labels)):
             labels, logits = eval_job(images, labels)
@@ -270,7 +270,7 @@ def eval_job(
     return (labels, logits)
 ```
 
-以上是用于校验的作业函数的实现，声明了返回值类型是 `Tuple[tp.Numpy, tp.Numpy]`， 因此返回一个 `tuple`， `tuple` 中有2个元素，每个元素都是1个 `numpy` 对象。我们将调用训练作业函数，并根据返回结果计算准确率。
+以上是用于校验的作业函数的实现，声明了返回值类型是 `Tuple[tp.Numpy, tp.Numpy]`， 因此返回一个 `tuple`， `tuple` 中有2个元素，每个元素都是1个 `numpy` 对象。我们将调用`predict`类型作业函数，并根据返回结果计算准确率。
 
 ### 迭代校验
 以下 `acc` 函数中统计样本的总数目，以及校验正确的总数目，我们将调用作业函数，得到 `labels` 与 `logits`：
@@ -307,7 +307,7 @@ if __name__ == "__main__":
     print("accuracy: {0:.1f}%".format(g_correct * 100 / g_total))
 ```
 
-以上，循环调用校验函数，并且最终输出在 MNIST 测试集上的判断准确率。
+以上，循环调用校验函数，最终输出在 MNIST 测试集上的准确率。
 
 ## 预测图片
 
