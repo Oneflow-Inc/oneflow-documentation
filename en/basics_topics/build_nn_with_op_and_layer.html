@@ -889,7 +889,7 @@
 <img src="imgs/lenet.png" align='center'/>
 </div>
 
-<p>There are two types of elements in the above diagram, one is the computing units represented by boxes which including <code>op</code> and <code>layer</code> such as <code>conv2d</code>, <code>dense</code>, <code>max_pool2d</code> and etc. The other is the data represented by arrows. It corresponds to the following code:</p>
+<p>There are two types of elements in the above diagram, one is the computing units represented by boxes which including <code>Op</code> and <code>Layer</code> such as <code>conv2d</code>, <code>dense</code>, <code>max_pool2d</code> and etc. The other is the data represented by arrows. It corresponds to the following code:</p>
 <p><div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">lenet</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">train</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="n">initializer</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">truncated_normal</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
     <span class="n">conv1</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">conv2d</span><span class="p">(</span>

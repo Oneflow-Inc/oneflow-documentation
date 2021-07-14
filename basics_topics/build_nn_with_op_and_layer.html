@@ -445,7 +445,7 @@
       
         <li class="md-nav__item">
   <a href="#op-layer" class="md-nav__link">
-    op 和 layer
+    Op 和 Layer
   </a>
   
 </li>
@@ -931,7 +931,7 @@
       
         <li class="md-nav__item">
   <a href="#op-layer" class="md-nav__link">
-    op 和 layer
+    Op 和 Layer
   </a>
   
 </li>
@@ -968,13 +968,13 @@
                 
                 
                 <h1 id="oneflow">使用OneFlow搭建神经网络<a class="headerlink" href="#oneflow" title="Permanent link">&para;</a></h1>
-<p>在 <a href="../quick_start/lenet_mnist.html">识别 MNIST 手写体数字</a> 的例子中，我们通过 <code>flow.layers</code> 和 <code>flow.nn</code> 中提供的接口搭建了一个简单的 LeNet 网络。下面，我们将通过LeNet来介绍 Onflow 中网络搭建的核心元素—算子(op)和层(layer)。</p>
+<p>在 <a href="../quick_start/lenet_mnist.html">识别 MNIST 手写体数字</a> 的例子中，我们通过 <code>flow.layers</code> 和 <code>flow.nn</code> 提供的接口搭建了一个简单的 LeNet 网络。下面，我们将通过LeNet来介绍 OneFlow 中网络搭建的核心元素—算子(Op)和层(Layer)。</p>
 <p>LeNet 是一个主要由卷积层、池化层和全连接层组成的神经网络。</p>
 <div align="center">
 <img src="imgs/lenet.png" align='center'/>
 </div>
 
-<p>上图中有两类元素，一类是方框代表的运算单元，包括 <code>op</code> 和 <code>layer</code> 两类，比如 <code>conv2d</code> 、 <code>dense</code> 、 <code>max_pool2d</code> 等；一类是箭头代表的数据。它对应了以下代码：</p>
+<p>上图中有两类元素，一类是方框代表的运算单元，包括 <code>Op</code> 和 <code>Layer</code> 两类，比如 <code>conv2d</code> 、 <code>dense</code> 、 <code>max_pool2d</code> 等；一类是箭头代表的数据。它对应了以下代码：</p>
 <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">lenet</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">train</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="n">initializer</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">truncated_normal</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
     <span class="n">conv1</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">conv2d</span><span class="p">(</span>
@@ -1013,13 +1013,13 @@
         <span class="n">hidden</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">dropout</span><span class="p">(</span><span class="n">hidden</span><span class="p">,</span> <span class="n">rate</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;dropout&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">flow</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">dense</span><span class="p">(</span><span class="n">hidden</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">kernel_initializer</span><span class="o">=</span><span class="n">initializer</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;dense2&quot;</span><span class="p">)</span>
 </code></pre></div>
-<p>作业函数运行时，<code>data</code> 是形状为 <code>100x1×28×28</code> 的数据，<code>data</code> 首先作为 <code>conv2d</code> 的输入参与卷积计算，得到计算结果<code>conv1</code> ，然后 <code>conv1</code> 作为输入传给 <code>max_pool2d</code> ，依此类推。</p>
-<h2 id="op-layer">op 和 layer<a class="headerlink" href="#op-layer" title="Permanent link">&para;</a></h2>
+<p>作业函数运行时，<code>data</code> 是形状为 <code>100x1×28×28</code> 的数据，<code>data</code> 首先作为 <code>conv2d</code> 的输入参与卷积计算，得到计算结果<code>conv1</code> ，然后 <code>conv1</code> 作为输入传给 <code>max_pool2d</code> ，以此类推。</p>
+<h2 id="op-layer">Op 和 Layer<a class="headerlink" href="#op-layer" title="Permanent link">&para;</a></h2>
 <p>算子（Op）是比较常用的一种概念，是 OneFlow 中基本的运算单元，上文代码中的 <code>reshape</code> 和 <code>nn.max_pool2d</code> 就是两种算子。</p>
-<p><code>layers.conv2d</code> 和 <code>layers.dense</code> 不是基本的运算单元，它们是由算子组合成的特定的运算层（layer）。层的存在使得搭建神经网络更方便，相关接口使用请参考 <a href="https://oneflow.readthedocs.io/en/master/layers.html">oneflow.layers API</a>。</p>
+<p><code>layers.conv2d</code> 和 <code>layers.dense</code> 不是基本的运算单元，它们是由算子组合成的特定的运算层（Layer）。层的存在使得搭建神经网络更方便，相关接口使用请参考 <a href="https://oneflow.readthedocs.io/en/master/layers.html">oneflow.layers API</a>。</p>
 <p>通过阅读 <a href="https://github.com/Oneflow-Inc/oneflow/blob/master/oneflow/python/ops/layers.py">oneflow.layers 源码</a> ，可以学习由基本算子构建运算层的细节。</p>
 <h2 id="_1">网络构建过程中的数据块<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
-<p>OneFlow 默认模式是静态图机制，网络的构建和运行过程其实是分开的。因此，在定义网络时，各个变量中 <strong>并没有</strong> 真实的数据，它们只是数据的占位符。对于真实数据的计算发生在作业函数的调用过程中。</p>
+<p>OneFlow 默认模式是静态图机制，网络的构建和运行过程其实是分开的。因此，在定义网络时，各个变量中 <strong>并没有</strong> 真实的数据，它们只是数据的占位符。真实数据的计算发生在作业函数的调用过程中。</p>
 <p>在构建网络时，我们只是描述了网络中各个节点的性质、形状（如 <code>shape</code>、<code>dtype</code>）与连接关系等，这些节点中没有具体的数值，仅仅只是 <strong>数据占位符</strong>， OneFlow 可以根据这种数据占位符进行编译推理，得到计算图。</p>
 <p>这种数据占位符在 OneFlow 的语境中被称作 <code>Blob</code> ，在 OneFlow 中有对应的基类 <code>BlobDef</code>。</p>
 <p>搭建网络时可以打印 <code>Blob</code> 的属性，比如以下代码打印 <code>conv1</code> 的 <code>shape</code> 和 <code>dtype</code> ：
@@ -1034,7 +1034,7 @@
 <div class="highlight"><pre><span></span><code>output = flow.broadcast_add(output, fc2_biases)
 </code></pre></div></p>
 <h2 id="_2">总结<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
-<p>使用 OneFlow 进行神经网络搭建，需要 OneFlow 提供的算子或层作为计算单元。数据占位符 <code>Blob</code> 作为算子和层的输入和输出，运算符重载帮助简化了部分语句。</p>
+<p>使用 OneFlow 进行神经网络搭建，需要 OneFlow 提供算子或层作为计算单元。数据占位符 <code>Blob</code> 作为算子和层的输入和输出，运算符重载帮助简化了部分语句。</p>
 <p>OneFlow 提供的算子可以参阅 API 文档中的：<a href="https://oneflow.readthedocs.io/en/master/nn.html">oneflow.nn</a>、<a href="https://oneflow.readthedocs.io/en/master/math.html">oneflow.math</a>、<a href="https://oneflow.readthedocs.io/en/master/layers.html">oneflow.layers</a> 等模块。</p>
                 
               
