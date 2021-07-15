@@ -228,7 +228,7 @@ REGISTER_RELU_KERNEL(DeviceType::kGPU, double)
 ```
 
 也可以通过命令行直接获取编译、链接选项：
-```shell
+```
 python -c "import oneflow; print(' '.join(oneflow.sysconfig.get_compile_flags()))"
 python -c "import oneflow; print(' '.join(oneflow.sysconfig.get_link_flags()))"
 ```

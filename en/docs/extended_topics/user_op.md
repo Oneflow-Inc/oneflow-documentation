@@ -1,6 +1,6 @@
 # Create an New Operator
 
-## Background 
+## Background
 
 ### What is a Custom Op
 
@@ -114,13 +114,13 @@ Analysis of the above codes:
 
 * The macro `REGISTER_USER_OP` is used to register the op and accepts `myrelu` as `op_type_name`.
 
-* After registering with `REGISTER_USER_OP`, it actually returns an `OpRegistry` class (path: `oneflow\coreframework\user_op_registry.h`) which can be called to complete the setting of a custom op: 
+* After registering with `REGISTER_USER_OP`, it actually returns an `OpRegistry` class (path: `oneflow\coreframework\user_op_registry.h`) which can be called to complete the setting of a custom op:
 
   1. `Input("in") ` means that it has an input named "in".
   2. `Output("out")` means that it has an output named "out".
   3. `SetTensorDescInferFn` is used to set the shape and data type of the inferring function which describe the relationship between the input of this operator and shape and type of the output of this operator. In the above code, the shape and data type of the output is consistent with input.
 
-### Implementation and Registration of CPU Kernel 
+### Implementation and Registration of CPU Kernel
 
 We implemented the CPU kernel in `myrelu_cpu_kernel.cpp` and registered it：
 
@@ -151,7 +151,7 @@ private:
     user_op::Tensor *out_tensor = ctx->Tensor4ArgNameAndIndex("out", 0);
     MyRelu<T>(ctx->device_ctx(),
            in_tensor->shape().elem_cnt(),
-           in_tensor->dptr<T>(), 
+           in_tensor->dptr<T>(),
            out_tensor->mut_dptr<T>());
   }
   bool AlwaysComputeWhenAllOutputsEmpty() const override { return false; }
@@ -182,7 +182,7 @@ In the above code, we rewrite `Compute` and `AlwaysComputeWhenAllOutputsEmpty` a
 
 After implementing the kernel class, you need to call `REGISTER_USER_KERNEL` to register it. The string parameter that `REGISTER_USER_KERNEL("myrelu")` accepts is `op_type_name` which is used to complete registration and querying. You also need to use `op_type_name` when wrapping op at the Python layer.
 
-`REGISTER_USER_KERNEL("myrelu") ` returns an `OpKernelRegistry` object. The methods that need to be called to set the registration information are  mention in the code above. 
+`REGISTER_USER_KERNEL("myrelu") ` returns an `OpKernelRegistry` object. The methods that need to be called to set the registration information are  mention in the code above.
 
 * `SetCreateFn<T>()`: The method of this template's parameter `T`  is our implementation of the kernel class which OneFlow will use it to create the kernel object.
 
@@ -253,7 +253,7 @@ The `oneflow.sysconfig` contains the `get_compile_flags`, `get_include`, `get_li
 
 - Compiling Options
 - Dictionary of header file
-- Dictionary of link library 
+- Dictionary of link library
 - Linking options
 
 For example：
@@ -266,7 +266,7 @@ For example：
 
 You can also get compile and link options directly by using command：
 
-```shell
+```
 python -c "import oneflow; print(' '.join(oneflow.sysconfig.get_compile_flags()))"
 python -c "import oneflow; print(' '.join(oneflow.sysconfig.get_link_flags()))"
 ```
@@ -297,7 +297,7 @@ myrelu_cpu_kernel.o: myrelu_cpu_kernel.cpp
 	-o myrelu_cpu_kernel.o                  \
 	$(CFLAGS) -fPIC
 
-myrelu_gpu_kernel.o: myrelu_gpu_kernel.cu 
+myrelu_gpu_kernel.o: myrelu_gpu_kernel.cu
 	nvcc -std=c++11 -c myrelu_gpu_kernel.cu \
 	-o myrelu_gpu_kernel.o                  \
 	$(CFLAGS) -x cu -Xcompiler -fPIC
@@ -321,7 +321,7 @@ We use `g++` to compile `myrelu_op.cpp` and `myrelu_cpu_kernel.cpp`, use `nvcc` 
 
 We are going to load `final_relu.so` in Python then use wrappers and custom op.
 
-### Using the Custom Op in Python 
+### Using the Custom Op in Python
 
 Using a custom op in Python needs the following steps:
 
@@ -412,7 +412,7 @@ return op.InferAndTryRun().SoleOutputBlob()
 So far, we have built the `myrelu` which is a relatively simple op. But if we need to build a more complex op, we should use some additional features in the registration process.
 We'll introduce it from the aspects of op registration, kernel registration, gradient registration and Python layer wrapping.
 
-## Detailed Introduction of OpRegistry 
+## Detailed Introduction of OpRegistry
 
 ### `Attr`
 
@@ -461,9 +461,9 @@ We can pass an additional parameter and configure a default value for it which i
 
 ``` cpp
 .Attr<bool>("is_transpose", false)
-    
+
 .Attr<int32_t>("size", 10)
-    
+
 .Attr<std::vector<int32_t>>("vector_of_size", std::vector<int32_t>{10, 11, 12})
 ```
 
@@ -471,7 +471,7 @@ We can pass an additional parameter and configure a default value for it which i
 
 For some  `Attributes`, they require a more detailed delineation of the range which can be specified by  `SetCheckAttrFn`  when registering the Op.
 
-Take `Conv` op as an example, it has a configuration option called `data_format` which is a string type but the data must be `channels_first` or `channels_last`. 
+Take `Conv` op as an example, it has a configuration option called `data_format` which is a string type but the data must be `channels_first` or `channels_last`.
 
 ```cpp
 .Attr<std::string>("data_format", std::string("NCHW"))
@@ -479,12 +479,12 @@ Take `Conv` op as an example, it has a configuration option called `data_format`
   [](const user_op::UserOpDefWrapper& def,
     const user_op::UserOpConfWrapper& conf) -> Maybe<void> {
    std::string data_format = conf.attr<std::string>("data_format");
-   if (data_format == "channels_first" || data_format == "channels_last") { 
-     return Maybe<void>::Ok(); 
+   if (data_format == "channels_first" || data_format == "channels_last") {
+     return Maybe<void>::Ok();
    }
    return oneflow::Error::CheckFailed()
-         << "data_format value: " 
-         << data_format 
+         << "data_format value: "
+         << data_format
          << " for Conv op is illegal.";
 })
 ```
@@ -499,22 +499,22 @@ Input example：
 
 ```cpp
 // input must have 1 blob
-.Input("input")        
+.Input("input")
 
 // input must have 5 blobs
-.Input("input", 5) 
+.Input("input", 5)
 
 // input input must have at least 5  blobs
-.InputWithMinimum("input", 5) 
+.InputWithMinimum("input", 5)
 
 // input can have no blob or 1 blob
-.OptionalInput("input") 
+.OptionalInput("input")
 
 // input can have no blob or 5 blobs
-.OptionalInput("input", 5) 
+.OptionalInput("input", 5)
 
 // input can have no blob or at least 5 blobs
-.OptionalInputWithMininum("input", 5) 
+.OptionalInputWithMininum("input", 5)
 ```
 
 Output setting is similar to Input.
@@ -552,7 +552,7 @@ The following code registers the kernel with `SetInferTmpSizeFn` to specify a bu
 REGISTER_USER_KERNEL("XOp")
     .SetInferTmpSizeFn(
       [](const oneflow::user_op::InferContext*) {
-         return 1024; 
+         return 1024;
       });
 ```
 
@@ -616,9 +616,9 @@ REGISTER_USER_OP_GRAD("myop").SetBackwardOpConfGenFn(
     [](user_op::BackwardOpConfContext* ctx) {
 
       const auto op1_name = ctx->FwOp().op_name() + "_grad1";
-      
+
       // The operator op1_name is used to calculate the gradient of myop.in
-      ctx->DefineOp(op1_name, 
+      ctx->DefineOp(op1_name,
         [&ctx](user_op::BackwardOpBuilder& builder) {
           return builder.OpTypeName("multiply")
               .InputBind("x", ctx->FwOp().input("in", 0)) //multiply.x <- myop.in
@@ -629,7 +629,7 @@ REGISTER_USER_OP_GRAD("myop").SetBackwardOpConfGenFn(
 
       const auto op2_name = ctx->FwOp().op_name() + "_grad2";
       // The operator op2_name is used to calculate 6*op1_name.
-      ctx->DefineOp(op2_name, 
+      ctx->DefineOp(op2_name,
         [&ctx, &op1_name](user_op::BackwardOpBuilder& builder) {
           return builder.OpTypeName("scalar_mul")
               .InputBind("in", ctx->GetOp(op1_name).output("out", 0))
@@ -640,9 +640,9 @@ REGISTER_USER_OP_GRAD("myop").SetBackwardOpConfGenFn(
               .Output("out")
               .Build();
         });
-      
+
       // (the gradient of myop.in) <- op1_name.out
-      ctx->FwOp().InputGradBind(user_op::OpArg("in", 0), 
+      ctx->FwOp().InputGradBind(user_op::OpArg("in", 0),
         [&ctx, &op2_name]() -> const std::string& {
           return ctx->GetOp(op2_name)
                 .output("out", 0);
@@ -656,11 +656,11 @@ The string parameter accepted by `REGISTER_USER_OP_GRAD("myop")` is `op_type_nam
 
 In the above gradient registration process, the expression for the gradient of `myop` is `6*x*dy` which is demonstrated in the code.
 
-First `op1_name` is defined and `x*dy` is solved by using the existing operator `multiply`: 
+First `op1_name` is defined and `x*dy` is solved by using the existing operator `multiply`:
 
 ```cpp
 //  The operator op1_name is used to calculate the gradient of myop.in
-ctx->DefineOp(op1_name, 
+ctx->DefineOp(op1_name,
   [&ctx](user_op::BackwardOpBuilder& builder) {
     return builder.OpTypeName("multiply")
         .InputBind("x", ctx->FwOp().input("in", 0)) //multiply.x <- myop.in
@@ -674,7 +674,7 @@ Then `op2_name` is defined and use the existing operator `op2_name` to solve for
 
 ```cpp
 // The operator op2_name is used to calculate 6*op1_name.
-ctx->DefineOp(op2_name, 
+ctx->DefineOp(op2_name,
   [&ctx, &op1_name](user_op::BackwardOpBuilder& builder) {
     return builder.OpTypeName("scalar_mul")
         .InputBind("in", ctx->GetOp(op1_name).output("out", 0))
@@ -691,7 +691,7 @@ Finally bind the output of `op2_name` (i.e., `6*x*dy`) to the input of `myop` to
 
 ```cpp
 // (the gradient of myop.in) <- op1_name.out
-ctx->FwOp().InputGradBind(user_op::OpArg("in", 0), 
+ctx->FwOp().InputGradBind(user_op::OpArg("in", 0),
   [&ctx, &op2_name]() -> const std::string& {
     return ctx->GetOp(op2_name)
           .output("out", 0);
@@ -726,7 +726,7 @@ The common methods and their purpose used in `BackwardOpConfContext` as follows:
 `BackwardOpBuilder` is used to build a reverse op. The fragment of above code is an example:
 
 ```cpp
-ctx->DefineOp(op1_name, 
+ctx->DefineOp(op1_name,
   [&ctx](user_op::BackwardOpBuilder& builder) {
     return builder.OpTypeName("multiply")
         .InputBind("x", ctx->FwOp().input("in", 0)) //multiply.x <- myop.in
@@ -747,7 +747,7 @@ The purpose of each operator is as follows:
 
 * `Attr(attr_name, val) ` sets the value of the attribute which same in the registration.
 
-* Calling `Build()` after above configuration, then the construction of the reverse op is completed. 
+* Calling `Build()` after above configuration, then the construction of the reverse op is completed.
 
 
 ### Detailed Introduction of UserOpWrapper
@@ -755,7 +755,7 @@ The purpose of each operator is as follows:
 Calling `ctx->FwOp()` will return the `UserOpWrapper`of `myop` and complete the gradient binding by calling the `UserOpWrapper`.
 
 ```cpp
-ctx->FwOp().InputGradBind(user_op::OpArg("in", 0), 
+ctx->FwOp().InputGradBind(user_op::OpArg("in", 0),
   [&ctx, &op2_name]() -> const std::string& {
     return ctx->GetOp(op2_name)
           .output("out", 0);
@@ -781,7 +781,7 @@ Common methods for `UserOpWrapper` are:
 As we mentioned earlier, in most cases, the process of calculating a gradient can be represented by a combination of existing ops. However, when it is difficult to use an existing op to solve the gradient for a particular forward op that we need to design and create operators specifically for the gradient calculation. Example can be found in: [relu_op.cpp](https://github.com/Oneflow-Inc/oneflow/blob/master/oneflow/user/ops/relu_op.cpp).
 
 
-## Detailed Introduction of UserOpConfBuilder 
+## Detailed Introduction of UserOpConfBuilder
 
 In Python frontend of OneFlow, we provide `UserOpConfBuilder` to build the wrapper of custom op which is used in [Use custom opp in Python](./user_op.md#python-op) previously. Here is the summary of the relationship between `UserOpConfBuilder` in Python layer and C++ layer.
 

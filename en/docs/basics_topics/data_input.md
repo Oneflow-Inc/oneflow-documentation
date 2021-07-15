@@ -78,7 +78,7 @@ Or you can download the [part-00000](https://oneflow-public.oss-cn-beijing.aliyu
 
 The following example is running a script with our pre-prepared dataset:
 
-```shell
+```
 wget https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/basics_topics/part-00000
 sed -i "s:path/to/ImageNet/ofrecord:./:" of_data_pipeline.py
 python3 of_data_pipeline.py

@@ -64,7 +64,7 @@ ImageNet 大规模视觉识别挑战赛（ILSVRC），常称为 ImageNet 竞赛�
 
   `git clone git@github.com:Oneflow-Inc/OneFlow-Benchmark.git`
 
-  `cd  OneFlow-Benchmark/Classification/cnns` 
+  `cd  OneFlow-Benchmark/Classification/cnns`
 
 - 准备数据集（可选）
 
@@ -74,7 +74,7 @@ ImageNet 大规模视觉识别挑战赛（ILSVRC），常称为 ImageNet 竞赛�
 
 我们提供了通用脚本：`train.sh` 和 `inference.sh`，它们适用于此仓库下所有cnn网络模型的训练、验证、推理。您可以通过设置参数使用不同的模型、数据集来训练/推理。
 
- **关于模型的说明：** 
+ **关于模型的说明：**
 
 > 默认情况下，我们使用resnet50，您也可以通过改动脚本中的--model参数指定其他模型，如：`--model="resnet50"`，`--model="vgg"` 等。
 
@@ -109,7 +109,7 @@ cd OneFlow-Benchmark/Classification/cnns
 
 下载好预训练模型后，解压后放入当前目录，然后执行：
 
-```shell
+```
 sh inference.sh
 ```
 
@@ -132,13 +132,13 @@ data/fish.jpg
 
 - 训练同样很简单，只需执行：
 
-  ```shell
+  ```
   sh train.sh
   ```
 
   即可开始模型的训练，您将看到如下输出：
 
-  ```shell
+  ```
   Loading synthetic data.
   Loading synthetic data.
   Saving model to ./output/snapshots/model_save-20200723124215/snapshot_initial_model.
@@ -157,12 +157,12 @@ data/fish.jpg
 
   同样，你也可以使用[迷你示例数据集](https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/dataset/imagenet/mini-imagenet.zip)，下载解压后放入 cnn 项目的 data 目录即可，然后修改训练脚本如下：
 
-  ```shell
-  rm -rf core.* 
+  ```
+  rm -rf core.*
   rm -rf ./output/snapshots/*
-  
+
   DATA_ROOT=data/imagenet/ofrecord
-  
+
   python3 of_cnn_train_val.py \
       --train_data_dir=$DATA_ROOT/train \
       --num_examples=50 \
@@ -184,8 +184,8 @@ data/fish.jpg
   运行此脚本，将在仅有50张金鱼图片的迷你 ImageNet 数据集上，训练出一个分类模型，利用它，你可以对金鱼图片进行分类。
 
   不要着急，如果您需要在完整的 ImageNet2012 数据集上进行训练，请参考：[OneFlow-Benchmark](https://github.com/Oneflow-Inc/OneFlow-Benchmark/blob/master/Classification/cnns)仓库。
-  
-  
+
+
 
 ### 评估(Evaluate)
 
@@ -193,13 +193,13 @@ data/fish.jpg
 
 只需运行：
 
-```shell
+```
 sh evaluate.sh
 ```
 
 即可获得训练好的模型在50000张验证集上的准确率：
 
-```shell
+```
 Time stamp: 2020-07-27-09:28:28
 Restoring model from resnet_v15_of_best_model_val_top1_77318.
 I0727 09:28:28.773988162    8411 ev_epoll_linux.c:82]        Use of signals is disabled. Epoll engine will not be used
@@ -232,8 +232,8 @@ OneFlow 框架从底层设计上，就原生支持高效的分布式训练。尤
 
 例如，想要在2机8卡上进行分布式训练，像下面这样配置：
 
-```shell
-# train.sh 
+```
+# train.sh
 python3 of_cnn_train_val.py \
     --num_nodes=2 \
     --node_ips="192.168.1.1, 192.168.1.2"
@@ -244,7 +244,7 @@ python3 of_cnn_train_val.py \
 
 然后分别在两台机器上，同时执行：
 
-```shell
+```
 ./train.sh
 ```
 
@@ -287,7 +287,7 @@ OneFlow 的 ResNet50 实现，为了保证和[英伟达的 Mxnet 版实现](http
 - [CIFAR](http://www.cs.toronto.edu/~kriz/cifar.html)
   是由Hinton 的学生 Alex Krizhevsky 和 Ilya Sutskever 整理的一个用于识别普适物体的小型数据集。包括CIFAR-10和CIFAR-100。
 
-- [ImageNet](http://image-net.org/index) 
+- [ImageNet](http://image-net.org/index)
   ImageNet 数据集，一般是指2010-2017年间大规模视觉识别竞赛 (ILSVRC) 的所使用的数据集的统称。ImageNet 数据从2010年来稍有变化，常用 ImageNet-2012 数据集包含1000个类别，其中训练集包含1,281,167张图片，每个类别数据732至1300张不等，验证集包含50,000张图片，平均每个类别50张图片。
 
 完整的 ImageNet(2012)制作过程，请参考 tools 目录下的[README说明](https://github.com/Oneflow-Inc/OneFlow-Benchmark/blob/master/Classification/cnns/tools/README.md)
@@ -346,7 +346,7 @@ onnx_model_dir = 'onnx/model'
 
 **步骤三：调用 `flow.onnx.export `方法**
 
-接下来代码中会调用 `oneflow_to_onnx()` 方法，此方法包含了核心的模型转换方法： `flow.onnx.export()` 
+接下来代码中会调用 `oneflow_to_onnx()` 方法，此方法包含了核心的模型转换方法： `flow.onnx.export()`
 
  **`flow.onnx.export`** 将从 OneFlow 网络得到 ONNX 模型，它的第一个参数是上文所说的专用于推理的 job function，第二个参数是 OneFlow 模型路径，第三个参数是（转换后）ONNX 模型的存放路径
 
@@ -357,4 +357,3 @@ onnx_model = oneflow_to_onnx(InferenceNet, flow_weights_path, onnx_model_dir, ex
 #### 验证 ONNX 模型的正确性
 
 生成 ONNX 模型之后可以使用 ONNX Runtime 运行 ONNX 模型，以验证 OneFlow 模型和 ONNX 模型能够在相同的输入下产生相同的结果。相应的代码在 resnet\_to\_onnx.py 的 `check_equality`。
-

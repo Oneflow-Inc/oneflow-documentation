@@ -24,12 +24,12 @@
 
 1. git clone [此仓库](https://github.com/Oneflow-Inc/oneflow_yolov3)到本地
 
-```shell
+```
 git clone --recursive https://github.com/Oneflow-Inc/oneflow_yolov3.git
 ```
 2. 安装 python 依赖库
 
-```shell
+```
    pip install -r requirements.txt
 ```
 3. 在项目 root 目录下，执行:
@@ -55,11 +55,11 @@ git clone --recursive https://github.com/Oneflow-Inc/oneflow_yolov3.git
 
 运行：
 
-```shell
+```
 sh yolo_predict.sh
 ```
 或者：
-```shell
+```
 sh yolo_predict_python_data_preprocess.sh
 ```
 
@@ -82,7 +82,7 @@ sh yolo_predict_python_data_preprocess.sh
 
 - --image_paths             单个/多个待检测图片路径，如：
 
-  --image_paths  'data/images/000002.jpg'  'data/images/000004.jpg' 
+  --image_paths  'data/images/000002.jpg'  'data/images/000004.jpg'
 
 训练同样很简单，准备好数据集后，只需要执行：`sh yolo_train.sh`即可，数据集制作过程见下文【数据集制作】部分。
 
@@ -100,7 +100,7 @@ Yolov3 支持任意目标检测数据集，下面我们以 [COCO2014](http://coc
 
 准备资源文件：`labels`，`5k.part`，`trainvalno5k.part`
 
-```shell
+```
 wget -c https://pjreddie.com/media/files/coco/5k.part
 wget -c https://pjreddie.com/media/files/coco/trainvalno5k.part
 wget -c https://pjreddie.com/media/files/coco/labels.tgz
@@ -110,7 +110,7 @@ wget -c https://pjreddie.com/media/files/coco/labels.tgz
 
 在 `data/COCO` 目录下执行脚本：
 
-```shell
+```
 # get label file
 tar xzf labels.tgz
 
@@ -133,7 +133,7 @@ find labels/val2014/   -name "*.txt"  | xargs -i cp {} images/val2014/
 
 修改 `yolo_train.sh` 脚本中的参数，令：`--image_path_file="data/COCO/trainvalno5k.txt"` 并执行：
 
-```shell
+```
 sh yolo_train.sh
 ```
 
@@ -155,18 +155,18 @@ sh yolo_train.sh
 
 其中：
 
-`predict decoder` 中调用 `load_image_color`、`letterbox_image` 函数  
-`train decoder` 中调用 `load_data_detection` 函数  
-主要涉及以下操作，在后续的版本中会使用 `OneFlow decoder ops` 替换  
+`predict decoder` 中调用 `load_image_color`、`letterbox_image` 函数
+`train decoder` 中调用 `load_data_detection` 函数
+主要涉及以下操作，在后续的版本中会使用 `OneFlow decoder ops` 替换
 
-- image read  
-- nhwc -> nchw  
-- image / 255  
-- bgr2rgb  
-- resize_image  
-- fill_image   
-- random_distort_image  
-- clip image  
-- random flip image and box  
-- randomize_boxes   
-- correct_boxes  
+- image read
+- nhwc -> nchw
+- image / 255
+- bgr2rgb
+- resize_image
+- fill_image
+- random_distort_image
+- clip image
+- random flip image and box
+- randomize_boxes
+- correct_boxes

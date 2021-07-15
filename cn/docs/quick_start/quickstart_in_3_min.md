@@ -3,7 +3,7 @@
 ## 运行例子
 如果已经安装好了 OneFlow ，可以使用以下命令下载[文档仓库](https://github.com/Oneflow-Inc/oneflow-documentation.git)中的[mlp_mnist.py](https://github.com/Oneflow-Inc/oneflow-documentation/blob/master/cn/docs/code/quick_start/mlp_mnist.py)脚本，并运行。
 
-```shell
+```
 wget https://docs.oneflow.org/code/quick_start/mlp_mnist.py #下载脚本
 python3 mlp_mnist.py #运行脚本
 ```
@@ -111,7 +111,7 @@ def train_job(
 
 ## FAQ
 - 运行本文脚本时，为什么一直卡着不动？
-> 可能是环境变量中设置了错误的代理。可以先通过先运行命令取消代理
+> 可能是环境变量中设置了错误的代理。可以先通过运行命令取消代理
 ```
 unset http_proxy
 unset https_proxy

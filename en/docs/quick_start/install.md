@@ -2,18 +2,18 @@
 
 Install the latest stable version of OneFlow with CUDA support using the following command:
 
-```shell
-python3 -m pip install -f https://release.oneflow.info oneflow==0.4.0+cu102 --user
+```
+python3 -m pip install -f https://release.oneflow.info oneflow==0.4.0+cu102
 ```
 
 Install the latest version of the OneFlow master branch using the following command (not recommended for production environments):
-```shell
-python3 -m pip install oneflow --user -f https://staging.oneflow.info/branch/master/cu102
+```
+python3 -m pip install oneflow -f https://staging.oneflow.info/branch/master/cu102
 ```
 
 If you are informed that the corresponding version cannot be found, please try upgrading `pip`:
-```shell
-python3 -m pip install --upgrade --user pip
+```
+python3 -m pip install --upgrade pip #--user
 ```
 
 Chinese users can use the domestic mirror to accelerate:
@@ -25,7 +25,7 @@ Detailed instructions can be found in the [pypi mirror help](https://mirror.tuna
 
 System Requirements:
 
-* Python >= 3.5
+* Python >= 3.6
 
 * CUDA driver requirements are available in the OneFlow source code repository [README](https://github.com/Oneflow-Inc/oneflow/#system-requirements)
 
@@ -39,12 +39,12 @@ To install OneFlow with legacy CUDA support, run one of the following command:
 
 Stable:
 ```
-python3 -m pip install --find-links https://release.oneflow.info oneflow==0.4.0+[PLATFORM] --user
+python3 -m pip install --find-links https://release.oneflow.info oneflow==0.4.0+[PLATFORM]
 ```
 
 Nightly:
 ```
-python3 -m pip install oneflow --user -f https://staging.oneflow.info/branch/master/[PLATFORM]
+python3 -m pip install oneflow -f https://staging.oneflow.info/branch/master/[PLATFORM]
 ```
 
 All available `[PLATFORM]`:

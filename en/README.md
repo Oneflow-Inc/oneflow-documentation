@@ -2,13 +2,13 @@ The document is written in markdown, using `mkdocs` document generation tool and
 
 **安装mkdocs与material**
 
-```shell
+```
 pip3 install mkdocs mkdocs-material --user
 ```
 
 **编译为html**
 
-```shell
+```
 mkdocs build
 ```
 

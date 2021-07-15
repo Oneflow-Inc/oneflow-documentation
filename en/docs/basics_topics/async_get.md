@@ -211,7 +211,7 @@ Code example: [synchronize_single_job.py](../code/basics_topics/synchronize_sing
 
 Run:
 
-```shell
+```
 wget https://docs.oneflow.org/code/basics_topics/synchronize_single_job.py
 python3 synchronize_single_job.py
 ```
@@ -239,7 +239,7 @@ Code: [synchronize_batch_job.py](../code/basics_topics/synchronize_batch_job.py)
 The trained model can be downloaded from [lenet_models_1.zip](https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/basics_topics/lenet_models_1.zip)
 Run:
 
-```shell
+```
 wget https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/quick_start/lenet_models_1.zip
 unzip lenet_models_1.zip
 wget https://docs.oneflow.org/code/basics_topics/synchronize_batch_job.py
@@ -262,7 +262,7 @@ Code: [async_single_job.py](../code/basics_topics/async_single_job.py)
 
 Run:
 
-```shell
+```
 wget https://docs.oneflow.org/code/basics_topics/async_single_job.py
 python3 async_single_job.py
 ```
@@ -291,7 +291,7 @@ The trained model can be downloaded from [mlp_models_1.zip](https://oneflow-publ
 
 Run:
 
-```shell
+```
 wget https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/basics_topics/mlp_models_1.zip
 unzip mlp_models_1.zip
 wget https://docs.oneflow.org/code/basics_topics/async_batch_job.py

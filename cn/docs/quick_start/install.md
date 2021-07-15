@@ -2,18 +2,20 @@
 
 使用以下命令安装 OneFlow 最新的支持CUDA的稳定版本：
 
-```shell
-python3 -m pip install -f https://release.oneflow.info oneflow==0.4.0+cu102 --user
+```
+python3 -m pip install -f https://release.oneflow.info oneflow==0.4.0+cu102
 ```
 
 使用以下命令安装 OneFlow 最新 master 分支（不建议生产环境下使用）：
-```shell
-python3 -m pip install oneflow --user -f https://staging.oneflow.info/branch/master/cu102
+```
+python3 -m pip install oneflow -f https://staging.oneflow.info/branch/master/cu102
 ```
 
+如果因为权限问题安装失败，请添加 `--user` 参数
+
 如果提示 **找不到** 对应版本，请尝试升级 `pip`：
-```shell
-python3 -m pip install --upgrade --user pip
+```
+python3 -m pip install --upgrade pip #--user
 ```
 
 国内用户可以使用国内镜像加速
@@ -25,7 +27,7 @@ python3 -m pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/sim
 
 系统要求：
 
-* Python >= 3.5
+* Python >= 3.6
 
 * CUDA 驱动要求详情见 OneFlow 源码仓库 [README](https://github.com/Oneflow-Inc/oneflow/#system-requirements)
 
@@ -39,12 +41,12 @@ python3 -m pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/sim
 
 Stable:
 ```
-python3 -m pip install --find-links https://release.oneflow.info oneflow==0.4.0+[PLATFORM] --user
+python3 -m pip install --find-links https://release.oneflow.info oneflow==0.4.0+[PLATFORM]
 ```
 
 Nightly:
 ```
-python3 -m pip install oneflow --user -f https://staging.oneflow.info/branch/master/[PLATFORM]
+python3 -m pip install oneflow -f https://staging.oneflow.info/branch/master/[PLATFORM]
 ```
 
 其中 `[PLATFORM]` 可以是:

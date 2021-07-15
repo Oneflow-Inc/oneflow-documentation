@@ -67,7 +67,7 @@ python ./run_pretraining.py\
     --loss_print_every_n_iter=5 \
     --model_save_dir=./bert_regresssioin_test/of \
     --warmup_batches 831 \
-    --save_last_snapshot True 
+    --save_last_snapshot True
 ```
 我们将获得类似以下输出：
 ```text
@@ -190,28 +190,28 @@ average speed: 0.556(sentences/sec)
 再利用我们提供的 `convert_tf_ckpt_to_of.py` 脚本，将其转为 OneFlow 模型格式。转换过程如下：
 
 首先，下载并解压某个版本的 BERT 模型，如 `uncased_L-12_H-768_A-12`。
-```shell
+```
 wget https://storage.googleapis.com/bert_models/2020_02_20/uncased_L-12_H-768_A-12.zip
 unzip uncased_L-12_H-768_A-12.zip -d uncased_L-12_H-768_A-12
 ```
 
 然后，运行以下命令：
-```shell
+```
 cd uncased_L-12_H-768_A-12/
 cat > checkpoint <<ONEFLOW
-model_checkpoint_path: "bert_model.ckpt" 
-all_model_checkpoint_paths: "bert_model.ckpt" 
+model_checkpoint_path: "bert_model.ckpt"
+all_model_checkpoint_paths: "bert_model.ckpt"
 ONEFLOW
 ```
 
 该命令将在解压目录下创建一个 `checkpoint` 文件，并写入以下内容：
 ```
-model_checkpoint_path: "bert_model.ckpt" 
-all_model_checkpoint_paths: "bert_model.ckpt" 
+model_checkpoint_path: "bert_model.ckpt"
+all_model_checkpoint_paths: "bert_model.ckpt"
 ```
 
 此时，已经准备好待转化的 TensorFlow 模型目录，整个模型目录的结构如下：
-```shell
+```
 uncased_L-12_H-768_A-12
 ├── bert_config.json
 ├── bert_model.ckpt.data-00000-of-00001
@@ -235,7 +235,7 @@ python convert_tf_ckpt_to_of.py \
 def SQuADTrain():
     #...
     backbone = bert_util.BertBackbone()
-    
+
     #在BERT的基础上加上一个全连接层
     with flow.name_scope("cls-squad"):
         final_hidden = backbone.sequence_output()
@@ -262,7 +262,7 @@ def SQuADTrain():
 
 为了得到一个初始化的 squad 模型，我们通过以下脚本启动 squad 训练，并保存模型。
 
-```shell
+```
 python ./run_squad.py\
     --gpu_num_per_node=1\
     --learning_rate=3e-5\
@@ -292,7 +292,7 @@ python ./run_squad.py\
 ### 合并 pretrained 模型为 SQuAD 模型
 SQuAD 模型是在 pretrained 模型基础上的扩充，我们需要参照[模型的加载与保存](../basics_topics/model_load_save.md)中的“模型部分初始化和部分导入”方法，将训练好的 BERT pretrained 模型与初始化的 SQuAD 模型合并。
 
-```shell
+```
 cp -R ./bert_regresssioin_test/of/last_snapshot ./squadModel
 cp -R --remove-destination ./dataset/uncased_L-12_H-768_A-12_oneflow/* ./squadModel/
 ```
@@ -301,7 +301,7 @@ cp -R --remove-destination ./dataset/uncased_L-12_H-768_A-12_oneflow/* ./squadMo
 OneFlow 生成的模型目录中，会有一个名为 `System-Train-TrainStep-xxx` 的子目录(xxx为作业函数的函数名)，该子目录下的 out 文件中，保存有训练总迭代数，并且这个迭代数会用于动态调节训练过程的`learning rate`。
 
 为了防止保存的迭代数影响到微调的训练，应该将out文件中的二进制数据清零：
-```shell
+```
 cd System-Train-TrainStep-xxx
 xxd -r > out <<ONEFLOW
 00000000: 0000 0000 0000 0000
@@ -321,7 +321,7 @@ ONEFLOW
 
 * learning rate = 3e-5
 
-```shell
+```
 python ./run_squad.py\
     --gpu_num_per_node=4\
     --learning_rate=3e-5\
@@ -377,7 +377,7 @@ python run_squad_predict.py \
 注意将以上 `model_load_dir` 修改为 **训练好的** squadModel。
 
 得到 `all_results.npy` 文件后，在[google bert](https://github.com/google-research/bert/)仓库目录下（注意该仓库的 tensorflow 版本为 **tensorflow v1** ），运行我们提供的 `npy2json.py` (由 google bert 中的 run_squand.py 修改得来)：
-```shell
+```
 python npy2json.py\
   --vocab_file=./dataset/vocab.txt \
   --bert_config_file=./dataset/bert_config.json \
@@ -397,7 +397,7 @@ python npy2json.py\
 ```bash
 python evaluate-v1.1.py \
 ./dataset/dev-v1.1.json \
-path/to/squad_base/predictions.json 
+path/to/squad_base/predictions.json
 ```
 
 ## 分布式训练

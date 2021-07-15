@@ -81,7 +81,7 @@ images, labels = test_job(images_in, labels_in)
 
 以下是使用我们预先准备的数据集运行脚本的例子:
 
-```shell
+```
 wget https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/basics_topics/part-00000
 sed -i "s:path/to/ImageNet/ofrecord:./:" of_data_pipeline.py
 python3 of_data_pipeline.py

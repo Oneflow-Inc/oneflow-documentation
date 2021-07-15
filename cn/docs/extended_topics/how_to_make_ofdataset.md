@@ -123,13 +123,13 @@ def ofrecord_reader(
 * 在[这里](https://oneflow-static.oss-cn-beijing.aliyuncs.com/oneflow-tutorial-attachments/spark-oneflow-connector-assembly-0.1.0_int64.jar)下载 jar 包，spark 需要它来支持 ofrecord 格式
 
 接着，解压 `spark-2.4.7-bin-hadoop2.7.tgz`，并配置环境变量 `SPARK_HOME`:
-```shell
+```
 export SPARK_HOME=path/to/spark-2.4.7-bin-hadoop2.7
 export PATH=$SPARK_HOME/bin:$PATH
 ```
 
 然后，通过以下命令启动 pyspark shell：
-```shell
+```
 pyspark --master "local[*]"\
  --jars spark-oneflow-connector-assembly-0.1.0_int64.jar\
  --packages org.tensorflow:spark-tensorflow-connector_2.11:1.13.1
@@ -146,7 +146,7 @@ Welcome to
 
 Using Python version 3.6.10 (default, Mar 25 2020 18:53:43)
 SparkSession available as 'spark'.
->>> 
+>>>
 ```
 
 在启动的 pyspark shell 中，我们可以完成 OFRecord 数据集与其它数据格式的相互转化。

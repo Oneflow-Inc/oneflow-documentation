@@ -16,7 +16,7 @@ Thus, we need to compile `Debug` version of OneFlow and generate the json file n
 
 When we run cmake, we need add flag of `Debug` and `CMAKE_EXPORT_COMPILE_COMMANDS`.
 
-```shell
+```
 cmake .. \
 -DCMAKE_BUILD_TYPE=Debug \
 -DCMAKE_EXPORT_COMPILE_COMMANDS=1
@@ -60,7 +60,7 @@ Followings are required before we configure clangd:
 
 Create a soft link to the `compile_commands.json` in "build" dictionary in the source root of OneFlow. We need to change to the directory of OneFlow's source root and run the command below:
 
-```shell
+```
 ln -s ./build/compile_commands.json compile_commands.json
 ```
 
@@ -122,7 +122,7 @@ After we set the breakpoint, we can press F5 to start debugging.
 
 * The latest version of clangd may have special requirements of glibc. That may lead to raise some errors on missing libraries.
 
-```shell
+```
 ./bin/clangd: /lib64/libc.so.6: version `GLIBC_2.18' not found (required by ./bin/clangd)
 ```
 
