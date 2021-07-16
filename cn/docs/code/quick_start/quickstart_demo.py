@@ -23,44 +23,46 @@ import torchvision.transforms as transforms
 
 # Data manipulation
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-# BATCH_SIZE = 100
-# (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(BATCH_SIZE, BATCH_SIZE)
+BATCH_SIZE = 100
+(train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(BATCH_SIZE, BATCH_SIZE)
 
 
-# print(train_labels.shape)
-# tr_images = torch.tensor(train_images)
-# tr_labels = torch.tensor(train_labels)
-# te_images = torch.tensor(test_images)
-# te_labels = torch.tensor(test_labels)
+tr_images = torch.tensor(train_images)
+tr_labels = torch.tensor(train_labels)
+te_images = torch.tensor(test_images)
+te_labels = torch.tensor(test_labels)
 input_size = 784
 hidden_size = 100
 num_classes = 10
 batch_size = 100
 
 # Dataloader-MNIST
-train_dataset = torchvision.datasets.MNIST(root='./data', train=True,
-    transform=transforms.ToTensor(), download=True)
-test_dataset = torchvision.datasets.MNIST(root='./data', train=False,
-    transform=transforms.ToTensor())
+# train_dataset = torchvision.datasets.MNIST(root='./data', train=True,
+#     transform=transforms.ToTensor(), download=True)
+# test_dataset = torchvision.datasets.MNIST(root='./data', train=False,
+#     transform=transforms.ToTensor())
 
-train_loader = torch.utils.data.DataLoader(dataset=train_dataset, batch_size=batch_size, shuffle=True)
-test_loader = torch.utils.data.DataLoader(dataset=test_dataset, batch_size=batch_size, shuffle=False)
-classes = ('1', '2', '3', '4', '5', '6', '7', '8', '9', '0')
+# train_loader = torch.utils.data.DataLoader(dataset=train_dataset, batch_size=batch_size, shuffle=True)
+# test_loader = torch.utils.data.DataLoader(dataset=test_dataset, batch_size=batch_size, shuffle=False)
+
 
 # Model
 input_size = 784
-hidden_size = 100
+hidden_size1 = 128
+hidden_size2 = 64
 num_classes = 10
 batch_size = 100
 class LeNet5(nn.Module):
-    def __init__(self, input_size, hidden_size, num_classes):
+    def __init__(self, input_size, hidden_size1, hidden_size2, num_classes):
         super(LeNet5, self).__init__()
         # self.flatten = nn.Flatten()
         # self.linear_relu_stack = nn.Sequential(
-        self.l1 = nn.Linear(input_size, hidden_size)
-        self.relu = nn.ReLU()
-        self.l2 = nn.Linear(hidden_size, num_classes)
-            # nn.ReLU(),
+        self.l1 = nn.Linear(input_size, hidden_size1)
+        self.relu1 = nn.ReLU()
+        self.l2 = nn.Linear(hidden_size1, hidden_size2)
+        self.relu2 = nn.ReLU()
+        self.l3 = nn.Linear(hidden_size2, num_classes)
+        # snn.ReLU(),
             # nn.Linear(512, 10),
             # nn.ReLU()
         # ) 
@@ -68,29 +70,30 @@ class LeNet5(nn.Module):
     def forward(self, x):
         # x = self.flatten(x)
         out = self.l1(x)
-        out = self.relu(out)
+        out = self.relu1(out)
         out = self.l2(out)
+        out = self.relu2(out)
+        out = self.l3(out)
         return out
 
-model = LeNet5(input_size, hidden_size, num_classes) # may change
+model = LeNet5(input_size, hidden_size1, hidden_size2, num_classes) # may change
 loss_fn = nn.CrossEntropyLoss() # loss function
-optimizer = torch.optim.SGD(model.parameters(), lr=1e-3) # 更新梯度
+optimizer = torch.optim.SGD(model.parameters(), lr=0.003) # 更新梯度
 
 # Training Loop
-num_epochs = 5
-n_total_steps = 60000
+num_epochs = 15
 for epoch in range(num_epochs):
-    for i, (images, labels) in enumerate(train_loader):
+    for i, (images, labels) in enumerate(zip(train_images, train_labels)):
         # 正向和loss
-        # T_images = torch.tensor(images)
-        # T_labels = torch.tensor(labels)
+        T_images = torch.tensor(images, dtype=torch.float32)
+        T_labels = torch.tensor(labels, dtype=torch.long)
 
+        #矩阵格式对齐
+        T_images = T_images.reshape(-1, 28*28).to(device)
+        T_labels = T_labels.to(device)
 
-        images = images.reshape(-1, 28*28).to(device)
-        labels = labels.to(device)
-
-        outputs = model(images)
-        loss = loss_fn(outputs, labels)
+        outputs = model(T_images)
+        loss = loss_fn(outputs, T_labels)
 
         #反向和更新权重
         optimizer.zero_grad()
@@ -106,28 +109,31 @@ print('Finished Training')
 # torch.save(model.state_dict(), "model.pth")
 # print("Saved PyTorch Model")
 
-# 预测
-# model.eval()
-# x, y = te_images[0], te_images[0]
-# with torch.no_grad():
-#     pred = model(x)
-#     predicted, actual = classes[pred[0].argmax(0)], classes[y]
-#     print(f'Predicted:"{predicted}", Actual: "{actucal}"')
-
 with torch.no_grad():
     n_correct = 0
     n_samples = 0
-    for images, labels in test_loader:
-        images = images.reshape(-1, 28*28).to(device)
-        labels = labels.to(device)
-        outputs = model(images)
+    for images, labels in zip(test_images, test_labels):
+        T_images = torch.tensor(images, dtype=torch.float32)
+        T_labels = torch.tensor(labels, dtype=torch.long)
+        T_images = T_images.reshape(-1, 28*28).to(device)
+        T_labels = T_labels.to(device)
+        outputs = model(T_images)
 
         _, predictions = torch.max(outputs, 1)
         n_samples +=labels.shape[0]
-        n_correct = (predictions == labels).sum().item()
+        n_correct = (predictions == T_labels).sum().item()
     acc = 100.0 * n_correct / n_samples
     print(f'accuracy = {acc}')
 
+# 预测（这块还有bug）
+classes = ('1', '2', '3', '4', '5', '6', '7', '8', '9', '0')
+model.eval()
+te_images = te_images.reshape(-1, 28*28).to(device)
+x, y = te_images[0], te_labels[0]
+with torch.no_grad():
+    pred = model(x)
+    predicted, actual = classes[pred[0].argmax(0)], classes[y]
+    print(f'Predicted:"{predicted}", Actual: "{actucal}"')
 
 
 
