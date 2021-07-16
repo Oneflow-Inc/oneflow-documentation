@@ -1,4 +1,6 @@
 # lenet_eval.py
+import time
+
 import numpy as np
 import oneflow as flow
 from typing import Tuple
@@ -72,14 +74,17 @@ def acc(labels, logtis):
 
 
 if __name__ == "__main__":
-    flow.load_variables(flow.checkpoint.get("./lenet_models_1"))
+    flow.load_variables(flow.checkpoint.get("./synchronize_lenet_models"))
     (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(
         BATCH_SIZE, BATCH_SIZE
     )
 
     for epoch in range(1):
         for i, (images, labels) in enumerate(zip(test_images, test_labels)):
+            if i == 20:
+                start = time.time()
             labels, logtis = eval_job(images, labels)
             acc(labels, logtis)
+    print("synchronize predict elapsed time: ", time.time() - start)
 
     print("accuracy: {0:.1f}%".format(g_correct * 100 / g_total))

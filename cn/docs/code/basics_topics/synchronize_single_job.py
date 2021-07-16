@@ -1,4 +1,5 @@
 # lenet_train.py
+import time
 import oneflow as flow
 import oneflow.typing as tp
 
@@ -62,9 +63,12 @@ if __name__ == "__main__":
     )
 
     for epoch in range(20):
+        if epoch == 1:
+            start = time.time()
         for i, (images, labels) in enumerate(zip(train_images, train_labels)):
             loss = train_job(images, labels)
             if i % 20 == 0:
                 print(loss.mean())
-    flow.checkpoint.save("./lenet_models_1")  # need remove the existed folder
+    print("synchronize train elapsed time: ", time.time() - start)
+    flow.checkpoint.save("./synchronize_lenet_models")  # need remove the existed folder
     print("model saved")

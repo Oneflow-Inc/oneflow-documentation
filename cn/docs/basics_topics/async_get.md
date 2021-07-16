@@ -34,7 +34,7 @@
 
 定义作业函数时，通过注解指定作业函数的返回结果为 `oneflow.typing.Numpy` 时，作业函数为一个同步作业函数。
 
-比如，如果我们定义了如下的作业函数：
+比如，我们定义了如下的作业函数：
 ```python
 @flow.global_function(type="train")
 def train_job(
@@ -113,23 +113,11 @@ def train_job(
     images: tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
     labels: tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32),
 ) -> tp.Callback[tp.Numpy]:
-    # mlp
-    initializer = flow.truncated_normal(0.1)
-    reshape = flow.reshape(images, [images.shape[0], -1])
-    hidden = flow.layers.dense(
-        reshape,
-        512,
-        activation=flow.nn.relu,
-        kernel_initializer=initializer,
-        name="hidden",
-    )
-    logits = flow.layers.dense(
-        hidden, 10, kernel_initializer=initializer, name="output"
-    )
-
-    loss = flow.nn.sparse_softmax_cross_entropy_with_logits(
-        labels, logits, name="softmax_loss"
-    )
+    with flow.scope.placement("gpu", "0:0"):
+        logits = lenet(images, train=True)
+        loss = flow.nn.sparse_softmax_cross_entropy_with_logits(
+            labels, logits, name="softmax_loss"
+        )
     lr_scheduler = flow.optimizer.PiecewiseConstantScheduler([], [0.1])
     flow.optimizer.SGD(lr_scheduler, momentum=0).minimize(loss)
     return loss
@@ -152,8 +140,8 @@ def eval_job(
     images: tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
     labels: tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32),
 ) -> tp.Callback[Tuple[tp.Numpy, tp.Numpy]]:
-    with flow.scope.placement("cpu", "0:0"):
-        logits = mlp(images)
+    with flow.scope.placement("gpu", "0:0"):
+        logits = lenet(images)
         loss = flow.nn.sparse_softmax_cross_entropy_with_logits(
             labels, logits, name="softmax_loss"
         )
@@ -216,18 +204,18 @@ python3 synchronize_single_job.py
 
 ```text
 File mnist.npz already exist, path: ./mnist.npz
-7.3258467
-2.1435719
-1.1712438
-0.7531896
+5.4810095
+1.230904
+0.4844963
 ...
 ...
+synchronize train elapsed time:  25.68173050880432
 model saved
 ```
 
 ### 同步获取多个返回结果
 
-在本例中，作业函数返回一个 `tuple` ，我们通过同步方式获取 `tuple` 中 `labels` 与 `logits` ，并对上例中训练好的模型进行评估，输出准确率。
+在本例中，作业函数返回一个 `tuple` ，我们通过同步方式获取 `tuple` 中的 `labels` 与 `logits` ，并对上例中训练好的模型进行评估，输出准确率。
 
 代码链接：[synchronize_batch_job.py](../code/basics_topics/synchronize_batch_job.py)
 
@@ -243,12 +231,13 @@ python3 synchronize_batch_job.py
 
 会有输出：
 ```text
-accuracy: 99.3%
+synchronize predict elapsed time:  0.11447286605834961
+accuracy: 99.2%
 ```
 
 ### 异步获取一个返回结果
 
-在本例中，使用 mlp 训练，通过异步方式获取唯一的返回结果 `loss` ，并每隔20轮打印一次 `loss.mean()`。
+在本例中，同样使用 LeNet 训练，通过异步方式获取唯一的返回结果 `loss` ，并每隔20轮打印一次 `loss.mean()`。
 
 代码下载：[async_single_job.py](../code/basics_topics/async_single_job.py)
 
@@ -262,11 +251,11 @@ python3 async_single_job.py
 
 ```text
 File mnist.npz already exist, path: ./mnist.npz
-3.0865736
-0.8949808
-0.47858357
-0.3486296
+5.1192927
+1.6323515
+0.756971
 ...
+async train elapsed time:  25.61915397644043
 ```
 
 
@@ -290,5 +279,6 @@ python3 async_batch_job.py
 
 ```text
 File mnist.npz already exist, path: ./mnist.npz
-accuracy: 97.6%
+async predict elapsed time:  0.0742502212524414
+accuracy: 99.1%
 ```
