@@ -4,6 +4,7 @@
 
 ## 使用 LeNet-5 识别图片中的数字
 
+我们先通过OneFlow已有的模型，体验一下其识别效果。
 OneFlow 提供了 LeNet-5 的预训练模型，可以直接用于识别图片中的数字：
 
 ```python
@@ -25,6 +26,7 @@ OneFlow 主要有两类将数据用作训练的方式：使用 `numpy` 数据或
 我们在此使用前者，直接加载图并且将它转为 numpy 数据：
 
 ```python
+
 加载图片
 显示 numpy 数据
 ```
@@ -51,7 +53,7 @@ class LeNet5(nn.Module):
             nn.ReLU(),
             nn.Linear(512, 10),
             nn.ReLU()
-        )
+        ) # 这里我觉得可以画一张网络图，给读者一个更清晰的视觉化的解释
 
     def forward(self, x):
         x = self.flatten(x)
@@ -73,16 +75,45 @@ print(model)
 
 ```python
 前向、反向代码 + 注释
+
 ```
 
 以上展示了一次迭代所需要的正向传播、计算梯度、参数更新。完整的训练，我们一共准备5个 epoch，每个 epoch 中迭代60000次。
 
 ```python
-完整训练代码
+num_epochs = 5
+n_total_steps = 60000
+for epoch in range(num_epochs):
+    for i, (images, labels) in enumerate(tr_images, tr_labels):
+        # 正向和loss
+        outputs = model(images)
+        loss = loss_fn(outputs, labels)
+
+        #反向和更新权重
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+
+        if (i+1) % 5000 == 0:
+            print(f'Epoch [{epoch+1}/{num_epochs}], Step [{i+1}/{n_total_steps}], Loss: {loss.item():.4f}')
+
 ```
 
 【输出效果】
 
 ## 保存模型
 
+```python
+torch.save(model.state_dict(), "model.pth")
+print("Saved PyTorch Model")
+```
 ## 加载模型
+
+```python
+model.eval()
+x, y = te_images[0], te_images[0]
+with torch.no_grad():
+    pred = model(x)
+    predicted, actual = classes[pred[0].argmax(0)], classes[y]
+    print(f'Predicted:"{predicted}", Actual: "{actucal}"')
+```
