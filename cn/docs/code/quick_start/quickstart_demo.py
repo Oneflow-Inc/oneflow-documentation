@@ -51,13 +51,14 @@ class LeNet5(nn.Module):
         return logits
 
 model = LeNet5() # may change
-loss_fn = nn.CrossEntropyLoss()
-optimizer = torch.optim.SGD(model.parameters(), lr=1e-3)
+loss_fn = nn.CrossEntropyLoss() # loss function
+optimizer = torch.optim.SGD(model.parameters(), lr=1e-3) # 更新梯度
 
+# Training Loop
 num_epochs = 5
 n_total_steps = 60000
 for epoch in range(num_epochs):
-    for i, (images, labels) in enumerate(tr_images, tr_labels):
+    for i, (images, labels) in enumerate(zip(train_images, train_labels)):
         # 正向和loss
         outputs = model(images)
         loss = loss_fn(outputs, labels)
