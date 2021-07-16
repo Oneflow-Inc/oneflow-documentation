@@ -1113,7 +1113,7 @@
 <p>如何异步方式获取作业函数的结果</p>
 </li>
 </ul>
-<p>在 OneFlow 中，被 <code>@flow.global_function</code> 装饰器修饰的函数定义称为作业函数，作业函数可以用于训练或预测。通过指定作业函数的返回值类型，可以使用同步或者异步的方式获取作业函数的运算结果。</p>
+<p>在 OneFlow 中，被 <code>@flow.global_function</code> 装饰器修饰的函数称为作业函数，作业函数可以用于训练或预测。通过指定作业函数的返回值类型，可以使用同步或者异步的方式获取作业函数的运算结果。</p>
 <h2 id="_2">同步/异步对比<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
 <p><strong>同步</strong></p>
 <p>在同步训练中，只有上一个 step 的工作完成后，才能开始下一个 step 的训练。</p>
@@ -1150,7 +1150,7 @@
     <span class="n">flow</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">SGD</span><span class="p">(</span><span class="n">lr_scheduler</span><span class="p">,</span> <span class="n">momentum</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">minimize</span><span class="p">(</span><span class="n">loss</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">loss</span>
 </code></pre></div></p>
-<p>以上代码，通过 python 注解的方式告知 OneFlow 系统，返回的是 <code>tp.Numpy</code> （ <code>tp</code> 是 脚本中 <code>oneflow.typing</code> 的别名）类型，它对应了 <code>NumPy</code> 中的 <code>ndarray</code>。</p>
+<p>以上代码，通过 python 注解的方式告知 OneFlow ，返回的是 <code>tp.Numpy</code> （ <code>tp</code> 是 脚本中 <code>oneflow.typing</code> 的别名）类型，它对应了 <code>NumPy</code> 中的 <code>ndarray</code>。</p>
 <p>那么，当我们调用作业函数时，作业函数会直接返回 <code>ndarray</code> 对象：</p>
 <div class="highlight"><pre><span></span><code><span class="n">loss</span> <span class="o">=</span> <span class="n">train_job</span><span class="p">(</span><span class="n">images</span><span class="p">,</span> <span class="n">labels</span><span class="p">)</span>
 <span class="k">if</span> <span class="n">i</span> <span class="o">%</span> <span class="mi">20</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
@@ -1192,7 +1192,7 @@
 <p>调用作业函数：并注册以上第一步准备的回调函数</p>
 </li>
 </ul>
-<p>以上工作三个步骤由 OneFlow 的用户完成，在程序运行时，注册的回调函数会被 OneFlow 调用，并将作业函数的返回值作为参数传递给回调函数。</p>
+<p>以上三个步骤由 OneFlow 的用户完成，在程序运行时，注册的回调函数会被 OneFlow 调用，并将作业函数的返回值作为参数传递给回调函数。</p>
 <h3 id="_5">编写回调函数<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h3>
 <p>回调函数的原型如下：</p>
 <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">cb_func</span><span class="p">(</span><span class="n">result</span><span class="p">:</span> <span class="n">T</span><span class="p">):</span>
@@ -1278,7 +1278,7 @@
 </code></pre></div>
 <h2 id="_7">完整代码<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h2>
 <h3 id="_8">同步获取一个结果<a class="headerlink" href="#_8" title="Permanent link">&para;</a></h3>
-<p>在本例中，使用一个 LeNet 网络，通过同步方式获取唯一的返回结果 <code>loss</code> ，并每隔20轮打印一次 <code>loss</code>。</p>
+<p>在本例中，使用一个 LeNet 网络，通过同步方式获取唯一的返回结果 <code>loss</code> ，并每隔20轮打印一次 <code>loss.mean()</code>。</p>
 <p>代码链接：<a href="../code/basics_topics/synchronize_single_job.py">synchronize_single_job.py</a></p>
 <p>运行：
 <div class="highlight"><pre><span></span><code>wget https://docs.oneflow.org/code/basics_topics/synchronize_single_job.py
@@ -1308,7 +1308,7 @@ python3 synchronize_batch_job.py
 <div class="highlight"><pre><span></span><code>accuracy: 99.3%
 </code></pre></div></p>
 <h3 id="_10">异步获取一个返回结果<a class="headerlink" href="#_10" title="Permanent link">&para;</a></h3>
-<p>在本例中，使用 mlp 训练，通过异步方式获取唯一的返回结果 <code>loss</code> ，并每隔20轮打印一次 <code>loss</code>。</p>
+<p>在本例中，使用 mlp 训练，通过异步方式获取唯一的返回结果 <code>loss</code> ，并每隔20轮打印一次 <code>loss.mean()</code>。</p>
 <p>代码下载：<a href="../code/basics_topics/async_single_job.py">async_single_job.py</a></p>
 <p>运行：
 <div class="highlight"><pre><span></span><code>wget https://docs.oneflow.org/code/basics_topics/async_single_job.py
@@ -1323,7 +1323,7 @@ python3 async_single_job.py
 ...
 </code></pre></div>
 <h3 id="_11">异步获取多个返回结果<a class="headerlink" href="#_11" title="Permanent link">&para;</a></h3>
-<p>在以下的例子中，我们展示了如何异步方式获取作业函数的多个返回结果，并对上例中训练好的模型进行评估，输出准确率。</p>
+<p>在以下的例子中，我们展示了如何通过异步方式获取作业函数的多个返回结果，并对上例中训练好的模型进行评估，输出准确率。</p>
 <p>代码下载：<a href="../code/basics_topics/async_batch_job.py">async_batch_job.py</a></p>
 <p>其中，预训练模型文件可以点此处下载：<a href="https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/basics_topics/mlp_models_1.zip">mlp_models_1.zip</a></p>
 <div class="highlight"><pre><span></span><code>wget https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/basics_topics/mlp_models_1.zip
