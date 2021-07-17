@@ -30,7 +30,7 @@
 
 ### 流程
 
-`get_variable` 需要一个指定一个 `name` 参数，该参数作为创建对象的标识。
+`get_variable` 需要指定一个 `name` 参数，该参数作为创建对象的标识。
 
 如果 `name` 指定的值在当前上下文环境中已经存在，那么 `get_variable` 会取出已有对象，并返回。
 
@@ -120,10 +120,10 @@ flow.config.enable_legacy_model_io(False)
 ### 获取/更新 variable 对象的值
 我们可以使用以下两个接口，获取或更新作业函数中由 `oneflow.get_variable` 所创建的 `variable` 对象的值
 
-- `oneflow.get_all_variables` : 获取所有作业函数中的的 `variable` 对象
+- `oneflow.get_all_variables` : 获取所有作业函数中的 `variable` 对象
 - `oneflow.load_variables` : 更新作业函数中的 `variable` 对象
 
-`oneflow.get_all_variables` 会返回一个字典，字典的 key 就是创建 `variable` 时指定的 `name`，key 对应的 value 就是一个张量对象，该张量对象有 `numpy()` 方法转为 numpy 数组。
+`oneflow.get_all_variables` 会返回一个字典，字典的 key 就是创建 `variable` 时指定的 `name`，key 对应的 value 就是一个张量对象，该张量对象通过 `numpy()` 方法转为 numpy 数组。
 
 比如，在作业函数中创建了名为 `myblob` 的对象：
 ```python
@@ -157,7 +157,7 @@ for epoch in range(20):
 def load_variables(value_dict, ignore_mismatch = True)
 ```
 
-使用 `load_variables` 前，我们要准备一个字典，该字典的 key 为创建 `variable` 时指定的 `name`，value 是 numpy 数组；将字典传递给 `load_variables` 后，`load_variables` 会将根据 key 找到作业函数中的 variable 对象，并更新值。
+使用 `load_variables` 前，我们要准备一个字典，该字典的 key 为创建 `variable` 时指定的 `name`，value 是 numpy 数组；将字典传递给 `load_variables` 后，`load_variables` 会根据 key 找到作业函数中的 variable 对象，并更新值。
 
 如以下代码：
 
@@ -215,7 +215,7 @@ flow.load_variables(flow.checkpoint.get(save_dir))
 
 ## OneFlow 模型的存储结构
 OneFlow 模型是一组已经被训练好的网络的 **参数值** 。模型所保存的路径下，有多个子目录，每个子目录对应了 `作业函数` 中模型的 `name`。
-比如，我们先通过代码定义以下的模型：
+比如，我们先通过代码定义如下的模型：
 
 ```python
 def lenet(data, train=False):
@@ -300,7 +300,7 @@ lenet_models_name/
 
 * 以上每个子目录中，都有 `out` 和 `meta` 文件，`out` 以二进制的形式存储了网络参数的值，`meta` 以文本的形式存储了网络的结构信息
 
-* `snapshot_done` 是一个空文件，如果它存在，表示网络已经训练完成
+* `snapshot_done` 是一个空文件，如果它存在，则表示网络已经训练完成
 
 * `System-Train-TrainStep-train_job` 中保存有快照的训练步数
 
@@ -315,7 +315,7 @@ lenet_models_name/
 
 我们可以使用 `oneflow.load_variables` 完成以上操作。以下举一个用于阐述概念的简单例子。
 
-首先，我们先定义一个模型，训练后保存至 `./mlp_models_1`：
+首先，我们定义一个模型，训练后保存至 `./mlp_models_1`：
 ```python
 @flow.global_function(type="train")
 def train_job(
