@@ -23,8 +23,8 @@ def test_job() -> Tuple[tp.Numpy, tp.Numpy]:
         label = flow.data.OFRecordRawDecoder(
             ofrecord, "class/label", shape=(), dtype=flow.int32
         )
-        rsz = flow.image.Resize(
-            image, resize_x=224, resize_y=224, color_space=color_space
+        rsz, scale, new_size = flow.image.Resize(
+            image, target_size=(224, 224)
         )
 
         rng = flow.random.CoinFlip(batch_size=batch_size)
