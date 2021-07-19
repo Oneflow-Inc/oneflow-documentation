@@ -34,7 +34,7 @@
 
 定义作业函数时，通过注解指定作业函数的返回结果为 `oneflow.typing.Numpy` 时，作业函数为一个同步作业函数。
 
-比如，如果我们定义了如下的作业函数：
+比如，我们定义了如下的作业函数：
 ```python
 @flow.global_function(type="train")
 def train_job(
@@ -227,7 +227,7 @@ model saved
 
 ### 同步获取多个返回结果
 
-在本例中，作业函数返回一个 `tuple` ，我们通过同步方式获取 `tuple` 中 `labels` 与 `logits` ，并对上例中训练好的模型进行评估，输出准确率。
+在本例中，作业函数返回一个 `tuple` ，我们通过同步方式获取 `tuple` 中的 `labels` 与 `logits` ，并对上例中训练好的模型进行评估，输出准确率。
 
 代码链接：[synchronize_batch_job.py](../code/basics_topics/synchronize_batch_job.py)
 
