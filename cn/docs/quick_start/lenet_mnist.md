@@ -137,7 +137,7 @@ def train_job(images:tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.fl
 其中的 `tp.Numpy.Placeholder` 是数据占位符， `-> tp.Numpy` 指定这个作业函数在调用时，将返回一个 `numpy` 对象。
 
 ### 指定优化目标
-我们可以通过 [oneflow.optimizer](https://oneflow.readthedocs.io/en/master/optimizer.html) 下的接口指定优化器及其优化目标。这样，OneFlow 在每次迭代训练作业的过程中，将以指定的方式优化目标。
+我们可以通过 [oneflow.optimizer](https://oneflow.readthedocs.io/en/master/optimizer.html) 接口指定优化器及其优化目标。这样，OneFlow 在每次迭代训练作业的过程中，将以指定的方式优化目标。
 
 ```python
 @flow.global_function(type="train")
@@ -319,7 +319,6 @@ def load_image(file):
     im = im.resize((28, 28), Image.ANTIALIAS)
     im = np.array(im).reshape(1, 1, 28, 28).astype(np.float32)
     im = (im - 128.0) / 255.0
-    im.reshape((-1, 1, 1, im.shape[1], im.shape[2]))
     return im
 
 

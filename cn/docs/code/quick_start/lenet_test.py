@@ -74,7 +74,6 @@ def load_image(file):
     im = im.resize((28, 28), Image.ANTIALIAS)
     im = np.array(im).reshape(1, 1, 28, 28).astype(np.float32)
     im = (im - 128.0) / 255.0
-    im.reshape((-1, 1, 1, im.shape[1], im.shape[2]))
     return im
 
 

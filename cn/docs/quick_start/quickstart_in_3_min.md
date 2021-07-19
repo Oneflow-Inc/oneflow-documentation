@@ -30,6 +30,7 @@ import oneflow as flow
 import oneflow.typing as tp
 import numpy as np
 
+# trainset must be divisible by BATCH_SIZE, because using numpy for reshape
 BATCH_SIZE = 100
 
 @flow.global_function(type="train")
@@ -37,6 +38,7 @@ def train_job(
     images: tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
     labels: tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32),
 ) -> tp.Numpy:
+    # If you want to train the model on gpu, You can replace cpu with gpu
     with flow.scope.placement("cpu", "0:0"):
         reshape = flow.reshape(images, [images.shape[0], -1])
         initializer1 = flow.random_uniform_initializer(-1/28.0, 1/28.0)
@@ -61,6 +63,7 @@ def train_job(
 
 
 if __name__ == "__main__":
+    # train_images.shape = (600, 100, 1, 28, 28) They are batch_num, batch_size, channel, height, width
     (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(
         BATCH_SIZE, BATCH_SIZE
     )
@@ -121,4 +124,4 @@ unset HTTPS_PROXY
 然后再进行尝试
 
 - 我电脑无法联网，运行脚本时一直卡着不动
-> 本文脚本会自动从网络下载需要的数据文件，如果电脑无法联网，则需要点击 [这里](https://oneflow-public.oss-cn-beijing.aliyuncs.com/datasets/mnist.npz) 手工下载，并将它放置在脚本 `mlp_mnist.py` 相同路径下，然后再进行尝试
+> 本文脚本会自动从网络下载需要的数据文件，如果电脑无法联网，则需要点击 [这里](https://oneflow-public.oss-cn-beijing.aliyuncs.com/datasets/mnist.npz) 手动下载，并将它放置在脚本 `mlp_mnist.py` 相同路径下，然后再进行尝试
