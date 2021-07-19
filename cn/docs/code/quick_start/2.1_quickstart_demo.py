@@ -11,13 +11,8 @@ tr_labels = flow.tensor(train_labels)
 te_images = flow.tensor(test_images)
 te_labels = flow.tensor(test_labels)
 
+# 模型
 # 设置模型需要的参数
-input_size = 784
-hidden_size = 100
-num_classes = 10
-batch_size = 100
-
-# Model
 input_size = 784
 hidden_size1 = 128
 hidden_size2 = 64
