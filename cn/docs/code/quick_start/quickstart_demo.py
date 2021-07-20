@@ -6,7 +6,7 @@ import torchvision
 import torchvision.transforms as transforms
 
 # Data manipulation
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+device = torch.device('cpu')
 BATCH_SIZE = 100
 (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(BATCH_SIZE, BATCH_SIZE)
 
