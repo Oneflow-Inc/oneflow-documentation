@@ -19,23 +19,31 @@ hidden_size2 = 64
 num_classes = 10
 batch_size = 100
 class LeNet5(nn.Module):
-    def __init__(self, input_size, hidden_size1, hidden_size2, num_classes):
+    def __init__(self, n_classes):
         super(LeNet5, self).__init__()
-        self.l1 = nn.Linear(input_size, hidden_size1)
-        self.relu1 = nn.ReLU()
-        self.l2 = nn.Linear(hidden_size1, hidden_size2)
-        self.relu2 = nn.ReLU()
-        self.l3 = nn.Linear(hidden_size2, num_classes)
-
+        self.feature_extractor = nn.Sequential(            
+            nn.Conv2d(in_channels=1, out_channels=6, kernel_size=5, stride=1),
+            nn.Tanh(),
+            nn.AvgPool2d(kernel_size=2),
+            nn.Conv2d(in_channels=6, out_channels=16, kernel_size=5, stride=1),
+            nn.Tanh(),
+            nn.AvgPool2d(kernel_size=2),
+            nn.Conv2d(in_channels=16, out_channels=120, kernel_size=5, stride=1),
+            nn.Tanh()
+        )
+        self.classifier = nn.Sequential(
+            nn.Linear(in_features=120, out_features=84),
+            nn.Tanh(),
+            nn.Linear(in_features=84, out_features=n_classes),
+        )
     def forward(self, x):
-        out = self.l1(x)
-        out = self.relu1(out)
-        out = self.l2(out)
-        out = self.relu2(out)
-        out = self.l3(out)
-        return out
+        x = self.feature_extractor(x)
+        x = flow.flatten(x, 1)
+        logits = self.classifier(x)
+        # probs = flow.softmax(logits, dim=1)
+        return logits
 
-model = LeNet5(input_size, hidden_size1, hidden_size2, num_classes)
+model = LeNet5(num_classes)
 loss_fn = nn.CrossEntropyLoss() # loss function
 optimizer = flow.optim.SGD(model.parameters(), lr=0.003) # 更新梯度
 
