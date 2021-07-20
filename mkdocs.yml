@@ -4,3 +4,11 @@ theme:
 extra:
   version:
     provider: mike
+  alternate:
+    - name: English
+      link: site/en/
+      lang: en
+
+    - name: 中文
+      link: site/cn/
+      lang: zh
