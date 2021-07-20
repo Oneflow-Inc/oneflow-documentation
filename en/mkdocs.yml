@@ -49,6 +49,16 @@ plugins:
 extra:
   version:
     provider: mike
+  alternate:
+    # Switch to English
+    - name: English
+      link: https://docs.oneflow.org/english
+      lang: en
+
+    # Switch to Chinese
+    - name: 中文
+      link: https://docs.oneflow.org
+      lang: zh
 
 # Extensions
 markdown_extensions:
@@ -136,4 +146,4 @@ nav:
       - Contribute to OneFlow: contribute/intro.md
 
     - 中文:
-      - 中文: ../index.html
+      - 中文: ../../index.html
