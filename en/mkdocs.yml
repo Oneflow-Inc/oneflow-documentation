@@ -52,7 +52,7 @@ extra:
   alternate:
     # Switch to English
     - name: English
-      link: https://docs.oneflow.org/english
+      link: https://docs.oneflow.org/en
       lang: en
 
     # Switch to Chinese
@@ -144,6 +144,3 @@ nav:
 
     - Contribute:
       - Contribute to OneFlow: contribute/intro.md
-
-    - 中文:
-      - 中文: ../../index.html

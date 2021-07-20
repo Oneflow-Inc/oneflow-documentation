@@ -57,7 +57,7 @@ extra:
 
     # Switch to English
     - name: English
-      link: https://docs.oneflow.org/english
+      link: https://docs.oneflow.org/en
       lang: en
 
 # Extensions
@@ -140,6 +140,3 @@ nav:
 
     - OneFlow 开源计划:
       - OneFlow 开源计划: contribute/intro.md
-
-    - EN:
-      - EN: ../en/index.html
