@@ -6,9 +6,9 @@ extra:
     provider: mike
   alternate:
     - name: English
-      link: site/en/
+      link: en
       lang: en
 
     - name: 中文
-      link: site/cn/
+      link: cn
       lang: zh
