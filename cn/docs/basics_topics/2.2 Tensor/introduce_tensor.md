@@ -4,103 +4,41 @@
 
 ## 什么是Tensor
 
-机器学习中，Tensor是我们离不开的数据形式。神经网络中数据表示，往往是通过称为张量（Tensor）的数据存储库完成的。张量（Tensor）可以视为一个容器，可以容纳N维数据。张量和矩阵有所区别，具体而言，张量是矩阵对N维空间的推广。
+​	机器学习中，Tensor是我们离不开的数据形式。神经网络中数据表示，往往是通过称为张量（Tensor）的数据存储库完成的。张量（Tensor）可以视为一个容器，可以容纳N维数据。张量和矩阵有所区别，具体而言，张量是矩阵对N维空间的推广。
 
- ![An example of a scalar, a vector, a matrix and a tensor](https://hadrienj.github.io/assets/images/2.1/scalar-vector-matrix-tensor.png) 
+​	张量类似于 NumPy 的 ndarray，不同之处在于张量可以在 GPU 或其他硬件加速器上运行。事实上，张量和 NumPy 数组通常可以共享相同的底层内存，从而无需复制数据。除此之外，张量也针对自动微分进行了优化。
 
-我们分别对以上数据格式进行说明：
+​	下面我们将使用Numpy创建一个张量：
 
--  **Scalar 标量** 
-
-  标量是单个数字。 标量是0维(0D) 张量。因此，它有0个轴，并且等级为0（张量表示“轴数”）。 
-
-  ```python
+```python
 import numpy as np
-  x = np.array(16)
+x = np.array([[[1, 4, 7],
+               [2, 5, 8],
+               [3, 6, 9]],
+              [[10, 40, 70],
+               [20, 50, 80],
+               [30, 60, 90]],
+              [[100, 400, 700],
+               [200, 500, 800],
+               [300, 600, 900]]])
 print(x)
-  print('A scalar is of rank %d' %(x.ndim))
-  ```
-  
-  ```
-  42
-  A scalar is of rank 0
+print('This tensor is of rank %d' %(x.ndim))
 ```
-  
-  
-  
--  **Vector 向量** 
 
-   向量是一维 (1D) 张量，我们更常听到将其称为数组。向量由一系列数字组成，有1 个轴，秩为1。 
-
-  ```python
-  import numpy as np
-  x = np.array([1, 1, 2, 3, 5, 8])
-  print(x)
-  print('A vector is of rank %d' %(x.ndim))
-  ```
-
-  ```
-  [1 1 2 3 5 8]
-  A vector is of rank 1
-  ```
+```
+[[[  1   4   7]
+  [  2   5   8]
+  [  3   6   9]]
+ [[ 10  40  70]
+  [ 20  50  80]
+  [ 30  60  90]]
+ [[100 400 700]
+  [200 500 800]
+  [300 600 900]]]
+This tensor is of rank 3
+```
 
 
-
--  **Matrix 矩阵** 
-
-   矩阵是秩为 2 的张量，这意味着它有 2 个轴。矩阵排列为数字网格（行和列），从技术上讲，它是一个二维 (2D) 张量。 
-
-  ```python
-  import numpy as np
-  x = np.array([[1, 4, 7],
-                [2, 5, 8],
-                [3, 6, 9]])
-  print(x)
-  print('A matrix is of rank %d' %(x.ndim))
-  ```
-
-  ```
-  [[1 4 7]
-   [2 5 8]
-   [3 6 9]]
-  A matrix is of rank 2
-  ```
-
-  
-
--  **3D Tensor  张量** 
-
-  从技术上讲，上述所有构造都是有效的张量，但是通俗地说，当我们谈到张量时，我们通常是将矩阵的概念推广到**N≥3维**。因此，为了避免混淆，我们通常只将维度在三维或三维以上称为张量。
-
-  ```python
-  import numpy as np
-  x = np.array([[[1, 4, 7],
-                 [2, 5, 8],
-                 [3, 6, 9]],
-                [[10, 40, 70],
-                 [20, 50, 80],
-                 [30, 60, 90]],
-                [[100, 400, 700],
-                 [200, 500, 800],
-                 [300, 600, 900]]])
-  print(x)
-  print('This tensor is of rank %d' %(x.ndim))
-  ```
-
-  ```
-  [[[  1   4   7]
-    [  2   5   8]
-    [  3   6   9]]
-   [[ 10  40  70]
-    [ 20  50  80]
-    [ 30  60  90]]
-   [[100 400 700]
-    [200 500 800]
-    [300 600 900]]]
-  This tensor is of rank 3
-  ```
-
-  
 
 
 
@@ -127,23 +65,55 @@ x_np = flow.from_numpy(np_array)
 
 
 
+```python
+import oneflow.experimental as flow
+import numpy as np
+
+x = flow.Tensor(np.random.rand([5]))
+y = flow.ones_like(x)
+```
+
 
 
 ### 使用算子
+
+我们也可以使用算子进行Tensor的构造。
+
+​	
+
+```python
+import oneflow.experimental as flow
+import numpy as np
+flow.enable_eager_execution()
+
+shape = (2,3,)
+
+ones_tensor = flow.ones(shape)
+zeros_tensor = flow.zeros(shape)
+
+print(f"Ones Tensor: \n {ones_tensor} \n")
+print(f"Zeros Tensor: \n {zeros_tensor}")
+```
 
 
 
 ## Tensor 的常见属性
 
-每个Tensor都有flow.dtype， flow.device，和 flow.layout 三个属性。
+ 张量属性描述了它们的形状（shape）、数据类型（dtype）和存储它们的设备（device）。 
+
+```python
+import oneflow.experimental as flow
+import numpy as np
+flow.enable_eager_execution()
+
+tensor = flow.Tensor(np.random.randn(2, 6), dtype=flow.float32)
+
+print(f"Shape of tensor: {tensor.shape}")
+print(f"Datatype of tensor: {tensor.dtype}")
+print(f"Device tensor is stored on: {tensor.device}")
+```
 
 
-
-
-
-
-
-## 常见的Tensor操作（算子）
 
 ## 常见的Tensor操作（算子）
 
@@ -154,6 +124,7 @@ x_np = flow.from_numpy(np_array)
   ```python
   import numpy as np
   import oneflow.experimental as flow
+  flow.enable_eager_execution()
   
   # element-wise add
   x = flow.Tensor(np.random.randn(2,3))
@@ -194,13 +165,29 @@ x_np = flow.from_numpy(np_array)
 
   
 
-
-
-
-
-
-
 #### 位置操作类
+
+索引和切片
+
+```python
+import oneflow.experimental as flow
+import numpy as np
+flow.enable_eager_execution()
+
+tensor = flow.ones(4, 4)
+print('First row: ',tensor[0])
+print('First column: ', tensor[:, 0])
+print('Last column:', tensor[..., -1])
+tensor[:,1] = 0
+print(tensor)
+```
+
+连接多个Tensor.
+
+```python
+t1 = torch.cat([tensor, tensor, tensor], dim=1)
+print(t1)
+```
 
 
 

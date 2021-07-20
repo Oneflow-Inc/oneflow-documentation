@@ -2,6 +2,8 @@ import oneflow.experimental as flow
 import oneflow.experimental.nn as nn
 import numpy as np 
 
+flow.enable_eager_execution()
+
 # 下载并设置数据
 BATCH_SIZE = 100
 (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(BATCH_SIZE, BATCH_SIZE)
@@ -82,6 +84,9 @@ with flow.no_grad():
         T_labels = T_labels
         outputs = model(T_images)
         
+        # predictions = flow.max(outputs, dim=1)
+        # n_samples += labels.shape[0]
+        # n_correct = (predictions == T_labels).sum().item()
         predictions = flow.argmax(outputs, dim=1)
         n_samples +=labels.shape[0]
         T_correct = flow.eq(predictions, T_labels)
