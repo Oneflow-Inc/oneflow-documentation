@@ -46,6 +46,9 @@ theme:
 # Plugins
 plugins:
   - search
+extra:
+  version:
+    provider: mike
 
 # Extensions
 markdown_extensions:
