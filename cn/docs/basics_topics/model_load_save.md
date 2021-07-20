@@ -157,7 +157,7 @@ for epoch in range(20):
 def load_variables(value_dict, ignore_mismatch = True)
 ```
 
-使用 `load_variables` 前，我们要准备一个字典，该字典的 key 为创建 `variable` 时指定的 `name`，value 是 numpy 数组；将字典传递给 `load_variables` 后，`load_variables` 会将根据 key 找到作业函数中的 variable 对象，并更新值。
+使用 `load_variables` 前，我们要准备一个字典，该字典的 key 为创建 `variable` 时指定的 `name`，value 是 numpy 数组；将字典传递给 `load_variables` 后，`load_variables` 会根据 key 找到作业函数中的 variable 对象，并更新值。
 
 如以下代码：
 
@@ -300,7 +300,7 @@ lenet_models_name/
 
 * 以上每个子目录中，都有 `out` 和 `meta` 文件，`out` 以二进制的形式存储了网络参数的值，`meta` 以文本的形式存储了网络的结构信息
 
-* `snapshot_done` 是一个空文件，如果它存在，表示网络已经训练完成
+* `snapshot_done` 是一个空文件，如果它存在，则表示网络已经训练完成
 
 * `System-Train-TrainStep-train_job` 中保存有快照的训练步数
 
