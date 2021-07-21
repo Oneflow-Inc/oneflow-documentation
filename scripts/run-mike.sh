@@ -1,4 +1,6 @@
 set -ex
+GIT_USER_NAME=`git config --get user.name`
+GIT_EMAIL=`git config --get user.email`
 git config --global user.name "YaoChi"
 git config --global user.email "later@usopp.net"
 
@@ -17,3 +19,6 @@ ${MIKE} set-default ${LATEST_VERSION} ${CN_OPTIONS}
 cd ../en
 ${MIKE} deploy master ${LATEST_VERSION} -u ${EN_OPTIONS}
 ${MIKE} set-default ${LATEST_VERSION} ${EN_OPTIONS}
+
+git config --global user.name $GIT_USER_NAME
+git config --global user.email $GIT_EMAIL
