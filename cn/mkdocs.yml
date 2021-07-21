@@ -18,8 +18,6 @@ use_directory_urls: false
 theme:
   name: material
   custom_dir: 'custom_theme/'
-  features:
-    - navigation.top
 
   # 404 page
   static_templates:
