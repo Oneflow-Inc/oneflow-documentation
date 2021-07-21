@@ -2,13 +2,11 @@ import oneflow.experimental as flow
 import oneflow.experimental.nn as nn
 import numpy as np 
 
-
 flow.enable_eager_execution()
 
 # 下载并设置数据
 BATCH_SIZE = 100
 (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(BATCH_SIZE, BATCH_SIZE)
-
 tr_images = flow.tensor(train_images)
 tr_labels = flow.tensor(train_labels)
 te_images = flow.tensor(test_images)
@@ -16,37 +14,32 @@ te_labels = flow.tensor(test_labels)
 
 # 模型
 # 设置模型需要的参数
+
 input_size = 784
 hidden_size1 = 128
 hidden_size2 = 64
 num_classes = 10
 batch_size = 100
-class LeNet5(nn.Module):
-    def __init__(self, n_classes):
-        super(LeNet5, self).__init__()
-        self.feature_extractor = nn.Sequential(            
-            nn.Conv2d(in_channels=1, out_channels=6, kernel_size=5, stride=1),
-            nn.Tanh(),
-            nn.AvgPool2d(kernel_size=2),
-            nn.Conv2d(in_channels=6, out_channels=16, kernel_size=5, stride=1),
-            nn.Tanh(),
-            nn.AvgPool2d(kernel_size=2),
-            nn.Conv2d(in_channels=16, out_channels=120, kernel_size=5, stride=1),
-            nn.Tanh()
-        )
-        self.classifier = nn.Sequential(
-            nn.Linear(in_features=120, out_features=84),
-            nn.Tanh(),
-            nn.Linear(in_features=84, out_features=n_classes),
-        )
-    def forward(self, x):
-        x = self.feature_extractor(x)
-        x = flow.flatten(x, 1)
-        logits = self.classifier(x)
-        # probs = flow.softmax(logits, dim=1)
-        return logits
+n_total_steps = 60000
 
-model = LeNet5(num_classes)
+# 具体模型
+class LeNet5(nn.Module):
+    def __init__(self, input_size, hidden_size1, hidden_size2, num_classes):
+        super(LeNet5, self).__init__()
+        self.l1 = nn.Linear(input_size, hidden_size1)
+        self.relu1 = nn.ReLU()
+        self.l2 = nn.Linear(hidden_size1, hidden_size2)
+        self.relu2 = nn.ReLU()
+        self.l3 = nn.Linear(hidden_size2, num_classes)
+    def forward(self, x):
+        out = self.l1(x)
+        out = self.relu1(out)
+        out = self.l2(out)
+        out = self.relu2(out)
+        out = self.l3(out)
+        return out
+
+model = LeNet5(input_size, hidden_size1, hidden_size2, num_classes)
 loss_fn = nn.CrossEntropyLoss() # loss function
 optimizer = flow.optim.SGD(model.parameters(), lr=0.003) # 更新梯度
 
@@ -54,27 +47,21 @@ optimizer = flow.optim.SGD(model.parameters(), lr=0.003) # 更新梯度
 num_epochs = 15
 for epoch in range(num_epochs):
     for i, (images, labels) in enumerate(zip(train_images, train_labels)):
-
         #调整参数格式
         T_images = flow.tensor(images, dtype=flow.float32)
         T_labels = flow.tensor(labels, dtype=flow.long)
-        
         #矩阵格式对齐
         T_images = flow.reshape(T_images, shape=[-1, 28*28])
         T_labels = T_labels
-
         #正向传播和loss
         outputs = model(T_images)
         loss = loss_fn(outputs, T_labels)
-
         #反向传播和更新权重
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
-
-        if (i+1) % 5000 == 0:
-            print(f'Epoch [{epoch+1}/{num_epochs}], Step [{i+1}/{n_total_steps}], Loss: {loss.item():.4f}')
-
+        if i % 5000 == 0:
+            print(f'Epoch [{epoch+1}/{num_epochs}], Step [{i+1}/{n_total_steps}], Loss: {loss.mean()}')
 print('Finished Training')
 
 # 储存模型
@@ -89,13 +76,8 @@ with flow.no_grad():
         T_images = flow.tensor(images, dtype=flow.float32)
         T_labels = flow.tensor(labels, dtype=flow.float32)
         T_images = flow.reshape(T_images, shape=[-1, 28*28])
-        
         T_labels = T_labels
         outputs = model(T_images)
-        
-        # predictions = flow.max(outputs, dim=1)
-        # n_samples += labels.shape[0]
-        # n_correct = (predictions == T_labels).sum().item()
         predictions = flow.argmax(outputs, dim=1)
         n_samples +=labels.shape[0]
         T_correct = flow.eq(predictions, T_labels)
@@ -103,7 +85,7 @@ with flow.no_grad():
         n_correct += x[0]
     acc = 100.0 * n_correct / n_samples
     print(f'accuracy = {acc}%')
-
+    
 # 预测
 classes = ('0', '1', '2', '3', '4', '5', '6', '7', '8', '9')
 model.eval()
