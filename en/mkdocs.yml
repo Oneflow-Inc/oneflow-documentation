@@ -9,7 +9,7 @@ repo_url: https://github.com/OneFlow-Inc/oneflow-documentation
 edit_uri: "blob/master/en/docs/"
 
 # Copyright
-copyright: Copyright &copy; 2017 - 2020 OneFlow
+copyright: Copyright &copy; 2017 - 2021 OneFlow
 
 #website/xxx.html style
 use_directory_urls: false
@@ -18,8 +18,6 @@ use_directory_urls: false
 theme:
   name: material
   custom_dir: 'custom_theme/'
-  features:
-    - navigation.top
 
   # 404 page
   static_templates:
