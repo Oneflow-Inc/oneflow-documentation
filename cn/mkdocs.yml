@@ -2,14 +2,14 @@
 site_name: OneFlow
 site_url: https://docs.oneflow.org/
 site_description: >-
-  OneFlow 是一款分布式高效的机器学习框架
+  OneFlow -- 极致性能的分布式机器学习框架
 # Repository
-repo_name: Github
+repo_name: OneFlow
 repo_url: https://github.com/OneFlow-Inc/oneflow-documentation
 edit_uri: "blob/master/cn/docs/"
 
 # Copyright
-copyright: Copyright &copy; 2017 - 2020 OneFlow
+copyright: Copyright &copy; 2017 - 2021 OneFlow
 
 #website/xxx.html style
 use_directory_urls: false
@@ -46,6 +46,19 @@ theme:
 # Plugins
 plugins:
   - search
+extra:
+  version:
+    provider: mike
+  alternate:
+    # Switch to Chinese
+    - name: 中文
+      link: https://docs.oneflow.org
+      lang: zh
+
+    # Switch to English
+    - name: English
+      link: https://docs.oneflow.org/en
+      lang: en
 
 # Extensions
 markdown_extensions:
@@ -127,6 +140,3 @@ nav:
 
     - OneFlow 开源计划:
       - OneFlow 开源计划: contribute/intro.md
-
-    - EN:
-      - EN: en/index.html

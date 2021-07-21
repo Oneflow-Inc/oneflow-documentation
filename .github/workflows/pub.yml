@@ -10,13 +10,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-
       - run: pip3 install --user -r requirements.txt
-      - run: cd cn && python3 -m mkdocs build
-      - run: cd en && python3 -m mkdocs build
-      - run: mv cn/site _site
-      - run: mv en/site _site/en
-      - run: cp CNAME _site/
+      - run: git config --global user.email "ci-bot@oneflow.org"
+      - run: git config --global user.name "oneflow-ci-bot"
+      - run: sh ./scripts/run-mike.sh
+      - run: git checkout docs_output
+      - run: git checkout master -- CNAME
+      - run: mv CNAME ./_site/
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
