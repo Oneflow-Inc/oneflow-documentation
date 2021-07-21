@@ -1,0 +1,1337 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="OneFlow: a efficient distributed deep learning framework.">
+      
+      
+      
+      
+        <link rel="canonical" href="https://docs.oneflow.org/v0.4.0/adv_examples/resnet.html">
+      
+      <link rel="icon" href="../assets/favicon.png">
+      <meta name="generator" content="mkdocs-1.2.2, mkdocs-material-7.1.11">
+    
+    
+      
+        <title>Resnet - OneFlow</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.3754935a.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.f1a3b89f.min.css">
+        
+          
+          
+          <meta name="theme-color" content="#4051b5">
+        
+      
+    
+    
+    
+      
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>:root{--md-text-font-family:"Roboto";--md-code-font-family:"Roboto Mono"}</style>
+      
+    
+    
+    
+    
+      
+
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <script>function __prefix(e){return new URL("..",location).pathname+"."+e}function __get(e,t=localStorage){return JSON.parse(t.getItem(__prefix(e)))}</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#introduction" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../index.html" title="OneFlow" class="md-header__button md-logo" aria-label="OneFlow" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 89 89">
+  <path d="M3.136,17.387l0,42.932l42.932,21.467l-42.932,-64.399Z" />
+  <path d="M21.91,8l42.933,64.398l-18.775,9.388l-42.932,-64.399l18.774,-9.387Z" style="fill-opacity: 0.5" />
+  <path d="M67.535,17.387l-27.262,18.156l21.878,32.818l5.384,2.691l0,-53.665Z" />
+  <path d="M67.535,17.387l0,53.666l18.774,-9.388l0,-53.665l-18.774,9.387Z" style="fill-opacity: 0.25" />
+</svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            OneFlow
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Resnet
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <div class="md-header__option">
+        <div class="md-select">
+          
+          <button class="md-header__button md-icon" aria-label="Select language">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.52 17.52 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04M18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12m-2.62 7 1.62-4.33L19.12 17h-3.24z"/></svg>
+          </button>
+          <div class="md-select__inner">
+            <ul class="md-select__list">
+              
+                <li class="md-select__item">
+                  <a href="https://docs.oneflow.org/en" hreflang="en" class="md-select__link">
+                    English
+                  </a>
+                </li>
+                
+                <li class="md-select__item">
+                  <a href="https://docs.oneflow.org" hreflang="zh" class="md-select__link">
+                    中文
+                  </a>
+                </li>
+                
+            </ul>
+          </div>
+        </div>
+      </div>
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        
+<a href="https://www.github.com/oneflow-Inc/oneflow" title="Go to repository" class="md-source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    OneFlow
+  </div>
+</a>
+      </div>
+    
+  </nav>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-tabs__inner md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+
+
+  <li class="md-tabs__item">
+    <a href="../index.html" class="md-tabs__link">
+      Home
+    </a>
+  </li>
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../quick_start/install.html" class="md-tabs__link">
+        Quick Start
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../basics_topics/data_input.html" class="md-tabs__link">
+        Basic Topics
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../extended_topics/job_function_define_call.html" class="md-tabs__link">
+        Extended Topics
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="https://oneflow.readthedocs.io/en/master/" class="md-tabs__link">
+        API
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../contribute/intro.html" class="md-tabs__link">
+        Contribute
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../index.html" title="OneFlow" class="md-nav__button md-logo" aria-label="OneFlow" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 89 89">
+  <path d="M3.136,17.387l0,42.932l42.932,21.467l-42.932,-64.399Z" />
+  <path d="M21.91,8l42.933,64.398l-18.775,9.388l-42.932,-64.399l18.774,-9.387Z" style="fill-opacity: 0.5" />
+  <path d="M67.535,17.387l-27.262,18.156l21.878,32.818l5.384,2.691l0,-53.665Z" />
+  <path d="M67.535,17.387l0,53.666l18.774,-9.388l0,-53.665l-18.774,9.387Z" style="fill-opacity: 0.25" />
+</svg>
+
+    </a>
+    OneFlow
+  </label>
+  
+    <div class="md-nav__source">
+      
+<a href="https://www.github.com/oneflow-Inc/oneflow" title="Go to repository" class="md-source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    OneFlow
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../index.html" class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" >
+      
+      <label class="md-nav__link" for="__nav_2">
+        Quick Start
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="Quick Start" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          Quick Start
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quick_start/install.html" class="md-nav__link">
+        Installation
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quick_start/quickstart_in_3_min.html" class="md-nav__link">
+        Quick Start in 3 Minutes
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quick_start/lenet_mnist.html" class="md-nav__link">
+        Recognition of MNIST Handwritten Digits
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" >
+      
+      <label class="md-nav__link" for="__nav_3">
+        Basic Topics
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="Basic Topics" data-md-level="1">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          Basic Topics
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics_topics/data_input.html" class="md-nav__link">
+        Data Input
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics_topics/build_nn_with_op_and_layer.html" class="md-nav__link">
+        Build a Neural Network
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics_topics/optimizer_in_function_config.html" class="md-nav__link">
+        Optimization Algorithm and Parameter Configuration
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics_topics/async_get.html" class="md-nav__link">
+        Get results from job function
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics_topics/model_load_save.html" class="md-nav__link">
+        Loading and saving of model
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics_topics/distributed_train.html" class="md-nav__link">
+        Distributed training
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics_topics/concept_explanation.html" class="md-nav__link">
+        Term & Concept Explanation
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics_topics/essentials_of_oneflow.html" class="md-nav__link">
+        OneFlow System Design
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" >
+      
+      <label class="md-nav__link" for="__nav_4">
+        Extended Topics
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="Extended Topics" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          Extended Topics
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../extended_topics/job_function_define_call.html" class="md-nav__link">
+        The Definition and Call of Job Function
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../extended_topics/consistent_mirrored.html" class="md-nav__link">
+        Consistent & Mirrored View
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../extended_topics/model_mixed_parallel.html" class="md-nav__link">
+        Features of Parallelism in OneFlow
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../extended_topics/ofrecord.html" class="md-nav__link">
+        The OFRecord Data Format
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../extended_topics/how_to_make_ofdataset.html" class="md-nav__link">
+        Loading and Preparing OFRecord Dataset
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../extended_topics/how_to_convert_image_to_ofrecord.html" class="md-nav__link">
+        Convert Image Files to OFRecord Datasets
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../extended_topics/watch_watch_diff.html" class="md-nav__link">
+        Obtain Runtime Data
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../extended_topics/debug_by_vscode.html" class="md-nav__link">
+        Use VS Code to Debug OneFlow
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../extended_topics/user_op.html" class="md-nav__link">
+        User Defined OP
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../extended_topics/oneflow_convert_tools.html" class="md-nav__link">
+        OneFlow And ONNX Convert
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" >
+      
+      <label class="md-nav__link" for="__nav_5">
+        API
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="API" data-md-level="1">
+        <label class="md-nav__title" for="__nav_5">
+          <span class="md-nav__icon md-icon"></span>
+          API
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://oneflow.readthedocs.io/en/master/" class="md-nav__link">
+        API
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6" type="checkbox" id="__nav_6" >
+      
+      <label class="md-nav__link" for="__nav_6">
+        Contribute
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="Contribute" data-md-level="1">
+        <label class="md-nav__title" for="__nav_6">
+          <span class="md-nav__icon md-icon"></span>
+          Contribute
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../contribute/intro.html" class="md-nav__link">
+        Contribute to OneFlow
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#introduction" class="md-nav__link">
+    Introduction
+  </a>
+  
+    <nav class="md-nav" aria-label="Introduction">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#image-classification-and-cnn" class="md-nav__link">
+    Image classification and CNN
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#resnet" class="md-nav__link">
+    ResNet
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#requirements" class="md-nav__link">
+    Requirements
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quick-start" class="md-nav__link">
+    Quick Start
+  </a>
+  
+    <nav class="md-nav" aria-label="Quick Start">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pretrained-model" class="md-nav__link">
+    Pretrained Model
+  </a>
+  
+    <nav class="md-nav" aria-label="Pretrained Model">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#resnet50" class="md-nav__link">
+    resnet50
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#predict-inference" class="md-nav__link">
+    Predict / Inference
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#train-validation" class="md-nav__link">
+    Train &amp; Validation
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#evaluate" class="md-nav__link">
+    Evaluate
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#details" class="md-nav__link">
+    Details
+  </a>
+  
+    <nav class="md-nav" aria-label="Details">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#distributed-training" class="md-nav__link">
+    Distributed training
+  </a>
+  
+    <nav class="md-nav" aria-label="Distributed training">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-to-configure-and-run-distributed-training" class="md-nav__link">
+    How to configure and run distributed training?
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hybrid-precision-training-and-predicting" class="md-nav__link">
+    Hybrid precision training and predicting
+  </a>
+  
+    <nav class="md-nav" aria-label="Hybrid precision training and predicting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-to-turn-on-the-hybrid-precision-training-mode" class="md-nav__link">
+    How to turn on the hybrid precision training mode？
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hybrid-precision-model" class="md-nav__link">
+    Hybrid precision model
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#advanced" class="md-nav__link">
+    Advanced
+  </a>
+  
+    <nav class="md-nav" aria-label="Advanced">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#parameters-alignment" class="md-nav__link">
+    Parameters alignment
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#preparing-dataset" class="md-nav__link">
+    Preparing dataset
+  </a>
+  
+    <nav class="md-nav" aria-label="Preparing dataset">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#introduction-of-image-classification-dataset" class="md-nav__link">
+    Introduction of image classification dataset
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#convert-oneflow-model-to-onnx-model" class="md-nav__link">
+    Convert OneFlow model to ONNX model
+  </a>
+  
+    <nav class="md-nav" aria-label="Convert OneFlow model to ONNX model">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#introduction_1" class="md-nav__link">
+    Introduction
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#quick-start_1" class="md-nav__link">
+    Quick Start
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-to-generate-onnx-model" class="md-nav__link">
+    How to generate ONNX model
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#evaluate-the-correctness-of-onnx-model" class="md-nav__link">
+    Evaluate the correctness of ONNX model
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                  <a href="https://github.com/OneFlow-Inc/oneflow-documentation/blob/master/en/docs/adv_examples/resnet.md" title="Edit this page" class="md-content__button md-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
+                  </a>
+                
+                
+                  <h1>Resnet</h1>
+                
+                <h2 id="introduction">Introduction<a class="headerlink" href="#introduction" title="Permanent link">&para;</a></h2>
+<h3 id="image-classification-and-cnn">Image classification and CNN<a class="headerlink" href="#image-classification-and-cnn" title="Permanent link">&para;</a></h3>
+<p><strong>Image classification</strong> is an image processing method that divided different features reflected in image information into different categories of targets. It is the basis of  other tasks in computer vision, such as detection, semantic segmentation, face recognition and other high-level visual tasks.</p>
+<p>ImageNet Large-scale Visual Recognition Challenge (ILSVRC), often called ImageNet copetition, including image classification, object orientation, object detection and other tasks. It is one of the most important competition to promote the development of computer vision.</p>
+<p>In the 2012 ImageNet competition, deep convolution network Alexnet was born. With a top-5 accuracy rate more than 10% higher than the second place, it won the champion of 2012 ImageNet competition. Since then, the deep learning method represented by <strong>CNN(Convolutional neural network)</strong> has been applied in the field of computer vision. More and deeper CNN networks have been proposed, such as VGGNet, the champion of 2014 ImageNet competition, ResNet, the champion of 2015 ImageNet competition.</p>
+<h3 id="resnet">ResNet<a class="headerlink" href="#resnet" title="Permanent link">&para;</a></h3>
+<p><a href="https://arxiv.org/abs/1512.03385">ResNet</a> is the champion of 2015 competition. At present, compared with traditional machine learning classification algorithm, ResNet has achieved excellent results. After that, a large number of detection, segmentation, classification and other tasks are completed on the base of ResNet.</p>
+<p>In <a href="https://github.com/Oneflow-Inc/OneFlow-Benchmark">OneFlow-Benchmark</a> repository, we provide OneFlow implementation of ResNet50 v1.5. After 90 epochs of training on ImageNet-2012 dataset, the accuracy of evaluation can reach 77.318% (Top 1), 93.622% (Top 5).</p>
+<p>For more detailed network parameter alignment, you can refer to <a href="https://github.com/Oneflow-Inc/OneFlow-Benchmark/Classification/cnns">OneFlow-Benchmark's cnns</a> part.</p>
+<p><img alt="resnet50_validation_acuracy" src="imgs/resnet50_validation_acuracy.png" /></p>
+<p><strong>Some notes on ResNet50 v1.5</strong></p>
+<blockquote>
+<p>ResNet50 v1.5 is an improved version of the original <a href="https://arxiv.org/abs/1512.03385">ResNet50 v1</a>, compared with the original model, the accuracy improve slightly Top1(~0.5%), you can refer to <a href="https://github.com/NVIDIA/DeepLearningExamples/tree/master/MxNet/Classification/RN50v1.5">there</a> for more details.</p>
+</blockquote>
+<p>Next, we take the above ResNet50 network as an example to show how to use OneFlow to train and predict step by step.</p>
+<p>The main contents include：</p>
+<ul>
+<li>Preparation</li>
+<li>
+<p>The installation and preparation of project</p>
+</li>
+<li>
+<p>Quick start</p>
+</li>
+<li>Predict / Inference</li>
+<li>Train / Predict</li>
+<li>Evaluation</li>
+<li>More details</li>
+<li>Distributed training</li>
+<li>Hybrid precision training and prediction</li>
+<li>Advanced</li>
+<li>Parameter alignment</li>
+<li>Preparing dataset (ImageNet 2012)</li>
+<li>Convert OneFlow model to ONNX model</li>
+</ul>
+<h2 id="requirements">Requirements<a class="headerlink" href="#requirements" title="Permanent link">&para;</a></h2>
+<blockquote>
+<p>Don't worry, it is easy to use OneFlow. You can start OneFlow's image recognition journey with three steps as follow.</p>
+<ul>
+<li>
+<p>Install OneFlow，you can refer to <a href="https://github.com/Oneflow-Inc/oneflow">OneFlow project home page</a> to finish installation.</p>
+</li>
+<li>
+<p>Clone / Download <a href="https://github.com/Oneflow-Inc/OneFlow-Benchmark">OneFlow-Benchmark</a> repository.</p>
+</li>
+</ul>
+<p><code>git clone git@github.com:Oneflow-Inc/OneFlow-Benchmark.git</code></p>
+<p><code>cd  OneFlow-Benchmark/Classification/cnns</code></p>
+<ul>
+<li>
+<p>Preparing Dataset (optional)</p>
+</li>
+<li>
+<p>Use synthetic virtual dataset directly.</p>
+</li>
+<li>Download the ImageNet 2012 <a href="https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/dataset/imagenet/mini-imagenet.zip">mini-dataset</a> we created and unzip it into the data directory</li>
+<li>Or: Make a complete OFRecord format ImageNet dataset (see the advanced section below)</li>
+</ul>
+<p>We provide general scripts: <code>train.sh</code> and <code>inference.sh</code>, which are applicable to the training, validation and inference of all cnn networks in this repository. You can train different models and dataset by setting parameters in scripts.</p>
+<p><strong>Some notes on model</strong></p>
+<blockquote>
+<p>By default, we use ResNet50, you can also assign other model by setting the <code>--model</code> parameter. Such as: <code>--model="resnet50"</code>, <code>--model="vgg"</code> and so on.</p>
+</blockquote>
+<p><strong>Description of dataset</strong></p>
+<blockquote>
+<p>1)  To get reader quickly start, we provide synthetic virtual dataset, which refers to data is generated directly in memory as a random source of neural network.</p>
+<p>2) At the same time, we provide a mini-dataset. You can download and unzip it into data directory,  you can start training quickly. After getting familiar with the process, readers can refer to the making dataset part to make a complete ImageNet 2012 dataset.</p>
+<p>3) Using OFRecord dataset can improve the efficientcy of data loading (But this is not necessary, refer to <a href="../basics_topics/data_input.html">Data Input</a>, OneFlow supports loading numpy data directly).</p>
+</blockquote>
+</blockquote>
+<h2 id="quick-start">Quick Start<a class="headerlink" href="#quick-start" title="Permanent link">&para;</a></h2>
+<p>So, let's start OneFlow's image classification journey !</p>
+<p>First, switch to the directory:</p>
+<div class="highlight"><pre><span></span><code>cd OneFlow-Benchmark/Classification/cnns
+</code></pre></div>
+<h3 id="pretrained-model">Pretrained Model<a class="headerlink" href="#pretrained-model" title="Permanent link">&para;</a></h3>
+<h4 id="resnet50">resnet50<a class="headerlink" href="#resnet50" title="Permanent link">&para;</a></h4>
+<p><a href="https://oneflow-public.oss-cn-beijing.aliyuncs.com/model_zoo/resnet_v15_of_best_model_val_top1_77318.tgz">resnet50_v1.5_model</a> (validation accuracy: 77.318% top1，93.622% top5 )</p>
+<h3 id="predict-inference">Predict / Inference<a class="headerlink" href="#predict-inference" title="Permanent link">&para;</a></h3>
+<p>After downloading pretrained model, unzip it and put it into the current directory. Then execute:</p>
+<div class="highlight"><pre><span></span><code>sh inference.sh
+</code></pre></div>
+<p>This script will call the model to classify the goldfish picture:</p>
+<div align="center">
+    <img src="imgs/fish.jpg" align='center'/>
+</div>
+
+<p>The prediction is successful if the following is output.</p>
+<div class="highlight"><pre><span></span><code>data/fish.jpg
+0.87059885 goldfish, Carassius auratus
+</code></pre></div>
+<p>As you can see, model judge this picture with 87.05% probability is goldfish.</p>
+<h3 id="train-validation">Train &amp; Validation<a class="headerlink" href="#train-validation" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Training model is also easy as we just need to execute:</li>
+</ul>
+<div class="highlight"><pre><span></span><code>sh train.sh
+</code></pre></div>
+<p>You can start training model and you will see the follow output</p>
+<div class="highlight"><pre><span></span><code>Loading synthetic data.
+Loading synthetic data.
+Saving model to ./output/snapshots/model_save-20200723124215/snapshot_initial_model.
+Init model on demand.
+train: epoch 0, iter 10, loss: 7.197278, top_1: 0.000000, top_k: 0.000000, samples/s: 61.569
+train: epoch 0, iter 20, loss: 6.177684, top_1: 0.000000, top_k: 0.000000, samples/s: 122.555
+Saving model to ./output/snapshots/model_save-20200723124215/snapshot_epoch_0.
+train: epoch 0, iter 30, loss: 3.988656, top_1: 0.525000, top_k: 0.812500, samples/s: 120.337
+train: epoch 1, iter 10, loss: 1.185733, top_1: 1.000000, top_k: 1.000000, samples/s: 80.705
+train: epoch 1, iter 20, loss: 1.042017, top_1: 1.000000, top_k: 1.000000, samples/s: 118.478
+Saving model to ./output/snapshots/model_save-20200723124215/snapshot_epoch_1.
+...
+</code></pre></div>
+<blockquote>
+<p>To facilitate running the demonstration, we use synthetic virtual dataset by default so that you can quickly see the model in action.</p>
+</blockquote>
+<p>Also, you can use <a href="https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/dataset/imagenet/mini-imagenet.zip">mini-dataset</a>, after downloading it and unzip it in data directory, and then modify the training script as follows:</p>
+<div class="highlight"><pre><span></span><code>rm -rf core.*
+rm -rf ./output/snapshots/*
+
+DATA_ROOT=data/imagenet/ofrecord
+
+python3 of_cnn_train_val.py \
+    --train_data_dir=$DATA_ROOT/train \
+    --num_examples=50 \
+    --train_data_part_num=1 \
+    --val_data_dir=$DATA_ROOT/validation \
+    --num_val_examples=50 \
+    --val_data_part_num=1 \
+    --num_nodes=1 \
+    --gpu_num_per_node=1 \
+    --model_update=&quot;momentum&quot; \
+    --learning_rate=0.001 \
+    --loss_print_every_n_iter=1 \
+    --batch_size_per_device=16 \
+    --val_batch_size_per_device=10 \
+    --num_epoch=10 \
+    --model=&quot;resnet50&quot;
+</code></pre></div>
+<p>Running this script, we will train a classfication model on the mini-ImageNet dataset with only 50 goldfish images. We can use this model to classify the goldfish image.</p>
+<p>Don't worry, if you need to train model on the complete ImageNet2012 dataset, please refer to <a href="https://github.com/Oneflow-Inc/OneFlow-Benchmark/blob/master/Classification/cnns">OneFlow-Benchmark</a> repository.</p>
+<h3 id="evaluate">Evaluate<a class="headerlink" href="#evaluate" title="Permanent link">&para;</a></h3>
+<p>You can evaluate the accuracy of the Resnet50 model using either your own trained model or the <a href="https://oneflow-public.oss-cn-beijing.aliyuncs.com/model_zoo/resnet_v15_of_best_model_val_top1_77318.tgz">resnet50_v1.5_model</a> (unzip it and put it in current directory) provided by us.</p>
+<p>Run this script:</p>
+<div class="highlight"><pre><span></span><code>sh evaluate.sh
+</code></pre></div>
+<p>The accuracy of the trained model on validation dataset with 50000 images can be obtained:</p>
+<div class="highlight"><pre><span></span><code>Time stamp: 2020-07-27-09:28:28
+Restoring model from resnet_v15_of_best_model_val_top1_77318.
+I0727 09:28:28.773988162    8411 ev_epoll_linux.c:82]        Use of signals is disabled. Epoll engine will not be used
+Loading data from /dataset/ImageNet/ofrecord/validation
+validation: epoch 0, iter 195, top_1: 0.773277, top_k: 0.936058, samples/s: 1578.325
+validation: epoch 0, iter 195, top_1: 0.773237, top_k: 0.936078, samples/s: 1692.303
+validation: epoch 0, iter 195, top_1: 0.773297, top_k: 0.936018, samples/s: 1686.896
+</code></pre></div>
+<blockquote>
+<p>Before executing <code>sh evaluate.sh</code>, make sure you have prepared the validation dataset of ImageNet 2012. Please refer to <a href="https://github.com/Oneflow-Inc/OneFlow-Benchmark/blob/master/Classification/cnns">OneFlow-Benchmark</a> repository to learn how to make validation dataset.</p>
+</blockquote>
+<p>From the evaluation results of the three rounds, out model has achieved 77.32+% Top1 accuracy.</p>
+<p>Finally, congratulations! You complete the training / validating, inference and evaluation of ResNet model on ImageNet dataset. Applause for yourself!</p>
+<h2 id="details">Details<a class="headerlink" href="#details" title="Permanent link">&para;</a></h2>
+<h3 id="distributed-training">Distributed training<a class="headerlink" href="#distributed-training" title="Permanent link">&para;</a></h3>
+<p><strong>Simple and easy-to-use distributed training is one of OneFlow's main features</strong></p>
+<p>OneFlow is designed to support efficient distributed training natively. Especially for distributed data parallelism, user do not have to worry about how to divide and synchronize the data when the algorithm expands from single machine to multiple machines. That is to say, in OneFlow, User only need to write algorithm from the view of single machine, and the code automatically has the ability of distributed training.</p>
+<h4 id="how-to-configure-and-run-distributed-training">How to configure and run distributed training?<a class="headerlink" href="#how-to-configure-and-run-distributed-training" title="Permanent link">&para;</a></h4>
+<p>We still use the code shown in the "Quick Start", in <code>train.sh</code>, the distributed configuration is easily accomplished by specifying the number of nodes (machines) with <code>--num_nodes</code>, the IP address of the nodes with <code>--node_ips</code>, and the number of devices to be used on each node with <code>--gpu_num_per_node</code>.</p>
+<p>For example, we want to do distributed training on  2 machines with 8 devices, configure it like this:</p>
+<div class="highlight"><pre><span></span><code># train.sh
+python3 of_cnn_train_val.py \
+    --num_nodes=2 \
+    --node_ips=&quot;192.168.1.1, 192.168.1.2&quot;
+    --gpu_num_per_node=4 \
+    ...
+    --model=&quot;resnet50&quot;
+</code></pre></div>
+<p>Then execute the following script on the two machines at the same time:</p>
+<div class="highlight"><pre><span></span><code>./train.sh
+</code></pre></div>
+<p>After the program starts, you can see through the command <code>watch -n 0.1 nvidia-smi</code> that both machines' devices start working. After a while, the output is printed on the screen of the first machine set by <code>--node_ips</code>.</p>
+<h3 id="hybrid-precision-training-and-predicting">Hybrid precision training and predicting<a class="headerlink" href="#hybrid-precision-training-and-predicting" title="Permanent link">&para;</a></h3>
+<p>Currently, OneFlow supports float16/float32 hybrid precision training. During training, the model parameters are trained using float16 while retaining float32 as the gradient update and calculation process. Since the storage of parameters is halved, the training speed will be improved.</p>
+<p>By turning on the hybrid precision training mode in OneFlow, ResNet50's training speed can theoretically reach <code>1.7</code> times of acceleration.</p>
+<h4 id="how-to-turn-on-the-hybrid-precision-training-mode">How to turn on the hybrid precision training mode？<a class="headerlink" href="#how-to-turn-on-the-hybrid-precision-training-mode" title="Permanent link">&para;</a></h4>
+<p>Just add the parameter <code>--use_fp16=True</code> in the <code>train.sh</code> script.</p>
+<h4 id="hybrid-precision-model">Hybrid precision model<a class="headerlink" href="#hybrid-precision-model" title="Permanent link">&para;</a></h4>
+<p>We provide a hybrid precision model after training 90 epochs on ImageNet2012 dataset, its Top_1 accuracy: 77.33%.</p>
+<p>You can download and use it directly: <a href="https://oneflow-public.oss-cn-beijing.aliyuncs.com/model_zoo/resnet_fp16_of_best_model_val_top1_77330.zip">resnet50_v15_fp16</a></p>
+<h2 id="advanced">Advanced<a class="headerlink" href="#advanced" title="Permanent link">&para;</a></h2>
+<h3 id="parameters-alignment">Parameters alignment<a class="headerlink" href="#parameters-alignment" title="Permanent link">&para;</a></h3>
+<p>OneFlow's ResNet50 implementation is aligned with Nvidia's Mxnet edition. We've made careful and almost identical alignment from the learning rate, optimizer, image augmentation to finer per-layer network configuration, bias, weight initialization, and more. The detailed parameters alignment please refer to <a href="https://github.com/Oneflow-Inc/OneFlow-Benchmark/blob/master/Classification/cnns">OneFlow-Benchmark</a> repository.</p>
+<h3 id="preparing-dataset">Preparing dataset<a class="headerlink" href="#preparing-dataset" title="Permanent link">&para;</a></h3>
+<h4 id="introduction-of-image-classification-dataset">Introduction of image classification dataset<a class="headerlink" href="#introduction-of-image-classification-dataset" title="Permanent link">&para;</a></h4>
+<p>The public dataset used for image classification are CIFAR, ImageNet, etc. These datasets provide original images in JPEG format.</p>
+<ul>
+<li><a href="http://www.cs.toronto.edu/~kriz/cifar.html">CIFAR</a></li>
+</ul>
+<p>Hinton's student Alex Krizhevsky and Ilya Sutskever collated a small dataset to classify pervasive objects. It includes CIFAR-10 and CIFAR-100</p>
+<ul>
+<li><a href="http://image-net.org/index">ImageNet</a></li>
+</ul>
+<p>ImageNet dataset are generally referred to as the dataset used in large-scale visual recognition challenge (ILSVRC) between 2010-2017. The ImageNet data has changed slightly since 2010. The commonly used ImageNet-2012 dataset includes 1000 categories, its training dataset contains 1281167 pictures, ranging from 732 to 1300 per category. The validation dataset contains 50000 pictures, with an average of 50 pictures per category.</p>
+<p>For the complete process of preparing ImageNet-2012 dataset, please refer to <a href="https://github.com/Oneflow-Inc/OneFlow-Benchmark/blob/master/Classification/cnns/tools/README.md">README</a> in the tools directory.</p>
+<h3 id="convert-oneflow-model-to-onnx-model">Convert OneFlow model to ONNX model<a class="headerlink" href="#convert-oneflow-model-to-onnx-model" title="Permanent link">&para;</a></h3>
+<h4 id="introduction_1">Introduction<a class="headerlink" href="#introduction_1" title="Permanent link">&para;</a></h4>
+<p><strong>ONNX (Open Neural Network Exchange)</strong>  is a widely used neural network intermediate format. With the ONNX format, the OneFlow model can be used by many serving framework (like OpenVINO, ONNEX Runtime and some mobile framework: ncnn, tnn, TEgine, etc). In this section, we will introduce how to convert the trained ResNet50 v1.5 model to ONNX model and evaluate it.</p>
+<h4 id="quick-start_1">Quick Start<a class="headerlink" href="#quick-start_1" title="Permanent link">&para;</a></h4>
+<p>We provide complete code: <a href="https://github.com/Oneflow-Inc/OneFlow-Benchmark/blob/master/Classification/cnns/resnet_to_onnx.py">resnet_to_onnx.py</a>, it can help you complete the transformation and testing of the model.</p>
+<p>**Step1: ** Download the pretrain model: <a href="https://oneflow-public.oss-cn-beijing.aliyuncs.com/model_zoo/resnet_v15_of_best_model_val_top1_77318.tgz">resnet50_v1.5_model</a>, unzip it and put it into current directory</p>
+<p>**Step2: ** Execute <code>python3 resnet_to_onnx.py</code></p>
+<p>This code will complete the transformation of the OneFlow model -&gt; ONNX model, and then use the ONNX Runtime to load the transformed model to test the individual images. The test picture is as follows:</p>
+<div align="center">
+    <img src="imgs/tiger.jpg" align='center'/>
+</div>
+
+<blockquote>
+<p>​                                             图片来源：<a href="https://en.wikipedia.org/wiki/Tiger">https://en.wikipedia.org/wiki/Tiger</a></p>
+</blockquote>
+<p>Output：</p>
+<div class="highlight"><pre><span></span><code><span class="n">Convert</span> <span class="n">to</span> <span class="n">onnx</span> <span class="n">success</span><span class="err">!</span> <span class="o">&gt;&gt;</span>  <span class="n">onnx</span><span class="o">/</span><span class="n">model</span><span class="o">/</span><span class="n">resnet_v15_of_best_model_val_top1_77318</span><span class="o">.</span><span class="n">onnx</span>
+<span class="n">data</span><span class="o">/</span><span class="n">tiger</span><span class="o">.</span><span class="n">jpg</span>
+<span class="n">Are</span> <span class="n">the</span> <span class="n">results</span> <span class="n">equal</span><span class="err">?</span> <span class="n">Yes</span>
+<span class="n">Class</span><span class="p">:</span> <span class="n">tiger</span><span class="p">,</span> <span class="n">Panthera</span> <span class="n">tigris</span><span class="p">;</span> <span class="n">score</span><span class="p">:</span> <span class="mf">0.8112028241157532</span>
+</code></pre></div>
+<h4 id="how-to-generate-onnx-model">How to generate ONNX model<a class="headerlink" href="#how-to-generate-onnx-model" title="Permanent link">&para;</a></h4>
+<p>We have introduced how to convert OneFlow's ResNet model to ONNX model and give an example of using the onnx runtime to make predictions in above example. Similarly, you can follow the steps to complete the transformation of your training ResNet model or other models.</p>
+<p><strong>Step1: Save the model's weight</strong></p>
+<p>First you should specify the OneFlow model path, and then specify the transformed ONNX model storage path, like the following example.</p>
+<p>首先指定待转换的OneFlow模型路径，然后指定转换后的ONNX模型存放路径，例如示例中：</p>
+<div class="highlight"><pre><span></span><code><span class="c1">#set up your model path</span>
+<span class="n">flow_weights_path</span> <span class="o">=</span> <span class="s1">&#39;resnet_v15_of_best_model_val_top1_77318&#39;</span>
+<span class="n">onnx_model_dir</span> <span class="o">=</span> <span class="s1">&#39;onnx/model&#39;</span>
+</code></pre></div>
+<p><strong>Step2: Create a new job function for inference</strong></p>
+<p>Then, we create a new job function for inference, which only contains the network structure, except the operator to read the OFRecord, and accepts the form of numpy array input. You can refer to the <code>InferenceNet</code> in <code>resnet_to_onnx.py</code>.</p>
+<p><strong>Step3: Call <code>flow.onnx.export</code> method</strong></p>
+<p>In the following code, we call the <code>oneflow_to_onnx()</code> method, this method includes the core model transformation method: <code>flow.onnx.export()</code>.</p>
+<p><strong><code>flow.onnx.export</code></strong> will obtain ONNX model from OneFlow network, its first parameter is the job function used to infer. The second parameter is OneFlow model path, the third parameter is the save path of ONNX model.</p>
+<div class="highlight"><pre><span></span><code><span class="n">onnx_model</span> <span class="o">=</span> <span class="n">oneflow_to_onnx</span><span class="p">(</span><span class="n">InferenceNet</span><span class="p">,</span> <span class="n">flow_weights_path</span><span class="p">,</span> <span class="n">onnx_model_dir</span><span class="p">,</span> <span class="n">external_data</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</code></pre></div>
+<h4 id="evaluate-the-correctness-of-onnx-model">Evaluate the correctness of ONNX model<a class="headerlink" href="#evaluate-the-correctness-of-onnx-model" title="Permanent link">&para;</a></h4>
+<p>After the ONNX model is generated, we can use ONNX model by ONNX Runtime to verify that the OneFlow model and the ONNX model give the same results with the same inputs. The corresponding code is <code>check_equality</code> in <code>resnet_to_onnx.py</code>.</p>
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+        
+      </main>
+      
+        
+<footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+          <div class="md-footer-copyright__highlight">
+            Copyright &copy; 2017 - 2021 OneFlow
+          </div>
+        
+        Made with
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs
+        </a>
+        
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.477d984a.min.js", "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.ddd52ceb.min.js"></script>
+      
+    
+  </body>
+</html>

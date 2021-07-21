@@ -1,0 +1,1808 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="OneFlow -- 极致性能的分布式机器学习框架">
+      
+      
+      
+      
+        <link rel="canonical" href="https://docs.oneflow.org/v0.4.0/adv_examples/bert.html">
+      
+      <link rel="icon" href="../assets/favicon.png">
+      <meta name="generator" content="mkdocs-1.2.2, mkdocs-material-7.1.11">
+    
+    
+      
+        <title>BERT - OneFlow</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.3754935a.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.f1a3b89f.min.css">
+        
+          
+          
+          <meta name="theme-color" content="#4051b5">
+        
+      
+    
+    
+    
+      
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>:root{--md-text-font-family:"Roboto";--md-code-font-family:"Roboto Mono"}</style>
+      
+    
+    
+    
+    
+      
+
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <script>function __prefix(e){return new URL("..",location).pathname+"."+e}function __get(e,t=localStorage){return JSON.parse(t.getItem(__prefix(e)))}</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#_1" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../index.html" title="OneFlow" class="md-header__button md-logo" aria-label="OneFlow" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 89 89">
+  <path d="M3.136,17.387l0,42.932l42.932,21.467l-42.932,-64.399Z" />
+  <path d="M21.91,8l42.933,64.398l-18.775,9.388l-42.932,-64.399l18.774,-9.387Z" style="fill-opacity: 0.5" />
+  <path d="M67.535,17.387l-27.262,18.156l21.878,32.818l5.384,2.691l0,-53.665Z" />
+  <path d="M67.535,17.387l0,53.666l18.774,-9.388l0,-53.665l-18.774,9.387Z" style="fill-opacity: 0.25" />
+</svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            OneFlow
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              BERT
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <div class="md-header__option">
+        <div class="md-select">
+          
+          <button class="md-header__button md-icon" aria-label="Select language">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.52 17.52 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04M18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12m-2.62 7 1.62-4.33L19.12 17h-3.24z"/></svg>
+          </button>
+          <div class="md-select__inner">
+            <ul class="md-select__list">
+              
+                <li class="md-select__item">
+                  <a href="https://docs.oneflow.org" hreflang="zh" class="md-select__link">
+                    中文
+                  </a>
+                </li>
+                
+                <li class="md-select__item">
+                  <a href="https://docs.oneflow.org/en" hreflang="en" class="md-select__link">
+                    English
+                  </a>
+                </li>
+                
+            </ul>
+          </div>
+        </div>
+      </div>
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        
+<a href="https://www.github.com/oneflow-Inc/oneflow" title="前往 GitHub 仓库" class="md-source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    OneFlow
+  </div>
+</a>
+      </div>
+    
+  </nav>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-tabs__inner md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+
+
+  <li class="md-tabs__item">
+    <a href="../index.html" class="md-tabs__link">
+      首页
+    </a>
+  </li>
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../quick_start/install.html" class="md-tabs__link">
+        快速上手
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../basics_topics/data_input.html" class="md-tabs__link">
+        基础专题
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../extended_topics/job_function_define_call.html" class="md-tabs__link">
+        扩展专题
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+    
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="resnet.html" class="md-tabs__link md-tabs__link--active">
+        高级应用实例
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="https://oneflow.readthedocs.io/en/master/" class="md-tabs__link">
+        API
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../contribute/intro.html" class="md-tabs__link">
+        OneFlow 开源计划
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../index.html" title="OneFlow" class="md-nav__button md-logo" aria-label="OneFlow" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 89 89">
+  <path d="M3.136,17.387l0,42.932l42.932,21.467l-42.932,-64.399Z" />
+  <path d="M21.91,8l42.933,64.398l-18.775,9.388l-42.932,-64.399l18.774,-9.387Z" style="fill-opacity: 0.5" />
+  <path d="M67.535,17.387l-27.262,18.156l21.878,32.818l5.384,2.691l0,-53.665Z" />
+  <path d="M67.535,17.387l0,53.666l18.774,-9.388l0,-53.665l-18.774,9.387Z" style="fill-opacity: 0.25" />
+</svg>
+
+    </a>
+    OneFlow
+  </label>
+  
+    <div class="md-nav__source">
+      
+<a href="https://www.github.com/oneflow-Inc/oneflow" title="前往 GitHub 仓库" class="md-source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    OneFlow
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../index.html" class="md-nav__link">
+        首页
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" >
+      
+      <label class="md-nav__link" for="__nav_2">
+        快速上手
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="快速上手" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          快速上手
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quick_start/install.html" class="md-nav__link">
+        安装
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quick_start/quickstart_in_3_min.html" class="md-nav__link">
+        3分钟快速上手
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quick_start/lenet_mnist.html" class="md-nav__link">
+        识别 MNIST 手写体数字
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" >
+      
+      <label class="md-nav__link" for="__nav_3">
+        基础专题
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="基础专题" data-md-level="1">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          基础专题
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics_topics/data_input.html" class="md-nav__link">
+        数据输入
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics_topics/build_nn_with_op_and_layer.html" class="md-nav__link">
+        搭建神经网络
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics_topics/optimizer_in_function_config.html" class="md-nav__link">
+        优化算法及超参配置
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics_topics/async_get.html" class="md-nav__link">
+        获取作业函数的结果
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics_topics/model_load_save.html" class="md-nav__link">
+        模型的加载与保存
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics_topics/distributed_train.html" class="md-nav__link">
+        分布式训练
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics_topics/concept_explanation.html" class="md-nav__link">
+        OneFlow 概念清单
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics_topics/essentials_of_oneflow.html" class="md-nav__link">
+        OneFlow 系统设计
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" >
+      
+      <label class="md-nav__link" for="__nav_4">
+        扩展专题
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="扩展专题" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          扩展专题
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../extended_topics/job_function_define_call.html" class="md-nav__link">
+        作业函数的定义与调用
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../extended_topics/consistent_mirrored.html" class="md-nav__link">
+        Consistent 与 Mirrored 视角
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../extended_topics/model_mixed_parallel.html" class="md-nav__link">
+        OneFlow 的并行特色
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../extended_topics/ofrecord.html" class="md-nav__link">
+        OFRecord 数据格式
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../extended_topics/how_to_make_ofdataset.html" class="md-nav__link">
+        加载与准备 OFRecord 数据集
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../extended_topics/how_to_convert_image_to_ofrecord.html" class="md-nav__link">
+        将图片文件制作为 OFRecord 数据集
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../extended_topics/watch_watch_diff.html" class="md-nav__link">
+        获取运行时数据
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../extended_topics/debug_by_vscode.html" class="md-nav__link">
+        使用 VS Code 调试 OneFlow
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../extended_topics/python_kernel_op.html" class="md-nav__link">
+        使用 Python 扩展 Op
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../extended_topics/user_op.html" class="md-nav__link">
+        使用 C++ 扩展 Op
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../extended_topics/implement_data_loader.html" class="md-nav__link">
+        自定义 DataLoader
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../extended_topics/oneflow_convert_tools.html" class="md-nav__link">
+        OneFlow 和 ONNX 交互
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" checked>
+      
+      <label class="md-nav__link" for="__nav_5">
+        高级应用实例
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="高级应用实例" data-md-level="1">
+        <label class="md-nav__title" for="__nav_5">
+          <span class="md-nav__icon md-icon"></span>
+          高级应用实例
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="resnet.html" class="md-nav__link">
+        ResNet
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="yolov3.html" class="md-nav__link">
+        YoloV3
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          BERT
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="bert.html" class="md-nav__link md-nav__link--active">
+        BERT
+      </a>
+      
+        
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    模型概述
+  </a>
+  
+    <nav class="md-nav" aria-label="模型概述">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    模型架构
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    快速开始
+  </a>
+  
+    <nav class="md-nav" aria-label="快速开始">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    获取相关数据集
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bert" class="md-nav__link">
+    训练 BERT 模型
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    详细说明
+  </a>
+  
+    <nav class="md-nav" aria-label="详细说明">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    脚本说明
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    脚本参数
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#wikipedia-bookcorpus" class="md-nav__link">
+    使用完整的 Wikipedia + BookCorpus 数据集
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tensorflow-bert-oneflow" class="md-nav__link">
+    将 Tensorflow 的 BERT 模型转为 OneFlow 模型格式
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#squad" class="md-nav__link">
+    微调：SQuAD 问答任务
+  </a>
+  
+    <nav class="md-nav" aria-label="微调：SQuAD 问答任务">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pretrained-squad" class="md-nav__link">
+    将 pretrained 模型修改为 SQuAD 模型
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pretrained-squad_1" class="md-nav__link">
+    合并 pretrained 模型为 SQuAD 模型
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#oneflow" class="md-nav__link">
+    OneFlow 预训练模型的训练次数问题
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#squad_1" class="md-nav__link">
+    开始 SQuAD 训练
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    预测及打分
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    分布式训练
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="wide_deep.html" class="md-nav__link">
+        Wide & Deep
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6" type="checkbox" id="__nav_6" >
+      
+      <label class="md-nav__link" for="__nav_6">
+        API
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="API" data-md-level="1">
+        <label class="md-nav__title" for="__nav_6">
+          <span class="md-nav__icon md-icon"></span>
+          API
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://oneflow.readthedocs.io/en/master/" class="md-nav__link">
+        API
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_7" type="checkbox" id="__nav_7" >
+      
+      <label class="md-nav__link" for="__nav_7">
+        OneFlow 开源计划
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="OneFlow 开源计划" data-md-level="1">
+        <label class="md-nav__title" for="__nav_7">
+          <span class="md-nav__icon md-icon"></span>
+          OneFlow 开源计划
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../contribute/intro.html" class="md-nav__link">
+        OneFlow 开源计划
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    模型概述
+  </a>
+  
+    <nav class="md-nav" aria-label="模型概述">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    模型架构
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    快速开始
+  </a>
+  
+    <nav class="md-nav" aria-label="快速开始">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    获取相关数据集
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bert" class="md-nav__link">
+    训练 BERT 模型
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    详细说明
+  </a>
+  
+    <nav class="md-nav" aria-label="详细说明">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    脚本说明
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    脚本参数
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#wikipedia-bookcorpus" class="md-nav__link">
+    使用完整的 Wikipedia + BookCorpus 数据集
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tensorflow-bert-oneflow" class="md-nav__link">
+    将 Tensorflow 的 BERT 模型转为 OneFlow 模型格式
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#squad" class="md-nav__link">
+    微调：SQuAD 问答任务
+  </a>
+  
+    <nav class="md-nav" aria-label="微调：SQuAD 问答任务">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pretrained-squad" class="md-nav__link">
+    将 pretrained 模型修改为 SQuAD 模型
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pretrained-squad_1" class="md-nav__link">
+    合并 pretrained 模型为 SQuAD 模型
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#oneflow" class="md-nav__link">
+    OneFlow 预训练模型的训练次数问题
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#squad_1" class="md-nav__link">
+    开始 SQuAD 训练
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    预测及打分
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    分布式训练
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                  <a href="https://github.com/OneFlow-Inc/oneflow-documentation/blob/master/cn/docs/adv_examples/bert.md" title="编辑此页" class="md-content__button md-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
+                  </a>
+                
+                
+                  <h1>BERT</h1>
+                
+                <h2 id="_1">模型概述<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<p>BERT(Bidirectional Encoder Representations from Transformers)是NLP领域的一种预训练模型。本案例中，基于论文<a href="https://arxiv.org/abs/1810.04805">BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding</a>实现了BERT模型的OneFlow版本。</p>
+<h3 id="_2">模型架构<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th align="center"><strong>Model</strong></th>
+<th align="center"><strong>Hidden layers</strong></th>
+<th align="center"><strong>Hidden unit size</strong></th>
+<th align="center"><strong>Attention heads</strong></th>
+<th align="center"><strong>Feedforward filter size</strong></th>
+<th align="center"><strong>Max sequence length</strong></th>
+<th align="center"><strong>Parameters</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center">BERTBASE</td>
+<td align="center">12 encoder</td>
+<td align="center">768</td>
+<td align="center">12</td>
+<td align="center">4 x  768</td>
+<td align="center">512</td>
+<td align="center">110M</td>
+</tr>
+</tbody>
+</table>
+<p>BERT 在实际应用中往往分为两步：</p>
+<ul>
+<li>
+<p>首先，预训练得到 BERT 语言模型；</p>
+</li>
+<li>
+<p>然后，为满足下游应用，在得到的 BERT 语言模型的基础上，多加一层网络，并进行微调，得到下游应用。</p>
+</li>
+</ul>
+<h2 id="_3">快速开始<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
+<h3 id="_4">获取相关数据集<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h3>
+<p>我们提供了完成 BERT 预训练及 SQuAD 微调的 <a href="https://oneflow-static.oss-cn-beijing.aliyuncs.com/oneflow-tutorial-attachments/bert_squad_dataset.zip">OFRecord 数据集及相关数据文件</a>，可以通过以下命令下载并解压：</p>
+<p><div class="highlight"><pre><span></span><code>wget https://oneflow-static.oss-cn-beijing.aliyuncs.com/oneflow-tutorial-attachments/bert_squad_dataset.zip
+unzip bert_squad_dataset.zip
+</code></pre></div>
+解压后的文件目录清单如下：</p>
+<ul>
+<li>
+<p>bert_config.json、vocab.txt：制作 prediction json 文件需要的文件，来自<a href="https://github.com/google-research/bert">google bert</a></p>
+</li>
+<li>
+<p>dev-v1.1/、dev-v1.1.json：SQuAD 检验集，用于打分</p>
+</li>
+<li>
+<p>part-0：预训练集样本（40个样本）</p>
+</li>
+<li>
+<p>train-v1.1：SQuAD 训练集，已经转为 ofrecord 数据集格式</p>
+</li>
+</ul>
+<p>以上各个文件将在下文的预训练任务、SQuAD 微调中使用到。</p>
+<h3 id="bert">训练 BERT 模型<a class="headerlink" href="#bert" title="Permanent link">&para;</a></h3>
+<p>首先，克隆 <code>OneFlow-Benchmark</code> 仓库。</p>
+<div class="highlight"><pre><span></span><code>git clone https://github.com/Oneflow-Inc/OneFlow-Benchmark.git
+<span class="nb">cd</span> OneFlow-Benchmark/LanguageModeling/BERT/
+</code></pre></div>
+<p>然后，通过以下命令，使用我们预训练好的 pretrain 模型以及小型样本集合，开始 BERT 预训练查看效果：
+<div class="highlight"><pre><span></span><code>python ./run_pretraining.py<span class="se">\</span>
+    --gpu_num_per_node<span class="o">=</span><span class="m">1</span> <span class="se">\</span>
+    --learning_rate<span class="o">=</span>3e-5 <span class="se">\</span>
+    --batch_size_per_device<span class="o">=</span><span class="m">1</span> <span class="se">\</span>
+    --iter_num<span class="o">=</span><span class="m">3</span> <span class="se">\</span>
+    --loss_print_every_n_iter<span class="o">=</span><span class="m">50</span> <span class="se">\</span>
+    --seq_length<span class="o">=</span><span class="m">128</span> <span class="se">\</span>
+    --max_predictions_per_seq<span class="o">=</span><span class="m">20</span> <span class="se">\</span>
+    --num_hidden_layers<span class="o">=</span><span class="m">12</span> <span class="se">\</span>
+    --num_attention_heads<span class="o">=</span><span class="m">12</span> <span class="se">\</span>
+    --max_position_embeddings<span class="o">=</span><span class="m">512</span> <span class="se">\</span>
+    --type_vocab_size<span class="o">=</span><span class="m">2</span> <span class="se">\</span>
+    --vocab_size<span class="o">=</span><span class="m">30522</span> <span class="se">\</span>
+    --attention_probs_dropout_prob<span class="o">=</span><span class="m">0</span>.0 <span class="se">\</span>
+    --hidden_dropout_prob<span class="o">=</span><span class="m">0</span>.0 <span class="se">\</span>
+    --hidden_size_per_head<span class="o">=</span><span class="m">64</span> <span class="se">\</span>
+    --use_boxing_v2<span class="o">=</span>True <span class="se">\</span>
+    --data_dir<span class="o">=</span>./dataset/ <span class="se">\</span>
+    --data_part_num<span class="o">=</span><span class="m">1</span> <span class="se">\</span>
+    --log_dir<span class="o">=</span>./bert_regresssioin_test/of <span class="se">\</span>
+    --loss_print_every_n_iter<span class="o">=</span><span class="m">5</span> <span class="se">\</span>
+    --model_save_dir<span class="o">=</span>./bert_regresssioin_test/of <span class="se">\</span>
+    --warmup_batches <span class="m">831</span> <span class="se">\</span>
+    --save_last_snapshot True
+</code></pre></div>
+我们将获得类似以下输出：
+<div class="highlight"><pre><span></span><code>==================================================================
+Running bert: num_gpu_per_node = 1, num_nodes = 1.
+==================================================================
+gpu_num_per_node = 1
+node_num = 1
+node_list = None
+learning_rate = 3e-05
+weight_decay_rate = 0.01
+batch_size_per_device = 1
+iter_num = 20
+warmup_batches = 831
+log_every_n_iter = 1
+data_dir = ./dataset/
+data_part_num = 1
+use_fp16 = None
+use_boxing_v2 = True
+loss_print_every_n_iter = 5
+model_save_every_n_iter = 10000
+model_save_dir = ./bert_regresssioin_test/of
+save_last_snapshot = True
+model_load_dir = None
+log_dir = ./bert_regresssioin_test/of
+seq_length = 128
+max_predictions_per_seq = 20
+num_hidden_layers = 12
+num_attention_heads = 12
+max_position_embeddings = 512
+type_vocab_size = 2
+vocab_size = 30522
+attention_probs_dropout_prob = 0.0
+hidden_dropout_prob = 0.0
+hidden_size_per_head = 64
+------------------------------------------------------------------
+Time stamp: 2020-07-06-19:09:29
+I0706 19:09:29.605840639   34801 ev_epoll_linux.c:82]        Use of signals is disabled. Epoll engine will not be used
+Init model on demand
+iter 4, total_loss: 11.032, mlm_loss: 10.281, nsp_loss: 0.751, speed: 33.086(sec/batch), 0.151(sentences/sec)
+iter 9, total_loss: 11.548, mlm_loss: 10.584, nsp_loss: 0.965, speed: 0.861(sec/batch), 5.806(sentences/sec)
+iter 14, total_loss: 10.697, mlm_loss: 10.249, nsp_loss: 0.448, speed: 0.915(sec/batch), 5.463(sentences/sec)
+iter 19, total_loss: 10.685, mlm_loss: 10.266, nsp_loss: 0.419, speed: 1.087(sec/batch), 4.602(sentences/sec)
+Saving model to ./bert_regresssioin_test/of/last_snapshot.
+------------------------------------------------------------------
+average speed: 0.556(sentences/sec)
+------------------------------------------------------------------
+</code></pre></div></p>
+<h2 id="_5">详细说明<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h2>
+<h3 id="_6">脚本说明<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th align="center"><strong>分类</strong></th>
+<th align="center"><strong>说明</strong></th>
+<th align="center"><strong>所属</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center">pretrain.py、bert.py</td>
+<td align="center">定义了 BERT 网络模型；</td>
+<td align="center">BERT</td>
+</tr>
+<tr>
+<td align="center">run_pretraining.py</td>
+<td align="center">启动BERT训练的用户脚本，用户通过命令行参数进行BERT训练的训练环境及超参配置，各个参数的具体作用将在下文 <strong>脚本参数</strong> 中说明。</td>
+<td align="center">BERT</td>
+</tr>
+<tr>
+<td align="center">squad.py</td>
+<td align="center">定义了squad网络；</td>
+<td align="center">SQuAD</td>
+</tr>
+<tr>
+<td align="center">run_squad.py</td>
+<td align="center">用于启动SQuAD的训练</td>
+<td align="center">SQuAD</td>
+</tr>
+<tr>
+<td align="center">run_squad_predict.py</td>
+<td align="center">使用训练好的SQuAD模型进行预测</td>
+<td align="center">SQuAD</td>
+</tr>
+<tr>
+<td align="center">npy2json.py</td>
+<td align="center">将OneFlow的预测结果转化为prediction json格式的必要脚本</td>
+<td align="center">SQuAD</td>
+</tr>
+<tr>
+<td align="center">convert_tf_ckpt_to_of.py</td>
+<td align="center">将TensorFlow模型转为OneFlow的模型格式</td>
+<td align="center">BERT/SQuAD</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_7">脚本参数<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h3>
+<p><code>run_pretraining.py</code>通过命令行参数配置包括超参在内的训练环境，可以通过
+<code>run_pretraining.py --help</code>查看，以下是这些参数作用的具体说明：</p>
+<ul>
+<li>
+<p>gpu_num_per_node： 每个节点上 GPU 的数目，OneFlow 要求每个节点的 GPU 数目必须一致</p>
+</li>
+<li>
+<p>node_num： 节点数目，即分布式训练时的主机数目</p>
+</li>
+<li>
+<p>node_list： 节点列表，如果节点数大于1，则需要通过 node_list 指定节点列表，节点列表为字符串形式，采用逗号分隔，如<code>--node_num=2 --node_list="192.168.1.12,192.168.1.14"</code></p>
+</li>
+<li>
+<p>learning_rate： Learning rate</p>
+</li>
+<li>
+<p>weight_decay_rate：设置权重衰减率</p>
+</li>
+<li>
+<p>batch_size_per_device： 分布式训练时每个设备上的batch大小</p>
+</li>
+<li>
+<p>iter_num ITER_NUM： 训练的总轮数</p>
+</li>
+<li>
+<p>warmup_batches： 预热轮数，默认值为10000</p>
+</li>
+<li>
+<p>data_dir： OFRecord数据集的路径</p>
+</li>
+<li>
+<p>data_part_num：OFRecord数据集目录下的数据文件数目</p>
+</li>
+<li>
+<p>use_fp16： 是否使用fp16</p>
+</li>
+<li>
+<p>use_boxing_v2： 是否使用boxing v2</p>
+</li>
+<li>
+<p>loss_print_every_n_iter：训练中每隔多少轮打印一次训练信息（loss信息）</p>
+</li>
+<li>
+<p>model_save_every_n_iter： 训练中每隔多少轮保存一次模型</p>
+</li>
+<li>
+<p>model_save_dir： 模型存储路径</p>
+</li>
+<li>
+<p>save_last_snapshot：指定最后一轮训练完成后，模型保存路径</p>
+</li>
+<li>
+<p>model_load_dir：指定模型加载路径</p>
+</li>
+<li>
+<p>log_dir LOG_DIR：指定日志路径</p>
+</li>
+<li>
+<p>seq_length： 指定BERT句子长度，默认值为512</p>
+</li>
+<li>
+<p>max_predictions_per_seq： 默认值为80</p>
+</li>
+<li>
+<p>num_hidden_layers：隐藏层数目，默认值为24</p>
+</li>
+<li>
+<p>num_attention_heads： Attention头数目，默认值为16</p>
+</li>
+</ul>
+<h3 id="wikipedia-bookcorpus">使用完整的 Wikipedia + BookCorpus 数据集<a class="headerlink" href="#wikipedia-bookcorpus" title="Permanent link">&para;</a></h3>
+<p>如果需要从无到有进行 BERT 的 pretrain 训练，则需要使用较大的训练集。</p>
+<p>如果感兴趣，可以通过 <a href="https://github.com/google-research/bert">google-research BERT</a> 的页面，下载 tfrecord 格式的数据集。再根据<a href="../extended_topics/how_to_make_ofdataset.html">加载与准备OFRecord数据集</a>中的方法，将 TFRecord 数据转为 OFRecord 数据集使用。</p>
+<h3 id="tensorflow-bert-oneflow">将 Tensorflow 的 BERT 模型转为 OneFlow 模型格式<a class="headerlink" href="#tensorflow-bert-oneflow" title="Permanent link">&para;</a></h3>
+<p>如果想直接使用已经训练好的 pretrained 模型做 fine-tune 任务（如以下将展示的SQuAD），可以考虑直接从 <a href="https://github.com/google-research/bert">google-research BERT</a> 页面下载已经训练好的 BERT 模型。</p>
+<p>再利用我们提供的 <code>convert_tf_ckpt_to_of.py</code> 脚本，将其转为 OneFlow 模型格式。转换过程如下：</p>
+<p>首先，下载并解压某个版本的 BERT 模型，如 <code>uncased_L-12_H-768_A-12</code>。
+<div class="highlight"><pre><span></span><code>wget https://storage.googleapis.com/bert_models/2020_02_20/uncased_L-12_H-768_A-12.zip
+unzip uncased_L-12_H-768_A-12.zip -d uncased_L-12_H-768_A-12
+</code></pre></div></p>
+<p>然后，运行以下命令：
+<div class="highlight"><pre><span></span><code>cd uncased_L-12_H-768_A-12/
+cat &gt; checkpoint &lt;&lt;ONEFLOW
+model_checkpoint_path: &quot;bert_model.ckpt&quot;
+all_model_checkpoint_paths: &quot;bert_model.ckpt&quot;
+ONEFLOW
+</code></pre></div></p>
+<p>该命令将在解压目录下创建一个 <code>checkpoint</code> 文件，并写入以下内容：
+<div class="highlight"><pre><span></span><code>model_checkpoint_path: &quot;bert_model.ckpt&quot;
+all_model_checkpoint_paths: &quot;bert_model.ckpt&quot;
+</code></pre></div></p>
+<p>此时，已经准备好待转化的 TensorFlow 模型目录，整个模型目录的结构如下：
+<div class="highlight"><pre><span></span><code>uncased_L-12_H-768_A-12
+├── bert_config.json
+├── bert_model.ckpt.data-00000-of-00001
+├── bert_model.ckpt.index
+├── checkpoint
+└── vocab.txt
+</code></pre></div></p>
+<p>我们接着使用 <code>convert_tf_ckpt_to_of.py</code> 将 TensorFlow 模型转为 OneFlow 模型：
+<div class="highlight"><pre><span></span><code>python convert_tf_ckpt_to_of.py <span class="se">\</span>
+  --tf_checkpoint_path ./uncased_L-12_H-768_A-12 <span class="se">\</span>
+  --of_dump_path ./uncased_L-12_H-768_A-12-oneflow
+</code></pre></div>
+以上命令，将转化好的 OneFlow 格式的模型保存在 <code>./uncased_L-12_H-768_A-12-oneflow</code> 目录下，供后续微调训练(如：SQuAD)使用。</p>
+<h2 id="squad">微调：SQuAD 问答任务<a class="headerlink" href="#squad" title="Permanent link">&para;</a></h2>
+<h3 id="pretrained-squad">将 pretrained 模型修改为 SQuAD 模型<a class="headerlink" href="#pretrained-squad" title="Permanent link">&para;</a></h3>
+<p>我们只需要在 BERT 的 backbone 基础上，加上一层 <code>output</code> 层，并修改 loss 的表达式即可，完整的代码可以查看 <code>squad.py</code> 脚本，以下是几处关键修改：
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">SQuADTrain</span><span class="p">():</span>
+    <span class="c1">#...</span>
+    <span class="n">backbone</span> <span class="o">=</span> <span class="n">bert_util</span><span class="o">.</span><span class="n">BertBackbone</span><span class="p">()</span>
+
+    <span class="c1">#在BERT的基础上加上一个全连接层</span>
+    <span class="k">with</span> <span class="n">flow</span><span class="o">.</span><span class="n">name_scope</span><span class="p">(</span><span class="s2">&quot;cls-squad&quot;</span><span class="p">):</span>
+        <span class="n">final_hidden</span> <span class="o">=</span> <span class="n">backbone</span><span class="o">.</span><span class="n">sequence_output</span><span class="p">()</span>
+        <span class="n">final_hidden_matrix</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">final_hidden</span><span class="p">,</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">hidden_size</span><span class="p">])</span>
+        <span class="n">logits</span> <span class="o">=</span> <span class="n">bert_util</span><span class="o">.</span><span class="n">_FullyConnected</span><span class="p">(</span>
+                    <span class="n">final_hidden_matrix</span><span class="p">,</span>
+                    <span class="n">hidden_size</span><span class="p">,</span>
+                    <span class="n">units</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                    <span class="n">weight_initializer</span><span class="o">=</span><span class="n">bert_util</span><span class="o">.</span><span class="n">CreateInitializer</span><span class="p">(</span><span class="n">initializer_range</span><span class="p">),</span>
+                    <span class="n">name</span><span class="o">=</span><span class="s1">&#39;output&#39;</span><span class="p">)</span>
+        <span class="n">logits</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">logits</span><span class="p">,</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">seq_length</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+
+        <span class="n">start_logits</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">slice</span><span class="p">(</span><span class="n">logits</span><span class="p">,</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+        <span class="n">end_logits</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">slice</span><span class="p">(</span><span class="n">logits</span><span class="p">,</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+
+    <span class="c1">#重新定义SQuAD任务的loss</span>
+        <span class="n">start_loss</span> <span class="o">=</span> <span class="n">_ComputeLoss</span><span class="p">(</span><span class="n">start_logits</span><span class="p">,</span> <span class="n">start_positions_blob</span><span class="p">,</span> <span class="n">seq_length</span><span class="p">)</span>
+        <span class="n">end_loss</span> <span class="o">=</span> <span class="n">_ComputeLoss</span><span class="p">(</span><span class="n">end_logits</span><span class="p">,</span> <span class="n">end_positions_blob</span><span class="p">,</span> <span class="n">seq_length</span><span class="p">)</span>
+
+        <span class="n">total_loss</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="n">start_loss</span> <span class="o">+</span> <span class="n">end_loss</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">total_loss</span>
+</code></pre></div></p>
+<p>为了得到一个初始化的 squad 模型，我们通过以下脚本启动 squad 训练，并保存模型。</p>
+<p><div class="highlight"><pre><span></span><code>python ./run_squad.py\
+    --gpu_num_per_node=1\
+    --learning_rate=3e-5\
+    --batch_size_per_device=2\
+    --iter_num=50\
+    --loss_print_every_n_iter=50\
+    --seq_length=384\
+    --max_predictions_per_seq=20\
+    --num_hidden_layers=12\
+    --num_attention_heads=12\
+    --max_position_embeddings=512\
+    --type_vocab_size=2\
+    --vocab_size=30522\
+    --attention_probs_dropout_prob=0.0\
+    --hidden_dropout_prob=0.0\
+    --hidden_size_per_head=64\
+    --use_boxing_v2=True\
+    --data_dir=./dataset/train-v1.1\
+    --data_part_num=1\
+    --log_dir=./bert_regresssioin_test/of\
+    --model_save_dir=./bert_regresssioin_test/of\
+    --warmup_batches 831\
+    --save_last_snapshot True
+</code></pre></div>
+完成训练后，在 <code>./bert_regresssioin_test/of/last_snapshot</code> 中保存有初始化的 SQuAD 模型，我们将其与训练好的 BERT 合并后，进行微调（fine-tune）训练。</p>
+<h3 id="pretrained-squad_1">合并 pretrained 模型为 SQuAD 模型<a class="headerlink" href="#pretrained-squad_1" title="Permanent link">&para;</a></h3>
+<p>SQuAD 模型是在 pretrained 模型基础上的扩充，我们需要参照<a href="../basics_topics/model_load_save.html">模型的加载与保存</a>中的“模型部分初始化和部分导入”方法，将训练好的 BERT pretrained 模型与初始化的 SQuAD 模型合并。</p>
+<div class="highlight"><pre><span></span><code>cp -R ./bert_regresssioin_test/of/last_snapshot ./squadModel
+cp -R --remove-destination ./dataset/uncased_L-12_H-768_A-12_oneflow/* ./squadModel/
+</code></pre></div>
+<h3 id="oneflow">OneFlow 预训练模型的训练次数问题<a class="headerlink" href="#oneflow" title="Permanent link">&para;</a></h3>
+<p>OneFlow 生成的模型目录中，会有一个名为 <code>System-Train-TrainStep-xxx</code> 的子目录(xxx为作业函数的函数名)，该子目录下的 out 文件中，保存有训练总迭代数，并且这个迭代数会用于动态调节训练过程的<code>learning rate</code>。</p>
+<p>为了防止保存的迭代数影响到微调的训练，应该将out文件中的二进制数据清零：
+<div class="highlight"><pre><span></span><code>cd System-Train-TrainStep-xxx
+xxd -r &gt; out &lt;&lt;ONEFLOW
+00000000: 0000 0000 0000 0000
+ONEFLOW
+</code></pre></div></p>
+<p>如果你使用的是由 TensorFlow 转过来的预训练模型，则可以省去这个步骤。</p>
+<h3 id="squad_1">开始 SQuAD 训练<a class="headerlink" href="#squad_1" title="Permanent link">&para;</a></h3>
+<p>通过 <code>run_suqad.py</code> 脚本，开始训练 SQuAD 模型，主要配置如下：</p>
+<ul>
+<li>
+<p>使用以上合并得到的 SQuAD 模型 <code>./squadModel</code></p>
+</li>
+<li>
+<p>采用 SQuAD v1.1 作为训练集</p>
+</li>
+<li>
+<p>epoch = 3 (<code>iternum = 88641*3/(4*8) = 8310</code>)</p>
+</li>
+<li>
+<p>learning rate = 3e-5</p>
+</li>
+</ul>
+<div class="highlight"><pre><span></span><code>python ./run_squad.py\
+    --gpu_num_per_node=4\
+    --learning_rate=3e-5\
+    --batch_size_per_device=8\
+    --iter_num=8310\
+    --loss_print_every_n_iter=50\
+    --seq_length=384\
+    --max_predictions_per_seq=20\
+    --num_hidden_layers=12\
+    --num_attention_heads=12\
+    --max_position_embeddings=512\
+    --type_vocab_size=2\
+    --vocab_size=30522\
+    --attention_probs_dropout_prob=0.0\
+    --hidden_dropout_prob=0.0\
+    --hidden_size_per_head=64\
+    --use_boxing_v2=True\
+    --data_dir=./dataset/train-v1.1\
+    --data_part_num=8\
+    --log_dir=./bert_regresssioin_test/of\
+    --model_save_dir=./bert_regresssioin_test/of\
+    --warmup_batches 831\
+    --save_last_snapshot True\
+    --model_load_dir=./squadModel
+</code></pre></div>
+<h3 id="_8">预测及打分<a class="headerlink" href="#_8" title="Permanent link">&para;</a></h3>
+<p>生成为了生成 <a href="https://rajpurkar.github.io/SQuAD-explorer/">Preidiction File</a> 格式的 json 文件，我们先将预测结果保存为 npy 文件，再使用 <a href="https://github.com/google-research/bert/blob/master/run_squad.py">google BERT的run_squad.py</a> 中的 <code>write_predictions</code> 函数，转化为 json 格式。</p>
+<p>利用 <code>run_squad_predict.py</code> 生成 <code>all_results.npy</code> 文件：
+<div class="highlight"><pre><span></span><code>python run_squad_predict.py <span class="se">\</span>
+  --gpu_num_per_node<span class="o">=</span><span class="m">1</span> <span class="se">\</span>
+  --batch_size_per_device<span class="o">=</span><span class="m">4</span> <span class="se">\</span>
+  --iter_num<span class="o">=</span><span class="m">2709</span> <span class="se">\</span>
+  --seq_length<span class="o">=</span><span class="m">384</span> <span class="se">\</span>
+  --max_predictions_per_seq<span class="o">=</span><span class="m">20</span> <span class="se">\</span>
+  --num_hidden_layers<span class="o">=</span><span class="m">12</span> <span class="se">\</span>
+  --num_attention_heads<span class="o">=</span><span class="m">12</span> <span class="se">\</span>
+  --max_position_embeddings<span class="o">=</span><span class="m">512</span> <span class="se">\</span>
+  --type_vocab_size<span class="o">=</span><span class="m">2</span> <span class="se">\</span>
+  --vocab_size<span class="o">=</span><span class="m">30522</span> <span class="se">\</span>
+  --attention_probs_dropout_prob<span class="o">=</span><span class="m">0</span>.0 <span class="se">\</span>
+  --hidden_dropout_prob<span class="o">=</span><span class="m">0</span>.0 <span class="se">\</span>
+  --hidden_size_per_head<span class="o">=</span><span class="m">64</span> <span class="se">\</span>
+  --use_boxing_v2<span class="o">=</span>True <span class="se">\</span>
+  --data_part_num<span class="o">=</span><span class="m">1</span> <span class="se">\</span>
+  --data_dir<span class="o">=</span>./dataset/dev-v1.1 <span class="se">\</span>
+  --log_dir<span class="o">=</span>./bert_regresssioin_test/of <span class="se">\</span>
+  --model_load_dir<span class="o">=</span>path/to/squadModel <span class="se">\</span>
+  --warmup_batches <span class="m">831</span>
+</code></pre></div>
+注意将以上 <code>model_load_dir</code> 修改为 <strong>训练好的</strong> squadModel。</p>
+<p>得到 <code>all_results.npy</code> 文件后，在<a href="https://github.com/google-research/bert/">google bert</a>仓库目录下（注意该仓库的 tensorflow 版本为 <strong>tensorflow v1</strong> ），运行我们提供的 <code>npy2json.py</code> (由 google bert 中的 run_squand.py 修改得来)：
+<div class="highlight"><pre><span></span><code>python npy2json.py\
+  --vocab_file=./dataset/vocab.txt \
+  --bert_config_file=./dataset/bert_config.json \
+  --do_train=False \
+  --do_predict=True \
+  --all_results_file=./all_results.npy \
+  --predict_file=./dataset/dev-v1.1.json \
+  --max_seq_length=384 \
+  --doc_stride=128 \
+  --output_dir=./squad_base/
+</code></pre></div></p>
+<p>注意将 <code>all_results_file</code> 修改为上一步得到的 <code>all_results.npy</code> 的路径。</p>
+<p>最终，得到 <code>predictions.json</code> 文件，可以使用 <a href="https://rajpurkar.github.io/SQuAD-explorer/">evaluate-v1.1.py</a> 进行打分。</p>
+<div class="highlight"><pre><span></span><code>python evaluate-v1.1.py <span class="se">\</span>
+./dataset/dev-v1.1.json <span class="se">\</span>
+path/to/squad_base/predictions.json
+</code></pre></div>
+<h2 id="_9">分布式训练<a class="headerlink" href="#_9" title="Permanent link">&para;</a></h2>
+<p>如之前介绍脚本参数时描述：进行分布式训练，只需要在启动训练脚本式加入 <code>node_num</code> 选项指定主机数目及 <code>node_list</code> 选项即可：</p>
+<div class="highlight"><pre><span></span><code>python run_squad_predict.py <span class="se">\</span>
+  --gpu_num_per_node<span class="o">=</span><span class="m">1</span> <span class="se">\</span>
+  --batch_size_per_device<span class="o">=</span><span class="m">4</span> <span class="se">\</span>
+  --iter_num<span class="o">=</span><span class="m">2709</span> <span class="se">\</span>
+  --seq_length<span class="o">=</span><span class="m">384</span> <span class="se">\</span>
+  --max_predictions_per_seq<span class="o">=</span><span class="m">20</span> <span class="se">\</span>
+  --num_hidden_layers<span class="o">=</span><span class="m">12</span> <span class="se">\</span>
+  --num_attention_heads<span class="o">=</span><span class="m">12</span> <span class="se">\</span>
+  --max_position_embeddings<span class="o">=</span><span class="m">512</span> <span class="se">\</span>
+  --type_vocab_size<span class="o">=</span><span class="m">2</span> <span class="se">\</span>
+  --vocab_size<span class="o">=</span><span class="m">30522</span> <span class="se">\</span>
+  --attention_probs_dropout_prob<span class="o">=</span><span class="m">0</span>.0 <span class="se">\</span>
+  --hidden_dropout_prob<span class="o">=</span><span class="m">0</span>.0 <span class="se">\</span>
+  --hidden_size_per_head<span class="o">=</span><span class="m">64</span> <span class="se">\</span>
+  --use_boxing_v2<span class="o">=</span>True <span class="se">\</span>
+  --data_part_num<span class="o">=</span><span class="m">1</span> <span class="se">\</span>
+  --data_dir<span class="o">=</span>./dataset/dev-v1.1 <span class="se">\</span>
+  --log_dir<span class="o">=</span>./bert_regresssioin_test/of <span class="se">\</span>
+  --model_load_dir<span class="o">=</span>path/to/squadModel <span class="se">\</span>
+  --warmup_batches <span class="m">831</span> <span class="se">\</span>
+  --node_num<span class="o">=</span><span class="m">2</span> <span class="se">\</span>
+  --node_list<span class="o">=</span><span class="s2">&quot;192.168.1.12,192.168.1.14&quot;</span>
+</code></pre></div>
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+        
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <nav class="md-footer__inner md-grid" aria-label="Footer">
+      
+        
+        <a href="yolov3.html" class="md-footer__link md-footer__link--prev" aria-label="上一页: YoloV3" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                上一页
+              </span>
+              YoloV3
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="wide_deep.html" class="md-footer__link md-footer__link--next" aria-label="下一页: Wide &amp; Deep" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                下一页
+              </span>
+              Wide & Deep
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+          <div class="md-footer-copyright__highlight">
+            Copyright &copy; 2017 - 2021 OneFlow
+          </div>
+        
+        Made with
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs
+        </a>
+        
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs"], "translations": {"clipboard.copy": "\u590d\u5236", "clipboard.copied": "\u5df2\u590d\u5236", "search.config.lang": "ja", "search.config.pipeline": "trimmer, stemmer", "search.config.separator": "[\\uff0c\\u3002]+", "search.placeholder": "\u641c\u7d22", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.477d984a.min.js", "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.ddd52ceb.min.js"></script>
+      
+    
+  </body>
+</html>

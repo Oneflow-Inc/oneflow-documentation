@@ -1,0 +1,1577 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="OneFlow -- 极致性能的分布式机器学习框架">
+      
+      
+      
+      
+        <link rel="canonical" href="https://docs.oneflow.org/v0.4.0/extended_topics/implement_data_loader.html">
+      
+      <link rel="icon" href="../assets/favicon.png">
+      <meta name="generator" content="mkdocs-1.2.2, mkdocs-material-7.1.11">
+    
+    
+      
+        <title>自定义 DataLoader - OneFlow</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.3754935a.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.f1a3b89f.min.css">
+        
+          
+          
+          <meta name="theme-color" content="#4051b5">
+        
+      
+    
+    
+    
+      
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>:root{--md-text-font-family:"Roboto";--md-code-font-family:"Roboto Mono"}</style>
+      
+    
+    
+    
+    
+      
+
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <script>function __prefix(e){return new URL("..",location).pathname+"."+e}function __get(e,t=localStorage){return JSON.parse(t.getItem(__prefix(e)))}</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#dataloader" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../index.html" title="OneFlow" class="md-header__button md-logo" aria-label="OneFlow" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 89 89">
+  <path d="M3.136,17.387l0,42.932l42.932,21.467l-42.932,-64.399Z" />
+  <path d="M21.91,8l42.933,64.398l-18.775,9.388l-42.932,-64.399l18.774,-9.387Z" style="fill-opacity: 0.5" />
+  <path d="M67.535,17.387l-27.262,18.156l21.878,32.818l5.384,2.691l0,-53.665Z" />
+  <path d="M67.535,17.387l0,53.666l18.774,-9.388l0,-53.665l-18.774,9.387Z" style="fill-opacity: 0.25" />
+</svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            OneFlow
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              自定义 DataLoader
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <div class="md-header__option">
+        <div class="md-select">
+          
+          <button class="md-header__button md-icon" aria-label="Select language">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.52 17.52 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04M18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12m-2.62 7 1.62-4.33L19.12 17h-3.24z"/></svg>
+          </button>
+          <div class="md-select__inner">
+            <ul class="md-select__list">
+              
+                <li class="md-select__item">
+                  <a href="https://docs.oneflow.org" hreflang="zh" class="md-select__link">
+                    中文
+                  </a>
+                </li>
+                
+                <li class="md-select__item">
+                  <a href="https://docs.oneflow.org/en" hreflang="en" class="md-select__link">
+                    English
+                  </a>
+                </li>
+                
+            </ul>
+          </div>
+        </div>
+      </div>
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        
+<a href="https://www.github.com/oneflow-Inc/oneflow" title="前往 GitHub 仓库" class="md-source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    OneFlow
+  </div>
+</a>
+      </div>
+    
+  </nav>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-tabs__inner md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+
+
+  <li class="md-tabs__item">
+    <a href="../index.html" class="md-tabs__link">
+      首页
+    </a>
+  </li>
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../quick_start/install.html" class="md-tabs__link">
+        快速上手
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../basics_topics/data_input.html" class="md-tabs__link">
+        基础专题
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+    
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="job_function_define_call.html" class="md-tabs__link md-tabs__link--active">
+        扩展专题
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../adv_examples/resnet.html" class="md-tabs__link">
+        高级应用实例
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="https://oneflow.readthedocs.io/en/master/" class="md-tabs__link">
+        API
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../contribute/intro.html" class="md-tabs__link">
+        OneFlow 开源计划
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../index.html" title="OneFlow" class="md-nav__button md-logo" aria-label="OneFlow" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 89 89">
+  <path d="M3.136,17.387l0,42.932l42.932,21.467l-42.932,-64.399Z" />
+  <path d="M21.91,8l42.933,64.398l-18.775,9.388l-42.932,-64.399l18.774,-9.387Z" style="fill-opacity: 0.5" />
+  <path d="M67.535,17.387l-27.262,18.156l21.878,32.818l5.384,2.691l0,-53.665Z" />
+  <path d="M67.535,17.387l0,53.666l18.774,-9.388l0,-53.665l-18.774,9.387Z" style="fill-opacity: 0.25" />
+</svg>
+
+    </a>
+    OneFlow
+  </label>
+  
+    <div class="md-nav__source">
+      
+<a href="https://www.github.com/oneflow-Inc/oneflow" title="前往 GitHub 仓库" class="md-source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    OneFlow
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../index.html" class="md-nav__link">
+        首页
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" >
+      
+      <label class="md-nav__link" for="__nav_2">
+        快速上手
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="快速上手" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          快速上手
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quick_start/install.html" class="md-nav__link">
+        安装
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quick_start/quickstart_in_3_min.html" class="md-nav__link">
+        3分钟快速上手
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quick_start/lenet_mnist.html" class="md-nav__link">
+        识别 MNIST 手写体数字
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" >
+      
+      <label class="md-nav__link" for="__nav_3">
+        基础专题
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="基础专题" data-md-level="1">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          基础专题
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics_topics/data_input.html" class="md-nav__link">
+        数据输入
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics_topics/build_nn_with_op_and_layer.html" class="md-nav__link">
+        搭建神经网络
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics_topics/optimizer_in_function_config.html" class="md-nav__link">
+        优化算法及超参配置
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics_topics/async_get.html" class="md-nav__link">
+        获取作业函数的结果
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics_topics/model_load_save.html" class="md-nav__link">
+        模型的加载与保存
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics_topics/distributed_train.html" class="md-nav__link">
+        分布式训练
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics_topics/concept_explanation.html" class="md-nav__link">
+        OneFlow 概念清单
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics_topics/essentials_of_oneflow.html" class="md-nav__link">
+        OneFlow 系统设计
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" checked>
+      
+      <label class="md-nav__link" for="__nav_4">
+        扩展专题
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="扩展专题" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          扩展专题
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="job_function_define_call.html" class="md-nav__link">
+        作业函数的定义与调用
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="consistent_mirrored.html" class="md-nav__link">
+        Consistent 与 Mirrored 视角
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="model_mixed_parallel.html" class="md-nav__link">
+        OneFlow 的并行特色
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="ofrecord.html" class="md-nav__link">
+        OFRecord 数据格式
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="how_to_make_ofdataset.html" class="md-nav__link">
+        加载与准备 OFRecord 数据集
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="how_to_convert_image_to_ofrecord.html" class="md-nav__link">
+        将图片文件制作为 OFRecord 数据集
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="watch_watch_diff.html" class="md-nav__link">
+        获取运行时数据
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="debug_by_vscode.html" class="md-nav__link">
+        使用 VS Code 调试 OneFlow
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="python_kernel_op.html" class="md-nav__link">
+        使用 Python 扩展 Op
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="user_op.html" class="md-nav__link">
+        使用 C++ 扩展 Op
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          自定义 DataLoader
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="implement_data_loader.html" class="md-nav__link md-nav__link--active">
+        自定义 DataLoader
+      </a>
+      
+        
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#dataloader_1" class="md-nav__link">
+    Dataloader 的组成
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-reader" class="md-nav__link">
+    Data Reader 算子
+  </a>
+  
+    <nav class="md-nav" aria-label="Data Reader 算子">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#data-reader_1" class="md-nav__link">
+    Data Reader 的类关系
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#op-kernel" class="md-nav__link">
+    Op 及 Kernel 注册
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#minidatareader" class="md-nav__link">
+    MiniDataReader
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#minidataset" class="md-nav__link">
+    MiniDataset
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#miniparser" class="md-nav__link">
+    MiniParser
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-preprocessor" class="md-nav__link">
+    Data Preprocessor 算子
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dataloader_2" class="md-nav__link">
+    自定义 DataLoader 的使用
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mini-dataloader" class="md-nav__link">
+    Mini Dataloader 的编译与测试
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="oneflow_convert_tools.html" class="md-nav__link">
+        OneFlow 和 ONNX 交互
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" >
+      
+      <label class="md-nav__link" for="__nav_5">
+        高级应用实例
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="高级应用实例" data-md-level="1">
+        <label class="md-nav__title" for="__nav_5">
+          <span class="md-nav__icon md-icon"></span>
+          高级应用实例
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adv_examples/resnet.html" class="md-nav__link">
+        ResNet
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adv_examples/yolov3.html" class="md-nav__link">
+        YoloV3
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adv_examples/bert.html" class="md-nav__link">
+        BERT
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adv_examples/wide_deep.html" class="md-nav__link">
+        Wide & Deep
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6" type="checkbox" id="__nav_6" >
+      
+      <label class="md-nav__link" for="__nav_6">
+        API
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="API" data-md-level="1">
+        <label class="md-nav__title" for="__nav_6">
+          <span class="md-nav__icon md-icon"></span>
+          API
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://oneflow.readthedocs.io/en/master/" class="md-nav__link">
+        API
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_7" type="checkbox" id="__nav_7" >
+      
+      <label class="md-nav__link" for="__nav_7">
+        OneFlow 开源计划
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="OneFlow 开源计划" data-md-level="1">
+        <label class="md-nav__title" for="__nav_7">
+          <span class="md-nav__icon md-icon"></span>
+          OneFlow 开源计划
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../contribute/intro.html" class="md-nav__link">
+        OneFlow 开源计划
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#dataloader_1" class="md-nav__link">
+    Dataloader 的组成
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-reader" class="md-nav__link">
+    Data Reader 算子
+  </a>
+  
+    <nav class="md-nav" aria-label="Data Reader 算子">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#data-reader_1" class="md-nav__link">
+    Data Reader 的类关系
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#op-kernel" class="md-nav__link">
+    Op 及 Kernel 注册
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#minidatareader" class="md-nav__link">
+    MiniDataReader
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#minidataset" class="md-nav__link">
+    MiniDataset
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#miniparser" class="md-nav__link">
+    MiniParser
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-preprocessor" class="md-nav__link">
+    Data Preprocessor 算子
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dataloader_2" class="md-nav__link">
+    自定义 DataLoader 的使用
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mini-dataloader" class="md-nav__link">
+    Mini Dataloader 的编译与测试
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                  <a href="https://github.com/OneFlow-Inc/oneflow-documentation/blob/master/cn/docs/extended_topics/implement_data_loader.md" title="编辑此页" class="md-content__button md-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
+                  </a>
+                
+                
+                <h1 id="dataloader">自定义 DataLoader<a class="headerlink" href="#dataloader" title="Permanent link">&para;</a></h1>
+<p>如 <a href="../basics_topics/data_input.html">数据输入</a> 一文所介绍，OneFlow 支持两种数据加载方式：直接使用 NumPy 数据或者使用 DataLoader 及其相关算子。</p>
+<p>在大型工业场景下，数据加载容易成为训练的瓶颈。在其它的框架中，数据加载流水线往往作为单独的模块存在，需要针对不同场景进行调整，通用性不高。在 OneFlow 中，DataLoader 及相关预处理算子，与其它普通算子地位等同，可以享受与其它算子一样的流水加速效果，轻松解决大规模数据加载的痛点。</p>
+<p>在 OneFlow 中使用 DataLoader，一般通过调用 <code>XXXReader</code> 加载文件中的数据，调用 <code>XXXDeocde</code> 等对数据进行解码或其它预处理，他们一起协同完成 Dataloader 的功能。</p>
+<p>OneFlow 目前内置了一些文件格式的 <a href="https://oneflow.readthedocs.io/en/master/search.html?q=reader&amp;check_keywords=yes&amp;area=default">DataLoader</a>。如果我们想使用 DataLoader 提高数据加载的效率，但是加载的数据格式暂时没有内置在 OneFlow 中，此时，我们可以自己实现 DataLoader，加载自定义的数据格式。</p>
+<p>本文实现了一个 Mini Dataloader，在仓库中可查看<a href="https://github.com/Oneflow-Inc/oneflow-documentation/tree/master/cn/docs/code/extended_topics/data_loader/">完整代码</a>。</p>
+<p>作为示例，Mini Dataloader 支持的文件格式为：以逗号分隔的每行两列数字的纯文本文件(见代码中的 <code>part-000</code> 及 <code>part-001</code> 文件)：
+<div class="highlight"><pre><span></span><code>1.01,2.02
+2.01,4.02
+3.0,6.05
+4.1,8.205
+5,10
+6.0,12.0
+7.0,14.2
+8.0,16.3
+9.1,18.03
+</code></pre></div></p>
+<p>本文将以 Mini Dataloader 为例，对自定义格式的 DataLoader 的实现要点，进行讲解。</p>
+<h2 id="dataloader_1">Dataloader 的组成<a class="headerlink" href="#dataloader_1" title="Permanent link">&para;</a></h2>
+<p>完整的 Dataloader 一般包括两类 Op：</p>
+<ul>
+<li>Data Reader：负责将文件系统中的数据，加载到内存中的输入流，并最终将数据设置到 Op 的输出中。它又可以细分为 Loader 与 Parser 两部分，Loader 负责从文件系统中读取原始数据，Parser 负责将原始数据组织为 Data Reader Op 的输出</li>
+<li>Data Preprocessor：将 Data Reader Op 的输出的数据进行预处理，常见的预处理有图片解码、剪裁图片、解码等</li>
+</ul>
+<p>对于一些简单的数据格式，不需要预处理，可以省略掉 Data Preprocessor，只使用 Data Reader 即可。</p>
+<p>作为示例， Mini Dataloader 处理的数据格式虽然简单，但是依然实现了 DataReader 及 Data Preprocessor 两类 op，其中：</p>
+<ul>
+<li><code>MiniReader</code> 负责从文件中读取数据，并按逗号分隔字符串，将文本转为浮点数据后，设置到 Op 的输出中，输出形状为每行两列</li>
+<li><code>MiniDecoder</code> 负责将以上每行两列的输出进行分割，得到2个每行1列的输出 <code>x</code> 与 <code>y</code></li>
+</ul>
+<p>在 <a href="https://github.com/Oneflow-Inc/oneflow-documentation/tree/master/cn/docs/code/extended_topics/data_loader/test_mini_dataloader.py">test_mini_dataloader.py</a> 中可以看到 Python 层次两者的使用：
+<div class="highlight"><pre><span></span><code>    <span class="n">miniRecord</span> <span class="o">=</span> <span class="n">MiniReader</span><span class="p">(</span>
+        <span class="s2">&quot;./&quot;</span><span class="p">,</span>
+        <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span>
+        <span class="n">data_part_num</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="n">part_name_suffix_length</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+        <span class="n">random_shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">shuffle_after_epoch</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">MiniDecoder</span><span class="p">(</span>
+            <span class="n">miniRecord</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;d1&quot;</span>
+        <span class="p">)</span>
+</code></pre></div></p>
+<p>以下，我们将介绍 C++ 层次如何实现 Data Reader 算子与 Data Preprocessor 算子。</p>
+<h2 id="data-reader">Data Reader 算子<a class="headerlink" href="#data-reader" title="Permanent link">&para;</a></h2>
+<h3 id="data-reader_1">Data Reader 的类关系<a class="headerlink" href="#data-reader_1" title="Permanent link">&para;</a></h3>
+<p>我们需要实现一个继承自 <code>DataReader</code> 的类，该类包含了两个重要对象 <code>loader_</code> 与 <code>parser_</code>，分别继承自 <code>Dataset</code> 与 <code>Parser</code>。</p>
+<ul>
+<li><code>loader_</code> 的工作是从文件系统中读取数据至缓冲区，Op 作者通过重写 <code>Next</code> 方法编写这部分的逻辑</li>
+<li><code>parser_</code> 的工作是将缓冲区中的数据，设置到 Op 的输出中，Op 作者通过重写 <code>Parser</code> 方法编写这部分的逻辑</li>
+</ul>
+<p>当 Data Reader Op 工作时，会调用 <code>loader_</code> 中的相关方法打开文件系统中的文件，并调用 <code>loader_</code> 的 <code>Next</code> 方法按照 Op 作者预定的逻辑从文件系统读取数据，然后，再调用 <code>parser_</code> 的 <code>Parser</code> 方法，将数据设置到 Op 的输出中。</p>
+<p>以下的伪代码展示了以上类关系和调用过程，实际代码比伪代码要复杂，并不是一一对应的关系：
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">DataReader</span><span class="p">{</span>
+    <span class="kt">void</span> <span class="nf">Read</span><span class="p">(</span><span class="n">user_op</span><span class="o">::</span><span class="n">KernelComputeContext</span><span class="o">*</span> <span class="n">ctx</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// 运行到此处，已经启动了多线程加速数据处理</span>
+    <span class="n">loader</span><span class="o">-&gt;</span><span class="n">next</span><span class="p">();</span>
+    <span class="n">parser_</span><span class="o">-&gt;</span><span class="n">Parse</span><span class="p">();</span>
+  <span class="p">}</span>
+    <span class="n">Dataset</span><span class="o">*</span> <span class="n">loader_</span><span class="p">;</span>
+    <span class="n">Parser</span><span class="o">*</span>  <span class="n">parser_</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="k">class</span> <span class="nc">MiniDataReader</span> <span class="o">:</span> <span class="n">DataReader</span><span class="p">{</span>
+    <span class="n">loader_</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MiniDataSet</span><span class="p">;</span>
+    <span class="n">parser_</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MiniParser</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="k">class</span> <span class="nc">MiniDataset</span><span class="o">:</span> <span class="n">Dataset</span> <span class="p">{</span>
+  <span class="n">MiniDataset</span><span class="p">()</span> <span class="p">{</span>
+    <span class="c1">//在文件系统中找到数据集，并打开文件，初始化输入流</span>
+    <span class="c1">//...</span>
+  <span class="p">}</span>
+
+  <span class="n">Next</span><span class="p">()</span> <span class="p">{</span>
+    <span class="c1">// 从输入流中读取数据的逻辑</span>
+  <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="k">class</span> <span class="nc">MiniParser</span><span class="o">:</span> <span class="n">Parser</span> <span class="p">{</span>
+  <span class="kt">void</span> <span class="nf">Parse</span><span class="p">(){</span>
+    <span class="c1">// 将 DataSet 中的数据 设置到 Op 的输出中</span>
+  <span class="p">}</span>
+<span class="p">};</span>
+</code></pre></div>
+在 Data Reader Op 的 Kernel 中，会触发 <code>DataReader</code> 的 <code>Read</code> 方法，进而完成以上伪代码所展示的一连串操作。</p>
+<p>以下我们针对 MiniReader 算子的真实代码进行解析。</p>
+<h3 id="op-kernel">Op 及 Kernel 注册<a class="headerlink" href="#op-kernel" title="Permanent link">&para;</a></h3>
+<p>我们通过以下代码，注册了 MiniReader 的 Op：
+<div class="highlight"><pre><span></span><code><span class="n">REGISTER_CPU_ONLY_USER_OP</span><span class="p">(</span><span class="s">&quot;MiniReader&quot;</span><span class="p">)</span>
+    <span class="p">.</span><span class="n">Output</span><span class="p">(</span><span class="s">&quot;out&quot;</span><span class="p">)</span>
+    <span class="p">.</span><span class="n">Attr</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;data_dir&quot;</span><span class="p">)</span>
+    <span class="p">.</span><span class="n">Attr</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">int32_t</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;data_part_num&quot;</span><span class="p">)</span>
+    <span class="p">.</span><span class="n">Attr</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;part_name_prefix&quot;</span><span class="p">,</span> <span class="s">&quot;part-&quot;</span><span class="p">)</span>
+    <span class="p">.</span><span class="n">Attr</span><span class="o">&lt;</span><span class="kt">int32_t</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;part_name_suffix_length&quot;</span><span class="p">,</span> <span class="mi">-1</span><span class="p">)</span>
+    <span class="p">.</span><span class="n">Attr</span><span class="o">&lt;</span><span class="kt">int32_t</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;batch_size&quot;</span><span class="p">)</span>
+    <span class="p">.</span><span class="n">Attr</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;random_shuffle&quot;</span><span class="p">,</span> <span class="nb">false</span><span class="p">)</span>
+    <span class="p">.</span><span class="n">Attr</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;shuffle_after_epoch&quot;</span><span class="p">,</span> <span class="nb">false</span><span class="p">)</span>
+    <span class="p">.</span><span class="n">Attr</span><span class="o">&lt;</span><span class="kt">int64_t</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;seed&quot;</span><span class="p">,</span> <span class="mi">-1</span><span class="p">)</span>
+    <span class="p">.</span><span class="n">Attr</span><span class="o">&lt;</span><span class="kt">int32_t</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;shuffle_buffer_size&quot;</span><span class="p">,</span> <span class="mi">1024</span><span class="p">)</span>
+    <span class="p">.</span><span class="n">SetTensorDescInferFn</span><span class="p">([](</span><span class="n">user_op</span><span class="o">::</span><span class="n">InferContext</span><span class="o">*</span> <span class="n">ctx</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Maybe</span><span class="o">&lt;</span><span class="kt">void</span><span class="o">&gt;</span> <span class="p">{</span>
+      <span class="c1">//...</span>
+      <span class="o">*</span><span class="n">out_tensor</span><span class="o">-&gt;</span><span class="n">mut_shape</span><span class="p">()</span> <span class="o">=</span> <span class="n">Shape</span><span class="p">({</span><span class="n">local_batch_size</span><span class="p">,</span> <span class="mi">2</span><span class="p">});</span>
+      <span class="o">*</span><span class="n">out_tensor</span><span class="o">-&gt;</span><span class="n">mut_data_type</span><span class="p">()</span> <span class="o">=</span> <span class="n">DataType</span><span class="o">::</span><span class="n">kDouble</span><span class="p">;</span>
+      <span class="c1">//...</span>
+    <span class="p">})</span>
+    <span class="p">.</span><span class="n">SetGetSbpFn</span><span class="p">([](</span><span class="n">user_op</span><span class="o">::</span><span class="n">SbpContext</span><span class="o">*</span> <span class="n">ctx</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Maybe</span><span class="o">&lt;</span><span class="kt">void</span><span class="o">&gt;</span> <span class="p">{</span>
+      <span class="n">ctx</span><span class="o">-&gt;</span><span class="n">NewBuilder</span><span class="p">().</span><span class="n">Split</span><span class="p">(</span><span class="n">ctx</span><span class="o">-&gt;</span><span class="n">outputs</span><span class="p">(),</span> <span class="mi">0</span><span class="p">).</span><span class="n">Build</span><span class="p">();</span>
+      <span class="c1">//...</span>
+    <span class="p">});</span>
+</code></pre></div>
+可以看到，因为 Data Reader 是比较特殊的 Op，只有输出，没有输入（数据来自文件系统，而不是神经网络中的某个上游节点），因此我们只通过 <code>Out</code> 方法设置了输出，并在 <code>SetTensorDescInferFn</code> 设置了输出的性质为每行2列，数据类为 <code>DataType::kDouble</code>。同理，在设置 <code>SetGetSbpFn</code> 中设置 SBP Signature 时，只需要设置输出的 SBP 属性，我们将其设置为 Split(0)。</p>
+<p>而设置的各种属性（<code>data_dir</code>、<code>data_part_num</code> 等），沿用了 <a href="ofrecord.html#ofrecord">OFRecord 数据集</a> 中关于文件命名规范的要求，这使得我们可以复用 OneFlow 中已有的相关代码，像 <a href="how_to_make_ofdataset.html#ofrecord_1">加载 OFRecord 数据集</a> 那样，加载我们自定义格式的文件。</p>
+<p>接着看这个 Op 的 Kernel 实现：
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">MiniReaderKernel</span> <span class="k">final</span> <span class="o">:</span> <span class="k">public</span> <span class="n">user_op</span><span class="o">::</span><span class="n">OpKernel</span> <span class="p">{</span>
+ <span class="k">public</span><span class="o">:</span>
+  <span class="c1">//...</span>
+
+  <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">user_op</span><span class="o">::</span><span class="n">OpKernelState</span><span class="o">&gt;</span>
+  <span class="n">CreateOpKernelState</span><span class="p">(</span><span class="n">user_op</span><span class="o">::</span><span class="n">KernelInitContext</span><span class="o">*</span> <span class="n">ctx</span><span class="p">)</span> <span class="k">override</span><span class="p">{</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">MiniReaderWrapper</span><span class="o">&gt;</span> <span class="n">reader</span><span class="p">(</span><span class="k">new</span> <span class="n">MiniReaderWrapper</span><span class="p">(</span><span class="n">ctx</span><span class="p">));</span>
+    <span class="k">return</span> <span class="n">reader</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="kt">void</span> <span class="n">Compute</span><span class="p">(</span><span class="n">user_op</span><span class="o">::</span><span class="n">KernelComputeContext</span><span class="o">*</span> <span class="n">ctx</span><span class="p">,</span>
+               <span class="n">user_op</span><span class="o">::</span><span class="n">OpKernelState</span><span class="o">*</span> <span class="n">state</span><span class="p">)</span> <span class="k">override</span> <span class="p">{</span>
+    <span class="k">auto</span><span class="o">*</span> <span class="n">reader</span> <span class="o">=</span> <span class="k">dynamic_cast</span><span class="o">&lt;</span><span class="n">MiniReaderWrapper</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">state</span><span class="p">);</span>
+    <span class="n">reader</span><span class="o">-&gt;</span><span class="n">Read</span><span class="p">(</span><span class="n">ctx</span><span class="p">);</span>
+  <span class="p">}</span>
+  <span class="c1">//...</span>
+<span class="p">};</span>
+
+<span class="n">REGISTER_USER_KERNEL</span><span class="p">(</span><span class="s">&quot;MiniReader&quot;</span><span class="p">)</span>
+    <span class="p">.</span><span class="n">SetCreateFn</span><span class="o">&lt;</span><span class="n">MiniReaderKernel</span><span class="o">&gt;</span><span class="p">()</span>
+    <span class="p">.</span><span class="n">SetIsMatchedHob</span><span class="p">((</span><span class="n">user_op</span><span class="o">::</span><span class="n">HobDeviceTag</span><span class="p">()</span> <span class="o">==</span> <span class="s">&quot;cpu&quot;</span><span class="p">)</span>
+                     <span class="o">&amp;</span> <span class="p">(</span><span class="n">user_op</span><span class="o">::</span><span class="n">HobDataType</span><span class="p">(</span><span class="s">&quot;out&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">==</span> <span class="n">DataType</span><span class="o">::</span><span class="n">kDouble</span><span class="p">));</span>
+</code></pre></div>
+依据 <a href="user_op.html">自定义 Op</a> 一文中的知识，我们知道 <code>MiniReaderKernel::Compute</code> 负责 Op 的运算逻辑。不过此处使用使用的 <code>Compute</code> 是包含2个参数的重载，我们有必要介绍下它的第二个参数 <code>OpKernelState</code>。</p>
+<p>当我们进行 <code>Compute</code> 时，有时除了从 <code>ctx</code> 获取的信息外，我们还需要维护一些其他的对象，这种对象不需要反复创建，但是其中的信息状态可能随着 <code>Compute</code> 多次调用而改变。为了应对这种需求，OneFlow 提供了2个参数的 <code>Compute</code> 的重载，为了使用它，我们必须同时重写 <code>CreateOpKernelState</code>，<code>CreateOpKernelState</code> 的作用是返回一个 <code>user_op::OpKernelState</code> 派生类对象，这个对象，将在 <code>Compute</code> 调用时，作为第二个参数传递。</p>
+<p>为此，我们只需要将除 <code>ctx</code> 外想要维护的信息，封装为 <code>user_op::OpKernelState</code> 的派生类，并在 <code>CreateOpKernelState</code> 实例化并返回即可。</p>
+<p>具体到我们实现的 Mini Reader 的 Kernel，我们先实现了一个继承自 <code>user_op::OpKernelState</code> 的类 <code>MiniReaderWrapper</code>， 它是对 <code>MiniDataReader</code> 的简单封装，之所以封装一层 <code>MiniReaderWrapper</code> 而不直接使用 <code>MiniDataReader</code>，仅仅是为了符合以上所述的 OneFlow 框架要求。
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">MiniReaderWrapper</span> <span class="k">final</span> <span class="o">:</span> <span class="k">public</span> <span class="n">user_op</span><span class="o">::</span><span class="n">OpKernelState</span> <span class="p">{</span>
+ <span class="k">public</span><span class="o">:</span>
+  <span class="k">explicit</span> <span class="n">MiniReaderWrapper</span><span class="p">(</span><span class="n">user_op</span><span class="o">::</span><span class="n">KernelInitContext</span><span class="o">*</span> <span class="n">ctx</span><span class="p">)</span> <span class="o">:</span> <span class="n">reader_</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span> <span class="p">{}</span>
+  <span class="o">~</span><span class="n">MiniReaderWrapper</span><span class="p">()</span> <span class="o">=</span> <span class="k">default</span><span class="p">;</span>
+
+  <span class="kt">void</span> <span class="nf">Read</span><span class="p">(</span><span class="n">user_op</span><span class="o">::</span><span class="n">KernelComputeContext</span><span class="o">*</span> <span class="n">ctx</span><span class="p">)</span> <span class="p">{</span> <span class="n">reader_</span><span class="p">.</span><span class="n">Read</span><span class="p">(</span><span class="n">ctx</span><span class="p">);</span> <span class="p">}</span>
+
+ <span class="k">private</span><span class="o">:</span>
+  <span class="n">data</span><span class="o">::</span><span class="n">MiniDataReader</span> <span class="n">reader_</span><span class="p">;</span>
+<span class="p">};</span>
+</code></pre></div></p>
+<p>然后，重写 <code>CreateOpKernelState</code>，在其内部创建一个 <code>MiniReaderWrapper</code> 对象：
+<div class="highlight"><pre><span></span><code>  <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">user_op</span><span class="o">::</span><span class="n">OpKernelState</span><span class="o">&gt;</span>
+  <span class="n">CreateOpKernelState</span><span class="p">(</span><span class="n">user_op</span><span class="o">::</span><span class="n">KernelInitContext</span><span class="o">*</span> <span class="n">ctx</span><span class="p">)</span> <span class="k">override</span><span class="p">{</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">MiniReaderWrapper</span><span class="o">&gt;</span> <span class="n">reader</span><span class="p">(</span><span class="k">new</span> <span class="n">MiniReaderWrapper</span><span class="p">(</span><span class="n">ctx</span><span class="p">));</span>
+    <span class="k">return</span> <span class="n">reader</span><span class="p">;</span>
+  <span class="p">}</span>
+</code></pre></div></p>
+<p>这样，在适当的时机，OneFlow 就会自动调用 <code>CreateOpKernelState</code> 创建对象，并将其作为第2个参数传递给 <code>Compute</code>。我们可以在 <code>Compute</code> 中拿到这个对象，并使用：
+<div class="highlight"><pre><span></span><code>    <span class="k">auto</span><span class="o">*</span> <span class="n">reader</span> <span class="o">=</span> <span class="k">dynamic_cast</span><span class="o">&lt;</span><span class="n">MiniReaderWrapper</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">state</span><span class="p">);</span>
+    <span class="n">reader</span><span class="o">-&gt;</span><span class="n">Read</span><span class="p">(</span><span class="n">ctx</span><span class="p">);</span>
+</code></pre></div>
+可以看到，在 MiniReader 的 Kernel 中，我们仅仅是简单调用了 <code>MiniReaderWrapper::Reader</code>，这会触发上文伪代码中所提及的 <code>DataReader::Read</code> 流程。</p>
+<h3 id="minidatareader">MiniDataReader<a class="headerlink" href="#minidatareader" title="Permanent link">&para;</a></h3>
+<p>上文伪代码中已经提及，在 <code>MiniDataReader</code> 内部，会实例化一个 <code>MiniDataset</code> 并赋值给 <code>loader_</code> 指针。
+以下是真实代码：
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">MiniDataReader</span> <span class="k">final</span> <span class="o">:</span> <span class="k">public</span> <span class="n">DataReader</span><span class="o">&lt;</span><span class="n">TensorBuffer</span><span class="o">&gt;</span> <span class="p">{</span>
+ <span class="k">public</span><span class="o">:</span>
+  <span class="n">MiniDataReader</span><span class="p">(</span><span class="n">user_op</span><span class="o">::</span><span class="n">KernelInitContext</span><span class="o">*</span> <span class="n">ctx</span><span class="p">)</span> <span class="o">:</span> <span class="n">DataReader</span><span class="o">&lt;</span><span class="n">TensorBuffer</span><span class="o">&gt;</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">loader_</span><span class="p">.</span><span class="n">reset</span><span class="p">(</span><span class="k">new</span> <span class="n">MiniDataset</span><span class="p">(</span><span class="n">ctx</span><span class="p">));</span>
+    <span class="n">parser_</span><span class="p">.</span><span class="n">reset</span><span class="p">(</span><span class="k">new</span> <span class="n">MiniParser</span><span class="p">());</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">ctx</span><span class="o">-&gt;</span><span class="n">Attr</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;random_shuffle&quot;</span><span class="p">))</span> <span class="p">{</span>
+      <span class="n">loader_</span><span class="p">.</span><span class="n">reset</span><span class="p">(</span><span class="k">new</span> <span class="n">RandomShuffleDataset</span><span class="o">&lt;</span><span class="n">TensorBuffer</span><span class="o">&gt;</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">loader_</span><span class="p">)));</span>
+    <span class="p">}</span>
+    <span class="kt">int32_t</span> <span class="n">batch_size</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">-&gt;</span><span class="n">TensorDesc4ArgNameAndIndex</span><span class="p">(</span><span class="s">&quot;out&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">shape</span><span class="p">().</span><span class="n">elem_cnt</span><span class="p">();</span>
+    <span class="n">loader_</span><span class="p">.</span><span class="n">reset</span><span class="p">(</span><span class="k">new</span> <span class="n">BatchDataset</span><span class="o">&lt;</span><span class="n">TensorBuffer</span><span class="o">&gt;</span><span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">loader_</span><span class="p">)));</span>
+    <span class="n">StartLoadThread</span><span class="p">();</span>
+  <span class="p">}</span>
+<span class="p">};</span>
+</code></pre></div>
+可以看到，除了我们自己继承自 <code>DataSet</code> 的 <code>MiniDataset</code> 类之外，OneFlow 还内置了其他的 <code>XXXDataSet</code>，称为 <strong>修饰器</strong> 。</p>
+<p>修饰器可以在已有的 <code>DataSet</code> 基础上增加额外功能，如以上的 <code>BatchDataset</code> 用于批量读取数据。DataSet 修饰器均在 <a href="https://github.com/Oneflow-Inc/oneflow/tree/master/oneflow/user/data">user/data 目录</a>，常见的修饰器有：</p>
+<ul>
+<li>BatchDataset：用于批量读取数据</li>
+<li>RandomShuffleDataset：用于将数据的顺序随机化</li>
+<li>GroupBatchDataset：用于更定制化地组 batch，会把相同 group id 的数据实例放在同一个 batch 内，可参考<a href="https://github.com/Oneflow-Inc/oneflow/blob/267860bca25146f5053e8c878fe51231c1ced4ad/oneflow/user/data/coco_data_reader.cpp#L40">这里</a></li>
+<li>DistributedTrainingDataset：用于分布式的情况下，把一个 epoch 内的数据平均分配到不同节点读取，可参考<a href="https://github.com/Oneflow-Inc/oneflow/blob/267860bca25146f5053e8c878fe51231c1ced4ad/oneflow/user/data/distributed_training_dataset.h#L55">这里</a></li>
+</ul>
+<p>一切完成后，最后调用 <code>StartLoadThread</code>，顾名思义，启动加载线程，在 <code>StartLoadThread</code> 中，最终会触发重写的 <code>MiniDataset::Next</code> 方法。</p>
+<p>以上 <code>MiniDataReader</code> 的构造，可以作为模板，没有特殊要求，在实现自定义的 DataLoader 过程中，不需要修改。</p>
+<h3 id="minidataset">MiniDataset<a class="headerlink" href="#minidataset" title="Permanent link">&para;</a></h3>
+<p>对于 <code>MiniDataSet</code>，我们只需要关心它的构造函数以及重写的 <code>Next</code> 方法。</p>
+<p>构造函数主要是通过 <code>Attr</code> 获取用户的配置，然后根据用户配置，初始化输入流。以下代码中的 <code>JoinDirPath</code> 内部，主要根据数据集文件名的约定（前缀、文件数目，文件名编号是否补齐等），获取所有的文件名称；而 <code>InitInStream</code> 是将数据集中的文件，都初始化为 OneFlow 封装的输入流（<code>in_stream_</code> 成员），这在后续的 <code>Next</code> 方法中会使用。
+<div class="highlight"><pre><span></span><code>  <span class="n">MiniDataset</span><span class="p">(</span><span class="n">user_op</span><span class="o">::</span><span class="n">KernelInitContext</span><span class="o">*</span> <span class="n">ctx</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">current_epoch_</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="n">shuffle_after_epoch_</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">-&gt;</span><span class="n">Attr</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;shuffle_after_epoch&quot;</span><span class="p">);</span>
+
+    <span class="c1">//Join Dir Path</span>
+    <span class="n">JoinDirPath</span><span class="p">(</span><span class="n">ctx</span><span class="p">);</span>
+
+    <span class="c1">// in stream</span>
+    <span class="n">InitInStream</span><span class="p">(</span><span class="n">ctx</span><span class="p">);</span>
+  <span class="p">}</span>
+</code></pre></div></p>
+<p>从文件中加载的逻辑，写在 <code>Next</code> 虚函数中：
+<div class="highlight"><pre><span></span><code>  <span class="n">LoadTargetPtrList</span> <span class="nf">Next</span><span class="p">()</span> <span class="k">override</span> <span class="p">{</span>
+    <span class="n">LoadTargetPtrList</span> <span class="n">ret</span><span class="p">;</span>
+    <span class="n">LoadTargetPtr</span> <span class="n">sample_ptr</span><span class="p">(</span><span class="k">new</span> <span class="n">TensorBuffer</span><span class="p">());</span>
+
+    <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">sampleline</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">in_stream_</span><span class="o">-&gt;</span><span class="n">ReadLine</span><span class="p">(</span><span class="o">&amp;</span><span class="n">sampleline</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+      <span class="n">ShuffleAfterEpoch</span><span class="p">();</span>
+      <span class="n">in_stream_</span><span class="o">-&gt;</span><span class="n">ReadLine</span><span class="p">(</span><span class="o">&amp;</span><span class="n">sampleline</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="k">auto</span> <span class="n">numbers</span> <span class="o">=</span> <span class="n">CommaSplit</span><span class="p">(</span><span class="n">sampleline</span><span class="p">);</span>
+    <span class="n">sample_ptr</span><span class="o">-&gt;</span><span class="n">Resize</span><span class="p">(</span><span class="n">Shape</span><span class="p">({</span><span class="mi">2</span><span class="p">}),</span> <span class="n">DataType</span><span class="o">::</span><span class="n">kDouble</span><span class="p">);</span>
+    <span class="k">auto</span> <span class="n">pNums</span> <span class="o">=</span> <span class="n">sample_ptr</span><span class="o">-&gt;</span><span class="n">mut_data</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">();</span>
+    <span class="n">pNums</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">stod</span><span class="p">(</span><span class="n">numbers</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+    <span class="n">pNums</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">stod</span><span class="p">(</span><span class="n">numbers</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
+    <span class="n">ret</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">sample_ptr</span><span class="p">));</span>
+
+    <span class="k">return</span> <span class="n">ret</span><span class="p">;</span>
+  <span class="p">}</span>
+</code></pre></div>
+在以上代码中，我们通过调用 <code>in_stream_</code> 的 <code>ReadLine</code> 方法，将文件中的数据，读取至 <code>string</code> 对象 <code>sampleline</code> 中。然后通过 <code>CommaSplit</code> 等操作，将字符串按逗号分隔，并转为浮点数，放置到 <code>TensorBuffer</code> 对象中。</p>
+<p>值得一提的是，<code>in_stream_</code> 有2种方法从文件中读取数据，分别是：
+<div class="highlight"><pre><span></span><code><span class="kt">int32_t</span> <span class="nf">PersistentInStream::ReadLine</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">*</span> <span class="n">l</span><span class="p">);</span>
+<span class="kt">int32_t</span> <span class="nf">PersistentInStream::ReadFully</span><span class="p">(</span><span class="kt">char</span><span class="o">*</span> <span class="n">s</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">n</span><span class="p">);</span>
+</code></pre></div>
+<code>ReadLine</code> 读取文件中的一行，至 <code>l</code> 对象；<code>ReadFully</code> 读取 <code>n</code> 个字节的数据，至 <code>s</code> 所指向的内存。均以0作为成功时的返回值。</p>
+<p><code>MiniDataSet</code> 完成从文件到内存缓冲区的工作，接着，我们将使用 <code>MiniParser</code>，将缓冲区中的内容，设置到 Op 的输出中。</p>
+<h3 id="miniparser">MiniParser<a class="headerlink" href="#miniparser" title="Permanent link">&para;</a></h3>
+<p><code>MiniParser</code> 继承自 <code>Parser</code>，我们只需要重写其中的 <code>Parser</code> 方法即可：
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">MiniParser</span> <span class="k">final</span> <span class="o">:</span> <span class="k">public</span> <span class="n">Parser</span><span class="o">&lt;</span><span class="n">TensorBuffer</span><span class="o">&gt;</span> <span class="p">{</span>
+ <span class="k">public</span><span class="o">:</span>
+  <span class="k">using</span> <span class="n">LoadTargetPtr</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">TensorBuffer</span><span class="o">&gt;</span><span class="p">;</span>
+  <span class="k">using</span> <span class="n">LoadTargetPtrList</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">LoadTargetPtr</span><span class="o">&gt;</span><span class="p">;</span>
+
+  <span class="kt">void</span> <span class="nf">Parse</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">LoadTargetPtrList</span><span class="o">&gt;</span> <span class="n">batch_data</span><span class="p">,</span>
+             <span class="n">user_op</span><span class="o">::</span><span class="n">KernelComputeContext</span><span class="o">*</span> <span class="n">ctx</span><span class="p">)</span> <span class="k">override</span> <span class="p">{</span>
+    <span class="n">user_op</span><span class="o">::</span><span class="n">Tensor</span><span class="o">*</span> <span class="n">out_tensor</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">-&gt;</span><span class="n">Tensor4ArgNameAndIndex</span><span class="p">(</span><span class="s">&quot;out&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+    <span class="kt">double</span><span class="o">*</span> <span class="n">dptr</span> <span class="o">=</span> <span class="n">out_tensor</span><span class="o">-&gt;</span><span class="n">mut_dptr</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">();</span>
+
+    <span class="n">MultiThreadLoop</span><span class="p">(</span><span class="n">batch_data</span><span class="o">-&gt;</span><span class="n">size</span><span class="p">(),</span> <span class="p">[</span><span class="o">&amp;</span><span class="p">](</span><span class="kt">size_t</span> <span class="n">i</span><span class="p">)</span> <span class="p">{</span>
+      <span class="n">TensorBuffer</span><span class="o">*</span> <span class="n">buffer</span> <span class="o">=</span> <span class="n">batch_data</span><span class="o">-&gt;</span><span class="n">at</span><span class="p">(</span><span class="n">i</span><span class="p">).</span><span class="n">get</span><span class="p">();</span>
+      <span class="n">dptr</span><span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="mi">2</span><span class="p">]</span><span class="o">=</span> <span class="o">*</span><span class="p">(</span><span class="n">buffer</span><span class="o">-&gt;</span><span class="n">data</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">());</span>
+      <span class="n">dptr</span><span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="mi">2</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">=</span> <span class="o">*</span><span class="p">(</span><span class="n">buffer</span><span class="o">-&gt;</span><span class="n">data</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">()</span><span class="o">+</span><span class="mi">1</span><span class="p">);</span>
+    <span class="p">});</span>
+  <span class="p">}</span>
+<span class="p">};</span>
+</code></pre></div>
+<code>Parser</code> 包含2个参数，其中 <code>batch_data</code> 其实是一个封装了的 <code>vecotr</code>，这个容器内的每个元素，就是之前 <code>MiniDataSet</code> 通过 <code>Next</code> 读取的数据。 参数 <code>ctx</code> 使得我们可以获取 Op 的信息，在这里，我们主要通过 <code>ctx</code> 获取输出，并获取指向输出缓冲区的指针 <code>dptr</code>。</p>
+<p>注意，我们将 <code>batch_data</code> 中的数据设置到 Op 的输出 <code>dptr</code> 的过程中，使用了宏 <code>MultiThreadLoop</code>。<code>MultiThreadLoop</code> 可以让我们的循环逻辑在多线程中执行，它接受2个参数，第一个参数为循环的总次数；第二个参数是一个回调函数，原型为 <code>void callback(size_t i)</code>，OneFlow 会创建多个线程，然后并发调用这个回调函数。回调函数的参数 <code>i</code> 表明了当前循环的序号，使得我们可以根据 <code>i</code> 来划分数据，完成自己的业务逻辑。</p>
+<p>在以上的代码中，我们通过 <code>batch_data-&gt;at(i).get()</code> 获取了缓冲区的第 <code>i</code> 个的数据，然后将其设置到输出的内存区的第 <code>i</code> 行的位置，一共2列。</p>
+<h2 id="data-preprocessor">Data Preprocessor 算子<a class="headerlink" href="#data-preprocessor" title="Permanent link">&para;</a></h2>
+<p>Data Preprocessor 算子，其实就是一种普通的算子，它接受 <code>DataReader</code> 的输出作为自己的输入，然后通过运算后，输出一个或者多个 Blob。</p>
+<p>在 <a href="https://github.com/Oneflow-Inc/oneflow/blob/master/oneflow/user/ops/ofrecord_decoder_ops.cpp">ofrecord_decoder_ops.cpp</a> 可以看到针对 OFRecord 数据的各种预处理操作（以解码为主）。</p>
+<p>我们的 Mini Dataloader 处理的数据比较简单，因此 MiniDecoder 所做的工作也很简单，仅仅是将 <code>DataReader</code> 所输出的每行2列的数据，拆分为2个每行1列的输出 <code>x</code> 与 <code>y</code>。</p>
+<p>Mini Decoder 的 Op 注册为：
+<div class="highlight"><pre><span></span><code><span class="n">REGISTER_CPU_ONLY_USER_OP</span><span class="p">(</span><span class="s">&quot;mini_decoder&quot;</span><span class="p">)</span>
+    <span class="p">.</span><span class="n">Input</span><span class="p">(</span><span class="s">&quot;in&quot;</span><span class="p">)</span>
+    <span class="p">.</span><span class="n">Output</span><span class="p">(</span><span class="s">&quot;x&quot;</span><span class="p">)</span>
+    <span class="p">.</span><span class="n">Output</span><span class="p">(</span><span class="s">&quot;y&quot;</span><span class="p">)</span>
+    <span class="p">.</span><span class="n">SetTensorDescInferFn</span><span class="p">([](</span><span class="n">user_op</span><span class="o">::</span><span class="n">InferContext</span><span class="o">*</span> <span class="n">ctx</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Maybe</span><span class="o">&lt;</span><span class="kt">void</span><span class="o">&gt;</span> <span class="p">{</span>
+      <span class="n">user_op</span><span class="o">::</span><span class="n">TensorDesc</span><span class="o">*</span> <span class="n">in_tensor</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">-&gt;</span><span class="n">TensorDesc4ArgNameAndIndex</span><span class="p">(</span><span class="s">&quot;in&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+      <span class="n">user_op</span><span class="o">::</span><span class="n">TensorDesc</span><span class="o">*</span> <span class="n">out_tensor_x</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">-&gt;</span><span class="n">TensorDesc4ArgNameAndIndex</span><span class="p">(</span><span class="s">&quot;x&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+      <span class="n">user_op</span><span class="o">::</span><span class="n">TensorDesc</span><span class="o">*</span> <span class="n">out_tensor_y</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">-&gt;</span><span class="n">TensorDesc4ArgNameAndIndex</span><span class="p">(</span><span class="s">&quot;y&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+      <span class="c1">// 设置输入输出 Blob 的属性</span>
+      <span class="c1">// ...</span>
+    <span class="p">})</span>
+    <span class="p">.</span><span class="n">SetGetSbpFn</span><span class="p">([](</span><span class="n">user_op</span><span class="o">::</span><span class="n">SbpContext</span><span class="o">*</span> <span class="n">ctx</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Maybe</span><span class="o">&lt;</span><span class="kt">void</span><span class="o">&gt;</span> <span class="p">{</span>
+      <span class="n">ctx</span><span class="o">-&gt;</span><span class="n">NewBuilder</span><span class="p">()</span>
+          <span class="p">.</span><span class="n">Split</span><span class="p">(</span><span class="n">user_op</span><span class="o">::</span><span class="n">OpArg</span><span class="p">(</span><span class="s">&quot;in&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
+          <span class="p">.</span><span class="n">Split</span><span class="p">(</span><span class="n">user_op</span><span class="o">::</span><span class="n">OpArg</span><span class="p">(</span><span class="s">&quot;x&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
+          <span class="p">.</span><span class="n">Split</span><span class="p">(</span><span class="n">user_op</span><span class="o">::</span><span class="n">OpArg</span><span class="p">(</span><span class="s">&quot;y&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
+          <span class="p">.</span><span class="n">Build</span><span class="p">();</span>
+      <span class="c1">//...</span>
+    <span class="p">});</span>
+</code></pre></div></p>
+<p>Mini Decoder 的 Kernel 的实现：
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">MiniDecoderKernel</span> <span class="k">final</span> <span class="o">:</span> <span class="k">public</span> <span class="n">user_op</span><span class="o">::</span><span class="n">OpKernel</span> <span class="p">{</span>
+  <span class="c1">//...</span>
+  <span class="kt">void</span> <span class="nf">Compute</span><span class="p">(</span><span class="n">user_op</span><span class="o">::</span><span class="n">KernelComputeContext</span><span class="o">*</span> <span class="n">ctx</span><span class="p">)</span> <span class="k">const</span> <span class="k">override</span> <span class="p">{</span>
+    <span class="n">user_op</span><span class="o">::</span><span class="n">Tensor</span><span class="o">*</span> <span class="n">in_blob</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">-&gt;</span><span class="n">Tensor4ArgNameAndIndex</span><span class="p">(</span><span class="s">&quot;in&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+    <span class="n">user_op</span><span class="o">::</span><span class="n">Tensor</span><span class="o">*</span> <span class="n">out_blob_x</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">-&gt;</span><span class="n">Tensor4ArgNameAndIndex</span><span class="p">(</span><span class="s">&quot;x&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+    <span class="n">user_op</span><span class="o">::</span><span class="n">Tensor</span><span class="o">*</span> <span class="n">out_blob_y</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">-&gt;</span><span class="n">Tensor4ArgNameAndIndex</span><span class="p">(</span><span class="s">&quot;y&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+
+    <span class="kt">int64_t</span> <span class="n">record_num</span> <span class="o">=</span> <span class="n">in_blob</span><span class="o">-&gt;</span><span class="n">shape</span><span class="p">().</span><span class="n">At</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+
+    <span class="k">const</span> <span class="kt">double</span><span class="o">*</span> <span class="n">input</span> <span class="o">=</span> <span class="n">in_blob</span><span class="o">-&gt;</span><span class="n">dptr</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">();</span>
+    <span class="kt">double</span><span class="o">*</span> <span class="n">out_dptr_x</span> <span class="o">=</span> <span class="n">out_blob_x</span><span class="o">-&gt;</span><span class="n">mut_dptr</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">();</span>
+    <span class="kt">double</span><span class="o">*</span> <span class="n">out_dptr_y</span> <span class="o">=</span> <span class="n">out_blob_y</span><span class="o">-&gt;</span><span class="n">mut_dptr</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">();</span>
+
+    <span class="n">MultiThreadLoop</span><span class="p">(</span><span class="n">record_num</span><span class="p">,</span> <span class="p">[</span><span class="o">&amp;</span><span class="p">](</span><span class="kt">size_t</span> <span class="n">i</span><span class="p">){</span>
+      <span class="o">*</span><span class="p">(</span><span class="n">out_dptr_x</span> <span class="o">+</span> <span class="n">i</span><span class="p">)</span> <span class="o">=</span> <span class="o">*</span><span class="p">(</span><span class="n">input</span><span class="o">+</span><span class="n">i</span><span class="o">*</span><span class="mi">2</span><span class="p">);</span>
+      <span class="o">*</span><span class="p">(</span><span class="n">out_dptr_y</span> <span class="o">+</span> <span class="n">i</span><span class="p">)</span> <span class="o">=</span> <span class="o">*</span><span class="p">(</span><span class="n">input</span><span class="o">+</span><span class="n">i</span><span class="o">*</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span><span class="p">);</span>
+    <span class="p">});</span>
+
+  <span class="p">}</span>
+  <span class="c1">//...</span>
+<span class="p">};</span>
+</code></pre></div>
+可见，在 <code>MiniDecoderKernel::Compute</code> 中主要是获取到输入 <code>in_blob</code>， 然后在多线程循环 <code>MultiThreadLoop</code> 中，将输入的数据拆分到 <code>out_dptr_x</code> 与 <code>out_dptr_y</code> 中，它们分别对应了输出 <code>x</code> 与 <code>y</code>。</p>
+<h2 id="dataloader_2">自定义 DataLoader 的使用<a class="headerlink" href="#dataloader_2" title="Permanent link">&para;</a></h2>
+<p>如 <a href="user_op.html">自定义 Op</a> 一文中所描述，要使用 C++ 层编写的 Op，还需要在 Python 层封装一个 Python Wrapper。这些工作放到了 <a href="https://github.com/Oneflow-Inc/oneflow-documentation/tree/master/cn/docs/code/extended_topics/data_loader/test_mini_dataloader.py">test_mini_dataloader.py</a>中：
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">MiniDecoder</span><span class="p">(</span>
+    <span class="n">input_blob</span><span class="p">,</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Mini_Decoder_uniqueID&quot;</span>
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="n">flow</span><span class="o">.</span><span class="n">user_op_builder</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">Op</span><span class="p">(</span><span class="s2">&quot;mini_decoder&quot;</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">Input</span><span class="p">(</span><span class="s2">&quot;in&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">input_blob</span><span class="p">])</span>
+        <span class="o">.</span><span class="n">Output</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">Output</span><span class="p">(</span><span class="s2">&quot;y&quot;</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">Build</span><span class="p">()</span>
+        <span class="o">.</span><span class="n">InferAndTryRun</span><span class="p">()</span>
+        <span class="o">.</span><span class="n">RemoteBlobList</span><span class="p">()</span>
+    <span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">MiniReader</span><span class="p">(</span>
+    <span class="n">minidata_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="n">data_part_num</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="n">part_name_prefix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;part-&quot;</span><span class="p">,</span>
+    <span class="n">part_name_suffix_length</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">random_shuffle</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">shuffle_after_epoch</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">shuffle_buffer_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1024</span><span class="p">,</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Mini_Reader_uniqueID&quot;</span>
+
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="n">flow</span><span class="o">.</span><span class="n">user_op_builder</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">Op</span><span class="p">(</span><span class="s2">&quot;MiniReader&quot;</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">Output</span><span class="p">(</span><span class="s2">&quot;out&quot;</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">Attr</span><span class="p">(</span><span class="s2">&quot;data_dir&quot;</span><span class="p">,</span> <span class="n">minidata_dir</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">Attr</span><span class="p">(</span><span class="s2">&quot;data_part_num&quot;</span><span class="p">,</span> <span class="n">data_part_num</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">Attr</span><span class="p">(</span><span class="s2">&quot;batch_size&quot;</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">Attr</span><span class="p">(</span><span class="s2">&quot;part_name_prefix&quot;</span><span class="p">,</span> <span class="n">part_name_prefix</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">Attr</span><span class="p">(</span><span class="s2">&quot;random_shuffle&quot;</span><span class="p">,</span> <span class="n">random_shuffle</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">Attr</span><span class="p">(</span><span class="s2">&quot;shuffle_after_epoch&quot;</span><span class="p">,</span> <span class="n">shuffle_after_epoch</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">Attr</span><span class="p">(</span><span class="s2">&quot;part_name_suffix_length&quot;</span><span class="p">,</span> <span class="n">part_name_suffix_length</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">Attr</span><span class="p">(</span><span class="s2">&quot;shuffle_buffer_size&quot;</span><span class="p">,</span> <span class="n">shuffle_buffer_size</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">Build</span><span class="p">()</span>
+        <span class="o">.</span><span class="n">InferAndTryRun</span><span class="p">()</span>
+        <span class="o">.</span><span class="n">RemoteBlobList</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="p">)</span>
+</code></pre></div></p>
+<p>在 <code>test_mini_dataloader.py</code> 中，我们使用自己实现的 <code>MiniReader</code> 与 <code>MiniDecoder</code> 加载并解码了数据集（<code>part-000</code> 与 <code>part-001</code>）中的数据，完成了一次训练。</p>
+<h2 id="mini-dataloader">Mini Dataloader 的编译与测试<a class="headerlink" href="#mini-dataloader" title="Permanent link">&para;</a></h2>
+<p>进入到本文对应的 <a href="https://github.com/Oneflow-Inc/oneflow-documentation/tree/master/cn/docs/code/extended_topics/data_loader/">data_loader</a> 目录。
+修改 <code>Makefile</code> 文件中的 <code>ONEFLOW_ROOT</code> 变量为 OneFlow 源码路径。
+然后通过</p>
+<p><div class="highlight"><pre><span></span><code>make
+</code></pre></div>
+可生成 <code>miniloader.so</code> 文件。</p>
+<p>然后运行 <code>test_mini_dataloader.py</code> 脚本，可以使用 Mini Dataloader 加载数据并完成训练。
+<div class="highlight"><pre><span></span><code>python test_mini_dataloader.py
+</code></pre></div></p>
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+        
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <nav class="md-footer__inner md-grid" aria-label="Footer">
+      
+        
+        <a href="user_op.html" class="md-footer__link md-footer__link--prev" aria-label="上一页: 使用 C++ 扩展 Op" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                上一页
+              </span>
+              使用 C++ 扩展 Op
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="oneflow_convert_tools.html" class="md-footer__link md-footer__link--next" aria-label="下一页: OneFlow 和 ONNX 交互" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                下一页
+              </span>
+              OneFlow 和 ONNX 交互
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+          <div class="md-footer-copyright__highlight">
+            Copyright &copy; 2017 - 2021 OneFlow
+          </div>
+        
+        Made with
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs
+        </a>
+        
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs"], "translations": {"clipboard.copy": "\u590d\u5236", "clipboard.copied": "\u5df2\u590d\u5236", "search.config.lang": "ja", "search.config.pipeline": "trimmer, stemmer", "search.config.separator": "[\\uff0c\\u3002]+", "search.placeholder": "\u641c\u7d22", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.477d984a.min.js", "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.ddd52ceb.min.js"></script>
+      
+    
+  </body>
+</html>

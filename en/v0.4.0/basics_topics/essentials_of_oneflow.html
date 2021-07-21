@@ -1,0 +1,1318 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="OneFlow: a efficient distributed deep learning framework.">
+      
+      
+      
+      
+        <link rel="canonical" href="https://docs.oneflow.org/v0.4.0/basics_topics/essentials_of_oneflow.html">
+      
+      <link rel="icon" href="../assets/favicon.png">
+      <meta name="generator" content="mkdocs-1.2.2, mkdocs-material-7.1.11">
+    
+    
+      
+        <title>OneFlow System Design - OneFlow</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.3754935a.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.f1a3b89f.min.css">
+        
+          
+          
+          <meta name="theme-color" content="#4051b5">
+        
+      
+    
+    
+    
+      
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>:root{--md-text-font-family:"Roboto";--md-code-font-family:"Roboto Mono"}</style>
+      
+    
+    
+    
+    
+      
+
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <script>function __prefix(e){return new URL("..",location).pathname+"."+e}function __get(e,t=localStorage){return JSON.parse(t.getItem(__prefix(e)))}</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#oneflow-system-design" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../index.html" title="OneFlow" class="md-header__button md-logo" aria-label="OneFlow" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 89 89">
+  <path d="M3.136,17.387l0,42.932l42.932,21.467l-42.932,-64.399Z" />
+  <path d="M21.91,8l42.933,64.398l-18.775,9.388l-42.932,-64.399l18.774,-9.387Z" style="fill-opacity: 0.5" />
+  <path d="M67.535,17.387l-27.262,18.156l21.878,32.818l5.384,2.691l0,-53.665Z" />
+  <path d="M67.535,17.387l0,53.666l18.774,-9.388l0,-53.665l-18.774,9.387Z" style="fill-opacity: 0.25" />
+</svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            OneFlow
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              OneFlow System Design
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <div class="md-header__option">
+        <div class="md-select">
+          
+          <button class="md-header__button md-icon" aria-label="Select language">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.52 17.52 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04M18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12m-2.62 7 1.62-4.33L19.12 17h-3.24z"/></svg>
+          </button>
+          <div class="md-select__inner">
+            <ul class="md-select__list">
+              
+                <li class="md-select__item">
+                  <a href="https://docs.oneflow.org/en" hreflang="en" class="md-select__link">
+                    English
+                  </a>
+                </li>
+                
+                <li class="md-select__item">
+                  <a href="https://docs.oneflow.org" hreflang="zh" class="md-select__link">
+                    中文
+                  </a>
+                </li>
+                
+            </ul>
+          </div>
+        </div>
+      </div>
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        
+<a href="https://www.github.com/oneflow-Inc/oneflow" title="Go to repository" class="md-source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    OneFlow
+  </div>
+</a>
+      </div>
+    
+  </nav>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-tabs__inner md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+
+
+  <li class="md-tabs__item">
+    <a href="../index.html" class="md-tabs__link">
+      Home
+    </a>
+  </li>
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../quick_start/install.html" class="md-tabs__link">
+        Quick Start
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+    
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="data_input.html" class="md-tabs__link md-tabs__link--active">
+        Basic Topics
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../extended_topics/job_function_define_call.html" class="md-tabs__link">
+        Extended Topics
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="https://oneflow.readthedocs.io/en/master/" class="md-tabs__link">
+        API
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../contribute/intro.html" class="md-tabs__link">
+        Contribute
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../index.html" title="OneFlow" class="md-nav__button md-logo" aria-label="OneFlow" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 89 89">
+  <path d="M3.136,17.387l0,42.932l42.932,21.467l-42.932,-64.399Z" />
+  <path d="M21.91,8l42.933,64.398l-18.775,9.388l-42.932,-64.399l18.774,-9.387Z" style="fill-opacity: 0.5" />
+  <path d="M67.535,17.387l-27.262,18.156l21.878,32.818l5.384,2.691l0,-53.665Z" />
+  <path d="M67.535,17.387l0,53.666l18.774,-9.388l0,-53.665l-18.774,9.387Z" style="fill-opacity: 0.25" />
+</svg>
+
+    </a>
+    OneFlow
+  </label>
+  
+    <div class="md-nav__source">
+      
+<a href="https://www.github.com/oneflow-Inc/oneflow" title="Go to repository" class="md-source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    OneFlow
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../index.html" class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" >
+      
+      <label class="md-nav__link" for="__nav_2">
+        Quick Start
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="Quick Start" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          Quick Start
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quick_start/install.html" class="md-nav__link">
+        Installation
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quick_start/quickstart_in_3_min.html" class="md-nav__link">
+        Quick Start in 3 Minutes
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quick_start/lenet_mnist.html" class="md-nav__link">
+        Recognition of MNIST Handwritten Digits
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" checked>
+      
+      <label class="md-nav__link" for="__nav_3">
+        Basic Topics
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="Basic Topics" data-md-level="1">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          Basic Topics
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="data_input.html" class="md-nav__link">
+        Data Input
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="build_nn_with_op_and_layer.html" class="md-nav__link">
+        Build a Neural Network
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="optimizer_in_function_config.html" class="md-nav__link">
+        Optimization Algorithm and Parameter Configuration
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="async_get.html" class="md-nav__link">
+        Get results from job function
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="model_load_save.html" class="md-nav__link">
+        Loading and saving of model
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="distributed_train.html" class="md-nav__link">
+        Distributed training
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="concept_explanation.html" class="md-nav__link">
+        Term & Concept Explanation
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          OneFlow System Design
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="essentials_of_oneflow.html" class="md-nav__link md-nav__link--active">
+        OneFlow System Design
+      </a>
+      
+        
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#motivation" class="md-nav__link">
+    Motivation
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#runtime-based-on-actor-system" class="md-nav__link">
+    Runtime based on actor system
+  </a>
+  
+    <nav class="md-nav" aria-label="Runtime based on actor system">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#decentralized-scheduling" class="md-nav__link">
+    Decentralized scheduling
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pipelining" class="md-nav__link">
+    Pipelining
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data-movement-as-a-first-class-citizen" class="md-nav__link">
+    Data movement as a first-class citizen
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#exploit-parallelism-as-much-as-possible" class="md-nav__link">
+    Exploit parallelism as much as possible
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#compile-time-based-on-a-formal-description-of-parallelism" class="md-nav__link">
+    Compile-time based on a formal description of parallelism
+  </a>
+  
+    <nav class="md-nav" aria-label="Compile-time based on a formal description of parallelism">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#placement" class="md-nav__link">
+    Placement
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sbp" class="md-nav__link">
+    SBP
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-most-user-friendly-distributed-framework" class="md-nav__link">
+    The most user-friendly distributed framework
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    Summary
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" >
+      
+      <label class="md-nav__link" for="__nav_4">
+        Extended Topics
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="Extended Topics" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          Extended Topics
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../extended_topics/job_function_define_call.html" class="md-nav__link">
+        The Definition and Call of Job Function
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../extended_topics/consistent_mirrored.html" class="md-nav__link">
+        Consistent & Mirrored View
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../extended_topics/model_mixed_parallel.html" class="md-nav__link">
+        Features of Parallelism in OneFlow
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../extended_topics/ofrecord.html" class="md-nav__link">
+        The OFRecord Data Format
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../extended_topics/how_to_make_ofdataset.html" class="md-nav__link">
+        Loading and Preparing OFRecord Dataset
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../extended_topics/how_to_convert_image_to_ofrecord.html" class="md-nav__link">
+        Convert Image Files to OFRecord Datasets
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../extended_topics/watch_watch_diff.html" class="md-nav__link">
+        Obtain Runtime Data
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../extended_topics/debug_by_vscode.html" class="md-nav__link">
+        Use VS Code to Debug OneFlow
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../extended_topics/user_op.html" class="md-nav__link">
+        User Defined OP
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../extended_topics/oneflow_convert_tools.html" class="md-nav__link">
+        OneFlow And ONNX Convert
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" >
+      
+      <label class="md-nav__link" for="__nav_5">
+        API
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="API" data-md-level="1">
+        <label class="md-nav__title" for="__nav_5">
+          <span class="md-nav__icon md-icon"></span>
+          API
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://oneflow.readthedocs.io/en/master/" class="md-nav__link">
+        API
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6" type="checkbox" id="__nav_6" >
+      
+      <label class="md-nav__link" for="__nav_6">
+        Contribute
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="Contribute" data-md-level="1">
+        <label class="md-nav__title" for="__nav_6">
+          <span class="md-nav__icon md-icon"></span>
+          Contribute
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../contribute/intro.html" class="md-nav__link">
+        Contribute to OneFlow
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#motivation" class="md-nav__link">
+    Motivation
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#runtime-based-on-actor-system" class="md-nav__link">
+    Runtime based on actor system
+  </a>
+  
+    <nav class="md-nav" aria-label="Runtime based on actor system">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#decentralized-scheduling" class="md-nav__link">
+    Decentralized scheduling
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pipelining" class="md-nav__link">
+    Pipelining
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data-movement-as-a-first-class-citizen" class="md-nav__link">
+    Data movement as a first-class citizen
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#exploit-parallelism-as-much-as-possible" class="md-nav__link">
+    Exploit parallelism as much as possible
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#compile-time-based-on-a-formal-description-of-parallelism" class="md-nav__link">
+    Compile-time based on a formal description of parallelism
+  </a>
+  
+    <nav class="md-nav" aria-label="Compile-time based on a formal description of parallelism">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#placement" class="md-nav__link">
+    Placement
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sbp" class="md-nav__link">
+    SBP
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-most-user-friendly-distributed-framework" class="md-nav__link">
+    The most user-friendly distributed framework
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    Summary
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                  <a href="https://github.com/OneFlow-Inc/oneflow-documentation/blob/master/en/docs/basics_topics/essentials_of_oneflow.md" title="Edit this page" class="md-content__button md-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
+                  </a>
+                
+                
+                <h1 id="oneflow-system-design">OneFlow System Design<a class="headerlink" href="#oneflow-system-design" title="Permanent link">&para;</a></h1>
+<p>In this article, we will cover these topics:</p>
+<ul>
+<li>Motivation</li>
+<li>OneFlow feature 1: Runtime based on actor system</li>
+<li>OneFlow feature 2: Compile-time based on a formal description of parallelism</li>
+<li>Summary</li>
+</ul>
+<h2 id="motivation">Motivation<a class="headerlink" href="#motivation" title="Permanent link">&para;</a></h2>
+<p>OneFlow is born for performance and horizontal scalability, especially for multi-nodes and multi-devices scenarios. We expect that users can leverage the power of multiple machines and multiple devices in a way as easy as using a single machine with single device, and enjoy the efficiency of linear speedup.</p>
+<p>Why does OneFlow focus on the performance and user experience in distributed scenarios? With the development of deep learning, the model becomes increasingly large, and the computing power required to train deep learning models will become higher and higher. The computing power and the memory of a single device are far from meeting the needs of deep learning model training, and multiple machines and multiple devices are required for parallelism speedup.</p>
+<p>If the deep learning framework can make multiple interconnected devices work well together and achieve linear speedup, even if the performance of each device is just so so, it can also meet the computing power needs of any scale. This is the so-called horizontal scalability or scaling out. We do believe this is the solution to the increasing need of computing power。</p>
+<p>However, the existing frameworks usually focus on the user experience of a single device, and only handle the multi-machine and multi-devices scenarios that works for data parallelism. That is, mirroring the computation graph on a single device to multiple machines and multiple devices, synchronizing model with Allreduce.</p>
+<p>For models with a huge amount of parameters such as BERT/GPT-3, users often find it not friendly to use, hard to deploy and not efficient to train models on multiple machines and multiple devices when using existing deep learning frameworks. It is also time-consuming for users to learn how to do distributed training. They also need to care about the synchronization of models between multiple machines and multiple devices. In order to solve the above problems in distributed deep learning, both industry and academia not only improve the deep learning framework itself, but also develop a variety of third-party plugins, such as NCCL, Horovod, BytePS, HugeCTR, Mesh-tensorflow, Gpipe, etc. However, it still can’t meet users' unlimited pursuit to performance.</p>
+<p>The core motivation of OneFlow is to make multi-machine and multi-devices distributed training efficiently, and at the same time, to make the distributed training experience as simple as using a single device. Let's introduce the two core ideas of OneFlow, and explain how OneFlow views deep learning training in distributed scenarios.</p>
+<h2 id="runtime-based-on-actor-system">Runtime based on actor system<a class="headerlink" href="#runtime-based-on-actor-system" title="Permanent link">&para;</a></h2>
+<p>Key features:</p>
+<ul>
+<li>
+<p>Decentralized scheduling</p>
+</li>
+<li>
+<p>Pipelining</p>
+</li>
+<li>
+<p>Data movement as a first-class citizen</p>
+</li>
+<li>
+<p>Overlapping data movement and computation</p>
+</li>
+<li>
+<p>Overlapping control and data logic</p>
+</li>
+</ul>
+<p>OneFlow consists of two stages: Compile-time and Runtime. In the Compile-time, user-defined neural networks and the requested resource are compiled into a static graph execution plan, which is composed of the description of the basic execution unit <code>Actor</code>; During the runtime , each machine actually creates many Actor instances located to its own machine based on the Actor description in the Plan, and then started the Actor operating system. In the training procedure, the basic unit of OneFlow execution is Actor, which corresponds to a node of the static execution graph. The data produced and consumed between Actors are stored in the form of <code>Registers</code>, and the Actors cooperate through message passing.</p>
+<h3 id="decentralized-scheduling">Decentralized scheduling<a class="headerlink" href="#decentralized-scheduling" title="Permanent link">&para;</a></h3>
+<p>OneFlow implements decentralized scheduling through the Actor mechanism. In the entire static graph is composed of actors, there is no central scheduler. Each actor only cares about the producer of the data it needs (upstream Actor) and the consumer of the data it produces (downstream Actor). In this way, in the ultra-large-scale distributed training scenario, <strong>completely decentralized scheduling</strong> can avoid the single-point performance bottleneck with centralized scheduling.</p>
+<p>Each Actor has an internal state machine, which updates its status according to the messages sent and received by the Actor. It should be noted that Register is a storage block, which stores the data produced by the Actor, and the message is a lightweight data containing the memory address of the Register storage block. It is message instead of Register that is passed between Actors, in this way, OneFlow runtime achieves zero-copy.</p>
+<p>When an Actor receives a new message and decides whether the Register it needs to consume is ready, and it has free Register to write the produced data. If yes, the Actor executes (Act) once and produces some new data.</p>
+<p>After action, the Actor sends a message to the consumer Actors who need to consume the produced Register, indicating that "you can read the data I produced"; At the same time, the Actor also needs to return the Register it consumes to its producer, indicating that "I have used up your data and you can recycle it." The state machine inside the Actor is shown in Figure 1.</p>
+<div align="center">
+    <img src="imgs/actor_state_machine.png" align='center'/>
+</div>
+
+<p><center>
+Figure 1 Actor state machine inside
+</center></p>
+<p>After the Actor starts, it will switch its two states according to the messages sent and received with other actors: <strong>waiting state</strong> and <strong>execution state</strong> .</p>
+<p>The messages received by an Actor are generally divided into several types:</p>
+<ul>
+<li>
+<p>The upstream producer Actor sends a message saying that you can read the data I produce;</p>
+</li>
+<li>
+<p>the downstream consumer Actor sends a message saying that I have used up the data you produced.</p>
+</li>
+</ul>
+<p>When this data are used up by all consumers, it can be recycled as a free block and wait for the Actor to produce a new data in next time.</p>
+<p>Whenever receiving a message, an Actor will try to decides whether its action conditions are met with. There are generally two action conditions:</p>
+<ul>
+<li>
+<p>Whether all the data to be read are available;</p>
+</li>
+<li>
+<p>Whether there are free blocks that can be used for production. When the action state is satisfied, the actor starts to launch its internal Kernel to consume incoming data and produce some new data.</p>
+</li>
+</ul>
+<p>After action, the Actor will send messages to upstream and downstream:</p>
+<ul>
+<li>
+<p>Send a message to the downstream consumer Actor saying that I just produced a piece of data, you can read them;</p>
+</li>
+<li>
+<p>Send a message to the upstream producer Actor saying that I just used up the data you sent me before.</p>
+</li>
+</ul>
+<p>Actors only need to care about upstream and downstream messages to decide whether they can act or not. All Actors form a <strong>completely decentralized</strong> distributed collaborative network through their own internal state machines and messages exchanging mechanism.</p>
+<h3 id="pipelining">Pipelining<a class="headerlink" href="#pipelining" title="Permanent link">&para;</a></h3>
+<p>In above, we introduced the internal finite state machine of Actors. Message passing and data movement between Actors are implemented by <code>Register</code>. Whether an Actor can act only relates to two conditions:</p>
+<ul>
+<li>
+<p>Whether the Registers consumed by itself are readable;</p>
+</li>
+<li>
+<p>Whether the Registers produced by itself have free blocks to write.</p>
+</li>
+</ul>
+<p>For a Register, if we allocate multiple free blocks for it, two adjacent Actors can work simultaneously. In this way, the overlapping of adjacent actors implements pipelining. In an ideal case, the <code>initiation interval</code> of the entire static execution graph is the execution time of the bottleneck actor's each action, the execution time of all the other actors will be hidden through the pipelining.</p>
+<p>Let's take an example to explain how the pipelining of the Actor system works. Figure 2 is an execution sequence diagram of a computation graph composed of 3 Actors (a, b, c). The green Regst square represents the Register block being occupied, and the white Regst square represents the free block of the same Register.</p>
+<ul>
+<li>
+<p>At Time0, Actor <code>a</code> produces a Regst_a_0, and Actor <code>b</code> and Actor <code>c</code> are in waiting state because they have no readable Register. Here we assume that the execution time of each Actor is the same.</p>
+</li>
+<li>
+<p>At Time1, Actor <code>a</code> sends a message to Actor <code>b</code> saying that you can read the Regst_a_0 that I produced. Actor <code>b</code> receives the message and checks whether there is a free block available in the Register <code>b</code> owned by itself, and finds that there is an available Regst_b_0 , so Actor <code>b</code> executes at Time1, reading Regst_a_0 and writing Regst_b_0; at the same time, Actor <code>a</code> will also check whether it has a free block to write, and finds that it has a free block to write, so Actor <code>a</code> will also begin executing at Time1, writing Regst_a_1. (It should be noted here that Regst_a_0 and Regst_a_1 logically belong to the same Register, but they are spatially divided into different free blocks. In deep learning training task, Regst_a_0 and Regst_a_1 store data belonging to different batches produced by a same producer.) So Actor <code>a</code> and Actor <code>b</code> work in parallel. Actor <code>c</code> is still waiting because there is no data to read.</p>
+</li>
+<li>
+<p>At Time2, Actor <code>b</code> has produced Regst_b_0, so it sends a message to the downstream consumer Actor <code>c</code> that you can read the Regst_b_0 I produced, and at the same time sends a message to the upstream producer Actor <code>a</code> that I have consumed your Regst_a_0 . At the same time, Actor <code>a</code> sends a newly produced Regst_a_1 to Actor <code>b</code>. Actor <code>b</code> checks that it still has Regst_b_1 being free, so Actor <code>b</code> starts to read Regst_a_1 and writes Regst_b_1; Actor <code>c</code> receives Regst_b_0 and finds that it has Regst_c_0 being free, so Actor <code>c</code> starts execution, reading Regst_b_0 and writing Regst_c_0; Actor <code>a</code> receives Regst_a_0 that Actor <code>b</code> has used up and returned the ownership, and checks that all consumers of Regst_a_0 are used up, so Regst_a_0 is recycled and marked as a free block, and Actor <code>a</code> can continue to execute and write Regst_a_2.</p>
+</li>
+</ul>
+<div align="center">
+    <img src="imgs/actor_time_sequence.png" align='center'/>
+</div>
+
+<p><center>
+Figure 2 Actor
+ producer-consumer relationship and execution sequence diagram
+</center></p>
+<p>In the above example, at Time2, Actors <code>a</code>, <code>b</code>, and <code>c</code> are all working simultaneously. In typical deep learning training job, Regst_b_0 and Regst_c_0 at Time2 store the data of Batch 0, and Regst_a_1 and Regst_b_1 store the data of Batch 1. Regst_a_2 stores data of Batch 2. By the design of a Register with multiple free blocks, the Actor naturally supports pipelining.</p>
+<p>Here we raise a further in-depth problem: in OneFlow, the execution of the entire data flow is like a network, and the data flow throught the network and completes the computation. How to slow down the producer's production if it is too fast for the consumer to consume, and how to avoid the case if the producer's production is too slow, and consumers get hungry. This problem involves planning for computing, memory, and transmission bandwidth, so that the bottleneck of the system is as wide as possible. It relates to flow control and resource allocation (For example, how many memory block quotas are allocated to the Register of each Actor). This is a critical problem which has been solved by the OneFlow system.</p>
+<h3 id="data-movement-as-a-first-class-citizen">Data movement as a first-class citizen<a class="headerlink" href="#data-movement-as-a-first-class-citizen" title="Permanent link">&para;</a></h3>
+<p>In a distributed environment with multiple machines and multiple devices, the data movement between machines and devices is often the bottleneck  affecting the horizontal scalability of the system. Only if the movement cost can be overlapped by the computation, can distributed deep learning training achieve the ideal linear speedup. Compared with other frameworks, OneFlow regards data movement as important as computation, thus proposing the idea of <strong>"data movement is the first-class citizen"</strong>.</p>
+<p>Most attention of the conventional frameworks is paid to computation in compile-time. The existing frameworks treat the data movement occuring implicitly behind the scenes. Therefore, the arrangement of overlapping computation and movement is ignored while performing the static analysis of the computation graph. OneFlow explicitly expresses the data movement in the computation graph and treat data movement and data computation equally important in static analysis to maximize the overlapping between data movement and computation.</p>
+<p>In runtime, data movement operations are also carried out by Actors. In addition to actors used for computation on devices, there are also Actors responsible for data movement between host memory and device memory, network Actors for network communication between machines, Actors responsible for data splitting, merging, and replication, Actors responsible for fetching and reading data from disk, and Actors responsible for loading and saving the model, etc. Many other frameworks make data loading, synchronization of model gradients, networks, model loading updates, etc. into a separate module, but in OneFlow, all such complicated functions are implemented in a static execution graph composed of Actors. The design of OneFlow is simple, elegant and efficient.</p>
+<div align="center">
+    <img src="imgs/data_transport.png" align='center'/>
+</div>
+
+<p><center>
+Figure 3 Data movement from one device to another
+</center></p>
+<p>Figure 3 shows that, in the runtime of OneFlow, how the data are moved from the producer to the consumer on another machine if without GPU-direct.</p>
+<h3 id="exploit-parallelism-as-much-as-possible">Exploit parallelism as much as possible<a class="headerlink" href="#exploit-parallelism-as-much-as-possible" title="Permanent link">&para;</a></h3>
+<p>In the design of OneFlow, parallelism is used as much as possible to achieve optimal distributed performance. For example, when considering the distributed training model of gradient synchronization, the transmission bandwidth between device memory and host memory is higher than the network transmission bandwidth between machines. OneFlow will perform two-level scatter and gather operations (local and between each machine) to increase locality and improve overall performance.</p>
+<p>Give another example, when OneFlow is running, the control part of user program (usually is Python) is executed in parallel with the execution graph. When necessary, OneFlow use mutually exclusive section ensure the correctness of the concurrent execution.</p>
+<p>Whether the data loader reads data from disk or is fed data from python, OneFlow ensures that it uses parallelism whenever possible, so that the computing device will not be idle due to waiting for data.</p>
+<p>If existing frameworks want to overlap data movement and computation as much as possible, they usually use multiple nested callback functions. When there are too many nesting levels, the so-called <strong>Callback Hell</strong> becomes troublesome, and the correctness and readability of code may decrease. However, in OneFlow, the above concurrency is implemented with the simple and clear Actor mechanism, which avoids the Callback Hell problem.</p>
+<p>In addition, in the multi-machine network communication, the network communication library in OneFlow not only supports the low level epoll implementation, but also naturally supports high-performance communication protocol such as RDMA. However, in most other deep learning frameworks, they use RPC for data movement in the multi-machine network communication.</p>
+<h2 id="compile-time-based-on-a-formal-description-of-parallelism">Compile-time based on a formal description of parallelism<a class="headerlink" href="#compile-time-based-on-a-formal-description-of-parallelism" title="Permanent link">&para;</a></h2>
+<p>OneFlow may be the most user-friendly deep learning framework that supports data parallelism, model parallelism, and pipelining parallelism in distributed scenarios. Users only need to create a network model as if it’s on a single device, and tell OneFlow which resource (machines and devices) is available. OneFlow will automatically generate an almost optimal execulation plan for the job, enabling the runtime system use these machines and devices in an efficient way.</p>
+<p>This stems from a unique design of OneFlow: Consistent View. For multi-machines and multi-devices, OneFlow will <strong>abstract it into a single super large device</strong> , which we call a logical device. The device memory of this logical device is the sum of the actual device memories of multiple physical devices, and the computing power of this logical device is also the sum of the actual computing power of multiple physical devices.</p>
+<p>The user only needs to define how the deep learning model is constructed in this logical super device, and doesn’t need to worry about how OneFlow maps from the model to the physical devices.</p>
+<p>Here are two concepts: "logical" and "physical". "Logical" means that OneFlow abstracts the distributed computation and data into a single super-device, and "physical" means that the computation and data are actually deployed on various machines and devices.</p>
+<p>The deep learning model is a computation graph composed of Ops, and each Op produces and consumes some data in the form of tensor. In a multi-machine and multi-devices environment, a logical Op is mapped to multiple physical Ops. The computation actually performed by each physical Op is a part of the logical Op computation, and a logical Tensor also is mapped to multiple physical Tensors, and each physical Tensor is a part of the logical Tensor.</p>
+<p>In distributed training defined by other frameworks, each device is viewed as a "world", and the data or parameters are synchronized between multiple devices according to the exposed interface; In OneFlow, the involved multiple machines and multiple devices are together viewed as a "world". In the following, we introduce a set of Placement+SBP method for overall management of the world.</p>
+<h3 id="placement">Placement<a class="headerlink" href="#placement" title="Permanent link">&para;</a></h3>
+<p>While creating the computation graph, each computation Op can be assigned an attribute called Placement, indicating on which machines and devices the logical Op will be deployed. In general data parallelism, all Ops are deployed on all devices. However, OneFlow also supports user-specified Op Placement. For example, if the network is too large for a single device to accommodate at all, OneFlow allows the first part of the network to be on one device and the second part on the other device. The devices work together like in a "relay game", which enables pipelining parallelism.</p>
+<p>Figure 4 shows an example of a possible Placement. The user defines a network consisting of 3 Ops: Op_0 -&gt; Op_1 -&gt; Op_2.</p>
+<p>In this example, the Placement of Op_0 and Op_1 is Device 0, and the Placement of Op_2 is Device 1. This is an example of pipelining parallelism. Oneflow will automatically insert the Copy Op needed for data transfer between Op_1 and Op_2.</p>
+<div align="center">
+    <img src="imgs/pipeline_placement.png" align='center'/>
+</div>
+
+<p><center>
+Figure 4 a placement for pipelining parallelism
+</center></p>
+<h3 id="sbp">SBP<a class="headerlink" href="#sbp" title="Permanent link">&para;</a></h3>
+<p>SBP is a unique concept of OneFlow. It is a combination of the initials of three words: Split, Broadcast, PartialSum (taking PartialSum as an example, in fact, it can also be a reduce operation such as PartialMin, PartialMax). The full name of SBP is SbpParallel, which represents a mapping relationship between the logic Tensor and the physical Tensor.</p>
+<p>Split means that the physical Tensor is obtained by splitting the logical Tensor along a certain dimension. An <code>axis</code> parameter is used to indicate the dimension of the split. If multiple physical Tensors are concatenated along the dimension of Split, the logical Tensor can be restored.</p>
+<p>Broadcast indicates that each physical Tensor is exactly a copy of the logical Tensor.</p>
+<p>PartialSum indicates that although the physical Tensor has the same shape as the logical Tensor, the value in the physical Tensor is a part of the value in the corresponding position in the logical Tensor, if you add multiple physical Tensors at the same positions, you can restore the logical Tensor.</p>
+<p>Figure 5 shows a simple example of SbpParallel.</p>
+<div align="center">
+    <img src="imgs/sbp_parallel.png" align='center'/>
+</div>
+
+<p><center>
+Figure 5 Examples of SbpParallel
+</center></p>
+<p>SbpSignature is a collection of SbpParallels, each of which is an attribute of a specific Op. It depicts how a logical Op is mapped to multiple physical Ops on each device, and how these physical Ops treat the logical and physical mapping of their Input and Output Tensors. An Op may have multiple legal SbpSignatures. A simple legal signature is that the SbpParallel values of both input and output are Broadcast, which means that each physical Op needs the entire logical Tensor.</p>
+<p>Once the logical computation graph is constructed by the user, OneFlow generates a distributed physical execution graph by the Compiler. Among the feasible Placements of Ops and the list of legal SbpSignature of each Op, the Compile is able to find an optimal SbpSignature (such as with he minimum transmission cost) for each Op, so that the Compiler can generate the most efficient execution plan.</p>
+<p>Regarding to the list of legal SbpSignatures of an Op, we will give an example of an Op of matrix multiplication (matmul).</p>
+<p>Definition: <code>Y = matmul(A,B)</code>, <code>A</code>, <code>B</code>, <code>Y</code> are all <code>Tensor</code>, which means <code>Y = AB</code>. Then there are at least two legal SbpSignatures:</p>
+<ul>
+<li>
+<p>1) Y: <code>Split(0)</code>, A: <code>Split(0)</code> , B: <code>Broadcast</code></p>
+</li>
+<li>
+<p>2) Y: <code>Split(1)</code>, A: <code>Broadcast</code>, B: <code>Split(1)</code></p>
+</li>
+</ul>
+<p>The diagram of the two legal signatures on the two devices is shown in Figure 6. Assume that the shapes of the logical input and output Tensor of MatMul is:</p>
+<div class="highlight"><pre><span></span><code>A(64, 10) × B(10, 50) -&gt; Y(64, 50)
+</code></pre></div>
+<div align="center">
+    <img src="imgs/sbp_signature.png" align='center'/>
+</div>
+
+<p><center>
+Figure 6 Two leagal SbpSignatures of MatMul
+</center></p>
+<p>, and the Op is distributed on two devices. Under the first SbpSignature, A on device 0 is the first half of logical A, A on device 1 is the second half of logical A (division along the 0<sup>th</sup> dimension), and B on both devices is exactly the same as the logical B. The output Y from the two devices is the first half and the second half of the logical Y respectively. The second SbpSignature can also be analyzed in the same way.</p>
+<p>It should be noted that when A is data and B is model, the first SbpSignature is actually <strong>data parallelism</strong> , and the second SbpSignature is <strong>model parallelism</strong> . If there’re two adjacent MatMul ops, the former uses the first SbpSignature and the latter uses the second SbpSignature, the entire network will form the so-called <strong>hybrid parallelism</strong> .</p>
+<p>Figure 7 is an example of hybrid parallelism. It defines Y0 = MatMul_0(A0, B0), Y1 = MatMul_1(Y0, B1), a computation graph composed of two ops, where A0, Y0, Y1 are data Tensor, B0 , B1 is the model Tensor.</p>
+<div align="center">
+    <img src="imgs/mixed_parallel.png" align='center'/>
+</div>
+
+<p><center>
+Figure 7 Hybrid parallelism
+</center></p>
+<p>In Figure 7, Y0 produced by MatMul_0 is consumed by MatMul_1, but the two ops view the SBP of the same Tensor differently. MatMul_0 considers Y0 to be a Split (axis=0) segment, but MatMul_1 needs a Broadcast Y0 input. To achieve the mathematical consistency, OneFlow will automatically insert a "universal" Boxing Op to do the necessary data splitting, concatenating, handling and summing operations, so that all Ops can efficiently get the data they want in a distributed environment.</p>
+<p>In data parallelism, if the Tensor in a training forward model is Broadcast, the corresponding gradient computation in the backward direction is PartialSum. When the Optimizer needs all the gradients to update the model, it will trigger the Boxing mechanism to perform efficient gradient synchronization.</p>
+<h3 id="the-most-user-friendly-distributed-framework">The most user-friendly distributed framework<a class="headerlink" href="#the-most-user-friendly-distributed-framework" title="Permanent link">&para;</a></h3>
+<p>OneFlow’s Placement + SBP + Boxing mechanisms allow Op and Tensor in user-defined computation graphs to be distributed on various machines and devices in any way. No matter it is data parallelism, model parallelism or pipelining parallelism, for OneFlow, it is just a combination of a specific SbpSignature under a specific Placement, which can be easily configured by the user, or handed over to OneFlow for automatic processing.</p>
+<p>In addition, before Microsoft launched the ZeRO-2 framework, OneFlow already supported similar features. In the multiple machines and multiple devices scenarios, each model Tensor is only saved on one of the devices, reducing the memory usage in gradient computations.</p>
+<h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
+<p>In summary, during the compile time, OneFlow introduces a mathematically rigorous formal system to describe all legal parallel modes, and enable the compiler to automatically search for the optimal parallel mode conveniently.</p>
+<p>At the runtime, the Actor system supports parallel and concurrent execution in an flexible and efficient way. The core of OneFlow runtime system has the advantages of simplicity, efficiency and high scalability.</p>
+<p>Based on such mechanisms, OneFlow makes the distributed training extremely efficient, and makes it as easy as training on a single device.</p>
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+        
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <nav class="md-footer__inner md-grid" aria-label="Footer">
+      
+        
+        <a href="concept_explanation.html" class="md-footer__link md-footer__link--prev" aria-label="Previous: Term &amp; Concept Explanation" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              Term & Concept Explanation
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="../extended_topics/job_function_define_call.html" class="md-footer__link md-footer__link--next" aria-label="Next: The Definition and Call of Job Function" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              The Definition and Call of Job Function
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+          <div class="md-footer-copyright__highlight">
+            Copyright &copy; 2017 - 2021 OneFlow
+          </div>
+        
+        Made with
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs
+        </a>
+        
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.477d984a.min.js", "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.ddd52ceb.min.js"></script>
+      
+    
+  </body>
+</html>

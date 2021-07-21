@@ -1,0 +1,1281 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="OneFlow -- 极致性能的分布式机器学习框架">
+      
+      
+      
+      
+        <link rel="canonical" href="https://docs.oneflow.org/v0.4.0/basics_topics/data_input.html">
+      
+      <link rel="icon" href="../assets/favicon.png">
+      <meta name="generator" content="mkdocs-1.2.2, mkdocs-material-7.1.11">
+    
+    
+      
+        <title>数据输入 - OneFlow</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.3754935a.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.f1a3b89f.min.css">
+        
+          
+          
+          <meta name="theme-color" content="#4051b5">
+        
+      
+    
+    
+    
+      
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>:root{--md-text-font-family:"Roboto";--md-code-font-family:"Roboto Mono"}</style>
+      
+    
+    
+    
+    
+      
+
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <script>function __prefix(e){return new URL("..",location).pathname+"."+e}function __get(e,t=localStorage){return JSON.parse(t.getItem(__prefix(e)))}</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#_1" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../index.html" title="OneFlow" class="md-header__button md-logo" aria-label="OneFlow" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 89 89">
+  <path d="M3.136,17.387l0,42.932l42.932,21.467l-42.932,-64.399Z" />
+  <path d="M21.91,8l42.933,64.398l-18.775,9.388l-42.932,-64.399l18.774,-9.387Z" style="fill-opacity: 0.5" />
+  <path d="M67.535,17.387l-27.262,18.156l21.878,32.818l5.384,2.691l0,-53.665Z" />
+  <path d="M67.535,17.387l0,53.666l18.774,-9.388l0,-53.665l-18.774,9.387Z" style="fill-opacity: 0.25" />
+</svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            OneFlow
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              数据输入
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <div class="md-header__option">
+        <div class="md-select">
+          
+          <button class="md-header__button md-icon" aria-label="Select language">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.52 17.52 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04M18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12m-2.62 7 1.62-4.33L19.12 17h-3.24z"/></svg>
+          </button>
+          <div class="md-select__inner">
+            <ul class="md-select__list">
+              
+                <li class="md-select__item">
+                  <a href="https://docs.oneflow.org" hreflang="zh" class="md-select__link">
+                    中文
+                  </a>
+                </li>
+                
+                <li class="md-select__item">
+                  <a href="https://docs.oneflow.org/en" hreflang="en" class="md-select__link">
+                    English
+                  </a>
+                </li>
+                
+            </ul>
+          </div>
+        </div>
+      </div>
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        
+<a href="https://www.github.com/oneflow-Inc/oneflow" title="前往 GitHub 仓库" class="md-source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    OneFlow
+  </div>
+</a>
+      </div>
+    
+  </nav>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-tabs__inner md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+
+
+  <li class="md-tabs__item">
+    <a href="../index.html" class="md-tabs__link">
+      首页
+    </a>
+  </li>
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../quick_start/install.html" class="md-tabs__link">
+        快速上手
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+    
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="data_input.html" class="md-tabs__link md-tabs__link--active">
+        基础专题
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../extended_topics/job_function_define_call.html" class="md-tabs__link">
+        扩展专题
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../adv_examples/resnet.html" class="md-tabs__link">
+        高级应用实例
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="https://oneflow.readthedocs.io/en/master/" class="md-tabs__link">
+        API
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../contribute/intro.html" class="md-tabs__link">
+        OneFlow 开源计划
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../index.html" title="OneFlow" class="md-nav__button md-logo" aria-label="OneFlow" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 89 89">
+  <path d="M3.136,17.387l0,42.932l42.932,21.467l-42.932,-64.399Z" />
+  <path d="M21.91,8l42.933,64.398l-18.775,9.388l-42.932,-64.399l18.774,-9.387Z" style="fill-opacity: 0.5" />
+  <path d="M67.535,17.387l-27.262,18.156l21.878,32.818l5.384,2.691l0,-53.665Z" />
+  <path d="M67.535,17.387l0,53.666l18.774,-9.388l0,-53.665l-18.774,9.387Z" style="fill-opacity: 0.25" />
+</svg>
+
+    </a>
+    OneFlow
+  </label>
+  
+    <div class="md-nav__source">
+      
+<a href="https://www.github.com/oneflow-Inc/oneflow" title="前往 GitHub 仓库" class="md-source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    OneFlow
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../index.html" class="md-nav__link">
+        首页
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" >
+      
+      <label class="md-nav__link" for="__nav_2">
+        快速上手
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="快速上手" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          快速上手
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quick_start/install.html" class="md-nav__link">
+        安装
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quick_start/quickstart_in_3_min.html" class="md-nav__link">
+        3分钟快速上手
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quick_start/lenet_mnist.html" class="md-nav__link">
+        识别 MNIST 手写体数字
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" checked>
+      
+      <label class="md-nav__link" for="__nav_3">
+        基础专题
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="基础专题" data-md-level="1">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          基础专题
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          数据输入
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="data_input.html" class="md-nav__link md-nav__link--active">
+        数据输入
+      </a>
+      
+        
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#numpy" class="md-nav__link">
+    使用 Numpy 数据作为输入
+  </a>
+  
+    <nav class="md-nav" aria-label="使用 Numpy 数据作为输入">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    运行例子
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    代码解读
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dataloader" class="md-nav__link">
+    使用 DataLoader 及相关算子
+  </a>
+  
+    <nav class="md-nav" aria-label="使用 DataLoader 及相关算子">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    运行例子
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    代码解读
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dataloader_1" class="md-nav__link">
+    支持更多格式的 DataLoader
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="build_nn_with_op_and_layer.html" class="md-nav__link">
+        搭建神经网络
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="optimizer_in_function_config.html" class="md-nav__link">
+        优化算法及超参配置
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="async_get.html" class="md-nav__link">
+        获取作业函数的结果
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="model_load_save.html" class="md-nav__link">
+        模型的加载与保存
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="distributed_train.html" class="md-nav__link">
+        分布式训练
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="concept_explanation.html" class="md-nav__link">
+        OneFlow 概念清单
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="essentials_of_oneflow.html" class="md-nav__link">
+        OneFlow 系统设计
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" >
+      
+      <label class="md-nav__link" for="__nav_4">
+        扩展专题
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="扩展专题" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          扩展专题
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../extended_topics/job_function_define_call.html" class="md-nav__link">
+        作业函数的定义与调用
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../extended_topics/consistent_mirrored.html" class="md-nav__link">
+        Consistent 与 Mirrored 视角
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../extended_topics/model_mixed_parallel.html" class="md-nav__link">
+        OneFlow 的并行特色
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../extended_topics/ofrecord.html" class="md-nav__link">
+        OFRecord 数据格式
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../extended_topics/how_to_make_ofdataset.html" class="md-nav__link">
+        加载与准备 OFRecord 数据集
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../extended_topics/how_to_convert_image_to_ofrecord.html" class="md-nav__link">
+        将图片文件制作为 OFRecord 数据集
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../extended_topics/watch_watch_diff.html" class="md-nav__link">
+        获取运行时数据
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../extended_topics/debug_by_vscode.html" class="md-nav__link">
+        使用 VS Code 调试 OneFlow
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../extended_topics/python_kernel_op.html" class="md-nav__link">
+        使用 Python 扩展 Op
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../extended_topics/user_op.html" class="md-nav__link">
+        使用 C++ 扩展 Op
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../extended_topics/implement_data_loader.html" class="md-nav__link">
+        自定义 DataLoader
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../extended_topics/oneflow_convert_tools.html" class="md-nav__link">
+        OneFlow 和 ONNX 交互
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" >
+      
+      <label class="md-nav__link" for="__nav_5">
+        高级应用实例
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="高级应用实例" data-md-level="1">
+        <label class="md-nav__title" for="__nav_5">
+          <span class="md-nav__icon md-icon"></span>
+          高级应用实例
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adv_examples/resnet.html" class="md-nav__link">
+        ResNet
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adv_examples/yolov3.html" class="md-nav__link">
+        YoloV3
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adv_examples/bert.html" class="md-nav__link">
+        BERT
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adv_examples/wide_deep.html" class="md-nav__link">
+        Wide & Deep
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6" type="checkbox" id="__nav_6" >
+      
+      <label class="md-nav__link" for="__nav_6">
+        API
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="API" data-md-level="1">
+        <label class="md-nav__title" for="__nav_6">
+          <span class="md-nav__icon md-icon"></span>
+          API
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://oneflow.readthedocs.io/en/master/" class="md-nav__link">
+        API
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_7" type="checkbox" id="__nav_7" >
+      
+      <label class="md-nav__link" for="__nav_7">
+        OneFlow 开源计划
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="OneFlow 开源计划" data-md-level="1">
+        <label class="md-nav__title" for="__nav_7">
+          <span class="md-nav__icon md-icon"></span>
+          OneFlow 开源计划
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../contribute/intro.html" class="md-nav__link">
+        OneFlow 开源计划
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#numpy" class="md-nav__link">
+    使用 Numpy 数据作为输入
+  </a>
+  
+    <nav class="md-nav" aria-label="使用 Numpy 数据作为输入">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    运行例子
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    代码解读
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dataloader" class="md-nav__link">
+    使用 DataLoader 及相关算子
+  </a>
+  
+    <nav class="md-nav" aria-label="使用 DataLoader 及相关算子">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    运行例子
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    代码解读
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dataloader_1" class="md-nav__link">
+    支持更多格式的 DataLoader
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                  <a href="https://github.com/OneFlow-Inc/oneflow-documentation/blob/master/cn/docs/basics_topics/data_input.md" title="编辑此页" class="md-content__button md-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
+                  </a>
+                
+                
+                <h1 id="_1">数据输入<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
+<p>深度学习是一种数据驱动的技术，为了兼顾易用性与效率， OneFlow 提供了两种“喂”数据给神经网络的方法：</p>
+<ul>
+<li>一种方法，可以直接将 NumPy ndarray 对象作为参数传递给作业函数。也就是说 OneFlow 能够直接使用 NumPy 数据作为输入。</li>
+<li>另外一种方法是使用 OneFlow 的 <a href="https://oneflow.readthedocs.io/en/master/data.html">DataLoader</a> 及其相关算子，从文件系统加载特定格式的数据集并做预处理。</li>
+</ul>
+<p>直接使用 NumPy 数据的方式简单方便，但仅适合小数据量的情况。因为当数据量过大时，可能在准备 NumPy 数据上遭遇效率瓶颈。因此，这种方式比较适合项目的初始阶段，快速验证和改进算法；</p>
+<p>OneFlow 的 DataLoader 内部采用了多线程和数据流水线等技术使得数据加载、数据预处理等效率更高。但是，需要为已经支持的格式<a href="../extended_topics/how_to_make_ofdataset.html">准备数据集</a>或为 OneFlow 暂时还不支持的格式<a href="../extended_topics/implement_data_loader.html">开发自己的 DataLoader</a>。因此，推荐在成熟的项目中使用。</p>
+<h2 id="numpy">使用 Numpy 数据作为输入<a class="headerlink" href="#numpy" title="Permanent link">&para;</a></h2>
+<h3 id="_2">运行例子<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h3>
+<p>在 Oneflow 中，可以直接使用 NumPy 类型的数据作为作业函数的输入，下面是一个完整的例子：</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># feed_numpy.py</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">oneflow</span> <span class="k">as</span> <span class="nn">flow</span>
+<span class="kn">import</span> <span class="nn">oneflow.typing</span> <span class="k">as</span> <span class="nn">tp</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span>
+
+
+<span class="nd">@flow</span><span class="o">.</span><span class="n">global_function</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;predict&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">test_job</span><span class="p">(</span>
+    <span class="n">images</span><span class="p">:</span> <span class="n">tp</span><span class="o">.</span><span class="n">Numpy</span><span class="o">.</span><span class="n">Placeholder</span><span class="p">((</span><span class="mi">32</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">28</span><span class="p">,</span> <span class="mi">28</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">flow</span><span class="o">.</span><span class="n">float</span><span class="p">),</span>
+    <span class="n">labels</span><span class="p">:</span> <span class="n">tp</span><span class="o">.</span><span class="n">Numpy</span><span class="o">.</span><span class="n">Placeholder</span><span class="p">((</span><span class="mi">32</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">flow</span><span class="o">.</span><span class="n">int32</span><span class="p">),</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">tp</span><span class="o">.</span><span class="n">Numpy</span><span class="p">,</span> <span class="n">tp</span><span class="o">.</span><span class="n">Numpy</span><span class="p">]:</span>
+    <span class="c1"># do something with images or labels</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">images</span><span class="p">,</span> <span class="n">labels</span><span class="p">)</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">images_in</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">28</span><span class="p">,</span> <span class="mi">28</span><span class="p">))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+    <span class="n">labels_in</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="p">(</span><span class="mi">32</span><span class="p">,))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
+    <span class="n">images</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">test_job</span><span class="p">(</span><span class="n">images_in</span><span class="p">,</span> <span class="n">labels_in</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">images</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">labels</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+</code></pre></div>
+<p>下载完整代码：<a href="../code/basics_topics/feed_numpy.py">feed_numpy.py</a> ，然后用 python 执行即可：</p>
+<p><div class="highlight"><pre><span></span><code>python feed_numpy.py
+</code></pre></div>
+将得到如下结果
+<div class="highlight"><pre><span></span><code><span class="o">(</span><span class="m">32</span>, <span class="m">1</span>, <span class="m">28</span>, <span class="m">28</span><span class="o">)</span> <span class="o">(</span><span class="m">32</span>,<span class="o">)</span>
+</code></pre></div></p>
+<h3 id="_3">代码解读<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>
+<p>在上面的代码中，我们定义了一个作业函数 <code>test_job()</code>，其输入为 <code>images</code> 和 <code>labels</code> ，并且通过注解(注意形参后面是“:”，而不是“=”。)指定了数据的形状与数据类型。</p>
+<p>因此，例子中按照作业函数对形状和数据类型的要求随机生成了 NumPy数据：<code>images_in</code> 和 <code>labels_in</code> ：
+<div class="highlight"><pre><span></span><code>  <span class="n">images_in</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">28</span><span class="p">,</span> <span class="mi">28</span><span class="p">))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+  <span class="n">labels_in</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="p">))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
+</code></pre></div></p>
+<p>并在调用作业函数时，直接将 NumPy 数据 <code>images_in</code> 和 <code>labels_in</code> 作为参数传递：
+<div class="highlight"><pre><span></span><code><span class="n">images</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">test_job</span><span class="p">(</span><span class="n">images_in</span><span class="p">,</span> <span class="n">labels_in</span><span class="p">)</span>
+</code></pre></div></p>
+<p>代码中的 <code>oneflow.typing.Numpy.Placeholder</code> 是 NumPy <code>ndarray</code> 对象的占位符，OneFlow 中还有多种占位符，可以表示更复杂的 NumPy 数据形式。具体可以参考<a href="../extended_topics/job_function_define_call.html">作业函数的定义与调用</a>。</p>
+<h2 id="dataloader">使用 DataLoader 及相关算子<a class="headerlink" href="#dataloader" title="Permanent link">&para;</a></h2>
+<p>在 <a href="https://oneflow.readthedocs.io/en/master/data.html">oneflow.data</a> 模块下，有用于加载数据集的 DataLoader 算子以及相关的数据预处理算子。DataLoader 一般以 <code>data.xxx_reader</code> 的形式命名，如目前已有的 <code>data.ofrecord_reader</code> 和 <code>data.coco_reader</code>，分别支持 OneFlow 原生的 <code>OFRecord</code> 格式的文件和 COCO 数据集。</p>
+<p>此外，在该模块下，还包含有其它数据预处理算子，用于处理 DataLoader 加载后的数据。如下文代码使用的 <code>data.OFRecordImageDecoderRandomCrop</code> 用于图片随机裁剪，<code>data.OFRecordRawDecoder</code> 用于图片解码。具体使用方法可以查阅 <a href="https://oneflow.readthedocs.io/en/master/index.html">API 文档</a>。</p>
+<h3 id="_4">运行例子<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h3>
+<p>以下的例子，读取 <code>OFRecord</code> 数据格式文件，处理的是 ImageNet 数据集中的图片。完整代码可以点此下载：<a href="../code/basics_topics/of_data_pipeline.py">of_data_pipeline.py</a></p>
+<p>这个脚本，需要一个 OFRecord 数据集，你可以根据<a href="../extended_topics/how_to_make_ofdataset.html">这篇文章</a>自己制作一个。</p>
+<p>或者下载我们已经准备好的 <a href="https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/basics_topics/part-00000">part-00000</a> 数据文件，它包含了64张图片。并且，将脚本中的 <code>path/to/ImageNet/ofrecord</code> 替换为 <code>part-00000</code> 文件 <strong>所在的目录</strong>，然后运行脚本。</p>
+<p>以下是使用我们预先准备的数据集运行脚本的例子:</p>
+<div class="highlight"><pre><span></span><code>wget https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/basics_topics/part-00000
+sed -i &quot;s:path/to/ImageNet/ofrecord:./:&quot; of_data_pipeline.py
+python3 of_data_pipeline.py
+</code></pre></div>
+<p>将得到下面的输出：
+<div class="highlight"><pre><span></span><code>(64, 3, 224, 224) (64,)
+</code></pre></div></p>
+<h3 id="_5">代码解读<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h3>
+<p>使用 OneFlow DataLoader 一般为两个阶段： <strong>数据加载</strong> 和 <strong>数据预处理</strong> 。</p>
+<p>脚本中 <code>flow.data.ofrecord_reader</code> 负责从文件系统中加载数据到内存。
+<div class="highlight"><pre><span></span><code>    <span class="n">ofrecord</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">ofrecord_reader</span><span class="p">(</span>
+        <span class="s2">&quot;path/to/ImageNet/ofrecord&quot;</span><span class="p">,</span>
+        <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span>
+        <span class="n">data_part_num</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">part_name_suffix_length</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+        <span class="n">random_shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">shuffle_after_epoch</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+</code></pre></div></p>
+<p>需要指定 OFRecord 格式文件所在的目录，和一些其他参数，请参考 <a href="https://oneflow.readthedocs.io/en/master/data.html#oneflow.data.ofrecord_reader">data.ofrecord_reader</a></p>
+<p>DataLoader 的返回值，如果是简单的基本数据类型，那么可以直接作为下游的算子的输入，否则，需要继续调用数据预处理算子，进行预处理。</p>
+<p>比如，在以上脚本中：
+<div class="highlight"><pre><span></span><code>    <span class="n">image</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">OFRecordImageDecoderRandomCrop</span><span class="p">(</span>
+        <span class="n">ofrecord</span><span class="p">,</span> <span class="s2">&quot;encoded&quot;</span><span class="p">,</span> <span class="n">color_space</span><span class="o">=</span><span class="n">color_space</span>
+    <span class="p">)</span>
+    <span class="n">label</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">OFRecordRawDecoder</span><span class="p">(</span>
+        <span class="n">ofrecord</span><span class="p">,</span> <span class="s2">&quot;class/label&quot;</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">flow</span><span class="o">.</span><span class="n">int32</span>
+    <span class="p">)</span>
+    <span class="n">rsz</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">image</span><span class="o">.</span><span class="n">Resize</span><span class="p">(</span>
+        <span class="n">image</span><span class="p">,</span> <span class="n">resize_x</span><span class="o">=</span><span class="mi">224</span><span class="p">,</span> <span class="n">resize_y</span><span class="o">=</span><span class="mi">224</span><span class="p">,</span> <span class="n">color_space</span><span class="o">=</span><span class="n">color_space</span>
+    <span class="p">)</span>
+    <span class="n">rng</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">CoinFlip</span><span class="p">(</span><span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">)</span>
+    <span class="n">normal</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">image</span><span class="o">.</span><span class="n">CropMirrorNormalize</span><span class="p">(</span>
+        <span class="n">rsz</span><span class="p">,</span>
+        <span class="n">mirror_blob</span><span class="o">=</span><span class="n">rng</span><span class="p">,</span>
+        <span class="n">color_space</span><span class="o">=</span><span class="n">color_space</span><span class="p">,</span>
+        <span class="n">mean</span><span class="o">=</span><span class="p">[</span><span class="mf">123.68</span><span class="p">,</span> <span class="mf">116.779</span><span class="p">,</span> <span class="mf">103.939</span><span class="p">],</span>
+        <span class="n">std</span><span class="o">=</span><span class="p">[</span><span class="mf">58.393</span><span class="p">,</span> <span class="mf">57.12</span><span class="p">,</span> <span class="mf">57.375</span><span class="p">],</span>
+        <span class="n">output_dtype</span><span class="o">=</span><span class="n">flow</span><span class="o">.</span><span class="n">float</span><span class="p">,</span>
+    <span class="p">)</span>
+</code></pre></div></p>
+<p><code>OFRecordImageDecoderRandomCrop</code> 负责图片解码并随机做了裁剪，<code>OFRecordRawDecoder</code> 负责从 ofrecord 对象中直接解码出标签， <code>image.Resize</code> 把裁剪后的图片调整成224x224的大小， <code>CropMirrorNormalize</code> 把图片进行了正则化。</p>
+<h2 id="dataloader_1">支持更多格式的 DataLoader<a class="headerlink" href="#dataloader_1" title="Permanent link">&para;</a></h2>
+<p>OneFlow 提供了一些 DataLoader 和预处理的算子，详细请参考 <a href="https://oneflow.readthedocs.io/en/master/data.html">oneflow.data</a>。未来会不断丰富和优化这些算子，用户也可以参考 <a href="../extended_topics/implement_data_loader.html">这篇文章</a> 自定义 DataLoader 满足特定的需求。</p>
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+        
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <nav class="md-footer__inner md-grid" aria-label="Footer">
+      
+        
+        <a href="../quick_start/lenet_mnist.html" class="md-footer__link md-footer__link--prev" aria-label="上一页: 识别 MNIST 手写体数字" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                上一页
+              </span>
+              识别 MNIST 手写体数字
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="build_nn_with_op_and_layer.html" class="md-footer__link md-footer__link--next" aria-label="下一页: 搭建神经网络" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                下一页
+              </span>
+              搭建神经网络
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+          <div class="md-footer-copyright__highlight">
+            Copyright &copy; 2017 - 2021 OneFlow
+          </div>
+        
+        Made with
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs
+        </a>
+        
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs"], "translations": {"clipboard.copy": "\u590d\u5236", "clipboard.copied": "\u5df2\u590d\u5236", "search.config.lang": "ja", "search.config.pipeline": "trimmer, stemmer", "search.config.separator": "[\\uff0c\\u3002]+", "search.placeholder": "\u641c\u7d22", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.477d984a.min.js", "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.ddd52ceb.min.js"></script>
+      
+    
+  </body>
+</html>
