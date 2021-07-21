@@ -2,6 +2,7 @@ import oneflow.experimental as flow
 import oneflow.experimental.nn as nn
 import numpy as np 
 
+
 flow.enable_eager_execution()
 
 # 下载并设置数据
