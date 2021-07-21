@@ -11,6 +11,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: pip3 install --user -r requirements.txt
+      - run: git config --global user.email "ci-bot@oneflow.org"
+      - run: git config --global user.name "oneflow-ci-bot"
       - run: sh ./scripts/run-mike.sh
       - run: git checkout docs_output
       - run: git checkout master -- CNAME
