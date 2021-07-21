@@ -13,6 +13,8 @@ jobs:
       - run: pip3 install --user -r requirements.txt
       - run: sh ./scripts/run-mike.sh
       - run: git checkout docs_output
+      - run: git checkout master CNAME
+      - run: mv CNAME ./_site/
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
