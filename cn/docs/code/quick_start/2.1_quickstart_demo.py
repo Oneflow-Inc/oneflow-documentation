@@ -20,7 +20,7 @@ hidden_size1 = 128
 hidden_size2 = 64
 num_classes = 10
 batch_size = 100
-n_total_steps = 60000
+n_total_steps = 600
 
 # 具体模型
 class LeNet5(nn.Module):
@@ -60,7 +60,7 @@ for epoch in range(num_epochs):
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
-        if i % 5000 == 0:
+        if i % 600 == 0:
             print(f'Epoch [{epoch+1}/{num_epochs}], Step [{i+1}/{n_total_steps}], Loss: {loss.mean()}')
 print('Finished Training')
 
@@ -85,7 +85,7 @@ with flow.no_grad():
         n_correct += x[0]
     acc = 100.0 * n_correct / n_samples
     print(f'accuracy = {acc}%')
-    
+
 # 预测
 classes = ('0', '1', '2', '3', '4', '5', '6', '7', '8', '9')
 model.eval()
