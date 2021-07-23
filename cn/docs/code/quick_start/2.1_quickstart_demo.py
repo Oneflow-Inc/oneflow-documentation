@@ -23,9 +23,9 @@ batch_size = 100
 n_total_steps = 600
 
 # 具体模型
-class LeNet5(nn.Module):
+class Net(nn.Module):
     def __init__(self, input_size, hidden_size1, hidden_size2, num_classes):
-        super(LeNet5, self).__init__()
+        super(Net, self).__init__()
         self.l1 = nn.Linear(input_size, hidden_size1)
         self.relu1 = nn.ReLU()
         self.l2 = nn.Linear(hidden_size1, hidden_size2)
@@ -39,7 +39,8 @@ class LeNet5(nn.Module):
         out = self.l3(out)
         return out
 
-model = LeNet5(input_size, hidden_size1, hidden_size2, num_classes)
+model = Net(input_size, hidden_size1, hidden_size2, num_classes)
+print(model)
 loss_fn = nn.CrossEntropyLoss() # loss function
 optimizer = flow.optim.SGD(model.parameters(), lr=0.003) # 更新梯度
 
@@ -65,8 +66,8 @@ for epoch in range(num_epochs):
 print('Finished Training')
 
 # 储存模型
-# flow.save(model.state_dict(), "文件夹路径")
-# print("Saved OneFlow Model")
+flow.save(model_state_dict, "./mnist_model")
+print("Saved OneFlow Model")
 
 # 模型准确率
 with flow.no_grad():
