@@ -5,6 +5,7 @@ import numpy as np
 
 flow.config.enable_legacy_model_io(False)
 
+# trainset must be divisible by BATCH_SIZE, because using numpy for reshape
 BATCH_SIZE = 100
 
 
@@ -13,6 +14,7 @@ def train_job(
     images: tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
     labels: tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32),
 ) -> tp.Numpy:
+    # If you want to train the model on gpu, You can replace cpu with gpu
     with flow.scope.placement("cpu", "0:0"):
         reshape = flow.reshape(images, [images.shape[0], -1])
         initializer1 = flow.random_uniform_initializer(-1 / 28.0, 1 / 28.0)
@@ -42,6 +44,7 @@ def train_job(
 
 
 if __name__ == "__main__":
+    # train_images.shape = (600, 100, 1, 28, 28) They are batch_num, batch_size, channel, height, width
     (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(
         BATCH_SIZE, BATCH_SIZE
     )

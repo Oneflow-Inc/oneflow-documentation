@@ -6,7 +6,7 @@
 
 * 如何异步方式获取作业函数的结果
 
-在 OneFlow 中，被 `@flow.global_function` 装饰器修饰的函数定义称为作业函数，作业函数可以用于训练或预测。通过指定作业函数的返回值类型，可以使用同步或者异步的方式获取作业函数的运算结果。
+在 OneFlow 中，被 `@flow.global_function` 装饰器修饰的函数称为作业函数，作业函数可以用于训练或预测。通过指定作业函数的返回值类型，可以使用同步或者异步的方式获取作业函数的运算结果。
 
 ## 同步/异步对比
 
@@ -51,7 +51,7 @@ def train_job(
     return loss
 ```
 
-以上代码，通过 python 注解的方式告知 OneFlow 系统，返回的是 `tp.Numpy` （ `tp` 是 脚本中 `oneflow.typing` 的别名）类型，它对应了 `NumPy` 中的 `ndarray`。
+以上代码，通过 python 注解的方式告知 OneFlow ，返回的是 `tp.Numpy` （ `tp` 是 脚本中 `oneflow.typing` 的别名）类型，它对应了 `NumPy` 中的 `ndarray`。
 
 那么，当我们调用作业函数时，作业函数会直接返回 `ndarray` 对象：
 
@@ -92,7 +92,7 @@ if i % 20 == 0:
 
 * 调用作业函数：并注册以上第一步准备的回调函数
 
-以上工作三个步骤由 OneFlow 的用户完成，在程序运行时，注册的回调函数会被 OneFlow 调用，并将作业函数的返回值作为参数传递给回调函数。
+以上三个步骤由 OneFlow 的用户完成，在程序运行时，注册的回调函数会被 OneFlow 调用，并将作业函数的返回值作为参数传递给回调函数。
 
 ### 编写回调函数
 回调函数的原型如下：
@@ -202,7 +202,7 @@ train_job(images, labels)(cb_print_loss)
 ## 完整代码
 
 ### 同步获取一个结果
-在本例中，使用一个 LeNet 网络，通过同步方式获取唯一的返回结果 `loss` ，并每隔20轮打印一次 `loss`。
+在本例中，使用一个 LeNet 网络，通过同步方式获取唯一的返回结果 `loss` ，并每隔20轮打印一次 `loss.mean()`。
 
 代码链接：[synchronize_single_job.py](../code/basics_topics/synchronize_single_job.py)
 
@@ -248,7 +248,7 @@ accuracy: 99.3%
 
 ### 异步获取一个返回结果
 
-在本例中，使用 mlp 训练，通过异步方式获取唯一的返回结果 `loss` ，并每隔20轮打印一次 `loss`。
+在本例中，使用 mlp 训练，通过异步方式获取唯一的返回结果 `loss` ，并每隔20轮打印一次 `loss.mean()`。
 
 代码下载：[async_single_job.py](../code/basics_topics/async_single_job.py)
 
@@ -273,7 +273,7 @@ File mnist.npz already exist, path: ./mnist.npz
 
 ### 异步获取多个返回结果
 
-在以下的例子中，我们展示了如何异步方式获取作业函数的多个返回结果，并对上例中训练好的模型进行评估，输出准确率。
+在以下的例子中，我们展示了如何通过异步方式获取作业函数的多个返回结果，并对上例中训练好的模型进行评估，输出准确率。
 
 代码下载：[async_batch_job.py](../code/basics_topics/async_batch_job.py)
 

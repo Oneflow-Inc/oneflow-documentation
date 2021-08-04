@@ -1,3 +1,9 @@
+---
+hide:
+  - navigation
+  - toc
+---
+
 # OneFlow 全新一代深度学习框架
 
 ## OneFlow 是什么

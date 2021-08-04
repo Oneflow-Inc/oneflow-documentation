@@ -7,7 +7,7 @@ Machine learning is driven by data. Data loading and preprocessing require both 
 
 Working directly with Numpy data is easy and convenient but only for small amounts of data. Because when the amount of data is too large, there may be barrier in preparing the Numpy data. Therefore, this approach is more suitable for the initial stages of the project to quickly validate and improve the algorithm.
 
-The DataLoader of OneFlow use techniques such as multi-threading and data pipelining which make data loading, data pre-processing more efficient.However, you need to [prepare dataset] (... /extended_topics/how_to_make_of_dataset.md) which already supported by Oneflow or [develop you own DataLoader](../extended_topics/implement_data_loader.md) for the datatype which not supported by Oneflow. Thus we recommend use that in mature projects.
+The DataLoader of OneFlow use techniques such as multi-threading and data pipelining which make data loading, data pre-processing more efficient.However, you need to [prepare dataset](... /extended_topics/how_to_make_of_dataset.md) which already supported by Oneflow or [develop you own DataLoader](../extended_topics/implement_data_loader.md) for the datatype which not supported by Oneflow. Thus we recommend use that in mature projects.
 
 
 ## Use Numpy as Data Input

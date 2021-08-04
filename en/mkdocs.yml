@@ -9,7 +9,7 @@ repo_url: https://github.com/OneFlow-Inc/oneflow-documentation
 edit_uri: "blob/master/en/docs/"
 
 # Copyright
-copyright: Copyright &copy; 2017 - 2020 OneFlow
+copyright: Copyright &copy; 2017 - 2021 OneFlow
 
 #website/xxx.html style
 use_directory_urls: false
@@ -46,6 +46,19 @@ theme:
 # Plugins
 plugins:
   - search
+extra:
+  version:
+    provider: mike
+  alternate:
+    # Switch to English
+    - name: English
+      link: https://docs.oneflow.org/en
+      lang: en
+
+    # Switch to Chinese
+    - name: 中文
+      link: https://docs.oneflow.org
+      lang: zh
 
 # Extensions
 markdown_extensions:
@@ -131,6 +144,3 @@ nav:
 
     - Contribute:
       - Contribute to OneFlow: contribute/intro.md
-
-    - 中文:
-      - 中文: ../index.html

@@ -1,3 +1,9 @@
+---
+hide:
+  - navigation
+  - toc
+---
+
 # OneFlow: A Whole New Generation Of Deep Learning Framework
 
 An open source deep learning framework with whole new frame design and the world's leading technology for distributed system.
