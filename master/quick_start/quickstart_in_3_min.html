@@ -1015,7 +1015,7 @@
                 <p>这篇文章将介绍如何快速上手 OneFlow ，我们可以在3分钟内完成一个完整的神经网络训练过程。</p>
 <h2 id="_1">运行例子<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
 <p>如果已经安装好了 OneFlow ，可以使用以下命令下载<a href="https://github.com/Oneflow-Inc/oneflow-documentation.git">文档仓库</a>中的<a href="https://github.com/Oneflow-Inc/oneflow-documentation/blob/master/cn/docs/code/quick_start/mlp_mnist.py">mlp_mnist.py</a>脚本，并运行。</p>
-<div class="highlight"><pre><span></span><code>wget https://docs.oneflow.org/code/quick_start/mlp_mnist.py #下载脚本
+<div class="highlight"><pre><span></span><code>wget https://docs.oneflow.org/master/code/quick_start/mlp_mnist.py #下载脚本
 python3 mlp_mnist.py #运行脚本
 </code></pre></div>
 <p>我们将得到类似以下输出：
@@ -1031,8 +1031,8 @@ Epoch [1/20], Loss: 0.3167
 <h2 id="_2">代码解读<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
 <p>以下是完整代码，我们将对其关键部分进行解读。
 <div class="highlight"><pre><span></span><code><span class="c1"># mlp_mnist.py</span>
-<span class="kn">import</span> <span class="nn">oneflow</span> <span class="k">as</span> <span class="nn">flow</span>
-<span class="kn">import</span> <span class="nn">oneflow.typing</span> <span class="k">as</span> <span class="nn">tp</span>
+<span class="kn">from</span> <span class="nn">oneflow.compatible</span> <span class="kn">import</span> <span class="n">single_client</span> <span class="k">as</span> <span class="n">flow</span>
+<span class="kn">from</span> <span class="nn">oneflow.compatible.single_client</span> <span class="kn">import</span> <span class="n">typing</span> <span class="k">as</span> <span class="n">tp</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 <span class="n">BATCH_SIZE</span> <span class="o">=</span> <span class="mi">100</span>
