@@ -101,10 +101,10 @@ markdown_extensions:
 nav:
     - 首页: index.md
 
-    # - 快速上手:
-    #   - 安装: quick_start/install.md
-    #   - 3分钟快速上手: quick_start/quickstart_in_3_min.md
-    #   - 识别 MNIST 手写体数字: quick_start/lenet_mnist.md
+    - 快速上手:
+      - 安装: quick_start/install.md
+      - 3分钟快速上手: quick_start/quickstart_in_3_min.md
+      - 识别 MNIST 手写体数字: quick_start/lenet_mnist.md
 
     - 基础专题:
       - 数据输入: basics_topics/data_input.md
@@ -115,6 +115,7 @@ nav:
       - 分布式训练: basics_topics/distributed_train.md
       - OneFlow 概念清单: basics_topics/concept_explanation.md
       - OneFlow 系统设计: basics_topics/essentials_of_oneflow.md
+
     - 扩展专题:
       - 作业函数的定义与调用: extended_topics/job_function_define_call.md
       - Consistent 与 Mirrored 视角: extended_topics/consistent_mirrored.md
@@ -128,15 +129,12 @@ nav:
       - 使用 C++ 扩展 Op: extended_topics/user_op.md
       - 自定义 DataLoader: extended_topics/implement_data_loader.md
       - OneFlow 和 ONNX 交互: extended_topics/oneflow_convert_tools.md
+
     - 高级应用实例:
       - ResNet: adv_examples/resnet.md
       - YoloV3: adv_examples/yolov3.md
       - BERT: adv_examples/bert.md
       - Wide & Deep: adv_examples/wide_deep.md
-
-    - 分布式训练:
-      - 快速上手: distributed_training/quickstart.md
-      - 分布式训练中的策略: distributed_training/distributed_strategy.md
 
     - API:
       - API: https://oneflow.readthedocs.io/en/master/
