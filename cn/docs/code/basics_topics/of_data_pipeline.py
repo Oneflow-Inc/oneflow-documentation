@@ -1,6 +1,6 @@
 # of_data_pipeline.py
-import oneflow as flow
-import oneflow.typing as tp
+from oneflow.compatible import single_client as flow
+from oneflow.compatible.single_client import typing as tp
 from typing import Tuple
 
 
@@ -10,7 +10,7 @@ def test_job() -> Tuple[tp.Numpy, tp.Numpy]:
     color_space = "RGB"
     with flow.scope.placement("cpu", "0:0"):
         ofrecord = flow.data.ofrecord_reader(
-            "path/to/ImageNet/ofrecord",
+            "./",
             batch_size=batch_size,
             data_part_num=1,
             part_name_suffix_length=5,

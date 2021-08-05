@@ -19,7 +19,7 @@ Placeholder 即 **数据占位符** ，此概念用于描述输入/输出的数�
 例如：
 
 ```python
-import oneflow.typing as tp
+from oneflow.compatible.single_client import typing as tp
 def test_job(
     images: tp.Numpy.Placeholder((32, 1, 28, 28), dtype=flow.float),
     labels: tp.Numpy.Placeholder((32,), dtype=flow.int32),
