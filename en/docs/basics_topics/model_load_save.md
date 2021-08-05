@@ -392,7 +392,7 @@ Run:
 
 
 ```
-wget https://docs.oneflow.org/code/basics_topics/mlp_mnist_origin.py
+wget https://docs.oneflow.org/master/code/basics_topics/mlp_mnist_origin.py
 python3 mlp_mnist_origin.py
 ```
 
@@ -404,7 +404,7 @@ Run:
 
 
 ```
-wget https://docs.oneflow.org/code/basics_topics/mlp_mnist_finetune.py
+wget https://docs.oneflow.org/master/code/basics_topics/mlp_mnist_finetune.py
 python3 mlp_mnist_finetune.py
 ```
 
