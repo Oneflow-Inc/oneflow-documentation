@@ -135,7 +135,6 @@ nav:
       - YoloV3: adv_examples/yolov3.md
       - BERT: adv_examples/bert.md
       - Wide & Deep: adv_examples/wide_deep.md
-
     - API:
       - API: https://oneflow.readthedocs.io/en/master/
 
