@@ -8,4 +8,5 @@ x_grad = flow.autograd.grad(z,x,retain_graph=True)
 y_grad = flow.autograd.grad(z,y)
 
 print(x_grad[0],y_grad[0])
- 
+
+

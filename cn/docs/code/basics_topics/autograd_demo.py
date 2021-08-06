@@ -15,4 +15,5 @@ print(out)
 # 反向传播，计算导数
 out.backward()
 print(x.grad)
- 
+
+
