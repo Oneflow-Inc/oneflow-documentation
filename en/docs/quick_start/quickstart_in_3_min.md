@@ -4,7 +4,7 @@ This article introduces how to quickly get start with OneFlow. We can complete a
 With OneFlow installed, you can run the following command to download [mlp_mnist.py](https://github.com/Oneflow-Inc/oneflow-documentation/blob/master/en/docs/code/quick_start/mlp_mnist.py) python script from [repository](https://github.com/Oneflow-Inc/oneflow-documentation.git) and run it.
 
 ```
-wget https://docs.oneflow.org/master/en/code/quick_start/mlp_mnist.py
+wget https://docs.oneflow.org/en/master/code/quick_start/mlp_mnist.py
 python3 mlp_mnist.py
 ```
 
