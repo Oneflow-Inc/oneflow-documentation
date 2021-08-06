@@ -27,3 +27,4 @@ if __name__ == "__main__":
         w -= LR*grad
 
     print(f"w:{w}")
+    
