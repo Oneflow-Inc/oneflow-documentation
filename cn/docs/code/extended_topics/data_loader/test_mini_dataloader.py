@@ -1,5 +1,5 @@
-import oneflow as flow
-import oneflow.typing as tp
+from oneflow.compatible import single_client as flow
+from oneflow.compatible.single_client import typing as tp
 from typing import Tuple
 import numpy as np
 

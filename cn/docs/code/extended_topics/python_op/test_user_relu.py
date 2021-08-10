@@ -1,7 +1,7 @@
-import oneflow as flow
 import numpy as np
 import os
-import oneflow.typing as tp
+from oneflow.compatible import single_client as flow
+from oneflow.compatible.single_client import typing as tp
 
 module_path = os.path.dirname(os.path.abspath(__file__))
 user_relu_op = flow.experimental.custom_op_module("user_relu", module_path)
