@@ -1,6 +1,6 @@
+import numpy as np
 from oneflow.compatible import single_client as flow
 from oneflow.compatible.single_client import typing as tp
-import numpy as np
 
 # 加载模块
 flow.config.load_library("final_relu.so")
