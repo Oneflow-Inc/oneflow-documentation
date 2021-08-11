@@ -66,4 +66,4 @@ python3 -m pip install oneflow -f https://staging.oneflow.info/branch/master/[PL
 
 **加QQ群 331883 或扫描二维码**
 
-![qq group](../contribute/imgs/qq_group.png)
+![qq group](../../contribute/imgs/qq_group.png)
