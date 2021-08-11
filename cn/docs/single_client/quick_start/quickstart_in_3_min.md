@@ -4,7 +4,7 @@
 如果已经安装好了 OneFlow ，可以使用以下命令下载[文档仓库](https://github.com/Oneflow-Inc/oneflow-documentation.git)中的[mlp_mnist.py](https://github.com/Oneflow-Inc/oneflow-documentation/blob/master/cn/docs/code/quick_start/mlp_mnist.py)脚本，并运行。
 
 ```
-wget https://docs.oneflow.org/code/quick_start/mlp_mnist.py #下载脚本
+wget https://docs.oneflow.org/master/code/quick_start/mlp_mnist.py #下载脚本
 python3 mlp_mnist.py #运行脚本
 ```
 
@@ -26,8 +26,8 @@ Epoch [1/20], Loss: 0.3167
 以下是完整代码，我们将对其关键部分进行解读。
 ```python
 # mlp_mnist.py
-import oneflow as flow
-import oneflow.typing as tp
+from oneflow.compatible import single_client as flow
+from oneflow.compatible.single_client import typing as tp
 import numpy as np
 
 BATCH_SIZE = 100
