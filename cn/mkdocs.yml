@@ -101,9 +101,6 @@ markdown_extensions:
 nav:
     - 首页: index.md
 
-    - 基础专题:
-      - 快速上手: basics/01_quickstart.md
-
     - Single Client:
       - 安装: single_client/quick_start/install.md
       - 3分钟快速上手: single_client/quick_start/quickstart_in_3_min.md
