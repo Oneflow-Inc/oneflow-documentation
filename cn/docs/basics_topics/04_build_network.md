@@ -86,7 +86,7 @@ class Module(object):
 
 -  _buffers 属性：存储管理缓冲属性
 
--  5 个 ***_hooks 属性：存储管理钩子函数
+-  5 个 xxx_hooks 属性：存储管理钩子函数
 
 
 
