@@ -53,10 +53,10 @@ OrderedDict([('weight',
 我们可以使用 [oneflow.save](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.save#oneflow.save)方法保存模型。
 
 ```python
-flow.save(m.state_dict(), "./hello")
+flow.save(m.state_dict(), "./model")
 ```
 
-它的第一个参数的 Module 的参数，第二个是保存路径。以上代码，将 `m` Module 对象的参数，保存到了 `./hello` 目录下。
+它的第一个参数的 Module 的参数，第二个是保存路径。以上代码，将 `m` Module 对象的参数，保存到了 `./model` 目录下。
 
 
 
@@ -65,7 +65,7 @@ flow.save(m.state_dict(), "./hello")
 使用 [oneflow.load](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.load#oneflow.load) 可以将参数从指定的磁盘路径加载参数到内存，得到存有参数的字典。
 
 ```python
-params = flow.load("./hello")
+params = flow.load("./model")
 ```
 
 然后，再借助上文介绍的 `load_state_dict` 方法，就可以将字典加载到模型中：
