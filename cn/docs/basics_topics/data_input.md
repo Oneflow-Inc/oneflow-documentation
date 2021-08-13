@@ -7,7 +7,7 @@
 
 直接使用 NumPy 数据的方式简单方便，但仅适合小数据量的情况。因为当数据量过大时，可能在准备 NumPy 数据上遭遇效率瓶颈。因此，这种方式比较适合项目的初始阶段，快速验证和改进算法；
 
-OneFlow 的 DataLoader 内部采用了多线程和数据流水线等技术使得数据加载、数据预处理等效率更高。但是，需要为已经支持的格式[准备数据集](../extended_topics/how_to_make_ofdataset.md)或为 OneFlow 暂时还不支持的格式[开发自己的 DataLoader](../extended_topics/implement_data_loader.md)。因此，推荐在成熟的项目中使用。
+OneFlow 的 DataLoader 内部采用了多线程和数据流水线等技术使得数据加载、数据预处理等效率更高。但是，需要为已经支持的格式[准备数据集](../extended_topics/how_to_make_ofdataset.md)。因此，推荐在成熟的项目中使用。
 
 
 ## 使用 Numpy 数据作为输入
@@ -135,4 +135,4 @@ DataLoader 的返回值，如果是简单的基本数据类型，那么可以直
 `OFRecordImageDecoderRandomCrop` 负责图片解码并随机做了裁剪，`OFRecordRawDecoder` 负责从 ofrecord 对象中直接解码出标签， `image.Resize` 把裁剪后的图片调整成224x224的大小， `CropMirrorNormalize` 把图片进行了正则化。
 
 ## 支持更多格式的 DataLoader
-OneFlow 提供了一些 DataLoader 和预处理的算子，详细请参考 [oneflow.data](https://oneflow.readthedocs.io/en/master/data.html)。未来会不断丰富和优化这些算子，用户也可以参考 [这篇文章](../extended_topics/implement_data_loader.md) 自定义 DataLoader 满足特定的需求。
+OneFlow 提供了一些 DataLoader 和预处理的算子，详细请参考 [oneflow.data](https://oneflow.readthedocs.io/en/master/data.html)。

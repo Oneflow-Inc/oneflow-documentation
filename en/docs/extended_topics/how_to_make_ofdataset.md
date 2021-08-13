@@ -104,8 +104,8 @@ def ofrecord_reader(
 
 The benefit of using `ofrecord_reader` is that `ofrecord_reader` acts as a normal operator which participates in OneFlow composition optimization and enjoys OneFlow pipeline acceleration.
 For flexibility and extensibility of the code, we can define a preprocessing OP for `ofrecord_reader` to deal with specific data formats which are coupled with operational logic (e.g. decoding, decompression and etc.).
+
 - For more information on DataLoader and related operator usage refer to [Data input](../basics_topics/data_input.md) .
-- For more information on customized OP please refer to [User op](./user_op.md).
 
 ## The transition between other data format data and OFRecord dataset
 
