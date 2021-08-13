@@ -120,10 +120,6 @@ nav:
       - 加载与准备 OFRecord 数据集: single_client/extended_topics/how_to_make_ofdataset.md
       - 将图片文件制作为 OFRecord 数据集: single_client/extended_topics/how_to_convert_image_to_ofrecord.md
       - 获取运行时数据: single_client/extended_topics/watch_watch_diff.md
-      - 使用 VS Code 调试 OneFlow: single_client/extended_topics/debug_by_vscode.md
-      - 使用 Python 扩展 Op: single_client/extended_topics/python_kernel_op.md
-      - 使用 C++ 扩展 Op: single_client/extended_topics/user_op.md
-      - 自定义 DataLoader: single_client/extended_topics/implement_data_loader.md
       - OneFlow 和 ONNX 交互: single_client/extended_topics/oneflow_convert_tools.md
 
     - API:
