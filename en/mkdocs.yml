@@ -128,14 +128,6 @@ nav:
       - OneFlow And ONNX Convert: extended_topics/oneflow_convert_tools.md
 
 
-    #- Advanced Examples:
-      #- Image Processing:
-       # - ResNet: adv_examples/resnet.md
-        #- AlexNet: adv_examples/alexnet.md
-        #- MaskRCNN: adv_examples/mask_rcnn.md
-      #- NLP handling-BERT: adv_examples/bert.md
-      #- Recommendation System -Wide&Deep: adv_examples/wide_deep.md
-      #- Deep Faking -Generate Conflict Network: adv_examples/dcgan.md
     - API:
       - API: https://oneflow.readthedocs.io/en/master/
 
