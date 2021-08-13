@@ -744,30 +744,6 @@
   
   
     <li class="md-nav__item">
-      <a href="debug_by_vscode.html" class="md-nav__link">
-        Use VS Code to Debug OneFlow
-      </a>
-    </li>
-  
-
-          
-            
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="user_op.html" class="md-nav__link">
-        User Defined OP
-      </a>
-    </li>
-  
-
-          
-            
-  
-  
-  
-    <li class="md-nav__item">
       <a href="oneflow_convert_tools.html" class="md-nav__link">
         OneFlow And ONNX Convert
       </a>
@@ -1049,9 +1025,10 @@
 <li><code>shuffle_after_epoch</code> assign whether shuffle the sample order after each epoch</li>
 </ul>
 <p>The benefit of using <code>ofrecord_reader</code> is that <code>ofrecord_reader</code> acts as a normal operator which participates in OneFlow composition optimization and enjoys OneFlow pipeline acceleration.
-For flexibility and extensibility of the code, we can define a preprocessing OP for <code>ofrecord_reader</code> to deal with specific data formats which are coupled with operational logic (e.g. decoding, decompression and etc.).
-- For more information on DataLoader and related operator usage refer to <a href="../basics_topics/data_input.html">Data input</a> .
-- For more information on customized OP please refer to <a href="user_op.html">User op</a>.</p>
+For flexibility and extensibility of the code, we can define a preprocessing OP for <code>ofrecord_reader</code> to deal with specific data formats which are coupled with operational logic (e.g. decoding, decompression and etc.).</p>
+<ul>
+<li>For more information on DataLoader and related operator usage refer to <a href="../basics_topics/data_input.html">Data input</a> .</li>
+</ul>
 <h2 id="the-transition-between-other-data-format-data-and-ofrecord-dataset">The transition between other data format data and OFRecord dataset<a class="headerlink" href="#the-transition-between-other-data-format-data-and-ofrecord-dataset" title="Permanent link">&para;</a></h2>
 <p>According to the storage format of OFRecord file in article <a href="ofrecord.html">OFRecord</a> and the filename format convention of OFRecord dataset introduced at the beginning, we can prepare OFRecord dataset by ourselves.</p>
 <p>To prepare dataset easier, we provide jar package from Spark, which is convenient to the interconversion between OFRecord and common data formats (such as TFRecord and JSON).</p>
