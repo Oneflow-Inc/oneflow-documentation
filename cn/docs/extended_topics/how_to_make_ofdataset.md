@@ -106,9 +106,7 @@ def ofrecord_reader(
 
 对于与业务逻辑耦合的特定操作（如解码、解压等），我们还可以为 `ofrecord_reader` 定义预处理 op，让程序拥有很高的灵活性和扩展性。
 
-* 关于 DataLoader 及相关算子使用可以参考[数据输入](../basics_topics/data_input.md#dataloader)
-
-* 关于自定义 Op 可以参考[用户自定义 op](user_op.md)
+- 关于 DataLoader 及相关算子使用可以参考[数据输入](../basics_topics/data_input.md#dataloader)
 
 ## 其它格式数据与 OFRecord 数据集的相互转化
 参考[OFrecord数据格式](ofrecord.md)中 OFRecord 文件的存储格式及本文开头介绍的 OFRecord 数据集的文件名格式约定，我们完全可以自己制作 OFRecord 数据集。
