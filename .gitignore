@@ -4,3 +4,16 @@ site/
 
 .idea
 .DS_Store
+
+log/
+core.*
+*.pyc
+*.ipynb
+/.vscode
+/.idea
+/manylinux*
+wheelhouse/
+wheelhouse*
+.clangd
+.cache
+/tmp
