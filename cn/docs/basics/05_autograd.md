@@ -1,59 +1,69 @@
 # 自动求导
 
-训练完毕和未训练的模型最大的区别就是权重 (weight)。举一个简单的例子：
+神经网络的训练过程离不开 **反向传播算法**，在反向传播过程中，需要获取 loss 函数对模型参数的梯度，用于更新参数。
 
-<img src="https://oneflow-static.oss-cn-beijing.aliyuncs.com/oneflow-documentation/desmos-graph%20(1).png" style="zoom:40%;"/>
+OneFlow 提供了自动求导机制，可自动计算神经网络中参数的梯度。
 
-如上图所示，与其说我们要让模型识别出青蛙和蚯蚓的区别，其实就是让模型保存 y = x 这条线。而决定这条线最大的因素就是其斜率，也就是权重，同时这条线的权重也是这条线的导数（注意：导数和权重是两个概念，权重存在于正向传播，而导数存在于反向传播）。有正确的权重，这条线就可以完美的区分蚯蚓和青蛙；相反，若没有权重，模型几乎不可能做到正确分类。但是，当面对复杂的分类工程时，坐标系往往有成千上万个维度。也就是说，节点数会大量增加 （每一个节点储存一个权重）。我们不可能对每个节点一一求导。也就是为什么自动求导，是训练神经网络必需品。
+本文将先介绍计算图的基本概念，它有利于理解 OneFlow 自动求导的常见设置及限制，再介绍 OneFlow 中与自动求导有关的常见接口。
 
-实现自动求导的过程就是反向传播。以青蛙和蚯蚓为例，若分类线没有正确分类，我们可以指定一个损失函数 (例如常见的MSE Mean Squared Error) 让电脑意识到与正确答案的差距，并根据差距更新权重。重复以上过程以达到正确的分类。
+## 计算图
 
-## `backward()` 自动求导
-
-##### `requires_grad` 与 `backward()`
-
-让我们先看一段简单的代码：
+张量与算子，共同组成计算图，如以下代码：
 
 ```python
 import oneflow as flow
-import numpy as np
-# 建立一个简单的张量，并做简单的变换
-x =  flow.tensor([1.0,2.0,3.0], requires_grad = True)
-print(x)
-y = x*x
-# 用 MSE 来计算 x 与 y 的差距
-loss = flow.nn.MSELoss()
-out = loss(x, y)
-print(out)
-# 反向传播，计算导数
-out.backward()
-print(x.grad)
+
+def loss(y_pred, y):
+    return flow.sum(1/2*(y_pred-y)**2)
+
+x = flow.ones(1, 5)  # 输入
+w = flow.randn(5, 3, requires_grad=True)
+b = flow.randn(1, 3, requires_grad=True)
+z = flow.matmul(x, w) + b
+
+y = flow.zeros(1, 3)  # label
+l = loss(z,y)
 ```
 
-这段代码不难理解。简单来说，我们建立了两个矩阵，并通过 MSE 损失函数来推算两个矩阵的差距，并计算 loss'(x)。只有推导出导数值，机器才能相对应的对每个结点上的权重做出调整。
+它对应的计算图如下：
 
-当建立一个矩阵时，`requires_grad ` 默认为 `false`，也就是为什么当我们需要反向传播时，要在张量后面设置`requires_grad`。而`.backward()` 的作用就是让机器自动进行求导，也就是反向传播 (backward pass)。
+![todo](https://todo)
+
+计算图中，像 `x`、`w`、`b`、`y` 这种只有输出，没有输入的节点称为 **叶子节点**；向 `loss` 这种只有输入没有输出的节点，称为 **根**。
+
+反向传播过程中，需要求得 `l` 对 `w`、`b` 的梯度，以更新这两个模型参数。因此，我们在创建它们时，设置 `requires_grad` 为 `True`。
 
 
+## 自动求导
 
-### 为什么只能是针对标量求导
-
-若你将上面的代码在本地跑过一遍的话，你可能会发现，loss的输出是比较奇怪的：
+在反向传播的过程中，需要得到 `l` 分别对 `w`、`b` 的梯度 $\frac{\partial l}{\partial w}$ 和 $\frac{\partial l}{\partial b}$。我们只需要对 `l` 调用 `backward()` 方法，然后 OneFlow 就会自动计算梯度，并且存放到 `w` 与 `b` 的 `grad` 成员中。
 
 ```python
-out = loss(x,y)
-print(out)
+l.backwad()
+print(w.grad)
+print(b.grad)
 ```
 
-输出：
-
-```shell
-tensor(13.3333, dtype=oneflow.float32, grad_fn=<scalar_mul_backward>)
+```text
+tensor([[0.9397, 2.5428, 2.5377],
+        [0.9397, 2.5428, 2.5377],
+        [0.9397, 2.5428, 2.5377],
+        [0.9397, 2.5428, 2.5377],
+        [0.9397, 2.5428, 2.5377]], dtype=oneflow.float32)
+tensor([[0.9397, 2.5428, 2.5377]], dtype=oneflow.float32)
 ```
 
-重点在后面的 `grad_fn=<scalar_mul_backward>` 。scalar 的意思是标量，也就是说，在反向传播的过程中，我们只能针对标量 (loss) 求导，而不是一个任意一个向量 (vector, 也可以说是所有非 single-element 的 tensor)。
+### 停止对某个 Tensor 求梯度
 
-其实这一法则也很好理解。在反向传播过程中，我们要计算的是 loss 对每一个节点上权重的导数，并根据导数更新权重。而若 loss 是一个向量的话，loss 就不是一个值，导数也就不复存在 (标量对向量求导)。
+### 对一个计算图多次 `backward()`
+
+### 对非叶子节点求梯度
+
+## 输出为 Tensor 时如何求导
+- scalar implicity only
+
+
+
 
 ### 为什么默认保留叶子节点的导数
 
