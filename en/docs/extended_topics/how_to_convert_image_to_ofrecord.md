@@ -8,7 +8,7 @@ In this article, we will explain how to make image files into OFRecord datasets.
 - How OFRecord Reader is encoded.
 - Training on OFRecord dataset.
 
-### Make OFRecord Datasets Based on Image Files 
+### Make OFRecord Datasets Based on Image Files
 
 We use [MNIST Handwritten Digits dataset](https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/quick_start/mnist_raw_images.zip)  to produce an OFRecord format file.
 
@@ -16,21 +16,21 @@ we only take 50 pictures for demonstration. Please refer to img2ofrecord for rel
 
 - Download and unzip the relevant zip file
 
-```shell
+```
 $ wget https://oneflow-static.oss-cn-beijing.aliyuncs.com/oneflow-tutorial-attachments/img2ofrecord.zip
 $ unzip img2ofrecord.zip
 ```
 
 - Change directory to corresponding path and run OFRecord production script `img2ofrecord.py`
 
-```shell
+```
 $ cd ./img_to_ofrecord
 $ python img2ofrecord.py --part_num=5 --save_dir=./dataset/ --img_format=.png --image_root=./images/train_set/
 ```
 
 - The following output will display as the script runs.
 
-```shell
+```
 The image root is:  ./images/train_set/
 The amount of OFRecord data part is:  5
 The directory of Labels is:  ./images/train_label/label.txt
@@ -69,7 +69,7 @@ img_to_ofrecord
 
 The label file is stored as `json` here in following format：
 
-```shell
+```
 {"00000030_3.png": 3}
 {"00000034_0.png": 0}
 {"00000026_4.png": 4}
@@ -140,5 +140,3 @@ The outputs of training script should like below:
 ```
 
 At this point, we have successfully completed the whole process of dataset production, reading and training.
-
-

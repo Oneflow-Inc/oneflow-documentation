@@ -8,7 +8,7 @@ LeNet is constructed by convolution layer, pooling layer and fully connected lay
 <img src="imgs/lenet.png" align='center'/>
 </div>
 
-There are two types of elements in the above diagram, one is the computing units represented by boxes which including `op` and `layer` such as `conv2d`, `dense`, `max_pool2d` and etc. The other is the data represented by arrows. It corresponds to the following code:
+There are two types of elements in the above diagram, one is the computing units represented by boxes which including `Op` and `Layer` such as `conv2d`, `dense`, `max_pool2d` and etc. The other is the data represented by arrows. It corresponds to the following code:
 
 ```python
 def lenet(data, train=False):

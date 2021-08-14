@@ -71,9 +71,9 @@ OneFlow provides the API interface to load OFRecord dataset by specifying the pa
 
 ## The Method to Load OFRecord Dataset
 
-We use `ofrecord_reader` to load and preprocess dataset. 
+We use `ofrecord_reader` to load and preprocess dataset.
 
-In article [Data Input](../basics_topics/data_input.md), we have shown how to use `ofrecord_reader` API to load OFRecord data and preprocess it. 
+In article [Data Input](../basics_topics/data_input.md), we have shown how to use `ofrecord_reader` API to load OFRecord data and preprocess it.
 
 Code: [of_data_pipeline.py](../code/basics_topics/of_data_pipeline.py)
 
@@ -104,8 +104,8 @@ def ofrecord_reader(
 
 The benefit of using `ofrecord_reader` is that `ofrecord_reader` acts as a normal operator which participates in OneFlow composition optimization and enjoys OneFlow pipeline acceleration.
 For flexibility and extensibility of the code, we can define a preprocessing OP for `ofrecord_reader` to deal with specific data formats which are coupled with operational logic (e.g. decoding, decompression and etc.).
+
 - For more information on DataLoader and related operator usage refer to [Data input](../basics_topics/data_input.md) .
-- For more information on customized OP please refer to [User op](./user_op.md).
 
 ## The transition between other data format data and OFRecord dataset
 
@@ -123,14 +123,14 @@ At first, we should download Spark and Spark-oneflow-connector：
 
 Then unzip the `spark-2.4.7-bin-hadoop2.7.tgz` and configure the environment variable `SPARK_HOME`:
 
-```shell
+```
 export SPARK_HOME=path/to/spark-2.4.7-bin-hadoop2.7
 export PATH=$SPARK_HOME/bin:$PATH
 ```
 
 We can launch the pyspark shell with the following command：
 
-```shell
+```
 pyspark --master "local[*]"\
  --jars spark-oneflow-connector-assembly-0.1.0_int64.jar\
  --packages org.tensorflow:spark-tensorflow-connector_2.11:1.13.1
@@ -239,4 +239,3 @@ reader = spark.read.format("ofrecord")
 dataframe = reader.load("file:///path/to/ofrecord_file")
 dataframe.write.json("file://path/to/outputdir")
 ```
-
