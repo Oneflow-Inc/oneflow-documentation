@@ -1,155 +1,129 @@
 # 搭建神经网络
 
-​	 神经网络由对数据执行操作的层/模块组成。 `oneflow.nn` 命名空间提供了构建自己的神经网络所需的常见模块（例如`oneflow.nn.Conv2d`，`oneflow.nn.ReLU`等等）。 `oneflow` 中提供的每个模块都继承自 `nn.Module` ，神经网络可以由一个模块或者多个模块堆叠而成。这种嵌套的结构允许其轻松地构建和管理复杂的神经网络架构。   
-
-
-
-## `flow.nn.Module` 与 `flow.nn.functional`
-
- 	`oneflow`中`nn.Module`是面向对象的，可以保存状态。而`nn.functional` 是函数式的，无法保存状态。在大部分情况下，`oneflow`中的 `nn.module` 是通过封装 `nn.functional` 得到的。如果你需要更加细粒度使用一些API，推荐使用`nn.functional`提供的函数。 
-
-`flow.nn.Module`和`flow.nn.functional`存在相同之处：
-
-- 实际功能相同，例如 `flow.nn.Conv2d`和`flow.nn.functional.conv2d` 都是进行卷积 
--  运行效率近乎相同
-
-两者之间还是存在一定差异：
-
--  **两者的调用方式不同** 。
-
-   `nn.Module` 需要先进行实例化并传入参数，然后通过实例化对象和传入输入数据来调用它的`foward`函数完成计算。  
-
-  ```python
-  import oneflow as flow
-  import oneflow.nn as nn
-  import numpy as np
-  
-  inputs =flow.Tensor(np.random.randn(64, 3, 244, 244))
-  conv = nn.Conv2d(in_channels=3, out_channels=64, kernel_size=3, padding=1)
-  outputs = conv(inputs)
-  ```
-
-   `nn.functional.xxx`  同时传入输入数据和weight, bias等其他参数 。 
-
-  ```python
-  import oneflow as flow
-  import oneflow.nn as nn
-  import numpy as np
-  
-  inputs = flow.Tensor(np.random.randn(33, 16, 30))
-  weight = flow.Tensor(np.random.randn(64,3,3,3))
-  bias = flow.Tensor(np.random.randn(64)) 
-  outputs = nn.functional.conv2d(inputs, weight, bias, stride=[1], padding=[1], dilation=[1])
-  ```
-
--  `nn.xxx`继承于`nn.Module`， 能够很好的与`nn.Sequential`结合使用， 而`nn.functional.xxx`无法与`nn.Sequential`结合使用。
-
-  ```
-  flow_layer = nn.Sequential(
-              nn.Conv2d(3, 64, kernel_size=3, padding=1),
-              nn.BatchNorm2d(num_features=64),
-              nn.ReLU(),
-              nn.MaxPool2d(kernel_size=2),
-              nn.Dropout(0.2)
-  )
-  ```
-
-- `nn.xxx`对存在weight参数的定义和管理是自动的 ；而`nn.functional.xxx`需要你自己定义weight，每次调用的时候都需要手动传入weight, 不利于代码复用。
-
-
-
-## `nn.Module` 的常见方法及常见 `Module`
-
-​	`nn.Module` 有 12 个属性，其中有8个是`OrderDict`(有序字典)。 我们在创建神经网络的时候， `__init__()`方法中会调用父类`nn.Module`的`__init__()`方法，创建这 8 个属性。 
-
-```python
-class Module(object):
-    def __init__(self):
-        self.training = True
-        self._consistent = False
-        self._non_persistent_buffers_set = set()
-        self._is_full_backward_hook = None
-
-        self._parameters = OrderedDict()
-        self._buffers = OrderedDict()
-        self._backward_hooks = OrderedDict()
-        self._forward_hooks = OrderedDict()
-        self._forward_pre_hooks = OrderedDict()
-        self._state_dict_hooks = OrderedDict()
-        self._load_state_dict_pre_hooks = OrderedDict()
-        self._modules = OrderedDict()
-```
-
--  _parameters 属性：存储管理 nn.Parameter 类型的参数 
-
--  _modules 属性：存储管理 nn.Module 类型的参数 
-
--  _buffers 属性：存储管理缓冲属性
-
--  5 个 xxx_hooks 属性：存储管理钩子函数
-
-
-
-其中比较重要的是`parameters`和`modules`属性。 
-
-`nn.Parameter` 主要作用是作为nn.Module中的可训练参数使用。
-
-常见的`nn.Module`，包括`nn.Conv1d()`、`nn.Conv2d()` 、`nn.Conv3d()`和`nn.Linear()`等。
-
-下面我们将对`nn.Conv2d()`进行简单介绍：
+​神经网络的各层，可以使用 [oneflow.nn](https://oneflow.readthedocs.io/en/master/nn.html) 名称空间下的 API 搭建，它提供了构建神经网络所需的常见 Module（如 [oneflow.nn.Conv2d](https://oneflow.readthedocs.io/en/master/nn.html?highlight=oneflow.nn.Conv2D#oneflow.nn.Conv2d)，[oneflow.nn.ReLU](https://oneflow.readthedocs.io/en/master/nn.html?highlight=oneflow.nn.ReLU#oneflow.nn.ReLU) 等等）。 用于搭建网络的所有 Module 类都继承自 [oneflow.nn.Module](https://oneflow.readthedocs.io/en/master/module.html#oneflow.nn.Module)，多个简单的 Module 可以组合在一起构成更复杂的 Module，用这种方式，用户可以轻松地搭建和管理复杂的神经网络。
 
 ```python
 import oneflow as flow
 import oneflow.nn as nn
-import numpy as np
-
-# 样本数为3,channel：3, w:9, H:9
-x = flow.Tensor(np.random.randn(3, 3, 9, 9))
-print(x.shape)
-
-# case1 in_channels=3, out_channels=6, kernel_size=3
-conv1 = nn.Conv2d(3, 6, 3)
-x1 = conv1(x)
-print("[case1] in_channels=3, out_channels=6, kernel_size=3: ", x1.shape)
-
-# [case2] stride_size=3
-conv2 = nn.Conv2d(3, 6, 3, 3)
-x2 = conv2(x)
-print("[case2] stride_size=3: ", x2.shape)
-
-# [case3] kernel_size=(3,2)
-conv3 = nn.Conv2d(3, 6, (3, 2))
-x3 = conv3( x)
-print("[case3] kernel_size=(3,2): ", x3.shape)
-
-# [case4] padding=3
-conv4 = nn.Conv2d(3, 6, 3, 1, 2)
-x4 = conv4(x)
-print("[case4]padding=3: ", x4.shape)
-
-# [case5] dilation=3
-conv5 = nn.Conv2d(3, 6, 3, 1, 0, 3)
-x5 = conv5(x)
-print("[case5]dilation=3: ", x5.shape)
-
-# [case6] groups=3
-conv6 = nn.Conv2d(3, 6, 3, groups=3)
-x6 = conv6(x)
-print("[case6]groups=3: ", x6.shape)
 ```
 
-可以得到以下输出：
 
-```shell
-flow.Size([3, 3, 9, 9])
-[case1] in_channels=3, out_channels=6, kernel_size=3:  flow.Size([3, 6, 7, 7])
-[case2] stride_size=3:  flow.Size([3, 6, 3, 3])
-[case3] kernel_size=(3,2):  flow.Size([3, 6, 7, 8])
-[case4] padding=3:  flow.Size([3, 6, 11, 11])
-[case5] dilation=3:  flow.Size([3, 6, 3, 3])
-[case6] groups=3:  flow.Size([3, 6, 7, 7])
+## 定义 Module 类
+
+`oneflow.nn` 下提供了常见并基础的 Module 类，我们可以在他们的基础上，通过自定义 Module 类搭建神经网络。搭建过程包括：
+
+- 写一个继承自 `oneflow.nn.Module` 的类
+- 实现类的 `__init__` 方法，在其中构建神经网络的结构
+- 实现类的 `forward` 方法，这个方法针对 Module 的输入进行计算
+
+```python
+class NeuralNetwork(nn.Module):
+    def __init__(self):
+        super(NeuralNetwork, self).__init__()
+        self.flatten = nn.Flatten()
+        self.linear_relu_stack = nn.Sequential(
+            nn.Linear(28*28, 512),
+            nn.ReLU(),
+            nn.Linear(512, 512),
+            nn.ReLU(),
+            nn.Linear(512, 10),
+            nn.ReLU()
+        )
+
+    def forward(self, x):
+        x = self.flatten(x)
+        logits = self.linear_relu_stack(x)
+        return logits
+net = NeuralNetwork()
+print(net)
 ```
 
+以上代码，会输出刚刚搭建的 `NeuralNetwork` 网络的结构：
+
+```text
+NeuralNetwork(
+  (flatten): Flatten(start_dim=1, end_dim=-1)
+  (linear_relu_stack): Sequential(
+    (0): Linear(in_features=784, out_features=512, bias=True)
+    (1): ReLU()
+    (2): Linear(in_features=512, out_features=512, bias=True)
+    (3): ReLU()
+    (4): Linear(in_features=512, out_features=10, bias=True)
+    (5): ReLU()
+  )
+)
+```
+
+接着，调用 `net` （注意：推荐直接调用 `forward`）即可完成推理：
+
+```python
+X = flow.ones(1, 28, 28)
+logits = net(X)
+pred_probab = nn.Softmax(dim=1)(logits)
+y_pred = pred_probab.argmax(1)
+print(f"Predicted class: {y_pred}")
+```
+
+会得到类似以下的输出结果：
+
+```text
+Predicted class: tensor([1], dtype=oneflow.int32)
+```
+
+以上从数据输入、到网络计算，最终推理输出的流程，如下图所示：
+
+![todo](imagetodo)
+
+## `flow.nn.functional`
+
+除了 `oneflow.nn` 外，[oneflow.nn.functional](https://oneflow.readthedocs.io/en/master/functional.html) 名称空间下也提供了不少 API。它与 `oneflow.nn` 在功能上有一定的重叠。比如 [nn.functional.relu](https://oneflow.readthedocs.io/en/master/functional.html?highlight=relu#oneflow.nn.functional.relu) 与 [nn.ReLU](https://oneflow.readthedocs.io/en/master/nn.html?highlight=relu#oneflow.nn.ReLU) 都可用于神经网络做 activation 操作。
+
+两者的区别主要有：
+
+- `nn` 下的 API 是类，需要先构造实例化对象，再调用；`nn.functional` 下的 API 是作为函数直接调用
+- `nn` 下的类内部自己管理了网络参数；而 `nn.functional` 下的函数，需要我们自己定义参数，每次调用的时手动传入
+
+实际上，OneFlow 提供的大部分 Module 是通过封装 `nn.functional` 下的方法得到的。`nn.functional` 提供了更加细粒度管理网络的可能。 
+
+以下的例子，使用 `nn.functional` 中的方法，构建与上文中 `NeuralNetwork` 类等价的 Module `FunctionalNeuralNetwork`，读者可以体会两者的异同：
+
+```python
+class FunctionalNeuralNetwork(nn.Module):    
+    def __init__(self):
+        super(FunctionalNeuralNetwork, self).__init__()
+        
+        self.weight1 = nn.Parameter(flow.randn(28*28, 512))
+        self.bias1 = nn.Parameter(flow.randn(512))
+
+        self.weight2 = nn.Parameter(flow.randn(512, 512))
+        self.bias2 = nn.Parameter(flow.randn(512))
+
+        self.weight3 = nn.Parameter(flow.randn(512, 10))
+        self.bias3 = nn.Parameter(flow.randn(10))
+        
+    def forward(self, x):
+        x = x.reshape(1, 28*28)
+        out = flow.F.matmul(x, self.weight1)
+        out = out + self.bias1
+        out = nn.functional.relu(out)
+
+        out = flow.F.matmul(out, self.weight2)
+        out = out + self.bias2
+        out = nn.functional.relu(out)
+
+        out = flow.F.matmul(out, self.weight3)
+        out = out + self.bias3
+        out = nn.functional.relu(out)
+
+        return out
+
+net = FunctionalNeuralNetwork()
+X = flow.ones(1, 28, 28)
+logits = net(X)
+pred_probab = nn.Softmax(dim=1)(logits)
+y_pred = pred_probab.argmax(1)
+print(f"Predicted class: {y_pred}")
+```
 
 
 ## `Module Container`
