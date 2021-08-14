@@ -1,4 +1,4 @@
-# 2.5 自动求导与反向传播
+# 自动求导
 
 训练完毕和未训练的模型最大的区别就是权重 (weight)。举一个简单的例子：
 
@@ -8,7 +8,7 @@
 
 实现自动求导的过程就是反向传播。以青蛙和蚯蚓为例，若分类线没有正确分类，我们可以指定一个损失函数 (例如常见的MSE Mean Squared Error) 让电脑意识到与正确答案的差距，并根据差距更新权重。重复以上过程以达到正确的分类。
 
-### 2.5.1 `backward()` 自动求导
+## `backward()` 自动求导
 
 ##### `requires_grad` 与 `backward()`
 
@@ -36,7 +36,7 @@ print(x.grad)
 
 
 
-##### 为什么只能是针对标量求导
+### 为什么只能是针对标量求导
 
 若你将上面的代码在本地跑过一遍的话，你可能会发现，loss的输出是比较奇怪的：
 
@@ -55,13 +55,13 @@ tensor(13.3333, dtype=oneflow.float32, grad_fn=<scalar_mul_backward>)
 
 其实这一法则也很好理解。在反向传播过程中，我们要计算的是 loss 对每一个节点上权重的导数，并根据导数更新权重。而若 loss 是一个向量的话，loss 就不是一个值，导数也就不复存在 (标量对向量求导)。
 
-##### 为什么默认保留叶子节点的导数
+### 为什么默认保留叶子节点的导数
 
 在 **2.1 快速上手** 中，我们的训练循环结尾会有一步 `.zero_grad()` 的过程。这是因为，所有叶子节点的导数会被保留。每次在我们进行 `.backward()` 操作后，梯度需要被保留以用于更新参数 (也就是后文中的`optimizer.step()`)。
 
-### 2.5.2 `grad` 成员及相关操作
+## `grad` 成员及相关操作
 
-##### detach
+### detach
 
 detach 可以让 oneflow 停止对 `requires_grad=True` 的元素进行求导跟踪。例如：
 
@@ -102,7 +102,7 @@ tensor([  0.6667,  20.    , 110.    ], dtype=oneflow.float32)
 
 在实际运用中，假设有两个模型，第一个模型的输出为第二个模型的输入。若你只想训练第二个模型，那么只需在第一个模型后面加入 detach 操作就可以达到目的。
 
-##### retain_graph （这块讲的不是太清楚因为具体不知道怎么在模型里去操作）
+### retain_graph 
 
 上面讲到，非叶子节点的梯度会在更新完被释放。但如果我们想查看被释放的梯度呢？只需要在 autograd 函数中加上 `requires_grad=True` 即可
 
@@ -128,142 +128,3 @@ tensor(3., dtype=oneflow.float32) tensor(2., dtype=oneflow.float32)
 ```
 
 若没有加入 `requires_grad=True` , oneflow 会默认报错，因为梯度已被释放。
-
-### 2.5.3 利用自动求导手工实现反向传播
-
-为了更方便理解自动求导的作用，我们在这里提供了一份用 numpy 纯手写的简单模型：
-
-```python
-import numpy as np
-
-ITER_COUNT = 500
-LR = 0.01
-
-# 前向传播
-def forward(x, w):
-    return np.matmul(x, w)
-
-# 损失函数 (return MSE 的导数)
-def loss(y_pred, y):
-    return (0.5*(y_pred-y)**2).sum()
-
-# 计算导数
-def gradient(x, y, y_pred):
-    return np.matmul(x.T, (y_pred-y))
-
-if __name__ == "__main__":
-    # 训练目的: Y = 2*X1 + 3*X2
-    x = np.array([[1, 2], [2, 3], [4, 6], [3, 1]], dtype=np.float32)
-    y = np.array([[8], [13], [26], [9]], dtype=np.float32)
-
-    w = np.random.rand(2, 1)
-    # 训练循环
-    for i in range(0, ITER_COUNT):
-        y_pred = forward(x, w)
-        l = loss(y_pred, y)
-        if (i+1) % 50 == 0: print(f"{i+1}/{500} loss:{l}")
-
-        grad = gradient(x, y, y_pred)
-        w -= LR*grad
-
-    print(f"w:{w}")
-```
-
-输出：
-
-```shell
-50/500 loss:0.0012162785263114685
-100/500 loss:3.11160142374838e-05
-150/500 loss:7.960399867959713e-07
-200/500 loss:2.0365065260521826e-08
-250/500 loss:5.209988065278517e-10
-300/500 loss:1.3328695632996161e-11
-350/500 loss:3.4098758995283524e-13
-400/500 loss:8.723474589862032e-15
-450/500 loss:2.231723694177745e-16
-500/500 loss:5.7094113647001346e-18
-w:[[2.]
- [3.]]
-```
-
-可以看到，以上代码的主要目的为训练模型去寻找公式中2，3两个参数 (`Y = 2*X1 + 3*X2`)。具体训练过程及步骤在 **2.1 快速上手** 中已有详细介绍。
-
-在 **2.1 快速上手** 的反向传播时，我们与用了一个简单的 `.backward` 就解决了更新导数的问题。但为了更好的诠释 `.backward` 的过程，我们这里手写了反向传播。关键在于：
-
-```python
-def gradient(x, y, y_pred):
-    return np.matmul(x.T, (y_pred-y))
-```
-
-以及训练循环中的：
-
-```python
-grad = gradient(x, y, y_pred)
-w -= LR*grad
-```
-
-可以看到，所谓更新参数，就是简单的导数乘以学习率。
-
-### 2.5.4 利用 `flow.optim` 中已有的类进行反向传播
-
-上面手写的模型似乎很麻烦。我们不但要对其导数公式，还需要手写更新过程。在训练稍稍复杂一点的模型的话，工作量会大大提高 (激活函数等等都需要手写)。下面是我们用 oneflow 写出的训练 `Y = 2*X1 + 3*X2` 的模型。
-
-```python
-import oneflow as flow
-
-class MyLrModule(flow.nn.Module):
-    def __init__(self, lr, iter_count):
-        super().__init__()
-        self.w = flow.nn.Parameter(flow.tensor([[1], [1]],dtype=flow.float32))
-        self.lr = lr
-        self.iter_count = iter_count
-
-    def forward(self, x):
-        return flow.matmul(x, self.w)
-
-if __name__ == "__main__":
-    # train data: Y = 2*X1 + 3*X2
-    x = flow.tensor([[1, 2], [2, 3], [4, 6], [3, 1]], dtype=flow.float32)
-    y = flow.tensor([[8], [13], [26], [9]], dtype=flow.float32)
-
-    model = MyLrModule(0.01, 500)
-    loss = flow.nn.MSELoss(reduction='sum')
-    optimizer = flow.optim.SGD(model.parameters(), model.lr)
-
-    for i in range(0, model.iter_count):
-        y_pred = model(x)
-        l = loss(y_pred, y)
-        if (i+1) % 50 == 0: print(f"{i+1}/{model.iter_count} loss:{l}")
-
-        l.backward()
-        optimizer.step()
-        optimizer.zero_grad()
-
-    print(f"w: {model.w}")
-```
-
-```shell
-50/500 loss:tensor(0.0004, dtype=oneflow.float32, grad_fn=<reduce_sum_backward>)
-100/500 loss:tensor(2.2268e-07, dtype=oneflow.float32, grad_fn=<reduce_sum_backward>)
-150/500 loss:tensor(1.3461e-10, dtype=oneflow.float32, grad_fn=<reduce_sum_backward>)
-200/500 loss:tensor(3.8654e-12, dtype=oneflow.float32, grad_fn=<reduce_sum_backward>)
-250/500 loss:tensor(3.8654e-12, dtype=oneflow.float32, grad_fn=<reduce_sum_backward>)
-300/500 loss:tensor(3.8654e-12, dtype=oneflow.float32, grad_fn=<reduce_sum_backward>)
-350/500 loss:tensor(3.8654e-12, dtype=oneflow.float32, grad_fn=<reduce_sum_backward>)
-400/500 loss:tensor(3.8654e-12, dtype=oneflow.float32, grad_fn=<reduce_sum_backward>)
-450/500 loss:tensor(3.8654e-12, dtype=oneflow.float32, grad_fn=<reduce_sum_backward>)
-500/500 loss:tensor(3.8654e-12, dtype=oneflow.float32, grad_fn=<reduce_sum_backward>)
-w: tensor([[2.],
-        [3.]], dtype=oneflow.float32, grad_fn=<accumulate_grad>)
-```
-
-可以看到，我们不需要再手写损失函数以及其导数。oneflow.nn 中含有大量的损失函数供用户使用。其次，在实现反向传播时，用户只需在训练循环最后加入：
-
-```python
-l.backward()
-optimizer.step() #更新参数
-optimizer.zero_grad() #清除导数
-```
-
-即可。
-
