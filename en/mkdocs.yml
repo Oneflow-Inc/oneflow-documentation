@@ -9,7 +9,7 @@ repo_url: https://github.com/OneFlow-Inc/oneflow-documentation
 edit_uri: "blob/master/en/docs/"
 
 # Copyright
-copyright: Copyright &copy; 2017 - 2020 OneFlow
+copyright: Copyright &copy; 2017 - 2021 OneFlow
 
 #website/xxx.html style
 use_directory_urls: false
@@ -46,6 +46,19 @@ theme:
 # Plugins
 plugins:
   - search
+extra:
+  version:
+    provider: mike
+  alternate:
+    # Switch to English
+    - name: English
+      link: https://docs.oneflow.org/en
+      lang: en
+
+    # Switch to Chinese
+    - name: 中文
+      link: https://docs.oneflow.org
+      lang: zh
 
 # Extensions
 markdown_extensions:
@@ -112,25 +125,12 @@ nav:
       - Loading and Preparing OFRecord Dataset: extended_topics/how_to_make_ofdataset.md
       - Convert Image Files to OFRecord Datasets: extended_topics/how_to_convert_image_to_ofrecord.md
       - Obtain Runtime Data: extended_topics/watch_watch_diff.md
-      - Use VS Code to Debug OneFlow: extended_topics/debug_by_vscode.md
-      - User Defined OP: extended_topics/user_op.md
       - OneFlow And ONNX Convert: extended_topics/oneflow_convert_tools.md
 
 
-    #- Advanced Examples:
-      #- Image Processing:
-       # - ResNet: adv_examples/resnet.md
-        #- AlexNet: adv_examples/alexnet.md
-        #- MaskRCNN: adv_examples/mask_rcnn.md
-      #- NLP handling-BERT: adv_examples/bert.md
-      #- Recommendation System -Wide&Deep: adv_examples/wide_deep.md
-      #- Deep Faking -Generate Conflict Network: adv_examples/dcgan.md
     - API:
       - API: https://oneflow.readthedocs.io/en/master/
 
 
     - Contribute:
       - Contribute to OneFlow: contribute/intro.md
-
-    - 中文:
-      - 中文: ../index.html

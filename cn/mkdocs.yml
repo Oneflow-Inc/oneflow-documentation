@@ -2,14 +2,14 @@
 site_name: OneFlow
 site_url: https://docs.oneflow.org/
 site_description: >-
-  OneFlow 是一款分布式高效的机器学习框架
+  OneFlow -- 极致性能的分布式机器学习框架
 # Repository
-repo_name: Github
+repo_name: OneFlow
 repo_url: https://github.com/OneFlow-Inc/oneflow-documentation
 edit_uri: "blob/master/cn/docs/"
 
 # Copyright
-copyright: Copyright &copy; 2017 - 2020 OneFlow
+copyright: Copyright &copy; 2017 - 2021 OneFlow
 
 #website/xxx.html style
 use_directory_urls: false
@@ -46,6 +46,19 @@ theme:
 # Plugins
 plugins:
   - search
+extra:
+  version:
+    provider: mike
+  alternate:
+    # Switch to Chinese
+    - name: 中文
+      link: https://docs.oneflow.org
+      lang: zh
+
+    # Switch to English
+    - name: English
+      link: https://docs.oneflow.org/en
+      lang: en
 
 # Extensions
 markdown_extensions:
@@ -58,7 +71,8 @@ markdown_extensions:
   - markdown.extensions.meta
   - markdown.extensions.toc:
       permalink: true
-  - pymdownx.arithmatex
+  - pymdownx.arithmatex:
+      generic: true
   - pymdownx.betterem:
       smart_enable: all
   - pymdownx.caret
@@ -85,54 +99,44 @@ markdown_extensions:
       custom_checkbox: true
   - pymdownx.tilde
 
+extra_javascript:
+  - javascripts/config.js
+  - https://polyfill.io/v3/polyfill.min.js?features=es6
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+
 nav:
     - 首页: index.md
 
-    # - 快速上手:
-    #   - 安装: quick_start/install.md
-    #   - 3分钟快速上手: quick_start/quickstart_in_3_min.md
-    #   - 识别 MNIST 手写体数字: quick_start/lenet_mnist.md
-
     - 基础专题:
-      - 快速上手: basics_topics/quickstart.md
-      # - 数据输入: basics_topics/data_input.md
-      # - 搭建神经网络: basics_topics/build_nn_with_op_and_layer.md
-      # - 优化算法及超参配置: basics_topics/optimizer_in_function_config.md
-      # - 获取作业函数的结果: basics_topics/async_get.md
-      # - 模型的加载与保存: basics_topics/model_load_save.md
-      # - 分布式训练: basics_topics/distributed_train.md
-      # - OneFlow 概念清单: basics_topics/concept_explanation.md
-      # - OneFlow 系统设计: basics_topics/essentials_of_oneflow.md
+      - 张量: basics/02_tensor.md
+      - 搭建神经网络: basics/04_build_network.md
+      - 自动求梯度: basics/05_autograd.md
+      - 反向传播与 optimizer: basics/06_optimization.md
+      - 模型的加载与保存: basics/07_model_load_save.md
 
-    - 分布式训练:
-      - 快速上手: distributed_training/quickstart.md
-      - 分布式训练中的策略: distributed_training/distributed_strategy.md
-
-    # - 扩展专题:
-    #   - 作业函数的定义与调用: extended_topics/job_function_define_call.md
-    #   - Consistent 与 Mirrored 视角: extended_topics/consistent_mirrored.md
-    #   - OneFlow 的并行特色: extended_topics/model_mixed_parallel.md
-    #   - OFRecord 数据格式: extended_topics/ofrecord.md
-    #   - 加载与准备 OFRecord 数据集: extended_topics/how_to_make_ofdataset.md
-    #   - 将图片文件制作为 OFRecord 数据集: extended_topics/how_to_convert_image_to_ofrecord.md
-    #   - 获取运行时数据: extended_topics/watch_watch_diff.md
-    #   - 使用 VS Code 调试 OneFlow: extended_topics/debug_by_vscode.md
-    #   - 使用 Python 扩展 Op: extended_topics/python_kernel_op.md
-    #   - 使用 C++ 扩展 Op: extended_topics/user_op.md
-    #   - 自定义 DataLoader: extended_topics/implement_data_loader.md
-    #   - OneFlow 和 ONNX 交互: extended_topics/oneflow_convert_tools.md
-
-    # - 高级应用实例:
-    #   - ResNet: adv_examples/resnet.md
-    #   - YoloV3: adv_examples/yolov3.md
-    #   - BERT: adv_examples/bert.md
-    #   - Wide & Deep: adv_examples/wide_deep.md
+    - Single Client:
+      - 安装: single_client/quick_start/install.md
+      - 3分钟快速上手: single_client/quick_start/quickstart_in_3_min.md
+      - 识别 MNIST 手写体数字: single_client/quick_start/lenet_mnist.md
+      - 数据输入: single_client/basics_topics/data_input.md
+      - 搭建神经网络: single_client/basics_topics/build_nn_with_op_and_layer.md
+      - 优化算法及超参配置: single_client/basics_topics/optimizer_in_function_config.md
+      - 获取作业函数的结果: single_client/basics_topics/async_get.md
+      - 模型的加载与保存: single_client/basics_topics/model_load_save.md
+      - 分布式训练: single_client/basics_topics/distributed_train.md
+      - OneFlow 概念清单: single_client/basics_topics/concept_explanation.md
+      - OneFlow 系统设计: single_client/basics_topics/essentials_of_oneflow.md
+      - 作业函数的定义与调用: single_client/extended_topics/job_function_define_call.md
+      - Consistent 与 Mirrored 视角: single_client/extended_topics/consistent_mirrored.md
+      - OneFlow 的并行特色: single_client/extended_topics/model_mixed_parallel.md
+      - OFRecord 数据格式: single_client/extended_topics/ofrecord.md
+      - 加载与准备 OFRecord 数据集: single_client/extended_topics/how_to_make_ofdataset.md
+      - 将图片文件制作为 OFRecord 数据集: single_client/extended_topics/how_to_convert_image_to_ofrecord.md
+      - 获取运行时数据: single_client/extended_topics/watch_watch_diff.md
+      - OneFlow 和 ONNX 交互: single_client/extended_topics/oneflow_convert_tools.md
 
     - API:
       - API: https://oneflow.readthedocs.io/en/master/
 
     - OneFlow 开源计划:
       - OneFlow 开源计划: contribute/intro.md
-
-    - EN:
-      - EN: en/index.html
