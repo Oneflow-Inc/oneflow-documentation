@@ -54,7 +54,7 @@ NeuralNetwork(
 )
 ```
 
-接着，调用 `net` （注意：推荐直接调用 `forward`）即可完成推理：
+接着，调用 `net` （注意：不推荐直接调用 `forward`）即可完成推理：
 
 ```python
 X = flow.ones(1, 28, 28)
