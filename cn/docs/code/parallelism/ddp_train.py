@@ -16,15 +16,10 @@ class Model(flow.nn.Module):
         super().__init__()
         self.lr = 0.01
         self.iter_count = 500
-        self.w = flow.nn.Parameter(flow.randn(2, 1, dtype=flow.float32))
-        self.used_only_in_rank0 = flow.nn.Parameter(
-            flow.randn(2, 1, dtype=flow.float32)
-        )
+        self.w = flow.nn.Parameter(flow.tensor([[0], [0]], dtype=flow.float32))
 
     def forward(self, x):
         x = flow.matmul(x, self.w)
-        if flow.framework.distribute.get_rank() == 0:
-            x = x * self.used_only_in_rank0
         return x
 
 
