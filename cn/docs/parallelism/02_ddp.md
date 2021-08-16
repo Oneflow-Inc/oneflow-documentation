@@ -82,7 +82,7 @@ for i in range(0, m.iter_count):
 print(f"\nw:{m.w}")
 ```
 
-可以发现，编写数据并行的训练代码，要点只有2个：
+可以发现，数据并行的训练代码，与单机单卡脚本的不同只有2个：
 
 - 使用 DistributedDataParallel 处理一下 module 对象（`m = ddp(m)`)
 - 使用 [get_rank](todo_rst_getrank.md) 获取当前设备编号，并针对设备分发数据
