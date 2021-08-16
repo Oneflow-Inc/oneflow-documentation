@@ -2,52 +2,33 @@
 
 本文将以训练 MNIST 数据集为例，简单的介绍一套从建立到使用深度学习模型的流程， 以及OneFlow 完成深度学习中所使用的常见 API。通过文章中的链接可以找到关于某类 API 更深入的介绍。
 
-本文分为六大板块：
+可以通过以下命令直接体验 OneFlow 训练
 
-- 使用已有模型识别图片中的数字
-- 加载数据
-- 构建网络
-- 训练模型
-- 保存模型
-- 加载模型
+```shell
+wget https://docs.oneflow.org/master/code/basics/quickstart.py
+python ./quickstart.py
+```
 
-其中，第一个板块会简单的展示模型预测效果，而后之后的板块会依次介绍实现模型的五个步骤。
-
-让我们先从导入必要的库开始：
+详细的介绍请阅读本文。让我们先从导入必要的库开始：
 
 ```python
 import oneflow as flow
 import oneflow.nn as nn
 import oneflow.utils.vision.transforms as transforms
+
+BATCH_SIZE=128
 ```
 
-
-
-## 使用模型识别图片中的数字
-
-我们先通过OneFlow已有的模型，体验一下其识别效果。
-OneFlow 提供了预训练模型，可以直接用于识别图片中的数字：
-
-识别前我们需要先[下载图片](https://oneflow-public.oss-cn-beijing.aliyuncs.com/oneflow-documentation/mnist_test/mnist_raw_images.zip)。若不想将整个 dataset 全部下载，则可用以下为一系列从 0 到 9 的图片：
-
-[1](https://oneflow-public.oss-cn-beijing.aliyuncs.com/oneflow-documentation/mnist_test/img_22.jpg) [2](https://oneflow-public.oss-cn-beijing.aliyuncs.com/oneflow-documentation/mnist_test/img_1.jpg) [3](https://oneflow-public.oss-cn-beijing.aliyuncs.com/oneflow-documentation/mnist_test/img_5.jpg) [4](https://oneflow-public.oss-cn-beijing.aliyuncs.com/oneflow-documentation/mnist_test/img_15.jpg) [5](https://oneflow-public.oss-cn-beijing.aliyuncs.com/oneflow-documentation/mnist_test/img_11.jpg) [6](https://oneflow-public.oss-cn-beijing.aliyuncs.com/oneflow-documentation/mnist_test/img_35.jpg) [7](https://oneflow-public.oss-cn-beijing.aliyuncs.com/oneflow-documentation/mnist_test/img_12.jpg) [8](https://oneflow-public.oss-cn-beijing.aliyuncs.com/oneflow-documentation/mnist_test/img_45.jpg) [9](https://oneflow-public.oss-cn-beijing.aliyuncs.com/oneflow-documentation/mnist_test/img_21.jpg) [0](https://oneflow-public.oss-cn-beijing.aliyuncs.com/oneflow-documentation/mnist_test/img_7.jpg)
-
-下载图片后，运行以下命令，即可预测制定图片。
-
-```shell
-git clone https://github.com/Oneflow-Inc/oneflow-documentation.git
-cd cn/docs/code/basics
-python3 test_mnist.py <图片文件绝对路径>
-```
 
 ## 加载数据
 
-OneFlow 主要有两类将数据用作训练的方式：使用 `numpy` 数据或者使用 [Dataloader 与 Dataset](https://url)。
+OneFlow 可以使用 [Dataset 与 Dataloader](./03_dataset_dataloader.md) 加载数据。
 
-我们在此使用后者，以下为具体实现脚本：
+[oneflow.utils.vision.datasets](todo_dataset_rst.md) 模块中包含了不少真实的数据集(如 MNIST、CIFAR10、FashionMNIST)。
+
+我们通过 `oneflow.utils.vision.datasets.MNIST` 获取 MNIST 的训练集和测试集数据。
 
 ```python
-# Dataloader 设置
 mnist_train = flow.utils.vision.datasets.MNIST(
     root="data",
     train=True,
@@ -62,185 +43,179 @@ mnist_test = flow.utils.vision.datasets.MNIST(
     download=True,
     source_url="https://oneflow-public.oss-cn-beijing.aliyuncs.com/datasets/mnist/MNIST/",
 )
+```
+输出：
+
+```text
+Downloading https://oneflow-public.oss-cn-beijing.aliyuncs.com/datasets/mnist/MNIST/train-images-idx3-ubyte.gz
+Downloading https://oneflow-public.oss-cn-beijing.aliyuncs.com/datasets/mnist/MNIST/train-images-idx3-ubyte.gz to data/MNIST/raw/train-images-idx3-ubyte.gz
+9913344it [00:00, 36066177.85it/s]                                                          
+Extracting data/MNIST/raw/train-images-idx3-ubyte.gz to data/MNIST/raw
+...
+```
+
+数据集下载并解压到 `./data` 目录下。
+
+利用 [oneflow.utils.data.DataLoader](todo_rst_dataloader.md) 可以将 `dataset` 封装为迭代器，方便后续训练。
+
+```pytohn
 train_iter = flow.utils.data.DataLoader(
-    mnist_train, batch_size, shuffle=True
+    mnist_train, BATCH_SIZE, shuffle=True
 )
 test_iter = flow.utils.data.DataLoader(
-    mnist_test, batch_size, shuffle=False
+    mnist_test, BATCH_SIZE, shuffle=False
 )
 ```
-
-
-## 构建网络
-
-想要构建网络，只需要实现一个继承自 `nn.Module` 的类就可以了。在它的 `__init__` 方法中定义神经网络的结构，在它的 `forward` 方法中指定数据计算的顺序（正向传播）。
 
 ```python
-# 设置模型需要的参数
-input_size = 784
-hidden_size1 = 512
-num_classes = 10
+for x, y in train_iter:
+    print("x.shape:", x.shape)
+    print("y.shape:", y.shape)
+    break
+```
 
-# 具体模型
-class Net(nn.Module):
-    def __init__(self, input_size, hidden_size1, num_classes):
-        super(Net, self).__init__()
+输出：
+
+```text
+x.shape: flow.Size([128, 1, 28, 28])
+y.shape: flow.Size([128])
+```
+
+> 点击 [Dataset 与 Dataloader](./03_dataset_dataloader.md) 获取更详细信息。
+
+## 搭建网络
+
+想要搭建网络，只需要实现一个继承自 `nn.Module` 的类就可以了。在它的 `__init__` 方法中定义神经网络的结构，在它的 `forward` 方法中指定数据计算的顺序（正向传播）。
+
+```python
+class NeuralNetwork(nn.Module):
+    def __init__(self):
+        super(NeuralNetwork, self).__init__()
         self.flatten = nn.Flatten()
-        self.l1 = nn.Linear(input_size, hidden_size1)
-        self.relu1 = nn.ReLU()
-        self.l2 = nn.Linear(hidden_size1, hidden_size1)
-        self.relu2 = nn.ReLU()
-        self.l3 = nn.Linear(hidden_size1, num_classes)
+        self.linear_relu_stack = nn.Sequential(
+            nn.Linear(28*28, 512),
+            nn.ReLU(),
+            nn.Linear(512, 512),
+            nn.ReLU(),
+            nn.Linear(512, 10),
+            nn.ReLU()
+        )
+
     def forward(self, x):
         x = self.flatten(x)
-        out = self.l1(x)
-        out = self.relu1(out)
-        out = self.l2(out)
-        out = self.relu2(out)
-        out = self.l3(out)
-        return out
+        logits = self.linear_relu_stack(x)
+        return logits
 
-device = flow.device("cuda")
-model = Net(input_size, hidden_size1, num_classes)
+model = NeuralNetwork()
 print(model)
-model.to(device)
 ```
 
-打印网络结构：
+输出：
 
-```shell
-Net(
-  (l1): Linear(in_features=784, out_features=512, bias=True)
-  (relu1): ReLU()
-  (l2): Linear(in_features=512, out_features=512, bias=True)
-  (relu2): ReLU()
-  (l3): Linear(in_features=512, out_features=10, bias=True)
+```text
+NeuralNetwork(
+  (flatten): Flatten(start_dim=1, end_dim=-1)
+  (linear_relu_stack): Sequential(
+    (0): Linear(in_features=784, out_features=512, bias=True)
+    (1): ReLU()
+    (2): Linear(in_features=512, out_features=512, bias=True)
+    (3): ReLU()
+    (4): Linear(in_features=512, out_features=10, bias=True)
+    (5): ReLU()
+  )
 )
 ```
+
+> 点击 [搭建神经网络](./04_build_network.md) 获取更详细信息。
 
 ## 训练模型
 
 为了训练模型，我们需要 `loss` 函数和 `optimizer`，`loss` 函数用于评价神经网络预测的结果与 label 的差距；`optimizer` 调整网络的参数，使得网络预测的结果越来越接近 label（标准答案），其格式为（input tensor，学习率）。这一过程被称为反向传播。
 
 ```python
-loss = nn.CrossEntropyLoss().to(device)
-optimizer = flow.optim.SGD(model.parameters(), lr=0.003)
+loss_fn = nn.CrossEntropyLoss()
+optimizer = flow.optim.SGD(model.parameters(), lr=1e-3)
 ```
 
-以上展示了一次迭代所需要的正向传播、计算梯度、参数更新。接下来我们将展示如何用 for loop 进行完整的训练。我们一共准备 10 个 epoch，每个 epoch 中迭代 60000 次。
+定义一个 `train` 函数进行训练，完成正向传播、计算 loss、反向传播更新模型参数等工作。
 
 ```python
-# 训练模型
-def train(dataloader, model, loss_fn, optimizer):
-    train_loss, n_correct, n_samples = 0.0, 0.0, 0
-    for images, labels in train_iter:
-        images = images.reshape((-1, 28*28))
-        images = images.to(device=device)
-        labels = labels.to(device=device)
-        features = model(images)
-        l = loss(features, labels).sum()
+def train(iter, model, loss_fn, optimizer):
+    size = len(iter.dataset)
+    for batch, (x, y) in enumerate(iter):
+        # Compute prediction error
+        pred = model(x)
+        loss = loss_fn(pred, y)
+
+        # Backpropagation
         optimizer.zero_grad()
-        l.backward()
+        loss.backward()
         optimizer.step()
 
-        train_loss += l.numpy()
-        n_correct += (features.argmax(dim=1).numpy() == labels.numpy()).sum()
-        n_samples += images.shape[0]
+        current = batch * BATCH_SIZE
+        if batch % 100 == 0:  
+            print(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")
+```
 
-# 精度测试
-def evaluate_accuracy(data_iter, net, device=None):
-    n_correct, n_samples = 0.0, 0
-    net.to(device)
-    net.eval()
+同时，定义一个 `test` 函数，用于检验模型的精度：
+
+```python
+def test(iter, model, loss_fn):
+    size = len(iter.dataset)
+    num_batches = len(iter)
+    model.eval()
+    test_loss, correct = 0, 0
     with flow.no_grad():
-        for images, labels in data_iter:
-            images = images.reshape((-1, 28*28))
-            images = images.to(device=device)
-            labels = labels.to(device=device)
-            n_correct += (net(images).argmax(dim=1).numpy() == labels.numpy()).sum()
-            n_samples += images.shape[0]
-    net.train()
-    return n_correct/n_samples
-  
-# 具体训练循环
-num_epochs = 10
-for epoch in range(num_epochs):
-    train_loss, n_correct, n_samples = 0.0, 0.0, 0
-    train(train_iter, model, loss, optimizer)
-    evaluate_accuracy(test_iter, model, device)
-     # 验证精度
-    test_acc = evaluate_accuracy(test_iter, model, device)
+        for x, y in iter:
+            pred = model(x)
+            test_loss += loss_fn(pred, y)
+            bool_value = (pred.argmax(1).to(dtype=flow.int64)==y)
+            correct += float(bool_value.sum().numpy())
+    test_loss /= num_batches
+    print("test_loss", test_loss, "num_batches ", num_batches)
+    correct /= size
+    print(f"Test Error: \n Accuracy: {(100*correct):>0.1f}%, Avg loss: {test_loss:>8f}
+```
 
-    print("epoch %d, test acc %.3f" % 
-        ( epoch + 1, test_acc))
+然后可以开始训练，定义5轮 epoch，先训练后校验精度：
+
+```python
+epochs = 5
+for t in range(epochs):
+    print(f"Epoch {t+1}\n-------------------------------")
+    train(train_iter, model, loss_fn, optimizer)
+    test(test_iter, model, loss_fn)
 print("Done!")
 ```
 
-其中，images 代表输入模型的图片，而 labels 代表每张图片的标准答案。例如，假设有一张写有数字 5 的图片，images 就是可以这张图片的 784 个像素，而 labels 就是数字 "5"。
+输出：
 
-如果你还不熟悉深度学习，可能会好奇，为什么图片可以转变为数字。这是因为计算机本身就是使用数字来表示图片中的像素的，一个 28x28 的灰度图片，表示图片的 784 个像素，其实就是 784 个数字。
+```text
+loss: 2.299633
+loss: 2.303208
+loss: 2.298017
+loss: 2.297773
+loss: 2.294673
+loss: 2.295637
+Test Error: 
+ Accuracy: 22.1%, Avg loss: 2.292105 
 
-输出效果展示：
-
-```shell
-epoch 1, test acc 0.098
-epoch 2, test acc 0.309
-epoch 3, test acc 0.546
-epoch 4, test acc 0.653
-epoch 5, test acc 0.746
-epoch 6, test acc 0.783
-epoch 7, test acc 0.809
-epoch 8, test acc 0.828
-epoch 9, test acc 0.847
-epoch 10, test acc 0.861
+Epoch 2
+-------------------------------
+loss: 2.288640
+loss: 2.286367
+...
 ```
 
-<!--注：打印过程前也许会出现`Parameters in optimizer do not have gradient` 的情况，可忽略。-->
+> 点击 [自动求梯度](./05_autogra.md) 与 [反向传播与 optimizer](./06_optimization.md) 获取更详细信息。
 
-验证精度会在 **加载模型** -> **模型准确率 **中展示。
+## 保存与加载模型
 
-## 保存模型
+调用 [oneflow.save](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.save#oneflow.save) 可以保存模型。保存的模型可以通过 [oneflow.load](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.load#oneflow.load) 加载，用于预测等工作。
 
 ```python
-flow.save(model.state_dict(), "文件夹路径")
-print("Saved OneFlow Model")
-```
-保存后，OneFlow 会将训练好的模型权重保存到对应的文件夹内。因为模型较大导致文件较多，所以我们推荐为模型单独建立一个文件夹。
-
-## 加载模型
-
-#### 预测效果
-
-```python
-test_net = Net(input_size, hidden_size1, hidden_size2, num_classes)
-test_net.load_state_dict(flow.load("./mnist_model"))
-# 预测
-classes = ('0', '1', '2', '3', '4', '5', '6', '7', '8', '9')
-test_net.eval()
-for images, labels in test_iter:
-    pred = test_net(images.reshape((-1, 28*28)))
-    x = pred[0].argmax().numpy()
-    predicted, actual = classes[x.item(0)], labels[0].numpy()
-    print(f'Predicted:"{predicted}", Actual: "{actual}"')
-    break
+flow.save(model.state_dict(), "./model")
 ```
 
-这里我们可以通过 model.eval() 来使用模型。
-
-#### 代码完整输出效果展示
-
-```shell
-epoch 1, test acc 0.098
-epoch 2, test acc 0.309
-epoch 3, test acc 0.546
-epoch 4, test acc 0.653
-epoch 5, test acc 0.746
-epoch 6, test acc 0.783
-epoch 7, test acc 0.809
-epoch 8, test acc 0.828
-epoch 9, test acc 0.847
-epoch 10, test acc 0.861
-Saved OneFlow Model
-Predicted:"7", Actual: "7"
-```
+> 点击 [模型的加载与保存](./07_model_load_save.md) 获取更详细信息。
 

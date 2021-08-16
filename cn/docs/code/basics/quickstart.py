@@ -13,14 +13,12 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
-import os
-
 import oneflow as flow
 import oneflow.nn as nn
 import oneflow.utils.vision.transforms as transforms
 
 
-batch_size=128
+BATCH_SIZE = 100
 
 # Dataloader 设置
 mnist_train = flow.utils.vision.datasets.MNIST(
@@ -37,105 +35,73 @@ mnist_test = flow.utils.vision.datasets.MNIST(
     download=True,
     source_url="https://oneflow-public.oss-cn-beijing.aliyuncs.com/datasets/mnist/MNIST/",
 )
-train_iter = flow.utils.data.DataLoader(
-    mnist_train, batch_size, shuffle=True
-)
-test_iter = flow.utils.data.DataLoader(
-    mnist_test, batch_size, shuffle=False
-)
+train_iter = flow.utils.data.DataLoader(mnist_train, BATCH_SIZE, shuffle=True)
+test_iter = flow.utils.data.DataLoader(mnist_test, BATCH_SIZE, shuffle=False)
 
-# 设置模型需要的参数
-input_size = 784
-hidden_size1 = 128
-num_classes = 10
-
-
-# 具体模型
-class Net(nn.Module):
-    def __init__(self, input_size, hidden_size1, num_classes):
-        super(Net, self).__init__()
+# 搭建网络
+class NeuralNetwork(nn.Module):
+    def __init__(self):
+        super(NeuralNetwork, self).__init__()
         self.flatten = nn.Flatten()
-        self.l1 = nn.Linear(input_size, hidden_size1)
-        self.relu1 = nn.ReLU()
-        self.l2 = nn.Linear(hidden_size1, hidden_size1)
-        self.relu2 = nn.ReLU()
-        self.l3 = nn.Linear(hidden_size1, num_classes)
+        self.linear_relu_stack = nn.Sequential(
+            nn.Linear(28 * 28, 512),
+            nn.ReLU(),
+            nn.Linear(512, 512),
+            nn.ReLU(),
+            nn.Linear(512, 10),
+            nn.ReLU(),
+        )
+
     def forward(self, x):
         x = self.flatten(x)
-        out = self.l1(x)
-        out = self.relu1(out)
-        out = self.l2(out)
-        out = self.relu2(out)
-        out = self.l3(out)
-        return out
+        logits = self.linear_relu_stack(x)
+        return logits
 
-device = flow.device("cuda")
-model = Net(input_size, hidden_size1, num_classes)
+
+model = NeuralNetwork()
 print(model)
-model.to(device)
 
-loss = nn.CrossEntropyLoss().to(device)
-optimizer = flow.optim.SGD(model.parameters(), lr=0.003)
+loss_fn = nn.CrossEntropyLoss()
+optimizer = flow.optim.SGD(model.parameters(), lr=1e-3)
 
-# 精度测试
-def evaluate_accuracy(data_iter, net, device=None):
-    n_correct, n_samples = 0.0, 0
-    net.to(device)
-    net.eval()
-    with flow.no_grad():
-        for images, labels in data_iter:
-            images = images.reshape((-1, 28*28))
-            images = images.to(device=device)
-            labels = labels.to(device=device)
-            n_correct += (net(images).argmax(dim=1).numpy() == labels.numpy()).sum()
-            n_samples += images.shape[0]
-    net.train()
-    return n_correct/n_samples
 
-# 训练模型
-def train(dataloader, model, loss_fn, optimizer):
-    train_loss, n_correct, n_samples = 0.0, 0.0, 0
-    for images, labels in train_iter:
-        images = images.reshape((-1, 28*28))
-        images = images.to(device=device)
-        labels = labels.to(device=device)
-        features = model(images)
-        l = loss(features, labels).sum()
+def train(iter, model, loss_fn, optimizer):
+    size = len(iter.dataset)
+    for batch, (x, y) in enumerate(iter):
+        # 计算 loss
+        pred = model(x)
+        loss = loss_fn(pred, y)
+
+        # 反向传播
         optimizer.zero_grad()
-        l.backward()
+        loss.backward()
         optimizer.step()
 
-        train_loss += l.numpy()
-        n_correct += (features.argmax(dim=1).numpy() == labels.numpy()).sum()
-        n_samples += images.shape[0]
-    
+        if batch % 100 == 0:
+            print(f"loss: {loss:>4f}")
 
-# 具体训练循环
-num_epochs = 10
-for epoch in range(num_epochs):
-    train_loss, n_correct, n_samples = 0.0, 0.0, 0
-    train(train_iter, model, loss, optimizer)
-    evaluate_accuracy(test_iter, model, device)
-     # 验证精度
-    test_acc = evaluate_accuracy(test_iter, model, device)
 
-    print("epoch %d, test acc %.3f" % 
-        ( epoch + 1, test_acc))
+def test(iter, model, loss_fn):
+    size = len(iter.dataset)
+    num_batches = len(iter)
+    model.eval()
+    test_loss, correct = 0, 0
+    with flow.no_grad():
+        for x, y in iter:
+            pred = model(x)
+            test_loss += loss_fn(pred, y)
+            bool_value = pred.argmax(1).to(dtype=flow.int64) == y
+            correct += float(bool_value.sum().numpy())
+    test_loss /= num_batches
+    correct /= size
+    print(
+        f"Test Error: \n Accuracy: {(100*correct):>0.1f}%, Avg loss: {test_loss:>8f} \n"
+    )
+
+
+epochs = 5
+for t in range(epochs):
+    print(f"Epoch {t+1}\n-------------------------------")
+    train(train_iter, model, loss_fn, optimizer)
+    test(test_iter, model, loss_fn)
 print("Done!")
-
-# 储存模型
-flow.save(model.state_dict(), "./mnist_model")
-print("Saved OneFlow Model")
-
-test_net = Net(input_size, hidden_size1, num_classes)
-test_net.load_state_dict(flow.load("./mnist_model"))
-
-# 预测
-classes = ('0', '1', '2', '3', '4', '5', '6', '7', '8', '9')
-test_net.eval()
-for images, labels in test_iter:
-    pred = test_net(images.reshape((-1, 28*28)))
-    x = pred[0].argmax().numpy()
-    predicted, actual = classes[x.item(0)], labels[0].numpy()
-    print(f'Predicted:"{predicted}", Actual: "{actual}"')
-    break
