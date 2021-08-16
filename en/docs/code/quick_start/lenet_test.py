@@ -1,9 +1,9 @@
 import numpy as np
-import oneflow as flow
 from PIL import Image
 import sys
 import os
-import oneflow.typing as tp
+from oneflow.compatible import single_client as flow
+from oneflow.compatible.single_client import typing as tp
 
 BATCH_SIZE = 1
 flow.config.enable_legacy_model_io(False)

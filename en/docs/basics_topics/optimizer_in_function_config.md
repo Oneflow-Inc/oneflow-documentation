@@ -40,7 +40,7 @@ def get_eval_config():
 
 @flow.global_function(type="predict", get_eval_config())
 def eval_job() -> tp.Numpy:
-  # build up neural network here
+  # build neural network here
 ```
 
 ### Configuration for training
