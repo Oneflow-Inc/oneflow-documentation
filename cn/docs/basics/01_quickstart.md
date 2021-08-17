@@ -207,7 +207,7 @@ loss: 2.286367
 ...
 ```
 
-> 点击 [自动求梯度](./05_autogra.md) 与 [反向传播与 optimizer](./06_optimization.md) 获取更详细信息。
+> 点击 [自动求梯度](./05_autograd.md) 与 [反向传播与 optimizer](./06_optimization.md) 获取更详细信息。
 
 ## 保存与加载模型
 

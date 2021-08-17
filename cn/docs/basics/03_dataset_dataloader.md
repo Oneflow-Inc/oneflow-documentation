@@ -97,7 +97,7 @@ for i in range(1, cols * rows + 1):
 plt.show()
 ```
 
-![fashionMNIST](../imgs/fashionMNIST.png)
+![fashionMNIST](./imgs/fashionMNIST.png)
 
 ## 自定义 Dataset
 

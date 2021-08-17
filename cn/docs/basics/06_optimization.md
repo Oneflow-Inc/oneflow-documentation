@@ -1,6 +1,6 @@
 # 反向传播与 optimizer
 
-到目前为止，我们已经掌握如何使用 OneFlow [搭建模型](./04_build_network.md)、[加载数据](todo_dataset_dataloader.md)、[自动计算模型参数的梯度](./05_autograd.md)，将它们组合在一起，我们就可以利用反向传播算法训练模型。
+到目前为止，我们已经掌握如何使用 OneFlow [加载数据](./03_dataset_dataloader.md)、[搭建模型](./04_build_network.md)、[自动计算模型参数的梯度](./05_autograd.md)，将它们组合在一起，我们就可以利用反向传播算法训练模型。
 
 在 [oneflow.optim](https://oneflow.readthedocs.io/en/master/optim.html) 中，有各类 `optimizer`，它们可以简化实现反向传播的代码。
 
