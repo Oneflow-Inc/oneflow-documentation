@@ -21,51 +21,34 @@ from oneflow.utils.vision.transforms import ToTensor
 from oneflow.utils.data import Dataset
 import oneflow.utils.vision.datasets as datasets
 
+import numpy as np
+class CustomDataset(Dataset):
+    raw_data_x = np.array([[1, 2], [2, 3], [4, 6], [3, 1]], dtype=np.float32)
+    raw_label = np.array([[8], [13], [26], [9]], dtype=np.float32)
 
-training_data = datasets.FashionMNIST(
-    root="data",
-    train=True,
-    download=True,
-    transform=ToTensor()
-)
+    def __init__(self, transform=None, target_transform=None):
+        self.transform = transform
+        self.target_transform = target_transform
 
-test_data = datasets.FashionMNIST(
-    root="data",
-    train=False,
-    download=True,
-    transform=ToTensor()
-)
+    def __len__(self):
+        return len(CustomDataset.raw_label)
 
-# labels_map = {
-#     0: "T-Shirt",
-#     1: "Trouser",
-#     2: "Pullover",
-#     3: "Dress",
-#     4: "Coat",
-#     5: "Sandal",
-#     6: "Shirt",
-#     7: "Sneaker",
-#     8: "Bag",
-#     9: "Ankle Boot",
-# }
-# figure = plt.figure(figsize=(8, 8))
-# cols, rows = 3, 3
-# from random import randint
-# for i in range(1, cols * rows + 1):
-#     sample_idx = randint(0, len(training_data))
-#     img, label = training_data[sample_idx]
-#     figure.add_subplot(rows, cols, i)
-#     plt.title(labels_map[label])
-#     plt.axis("off")
-#     plt.imshow(img.squeeze().numpy(), cmap="gray")
-# plt.show()
+    def __getitem__(self, idx):
+        x = CustomDataset.raw_data_x[idx]
+        label = CustomDataset.raw_label[idx]
+        if self.transform:
+            x = self.transform(x)
+        if self.target_transform:
+            label = self.target_transform(label)
+        return x, label
+
+custom_dataset = CustomDataset()
+# print(custom_dataset[0])
+# print(custom_dataset[1])
 
 from oneflow.utils.data import DataLoader
+myloader = DataLoader(custom_dataset, batch_size=5, shuffle=True)
 
-train_dataloader = DataLoader(training_data, batch_size=64, shuffle=True)
-x, label = next(iter(train_dataloader))
-print(f"shape of x:{x.shape}, shape of label: {label.shape}")
-
-for x, label in train_dataloader:
-    print(x.shape, label.shape)
-    # training...
+for x, y in myloader:
+    print(x)
+    print(y)

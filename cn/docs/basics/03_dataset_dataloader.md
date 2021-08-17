@@ -99,6 +99,50 @@ plt.show()
 
 ![fashionMNIST](../imgs/fashionMNIST.png)
 
+## 自定义 Dataset
+
+通过继承 [oneflow.utils.data.Dataset](https://oneflow.readthedocs.io/en/master/utils.html?highlight=oneflow.utils.data.Dataset#oneflow.utils.data.Dataset) 可以实现自定义 `Dataset`，自定义 `Dataset` 同样可以配合下一节介绍的 `Dataloader` 使用，简化数据处理的流程。
+
+以下的例子展示了如何实现一个自定义 `Dataset`，它的关键步骤是：
+
+- 继承 `oneflow.utils.data.Dataset`
+- 实现类的 `__len__` 方法，返回结果通常为该数据集中的样本数量
+- 实现类的 `__getitem__` 方法，它的返回值对应了用户（或框架）调用 `dataset_obj[idx]` 时得到的结果
+
+```python
+import numpy as np
+class CustomDataset(Dataset):
+    raw_data_x = np.array([[1, 2], [2, 3], [4, 6], [3, 1]], dtype=np.float32)
+    raw_label = np.array([[8], [13], [26], [9]], dtype=np.float32)
+
+    def __init__(self, transform=None, target_transform=None):
+        self.transform = transform
+        self.target_transform = target_transform
+
+    def __len__(self):
+        return len(raw_label)
+
+    def __getitem__(self, idx):
+        x = CustomDataset.raw_data_x[idx]
+        label = CustomDataset.raw_label[idx]
+        if self.transform:
+            x = self.transform(x)
+        if self.target_transform:
+            label = self.target_transform(label)
+        return x, label
+
+custom_dataset = CustomDataset()
+print(custom_dataset[0])
+print(custom_dataset[1])
+```
+
+输出：
+
+```text
+(array([1., 2.], dtype=float32), array([8.], dtype=float32))
+(array([2., 3.], dtype=float32), array([13.], dtype=float32))
+```
+
 ## 使用 DataLoader
 
 利用 Dataset 可以一次获取到所有数据。但是在训练中，往往有其它的需求，如：一次读取 batch size 份数据；1轮 epoch 训练后，数据重新打乱（reshuffle）等。
