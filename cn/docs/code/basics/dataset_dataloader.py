@@ -36,26 +36,36 @@ test_data = datasets.FashionMNIST(
     transform=ToTensor()
 )
 
-labels_map = {
-    0: "T-Shirt",
-    1: "Trouser",
-    2: "Pullover",
-    3: "Dress",
-    4: "Coat",
-    5: "Sandal",
-    6: "Shirt",
-    7: "Sneaker",
-    8: "Bag",
-    9: "Ankle Boot",
-}
-figure = plt.figure(figsize=(8, 8))
-cols, rows = 3, 3
-from random import randint
-for i in range(1, cols * rows + 1):
-    sample_idx = randint(0, len(training_data))
-    img, label = training_data[sample_idx]
-    figure.add_subplot(rows, cols, i)
-    plt.title(labels_map[label])
-    plt.axis("off")
-    plt.imshow(img.squeeze().numpy(), cmap="gray")
-plt.show()
+# labels_map = {
+#     0: "T-Shirt",
+#     1: "Trouser",
+#     2: "Pullover",
+#     3: "Dress",
+#     4: "Coat",
+#     5: "Sandal",
+#     6: "Shirt",
+#     7: "Sneaker",
+#     8: "Bag",
+#     9: "Ankle Boot",
+# }
+# figure = plt.figure(figsize=(8, 8))
+# cols, rows = 3, 3
+# from random import randint
+# for i in range(1, cols * rows + 1):
+#     sample_idx = randint(0, len(training_data))
+#     img, label = training_data[sample_idx]
+#     figure.add_subplot(rows, cols, i)
+#     plt.title(labels_map[label])
+#     plt.axis("off")
+#     plt.imshow(img.squeeze().numpy(), cmap="gray")
+# plt.show()
+
+from oneflow.utils.data import DataLoader
+
+train_dataloader = DataLoader(training_data, batch_size=64, shuffle=True)
+x, label = next(iter(train_dataloader))
+print(f"shape of x:{x.shape}, shape of label: {label.shape}")
+
+for x, label in train_dataloader:
+    print(x.shape, label.shape)
+    # training...

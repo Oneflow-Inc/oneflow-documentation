@@ -98,3 +98,49 @@ plt.show()
 ```
 
 ![fashionMNIST](../imgs/fashionMNIST.png)
+
+## 使用 DataLoader
+
+利用 Dataset 可以一次获取到所有数据。但是在训练中，往往有其它的需求，如：一次读取 batch size 份数据；1轮 epoch 训练后，数据重新打乱（reshuffle）等。
+
+这时候，使用 `DataLoader` 即可。 `DataLoader` 可以将 `DataSet` 封装为迭代器，方便训练循环中获取数据。如以下例子：
+
+- `batch_size=64` ： 指定一次迭代返回的数据 batch size
+- `shuffle` ：是否要随机打乱数据的顺序
+
+```python
+from oneflow.utils.data import DataLoader
+
+train_dataloader = DataLoader(training_data, batch_size=64, shuffle=True)
+x, label = next(iter(train_dataloader))
+print(f"shape of x:{x.shape}, shape of label: {label.shape}")
+```
+
+输出：
+```text
+shape of x:flow.Size([64, 1, 28, 28]), shape of label: flow.Size([64])
+```
+
+```python
+img = x[0].squeeze().numpy()
+label = label[0]
+plt.imshow(img, cmap="gray")
+plt.show()
+print(label)
+```
+
+输出：
+
+![dataloader item](./imgs/dataloader_item.png)
+
+```text
+tensor(9, dtype=oneflow.int64)
+```
+
+自然我们也可以在训练的循环中，使用 `Dataloader` 迭代器：
+
+```python
+for x, label in train_dataloader:
+    print(x.shape, label.shape)
+    # training...
+```
