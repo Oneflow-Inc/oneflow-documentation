@@ -1,14 +1,16 @@
-# nn.Graph
+# 静态图模块 nn.Graph
 
-目前，深度学习框架中模型的运行方式主要有两种，一种是以**动态图**的方式运行，即另一种是以**静态图**的方式运行。这两种方式各有优缺点，OneFlow对两种方式均提供了支持。
+目前，深度学习框架中模型的运行方式主要有两种，即 **动态图** 与 **静态图**，在 OneFlow 中，也被习惯称为 **eager 模式** 和 **graph 模式** 。
 
+这两种方式各有优缺点，OneFlow 对两种方式均提供了支持，默认情况下是 eager 模式。如果你是按顺序阅读本基础专题的教程，那么，到目前为所接触的所有代码都是 eager 模式的代码。
 
+一般而言，动态图更易用，静态图性能更具优势。OneFlow 提供的 [nn.Graph](todo_rst_nngraph.md) 模块，让用户可以用类似 eager 的编程习惯，构建静态图并训练模型。
 
-在OneFlow中，以动态图运行的方式被称为***Eager模式***，以静态图运行的方式被称为***Graph模式***。
+本文包括：
 
-
-
-其中，`nn.graph`为**静态图**运行方式的基础，本文将先介绍与**动态图/静态图**的概念，然后将具体介绍如何通过`nn.graph`，将OneFlow的模型的运行方式从**Eager模式**转换为**Graph模式**（即从动态图运行转换为静态图运行）。
+- 动态图与静态图的基本介绍
+- `nn.Graph` 模块接口介绍
+- Eager 转 Graph 实例
 
 
 
@@ -48,7 +50,7 @@ OneFlow默认以Eager模式运行，在[搭建神经网络](https://github.com/O
 
 ### 多项式拟合例子（Eager版）
 
-> 注：该例子代码改编自[PyTorch官网教程](https://pytorch.org/tutorials/beginner/pytorch_with_examples.html#nn-module)。为了降低用户的学习成本，OneFlow Eager模式下的API接口（如 [nn.Conv2d](https://oneflow.readthedocs.io/en/master/nn.html?highlight=oneflow.nn.Conv2D#oneflow.nn.Conv2d)， [nn.Module](https://oneflow.readthedocs.io/en/master/module.html#oneflow.nn.Module)等）基本上做到了与PyTorch一致，通过该例子可以看到，将PyTorch版本的模型代码转换为OneFlow版本，需要改动的地方非常少。
+> 注：该例子代码改编自[PyTorch官网教程](https://pytorch.org/tutorials/beginner/pytorch_with_examples.html#nn-module)。为了降低用户的学习成本，OneFlow Eager模式下的API接口（如 [nn.Conv2d](https://oneflow.readthedocs.io/en/master/nn.html?highlight=oneflow.nn.Conv2D#oneflow.nn.Conv2d)， [nn.Module](https://oneflow.readthedocs.io/en/master/module.html#oneflow.nn.Module)等）基本上做到了与PyTorch一致，通过该例子可以看到，将PyTorch版本的模型代码转换为 OneFlow 版本，需要改动的地方非常少。
 
 
 
@@ -71,33 +73,29 @@ import math
 import numpy as np
 import oneflow as flow
 
-device = flow.device("cuda")
+device = flow.device("cpu")
 dtype = flow.float32
 
 # Create Tensors to hold input and outputs.
-x = flow.tensor(np.linspace(-math.pi, math.pi, 20),
-                device=device, dtype=dtype)
+x = flow.tensor(np.linspace(-math.pi, math.pi, 2000), device=device, dtype=dtype)
 y = flow.tensor(np.sin(x), device=device, dtype=dtype)
 
 # For this example, the output y is a linear function of (x, x^2, x^3), so
 # we can consider it as a linear layer neural network. Let's prepare the
 # tensor (x, x^2, x^3).
-p = flow.tensor([1, 2, 3], device=device, dtype=dtype)
-xx = x.unsqueeze(-1).pow(p)
-
-# The Linear Module
-model = flow.nn.Sequential(
-    flow.nn.Linear(3, 1),
-    flow.nn.Flatten(0, 1)
+xx = flow.cat(
+    [x.unsqueeze(-1).pow(1), x.unsqueeze(-1).pow(2), x.unsqueeze(-1).pow(3)], dim=1
 )
-model = model.to(device)
+# The Linear Module
+model = flow.nn.Sequential(flow.nn.Linear(3, 1), flow.nn.Flatten(0, 1))
+model.to(device)
 
 # Loss Function
-loss_fn = flow.nn.MSELoss(reduction='sum')
-loss_fn = model.to(device)
+loss_fn = flow.nn.MSELoss(reduction="sum")
+loss_fn.to(device)
 
 # Optimizer
-optimizer = flow.optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
+optimizer = flow.optim.SGD(model.parameters(), lr=1e-6)
 
 for t in range(2000):
     # Forward pass: compute predicted y by passing x to the model.
@@ -111,7 +109,7 @@ for t in range(2000):
     # Use the optimizer object to zero all of the gradients for the variables
     # it will update (which are the learnable weights of the model).
     optimizer.zero_grad()
-    
+
     # Backward pass: compute gradient of the loss with respect to model
     # parameters.
     loss.backward()
@@ -121,13 +119,11 @@ for t in range(2000):
     optimizer.step()
 
 linear_layer = model[0]
+
 print(
-    f'Result: y = {linear_layer.bias.numpy()} + {linear_layer.weight[:, 0].numpy()} x + {linear_layer.weight[:, 1].numpy()} x^2 + {linear_layer.weight[:, 2].numpy()} x^3')
+    f"Result: y = {linear_layer.bias.numpy()[0]} + {linear_layer.weight[:, 0].numpy()[0]}*x + {linear_layer.weight[:, 1].numpy()[0]}*x^2 + {linear_layer.weight[:, 2].numpy()[0]}*x^3"
+)
 ```
-
-
-
-
 
 ## OneFlow的Graph模式
 
