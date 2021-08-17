@@ -1,8 +1,8 @@
 # 快速上手
 
-本文将以训练 MNIST 数据集为例，简单的介绍一套从建立到使用深度学习模型的流程， 以及OneFlow 完成深度学习中所使用的常见 API。通过文章中的链接可以找到关于某类 API 更深入的介绍。
+本文将以训练 MNIST 数据集为例，简单的如何使用 OneFlow 完成深度学习中的常见任务。通过文章中的链接可以跳转到各个子任务的专题介绍。
 
-可以通过以下命令直接体验 OneFlow 训练
+通过以下命令直接体验 OneFlow 训练
 
 ```shell
 wget https://docs.oneflow.org/master/code/basics/quickstart.py
