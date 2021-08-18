@@ -125,6 +125,28 @@ print(
 )
 ```
 
+输出：
+
+```text
+99 582.7045
+...
+1799 9.326502
+1899 9.154123
+1999 9.040091
+Result: y = -0.0013652867637574673 + 0.8422811627388*x + 0.0002355352626182139*x^2 + -0.09127362817525864*x^3
+```
+
+```python
+import matplotlib.pyplot as plt
+w = linear_layer.weight.numpy()[0]
+b = linear_layer.bias.numpy()[0]
+y_fit = b + w[0]*x + w[1]*x**2 + w[2]*x**3
+plt.plot(x.numpy(),y.numpy())
+plt.plot(x.numpy(),y_fit.numpy())
+```
+
+![poly_fit](./imgs/poly_fit.png)
+
 ## OneFlow的Graph模式
 
 ### `nn.graph`
@@ -187,22 +209,23 @@ y = flow.tensor(np.sin(x), device=device, dtype=dtype)
 # For this example, the output y is a linear function of (x, x^2, x^3), so
 # we can consider it as a linear layer neural network. Let's prepare the
 # tensor (x, x^2, x^3).
-p = flow.tensor([1, 2, 3], device=device, dtype=dtype)
-xx = x.unsqueeze(-1).pow(p)
+xx = flow.cat(
+    [x.unsqueeze(-1).pow(1), x.unsqueeze(-1).pow(2), x.unsqueeze(-1).pow(3)], dim=1
+)
 
 # The Linear Module
 model = flow.nn.Sequential(
     flow.nn.Linear(3, 1),
     flow.nn.Flatten(0, 1)
 )
-model = model.to(device)
+model.to(device)
 
 # Loss Function
 loss_fn = flow.nn.MSELoss(reduction='sum')
-loss_fn = model.to(device)
+loss_fn.to(device)
 
 # Optimizer
-optimizer = flow.optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
+optimizer = flow.optim.SGD(model.parameters(), lr=1e-6, momentum=0.9)
 
 
 # The Linear Train Graph
@@ -211,7 +234,7 @@ class LinearTrainGraph(flow.nn.Graph):
         super().__init__()
         self.model = model
         self.loss_fn = loss_fn
-        self.add_optimizer("optimizer", optimizer)
+        self.add_optimizer(optimizer)
 
     def build(self, x, y):
         y_pred = self.model(x)
@@ -220,11 +243,11 @@ class LinearTrainGraph(flow.nn.Graph):
         return loss
 
 
-linear_t_g = LinearTrainGraph()
+linear_graph = LinearTrainGraph()
 
 for t in range(2000):
     # Print loss.
-    loss = linear_t_g(xx, y)
+    loss = linear_graph(xx, y)
     if t % 100 == 99:
         print(t, loss.numpy())
 
@@ -236,15 +259,50 @@ print(
 
 
 
-### Graph模式下的调试工具
+### Graph 模式下的调试工具
 
-为了方便调试，在上面的代码中添加：
+调用为 Graph 对象的 `debug` 方法，可以
 
 ```
-linear_t_g.debug()
+linear_graph = LinearTrainGraph()
+linear_graph.debug()
 ```
 
-输出中将显示出静态图的相关信息，包括计算图中各个节点的名称，层级关系，输入输出等信息。
+OneFlow 在编译生成计算图的过程中会打印调试信息：
+
+```text
+Note that nn.Graph.debug() only print debug info on rank 0.
+(GRAPH:LinearTrainGraph_0:LinearTrainGraph) start building forward graph.
+(INPUT:_LinearTrainGraph_0-input_0:tensor(..., device='cuda:0', size=(20, 3), dtype=oneflow.float32))
+(INPUT:_LinearTrainGraph_0-input_1:tensor(..., device='cuda:0', size=(20,), dtype=oneflow.float32))
+(MODULE:model:Sequential())
+(INPUT:_model-input_0:tensor(..., device='cuda:0', is_lazy='True', size=(20, 3),
+       dtype=oneflow.float32))
+(MODULE:model.0:Linear(in_features=3, out_features=1, bias=True))
+(INPUT:_model.0-input_0:tensor(..., device='cuda:0', is_lazy='True', size=(20, 3),
+       dtype=oneflow.float32))
+(PARAMETER:model.0.weight:tensor(..., device='cuda:0', size=(1, 3), dtype=oneflow.float32,
+       requires_grad=True))
+(PARAMETER:model.0.bias:tensor(..., device='cuda:0', size=(1,), dtype=oneflow.float32,
+       requires_grad=True))
+(OUTPUT:_model.0-output_0:tensor(..., device='cuda:0', is_lazy='True', size=(20, 1),
+       dtype=oneflow.float32))
+(MODULE:model.1:Flatten(start_dim=0, end_dim=1))
+(INPUT:_model.1-input_0:tensor(..., device='cuda:0', is_lazy='True', size=(20, 1),
+       dtype=oneflow.float32))
+(OUTPUT:_model.1-output_0:tensor(..., device='cuda:0', is_lazy='True', size=(20,), dtype=oneflow.float32))
+(OUTPUT:_model-output_0:tensor(..., device='cuda:0', is_lazy='True', size=(20,), dtype=oneflow.float32))
+(MODULE:loss_fn:MSELoss())
+(INPUT:_loss_fn-input_0:tensor(..., device='cuda:0', is_lazy='True', size=(20,), dtype=oneflow.float32))
+(INPUT:_loss_fn-input_1:tensor(..., device='cuda:0', is_lazy='True', size=(20,), dtype=oneflow.float32))
+(OUTPUT:_loss_fn-output_0:tensor(..., device='cuda:0', is_lazy='True', size=(), dtype=oneflow.float32))
+(OUTPUT:_LinearTrainGraph_0-output_0:tensor(..., device='cuda:0', is_lazy='True', size=(), dtype=oneflow.float32))
+(GRAPH:LinearTrainGraph_0:LinearTrainGraph) end building forward graph.
+(GRAPH:LinearTrainGraph_0:LinearTrainGraph) start compiling and init graph runtime.
+(GRAPH:LinearTrainGraph_0:LinearTrainGraph) end compiling and init graph rumtime.
+```
+
+输出中将显示包括计算图中各层的名称、输入输出张量的信息，包括形状、设备信息、数据类型等。
 
 
 
