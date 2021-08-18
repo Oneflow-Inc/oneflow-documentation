@@ -14,12 +14,64 @@
 
 
 
-## 动态图 vs. 静态图
+## 动态图 VS 静态图
+
+我们已经知道，用户定义的神经网络，都会被深度学习框架转为计算图，如 [自动求梯度](./05_autograd.md) 中的例子：
+
+```python
+def loss(y_pred, y):
+    return flow.sum(1/2*(y_pred-y)**2)
+
+x = flow.ones(1, 5)  # 输入
+w = flow.randn(5, 3, requires_grad=True)
+b = flow.randn(1, 3, requires_grad=True)
+z = flow.matmul(x, w) + b
+
+y = flow.zeros(1, 3)  # label
+l = loss(z,y)
+```
+
+对应的计算图为：
+
+![计算图](./imgs/compute_graph.png)
 
 **动态图（Dynamic Graph）**
 
-- 动态图中的计算节点以*边定义边执行的方式运行（Define-by-Run）*，即计算节点的声明和真实赋值是同时进行的，因此也被称为* Eager 模式/命令式编程 (Imperative)*。
--  以动态图方式运行的模型：代码编写很灵活，支持逻辑控制语法。并且由于操作无需等待计算图的全部构建完成即可获得执行结果，因此易于调试，但是性能及可移植性相对欠缺。
+动态图的特点在于，它是一边运行，一边完成计算图的构建的。
+还是以我们的以上代码为例，当我们运行完
+
+```python
+x = flow.ones(1, 5)  # 输入
+w = flow.randn(5, 3, requires_grad=True)
+b = flow.randn(1, 3, requires_grad=True)
+```
+
+这几个语句后，动态图构建为：
+
+![01-dynamic-graph](./imgs/01-wxb.png)
+
+当继续执行
+
+```python
+z = flow.matmul(x, w) + b
+```
+
+动态图构建为：
+
+![01-dynamic-graph](./imgs/02-z.png)
+
+当执行完：
+
+```python
+y = flow.zeros(1, 3)  # label
+l = loss(z,y)
+```
+
+动态图为：
+
+![](./imgs/compute_graph.png)
+
+因为动态图是一边执行一边构图，所以很灵活，可以随时修改图的结构，运行一行代码就能得到一行的结果，易于调试。但是因为深度学习框架无法获取完整的图信息（随时可以改变、永远不能认为构图已经完成），因此无法进行充分的全局优化，在性能上会相对欠缺。
 
   
 
