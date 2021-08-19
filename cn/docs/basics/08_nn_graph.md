@@ -37,39 +37,11 @@ l = loss(z,y)
 
 **动态图（Dynamic Graph）**
 
-动态图的特点在于，它是一边运行，一边完成计算图的构建的。
-还是以我们的以上代码为例，当我们运行完
+动态图的特点在于，它是一边执行代码，一边完成计算图的构建的。
+以上代码和构图关系可看下图（注意：下图对简单的语句做了合并）
 
-```python
-x = flow.ones(1, 5)  # 输入
-w = flow.randn(5, 3, requires_grad=True)
-b = flow.randn(1, 3, requires_grad=True)
-```
+![](./imgs/dynamic_graph.gif)
 
-这几个语句后，动态图构建为：
-
-![01-dynamic-graph](./imgs/01-wxb.png)
-
-当继续执行
-
-```python
-z = flow.matmul(x, w) + b
-```
-
-动态图构建为：
-
-![01-dynamic-graph](./imgs/02-z.png)
-
-当执行完：
-
-```python
-y = flow.zeros(1, 3)  # label
-l = loss(z,y)
-```
-
-动态图为：
-
-![](./imgs/compute_graph.png)
 
 因为动态图是一边执行一边构图，所以很灵活，可以随时修改图的结构，运行一行代码就能得到一行的结果，易于调试。但是因为深度学习框架无法获取完整的图信息（随时可以改变、永远不能认为构图已经完成），因此无法进行充分的全局优化，在性能上会相对欠缺。
 
@@ -77,47 +49,36 @@ l = loss(z,y)
 
 **静态图（Static Graph）**
 
-- 与动态图不同，静态图先定义完整的计算图（即声明所有计算节点），然后再统一执行计算赋值，因此也被称为*Lazy模式/声明式编程 (Declarative)*。
-- 以静态图方式运行的模型：一次构建，可多次使用，并且可以进行图级别的计算性能优化，因此在性能和移植部署方面具有一定优势，但缺点是不容易调试。
+与动态图不同，静态图先定义完整的计算图。即需要用户先声明所有计算节点后，框架才开始进行计算。这可以理解为在用户代码与最终运行的计算图之间，框架起到了编译器的作用。
 
+![static graph](./imgs/static_graph.png)
+
+以 OneFlow 框架为例，用户的代码会被先转换为完整的计算图，然后再由 OneFlow Runtime 模块运行。
+
+静态图这种先获取完整网络，再编译运行的方式，使得它可以做很多动态图做不到的优化，因此性能上更有优势。并且编译完成后的计算图，也更容易跨平台部署。
+
+不过，在静态图中真正的计算发生时，已经与用户的代码没有直接关系了，因此静态图的调试较不方便。
 
 
 两种方式对比总结如下：
 
-|              | 动态图：边定义边运行（Define-by-Run） | 静态图：先定义后运行     |
+|              | 动态图 | 静态图   |
 | ------------ | ------------------------------------- | ------------------------ |
-| **计算方式** | Eager 模式                             | Lazy 模式                 |
-| **编程范式** | 命令式编程 (Imperative)               | 声明式编程 (Declarative) |
-| **优点**     | 代码编写灵活，易于调试                | 性能好，易于优化和部署   |
-| **缺点**     | 性能及可移植性差                      | 不易调试                 |
+| 计算方式 | Eager 模式                             | Graph 模式                 |
+| 优点     | 代码编写灵活，易于调试                | 性能好，易于优化和部署   |
+| 缺点     | 性能及可移植性差                      | 不易调试                 |
 
 
+OneFlow 提供的 Eager 模式，与 PyTorch 对齐，让熟悉 PyTorch 的用户可以零成本直接上手。
+OneFlow 提供的 Graph 模式，也基于面向对象的编程风格，让熟悉 Eager 开发的用户，只需要改很少量的代码，就可以使用高效率的静态图。
 
 ## OneFlow 的 Eager 模式
 
-OneFlow默认以 Eager 模式运行，在[搭建神经网络](./04_build_network.md)的教程中，使用 [nn](https://oneflow.readthedocs.io/en/master/nn.html) 名称空间下的 API 搭建的网络，若不做特殊处理，均默认以 Eager 模式运行。
+OneFlow 默认以 Eager 模式运行。
 
+以下脚本，用多项式 $y=a+bx+cx^2+dx^3$ 拟合正弦函数 $y=sin(x)$，求出一组近似拟合参数 $a$, $b$, $c$, $d$。
 
-
-### 多项式拟合例子（Eager版）
-
-> 注：该例子代码改编自[PyTorch官网教程](https://pytorch.org/tutorials/beginner/pytorch_with_examples.html#nn-module)。为了降低用户的学习成本，OneFlow Eager 模式下的API接口（如 [nn.Conv2d](https://oneflow.readthedocs.io/en/master/nn.html?highlight=oneflow.nn.Conv2D#oneflow.nn.Conv2d)， [nn.Module](https://oneflow.readthedocs.io/en/master/module.html#oneflow.nn.Module)等）基本上做到了与PyTorch一致，通过该例子可以看到，将PyTorch版本的模型代码转换为 OneFlow 版本，需要改动的地方非常少。
-
-
-
-**问题描述：**
-
-用多项式`y=a+bx+cx^2+dx^3`拟合正弦函数`y=sinx`，求出一组近似拟合参数`a,b,c,d`。
-
-
-
-**解决方法：**
-
-构建一个线性模型，使用神经网络的梯度下降法，迭代求解出似拟合参数`a,b,c,d`。
-
-
-
-**OneFlow代码：**
+> 注：该例子代码改编自 [PyTorch 官网教程](https://pytorch.org/tutorials/beginner/pytorch_with_examples.html#nn-module)。
 
 ```python
 import math
@@ -198,20 +159,57 @@ plt.plot(x.numpy(),y_fit.numpy())
 
 ![poly_fit](./imgs/poly_fit.png)
 
-## OneFlow的Graph模式
+## OneFlow 的 Graph 模式
 
-### `nn.Graph`
+### nn.Graph
 
-在OneFlow中，通过构建一个`nn.Graph`的子类，并将`nn.Module`构建的模型、损失函数、优化器等相关内容注册到该类中，可以得到 Graph 模式运行的模型。
+OneFlow 提供了 [nn.Graph](todo_nn_graph_rst.md) 基类，它可以简单理解成“静态图版本的 [nn.Module](https://oneflow.readthedocs.io/en/master/module.html?highlight=oneflow.nn.Module#oneflow.nn.Module)”。
 
+用户使用 OneFlow， 静态图和动态图开发差异很小。想使用静态图，只需要先像 Eager 那样搭建模型。最后构建一个 `nn.Graph`的子类，将神经网络（`nn.Module` 的子类）、损失函数、优化器等相关内容注册到该类中，就可以在 Graph 模式下运行模型。
+
+在以下代码中可以看到，Graph 模式的代码与 Eager 模式几乎没有区别，从 Eager 模式转为 Graph 模式，只需要做以下少量额外的工作：
+
+- 在 `nn.Graph` 子类的 `__init__` 中，指定神经网络、loss、优化器
+- 在 `nn.Graph` 子类的 `build` 中，指定模型的前向和后向过程（仅调用 `backward`，参数更新会自动完成）
+
+```python
+# The Linear Train Graph
+class LinearTrainGraph(flow.nn.Graph):
+    def __init__(self):
+        super().__init__()
+        self.model = model
+        self.loss_fn = loss_fn
+        self.add_optimizer(optimizer)
+
+    def build(self, x, y):
+        y_pred = self.model(x)
+        loss = self.loss_fn(y_pred, y)
+        loss.backward()
+        return loss
+linear_graph = LinearTrainGraph()
+```
+
+得到的 Graph 对象，和 Module 对象类似，可以直接接受 Tensor 对象，并调用：
+
+```python
+loss = linear_graph(xx, y)
+```
 
 我们在该类的`__init__()`方法中，进行模型构建和配置，在`build()`方法中，显示指定模型的前向和后向过程（梯度更新将隐式地自动完成）。该类的实例在每次调用时，会自动执行`build()`方法，完成一次模型迭代。
 
 
+### Graph 模式的多项式拟合例子
 
-### 多项式拟合例子（Graph版）
+将上述多项式拟合例子从Eager模式转换为为Graph模式，需要通过继承`nn.Graph`类构建一个`LinearTrainGraph`类。
 
-将上述多项式拟合例子从Eager模式转换为为Graph模式，需要通过继承`nn.Graph`类构建一个`LinearTrainGraph`类，具体代码如下：
+在控制台运行以下命令，体验 Graph 模式。
+
+```shell
+wget https://docs.oneflow.org/master/code/basics/fit_graph_mode.py
+python3 ./fit_graph_mode.py
+```
+
+以下为详细代码。
 
 ```python
 import math
@@ -222,8 +220,7 @@ device = flow.device("cuda")
 dtype = flow.float32
 
 # Create Tensors to hold input and outputs.
-x = flow.tensor(np.linspace(-math.pi, math.pi, 2000),
-                device=device, dtype=dtype)
+x = flow.tensor(np.linspace(-math.pi, math.pi, 2000), device=device, dtype=dtype)
 y = flow.tensor(np.sin(x), device=device, dtype=dtype)
 
 # For this example, the output y is a linear function of (x, x^2, x^3), so
@@ -234,14 +231,11 @@ xx = flow.cat(
 )
 
 # The Linear Module
-model = flow.nn.Sequential(
-    flow.nn.Linear(3, 1),
-    flow.nn.Flatten(0, 1)
-)
+model = flow.nn.Sequential(flow.nn.Linear(3, 1), flow.nn.Flatten(0, 1))
 model.to(device)
 
 # Loss Function
-loss_fn = flow.nn.MSELoss(reduction='sum')
+loss_fn = flow.nn.MSELoss(reduction="sum")
 loss_fn.to(device)
 
 # Optimizer
@@ -274,21 +268,22 @@ for t in range(2000):
 
 linear_layer = model[0]
 print(
-    f'Result: y = {linear_layer.bias.numpy()} + {linear_layer.weight[:, 0].numpy()} x + {linear_layer.weight[:, 1].numpy()} x^2 + {linear_layer.weight[:, 2].numpy()} x^3')
+    f"Result: y = {linear_layer.bias.numpy()} + {linear_layer.weight[:, 0].numpy()} x + {linear_layer.weight[:, 1].numpy()} x^2 + {linear_layer.weight[:, 2].numpy()} x^3"
+)
 ```
 
 
 
-### Graph 模式下的调试工具
+### Graph 调试
 
-调用为 Graph 对象的 `debug` 方法，可以
+调用 Graph 对象的 `debug` 方法，OneFlow 在编译生成计算图的过程中会打印调试信息：
 
 ```
 linear_graph = LinearTrainGraph()
 linear_graph.debug()
 ```
 
-OneFlow 在编译生成计算图的过程中会打印调试信息：
+输出：
 
 ```text
 Note that nn.Graph.debug() only print debug info on rank 0.
@@ -328,7 +323,7 @@ Note that nn.Graph.debug() only print debug info on rank 0.
 
 ## 相关链接
 
-OneFlow Eager模式下的神经网络搭建：[搭建神经网络](./basics/04_build_network.md)
+OneFlow Eager模式下的神经网络搭建：[搭建神经网络](./04_build_network.md)
 
 PyTorch版本的多项式拟合实例代码：[PyTorch: nn](https://pytorch.org/tutorials/beginner/pytorch_with_examples.html#id19)
 
