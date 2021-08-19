@@ -27,7 +27,7 @@ l = loss(z,y)
 
 它对应的计算图如下：
 
-![todo](https://todo)
+![todo](./imgs/compute_graph.png)
 
 计算图中，像 `x`、`w`、`b`、`y` 这种只有输出，没有输入的节点称为 **叶子节点**；向 `loss` 这种只有输入没有输出的节点，称为 **根**。
 
