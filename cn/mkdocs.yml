@@ -115,6 +115,7 @@ nav:
       - 自动求梯度: basics/05_autograd.md
       - 反向传播与 optimizer: basics/06_optimization.md
       - 模型的加载与保存: basics/07_model_load_save.md
+      - 静态图模块 nn.Graph: basics/08_nn_graph.md
 
     - Single Client:
       - 安装: single_client/quick_start/install.md
