@@ -760,6 +760,30 @@
   
   
     <li class="md-nav__item">
+      <a href="../extended_topics/debug_by_vscode.html" class="md-nav__link">
+        Use VS Code to Debug OneFlow
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../extended_topics/user_op.html" class="md-nav__link">
+        User Defined OP
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../extended_topics/oneflow_convert_tools.html" class="md-nav__link">
         OneFlow And ONNX Convert
       </a>
@@ -977,7 +1001,7 @@
 </li>
 </ul>
 <p>Working directly with Numpy data is easy and convenient but only for small amounts of data. Because when the amount of data is too large, there may be barrier in preparing the Numpy data. Therefore, this approach is more suitable for the initial stages of the project to quickly validate and improve the algorithm.</p>
-<p>The DataLoader of OneFlow use techniques such as multi-threading and data pipelining which make data loading, data pre-processing more efficient.However, you need to <a href="../extended_topics/how_to_make_ofdataset.html">prepare dataset</a> which already supported by Oneflow. Thus we recommend use that in mature projects.</p>
+<p>The DataLoader of OneFlow use techniques such as multi-threading and data pipelining which make data loading, data pre-processing more efficient.However, you need to <a href="... /extended_topics/how_to_make_of_dataset.md">prepare dataset</a> which already supported by Oneflow or <a href="../extended_topics/implement_data_loader.html">develop you own DataLoader</a> for the datatype which not supported by Oneflow. Thus we recommend use that in mature projects.</p>
 <h2 id="use-numpy-as-data-input">Use Numpy as Data Input<a class="headerlink" href="#use-numpy-as-data-input" title="Permanent link">&para;</a></h2>
 <h3 id="example">Example<a class="headerlink" href="#example" title="Permanent link">&para;</a></h3>
 <p>We can directly use Numpy ndarray as data input during training or predicting with OneFlow:</p>
@@ -1024,7 +1048,7 @@ The <code>oneflow.typing.Numpy.Placeholder</code> is the placeholder of Numpy <c
 <p>In addition, there are other data preprocessing operators that are used to process the data after DataLoader has been loaded. The following code uses <code>data.OFRecordImageDecoderRandomCrop</code> for random image cropping and <code>data.OFRecordRawDecoder</code> for image decoding. You can refer to the <a href="https://oneflow.readthedocs.io/en/master/index.html">API documentation</a> for more details.</p>
 <h3 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h3>
 <p>The following example reads the <code>OFRecord</code> data format file and dealing with images from the ImageNet dataset. The complete code can be downloaded here: <a href="../code/basics_topics/of_data_pipeline.py">of_data_pipeline.py</a>.</p>
-<p>This script requires an OFRecord dataset and you can make your own one according to <a href="../extended_topics/how_to_make_ofdataset.html">this article</a>.</p>
+<p>This script requires an OFRecord dataset and you can make your own one according to [this article] (. /extended_topics/how_to_make_of_dataset.md).</p>
 <p>Or you can download the <a href="https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/basics_topics/part-00000">part-00000</a> that we have prepared for you which contains 64 images. Then replace <code>path/to/ImageNet/ofrecord</code> in the script with the directory where the <code>part-00000</code> file <strong>is located</strong> and run the script.</p>
 <p>The following example is running a script with our pre-prepared dataset:</p>
 <div class="highlight"><pre><span></span><code>wget https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/basics_topics/part-00000
@@ -1070,7 +1094,7 @@ python3 of_data_pipeline.py
 </code></pre></div>
 <p><code>OFRecordImageDecoderRandomCrop</code> is responsible for randomly cropping the image, <code>OFRecordRawDecoder</code> is responsible for decoding the label directly from the ofrecord object. <code>image.Resize</code> resizes the cropped image to 224x224 and <code>CropMirrorNormalize</code> normalizes the image.</p>
 <h2 id="more-formats-support-by-dataloader">More Formats Support by DataLoader<a class="headerlink" href="#more-formats-support-by-dataloader" title="Permanent link">&para;</a></h2>
-<p>OneFlow provides a number of DataLoaders and preprocessing operators, refer to <a href="https://oneflow.readthedocs.io/en/master/data.html">oneflow.data</a> for details. These operators will be enriched and optimized in the future.</p>
+<p>OneFlow provides a number of DataLoaders and preprocessing operators, refer to <a href="https://oneflow.readthedocs.io/en/master/data.html">oneflow.data</a> for details. These operators will be enriched and optimized in the future, but users can also refer to <a href="../extended_topics/implement_data_loader.html">this article</a> to customize the DataLoader to meet specific needs.</p>
                 
               
               

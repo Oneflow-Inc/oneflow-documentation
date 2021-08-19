@@ -6,6 +6,31 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://docs.oneflow.org/master/adv_examples/bert.html</loc>
+         <lastmod>2021-08-19</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://docs.oneflow.org/master/adv_examples/dcgan.html</loc>
+         <lastmod>2021-08-19</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://docs.oneflow.org/master/adv_examples/resnet.html</loc>
+         <lastmod>2021-08-19</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://docs.oneflow.org/master/adv_examples/wide_deep.html</loc>
+         <lastmod>2021-08-19</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://docs.oneflow.org/master/adv_examples/yolov3.html</loc>
+         <lastmod>2021-08-19</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://docs.oneflow.org/master/basics_topics/async_get.html</loc>
          <lastmod>2021-08-19</lastmod>
          <changefreq>daily</changefreq>
@@ -56,12 +81,22 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://docs.oneflow.org/master/extended_topics/debug_by_vscode.html</loc>
+         <lastmod>2021-08-19</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://docs.oneflow.org/master/extended_topics/how_to_convert_image_to_ofrecord.html</loc>
          <lastmod>2021-08-19</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.oneflow.org/master/extended_topics/how_to_make_ofdataset.html</loc>
+         <lastmod>2021-08-19</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://docs.oneflow.org/master/extended_topics/implement_data_loader.html</loc>
          <lastmod>2021-08-19</lastmod>
          <changefreq>daily</changefreq>
     </url>
@@ -82,6 +117,11 @@
     </url>
     <url>
          <loc>https://docs.oneflow.org/master/extended_topics/oneflow_convert_tools.html</loc>
+         <lastmod>2021-08-19</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://docs.oneflow.org/master/extended_topics/user_op.html</loc>
          <lastmod>2021-08-19</lastmod>
          <changefreq>daily</changefreq>
     </url>

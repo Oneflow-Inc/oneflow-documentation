@@ -1,0 +1,2142 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="OneFlow -- 极致性能的分布式机器学习框架">
+      
+      
+      
+      
+        <link rel="canonical" href="https://docs.oneflow.org/master/extended_topics/user_op.html">
+      
+      <link rel="icon" href="../assets/favicon.png">
+      <meta name="generator" content="mkdocs-1.2.2, mkdocs-material-7.1.11">
+    
+    
+      
+        <title>使用 C++ 扩展 Op - OneFlow</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.3754935a.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.f1a3b89f.min.css">
+        
+          
+          
+          <meta name="theme-color" content="#4051b5">
+        
+      
+    
+    
+    
+      
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>:root{--md-text-font-family:"Roboto";--md-code-font-family:"Roboto Mono"}</style>
+      
+    
+    
+    
+    
+      
+
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <script>function __prefix(e){return new URL("..",location).pathname+"."+e}function __get(e,t=localStorage){return JSON.parse(t.getItem(__prefix(e)))}</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#c-op" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../index.html" title="OneFlow" class="md-header__button md-logo" aria-label="OneFlow" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 89 89">
+  <path d="M3.136,17.387l0,42.932l42.932,21.467l-42.932,-64.399Z" />
+  <path d="M21.91,8l42.933,64.398l-18.775,9.388l-42.932,-64.399l18.774,-9.387Z" style="fill-opacity: 0.5" />
+  <path d="M67.535,17.387l-27.262,18.156l21.878,32.818l5.384,2.691l0,-53.665Z" />
+  <path d="M67.535,17.387l0,53.666l18.774,-9.388l0,-53.665l-18.774,9.387Z" style="fill-opacity: 0.25" />
+</svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            OneFlow
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              使用 C++ 扩展 Op
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <div class="md-header__option">
+        <div class="md-select">
+          
+          <button class="md-header__button md-icon" aria-label="Select language">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.52 17.52 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04M18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12m-2.62 7 1.62-4.33L19.12 17h-3.24z"/></svg>
+          </button>
+          <div class="md-select__inner">
+            <ul class="md-select__list">
+              
+                <li class="md-select__item">
+                  <a href="https://docs.oneflow.org" hreflang="zh" class="md-select__link">
+                    中文
+                  </a>
+                </li>
+                
+                <li class="md-select__item">
+                  <a href="https://docs.oneflow.org/en" hreflang="en" class="md-select__link">
+                    English
+                  </a>
+                </li>
+                
+            </ul>
+          </div>
+        </div>
+      </div>
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        
+<a href="https://www.github.com/oneflow-Inc/oneflow" title="前往 GitHub 仓库" class="md-source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    OneFlow
+  </div>
+</a>
+      </div>
+    
+  </nav>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-tabs__inner md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+
+
+  <li class="md-tabs__item">
+    <a href="../index.html" class="md-tabs__link">
+      首页
+    </a>
+  </li>
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../quick_start/install.html" class="md-tabs__link">
+        快速上手
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../basics_topics/data_input.html" class="md-tabs__link">
+        基础专题
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+    
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="job_function_define_call.html" class="md-tabs__link md-tabs__link--active">
+        扩展专题
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../adv_examples/resnet.html" class="md-tabs__link">
+        高级应用实例
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="https://oneflow.readthedocs.io/en/master/" class="md-tabs__link">
+        API
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../contribute/intro.html" class="md-tabs__link">
+        OneFlow 开源计划
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../index.html" title="OneFlow" class="md-nav__button md-logo" aria-label="OneFlow" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 89 89">
+  <path d="M3.136,17.387l0,42.932l42.932,21.467l-42.932,-64.399Z" />
+  <path d="M21.91,8l42.933,64.398l-18.775,9.388l-42.932,-64.399l18.774,-9.387Z" style="fill-opacity: 0.5" />
+  <path d="M67.535,17.387l-27.262,18.156l21.878,32.818l5.384,2.691l0,-53.665Z" />
+  <path d="M67.535,17.387l0,53.666l18.774,-9.388l0,-53.665l-18.774,9.387Z" style="fill-opacity: 0.25" />
+</svg>
+
+    </a>
+    OneFlow
+  </label>
+  
+    <div class="md-nav__source">
+      
+<a href="https://www.github.com/oneflow-Inc/oneflow" title="前往 GitHub 仓库" class="md-source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    OneFlow
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../index.html" class="md-nav__link">
+        首页
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" >
+      
+      <label class="md-nav__link" for="__nav_2">
+        快速上手
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="快速上手" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          快速上手
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quick_start/install.html" class="md-nav__link">
+        安装
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quick_start/quickstart_in_3_min.html" class="md-nav__link">
+        3分钟快速上手
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quick_start/lenet_mnist.html" class="md-nav__link">
+        识别 MNIST 手写体数字
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" >
+      
+      <label class="md-nav__link" for="__nav_3">
+        基础专题
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="基础专题" data-md-level="1">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          基础专题
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics_topics/data_input.html" class="md-nav__link">
+        数据输入
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics_topics/build_nn_with_op_and_layer.html" class="md-nav__link">
+        搭建神经网络
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics_topics/optimizer_in_function_config.html" class="md-nav__link">
+        优化算法及超参配置
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics_topics/async_get.html" class="md-nav__link">
+        获取作业函数的结果
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics_topics/model_load_save.html" class="md-nav__link">
+        模型的加载与保存
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics_topics/distributed_train.html" class="md-nav__link">
+        分布式训练
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics_topics/concept_explanation.html" class="md-nav__link">
+        OneFlow 概念清单
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics_topics/essentials_of_oneflow.html" class="md-nav__link">
+        OneFlow 系统设计
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" checked>
+      
+      <label class="md-nav__link" for="__nav_4">
+        扩展专题
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="扩展专题" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          扩展专题
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="job_function_define_call.html" class="md-nav__link">
+        作业函数的定义与调用
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="consistent_mirrored.html" class="md-nav__link">
+        Consistent 与 Mirrored 视角
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="model_mixed_parallel.html" class="md-nav__link">
+        OneFlow 的并行特色
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="ofrecord.html" class="md-nav__link">
+        OFRecord 数据格式
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="how_to_make_ofdataset.html" class="md-nav__link">
+        加载与准备 OFRecord 数据集
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="how_to_convert_image_to_ofrecord.html" class="md-nav__link">
+        将图片文件制作为 OFRecord 数据集
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="watch_watch_diff.html" class="md-nav__link">
+        获取运行时数据
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="debug_by_vscode.html" class="md-nav__link">
+        使用 VS Code 调试 OneFlow
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="python_kernel_op.html" class="md-nav__link">
+        使用 Python 扩展 Op
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          使用 C++ 扩展 Op
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="user_op.html" class="md-nav__link md-nav__link--active">
+        使用 C++ 扩展 Op
+      </a>
+      
+        
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#oneflow-op" class="md-nav__link">
+    OneFlow 中的 Op 系统
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#c-op_1" class="md-nav__link">
+    使用 C++ 扩展 op 的步骤
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    示例
+  </a>
+  
+    <nav class="md-nav" aria-label="示例">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#op" class="md-nav__link">
+    op 的实现与注册
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cpu-kernel" class="md-nav__link">
+    CPU kernel 的实现与注册
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gpu-kernel" class="md-nav__link">
+    GPU kernel 的实现与注册
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    编译链接选项说明
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    编译、链接得到动态库
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#python-op" class="md-nav__link">
+    在 Python 使用自定义 op
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#opregistry" class="md-nav__link">
+    OpRegistry 详细介绍
+  </a>
+  
+    <nav class="md-nav" aria-label="OpRegistry 详细介绍">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#attr" class="md-nav__link">
+    Attr 方法
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setcheckattrfn" class="md-nav__link">
+    SetCheckAttrFn 方法
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    多输入/输出
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setgetsbpfn" class="md-nav__link">
+    SetGetSbpFn 方法
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#opkernelregistry" class="md-nav__link">
+    OpKernelRegistry 详细介绍
+  </a>
+  
+    <nav class="md-nav" aria-label="OpKernelRegistry 详细介绍">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#setinfertmpsizefn" class="md-nav__link">
+    SetInferTmpSizeFn 方法
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#opgradregistry" class="md-nav__link">
+    OpGradRegistry 详细介绍
+  </a>
+  
+    <nav class="md-nav" aria-label="OpGradRegistry 详细介绍">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#setbackwardopconfgenfn" class="md-nav__link">
+    SetBackwardOpConfGenFn 方法
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#backwardopconfcontext" class="md-nav__link">
+    BackwardOpConfContext 详细介绍
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#backwardopbuilder" class="md-nav__link">
+    BackwardOpBuilder 详细介绍
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#useropwrapper" class="md-nav__link">
+    UserOpWrapper 详细介绍
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#op_1" class="md-nav__link">
+    为计算梯度定制 op
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#useropconfbuilder" class="md-nav__link">
+    UserOpConfBuilder 详细介绍
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="implement_data_loader.html" class="md-nav__link">
+        自定义 DataLoader
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="oneflow_convert_tools.html" class="md-nav__link">
+        OneFlow 和 ONNX 交互
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" >
+      
+      <label class="md-nav__link" for="__nav_5">
+        高级应用实例
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="高级应用实例" data-md-level="1">
+        <label class="md-nav__title" for="__nav_5">
+          <span class="md-nav__icon md-icon"></span>
+          高级应用实例
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adv_examples/resnet.html" class="md-nav__link">
+        ResNet
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adv_examples/yolov3.html" class="md-nav__link">
+        YoloV3
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adv_examples/bert.html" class="md-nav__link">
+        BERT
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adv_examples/wide_deep.html" class="md-nav__link">
+        Wide & Deep
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6" type="checkbox" id="__nav_6" >
+      
+      <label class="md-nav__link" for="__nav_6">
+        API
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="API" data-md-level="1">
+        <label class="md-nav__title" for="__nav_6">
+          <span class="md-nav__icon md-icon"></span>
+          API
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://oneflow.readthedocs.io/en/master/" class="md-nav__link">
+        API
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_7" type="checkbox" id="__nav_7" >
+      
+      <label class="md-nav__link" for="__nav_7">
+        OneFlow 开源计划
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="OneFlow 开源计划" data-md-level="1">
+        <label class="md-nav__title" for="__nav_7">
+          <span class="md-nav__icon md-icon"></span>
+          OneFlow 开源计划
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../contribute/intro.html" class="md-nav__link">
+        OneFlow 开源计划
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#oneflow-op" class="md-nav__link">
+    OneFlow 中的 Op 系统
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#c-op_1" class="md-nav__link">
+    使用 C++ 扩展 op 的步骤
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    示例
+  </a>
+  
+    <nav class="md-nav" aria-label="示例">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#op" class="md-nav__link">
+    op 的实现与注册
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cpu-kernel" class="md-nav__link">
+    CPU kernel 的实现与注册
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gpu-kernel" class="md-nav__link">
+    GPU kernel 的实现与注册
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    编译链接选项说明
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    编译、链接得到动态库
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#python-op" class="md-nav__link">
+    在 Python 使用自定义 op
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#opregistry" class="md-nav__link">
+    OpRegistry 详细介绍
+  </a>
+  
+    <nav class="md-nav" aria-label="OpRegistry 详细介绍">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#attr" class="md-nav__link">
+    Attr 方法
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setcheckattrfn" class="md-nav__link">
+    SetCheckAttrFn 方法
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    多输入/输出
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setgetsbpfn" class="md-nav__link">
+    SetGetSbpFn 方法
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#opkernelregistry" class="md-nav__link">
+    OpKernelRegistry 详细介绍
+  </a>
+  
+    <nav class="md-nav" aria-label="OpKernelRegistry 详细介绍">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#setinfertmpsizefn" class="md-nav__link">
+    SetInferTmpSizeFn 方法
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#opgradregistry" class="md-nav__link">
+    OpGradRegistry 详细介绍
+  </a>
+  
+    <nav class="md-nav" aria-label="OpGradRegistry 详细介绍">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#setbackwardopconfgenfn" class="md-nav__link">
+    SetBackwardOpConfGenFn 方法
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#backwardopconfcontext" class="md-nav__link">
+    BackwardOpConfContext 详细介绍
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#backwardopbuilder" class="md-nav__link">
+    BackwardOpBuilder 详细介绍
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#useropwrapper" class="md-nav__link">
+    UserOpWrapper 详细介绍
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#op_1" class="md-nav__link">
+    为计算梯度定制 op
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#useropconfbuilder" class="md-nav__link">
+    UserOpConfBuilder 详细介绍
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                  <a href="https://github.com/OneFlow-Inc/oneflow-documentation/blob/master/cn/docs/extended_topics/user_op.md" title="编辑此页" class="md-content__button md-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
+                  </a>
+                
+                
+                <h1 id="c-op">使用 C++ 扩展 Op<a class="headerlink" href="#c-op" title="Permanent link">&para;</a></h1>
+<p>本文将介绍如何使用 C++ 扩展 Op，与用 Python 扩展 Op 相比，使用 C++ 扩展 Op，更加灵活、可配置的选项更多，且支持使用 GPU 作为计算设备。一般可使用 Python 扩展 Op 用于快速预研，使用 C++ 扩展 Op 追求高性能。</p>
+<p>在阅读本文前，假定用于已经阅读<a href="python_kernel_op.html">使用 Python 扩展 Op</a> 一文，并知晓以下知识点：</p>
+<ul>
+<li>OneFlow 中，逻辑上的运算单元 Op 的概念</li>
+<li>OneFlow 中，实际负责运算的 Kernel 的概念</li>
+<li>Op 种类的标识符 <code>op_type_name</code> 的概念</li>
+</ul>
+<h3 id="oneflow-op">OneFlow 中的 Op 系统<a class="headerlink" href="#oneflow-op" title="Permanent link">&para;</a></h3>
+<p>OneFlow 提供了一套机制，我们在这套机制下编写自定义 op 并将其注册到 OneFlow 中，就可以在 Python 中使用自定义 op。</p>
+<p>下图展示了 OneFlow 中自定义 op 的注册机制：</p>
+<p><img alt="OneFlow UserOp Existing System" src="imgs/oneflow_system_userop.png" /></p>
+<p>可以看到，在 OneFlow 框架中，与自定义 op 注册有关的 Registry 有三种：</p>
+<ul>
+<li>
+<p><code>OpGradRegistry</code>：管理梯度注册，用于反向图中自动求梯度</p>
+</li>
+<li>
+<p><code>OpRegistry</code>：管理 op 注册，用于生成前向图及构建 <code>Task Graph</code></p>
+</li>
+<li>
+<p><code>OpKernelRegistry</code>：管理 kernel 注册，用于运行时执行用户编写的 kernel 逻辑</p>
+</li>
+</ul>
+<p>在具体的编程过程中，我们其实是用 C++ 编写自定义 op，并生成动态链接库(so)文件。在 Python 中加载对应的 so 文件，就可以使用该 so 文件中的自定义 op。在<a href="python_kernel_op.html">使用 Python 扩展 Op</a> 时，底层也是使用了这套机制，只不过这些细节被封装在了相关 API 中，对开发者透明。</p>
+<p>在 <a href="https://github.com/Oneflow-Inc/oneflow/blob/master/oneflow/core/framework/user_op_conf.proto">user_op_conf.proto</a> 中可以查看 user op 的数据结构：
+<div class="highlight"><pre><span></span><code>syntax = &quot;proto2&quot;;
+package oneflow;
+
+import &quot;oneflow/core/framework/user_op_attr.proto&quot;;
+
+message UserOpConf {
+  message ListString {
+    repeated string s = 1;
+  }
+  required string op_type_name = 1;
+  map&lt;string, ListString&gt; input = 2;
+  map&lt;string, ListString&gt; output = 3;
+  map&lt;string, UserOpAttrVal&gt; attr = 4;
+}
+</code></pre></div></p>
+<p>其中的 <code>op_type_name</code> 是代表 op 类别的字符串，也是指明 op 类别的全局唯一 ID。</p>
+<h3 id="c-op_1">使用 C++ 扩展 op 的步骤<a class="headerlink" href="#c-op_1" title="Permanent link">&para;</a></h3>
+<ol>
+<li>
+<p>实现 op 并注册：op 的实现主要用于前向图构图，包括指定 op 的名称、输入、输出、配置属性以及一些必要的用于推导 tensor 的形状与数据类型的函数</p>
+</li>
+<li>
+<p>实现 op 对应的 kernel 并注册：kernel 负责运行时的具体运算过程，一个 op 可能会对应多个 kernel</p>
+</li>
+<li>
+<p>（可选）实现 op 对应的 grad 并注册：如果自定义 op 需要支持后向展开，需要实现一个后向函数并注册</p>
+</li>
+<li>
+<p>编译链接得到 so 文件</p>
+</li>
+<li>
+<p>在 Python 中加载 so 文件，并且使用 <code>oneflow.user_op_builder</code> 封装 C++ 编写的自定义 op</p>
+</li>
+<li>
+<p>测试</p>
+</li>
+</ol>
+<h2 id="_1">示例<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<p>我们将实现一个支持 CPU 及 GPU 运算的 "myrelu" 自定义 op。
+完整的代码见 <a href="https://github.com/Oneflow-Inc/oneflow-documentation/tree/master/cn/docs/code/extended_topics/create_user_op">code/extended_topics/create_user_op</a>。</p>
+<h3 id="op">op 的实现与注册<a class="headerlink" href="#op" title="Permanent link">&para;</a></h3>
+<p>我们在 <code>myrelu_op.cpp</code> 中定义了 op 并完成了注册：
+<div class="highlight"><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;oneflow/core/framework/framework.h&quot;</span><span class="cp"></span>
+
+<span class="k">namespace</span><span class="w"> </span><span class="nn">oneflow</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+
+<span class="k">namespace</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+
+<span class="n">REGISTER_USER_OP</span><span class="p">(</span><span class="s">&quot;myrelu&quot;</span><span class="p">)</span><span class="w"></span>
+<span class="w">  </span><span class="p">.</span><span class="n">Input</span><span class="p">(</span><span class="s">&quot;in&quot;</span><span class="p">)</span><span class="w"></span>
+<span class="w">  </span><span class="p">.</span><span class="n">Output</span><span class="p">(</span><span class="s">&quot;out&quot;</span><span class="p">)</span><span class="w"></span>
+<span class="w">  </span><span class="p">.</span><span class="n">SetTensorDescInferFn</span><span class="p">(</span><span class="w"></span>
+<span class="w">      </span><span class="p">[](</span><span class="n">user_op</span><span class="o">::</span><span class="n">InferContext</span><span class="w"> </span><span class="o">*</span><span class="n">ctx</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">Maybe</span><span class="o">&lt;</span><span class="kt">void</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="o">*</span><span class="n">ctx</span><span class="o">-&gt;</span><span class="n">Shape4ArgNameAndIndex</span><span class="p">(</span><span class="s">&quot;out&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"></span>
+<span class="w">            </span><span class="o">*</span><span class="n">ctx</span><span class="o">-&gt;</span><span class="n">Shape4ArgNameAndIndex</span><span class="p">(</span><span class="s">&quot;in&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span><span class="w"></span>
+<span class="w">        </span><span class="o">*</span><span class="n">ctx</span><span class="o">-&gt;</span><span class="n">Dtype4ArgNameAndIndex</span><span class="p">(</span><span class="s">&quot;out&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"></span>
+<span class="w">            </span><span class="o">*</span><span class="n">ctx</span><span class="o">-&gt;</span><span class="n">Dtype4ArgNameAndIndex</span><span class="p">(</span><span class="s">&quot;in&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span><span class="w"></span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">Maybe</span><span class="o">&lt;</span><span class="kt">void</span><span class="o">&gt;::</span><span class="n">Ok</span><span class="p">();</span><span class="w"></span>
+<span class="w">      </span><span class="p">});</span><span class="w"></span>
+<span class="p">}</span><span class="w"> </span><span class="c1">// namespace</span>
+
+<span class="p">}</span><span class="w"> </span><span class="c1">// namespace oneflow</span>
+</code></pre></div></p>
+<p>其所作工作与<a href="python_kernel_op.html#op">使用 Python 扩展 Op </a> 完全类似。即利用 <code>REGISTER_USER_OP</code> 注册了一个名为 <code>myrelu</code> 的 Op，设置了输入、输出，并根据输入推导了输出的形状、数据类型。</p>
+<h3 id="cpu-kernel">CPU kernel 的实现与注册<a class="headerlink" href="#cpu-kernel" title="Permanent link">&para;</a></h3>
+<p>我们在 <code>myrelu_cpu_kernel.cpp</code> 中实现了 CPU 版本的 kernel 并注册：
+<div class="highlight"><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;oneflow/core/framework/framework.h&quot;</span><span class="cp"></span>
+
+<span class="k">namespace</span><span class="w"> </span><span class="nn">oneflow</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+
+<span class="k">namespace</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+
+<span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span> <span class="nc">T</span><span class="o">&gt;</span><span class="w"></span>
+<span class="kt">void</span><span class="w"> </span><span class="n">MyRelu</span><span class="p">(</span><span class="n">DeviceCtx</span><span class="w"> </span><span class="o">*</span><span class="n">ctx</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">int64_t</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">T</span><span class="w"> </span><span class="o">*</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="w"> </span><span class="o">*</span><span class="n">y</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="n">T</span><span class="w"> </span><span class="n">zero</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">T</span><span class="p">)(</span><span class="mi">0</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int64_t</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">n</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">max</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="w"> </span><span class="n">zero</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+
+<span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="n">DeviceType</span><span class="w"> </span><span class="n">device_type</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span> <span class="nc">T</span><span class="o">&gt;</span><span class="w"></span>
+<span class="k">class</span> <span class="nc">ReluKernel</span><span class="w"> </span><span class="k">final</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">user_op</span><span class="o">::</span><span class="n">OpKernel</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="k">public</span><span class="o">:</span><span class="w"></span>
+<span class="w">  </span><span class="n">ReluKernel</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">default</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="o">~</span><span class="n">ReluKernel</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">default</span><span class="p">;</span><span class="w"></span>
+
+<span class="k">private</span><span class="o">:</span><span class="w"></span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">Compute</span><span class="p">(</span><span class="n">user_op</span><span class="o">::</span><span class="n">KernelComputeContext</span><span class="w"> </span><span class="o">*</span><span class="n">ctx</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">override</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">user_op</span><span class="o">::</span><span class="n">Tensor</span><span class="w"> </span><span class="o">*</span><span class="n">in_tensor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ctx</span><span class="o">-&gt;</span><span class="n">Tensor4ArgNameAndIndex</span><span class="p">(</span><span class="s">&quot;in&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="n">user_op</span><span class="o">::</span><span class="n">Tensor</span><span class="w"> </span><span class="o">*</span><span class="n">out_tensor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ctx</span><span class="o">-&gt;</span><span class="n">Tensor4ArgNameAndIndex</span><span class="p">(</span><span class="s">&quot;out&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="n">MyRelu</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="p">(</span><span class="n">ctx</span><span class="o">-&gt;</span><span class="n">device_ctx</span><span class="p">(),</span><span class="w"></span>
+<span class="w">           </span><span class="n">in_tensor</span><span class="o">-&gt;</span><span class="n">shape</span><span class="p">().</span><span class="n">elem_cnt</span><span class="p">(),</span><span class="w"></span>
+<span class="w">           </span><span class="n">in_tensor</span><span class="o">-&gt;</span><span class="n">dptr</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="p">(),</span><span class="w"></span>
+<span class="w">           </span><span class="n">out_tensor</span><span class="o">-&gt;</span><span class="n">mut_dptr</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="p">());</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">AlwaysComputeWhenAllOutputsEmpty</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">override</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span><span class="w"> </span><span class="p">}</span><span class="w"></span>
+<span class="p">};</span><span class="w"></span>
+
+<span class="cp">#define REGISTER_RELU_KERNEL(device, dtype)          \</span>
+<span class="cp">  REGISTER_USER_KERNEL(&quot;myrelu&quot;)                     \</span>
+<span class="cp">      .SetCreateFn&lt;ReluKernel&lt;device, dtype&gt;&gt;()      \</span>
+<span class="cp">      .SetIsMatchedHob(                              \</span>
+<span class="cp">          (user_op::HobDeviceTag() == device) &amp;     \</span>
+<span class="cp">          (user_op::HobDataType(&quot;out&quot;, 0)            \</span>
+<span class="cp">            == GetDataType&lt;dtype&gt;::value));</span>
+
+<span class="n">REGISTER_RELU_KERNEL</span><span class="p">(</span><span class="n">DeviceType</span><span class="o">::</span><span class="n">kCPU</span><span class="p">,</span><span class="w"> </span><span class="kt">float</span><span class="p">)</span><span class="w"></span>
+<span class="n">REGISTER_RELU_KERNEL</span><span class="p">(</span><span class="n">DeviceType</span><span class="o">::</span><span class="n">kCPU</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="p">)</span><span class="w"></span>
+<span class="p">}</span><span class="w"> </span><span class="c1">// namespace</span>
+
+<span class="p">}</span><span class="w"> </span><span class="c1">// namespace oneflow</span>
+</code></pre></div>
+在 OneFlow 中实现 kernel， 必须定义一个继承自 <code>oneflow::user_op::OpKernel</code> 的类，并重写其中的虚函数。</p>
+<p>在以上代码中，重写了 <code>Compute</code> 与 <code>AlwaysComputeWhenAllOutputsEmpty</code> 两个虚函数，他们分别的意义是：</p>
+<ul>
+<li>
+<p><code>Compute</code> 必须重写，在其中实现具体的运算逻辑</p>
+</li>
+<li>
+<p><code>AlwaysComputeWhenAllOutputsEmpty</code> 必须重写，对于绝大多数 op 而言直接返回 <code>false</code> 即可。对于极少数内部需要维护状态，即使输出为空也需要调用 kernel 进行计算的 op 而言，应该返回 <code>true</code></p>
+</li>
+</ul>
+<p>实现 kernel 类后，需要调用 <code>REGISTER_USER_KERNEL</code> 注册。<code>REGISTER_USER_KERNEL("myrelu")</code> 所接受的字符串参数，就是 <code>op_type_name</code>， 依据 <code>op_type_name</code> 完成注册和运行时的查询工作，在 Python 层封装 op 时也需要使用这个 <code>op_type_name</code>。</p>
+<p><code>REGISTER_USER_KERNEL("myrelu")</code> 会返回一个 <code>OpKernelRegistry</code> 对象，需要调用它的各个方法，设置注册信息。上文代码中涉及到</p>
+<ul>
+<li>
+<p><code>SetCreateFn&lt;T&gt;()</code>：该模板方法的模板参数 <code>T</code>，就是我们实现的 kernel 类，OneFlow 将使用它创建 kernel 对象。</p>
+</li>
+<li>
+<p><code>SetIsMatchedHob</code>：因为一个 op 可能有多个 kernel，要想根据物理设备及数据格式的不同而选择不同的 kernel 进行计算，就需要调用 <code>SetIsMatchedHob</code> 进行设置。该方法接受一个表达式，表达式为 <code>true</code> 时，OneFlow 将调用该 kernel 完成计算。</p>
+</li>
+</ul>
+<h3 id="gpu-kernel">GPU kernel 的实现与注册<a class="headerlink" href="#gpu-kernel" title="Permanent link">&para;</a></h3>
+<p>我们在 <code>myrelu_gpu_kernel.cu</code> 中实现了 GPU 版本的 kernel 并注册：
+<div class="highlight"><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;oneflow/core/framework/framework.h&quot;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;cub/cub.cuh&gt;</span><span class="cp"></span>
+
+<span class="k">namespace</span><span class="w"> </span><span class="nn">oneflow</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="k">namespace</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span> <span class="nc">T</span><span class="o">&gt;</span><span class="w"></span>
+<span class="n">__global__</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">ReluForwardGpu</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">T</span><span class="w"> </span><span class="o">*</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="w"> </span><span class="o">*</span><span class="n">y</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="n">CUDA_1D_KERNEL_LOOP</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+
+<span class="k">class</span> <span class="nc">ReluGpuFloatKernel</span><span class="w"> </span><span class="k">final</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">user_op</span><span class="o">::</span><span class="n">OpKernel</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="k">public</span><span class="o">:</span><span class="w"></span>
+<span class="w">  </span><span class="n">ReluGpuFloatKernel</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">default</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="o">~</span><span class="n">ReluGpuFloatKernel</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">default</span><span class="p">;</span><span class="w"></span>
+
+<span class="k">private</span><span class="o">:</span><span class="w"></span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">Compute</span><span class="p">(</span><span class="n">user_op</span><span class="o">::</span><span class="n">KernelComputeContext</span><span class="w"> </span><span class="o">*</span><span class="n">ctx</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">override</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">user_op</span><span class="o">::</span><span class="n">Tensor</span><span class="w"> </span><span class="o">*</span><span class="n">in_tensor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ctx</span><span class="o">-&gt;</span><span class="n">Tensor4ArgNameAndIndex</span><span class="p">(</span><span class="s">&quot;in&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="n">user_op</span><span class="o">::</span><span class="n">Tensor</span><span class="w"> </span><span class="o">*</span><span class="n">out_tensor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ctx</span><span class="o">-&gt;</span><span class="n">Tensor4ArgNameAndIndex</span><span class="p">(</span><span class="s">&quot;out&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span><span class="w"></span>
+
+<span class="w">    </span><span class="kt">int32_t</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">in_tensor</span><span class="o">-&gt;</span><span class="n">shape</span><span class="p">().</span><span class="n">elem_cnt</span><span class="p">();</span><span class="w"></span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="o">*</span><span class="n">in_ptr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">in_tensor</span><span class="o">-&gt;</span><span class="n">dptr</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;</span><span class="p">();</span><span class="w"></span>
+<span class="w">    </span><span class="kt">float</span><span class="w"> </span><span class="o">*</span><span class="n">out_ptr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">out_tensor</span><span class="o">-&gt;</span><span class="n">mut_dptr</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;</span><span class="p">();</span><span class="w"></span>
+<span class="w">    </span><span class="n">ReluForwardGpu</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;</span><span class="w"></span>
+<span class="w">        </span><span class="o">&lt;&lt;&lt;</span><span class="mi">32</span><span class="p">,</span><span class="w"> </span><span class="mi">1024</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">ctx</span><span class="o">-&gt;</span><span class="n">device_ctx</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">cuda_stream</span><span class="p">()</span><span class="o">&gt;&gt;&gt;</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">in_ptr</span><span class="p">,</span><span class="w"> </span><span class="n">out_ptr</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
+
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">AlwaysComputeWhenAllOutputsEmpty</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">override</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span><span class="w"> </span><span class="p">}</span><span class="w"></span>
+<span class="p">};</span><span class="w"></span>
+
+<span class="cp">#define REGISTER_RELU_KERNEL(device, dtype)          \</span>
+<span class="cp">  REGISTER_USER_KERNEL(&quot;myrelu&quot;)                     \</span>
+<span class="cp">      .SetCreateFn&lt;ReluGpuFloatKernel&gt;()             \</span>
+<span class="cp">      .SetIsMatchedHob(                              \</span>
+<span class="cp">          (user_op::HobDeviceTag() == device) &amp;     \</span>
+<span class="cp">          (user_op::HobDataType(&quot;out&quot;, 0)            \</span>
+<span class="cp">            == GetDataType&lt;dtype&gt;::value));</span>
+
+<span class="n">REGISTER_RELU_KERNEL</span><span class="p">(</span><span class="n">DeviceType</span><span class="o">::</span><span class="n">kGPU</span><span class="p">,</span><span class="w"> </span><span class="kt">float</span><span class="p">)</span><span class="w"></span>
+<span class="n">REGISTER_RELU_KERNEL</span><span class="p">(</span><span class="n">DeviceType</span><span class="o">::</span><span class="n">kGPU</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="p">)</span><span class="w"></span>
+<span class="p">}</span><span class="w"> </span><span class="c1">// namespace</span>
+<span class="p">}</span><span class="w"> </span><span class="c1">// namespace oneflow</span>
+</code></pre></div></p>
+<p>可以看到， 实现并注册 GPU kernel 的过程与 CPU kernel 几乎一致。区别主要在于：</p>
+<ul>
+<li>
+<p>因为使用了 CUDA 编程，所以包含了 CUDA 对应的头文件</p>
+</li>
+<li>
+<p><code>Compute</code> 内部使用了 GPU 的方法</p>
+</li>
+<li>
+<p><code>SetIsMatchedHob</code> 中所匹配的设备为 GPU</p>
+</li>
+</ul>
+<p>此外，我们马上会在下文看到，因为使用了 CUDA，我们需要使用 nvcc 编译器（而不是 g++）来编译 GPU kernel。</p>
+<h3 id="_2">编译链接选项说明<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h3>
+<p>在 <code>oneflow.sysconfig</code> 下包含了 <code>get_compile_flags</code>、<code>get_include</code>、<code>get_lib</code>、<code>get_link_flags</code> 方法分别对应自定义 op 时的：</p>
+<ul>
+<li>编译选项</li>
+<li>头文件路径</li>
+<li>链接库路径</li>
+<li>链接选项</li>
+</ul>
+<p>比如：
+<div class="highlight"><pre><span></span><code>&gt;&gt;&gt; import oneflow
+&gt;&gt;&gt; oneflow.sysconfig.get_compile_flags()
+[&#39;-I/home/yaochi/oneflow/build/python_scripts/oneflow/include&#39;, &#39;-DHALF_ENABLE_CPP11_USER_LITERALS=0&#39;, &#39;-DWITH_CUDA&#39;, &#39;-D_GLIBCXX_USE_CXX11_ABI=0&#39;]
+</code></pre></div></p>
+<p>也可以通过命令行直接获取编译、链接选项：
+<div class="highlight"><pre><span></span><code>python -c &quot;import oneflow; print(&#39; &#39;.join(oneflow.sysconfig.get_compile_flags()))&quot;
+python -c &quot;import oneflow; print(&#39; &#39;.join(oneflow.sysconfig.get_link_flags()))&quot;
+</code></pre></div></p>
+<p>对于 GPU kernel，链接时还需要指定 <code>cudart</code> 库。</p>
+<h3 id="_3">编译、链接得到动态库<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>
+<p>对于这个简单示例，可以使用以下 Makefile 进行构建：
+<div class="highlight"><pre><span></span><code><span class="nv">CFLAGS</span> <span class="o">=</span> <span class="k">$(</span>shell python -c <span class="s2">&quot;import oneflow; print(&#39; &#39;.join(oneflow.sysconfig.get_compile_flags()))&quot;</span><span class="k">)</span>
+<span class="nv">LFLAGS</span> <span class="o">=</span> <span class="k">$(</span>shell python -c <span class="s2">&quot;import oneflow; print(&#39; &#39;.join(oneflow.sysconfig.get_link_flags()))&quot;</span><span class="k">)</span>
+<span class="nv">CUDAPATH</span> <span class="o">=</span> /usr/local/cuda-10.1/lib64
+
+all: final_relu.so
+
+myrelu_op.o: myrelu_op.cpp
+    g++ -std<span class="o">=</span>c++11 -c myrelu_op.cpp <span class="se">\</span>
+    -o myrelu_op.o                  <span class="se">\</span>
+    -fPIC                           <span class="se">\</span>
+    <span class="si">${</span><span class="nv">CFLAGS</span><span class="si">}</span>                       <span class="se">\</span>
+    <span class="si">${</span><span class="nv">LFLAGS</span><span class="si">}</span>                       <span class="se">\</span>
+    -O2
+
+myrelu_cpu_kernel.o: myrelu_cpu_kernel.cpp
+    g++ -std<span class="o">=</span>c++11 -c myrelu_cpu_kernel.cpp <span class="se">\</span>
+    -o myrelu_cpu_kernel.o                  <span class="se">\</span>
+    <span class="k">$(</span>CFLAGS<span class="k">)</span> -fPIC
+
+myrelu_gpu_kernel.o: myrelu_gpu_kernel.cu
+    nvcc -std<span class="o">=</span>c++11 -c myrelu_gpu_kernel.cu <span class="se">\</span>
+    -o myrelu_gpu_kernel.o                  <span class="se">\</span>
+    <span class="k">$(</span>CFLAGS<span class="k">)</span> -x cu -Xcompiler -fPIC
+
+final_relu.so: myrelu_op.o myrelu_cpu_kernel.o myrelu_gpu_kernel.o
+    g++ -std<span class="o">=</span>c++11 myrelu_op.o <span class="se">\</span>
+    myrelu_cpu_kernel.o        <span class="se">\</span>
+    myrelu_gpu_kernel.o        <span class="se">\</span>
+    -shared -o final_relu.so   <span class="se">\</span>
+    <span class="k">$(</span>CFLAGS<span class="k">)</span>                  <span class="se">\</span>
+    -fPIC                      <span class="se">\</span>
+    -L<span class="k">$(</span>CUDAPATH<span class="k">)</span>              <span class="se">\</span>
+    -lcudart                   <span class="se">\</span>
+    <span class="k">$(</span>LFLAGS<span class="k">)</span>
+
+clean:
+    rm -rf *.so *.o
+</code></pre></div></p>
+<p>我们使用 <code>g++</code> 编译 <code>myrelu_op.cpp</code>、<code>myrelu_cpu_kernel.cpp</code>，使用 <code>nvcc</code> 编译 <code>myrelu_gpu_kernel.cpp</code>，得到目标文件（".o" 文件），最后把得到的目标文件链接为 <code>final_relu.so</code>。</p>
+<p>我们将在 Python 中加载 <code>final_relu.so</code> 并使用封装、使用自定义 op。</p>
+<h3 id="python-op">在 Python 使用自定义 op<a class="headerlink" href="#python-op" title="Permanent link">&para;</a></h3>
+<p>在 Python 中使用自定义 op 包括以下几个基本步骤：</p>
+<ul>
+<li>
+<p>使用 <code>oneflow.config.load_library</code> 加载 so 文件</p>
+</li>
+<li>
+<p>使用 <code>oneflow.user_op_builder</code> 生成自定义 op 的 Python wrapper</p>
+</li>
+<li>
+<p>调用以上的 Python wrapper 得到结果</p>
+</li>
+</ul>
+<p>以下代码在 Python 层次封装了 <code>myrelu</code> 并调用：
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">oneflow</span> <span class="k">as</span> <span class="nn">flow</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">oneflow.typing</span> <span class="k">as</span> <span class="nn">tp</span>
+
+<span class="c1"># 加载模块</span>
+<span class="n">flow</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">load_library</span><span class="p">(</span><span class="s2">&quot;final_relu.so&quot;</span><span class="p">)</span>
+
+<span class="c1"># 默认配置</span>
+<span class="n">flow</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">gpu_device_num</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="c1"># python op wrapper function</span>
+<span class="k">def</span> <span class="nf">myrelu</span><span class="p">(</span><span class="n">input_blob</span><span class="p">):</span>
+    <span class="n">op</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">flow</span><span class="o">.</span><span class="n">user_op_builder</span><span class="p">(</span><span class="s2">&quot;op_myrelu&quot;</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">Op</span><span class="p">(</span><span class="s2">&quot;myrelu&quot;</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">Input</span><span class="p">(</span><span class="s2">&quot;in&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">input_blob</span><span class="p">])</span>
+        <span class="o">.</span><span class="n">Output</span><span class="p">(</span><span class="s2">&quot;out&quot;</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">Build</span><span class="p">()</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">op</span><span class="o">.</span><span class="n">InferAndTryRun</span><span class="p">()</span><span class="o">.</span><span class="n">SoleOutputBlob</span><span class="p">()</span>
+
+
+<span class="c1"># 网络代码</span>
+<span class="nd">@flow</span><span class="o">.</span><span class="n">global_function</span><span class="p">()</span>
+<span class="k">def</span> <span class="nf">MyJob</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">tp</span><span class="o">.</span><span class="n">Numpy</span><span class="o">.</span><span class="n">Placeholder</span><span class="p">((</span><span class="mi">5</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">flow</span><span class="o">.</span><span class="n">float32</span><span class="p">))</span> <span class="o">-&gt;</span> <span class="n">tp</span><span class="o">.</span><span class="n">Numpy</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">myrelu</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="nb">input</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">MyJob</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+</code></pre></div>
+预期结果为：
+<div class="highlight"><pre><span></span><code>[-2. -1.  0.  1.  2.]
+[0. 0. 0. 1. 2.]
+</code></pre></div></p>
+<p>以上代码中的：<code>flow.config.load_library("final_relu.so")</code> 为加载 so 文件。</p>
+<p><code>myrelu</code> 内部构建 python wrapper 与《使用 Python 扩展 Op 》中的<a href="python_kernel_op.html">封装 Op 的 Python 接口</a>代码功能完全一样，在此不再重复解释。</p>
+<p>到现在为止，我们已经完成 <code>myrelu</code> op 的构建，这是一个比较简单的 op，如果我们需要构建更复杂的 op，就需要在注册过程中使用一些额外的高级特性。
+我们将从 op 注册、 kernel 注册、gradient 注册及 Python 层的封装几个方面介绍。</p>
+<h2 id="opregistry">OpRegistry 详细介绍<a class="headerlink" href="#opregistry" title="Permanent link">&para;</a></h2>
+<h3 id="attr"><code>Attr</code> 方法<a class="headerlink" href="#attr" title="Permanent link">&para;</a></h3>
+<p>有些 op 除了输入输出外，还需要有配置属性，比如 <code>reshape</code> 需要配置形状， <code>conv</code> 类算在需要配置对齐方式。我们可以在注册时使用 <code>Attr</code> 方法，为 op 设置属性，其原型为：
+<div class="highlight"><pre><span></span><code><span class="n">OpRegistry</span><span class="o">&amp;</span><span class="w"> </span><span class="n">Attr</span><span class="o">&lt;</span><span class="n">cpp_type</span><span class="o">&gt;</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">name</span><span class="p">);</span><span class="w"></span>
+</code></pre></div>
+我们只需指定属性的名字和类型即可。
+比如：</p>
+<div class="highlight"><pre><span></span><code><span class="n">REGISTER_USER_OP</span><span class="p">(</span><span class="s">&quot;reshape&quot;</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="p">.</span><span class="n">Input</span><span class="p">(</span><span class="s">&quot;in&quot;</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="p">.</span><span class="n">Output</span><span class="p">(</span><span class="s">&quot;out&quot;</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="p">.</span><span class="n">Attr</span><span class="o">&lt;</span><span class="n">shape</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;shape&quot;</span><span class="p">)</span><span class="w"></span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="n">REGISTER_USER_OP</span><span class="p">(</span><span class="s">&quot;conv2d&quot;</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="p">.</span><span class="n">Input</span><span class="p">(</span><span class="s">&quot;in&quot;</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="p">.</span><span class="n">Input</span><span class="p">(</span><span class="s">&quot;weight&quot;</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="p">.</span><span class="n">Output</span><span class="p">(</span><span class="s">&quot;out&quot;</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="p">.</span><span class="n">Attr</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int32_t</span><span class="o">&gt;&gt;</span><span class="p">(</span><span class="s">&quot;padding_before&quot;</span><span class="p">)</span><span class="w"></span>
+</code></pre></div>
+<p>OneFlow 目前支持了如下几种 C++ 数据类型：</p>
+<table>
+<thead>
+<tr>
+<th>UserOpAttrType</th>
+<th>对应的C++数据类型</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>kAtInt32</td>
+<td>int32_t</td>
+</tr>
+<tr>
+<td>kAtInt64</td>
+<td>int64_t</td>
+</tr>
+<tr>
+<td>kAtBool</td>
+<td>bool</td>
+</tr>
+<tr>
+<td>kAtFloat</td>
+<td>float</td>
+</tr>
+<tr>
+<td>kAtDouble</td>
+<td>double</td>
+</tr>
+<tr>
+<td>kAtShape</td>
+<td>oneflow::Shape</td>
+</tr>
+<tr>
+<td>kAtListInt32</td>
+<td>std::vector<int32_t></td>
+</tr>
+<tr>
+<td>kAtListInt64</td>
+<td>std::vector<int64_t></td>
+</tr>
+<tr>
+<td>kAtListFloat</td>
+<td>std::vector&lt; float &gt;</td>
+</tr>
+<tr>
+<td>kAtString</td>
+<td>std::string</td>
+</tr>
+</tbody>
+</table>
+<p>此外，我们还可以多传递一个参数，为属性配置默认值，默认值的类型即表格中对应的C++数据类型，如：</p>
+<div class="highlight"><pre><span></span><code><span class="p">.</span><span class="n">Attr</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;is_transpose&quot;</span><span class="p">,</span><span class="w"> </span><span class="nb">false</span><span class="p">)</span><span class="w"></span>
+
+<span class="p">.</span><span class="n">Attr</span><span class="o">&lt;</span><span class="kt">int32_t</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;size&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">)</span><span class="w"></span>
+
+<span class="p">.</span><span class="n">Attr</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int32_t</span><span class="o">&gt;&gt;</span><span class="p">(</span><span class="s">&quot;vector_of_size&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int32_t</span><span class="o">&gt;</span><span class="p">{</span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="mi">11</span><span class="p">,</span><span class="w"> </span><span class="mi">12</span><span class="p">})</span><span class="w"></span>
+</code></pre></div>
+<h3 id="setcheckattrfn"><code>SetCheckAttrFn</code> 方法<a class="headerlink" href="#setcheckattrfn" title="Permanent link">&para;</a></h3>
+<p>对于某些属性来说，需要更精确地限制取值范围。我们可以通过在注册 op 时使用 <code>SetCheckAttrFn</code> 方法来指定取值范围。</p>
+<p>例如，对于 <code>conv</code> op来说，其有一个配置选项 <code>data_format</code>，其类型是 string 字符串，但取值只能是 <code>channels_first</code> 或 <code>channels_last</code>，除此之外都不合法：</p>
+<div class="highlight"><pre><span></span><code><span class="p">.</span><span class="n">Attr</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;data_format&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;NCHW&quot;</span><span class="p">)</span><span class="w"></span>
+<span class="p">.</span><span class="n">SetCheckAttrFn</span><span class="p">(</span><span class="w"></span>
+<span class="w">  </span><span class="p">[](</span><span class="k">const</span><span class="w"> </span><span class="n">user_op</span><span class="o">::</span><span class="n">UserOpDefWrapper</span><span class="o">&amp;</span><span class="w"> </span><span class="n">def</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">user_op</span><span class="o">::</span><span class="n">UserOpConfWrapper</span><span class="o">&amp;</span><span class="w"> </span><span class="n">conf</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">Maybe</span><span class="o">&lt;</span><span class="kt">void</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">   </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">data_format</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">conf</span><span class="p">.</span><span class="n">attr</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;data_format&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">   </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">data_format</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s">&quot;channels_first&quot;</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">data_format</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s">&quot;channels_last&quot;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">     </span><span class="k">return</span><span class="w"> </span><span class="n">Maybe</span><span class="o">&lt;</span><span class="kt">void</span><span class="o">&gt;::</span><span class="n">Ok</span><span class="p">();</span><span class="w"></span>
+<span class="w">   </span><span class="p">}</span><span class="w"></span>
+<span class="w">   </span><span class="k">return</span><span class="w"> </span><span class="n">oneflow</span><span class="o">::</span><span class="n">Error</span><span class="o">::</span><span class="n">CheckFailed</span><span class="p">()</span><span class="w"></span>
+<span class="w">         </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;data_format value: &quot;</span><span class="w"></span>
+<span class="w">         </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">data_format</span><span class="w"></span>
+<span class="w">         </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot; for Conv op is illegal.&quot;</span><span class="p">;</span><span class="w"></span>
+<span class="p">})</span><span class="w"></span>
+</code></pre></div>
+<p>设置一个用于检查的函数，当属性值符合要求时，返回 <code>Maybe&lt;void&gt;::Ok()</code>；否则返回 <code>oneflow::Error::CheckFailed()</code>。</p>
+<h3 id="_4">多输入/输出<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h3>
+<p>对于有些 op 来说，可能有多个输入或者输出，这时我们就需要在注册 op 时指定其对应的输入输出的个数。</p>
+<p>以 Input 为例：</p>
+<p><div class="highlight"><pre><span></span><code><span class="c1">// input 必须对应有1个 blob</span>
+<span class="p">.</span><span class="n">Input</span><span class="p">(</span><span class="s">&quot;input&quot;</span><span class="p">)</span><span class="w"></span>
+
+<span class="c1">// input 必须对应有5个 blob</span>
+<span class="p">.</span><span class="n">Input</span><span class="p">(</span><span class="s">&quot;input&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">)</span><span class="w"></span>
+
+<span class="c1">// input 必须对应至少5个 blob</span>
+<span class="p">.</span><span class="n">InputWithMinimum</span><span class="p">(</span><span class="s">&quot;input&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">)</span><span class="w"></span>
+
+<span class="c1">// input 可能没有对应的 blob，若有则须对应1个</span>
+<span class="p">.</span><span class="n">OptionalInput</span><span class="p">(</span><span class="s">&quot;input&quot;</span><span class="p">)</span><span class="w"></span>
+
+<span class="c1">// input 可能没有对应的 blob，若有则须对应5个</span>
+<span class="p">.</span><span class="n">OptionalInput</span><span class="p">(</span><span class="s">&quot;input&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">)</span><span class="w"></span>
+
+<span class="c1">// input 可能没有对应的 blob，若有则须对应至少5个</span>
+<span class="p">.</span><span class="n">OptionalInputWithMininum</span><span class="p">(</span><span class="s">&quot;input&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">)</span><span class="w"></span>
+</code></pre></div>
+输出设置 <code>Output</code> 与 <code>Input</code> 类似。</p>
+<h3 id="setgetsbpfn">SetGetSbpFn 方法<a class="headerlink" href="#setgetsbpfn" title="Permanent link">&para;</a></h3>
+<p><code>SetGetSbpFn</code> 用于设置该 <code>op</code> 的 <a href="../basics_topics/essentials_of_oneflow.html#sbp">SBP</a>。
+以 "add_n" op 为例：
+<div class="highlight"><pre><span></span><code><span class="n">REGISTER_USER_OP</span><span class="p">(</span><span class="s">&quot;add_n&quot;</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="p">.</span><span class="n">InputWithMinimum</span><span class="p">(</span><span class="s">&quot;in&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="p">.</span><span class="n">Output</span><span class="p">(</span><span class="s">&quot;out&quot;</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="p">.</span><span class="n">SetGetSbpFn</span><span class="p">([](</span><span class="n">user_op</span><span class="o">::</span><span class="n">SbpContext</span><span class="o">*</span><span class="w"> </span><span class="n">ctx</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">      </span><span class="kt">int64_t</span><span class="w"> </span><span class="n">num_axes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ctx</span><span class="o">-&gt;</span><span class="n">LogicalTensorDesc4InputArgNameAndIndex</span><span class="p">(</span><span class="s">&quot;in&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">).</span><span class="n">shape</span><span class="p">().</span><span class="n">NumAxes</span><span class="p">();</span><span class="w"></span>
+<span class="w">      </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int64_t</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">num_axes</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="n">ctx</span><span class="o">-&gt;</span><span class="n">NewBuilder</span><span class="p">().</span><span class="n">Split</span><span class="p">(</span><span class="n">ctx</span><span class="o">-&gt;</span><span class="n">inputs</span><span class="p">(),</span><span class="w"> </span><span class="n">i</span><span class="p">).</span><span class="n">Split</span><span class="p">(</span><span class="n">user_op</span><span class="o">::</span><span class="n">OpArg</span><span class="p">(</span><span class="s">&quot;out&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">),</span><span class="w"> </span><span class="n">i</span><span class="p">).</span><span class="n">Build</span><span class="p">();</span><span class="w"></span>
+<span class="w">      </span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">ctx</span><span class="o">-&gt;</span><span class="n">NewBuilder</span><span class="p">().</span><span class="n">PartialSum</span><span class="p">(</span><span class="n">ctx</span><span class="o">-&gt;</span><span class="n">inputs</span><span class="p">()).</span><span class="n">PartialSum</span><span class="p">(</span><span class="n">user_op</span><span class="o">::</span><span class="n">OpArg</span><span class="p">(</span><span class="s">&quot;out&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">)).</span><span class="n">Build</span><span class="p">();</span><span class="w"></span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="n">Maybe</span><span class="o">&lt;</span><span class="kt">void</span><span class="o">&gt;::</span><span class="n">Ok</span><span class="p">();</span><span class="w"></span>
+<span class="w">    </span><span class="p">});</span><span class="w"></span>
+</code></pre></div></p>
+<h2 id="opkernelregistry">OpKernelRegistry 详细介绍<a class="headerlink" href="#opkernelregistry" title="Permanent link">&para;</a></h2>
+<h3 id="setinfertmpsizefn">SetInferTmpSizeFn 方法<a class="headerlink" href="#setinfertmpsizefn" title="Permanent link">&para;</a></h3>
+<p>某些 op 的 kernel 实现过程中，在 <code>Compute</code> 计算过程中可能需要一些额外的 buffer 用于存储临时数据。</p>
+<p>我们可以在注册 kernel 时通过 <code>SetInferTmpSizeFn</code> 方法指定 buffer 大小，在 <code>Compute</code> 函数中获取该 buffer 并使用。</p>
+<p>以下代码注册 kernel 时，通过 <code>SetInferTmpSizeFn</code> 指定 buffer 大小为 1024 字节：</p>
+<div class="highlight"><pre><span></span><code><span class="n">REGISTER_USER_KERNEL</span><span class="p">(</span><span class="s">&quot;XOp&quot;</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="p">.</span><span class="n">SetInferTmpSizeFn</span><span class="p">(</span><span class="w"></span>
+<span class="w">      </span><span class="p">[](</span><span class="k">const</span><span class="w"> </span><span class="n">oneflow</span><span class="o">::</span><span class="n">user_op</span><span class="o">::</span><span class="n">InferContext</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">         </span><span class="k">return</span><span class="w"> </span><span class="mi">1024</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="p">});</span><span class="w"></span>
+</code></pre></div>
+<p>一旦通过 <code>SetInferTmpSizeFn</code> 设置了 buffer 大小，在 <code>Compute</code> 中就可以通过调用 <code>KernelComputeContext::Tensor4ArgNameAndIndex</code> 方法，获取该缓冲区，该缓冲区封装为 <code>oneflow::user_op::Tensor</code>，可以通过调用 <code>dptr</code> 或 <code>mut_dptr</code> 方法转为其它类型的指针。</p>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">XKernel</span><span class="w"> </span><span class="k">final</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">oneflow</span><span class="o">::</span><span class="n">user_op</span><span class="o">::</span><span class="n">OpKernel</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">Compute</span><span class="p">(</span><span class="n">oneflow</span><span class="o">::</span><span class="n">user_op</span><span class="o">::</span><span class="n">KernelComputeContext</span><span class="o">*</span><span class="w"> </span><span class="n">ctx</span><span class="p">)</span><span class="w"> </span><span class="k">override</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="n">oneflow</span><span class="o">::</span><span class="n">user_op</span><span class="o">::</span><span class="n">Tensor</span><span class="o">*</span><span class="w"> </span><span class="n">tmp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ctx</span><span class="o">-&gt;</span><span class="n">Tensor4ArgNameAndIndex</span><span class="p">(</span><span class="s">&quot;tmp_buffer&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span><span class="w"></span>
+
+<span class="w">    </span><span class="c1">//转换后得到 1024 字节的 char* 缓冲区</span>
+<span class="w">    </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">pBuff</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tmp</span><span class="o">-&gt;</span><span class="n">mut_dptr</span><span class="o">&lt;</span><span class="kt">char</span><span class="o">&gt;</span><span class="p">();</span><span class="w"></span>
+
+<span class="w">    </span><span class="p">...</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
+<span class="p">};</span><span class="w"></span>
+</code></pre></div>
+<h2 id="opgradregistry">OpGradRegistry 详细介绍<a class="headerlink" href="#opgradregistry" title="Permanent link">&para;</a></h2>
+<p>在<a href="python_kernel_op.html#op_2">使用 Python 扩展 Op</a>一文中，介绍了如何为自定义 Op 提供反向计算。其核心是通过宏 <code>REGISTER_USER_OP_GRAD</code> 进行注册。</p>
+<p>实际上，<code>REGISTER_USER_OP_GRAD</code> 其实是在定义用于求导的反向子图，因此，我们不一定需要专门像 <a href="python_kernel_op.html#op_2">为自定义 Op 提供反向计算</a> 那样，专门去实现一个后向 Op 来求梯度，在大部分时候，可以使用 OneFlow 已有的 Op，描述反向子图。本节作为<a href="python_kernel_op.html#op_2">使用 Python 扩展 Op</a> 的补充，详细介绍后向注册并用现有 Op 表示反向子图的方法。</p>
+<p>Oneflow 在后向计算图展开过程中会自动求导，OneFlow 框架采用 <a href="https://en.wikipedia.org/wiki/Automatic_differentiation">Automatic Differentiation</a> 方法求导，即利用链式法则自动求出整个表达式的梯度。</p>
+<p>为了对自定义的 op 进行自动求导，我们需要通过宏 <code>REGISTER_USER_OP_GRAD</code> 进行注册。从数学角度上看，注册过程就是我们为自定义的 op，指定后向求导的计算方法。从编程角度看，就是为自定义 op 设置一个后向生成函数，在该函数中，编写代码，指定这个 op 的输入梯度的计算方法。</p>
+<p>为计算自定义 op 的梯度，我们需要根据自定义 op 的输入、输出以及输出的梯度，构造出输入的梯度。在大多数情况下，我们可以通过 OneFlow 中已有的算子及其组合形式，表示出输入的梯度的计算过程。</p>
+<p>编写代码，表示输入的梯度的计算过程，通常包含下面几步：</p>
+<ol>
+<li>
+<p>使用 <code>ctx-&gt;DefineOp()</code> 和 <code>BackwardOpBuilder</code> 来表示计算输入的梯度的方法，因为输入的梯度计算可能是多种运算的组合，因此 <code>DefineOp</code> 及 <code>BackwardOpBuilder</code> 可能被多次使用；</p>
+</li>
+<li>
+<p>经过上一步定义了计算过程后，最终在某个算子的输出中，记录了需要的梯度。我们需要调用 <code>ctx-&gt;FwOp().InputGradBind()</code> 方法，将上一步的计算结果和自定义 op 的输入梯度绑定。</p>
+</li>
+</ol>
+<p>以下示例（包含测试在内的完整代码见 <a href="https://github.com/Oneflow-Inc/oneflow-documentation/tree/master/cn/docs/code/extended_topics/myop_grad">仓库的 myop_grad 目录</a>），我们将针对一个名为 <code>myop</code> 的自定义 op 来注册其后向生成函数。这个 op 仅用于本文展示注册过程，不考虑实际用途，<code>myop</code> 的计算功能设定为计算 <code>3*x*x</code>。</p>
+<p>那么，容易得到其前向传播和后向传播的关系如下图所示，即反向过程中，<code>x</code> 的梯度计算公式为 <code>6*x*dy</code>：</p>
+<div align="center">
+  <img src="imgs/chainrule.png">
+  </img>
+</div>
+
+<p><code>myop</code> 的前向 op 定义如下：
+<div class="highlight"><pre><span></span><code><span class="n">REGISTER_USER_OP</span><span class="p">(</span><span class="s">&quot;myop&quot;</span><span class="p">).</span><span class="n">Input</span><span class="p">(</span><span class="s">&quot;in&quot;</span><span class="p">).</span><span class="n">Output</span><span class="p">(</span><span class="s">&quot;out&quot;</span><span class="p">).</span><span class="n">SetTensorDescInferFn</span><span class="p">(</span><span class="w"></span>
+<span class="w">    </span><span class="p">[](</span><span class="n">user_op</span><span class="o">::</span><span class="n">InferContext</span><span class="w"> </span><span class="o">*</span><span class="n">ctx</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">Maybe</span><span class="o">&lt;</span><span class="kt">void</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">      </span><span class="o">*</span><span class="n">ctx</span><span class="o">-&gt;</span><span class="n">Shape4ArgNameAndIndex</span><span class="p">(</span><span class="s">&quot;out&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"></span>
+<span class="w">          </span><span class="o">*</span><span class="n">ctx</span><span class="o">-&gt;</span><span class="n">Shape4ArgNameAndIndex</span><span class="p">(</span><span class="s">&quot;in&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span><span class="w"></span>
+<span class="w">      </span><span class="o">*</span><span class="n">ctx</span><span class="o">-&gt;</span><span class="n">Dtype4ArgNameAndIndex</span><span class="p">(</span><span class="s">&quot;out&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"></span>
+<span class="w">          </span><span class="o">*</span><span class="n">ctx</span><span class="o">-&gt;</span><span class="n">Dtype4ArgNameAndIndex</span><span class="p">(</span><span class="s">&quot;in&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span><span class="w"></span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="n">Maybe</span><span class="o">&lt;</span><span class="kt">void</span><span class="o">&gt;::</span><span class="n">Ok</span><span class="p">();</span><span class="w"></span>
+<span class="w">    </span><span class="p">});</span><span class="w"></span>
+</code></pre></div>
+即 <code>myop</code> 包含唯一的输入 <code>in</code> 和唯一的输出 <code>out</code>。</p>
+<p><code>myop</code> 的反向梯度注册代码如下：
+<div class="highlight"><pre><span></span><code><span class="n">REGISTER_USER_OP_GRAD</span><span class="p">(</span><span class="s">&quot;myop&quot;</span><span class="p">).</span><span class="n">SetBackwardOpConfGenFn</span><span class="p">(</span><span class="w"></span>
+<span class="w">    </span><span class="p">[](</span><span class="n">user_op</span><span class="o">::</span><span class="n">BackwardOpConfContext</span><span class="o">*</span><span class="w"> </span><span class="n">ctx</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+
+<span class="w">      </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">op1_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ctx</span><span class="o">-&gt;</span><span class="n">FwOp</span><span class="p">().</span><span class="n">op_name</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot;_grad1&quot;</span><span class="p">;</span><span class="w"></span>
+
+<span class="w">      </span><span class="c1">// 算子 op1_name 用于计算 myop.in*(myop.out的梯度)</span>
+<span class="w">      </span><span class="n">ctx</span><span class="o">-&gt;</span><span class="n">DefineOp</span><span class="p">(</span><span class="n">op1_name</span><span class="p">,</span><span class="w"></span>
+<span class="w">        </span><span class="p">[</span><span class="o">&amp;</span><span class="n">ctx</span><span class="p">](</span><span class="n">user_op</span><span class="o">::</span><span class="n">BackwardOpBuilder</span><span class="o">&amp;</span><span class="w"> </span><span class="n">builder</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">          </span><span class="k">return</span><span class="w"> </span><span class="n">builder</span><span class="p">.</span><span class="n">OpTypeName</span><span class="p">(</span><span class="s">&quot;multiply&quot;</span><span class="p">)</span><span class="w"></span>
+<span class="w">              </span><span class="p">.</span><span class="n">InputBind</span><span class="p">(</span><span class="s">&quot;x&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">ctx</span><span class="o">-&gt;</span><span class="n">FwOp</span><span class="p">().</span><span class="n">input</span><span class="p">(</span><span class="s">&quot;in&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">))</span><span class="w"> </span><span class="c1">//multiply.x &lt;- myop.in</span>
+<span class="w">              </span><span class="p">.</span><span class="n">InputBind</span><span class="p">(</span><span class="s">&quot;y&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">ctx</span><span class="o">-&gt;</span><span class="n">FwOp</span><span class="p">().</span><span class="n">output_grad</span><span class="p">(</span><span class="s">&quot;out&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">))</span><span class="w"> </span><span class="c1">//multiply.y &lt;- myop.out的梯度</span>
+<span class="w">              </span><span class="p">.</span><span class="n">Output</span><span class="p">(</span><span class="s">&quot;out&quot;</span><span class="p">)</span><span class="w"></span>
+<span class="w">              </span><span class="p">.</span><span class="n">Build</span><span class="p">();</span><span class="w"></span>
+<span class="w">        </span><span class="p">});</span><span class="w"></span>
+
+<span class="w">      </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">op2_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ctx</span><span class="o">-&gt;</span><span class="n">FwOp</span><span class="p">().</span><span class="n">op_name</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot;_grad2&quot;</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="c1">// 算子 op2_name 用于计算 6*op1_name</span>
+<span class="w">      </span><span class="n">ctx</span><span class="o">-&gt;</span><span class="n">DefineOp</span><span class="p">(</span><span class="n">op2_name</span><span class="p">,</span><span class="w"></span>
+<span class="w">        </span><span class="p">[</span><span class="o">&amp;</span><span class="n">ctx</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">op1_name</span><span class="p">](</span><span class="n">user_op</span><span class="o">::</span><span class="n">BackwardOpBuilder</span><span class="o">&amp;</span><span class="w"> </span><span class="n">builder</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">          </span><span class="k">return</span><span class="w"> </span><span class="n">builder</span><span class="p">.</span><span class="n">OpTypeName</span><span class="p">(</span><span class="s">&quot;scalar_mul&quot;</span><span class="p">)</span><span class="w"></span>
+<span class="w">              </span><span class="p">.</span><span class="n">InputBind</span><span class="p">(</span><span class="s">&quot;in&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">ctx</span><span class="o">-&gt;</span><span class="n">GetOp</span><span class="p">(</span><span class="n">op1_name</span><span class="p">).</span><span class="n">output</span><span class="p">(</span><span class="s">&quot;out&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">))</span><span class="w"></span>
+<span class="w">              </span><span class="p">.</span><span class="n">Attr</span><span class="p">(</span><span class="s">&quot;has_float_operand&quot;</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="p">)</span><span class="w"></span>
+<span class="w">              </span><span class="p">.</span><span class="n">Attr</span><span class="p">(</span><span class="s">&quot;has_int_operand&quot;</span><span class="p">,</span><span class="w"> </span><span class="nb">false</span><span class="p">)</span><span class="w"></span>
+<span class="w">              </span><span class="p">.</span><span class="n">Attr</span><span class="p">(</span><span class="s">&quot;float_operand&quot;</span><span class="p">,</span><span class="w"> </span><span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">6</span><span class="p">))</span><span class="w"></span>
+<span class="w">              </span><span class="p">.</span><span class="n">Attr</span><span class="p">(</span><span class="s">&quot;int_operand&quot;</span><span class="p">,</span><span class="w"> </span><span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">int64_t</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">6</span><span class="p">))</span><span class="w"></span>
+<span class="w">              </span><span class="p">.</span><span class="n">Output</span><span class="p">(</span><span class="s">&quot;out&quot;</span><span class="p">)</span><span class="w"></span>
+<span class="w">              </span><span class="p">.</span><span class="n">Build</span><span class="p">();</span><span class="w"></span>
+<span class="w">        </span><span class="p">});</span><span class="w"></span>
+
+<span class="w">      </span><span class="c1">// (myop.in的梯度) &lt;- op1_name.out</span>
+<span class="w">      </span><span class="n">ctx</span><span class="o">-&gt;</span><span class="n">FwOp</span><span class="p">().</span><span class="n">InputGradBind</span><span class="p">(</span><span class="n">user_op</span><span class="o">::</span><span class="n">OpArg</span><span class="p">(</span><span class="s">&quot;in&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">),</span><span class="w"></span>
+<span class="w">        </span><span class="p">[</span><span class="o">&amp;</span><span class="n">ctx</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">op2_name</span><span class="p">]()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">          </span><span class="k">return</span><span class="w"> </span><span class="n">ctx</span><span class="o">-&gt;</span><span class="n">GetOp</span><span class="p">(</span><span class="n">op2_name</span><span class="p">)</span><span class="w"></span>
+<span class="w">                </span><span class="p">.</span><span class="n">output</span><span class="p">(</span><span class="s">&quot;out&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span><span class="w"></span>
+<span class="w">        </span><span class="p">});</span><span class="w"></span>
+<span class="w">  </span><span class="p">});</span><span class="w"></span>
+</code></pre></div></p>
+<p>宏 <code>REGISTER_USER_OP_GRAD("myop")</code> 接受的字符串参数是 <code>op_type_name</code>，需要与 <code>REGISTER_USER_OP</code> 注册时的一致。</p>
+<p><code>REGISTER_USER_OP_GRAD("myop")</code> 会返回一个 <code>oneflow::user_op::OpGradRegistry</code> 对象，我们通过调用它的方法，设置自定义 op 的后向生成函数。</p>
+<p>以上梯度注册的过程中，我们最终要求的 <code>myop</code> 的输入的梯度的表达式为 <code>6*x*dy</code>，可以从代码中看到这个求解过程。</p>
+<p>首先，定义了 <code>op1_name</code>，利用已有的算子 <code>multiply</code> 求解 <code>x*dy</code>：
+<div class="highlight"><pre><span></span><code><span class="c1">// 算子 op1_name 用于计算 myop.in*(myop.out的梯度)</span>
+<span class="n">ctx</span><span class="o">-&gt;</span><span class="n">DefineOp</span><span class="p">(</span><span class="n">op1_name</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="p">[</span><span class="o">&amp;</span><span class="n">ctx</span><span class="p">](</span><span class="n">user_op</span><span class="o">::</span><span class="n">BackwardOpBuilder</span><span class="o">&amp;</span><span class="w"> </span><span class="n">builder</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">builder</span><span class="p">.</span><span class="n">OpTypeName</span><span class="p">(</span><span class="s">&quot;multiply&quot;</span><span class="p">)</span><span class="w"></span>
+<span class="w">        </span><span class="p">.</span><span class="n">InputBind</span><span class="p">(</span><span class="s">&quot;x&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">ctx</span><span class="o">-&gt;</span><span class="n">FwOp</span><span class="p">().</span><span class="n">input</span><span class="p">(</span><span class="s">&quot;in&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">))</span><span class="w"> </span><span class="c1">//multiply.x &lt;- myop.in</span>
+<span class="w">        </span><span class="p">.</span><span class="n">InputBind</span><span class="p">(</span><span class="s">&quot;y&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">ctx</span><span class="o">-&gt;</span><span class="n">FwOp</span><span class="p">().</span><span class="n">output_grad</span><span class="p">(</span><span class="s">&quot;out&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">))</span><span class="w"> </span><span class="c1">//multiply.y &lt;- myop.out的梯度</span>
+<span class="w">        </span><span class="p">.</span><span class="n">Output</span><span class="p">(</span><span class="s">&quot;out&quot;</span><span class="p">)</span><span class="w"></span>
+<span class="w">        </span><span class="p">.</span><span class="n">Build</span><span class="p">();</span><span class="w"></span>
+<span class="w">  </span><span class="p">});</span><span class="w"></span>
+</code></pre></div></p>
+<p>然后，定义了 <code>op2_name</code>，利用已有的算子 <code>op2_name</code> 求解 <code>6*op1_name</code>，即 <code>6*x*dy</code>。</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// 算子 op2_name 用于计算 6*op1_name</span>
+<span class="n">ctx</span><span class="o">-&gt;</span><span class="n">DefineOp</span><span class="p">(</span><span class="n">op2_name</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="p">[</span><span class="o">&amp;</span><span class="n">ctx</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">op1_name</span><span class="p">](</span><span class="n">user_op</span><span class="o">::</span><span class="n">BackwardOpBuilder</span><span class="o">&amp;</span><span class="w"> </span><span class="n">builder</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">builder</span><span class="p">.</span><span class="n">OpTypeName</span><span class="p">(</span><span class="s">&quot;scalar_mul&quot;</span><span class="p">)</span><span class="w"></span>
+<span class="w">        </span><span class="p">.</span><span class="n">InputBind</span><span class="p">(</span><span class="s">&quot;in&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">ctx</span><span class="o">-&gt;</span><span class="n">GetOp</span><span class="p">(</span><span class="n">op1_name</span><span class="p">).</span><span class="n">output</span><span class="p">(</span><span class="s">&quot;out&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">))</span><span class="w"></span>
+<span class="w">        </span><span class="p">.</span><span class="n">Attr</span><span class="p">(</span><span class="s">&quot;has_float_operand&quot;</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="p">)</span><span class="w"></span>
+<span class="w">        </span><span class="p">.</span><span class="n">Attr</span><span class="p">(</span><span class="s">&quot;has_int_operand&quot;</span><span class="p">,</span><span class="w"> </span><span class="nb">false</span><span class="p">)</span><span class="w"></span>
+<span class="w">        </span><span class="p">.</span><span class="n">Attr</span><span class="p">(</span><span class="s">&quot;float_operand&quot;</span><span class="p">,</span><span class="w"> </span><span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">6</span><span class="p">))</span><span class="w"></span>
+<span class="w">        </span><span class="p">.</span><span class="n">Attr</span><span class="p">(</span><span class="s">&quot;int_operand&quot;</span><span class="p">,</span><span class="w"> </span><span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">int64_t</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">6</span><span class="p">))</span><span class="w"></span>
+<span class="w">        </span><span class="p">.</span><span class="n">Output</span><span class="p">(</span><span class="s">&quot;out&quot;</span><span class="p">)</span><span class="w"></span>
+<span class="w">        </span><span class="p">.</span><span class="n">Build</span><span class="p">();</span><span class="w"></span>
+<span class="w">  </span><span class="p">});</span><span class="w"></span>
+</code></pre></div>
+<p>最后，将 <code>op2_name</code> 的输出结果（即 <code>6*x*dy</code>）绑定到 <code>myop</code> 的输入的梯度上，完成注册。</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// (myop.in的梯度) &lt;- op1_name.out</span>
+<span class="n">ctx</span><span class="o">-&gt;</span><span class="n">FwOp</span><span class="p">().</span><span class="n">InputGradBind</span><span class="p">(</span><span class="n">user_op</span><span class="o">::</span><span class="n">OpArg</span><span class="p">(</span><span class="s">&quot;in&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">),</span><span class="w"></span>
+<span class="w">  </span><span class="p">[</span><span class="o">&amp;</span><span class="n">ctx</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">op2_name</span><span class="p">]()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">ctx</span><span class="o">-&gt;</span><span class="n">GetOp</span><span class="p">(</span><span class="n">op2_name</span><span class="p">)</span><span class="w"></span>
+<span class="w">          </span><span class="p">.</span><span class="n">output</span><span class="p">(</span><span class="s">&quot;out&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="p">});</span><span class="w"></span>
+</code></pre></div>
+<p>以上是完整的注册梯度的流程，以下分别介绍相关的类及方法。</p>
+<h3 id="setbackwardopconfgenfn">SetBackwardOpConfGenFn 方法<a class="headerlink" href="#setbackwardopconfgenfn" title="Permanent link">&para;</a></h3>
+<p>我们使用 <code>OpGradRegistry::SetBackwardOpConfGenFn(fn)</code> 设置后向生成函数 <code>fn</code>，后向生成函数 <code>fn</code> 的函数原型如下：
+<div class="highlight"><pre><span></span><code><span class="kt">void</span><span class="w"> </span><span class="nf">fn</span><span class="p">(</span><span class="n">BackwardOpConfContext</span><span class="o">*</span><span class="w"> </span><span class="n">ctx</span><span class="p">);</span><span class="w"></span>
+</code></pre></div></p>
+<p><code>BackwardOpConfContext* ctx</code> 带有生成 op 所需要的信息。</p>
+<h3 id="backwardopconfcontext">BackwardOpConfContext 详细介绍<a class="headerlink" href="#backwardopconfcontext" title="Permanent link">&para;</a></h3>
+<p><code>BackwardOpConfContext</code> 类中的常用方法及其作用如下：</p>
+<ul>
+<li>
+<p><code>UserOpWrapper&amp; FwOp();</code>：获取前向 op</p>
+</li>
+<li>
+<p><code>GetOp(op_name)</code>: 根据 <code>op_name</code> 创建并获取对应的 <code>op</code>，<code>GetOp</code> 采用延迟创建机制(lazy init)，只有 <code>GetOp</code> 被调用时，对应的 op 才会被真正创建</p>
+</li>
+<li>
+<p><code>void DefineOp(op_name, fn)</code>：定义名为 <code>op_name</code> 的 Op 的创建函数 <code>fn</code>。当调用 <code>ctx-&gt;GetOp(op_name)</code> 时， 在 OneFlow 框架中会触发 <code>fn</code> 进行 Op 创建，如果 Op 已经被创建过，那么这里直接获取创建的结果。<code>fn</code> 函数接收一个 <code>BackwardOpBuilder</code> 参数，用于构建反向 op，我们接下来介绍 <code>BackwardOpBuilder</code>。</p>
+</li>
+</ul>
+<h3 id="backwardopbuilder">BackwardOpBuilder 详细介绍<a class="headerlink" href="#backwardopbuilder" title="Permanent link">&para;</a></h3>
+<p><code>BackwardOpBuilder</code> 用于构建一个反向 op。以上文中的代码片段为例
+<div class="highlight"><pre><span></span><code><span class="n">ctx</span><span class="o">-&gt;</span><span class="n">DefineOp</span><span class="p">(</span><span class="n">op1_name</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="p">[</span><span class="o">&amp;</span><span class="n">ctx</span><span class="p">](</span><span class="n">user_op</span><span class="o">::</span><span class="n">BackwardOpBuilder</span><span class="o">&amp;</span><span class="w"> </span><span class="n">builder</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">builder</span><span class="p">.</span><span class="n">OpTypeName</span><span class="p">(</span><span class="s">&quot;multiply&quot;</span><span class="p">)</span><span class="w"></span>
+<span class="w">        </span><span class="p">.</span><span class="n">InputBind</span><span class="p">(</span><span class="s">&quot;x&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">ctx</span><span class="o">-&gt;</span><span class="n">FwOp</span><span class="p">().</span><span class="n">input</span><span class="p">(</span><span class="s">&quot;in&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">))</span><span class="w"> </span><span class="c1">//multiply.x &lt;- myop.in</span>
+<span class="w">        </span><span class="p">.</span><span class="n">InputBind</span><span class="p">(</span><span class="s">&quot;y&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">ctx</span><span class="o">-&gt;</span><span class="n">FwOp</span><span class="p">().</span><span class="n">output_grad</span><span class="p">(</span><span class="s">&quot;out&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">))</span><span class="w"> </span><span class="c1">//multiply.y &lt;- myop.out的梯度</span>
+<span class="w">        </span><span class="p">.</span><span class="n">Output</span><span class="p">(</span><span class="s">&quot;out&quot;</span><span class="p">)</span><span class="w"></span>
+<span class="w">        </span><span class="p">.</span><span class="n">Build</span><span class="p">();</span><span class="w"></span>
+<span class="w">  </span><span class="p">});</span><span class="w"></span>
+</code></pre></div>
+我们在这个函数中，最终调用 <code>Build</code> 构建了一个用于计算 <code>x*dy</code> 的反向 op。
+各个接口的作用如下：</p>
+<ul>
+<li>
+<p><code>OpTypeName("multiply")</code> 指定一个 op 的 <code>op_type_name</code>，使用这个 op 来帮助我们进行反向梯度的计算</p>
+</li>
+<li>
+<p><code>InputBind(arg_name, blob)</code> 将 <code>multiply</code> 的输入 <code>arg_name</code> 与 指定的 <code>blob</code> 进行绑定，可以调用多次，如果该 <code>arg_name</code> 对应多个输入blob，则调用 <code>Input</code> 的顺序就是其对应的 index 顺序</p>
+</li>
+<li>
+<p><code>Output(arg_name, num)</code> 指定一个 <code>arg_name</code> 实际对应的输出 blob 的数量，如果不填 <code>num</code>，则 <code>num</code> 默认为1</p>
+</li>
+<li>
+<p><code>Attr(attr_name, val)</code> op 设置属性值，与注册 op 时的用法一样</p>
+</li>
+<li>
+<p><code>Build()</code> 完成各种设置后，通过调用 <code>Build</code> 完成反向 op 的构建</p>
+</li>
+</ul>
+<h3 id="useropwrapper">UserOpWrapper 详细介绍<a class="headerlink" href="#useropwrapper" title="Permanent link">&para;</a></h3>
+<p>调用 <code>ctx-&gt;FwOp()</code> 会返回代表前向自定义 op，即 <code>myop</code> 的 <code>UserOpWrapper</code> 对象，通过调用 <code>UserOpWrapper</code> 的方法，完成梯度绑定。</p>
+<div class="highlight"><pre><span></span><code><span class="n">ctx</span><span class="o">-&gt;</span><span class="n">FwOp</span><span class="p">().</span><span class="n">InputGradBind</span><span class="p">(</span><span class="n">user_op</span><span class="o">::</span><span class="n">OpArg</span><span class="p">(</span><span class="s">&quot;in&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">),</span><span class="w"></span>
+<span class="w">  </span><span class="p">[</span><span class="o">&amp;</span><span class="n">ctx</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">op2_name</span><span class="p">]()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">ctx</span><span class="o">-&gt;</span><span class="n">GetOp</span><span class="p">(</span><span class="n">op2_name</span><span class="p">)</span><span class="w"></span>
+<span class="w">          </span><span class="p">.</span><span class="n">output</span><span class="p">(</span><span class="s">&quot;out&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="p">});</span><span class="w"></span>
+</code></pre></div>
+<p><code>UserOpWrapper</code> 的常见方法有：</p>
+<ul>
+<li>
+<p><code>InputGradBind(input, grad_fn)</code>：绑定前向 op 的输入与获取梯度的函数 <code>grad_fn</code>。 OneFlow 会自动判断 <code>input</code> 是否需要生成后向的梯度，如果需要则触发 <code>grad_fn</code> 并进行绑定；</p>
+</li>
+<li>
+<p><code>input(arg_name, index)</code>：得到输入 <code>arg_name</code> 对应的 blob</p>
+</li>
+<li>
+<p><code>output(arg_name,index)</code>：得到输出 <code>arg_name</code> 对应的 blob</p>
+</li>
+<li>
+<p><code>output_grad(output_arg_name, index)</code>： 返回前向 op 的输出 <code>output_arg_name</code> 对应的后向梯度的 blob</p>
+</li>
+<li>
+<p><code>attr(attr_name)</code>：获取属性 <code>attr_name</code> 对应的值</p>
+</li>
+<li>
+<p><code>arg_tensor_desc(arg_name, index)</code>：返回前向 op 的输入/输出对应的 tensor 信息，包含 <code>shape</code>、<code>dtype</code> 等</p>
+</li>
+</ul>
+<h3 id="op_1">为计算梯度定制 op<a class="headerlink" href="#op_1" title="Permanent link">&para;</a></h3>
+<p>我们前文提到，在大多数情况下，可以通过已有 op 的组合，表示计算梯度的过程。但是，当某些特殊的前向 op，难以使用已有 op 描述其梯度求解过程时，我们需要为计算梯度专门设计和创建算子。这方面的例子可以参考<a href="python_kernel_op.html#op_2">使用 Python 扩展 Op</a> 及<a href="https://github.com/Oneflow-Inc/oneflow/blob/master/oneflow/user/ops/relu_op.cpp">relu_op.cpp</a>，前者使用 Python 定制反向求导 Op，后者使用 C++ 定制反向求导 Op。</p>
+<h2 id="useropconfbuilder">UserOpConfBuilder 详细介绍<a class="headerlink" href="#useropconfbuilder" title="Permanent link">&para;</a></h2>
+<p>在 OneFlow 的 Python 前端中，提供了 <code>UserOpConfBuilder</code> 构建自定义 op 的 wrapper，在上文 <a href="user_op.html#python-op">在 Python 中使用自定义 op</a> 中已经使用。在这里我们总结下 Python 层的 <code>UserOpConfBuilder</code> 的各方法接口与 C++ 层的对应关系。</p>
+<p>比如我们封装了一个 <code>cast</code> wrapper:
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">cast</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="n">flow</span><span class="o">.</span><span class="n">user_op_builder</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">Op</span><span class="p">(</span><span class="s2">&quot;cast&quot;</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">Input</span><span class="p">(</span><span class="s2">&quot;in&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">x</span><span class="p">])</span>
+        <span class="o">.</span><span class="n">Output</span><span class="p">(</span><span class="s2">&quot;out&quot;</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">Attr</span><span class="p">(</span><span class="s2">&quot;dtype&quot;</span><span class="p">,</span> <span class="n">dtype</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">Build</span><span class="p">()</span>
+        <span class="o">.</span><span class="n">InferAndTryRun</span><span class="p">()</span>
+        <span class="o">.</span><span class="n">RemoteBlobList</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+</code></pre></div></p>
+<ul>
+<li>
+<p><code>Op(op_type_name)</code>：接受的参数为 C++ 中注册时的 <code>op_type_name</code></p>
+</li>
+<li>
+<p><code>Input(input_name, input_blob_list)</code>：输入，<code>input_name</code> 应与 C++ 中注册 op 时 <code>Input</code> 的第一个参数一致</p>
+</li>
+<li>
+<p><code>Output(output_name, num=1)</code>：输出，<code>output_name</code> 及 <code>num</code> 应与 C++ 中注册 op 时的 <code>Output</code> 一致</p>
+</li>
+<li>
+<p><code>Attr(attr_name, attr_value)</code>：设置属性，<code>attr_name</code> 对应了 C++ 注册时使用 <code>OpRegistry::Attr</code> 声明的属性，且 <code>attr_value</code> 类型应当与声明时的属性类型一致</p>
+</li>
+<li>
+<p><code>Build()</code>：构建得到 Python 层的 user op</p>
+</li>
+</ul>
+<p>通过调用 user op 中的 <code>InferAndTryRun</code> 可以完成推导，然后通过调用 <code>RemoteBlobList</code> 或者 <code>SoleOutputBlob</code> 方法，可以获取计算结果。</p>
+<ul>
+<li>
+<p><code>RemoteBlobList</code>：获取所有输出，适用于有多个输出的 op，所有的 op 放置在一个 list 中</p>
+</li>
+<li>
+<p><code>SoleOutputBlob</code>：获取唯一的输出，适用于只有一个输出的 op</p>
+</li>
+</ul>
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+        
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <nav class="md-footer__inner md-grid" aria-label="Footer">
+      
+        
+        <a href="python_kernel_op.html" class="md-footer__link md-footer__link--prev" aria-label="上一页: 使用 Python 扩展 Op" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                上一页
+              </span>
+              使用 Python 扩展 Op
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="implement_data_loader.html" class="md-footer__link md-footer__link--next" aria-label="下一页: 自定义 DataLoader" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                下一页
+              </span>
+              自定义 DataLoader
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+          <div class="md-footer-copyright__highlight">
+            Copyright &copy; 2017 - 2021 OneFlow
+          </div>
+        
+        Made with
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs
+        </a>
+        
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs"], "translations": {"clipboard.copy": "\u590d\u5236", "clipboard.copied": "\u5df2\u590d\u5236", "search.config.lang": "ja", "search.config.pipeline": "trimmer, stemmer", "search.config.separator": "[\\uff0c\\u3002]+", "search.placeholder": "\u641c\u7d22", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.477d984a.min.js", "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.ddd52ceb.min.js"></script>
+      
+    
+  </body>
+</html>
