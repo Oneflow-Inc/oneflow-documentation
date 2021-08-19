@@ -27,7 +27,7 @@ l = loss(z,y)
 
 它对应的计算图如下：
 
-![todo](https://todo)
+![todo](./imgs/compute_graph.png)
 
 计算图中，像 `x`、`w`、`b`、`y` 这种只有输出，没有输入的节点称为 **叶子节点**；向 `loss` 这种只有输入没有输出的节点，称为 **根**。
 
@@ -167,7 +167,7 @@ print(z_det.requires_grad)
 False
 ```
 
-## 输出不是标量时如何求导
+### 输出不是标量时如何求梯度
 通常，调用 `backward()` 方法的 Tensor 是神经网络的 loss，是一个标量。
 
 但是，如果调用是张量，直接 `backward()` 时会报错。
@@ -198,7 +198,11 @@ print(x.grad)
 tensor([[3., 3.]], dtype=oneflow.float32)
 ```
 
-错误原因及解决方法的分析如下： `x` 张量中有两个元素，记作 $x_1$ 与 $x_2$，`y` 张量中的两个元素记作 $y_1$ 与 $y_2$，那么两者的关系是：
+错误原因及解决方法的分析请参考下文 “扩展阅读” 部分。 
+
+### 扩展阅读：VJP
+
+`x` 张量中有两个元素，记作 $x_1$ 与 $x_2$，`y` 张量中的两个元素记作 $y_1$ 与 $y_2$，那么两者的关系是：
 
 $$
 \mathbf{x} = [x_1, x_2]
@@ -238,9 +242,7 @@ $$
 \frac{\partial y}{\partial x_2} = \frac{\partial 3x_1 + 3x_2 + 2}{\partial x_2} = 3
 $$
 
-### 扩展阅读：VJP
-
-还可以使用更通用方法，即 **Vector Jacobian Product(VJP)** 完成非标量的根的梯度计算。依然用上文的例子，在反向传播过程中，OneFlow 会根据计算图生成雅可比矩阵：
+除了使用 `sum` 之外，还可以使用更通用方法，即 **Vector Jacobian Product(VJP)** 完成非标量的根的梯度计算。依然用上文的例子，在反向传播过程中，OneFlow 会根据计算图生成雅可比矩阵：
 
 $$
 J = \begin{pmatrix}
