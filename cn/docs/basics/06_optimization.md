@@ -4,7 +4,7 @@
 
 在 [oneflow.optim](https://oneflow.readthedocs.io/en/master/optim.html) 中，有各类 `optimizer`，它们可以简化实现反向传播的代码。
 
-本文将先介绍反向传播的基本概念，再介绍如何使用 `oneflow.optimz` 类。
+本文将先介绍反向传播的基本概念，再介绍如何使用 `oneflow.optim` 类。
 
 ## numpy 手工实现反向传播
 
@@ -20,28 +20,32 @@ LR = 0.01
 def forward(x, w):
     return np.matmul(x, w)
 
+
 # 损失函数
 def loss(y_pred, y):
-    return (0.5*(y_pred-y)**2).sum()
+    return ((y_pred - y) ** 2).sum()
+
 
 # 计算梯度
 def gradient(x, y, y_pred):
-    return np.matmul(x.T, (y_pred-y))
+    return np.matmul(x.T, 2 * (y_pred - y))
+
 
 if __name__ == "__main__":
     # 训练目标: Y = 2*X1 + 3*X2
     x = np.array([[1, 2], [2, 3], [4, 6], [3, 1]], dtype=np.float32)
     y = np.array([[8], [13], [26], [9]], dtype=np.float32)
 
-    w = np.random.rand(2, 1)
+    w = np.array([[2], [1]], dtype=np.float32)
     # 训练循环
     for i in range(0, ITER_COUNT):
         y_pred = forward(x, w)
         l = loss(y_pred, y)
-        if (i+1) % 50 == 0: print(f"{i+1}/{500} loss:{l}")
+        if (i + 1) % 50 == 0:
+            print(f"{i+1}/{500} loss:{l}")
 
         grad = gradient(x, y, y_pred)
-        w -= LR*grad
+        w -= LR * grad
 
     print(f"w:{w}")
 ```
@@ -49,25 +53,25 @@ if __name__ == "__main__":
 输出：
 
 ```text
-50/500 loss:0.0012162785263114685
-100/500 loss:3.11160142374838e-05
-150/500 loss:7.960399867959713e-07
-200/500 loss:2.0365065260521826e-08
-250/500 loss:5.209988065278517e-10
-300/500 loss:1.3328695632996161e-11
-350/500 loss:3.4098758995283524e-13
-400/500 loss:8.723474589862032e-15
-450/500 loss:2.231723694177745e-16
-500/500 loss:5.7094113647001346e-18
-w:[[2.00000001]
- [2.99999999]]
+50/500 loss:0.0034512376878410578
+100/500 loss:1.965487399502308e-06
+150/500 loss:1.05524122773204e-09
+200/500 loss:3.865352482534945e-12
+250/500 loss:3.865352482534945e-12
+300/500 loss:3.865352482534945e-12
+350/500 loss:3.865352482534945e-12
+400/500 loss:3.865352482534945e-12
+450/500 loss:3.865352482534945e-12
+500/500 loss:3.865352482534945e-12
+w:[[2.000001 ]
+ [2.9999993]]
 ```
 
-注意我们选择的 loss 函数表达式为 $\sum \frac{1}{2}(y_{p} - y)^2$，因此 `loss` 对参数 `w`求梯度的代码为：
+注意我们选择的 loss 函数表达式为 $\sum (y_{p} - y)^2$，因此 `loss` 对参数 `w`求梯度的代码为：
 
 ```python
 def gradient(x, y, y_pred):
-    return np.matmul(x.T, (y_pred-y))
+    return np.matmul(x.T, 2 * (y_pred - y))
 ```
 
 更新参数采用的是 [SGD](https://en.wikipedia.org/wiki/Stochastic_gradient_descent)：
@@ -106,7 +110,7 @@ y = flow.tensor([[8], [13], [26], [9]], dtype=flow.float32)
 class MyLrModule(flow.nn.Module):
     def __init__(self, lr, iter_count):
         super().__init__()
-        self.w = flow.nn.Parameter(flow.randn(2, 1, dtype=flow.float32))
+        self.w = flow.nn.Parameter(flow.tensor([[2], [1]], dtype=flow.float32))
         self.lr = lr
         self.iter_count = iter_count
 
@@ -122,7 +126,7 @@ model = MyLrModule(0.01, 500)
 然后，选择好 loss 函数，OneFlow 自带了多种 loss 函数，我们在这里选择 [MSELoss](https://oneflow.readthedocs.io/en/master/nn.html?highlight=mseloss#oneflow.nn.MSELoss)：
 
 ```python
-loss = flow.nn.MSELoss(reduction='sum')
+loss = flow.nn.MSELoss(reduction="sum")
 ```
 ### 构造 optimizer
 上文总结的训练中一次迭代里，反向传播的逻辑，都被封装在 optimizer 中。我们在此选择 [SGD](https://oneflow.readthedocs.io/en/master/optim.html?highlight=sgd#oneflow.optim.SGD) 优化器，你可以根据需要选择其它的优化器，如 [Adam](https://oneflow.readthedocs.io/en/master/optim.html?highlight=adam#oneflow.optim.Adam)、[AdamW](https://oneflow.readthedocs.io/en/master/optim.html?highlight=adamw#oneflow.optim.AdamW) 等。
@@ -142,7 +146,7 @@ for i in range(0, model.iter_count):
     y_pred = model(x)
     l = loss(y_pred, y)
     if (i + 1) % 50 == 0:
-        print(f"{i+1}/{model.iter_count} loss:{l}")
+        print(f"{i+1}/{model.iter_count} loss:{l.numpy()}")
 
     optimizer.zero_grad()
     l.backward()
@@ -153,17 +157,17 @@ print(f"\nw: {model.w}")
 
 输出：
 ```text
-50/500 loss:0.0015626397216692567
-100/500 loss:8.896231520338915e-07
-150/500 loss:5.038600647822022e-10
-200/500 loss:9.094947017729282e-13
-250/500 loss:9.094947017729282e-13
-300/500 loss:9.094947017729282e-13
-350/500 loss:9.094947017729282e-13
-400/500 loss:9.094947017729282e-13
-450/500 loss:9.094947017729282e-13
-500/500 loss:9.094947017729282e-13
+50/500 loss:0.003451163647696376
+100/500 loss:1.965773662959691e-06
+150/500 loss:1.103217073250562e-09
+200/500 loss:3.865352482534945e-12
+250/500 loss:3.865352482534945e-12
+300/500 loss:3.865352482534945e-12
+350/500 loss:3.865352482534945e-12
+400/500 loss:3.865352482534945e-12
+450/500 loss:3.865352482534945e-12
+500/500 loss:3.865352482534945e-12
 
-w: tensor([[2.0000],
-        [3.0000]], dtype=oneflow.float32, grad_fn=<accumulate_grad>)
+w: tensor([[2.],
+        [3.]], dtype=oneflow.float32, grad_fn=<accumulate_grad>)
 ```
