@@ -1355,13 +1355,13 @@
 <h3 id="_5">代码<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h3>
 <p>脚本 <a href="../code/basics_topics/mlp_mnist_origin.py">mlp_mnist_origin.py</a> 中构建了“骨干网络”，并将训练好的模型保存至 <code>./mlp_models_1</code>。</p>
 <p>运行：
-<div class="highlight"><pre><span></span><code>wget https://docs.oneflow.org/code/basics_topics/mlp_mnist_origin.py
+<div class="highlight"><pre><span></span><code>wget https://docs.oneflow.org/master/code/basics_topics/mlp_mnist_origin.py
 python3 mlp_mnist_origin.py
 </code></pre></div></p>
 <p>训练完成后，将会在当前工作路径下得到 <code>mlp_models_1</code> 目录。</p>
 <p>脚本 <a href="../code/basics_topics/mlp_mnist_finetune.py">mlp_mnist_finetune.py</a> 中的网络在原有基础上进行“微调”（为骨干网络增加一层<code>dense3</code>）后，加载 <code>./mlp_models_1</code>，并继续训练。</p>
 <p>运行：
-<div class="highlight"><pre><span></span><code>wget https://docs.oneflow.org/code/basics_topics/mlp_mnist_finetune.py
+<div class="highlight"><pre><span></span><code>wget https://docs.oneflow.org/master/code/basics_topics/mlp_mnist_finetune.py
 python3 mlp_mnist_finetune.py
 </code></pre></div></p>
 <p>微调后的模型，保存在 <code>./mlp_ext_models_1</code> 中。</p>

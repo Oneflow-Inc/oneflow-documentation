@@ -976,8 +976,8 @@
 <h3 id="single-machine-program">Single Machine Program<a class="headerlink" href="#single-machine-program" title="Permanent link">&para;</a></h3>
 <p>Here is the framework of single machine training program. Because the code of each function will be presented in the distributed program below, it is not listed in detail here.
 <div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">oneflow</span> <span class="k">as</span> <span class="nn">flow</span>
-<span class="kn">import</span> <span class="nn">oneflow.typing</span> <span class="k">as</span> <span class="nn">tp</span>
+<span class="kn">from</span> <span class="nn">oneflow.compatible</span> <span class="kn">import</span> <span class="n">single_client</span> <span class="k">as</span> <span class="n">flow</span>
+<span class="kn">from</span> <span class="nn">oneflow.compatible.single_client</span> <span class="kn">import</span> <span class="n">typing</span> <span class="k">as</span> <span class="n">tp</span>
 
 <span class="n">BATCH_SIZE</span> <span class="o">=</span> <span class="mi">100</span>
 
@@ -1044,7 +1044,7 @@
 <p>Compared with <strong>single machine training program</strong>, the distributed training program only needs to call one more function named <code>config_distributed</code>.</p>
 <p>Distribution script: <a href="../code/basics_topics/distributed_train.py">distributed_train.py</a></p>
 <p>Running on both <code>192.168.1.12</code> and <code>192.168.1.11</code>:</p>
-<p><div class="highlight"><pre><span></span><code>wget https://docs.oneflow.org/code/basics_topics/distributed_train.py
+<p><div class="highlight"><pre><span></span><code>wget https://docs.oneflow.org/master/code/basics_topics/distributed_train.py
 python3 distributed_train.py
 </code></pre></div>
 The result of the program will be displayed on <code>192.168.1.12</code>.</p>

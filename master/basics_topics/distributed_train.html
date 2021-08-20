@@ -976,8 +976,8 @@
 <h3 id="_3">单机训练程序<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>
 <p>以下是单机训练程序的框架，因为其网络结构及业务逻辑与文末的分布式程序完全一样，因此函数实现未详细列出。</p>
 <div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">oneflow</span> <span class="k">as</span> <span class="nn">flow</span>
-<span class="kn">import</span> <span class="nn">oneflow.typing</span> <span class="k">as</span> <span class="nn">tp</span>
+<span class="kn">from</span> <span class="nn">oneflow.compatible</span> <span class="kn">import</span> <span class="n">single_client</span> <span class="k">as</span> <span class="n">flow</span>
+<span class="kn">from</span> <span class="nn">oneflow.compatible.single_client</span> <span class="kn">import</span> <span class="n">typing</span> <span class="k">as</span> <span class="n">tp</span>
 
 <span class="n">BATCH_SIZE</span> <span class="o">=</span> <span class="mi">100</span>
 
@@ -1045,7 +1045,7 @@
 <p>我们可以将分布式训练程序与上文的 <strong>单机训练程序</strong> 比较，会发现仅仅只是增加了 <code>config_distributed</code> 函数并调用，我们之前的单机训练脚本，就成为了分布式训练脚本。</p>
 <p>分布式脚本代码：<a href="../code/basics_topics/distributed_train.py">distributed_train.py</a></p>
 <p>在 <code>192.168.1.12</code> 及 <code>192.168.1.11</code> 上 均运行：
-<div class="highlight"><pre><span></span><code>wget https://docs.oneflow.org/code/basics_topics/distributed_train.py
+<div class="highlight"><pre><span></span><code>wget https://docs.oneflow.org/master/code/basics_topics/distributed_train.py
 python3 distributed_train.py
 </code></pre></div></p>
 <p><code>192.168.1.12</code> 机器上将显示程序结果。</p>
