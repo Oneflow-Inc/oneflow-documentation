@@ -108,11 +108,14 @@ nav:
     - 首页: index.md
 
     - 基础专题:
+      - 快速上手: basics/01_quickstart.md
       - 张量: basics/02_tensor.md
+      - Dataset 与 DataLoader: basics/03_dataset_dataloader.md
       - 搭建神经网络: basics/04_build_network.md
       - 自动求梯度: basics/05_autograd.md
       - 反向传播与 optimizer: basics/06_optimization.md
       - 模型的加载与保存: basics/07_model_load_save.md
+      - 静态图模块 nn.Graph: basics/08_nn_graph.md
 
     - Single Client:
       - 安装: single_client/quick_start/install.md

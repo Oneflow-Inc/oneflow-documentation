@@ -72,7 +72,7 @@ Predicted class: tensor([1], dtype=oneflow.int32)
 
 以上从数据输入、到网络计算，最终推理输出的流程，如下图所示：
 
-![todo](imagetodo)
+![todo](./imgs/neural-network-layers.png)
 
 ## `flow.nn.functional`
 
