@@ -9,15 +9,25 @@
 
 ## 分布式训练中的计算与通信
 
+简单的机器堆叠并不一定会带来算力的增长。因为神经网络的训练并不是单纯的“把原来一个设备做的事情，现在分给多个设备各自做”，它不仅需要多个设备进行计算，还涉及到设备之间的数据传输，只有协调好集群中的计算与通信，才能做高效的分布式训练。
+
+通过以下简单的例子可以了解为什么分布式训练中既关心计算又关心传输。
+
+假设神经网络中某一层是做了矩阵乘法，其中的输入 $x$ 的形状为 $4\times5$，模型参数 $w$ 的形状为 $5\times8$，那么，它们做矩阵乘法的结果形状为 $4\times8$。示意图如下：
+
+![matmul](./imgs/matmul_logical.png)
 
 
 
 ## 常见的并行策略
 
 ### 数据并行
+![Data Paralelism](./imgs/matmul_data_paralelism.png)
 
 ### 模型并行
+![Model Paralelism](./imgs/matmul_model_paralelism.png)
 
 ### 流水并行
+<img src="./imgs/realy.png" width="50%" alt="Relay"/>
 
 ### 混合并行
