@@ -124,17 +124,8 @@ nav:
       - 加载与准备 OFRecord 数据集: extended_topics/how_to_make_ofdataset.md
       - 将图片文件制作为 OFRecord 数据集: extended_topics/how_to_convert_image_to_ofrecord.md
       - 获取运行时数据: extended_topics/watch_watch_diff.md
-      - 使用 VS Code 调试 OneFlow: extended_topics/debug_by_vscode.md
-      - 使用 Python 扩展 Op: extended_topics/python_kernel_op.md
-      - 使用 C++ 扩展 Op: extended_topics/user_op.md
-      - 自定义 DataLoader: extended_topics/implement_data_loader.md
       - OneFlow 和 ONNX 交互: extended_topics/oneflow_convert_tools.md
 
-    - 高级应用实例:
-      - ResNet: adv_examples/resnet.md
-      - YoloV3: adv_examples/yolov3.md
-      - BERT: adv_examples/bert.md
-      - Wide & Deep: adv_examples/wide_deep.md
     - API:
       - API: https://oneflow.readthedocs.io/en/master/
 
