@@ -120,8 +120,8 @@ nav:
     - 分布式训练:
       - 常见的分布式并行策略: parallelism/01_introduction.md
       - 数据并行训练: parallelism/02_ddp.md
-      - SBP 与 SBP Signature: parallelism/03_sbp.md
-      - 一致性视角: parallelism/04_consistent_tensor.md 
+      - 集群的一致性视角: parallelism/03_sbp.md
+      - Consistent Tensor: parallelism/04_consistent_tensor.md 
 
     - Single Client:
       - 安装: single_client/quick_start/install.md
