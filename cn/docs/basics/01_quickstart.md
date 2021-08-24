@@ -1,6 +1,6 @@
 # 快速上手
 
-本文将以训练 MNIST 数据集为例，简单的如何使用 OneFlow 完成深度学习中的常见任务。通过文章中的链接可以跳转到各个子任务的专题介绍。
+本文将以训练 MNIST 数据集为例，简单地介绍如何使用 OneFlow 完成深度学习中的常见任务。通过文章中的链接可以跳转到各个子任务的专题介绍。
 
 通过以下命令直接体验 OneFlow 训练
 
@@ -85,7 +85,7 @@ y.shape: flow.Size([128])
 
 ## 搭建网络
 
-想要搭建网络，只需要实现一个继承自 `nn.Module` 的类就可以了。在它的 `__init__` 方法中定义神经网络的结构，在它的 `forward` 方法中指定数据计算的顺序（正向传播）。
+想要搭建网络，只需要实现一个继承自 `nn.Module` 的类就可以了。在它的 `__init__` 方法中定义神经网络的结构，在它的 `forward` 方法中指定数据计算的顺序（前向传播）。
 
 ```python
 class NeuralNetwork(nn.Module):
@@ -130,14 +130,14 @@ NeuralNetwork(
 
 ## 训练模型
 
-为了训练模型，我们需要 `loss` 函数和 `optimizer`，`loss` 函数用于评价神经网络预测的结果与 label 的差距；`optimizer` 调整网络的参数，使得网络预测的结果越来越接近 label（标准答案），其格式为（input tensor，学习率）。这一过程被称为反向传播。
+为了训练模型，我们需要损失函数 `loss_fn` 和优化器 `optimizer`，损失函数用于评价神经网络预测的结果与 label 的差距；`optimizer` 调整网络的参数，使得网络预测的结果越来越接近 label（标准答案），这里选用 [oneflow.optim.SGD](https://oneflow.readthedocs.io/en/master/optim.html?highlight=optim.SGD#oneflow.optim.SGD)。这一过程被称为反向传播。
 
 ```python
 loss_fn = nn.CrossEntropyLoss()
 optimizer = flow.optim.SGD(model.parameters(), lr=1e-3)
 ```
 
-定义一个 `train` 函数进行训练，完成正向传播、计算 loss、反向传播更新模型参数等工作。
+定义一个 `train` 函数进行训练，完成前向传播、计算 loss、反向传播更新模型参数等工作。
 
 ```python
 def train(iter, model, loss_fn, optimizer):
@@ -177,7 +177,7 @@ def test(iter, model, loss_fn):
     print(f"Test Error: \n Accuracy: {(100*correct):>0.1f}%, Avg loss: {test_loss:>8f}
 ```
 
-然后可以开始训练，定义5轮 epoch，先训练后校验精度：
+然后可以开始训练，定义5轮 epoch，每训练完一个 epoch 都使用 `test` 来评估一下网络的精度：
 
 ```python
 epochs = 5

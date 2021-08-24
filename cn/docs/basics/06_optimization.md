@@ -88,7 +88,7 @@ w -= LR*grad
 3. 求 loss 对参数的梯度
 4. 更新参数
 
-其中 1~2 为正向传播过程；3~4为反向传播过程。
+其中 1~2 为前向传播过程；3~4为反向传播过程。
 
 ## 超参 Hyperparameters
 
@@ -129,7 +129,7 @@ model = MyLrModule(0.01, 500)
 loss = flow.nn.MSELoss(reduction="sum")
 ```
 ### 构造 optimizer
-上文总结的训练中一次迭代里，反向传播的逻辑，都被封装在 optimizer 中。我们在此选择 [SGD](https://oneflow.readthedocs.io/en/master/optim.html?highlight=sgd#oneflow.optim.SGD) 优化器，你可以根据需要选择其它的优化器，如 [Adam](https://oneflow.readthedocs.io/en/master/optim.html?highlight=adam#oneflow.optim.Adam)、[AdamW](https://oneflow.readthedocs.io/en/master/optim.html?highlight=adamw#oneflow.optim.AdamW) 等。
+反向传播的逻辑，都被封装在 optimizer 中。我们在此选择 [SGD](https://oneflow.readthedocs.io/en/master/optim.html?highlight=sgd#oneflow.optim.SGD)，你可以根据需要选择其它的优化算法，如 [Adam](https://oneflow.readthedocs.io/en/master/optim.html?highlight=adam#oneflow.optim.Adam)、[AdamW](https://oneflow.readthedocs.io/en/master/optim.html?highlight=adamw#oneflow.optim.AdamW) 等。
 
 ```python
 optimizer = flow.optim.SGD(model.parameters(), model.lr)

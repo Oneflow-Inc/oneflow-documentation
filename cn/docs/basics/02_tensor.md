@@ -2,7 +2,7 @@
 
 神经网络中的数据，都存放在 Tensor 中，Tensor 类似多维数组或者数学上的矩阵。OneFlow 提供了很多用于操作 Tensor 的算子，Tensor 与算子一起构成神经网络。
 
-Tensor 有别于单纯的多维数组的地方是：除了可以运行在 CPU 上外，它还可以运行在 其它 AI 芯片（如GPU）上，因此可以提高运算速度。此外，OneFlow 还为张量提供了 [自动求导](./05_autograd.md) 的功能。
+Tensor 有别于普通的多维数组的地方是：除了可以运行在 CPU 上外，它还可以运行在 其它 AI 芯片（如 NVIDIA GPU）上，因此可以提高运算速度。此外，OneFlow 还为张量提供了 [自动求导](./05_autograd.md) 的功能。
 
 ```
 import oneflow as flow
@@ -134,7 +134,8 @@ oneflow.float32
 cpu:0
 ```
 
-可以通过 [reshape](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.reshape#oneflow.reshape) 方法改变 Tensor 的形状，用 [to]() 方法改变 Tensor 的数据类型和所处设备：
+可以通过 [reshape](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.reshape#oneflow.reshape) 方法改变 Tensor 的形状，用 [to](https://oneflow.readthedocs.io/en/master/tensor.html?highlight=Tensor.to#oneflow.Tensor.to) 方法改变 Tensor 的数据类型和所处设备：
+
 ```
 x10 = x9.reshape(2, 2)
 x11 = x10.to(dtype=flow.int32, device=flow.device("cuda"))

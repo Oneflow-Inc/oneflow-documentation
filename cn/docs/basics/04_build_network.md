@@ -10,7 +10,7 @@ import oneflow.nn as nn
 
 ## 定义 Module 类
 
-`oneflow.nn` 下提供了常见并基础的 Module 类，我们可以在他们的基础上，通过自定义 Module 类搭建神经网络。搭建过程包括：
+`oneflow.nn` 下提供了常见的 Module 类，我们可以直接使用它们，或者在它们的基础上，通过自定义 Module 类搭建神经网络。搭建过程包括：
 
 - 写一个继承自 `oneflow.nn.Module` 的类
 - 实现类的 `__init__` 方法，在其中构建神经网络的结构
@@ -54,7 +54,7 @@ NeuralNetwork(
 )
 ```
 
-接着，调用 `net` （注意：不推荐直接调用 `forward`）即可完成推理：
+接着，调用 `net` （注意：不推荐显式调用 `forward`）即可完成前向传播：
 
 ```python
 X = flow.ones(1, 28, 28)
@@ -132,7 +132,7 @@ print(f"Predicted class: {y_pred}")
 
 `nn.Sequential` 是一种特殊容器，只要是继承自 `nn.Module` 的类都可以放置放置到其中。
 
-它的特殊指出在于：当 Sequential 进行前向传播时，Sequential 会自动地将容器中包含的各层“串联”起来。具体来说，会按照各层加入 Sequential 的顺序，自动地将上一层的输出，作为下一层的输入传递，直到得到整个 Moudle 的最后一层的输出。
+它的特殊之处在于：当 Sequential 进行前向传播时，Sequential 会自动地将容器中包含的各层“串联”起来。具体来说，会按照各层加入 Sequential 的顺序，自动地将上一层的输出，作为下一层的输入传递，直到得到整个 Moudle 的最后一层的输出。
 
 以下是不使用 Sequential 构建网络的例子（不推荐）：
 
@@ -170,4 +170,4 @@ class MySeqModel(nn.Module):
         return self.seq(x)
 ```
 
-除了 Sequential 外，还有 `nn.Modulelist` 及 `nn.ModuleDict`，除了会自动注册参数到整个网络外，他们的其它行为类似 Python list、Python dict，只是常用简单的容器，不会自动进行前后层的正向传播，需要自己手工遍历完成各层的计算。 
+除了 Sequential 外，还有 `nn.Modulelist` 及 `nn.ModuleDict`，除了会自动注册参数到整个网络外，他们的其它行为类似 Python list、Python dict，只是常用简单的容器，不会自动进行前后层的前向传播，需要自己手工遍历完成各层的计算。 

@@ -1,4 +1,4 @@
-# 自动求梯度
+# 自动求导
 
 神经网络的训练过程离不开 **反向传播算法**，在反向传播过程中，需要获取 loss 函数对模型参数的梯度，用于更新参数。
 
@@ -135,7 +135,7 @@ tensor(20., dtype=oneflow.float32)
 tensor(20., dtype=oneflow.float32)
 ```
 
-### 停止对某个 Tensor 求梯度
+### 不记录某个 Tensor 的梯度
 
 默认情况下，OneFlow 会 tracing `requires_grad` 为 `True` 的 Tensor，自动求梯度。
 不过有些情况可能并不需要 OneFlow 这样做，比如只是想试一试前向推理。那么可以使用 [oneflow.no_grad](https://oneflow.readthedocs.io/en/master/oneflow.html#oneflow.no_grad) 或 [oneflow.Tensor.detach](https://oneflow.readthedocs.io/en/master/tensor.html#oneflow.Tensor.detach) 方法设置。
@@ -168,9 +168,9 @@ False
 ```
 
 ### 输出不是标量时如何求梯度
-通常，调用 `backward()` 方法的 Tensor 是神经网络的 loss，是一个标量。
+通常，调用 `backward()` 方法的是神经网络的 loss，是一个标量。
 
-但是，如果调用是张量，直接 `backward()` 时会报错。
+但是，如果不是标量，对 Tensor 调用 `backward()` 时会报错。
 
 ```python
 x = flow.randn(1, 2, requires_grad=True)
@@ -202,7 +202,7 @@ tensor([[3., 3.]], dtype=oneflow.float32)
 
 ## 扩展阅读
 
-`x` 张量中有两个元素，记作 $x_1$ 与 $x_2$，`y` 张量中的两个元素记作 $y_1$ 与 $y_2$，那么两者的关系是：
+`x` 张量中有两个元素，记作 $x_1$ 与 $x_2$，`y` 张量中的两个元素记作 $y_1$ 与 $y_2$，并且两者的关系是：
 
 $$
 \mathbf{x} = [x_1, x_2]
@@ -242,7 +242,7 @@ $$
 \frac{\partial y}{\partial x_2} = \frac{\partial 3x_1 + 3x_2 + 2}{\partial x_2} = 3
 $$
 
-除了使用 `sum` 之外，还可以使用更通用方法，即 **Vector Jacobian Product(VJP)** 完成非标量的根的梯度计算。依然用上文的例子，在反向传播过程中，OneFlow 会根据计算图生成雅可比矩阵：
+除了使用 `sum` 之外，还可以使用更通用方法，即 **Vector Jacobian Product(VJP)** 完成非标量的根节点的梯度计算。依然用上文的例子，在反向传播过程中，OneFlow 会根据计算图生成雅可比矩阵：
 
 $$
 J = \begin{pmatrix}
@@ -289,3 +289,6 @@ print(x.grad)
 ```text
 tensor([[3., 3.]], dtype=oneflow.float32)
 ```
+
+**外部链接**
+- [Automatic Differentiation](http://www.cs.toronto.edu/~rgrosse/courses/csc421_2019/slides/lec06.pdf)
