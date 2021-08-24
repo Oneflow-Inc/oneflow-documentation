@@ -135,7 +135,7 @@ loss = flow.nn.MSELoss(reduction="sum")
 optimizer = flow.optim.SGD(model.parameters(), model.lr)
 ```
 
-构造时 `optimizer`，将模型参数及 learning rate 传递给 `SGD`，在之后若调用 `optimizer.step()`，在其内部就会自动完成对模型参数求梯度、并按照 SGD 算法更新模型参数。
+构造 `optimizer`时，将模型参数及 learning rate 传递给 `SGD`。之后调用 `optimizer.step()`，在其内部就会自动完成对模型参数求梯度、并按照 SGD 算法更新模型参数。
 
 ### 训练
 
