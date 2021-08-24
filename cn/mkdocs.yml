@@ -17,7 +17,7 @@ use_directory_urls: false
 # Configuration
 theme:
   name: material
-  custom_dir: 'custom_theme/'
+  custom_dir: overrides
 
   # 404 page
   static_templates:
