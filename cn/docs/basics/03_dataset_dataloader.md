@@ -147,7 +147,7 @@ print(custom_dataset[1])
 
 利用 Dataset 可以一次获取到所有数据。但是在训练中，往往有其它的需求，如：一次读取 batch size 份数据；1轮 epoch 训练后，数据重新打乱（reshuffle）等。
 
-这时候，使用 `DataLoader` 即可。 `DataLoader` 可以将 `DataSet` 封装为迭代器，方便训练循环中获取数据。如以下例子：
+这时候，使用 `DataLoader` 即可。 `DataLoader` 可以将 `Dataset` 封装为迭代器，方便训练循环中获取数据。如以下例子：
 
 - `batch_size=64` ： 指定一次迭代返回的数据 batch size
 - `shuffle` ：是否要随机打乱数据的顺序
