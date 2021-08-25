@@ -4,62 +4,93 @@
 {% block tabs %}
 {{ super() }}
 <style>
-
-    .md-main {
-        flex-grow: 0
+@-webkit-keyframes mdx-heart {
+    0%,40%,80%,to {
+        transform: scale(1)
     }
 
-    .md-main__inner {
-        display: flex;
-        height: 100%;
+    20%,60% {
+        transform: scale(1.15)
+    }
+}
+
+@keyframes mdx-heart {
+    0%,40%,80%,to {
+        transform: scale(1)
     }
 
+    20%,60% {
+        transform: scale(1.15)
+    }
+}
+
+.mdx-hero {
+    color: var(--md-primary-bg-color);
+    margin: 0 .8rem
+}
+
+.mdx-hero h1 {
+    color: currentColor;
+    font-weight: 700;
+    margin-bottom: 1rem
+}
+
+@media screen and (max-width: 29.9375em) {
+    .mdx-hero h1 {
+        font-size:1.4rem
+    }
+}
+
+.mdx-hero__content {
+    padding-bottom: 6rem
+}
+
+@media screen and (min-width: 60em) {
+    .mdx-hero {
+        align-items:stretch;
+        display: flex
+    }
+
+    .mdx-hero__content {
+        margin-top: 3.5rem;
+        max-width: 19rem;
+        /* padding-bottom: 14vw */
+    }
+
+    .mdx-hero__image {
+        order: 1;
+        transform: translateX(4rem);
+        width: 40rem;
+        height: 20rem
+    }
+}
+
+@media screen and (min-width: 76.25em) {
+    .mdx-hero__image {
+        transform:translateX(8rem)
+    }
+}
+
+.mdx-hero .md-button {
+    color: var(--md-primary-bg-color);
+    margin-right: .5rem;
+    margin-top: .5rem
+}
+
+.mdx-hero .md-button:focus,.mdx-hero .md-button:hover {
+    background-color: var(--md-accent-fg-color);
+    border-color: var(--md-accent-fg-color);
+    color: var(--md-accent-bg-color)
+}
+
+.mdx-hero .md-button--primary {
+    background-color: var(--md-primary-bg-color);
+    border-color: var(--md-primary-bg-color);
+    color: #894da8
+}
     .tx-container {
         padding-top: .0rem;
         background: linear-gradient(to bottom, var(--md-primary-fg-color), #9941d4 100%,#4051b5 99%)
-    }
-
-    .tx-hero {
-        margin: 32px 2.8rem;
-        color: var(--md-primary-bg-color);
-        justify-content: center;
-    }
-
-    .tx-hero h1 {
-        margin-bottom: 1rem;
-        color: currentColor;
-        font-weight: 700
-    }
-
-    .tx-hero__content {
-        padding-bottom: 1rem;
-        margin: 0 auto;
-    }
-
-    .tx-hero__image{
-        width:40rem;
-        height:20rem;
-        order:1;
-        padding-right: 2.5rem;
-    }
-
-    .tx-hero .md-button {
-        margin-top: .5rem;
-        margin-right: .5rem;
-        color: var(--md-primary-bg-color)
-    }
-
-    .tx-hero .md-button--primary {
-        background-color: var(--md-primary-bg-color);
-        color: hsla(280deg, 37%, 48%, 1);
-        border-color: var(--md-primary-bg-color)
-    }
-
-    .tx-hero .md-button:focus,
-    .tx-hero .md-button:hover {
-        background-color: var(--md-accent-fg-color);
-        color: var(--md-default-bg-color);
-        border-color: var(--md-accent-fg-color)
     }
 
     .feature-item h2 svg {
@@ -104,33 +135,6 @@
         display: block;
     }
 
-    @media screen and (max-width:30em) {
-        .tx-hero h1 {
-            font-size: 1.4rem
-        }
-    }
-
-    @media screen and (min-width:60em) {
-        .md-sidebar--secondary {
-            display: none
-        }
-
-        .tx-hero {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .tx-hero__content {
-            max-width: 22rem;
-            margin-top: 3.5rem;
-            margin-bottom: 3.5rem;
-            margin-left: 1.0rem;
-            margin-right: 4.0rem;
-            align-items: center;
-        }
-    }
-
     @media screen and (min-width:76.25em) {
         .md-sidebar--primary {
             display: none
@@ -172,39 +176,6 @@
         margin: 20px 0;
     }
 
-    .text-center {
-        text-align: center;
-        padding-right: 15px;
-        padding-left: 15px;
-        margin-right: auto;
-        margin-left: auto;
-        margin-top: 15px;
-        font-family: 'Lato', sans-serif;
-        font-size: 23px;
-        font-weight: 300;
-        padding-bottom: 10px;
-    }
-
-    .logos {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-flow: row wrap;
-        margin: 0 auto;
-    }
-
-    .logos img {
-        flex: 1 1 auto;
-        padding: 25px;
-        max-height: 130px;
-        vertical-align: middle;
-    }
-
-    .hr-logos {
-        margin-top: 0;
-        margin-bottom: 30px;
-    }
-
     .md-footer-meta__inner {
         display: flex;
         flex-wrap: wrap;
@@ -220,22 +191,33 @@
 <!-- Main site Entry button descriptions -->
 <section class="tx-container">
     <div class="md-grid md-typeset">
-      <div class="tx-hero">
-        <div class="tx-hero__image">
-          <img src="assets/product-layer.png" draggable="false">
-        </div>
-        <div class="tx-hero__content">
-          <h1> OneFlow </h1>
-          <p>OneFlow 是开源的、采用全新架构设计，世界领先的工业级通用深度学习框架。</p>
-          <a href="{{ page.next_page.url | url }}" title="{{ page.next_page.title | striptags }}" class="md-button md-button--primary">
-            Get started
-          </a>
-          <a href="https://github.com/OneFlow-Inc/oneflow" title="{{ lang.t('source.link.title') }}" class="md-button">
-            Go to GitHub
-          </a>
+        <div class="mdx-hero">
+
+          <!-- Hero image -->
+          <div class="mdx-hero__image">
+            <img
+              src="assets/product-layer.png"
+              alt=""
+              width="1659"
+              height="1200"
+              draggable="false"
+            >
+          </div>
+
+          <!-- Hero content -->
+          <div class="mdx-hero__content">
+            <h1>OneFlow</h1>
+            <p>OneFlow 是开源的、采用全新架构设计，世界领先的工业级通用深度学习框架。</p>
+            <a href="{{ page.next_page.url | url }}" title="{{ page.next_page.title | striptags }}" class="md-button md-button--primary">
+                Get started
+              </a>
+              <a href="https://github.com/OneFlow-Inc/oneflow" title="{{ lang.t('source.link.title') }}" class="md-button">
+                Go to GitHub
+              </a>
+          </div>
         </div>
       </div>
-    </div>
+
 </section>
 
 <!-- Main site box descriptions -->
@@ -276,6 +258,7 @@
 
 
 <!-- Custom narrow footer -->
+<hr />
 <div class="md-footer-meta__inner md-grid">
     <div class="md-footer-social">
     <a class="md-footer-social__link" href="https://www.zhihu.com/org/oneflow-17" rel="noopener" target="_blank" title="知乎">
