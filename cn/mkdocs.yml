@@ -17,7 +17,7 @@ use_directory_urls: false
 # Configuration
 theme:
   name: material
-  custom_dir: 'custom_theme/'
+  custom_dir: 'overrides/'
 
   # 404 page
   static_templates:
@@ -116,12 +116,12 @@ nav:
       - 反向传播与 optimizer: basics/06_optimization.md
       - 模型的加载与保存: basics/07_model_load_save.md
       - 静态图模块 nn.Graph: basics/08_nn_graph.md
-    
+
     - 分布式训练:
       - 常见的分布式并行策略: parallelism/01_introduction.md
       - 数据并行训练: parallelism/02_ddp.md
       - SBP 与 SBP Signature: parallelism/03_sbp.md
-      - 一致性视角: parallelism/04_consistent_tensor.md 
+      - 一致性视角: parallelism/04_consistent_tensor.md
 
     - Single Client:
       - 安装: single_client/quick_start/install.md

@@ -208,7 +208,7 @@ train_job(images, labels)(cb_print_loss)
 
 运行：
 ```
-wget https://docs.oneflow.org/code/basics_topics/synchronize_single_job.py
+wget https://docs.oneflow.org/master/code/basics_topics/synchronize_single_job.py
 python3 synchronize_single_job.py
 ```
 
@@ -237,7 +237,7 @@ model saved
 ```
 wget https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/quick_start/lenet_models_1.zip
 unzip lenet_models_1.zip
-wget https://docs.oneflow.org/code/basics_topics/synchronize_batch_job.py
+wget https://docs.oneflow.org/master/code/basics_topics/synchronize_batch_job.py
 python3 synchronize_batch_job.py
 ```
 
@@ -254,7 +254,7 @@ accuracy: 99.3%
 
 运行：
 ```
-wget https://docs.oneflow.org/code/basics_topics/async_single_job.py
+wget https://docs.oneflow.org/master/code/basics_topics/async_single_job.py
 python3 async_single_job.py
 ```
 
@@ -282,7 +282,7 @@ File mnist.npz already exist, path: ./mnist.npz
 ```
 wget https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/basics_topics/mlp_models_1.zip
 unzip mlp_models_1.zip
-wget https://docs.oneflow.org/code/basics_topics/async_batch_job.py
+wget https://docs.oneflow.org/master/code/basics_topics/async_batch_job.py
 python3 async_batch_job.py
 ```
 

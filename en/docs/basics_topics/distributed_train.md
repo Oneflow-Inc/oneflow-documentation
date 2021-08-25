@@ -32,8 +32,8 @@ Here is an example to change a program run on a single machine to be run on a di
 Here is the framework of single machine training program. Because the code of each function will be presented in the distributed program below, it is not listed in detail here.
 ```python
 import numpy as np
-import oneflow as flow
-import oneflow.typing as tp
+from oneflow.compatible import single_client as flow
+from oneflow.compatible.single_client import typing as tp
 
 BATCH_SIZE = 100
 
@@ -119,7 +119,7 @@ Distribution script: [distributed_train.py](../code/basics_topics/distributed_tr
 Running on both `192.168.1.12` and `192.168.1.11`:
 
 ```
-wget https://docs.oneflow.org/code/basics_topics/distributed_train.py
+wget https://docs.oneflow.org/master/code/basics_topics/distributed_train.py
 python3 distributed_train.py
 ```
 The result of the program will be displayed on `192.168.1.12`.
