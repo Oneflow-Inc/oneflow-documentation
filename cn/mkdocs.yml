@@ -123,8 +123,8 @@ nav:
       - 集群的一致性视角: parallelism/03_sbp.md
       - Consistent Tensor: parallelism/04_consistent_tensor.md
 
-    - Single Client:
-      - 安装: single_client/quick_start/install.md
+    - 原接口兼容:
+      - 说明: single_client/quick_start/introduce.md
       - 3分钟快速上手: single_client/quick_start/quickstart_in_3_min.md
       - 识别 MNIST 手写体数字: single_client/quick_start/lenet_mnist.md
       - 数据输入: single_client/basics_topics/data_input.md

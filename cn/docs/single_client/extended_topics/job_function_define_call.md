@@ -89,9 +89,9 @@ def train_job(
 ### 数据占位符
 注意，以上的 `images`、`logits`、`labels`、`loss`等对象，在我们定义作业函数时，并没有实际的数据。它们的作用只是 **描述数据的形状和属性** ，起到 **占位符** 的作用。
 
-在作业函数的参数中的数据占位符，使用 `oneflow.typing` 下的`Numpy.Placeholder`、`ListNumpy.Placeholder`、`ListListNumpy.Placeholder`，注解作业函数的参数，对应作业函数调用时，传递 `numpy` 数据对象。
+在作业函数的参数中的数据占位符，使用 `flow.typing` 下的`Numpy.Placeholder`、`ListNumpy.Placeholder`、`ListListNumpy.Placeholder`，注解作业函数的参数，对应作业函数调用时，传递 `numpy` 数据对象。
 
-除了`oneflow.typing`下的几种类型之外，不出现在参数中并且由 OneFlow 的算子或层产生的变量，如以上代码中的`reshape`、`hidden`、`logits`、`loss`等，也都起到了数据占位符的作用。
+除了`flow.typing`下的几种类型之外，不出现在参数中并且由 OneFlow 的算子或层产生的变量，如以上代码中的`reshape`、`hidden`、`logits`、`loss`等，也都起到了数据占位符的作用。
 
 不管是以上提及的哪种变量，它们都直接或间接继承自 OneFlow 的 `BlobDef` 基类，OneFlow 中把这种对象类型统称为 **Blob**。
 

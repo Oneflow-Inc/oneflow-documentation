@@ -1,6 +1,6 @@
 # eager_mlp_mnist.py
-import oneflow as flow
-import oneflow.typing as tp
+from oneflow.compatible import single_client as flow
+from oneflow.compatible.single_client import typing as tp
 
 flow.enable_eager_execution(True)
 BATCH_SIZE = 100

@@ -1,6 +1,6 @@
 # hybrid_parallelism_lenet.py
-import oneflow as flow
-import oneflow.typing as tp
+from oneflow.compatible import single_client as flow
+from oneflow.compatible.single_client import typing as tp
 
 flow.config.enable_legacy_model_io(False)
 BATCH_SIZE = 100
