@@ -112,7 +112,7 @@ nav:
       - Tensor: basics/02_tensor.md
       - Dataset 与 DataLoader: basics/03_dataset_dataloader.md
       - 搭建神经网络: basics/04_build_network.md
-      - 自动求导: basics/05_autograd.md
+      - Autograd: basics/05_autograd.md
       - 反向传播与 optimizer: basics/06_optimization.md
       - 模型的加载与保存: basics/07_model_load_save.md
       - 静态图模块 nn.Graph: basics/08_nn_graph.md
@@ -120,8 +120,8 @@ nav:
     - 分布式训练:
       - 常见的分布式并行策略: parallelism/01_introduction.md
       - 数据并行训练: parallelism/02_ddp.md
-      - SBP 与 SBP Signature: parallelism/03_sbp.md
-      - 一致性视角: parallelism/04_consistent_tensor.md
+      - 集群的一致性视角: parallelism/03_sbp.md
+      - Consistent Tensor: parallelism/04_consistent_tensor.md
 
     - Single Client:
       - 安装: single_client/quick_start/install.md
