@@ -49,7 +49,7 @@ mnist_test = flow.utils.vision.datasets.MNIST(
 ```text
 Downloading https://oneflow-public.oss-cn-beijing.aliyuncs.com/datasets/mnist/MNIST/train-images-idx3-ubyte.gz
 Downloading https://oneflow-public.oss-cn-beijing.aliyuncs.com/datasets/mnist/MNIST/train-images-idx3-ubyte.gz to data/MNIST/raw/train-images-idx3-ubyte.gz
-9913344it [00:00, 36066177.85it/s]                                                          
+9913344it [00:00, 36066177.85it/s]
 Extracting data/MNIST/raw/train-images-idx3-ubyte.gz to data/MNIST/raw
 ...
 ```
@@ -153,7 +153,7 @@ def train(iter, model, loss_fn, optimizer):
         optimizer.step()
 
         current = batch * BATCH_SIZE
-        if batch % 100 == 0:  
+        if batch % 100 == 0:
             print(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")
 ```
 
@@ -197,8 +197,8 @@ loss: 2.298017
 loss: 2.297773
 loss: 2.294673
 loss: 2.295637
-Test Error: 
- Accuracy: 22.1%, Avg loss: 2.292105 
+Test Error:
+ Accuracy: 22.1%, Avg loss: 2.292105
 
 Epoch 2
 -------------------------------
@@ -219,3 +219,10 @@ flow.save(model.state_dict(), "./model")
 
 > 点击 [模型的加载与保存](./07_model_load_save.md) 获取更详细信息。
 
+## 交流 QQ 群
+
+安装或使用过程遇到问题，欢迎入群与众多 OneFlow 爱好者共同讨论交流：
+
+加 QQ 群 **331883** 或扫描二维码
+
+![OneFlow 技术交流](./imgs/qq_group.png)

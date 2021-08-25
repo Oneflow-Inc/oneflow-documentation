@@ -123,6 +123,9 @@ nav:
       - 集群的一致性视角: parallelism/03_sbp.md
       - Consistent Tensor: parallelism/04_consistent_tensor.md
 
+    - API:
+      - API: https://oneflow.readthedocs.io/en/master/
+
     - 原接口兼容:
       - 说明: single_client/quick_start/introduce.md
       - 3分钟快速上手: single_client/quick_start/quickstart_in_3_min.md
@@ -143,9 +146,3 @@ nav:
       - 将图片文件制作为 OFRecord 数据集: single_client/extended_topics/how_to_convert_image_to_ofrecord.md
       - 获取运行时数据: single_client/extended_topics/watch_watch_diff.md
       - OneFlow 和 ONNX 交互: single_client/extended_topics/oneflow_convert_tools.md
-
-    - API:
-      - API: https://oneflow.readthedocs.io/en/master/
-
-    - OneFlow 开源计划:
-      - OneFlow 开源计划: contribute/intro.md
