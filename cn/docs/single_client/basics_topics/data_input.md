@@ -18,8 +18,8 @@ OneFlow 的 DataLoader 内部采用了多线程和数据流水线等技术使得
 ```python
 # feed_numpy.py
 import numpy as np
-import oneflow as flow
-import oneflow.typing as tp
+from oneflow.compatible import single_client as flow
+from oneflow.compatible.single_client import typing as tp
 from typing import Tuple
 
 
@@ -65,7 +65,7 @@ python feed_numpy.py
 images, labels = test_job(images_in, labels_in)
 ```
 
-代码中的 `oneflow.typing.Numpy.Placeholder` 是 NumPy `ndarray` 对象的占位符，OneFlow 中还有多种占位符，可以表示更复杂的 NumPy 数据形式。具体可以参考[作业函数的定义与调用](../extended_topics/job_function_define_call.md)。
+代码中的 `flow.typing.Numpy.Placeholder` 是 NumPy `ndarray` 对象的占位符，OneFlow 中还有多种占位符，可以表示更复杂的 NumPy 数据形式。具体可以参考[作业函数的定义与调用](../extended_topics/job_function_define_call.md)。
 
 ## 使用 DataLoader 及相关算子
 在 [oneflow.data](https://oneflow.readthedocs.io/en/master/data.html) 模块下，有用于加载数据集的 DataLoader 算子以及相关的数据预处理算子。DataLoader 一般以 `data.xxx_reader` 的形式命名，如目前已有的 `data.ofrecord_reader` 和 `data.coco_reader`，分别支持 OneFlow 原生的 `OFRecord` 格式的文件和 COCO 数据集。

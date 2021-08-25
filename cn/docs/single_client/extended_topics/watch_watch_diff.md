@@ -25,7 +25,7 @@ def foo() -> T:
     #...
 ```
 
-以上的 `T` 即 `oneflow.typing` 中的数据类型，如 `oneflow.typing.Numpy`，具体可以参考 [此文](../basics_topics/async_get.md#oneflowtyping)。
+以上的 `T` 即 `flow.typing` 中的数据类型，如 `flow.typing.Numpy`，具体可以参考 [此文](../basics_topics/async_get.md#oneflowtyping)。
 
 以下我们将用实际例子展示 `watch` 与 `watch_diff` 的使用方法
 

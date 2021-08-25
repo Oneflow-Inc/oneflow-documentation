@@ -26,13 +26,13 @@
 
 * 定义作业函数时，通过注解返回值类型，告知 OneFlow 是同步还是异步模式
 
-* 作业函数的返回值类型在 `oneflow.typing` 模块中选择
+* 作业函数的返回值类型在 `flow.typing` 模块中选择
 
 * 调用作业函数时，同步/异步调用作业函数的形式略有不同
 
 ## 同步获取结果
 
-定义作业函数时，通过注解指定作业函数的返回结果为 `oneflow.typing.Numpy` 时，作业函数为一个同步作业函数。
+定义作业函数时，通过注解指定作业函数的返回结果为 `flow.typing.Numpy` 时，作业函数为一个同步作业函数。
 
 比如，如果我们定义了如下的作业函数：
 ```python
@@ -65,17 +65,17 @@ if i % 20 == 0:
 
 * 定义作业函数时，作业函数返回的对象(上文中的 `loss`) 只是数据占位符，用于构建计算图，并没有真实数据。
 
-* 通过指定作业函数的返回值类型为 `oneflow.typing.Numpy`，可以告知 OneFlow 调用此作业函数时，返回的真实数据类型为 `NumPy ndarray` 对象
+* 通过指定作业函数的返回值类型为 `flow.typing.Numpy`，可以告知 OneFlow 调用此作业函数时，返回的真实数据类型为 `NumPy ndarray` 对象
 
-* 通过调用作业函数 `train_job(images, labels)` 可以直接获取作业函数的运行计算结果，类型为 `oneflow.typing.Numpy` 对应的 `ndarray` 对象。
+* 通过调用作业函数 `train_job(images, labels)` 可以直接获取作业函数的运行计算结果，类型为 `flow.typing.Numpy` 对应的 `ndarray` 对象。
 
-## `oneflow.typing` 中的数据类型
-`oneflow.typing` 中包含了作业函数可以返回的数据类型，上文中出现的 `oneflow.typing.Numpy` 只是其中一种，现将其中常用的几种类型及对应意义罗列如下：
+## `flow.typing` 中的数据类型
+`flow.typing` 中包含了作业函数可以返回的数据类型，上文中出现的 `flow.typing.Numpy` 只是其中一种，现将其中常用的几种类型及对应意义罗列如下：
 
-- `oneflow.typing.Numpy`：对应了 `numpy.ndarray`，本文主要以 `oneflow.typing.Numpy` 举例
-- `oneflow.typing.ListNumpy`：对应了一个 `list` 容器，其中每个元素都是一个 `numpy.ndarray` 对象。与 OneFlow 进行分布式训练的视角有关，将在[分布式训练的 consistent 与 mirrored 视角](../extended_topics/consistent_mirrored.md)中看到其作用
-- `oneflow.typing.ListListNumpy`：对应了一个 `list` 容器，其中每个元素都是一个 `TensorList` 对象，OneFlow 的某些接口需要处理或者返回多个 `TensorList` 对象。具体可以参阅 [概念清单](./concept_explanation.md#3tensorbuffer-tensorlist) 及相关 [API 文档](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=ListListNumpy)
-- `oneflow.typing.Callback`：对应了一个回调函数，用于异步调用作业函数，下文会介绍
+- `flow.typing.Numpy`：对应了 `numpy.ndarray`，本文主要以 `flow.typing.Numpy` 举例
+- `flow.typing.ListNumpy`：对应了一个 `list` 容器，其中每个元素都是一个 `numpy.ndarray` 对象。与 OneFlow 进行分布式训练的视角有关，将在[分布式训练的 consistent 与 mirrored 视角](../extended_topics/consistent_mirrored.md)中看到其作用
+- `flow.typing.ListListNumpy`：对应了一个 `list` 容器，其中每个元素都是一个 `TensorList` 对象，OneFlow 的某些接口需要处理或者返回多个 `TensorList` 对象。具体可以参阅 [概念清单](./concept_explanation.md#3tensorbuffer-tensorlist) 及相关 [API 文档](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=ListListNumpy)
+- `flow.typing.Callback`：对应了一个回调函数，用于异步调用作业函数，下文会介绍
 
 此外，OneFlow 还允许作业函数以字典的形式传出数据，有关 `ListNumpy`、`ListNumpy`、`ListListNumpy` 以及如何用字典方式传出数据的示例，可以参考 [OneFlow 的测试案例](https://github.com/Oneflow-Inc/oneflow/blob/master/oneflow/python/test/ops/test_global_function_signature.py)。
 
@@ -208,7 +208,7 @@ train_job(images, labels)(cb_print_loss)
 
 运行：
 ```
-wget https://docs.oneflow.org/code/basics_topics/synchronize_single_job.py
+wget https://docs.oneflow.org/master/code/basics_topics/synchronize_single_job.py
 python3 synchronize_single_job.py
 ```
 
@@ -237,7 +237,7 @@ model saved
 ```
 wget https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/quick_start/lenet_models_1.zip
 unzip lenet_models_1.zip
-wget https://docs.oneflow.org/code/basics_topics/synchronize_batch_job.py
+wget https://docs.oneflow.org/master/code/basics_topics/synchronize_batch_job.py
 python3 synchronize_batch_job.py
 ```
 
@@ -254,7 +254,7 @@ accuracy: 99.3%
 
 运行：
 ```
-wget https://docs.oneflow.org/code/basics_topics/async_single_job.py
+wget https://docs.oneflow.org/master/code/basics_topics/async_single_job.py
 python3 async_single_job.py
 ```
 
@@ -282,7 +282,7 @@ File mnist.npz already exist, path: ./mnist.npz
 ```
 wget https://oneflow-public.oss-cn-beijing.aliyuncs.com/online_document/docs/basics_topics/mlp_models_1.zip
 unzip mlp_models_1.zip
-wget https://docs.oneflow.org/code/basics_topics/async_batch_job.py
+wget https://docs.oneflow.org/master/code/basics_topics/async_batch_job.py
 python3 async_batch_job.py
 ```
 

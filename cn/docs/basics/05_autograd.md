@@ -1,4 +1,4 @@
-# 自动求导
+# Autograd
 
 神经网络的训练过程离不开 **反向传播算法**，在反向传播过程中，需要获取 loss 函数对模型参数的梯度，用于更新参数。
 
@@ -198,7 +198,7 @@ print(x.grad)
 tensor([[3., 3.]], dtype=oneflow.float32)
 ```
 
-错误原因及解决方法的分析请参考下文 “扩展阅读” 部分。 
+错误原因及解决方法的分析请参考下文 “扩展阅读” 部分。
 
 ## 扩展阅读
 
@@ -246,12 +246,12 @@ $$
 
 $$
 J = \begin{pmatrix}
-\frac{\partial y_1}{\partial x_1} & \frac{\partial y_1}{\partial x_2}\\ 
-\frac{\partial y_2}{\partial x_1} & \frac{\partial y_2}{\partial x_2} 
+\frac{\partial y_1}{\partial x_1} & \frac{\partial y_1}{\partial x_2}\\
+\frac{\partial y_2}{\partial x_1} & \frac{\partial y_2}{\partial x_2}
 \end{pmatrix}\\
 = \begin{pmatrix}
-\frac{\partial y_1}{\partial x_1} & 0 \\ 
-0                                 & \frac{\partial y_2}{\partial x_2} 
+\frac{\partial y_1}{\partial x_1} & 0 \\
+0                                 & \frac{\partial y_2}{\partial x_2}
 \end{pmatrix}
 $$
 
@@ -260,12 +260,12 @@ $$
 $$
 \begin{bmatrix}
 v_1\\
-v_2 
+v_2
 \end{bmatrix}
 \times
 \begin{pmatrix}
-\frac{\partial y_1}{\partial x_1} & 0 \\ 
-0                                 & \frac{\partial y_2}{\partial x_2} 
+\frac{\partial y_1}{\partial x_1} & 0 \\
+0                                 & \frac{\partial y_2}{\partial x_2}
 \end{pmatrix}=
 \begin{bmatrix}
 v_1 \frac{\partial y_1}{\partial x_1}\\

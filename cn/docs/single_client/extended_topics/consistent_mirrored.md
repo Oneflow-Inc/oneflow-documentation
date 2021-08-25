@@ -64,7 +64,7 @@
 ### 两类占位符
 在[使用OneFlow搭建神经网络](../basics_topics/build_nn_with_op_and_layer.md)及[定义与调用作业函数](./job_function_define_call.md)中已经介绍了 **数据占位符** 与 **Blob** 的概念。
 
-实际上，针对并行，OneFlow的数据占位符还可以细分为	两类：分别通过接口 `oneflow.typing.Numpy.Placeholder` 和 `oneflow.typing.ListNumpy.Placeholder` 构造的占位符，分别对应 `Consistent`  与 `Mirrored`情况。
+实际上，针对并行，OneFlow的数据占位符还可以细分为	两类：分别通过接口 `flow.typing.Numpy.Placeholder` 和 `flow.typing.ListNumpy.Placeholder` 构造的占位符，分别对应 `Consistent`  与 `Mirrored`情况。
 
 我们将在下文中看到它们的具体应用。
 
@@ -84,7 +84,7 @@
 
 在 `mirrored_view` 下，只能采用 **数据并行** 的并行模式，在调用作业函数时，我们需要将数据按照训练节点的数目（显卡总数）进行平均切分，并将切分后的数据放入 `list` 中进行传递，`list` 中的每个元素，就是后分配给 **各个显卡** 的实际数据。
 
-训练函数的返回值类型，也变作了 `oneflow.typing.ListNumpy`，是一个 `list`， `list` 中的每个元素，对应了每张卡上训练结果。
+训练函数的返回值类型，也变作了 `flow.typing.ListNumpy`，是一个 `list`， `list` 中的每个元素，对应了每张卡上训练结果。
 
 以上提及的 `list` 中的所有元素 **拼接在一起** ，才是一个完整的 BATCH。而OneFlow会自动执行这个拼接的过程，无需用户进行多余的操作。
 
@@ -98,13 +98,13 @@
 ### 代码解读
 以上代码中：
 
-* 使用 `flow.config.gpu_device_num` 设置 GPU 数目为2 
+* 使用 `flow.config.gpu_device_num` 设置 GPU 数目为2
 
 ```python
 flow.config.gpu_device_num(2)
 ```
 
-* `oneflow.typing.ListNumpy.Placeholder` 定义的样本数目，是被切分后的数目，即代码中的 `BATCH_SIZE_PER_GPU` 与总样本数 `BATCH_SIZE` 的关系为：`BATCH_SIZE=BATCH_SIZE_PER_GPU×GPU_NUM`
+* `flow.typing.ListNumpy.Placeholder` 定义的样本数目，是被切分后的数目，即代码中的 `BATCH_SIZE_PER_GPU` 与总样本数 `BATCH_SIZE` 的关系为：`BATCH_SIZE=BATCH_SIZE_PER_GPU×GPU_NUM`
 ```python
 def train_job(
     images: tp.ListNumpy.Placeholder((BATCH_SIZE_PER_GPU, 1, 28, 28), dtype=flow.float),
@@ -135,7 +135,7 @@ def train_job(
 ## 在 OneFlow 中使用 consistent 视角
 我们已经了解了 mirrored 视角，知道在 `mirrored_view` 视角下，样本会被平均分配到多个完全一样的模型上进行分布式训练，各个训练节点上的结果，需要组装才能得到真正完整的 BATCH，对应了逻辑上的 op 与 Blob。
 
-除了 mirrored 视角外，OneFlow 还提供了 consistent 视角。consistent 视角是 OneFlow 的一大特色，与 mirrored 视角相比有很大的优势。 
+除了 mirrored 视角外，OneFlow 还提供了 consistent 视角。consistent 视角是 OneFlow 的一大特色，与 mirrored 视角相比有很大的优势。
 
 默认情况下 OneFlow 采取的是 consistent 视角，如果想显式声明，也可以通过代码设置：
 ```python
@@ -145,7 +145,7 @@ def train_job(
 
 之所以说 consistent 视角是 OneFlow 的一大特色，是因为在 OneFlow 的设计中，若采用 `consistent_view`，那么从用户的视角看，分布式系统中的多个设备将获得 **逻辑上的统一**，同样以本文开头的矩阵乘法为例，我们只需要关注[矩阵乘法](#mat_mul_op)本身数学计算上的意义；而在工程上到底如何配置、采用模型并行还是数据并行等细节问题，可以使用 OneFlow 的接口轻松完成。OneFlow 内部会高效可靠地解决 **数据并行中的数据切分** 、**模型并行中的模型切分** 、**串行逻辑** 等问题。
 
-在 OneFlow 的 consistent 视角下，可以自由选择模型并行、数据并行、流水并行或者混合并行。 
+在 OneFlow 的 consistent 视角下，可以自由选择模型并行、数据并行、流水并行或者混合并行。
 
 ### 代码
 以下脚本，我们采用 consistent 视角，使用2个 GPU 进行训练，consistent 策略下默认的并行方式仍然是 **数据并行**。关于如何在 consistent 策略下设置 **模型并行** 及 **混合并行** 不在本文讨论范围，我们在[OneFlow 的并行特色](model_mixed_parallel.md)中有专门的介绍与示例。
@@ -183,5 +183,3 @@ for i, (images, labels) in enumerate(zip(train_images, train_labels)):
 随着机器学习理论与实践发展，现在已经出现了很多单机无法训练的网络；也出现了越来越多仅采用数据并行无法很好完成训练的模型。
 
 采用 OneFlow 的 `consistent` 视角，通过自由选择及组合并行方式，可以很好地解决以上问题，我们在 [OneFlow 的并行特色](model_mixed_parallel.md)进行了专门的介绍。
-
-

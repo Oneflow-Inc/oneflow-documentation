@@ -17,8 +17,8 @@ We can directly use Numpy ndarray as data input during training or predicting wi
 ```python
 # feed_numpy.py
 import numpy as np
-import oneflow as flow
-import oneflow.typing as tp
+from oneflow.compatible import single_client as flow
+from oneflow.compatible.single_client import typing as tp
 from typing import Tuple
 
 

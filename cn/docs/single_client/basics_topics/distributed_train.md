@@ -33,8 +33,8 @@
 
 ```python
 import numpy as np
-import oneflow as flow
-import oneflow.typing as tp
+from oneflow.compatible import single_client as flow
+from oneflow.compatible.single_client import typing as tp
 
 BATCH_SIZE = 100
 
@@ -121,7 +121,7 @@ def config_distributed():
 
 在 `192.168.1.12` 及 `192.168.1.11` 上 均运行：
 ```
-wget https://docs.oneflow.org/code/basics_topics/distributed_train.py
+wget https://docs.oneflow.org/master/code/basics_topics/distributed_train.py
 python3 distributed_train.py
 ```
 

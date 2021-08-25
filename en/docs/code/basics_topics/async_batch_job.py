@@ -1,7 +1,7 @@
 import numpy as np
-import oneflow as flow
+from oneflow.compatible import single_client as flow
 from typing import Tuple
-import oneflow.typing as tp
+from oneflow.compatible.single_client import typing as tp
 
 flow.config.enable_legacy_model_io(False)
 BATCH_SIZE = 100
