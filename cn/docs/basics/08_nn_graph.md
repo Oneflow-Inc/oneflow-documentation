@@ -45,7 +45,7 @@ l = loss(z,y)
 
 因为动态图是一边执行一边构图，所以很灵活，可以随时修改图的结构，运行一行代码就能得到一行的结果，易于调试。但是因为深度学习框架无法获取完整的图信息（随时可以改变、永远不能认为构图已经完成），因此无法进行充分的全局优化，在性能上会相对欠缺。
 
-  
+
 
 **静态图（Static Graph）**
 
@@ -80,62 +80,63 @@ OneFlow 默认以 Eager 模式运行。
 
 > 注：该例子代码改编自 [PyTorch 官网教程](https://pytorch.org/tutorials/beginner/pytorch_with_examples.html#nn-module)。
 
-```python
-import math
-import numpy as np
-import oneflow as flow
+??? code
+    ```python
+    import math
+    import numpy as np
+    import oneflow as flow
 
-device = flow.device("cuda")
-dtype = flow.float32
+    device = flow.device("cuda")
+    dtype = flow.float32
 
-# Create Tensors to hold input and outputs.
-x = flow.tensor(np.linspace(-math.pi, math.pi, 2000), device=device, dtype=dtype)
-y = flow.tensor(np.sin(x), device=device, dtype=dtype)
+    # Create Tensors to hold input and outputs.
+    x = flow.tensor(np.linspace(-math.pi, math.pi, 2000), device=device, dtype=dtype)
+    y = flow.tensor(np.sin(x), device=device, dtype=dtype)
 
-# For this example, the output y is a linear function of (x, x^2, x^3), so
-# we can consider it as a linear layer neural network. Let's prepare the
-# tensor (x, x^2, x^3).
-xx = flow.cat(
-    [x.unsqueeze(-1).pow(1), x.unsqueeze(-1).pow(2), x.unsqueeze(-1).pow(3)], dim=1
-)
-# The Linear Module
-model = flow.nn.Sequential(flow.nn.Linear(3, 1), flow.nn.Flatten(0, 1))
-model.to(device)
+    # For this example, the output y is a linear function of (x, x^2, x^3), so
+    # we can consider it as a linear layer neural network. Let's prepare the
+    # tensor (x, x^2, x^3).
+    xx = flow.cat(
+        [x.unsqueeze(-1).pow(1), x.unsqueeze(-1).pow(2), x.unsqueeze(-1).pow(3)], dim=1
+    )
+    # The Linear Module
+    model = flow.nn.Sequential(flow.nn.Linear(3, 1), flow.nn.Flatten(0, 1))
+    model.to(device)
 
-# Loss Function
-loss_fn = flow.nn.MSELoss(reduction="sum")
-loss_fn.to(device)
+    # Loss Function
+    loss_fn = flow.nn.MSELoss(reduction="sum")
+    loss_fn.to(device)
 
-# Optimizer
-optimizer = flow.optim.SGD(model.parameters(), lr=1e-6)
+    # Optimizer
+    optimizer = flow.optim.SGD(model.parameters(), lr=1e-6)
 
-for t in range(2000):
-    # Forward pass: compute predicted y by passing x to the model.
-    y_pred = model(xx)
+    for t in range(2000):
+        # Forward pass: compute predicted y by passing x to the model.
+        y_pred = model(xx)
 
-    # Compute and print loss.
-    loss = loss_fn(y_pred, y)
-    if t % 100 == 99:
-        print(t, loss.numpy())
+        # Compute and print loss.
+        loss = loss_fn(y_pred, y)
+        if t % 100 == 99:
+            print(t, loss.numpy())
 
-    # Use the optimizer object to zero all of the gradients for the variables
-    # it will update (which are the learnable weights of the model).
-    optimizer.zero_grad()
+        # Use the optimizer object to zero all of the gradients for the variables
+        # it will update (which are the learnable weights of the model).
+        optimizer.zero_grad()
 
-    # Backward pass: compute gradient of the loss with respect to model
-    # parameters.
-    loss.backward()
+        # Backward pass: compute gradient of the loss with respect to model
+        # parameters.
+        loss.backward()
 
-    # Calling the step function on an Optimizer makes an update to its
-    # parameters.
-    optimizer.step()
+        # Calling the step function on an Optimizer makes an update to its
+        # parameters.
+        optimizer.step()
 
-linear_layer = model[0]
+    linear_layer = model[0]
 
-print(
-    f"Result: y = {linear_layer.bias.numpy()[0]} + {linear_layer.weight[:, 0].numpy()[0]}*x + {linear_layer.weight[:, 1].numpy()[0]}*x^2 + {linear_layer.weight[:, 2].numpy()[0]}*x^3"
-)
-```
+    print(
+        f"Result: y = {linear_layer.bias.numpy()[0]} + {linear_layer.weight[:, 0].numpy()[0]}*x + {linear_layer.weight[:, 1].numpy()[0]}*x^2 + {linear_layer.weight[:, 2].numpy()[0]}*x^3"
+    )
+    ```
 
 输出：
 
@@ -326,6 +327,3 @@ Note that nn.Graph.debug() only print debug info on rank 0.
 OneFlow Eager模式下的神经网络搭建：[搭建神经网络](./04_build_network.md)
 
 PyTorch版本的多项式拟合实例代码：[PyTorch: nn](https://pytorch.org/tutorials/beginner/pytorch_with_examples.html#id19)
-
-
-

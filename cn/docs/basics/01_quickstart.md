@@ -24,7 +24,7 @@ BATCH_SIZE=128
 
 OneFlow 可以使用 [Dataset 与 Dataloader](./03_dataset_dataloader.md) 加载数据。
 
-[oneflow.utils.vision.datasets](todo_dataset_rst.md) 模块中包含了不少真实的数据集(如 MNIST、CIFAR10、FashionMNIST)。
+[oneflow.utils.vision.datasets](https://oneflow.readthedocs.io/en/master/utils.html#module-oneflow.utils.vision.datasets) 模块中包含了不少真实的数据集(如 MNIST、CIFAR10、FashionMNIST)。
 
 我们通过 `oneflow.utils.vision.datasets.MNIST` 获取 MNIST 的训练集和测试集数据。
 
@@ -56,7 +56,7 @@ Extracting data/MNIST/raw/train-images-idx3-ubyte.gz to data/MNIST/raw
 
 数据集下载并解压到 `./data` 目录下。
 
-利用 [oneflow.utils.data.DataLoader](todo_rst_dataloader.md) 可以将 `dataset` 封装为迭代器，方便后续训练。
+利用 [oneflow.utils.data.DataLoader](https://oneflow.readthedocs.io/en/master/utils.html#oneflow.utils.data.DataLoader) 可以将 `dataset` 封装为迭代器，方便后续训练。
 
 ```pytohn
 train_iter = flow.utils.data.DataLoader(
@@ -80,8 +80,7 @@ for x, y in train_iter:
 x.shape: flow.Size([128, 1, 28, 28])
 y.shape: flow.Size([128])
 ```
-
-> 点击 [Dataset 与 Dataloader](./03_dataset_dataloader.md) 获取更详细信息。
+> [:link: Dataset 与 Dataloader](./03_dataset_dataloader.md){ .md-button .md-button--primary}
 
 ## 搭建网络
 
@@ -126,7 +125,7 @@ NeuralNetwork(
 )
 ```
 
-> 点击 [搭建神经网络](./04_build_network.md) 获取更详细信息。
+> [:link: 搭建神经网络](./04_build_network.md){ .md-button .md-button--primary}
 
 ## 训练模型
 
@@ -206,8 +205,8 @@ loss: 2.288640
 loss: 2.286367
 ...
 ```
-
-> 点击 [自动求梯度](./05_autograd.md) 与 [反向传播与 optimizer](./06_optimization.md) 获取更详细信息。
+> [:link: 自动求梯度](./05_autograd.md){ .md-button .md-button--primary}
+> [:link: 反向传播与 optimizer](./06_optimization.md){ .md-button .md-button--primary}
 
 ## 保存与加载模型
 
@@ -216,8 +215,7 @@ loss: 2.286367
 ```python
 flow.save(model.state_dict(), "./model")
 ```
-
-> 点击 [模型的加载与保存](./07_model_load_save.md) 获取更详细信息。
+> [:link: 模型的加载与保存](./07_model_load_save.md){ .md-button .md-button--primary}
 
 ## 交流 QQ 群
 
