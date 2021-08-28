@@ -85,7 +85,7 @@ y.shape: flow.Size([128])
 
 ## 搭建网络
 
-想要搭建网络，只需要实现一个继承自 `nn.Module` 的类就可以了。在它的 `__init__` 方法中定义神经网络的结构，在它的 `forward` 方法中指定数据计算的顺序（前向传播）。
+想要搭建网络，只需要实现一个继承自 `nn.Module` 的类就可以了。在它的 `__init__` 方法中定义神经网络的结构，在它的 `forward` 方法中指定前向传播的计算逻辑。
 
 ```python
 class NeuralNetwork(nn.Module):

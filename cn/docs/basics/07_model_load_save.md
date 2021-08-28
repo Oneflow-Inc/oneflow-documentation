@@ -18,7 +18,7 @@ m = flow.nn.Linear(2,3)
 print(m.state_dict())
 ```
 
-以上代码，将显式子构造好的 Linear Module 对象 m 中的参数打印出来：
+以上代码，将显式构造好的 Linear Module 对象 m 中的参数打印出来：
 
 ```text
 OrderedDict([('weight',

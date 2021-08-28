@@ -8,21 +8,13 @@
 
 === "Terminal 0"
     ```shell
-    export MASTER_ADDR=127.0.0.1
-    export MASTER_PORT=17789
-    export WORLD_SIZE=2
-    export RANK=0
-    export LOCAL_RANK=0
+    export MASTER_ADDR=127.0.0.1 MASTER_PORT=17789 WORLD_SIZE=2 RANK=0 LOCAL_RANK=0
     python3
     ```
 
 === "Terminal 1"
     ```shell
-    export MASTER_ADDR=127.0.0.1
-    export MASTER_PORT=17789
-    export WORLD_SIZE=2
-    export RANK=1
-    export LOCAL_RANK=1
+    export MASTER_ADDR=127.0.0.1 MASTER_PORT=17789 WORLD_SIZE=2 RANK=1 LOCAL_RANK=1
     python3
     ```
 

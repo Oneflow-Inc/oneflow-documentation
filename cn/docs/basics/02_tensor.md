@@ -118,7 +118,7 @@ flow.Size([2, 3])
 
 ## Tensor 的属性
 
-Tensor 的 `shape`、`dtype`、`device` 属性分别描述了 Tensor 的形状、数据类型和所在的设备类型。 
+Tensor 的 `shape`、`dtype`、`device` 属性分别描述了 Tensor 的形状、数据类型和所在的设备类型。
 
 ```python
 x9 = flow.randn(1,4)
@@ -127,7 +127,7 @@ print(x9.dtype)
 print(x9.device)
 ```
 
-输出结果分别展示了张量的形状、数据类型和所处的设备（第0号 CPU 上，之所以有编号，是因为 OneFlow 很方便自然地支持分布式，可参考 [Consistent Tensor](todo.md)）
+输出结果分别展示了张量的形状、数据类型和所处的设备（第0号 CPU 上，之所以有编号，是因为 OneFlow 很方便自然地支持分布式，可参考 [Consistent Tensor](../parallelism/04_consistent_tensor.md)）
 ```text
 flow.Size([1, 4])
 oneflow.float32
@@ -156,7 +156,7 @@ OneFlow 中的 Tensor，与 Numpy 数组一样易用。比如，支持与 Numpy 
 
 ```python
 tensor = flow.ones(4, 4)
-print('First row: ',tensor[0])  
+print('First row: ',tensor[0])
 print('First column: ', tensor[:, 0])
 print('Last column:', tensor[..., -1])
 tensor[:,1] = 0
