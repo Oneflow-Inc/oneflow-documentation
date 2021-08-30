@@ -29,7 +29,7 @@ SBP 是 OneFlow 发明的概念，描述了“超级计算设备”一致性视�
 
 ![SBP Example](./imgs/sbp-example.png)
 
-在创建 Consistent Tensor 时，可以指定 Tensor 的 SBP，实际的代码例子将在下一篇文章 [Consistent Tensor](./04_consistent_tensor.md) 中看到。
+在创建 Consistent Tensor 时，可以指定 Tensor 的 SBP，实际的代码例子将在下一篇文章 [Consistent Tensor](./03_consistent_tensor.md) 中看到。
 
 ## SPB Signature
 
@@ -119,4 +119,4 @@ OneFlow 中的算子，都会由算子作者根据算子的运算法则，预设
 ## 总结
 `placement` 与 `SBP`、`SBP Signature` 是 OneFlow 分布式一致性视角的重要保证，OneFlow 的一致性视角使得 OneFlow 的分布式训练与单机单卡一样简单。
 
-在下一篇 [Consistent Tensor](./04_consistent_tensor) 中，我们将看到一致性视角的编程例子。
+在下一篇 [Consistent Tensor](./03_consistent_tensor) 中，我们将看到一致性视角的编程例子。
