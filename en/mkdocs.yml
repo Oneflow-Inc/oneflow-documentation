@@ -105,6 +105,7 @@ nav:
       - API: https://oneflow.readthedocs.io/en/master/
 
     - Compatible:
+      - Introduce: single_client/index.md
       - Quick Start in 3 Minutes: single_client/quick_start/quickstart_in_3_min.md
       - Recognition of MNIST Handwritten Digits: single_client/quick_start/lenet_mnist.md
       - Data Input: single_client/basics_topics/data_input.md
