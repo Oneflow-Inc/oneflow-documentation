@@ -60,7 +60,7 @@
 
 ### 由 consistent tensor 得到 local tensor
 
-通过 [to_local](todo_rst_to_local.rst) 方法可以查看物理设备上的 local tensor：
+通过 [to_local](https://oneflow.readthedocs.io/en/master/tensor.html#oneflow.Tensor.to_local) 方法可以查看物理设备上的 local tensor：
 
 === "Terminal 0"
     ```python
@@ -80,7 +80,7 @@
 
 ### 由 local tensor 转换得到 consistent tensor
 
-可以先创建 local tensor，再利用 [Tensor.to_consistent](todo_rst_to_consistent.md) 方法，将 local tensor 转为 consistent tensor。
+可以先创建 local tensor，再利用 [Tensor.to_consistent](https://oneflow.readthedocs.io/en/master/tensor.html#oneflow.Tensor.to_consistent) 方法，将 local tensor 转为 consistent tensor。
 
 下面的例子中，在2台设备上分别创建了 `shape=(2,5)` 的2个 local tensor。
 注意经过 `to_consistent` 方法后，得到的 consistent tensor 的 `shape` 为 `(4,5)`。

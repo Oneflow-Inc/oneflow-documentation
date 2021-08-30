@@ -2,7 +2,7 @@
 
 在 [常见的分布式并行策略](./01_introduction.md) 一文中介绍了数据并行的特点。
 
-OneFlow 提供了 [oneflow.nn.parallel.DistributedDataParallel](ddp_rst_todo.md) 模块及 [launcher](launcher_rst_todo.md)，可以让用户几乎不用对单机单卡脚本做修改，就能地进行数据并行训练。
+OneFlow 提供了 [oneflow.nn.parallel.DistributedDataParallel](https://oneflow.readthedocs.io/en/master/nn.html#oneflow.nn.parallel.DistributedDataParallel) 模块及 [launcher](https://oneflow.readthedocs.io/en/master/distributed.html#oneflow-distributed)，可以让用户几乎不用对单机单卡脚本做修改，就能地进行数据并行训练。
 
 可以用快速体验 OneFlow 的数据并行：
 
@@ -85,7 +85,7 @@ print(f"\nw:{m.w}")
 可以发现，数据并行的训练代码，与单机单卡脚本的不同只有2个：
 
 - 使用 DistributedDataParallel 处理一下 module 对象（`m = ddp(m)`)
-- 使用 [get_rank](todo_rst_getrank.md) 获取当前设备编号，并针对设备分发数据
+- 使用 [get_rank](https://oneflow.readthedocs.io/en/master/oneflow.html#oneflow.env.get_rank) 获取当前设备编号，并针对设备分发数据
 
 然后使用 `launcher` 启动脚本，把剩下的一切都交给 OneFlow，让分布式训练，像单机单卡训练一样简单：
 

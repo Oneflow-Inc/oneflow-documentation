@@ -4,7 +4,7 @@
 
 这两种方式各有优缺点，OneFlow 对两种方式均提供了支持，默认情况下是 Eager 模式。如果你是按顺序阅读本基础专题的教程，那么，到目前为止所接触的所有代码都是 Eager 模式的代码。
 
-一般而言，动态图更易用，静态图性能更具优势。OneFlow 提供的 [nn.Graph](todo_rst_nngraph.md) 模块，让用户可以用类似 Eager 的编程习惯，构建静态图并训练模型。
+一般而言，动态图更易用，静态图性能更具优势。OneFlow 提供的 [nn.Graph](https://oneflow.readthedocs.io/en/master/graph.html) 模块，让用户可以用类似 Eager 的编程习惯，构建静态图并训练模型。
 
 本文包括：
 
@@ -164,7 +164,7 @@ plt.plot(x.numpy(),y_fit.numpy())
 
 ### nn.Graph
 
-OneFlow 提供了 [nn.Graph](todo_nn_graph_rst.md) 基类，它可以简单理解成“静态图版本的 [nn.Module](https://oneflow.readthedocs.io/en/master/module.html?highlight=oneflow.nn.Module#oneflow.nn.Module)”。
+OneFlow 提供了 [nn.Graph](https://oneflow.readthedocs.io/en/master/graph.html) 基类，它可以简单理解成“静态图版本的 [nn.Module](https://oneflow.readthedocs.io/en/master/module.html?highlight=oneflow.nn.Module#oneflow.nn.Module)”。
 
 用户使用 OneFlow， 静态图和动态图开发差异很小。想使用静态图，只需要先像 Eager 那样搭建模型。最后构建一个 `nn.Graph`的子类，将神经网络（`nn.Module` 的子类）、损失函数、优化器等相关内容注册到该类中，就可以在 Graph 模式下运行模型。
 
