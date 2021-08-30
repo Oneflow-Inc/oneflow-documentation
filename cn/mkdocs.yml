@@ -31,6 +31,7 @@ theme:
   language: zh
   features:
     - navigation.tabs
+    - navigation.top
     #- instant
   palette:
     scheme: default
@@ -56,9 +57,9 @@ extra:
       lang: zh
 
     # Switch to English
-    - name: English
-      link: https://docs.oneflow.org/en
-      lang: en
+    # - name: English
+    #   link: https://docs.oneflow.org/en
+    #   lang: en
   disqus: livere_indeed
 
 # Extensions

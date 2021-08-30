@@ -197,7 +197,7 @@
     flow.Size([4, 8])
     ```
 
-## 扩展阅读 - Boxing：自动转换 SBP
+## 扩展阅读：Boxing（自动转换 SBP）
 
 我们已经通过以上代码的例子，知道一个算子会根据输入 tensor 的 SBP 属性以及算子内置的 SBP Signature，自动设置输出 tensor 的 SBP。
 
