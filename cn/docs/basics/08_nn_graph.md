@@ -225,7 +225,7 @@ python3 ./fit_graph_mode.py
             super().__init__()
             self.model = model
             self.loss_fn = loss_fn
-            self.add_optimizer(optimizer)
+            self.add_optimizer("optimizer", optimizer)
 
         def build(self, x, y):
             y_pred = self.model(x)

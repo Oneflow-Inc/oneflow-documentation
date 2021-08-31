@@ -41,7 +41,7 @@ l = loss(z,y)
 在反向传播的过程中，需要得到 `l` 分别对 `w`、`b` 的梯度 $\frac{\partial l}{\partial w}$ 和 $\frac{\partial l}{\partial b}$。我们只需要对 `l` 调用 `backward()` 方法，然后 OneFlow 就会自动计算梯度，并且存放到 `w` 与 `b` 的 `grad` 成员中。
 
 ```python
-l.backwad()
+l.backward()
 print(w.grad)
 print(b.grad)
 ```
