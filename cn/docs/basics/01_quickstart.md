@@ -171,8 +171,7 @@ def test(iter, model, loss_fn):
     test_loss /= num_batches
     print("test_loss", test_loss, "num_batches ", num_batches)
     correct /= size
-    print(f"Test Error: \n Accuracy: {(100*correct):>0.1f}, Avg loss: {test_loss:>8f}".format(correct,test_loss))
-    
+    print(f"Test Error: \n Accuracy: {(100*correct):>0.1f}, Avg loss: {test_loss:>8f}")
 ```
 
 然后可以开始训练，定义5轮 epoch，每训练完一个 epoch 都使用 `test` 来评估一下网络的精度：
