@@ -225,7 +225,7 @@ python3 ./fit_graph_mode.py
             super().__init__()
             self.model = model
             self.loss_fn = loss_fn
-            self.add_optimizer("optimizer", optimizer)
+            self.add_optimizer(optimizer)
 
         def build(self, x, y):
             y_pred = self.model(x)
@@ -235,6 +235,7 @@ python3 ./fit_graph_mode.py
 
 
     linear_graph = LinearTrainGraph()
+    # linear_graph.debug()
 
     for t in range(2000):
         # Print loss.
@@ -275,12 +276,7 @@ class LinearTrainGraph(flow.nn.Graph):
 
 ### Graph 调试
 
-调用 Graph 对象的 `debug` 方法，OneFlow 在编译生成计算图的过程中会打印调试信息：
-
-```
-linear_graph = LinearTrainGraph()
-linear_graph.debug()
-```
+调用 Graph 对象的 `debug` 方法，OneFlow 在编译生成计算图的过程中会打印调试信息，比如，讲上面例子代码中`linear_graph.debug()`的注释去掉，将在控制台上输出如下信息：
 
 输出：
 
