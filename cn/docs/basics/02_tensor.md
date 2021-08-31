@@ -4,7 +4,7 @@
 
 Tensor 有别于普通的多维数组的地方是：除了可以运行在 CPU 上外，它还可以运行在 其它 AI 芯片（如 NVIDIA GPU）上，因此可以提高运算速度。此外，OneFlow 还为张量提供了 [自动求导](./05_autograd.md) 的功能。
 
-```
+```python
 import oneflow as flow
 import numpy as np
 ```

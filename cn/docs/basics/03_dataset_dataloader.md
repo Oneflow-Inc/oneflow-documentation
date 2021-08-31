@@ -173,7 +173,7 @@ plt.show()
 print(label)
 ```
 
-输出：
+输出：（随机输出一张图片）
 
 ![dataloader item](./imgs/dataloader_item.png)
 

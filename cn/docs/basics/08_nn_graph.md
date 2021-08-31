@@ -235,6 +235,7 @@ python3 ./fit_graph_mode.py
 
 
     linear_graph = LinearTrainGraph()
+    # linear_graph.debug()
 
     for t in range(2000):
         # Print loss.
@@ -275,14 +276,75 @@ class LinearTrainGraph(flow.nn.Graph):
 
 ### Graph 调试
 
-调用 Graph 对象的 `debug` 方法，OneFlow 在编译生成计算图的过程中会打印调试信息：
+可以调用 `print` 输出 Graph 对象的信息。
 
-```
-linear_graph = LinearTrainGraph()
-linear_graph.debug()
+```python
+print(linear_graph)
 ```
 
-输出：
+根据 Graph 对象是否调用，输出的效果略有不同：
+
+如果 Graph 对象调用前 `print`，输出的是网络结构的信息。
+
+以上 `linear_graph` 调用前 `print` 效果：
+
+```text
+(GRAPH:LinearTrainGraph_0:LinearTrainGraph): (
+  (MODULE:model:Sequential()): (
+    (MODULE:model.0:Linear(in_features=3, out_features=1, bias=True)): (
+      (PARAMETER:model.0.weight:tensor(..., device='cuda:0', size=(1, 3), dtype=oneflow.float32,
+             requires_grad=True)): ()
+      (PARAMETER:model.0.bias:tensor(..., device='cuda:0', size=(1,), dtype=oneflow.float32,
+             requires_grad=True)): ()
+    )
+    (MODULE:model.1:Flatten(start_dim=0, end_dim=1)): ()
+  )
+  (MODULE:loss_fn:MSELoss()): ()
+)
+```
+
+如果是 Graph 对象调用后 `print`，除了网络的结构信息外，还会打印输入输出张量的信息，又如下类似效果：
+
+```text
+(GRAPH:LinearTrainGraph_0:LinearTrainGraph): (
+  (INPUT:_LinearTrainGraph_0-input_0:tensor(..., device='cuda:0', size=(2000, 3), dtype=oneflow.float32))
+  (INPUT:_LinearTrainGraph_0-input_1:tensor(..., device='cuda:0', size=(2000,), dtype=oneflow.float32))
+  (MODULE:model:Sequential()): (
+    (INPUT:_model-input_0:tensor(..., device='cuda:0', is_lazy='True', size=(2000, 3),
+           dtype=oneflow.float32))
+    (MODULE:model.0:Linear(in_features=3, out_features=1, bias=True)): (
+      (INPUT:_model.0-input_0:tensor(..., device='cuda:0', is_lazy='True', size=(2000, 3),
+             dtype=oneflow.float32))
+      (PARAMETER:model.0.weight:tensor(..., device='cuda:0', size=(1, 3), dtype=oneflow.float32,
+             requires_grad=True)): ()
+      (PARAMETER:model.0.bias:tensor(..., device='cuda:0', size=(1,), dtype=oneflow.float32,
+             requires_grad=True)): ()
+      (OUTPUT:_model.0-output_0:tensor(..., device='cuda:0', is_lazy='True', size=(2000, 1),
+             dtype=oneflow.float32))
+    )
+    (MODULE:model.1:Flatten(start_dim=0, end_dim=1)): (
+      (INPUT:_model.1-input_0:tensor(..., device='cuda:0', is_lazy='True', size=(2000, 1),
+             dtype=oneflow.float32))
+      (OUTPUT:_model.1-output_0:tensor(..., device='cuda:0', is_lazy='True', size=(2000,),
+             dtype=oneflow.float32))
+    )
+    (OUTPUT:_model-output_0:tensor(..., device='cuda:0', is_lazy='True', size=(2000,),
+           dtype=oneflow.float32))
+  )
+  (MODULE:loss_fn:MSELoss()): (
+    (INPUT:_loss_fn-input_0:tensor(..., device='cuda:0', is_lazy='True', size=(2000,),
+           dtype=oneflow.float32))
+    (INPUT:_loss_fn-input_1:tensor(..., device='cuda:0', is_lazy='True', size=(2000,),
+           dtype=oneflow.float32))
+    (OUTPUT:_loss_fn-output_0:tensor(..., device='cuda:0', is_lazy='True', size=(), dtype=oneflow.float32))
+  )
+  (OUTPUT:_LinearTrainGraph_0-output_0:tensor(..., device='cuda:0', is_lazy='True', size=(), dtype=oneflow.float32))
+)
+```
+
+此外，调用 Graph 对象的 `debug` 方法，就开启了 Graph 的调试模式。
+
+OneFlow 在编译生成计算图的过程中会打印调试信息，比如，将上面例子代码中`linear_graph.debug()`的注释去掉，将在控制台上输出如下输出：
 
 ```text
 Note that nn.Graph.debug() only print debug info on rank 0.
@@ -318,11 +380,9 @@ Note that nn.Graph.debug() only print debug info on rank 0.
 
 输出中将显示包括计算图中各层的名称、输入输出张量的信息，包括形状、设备信息、数据类型等。
 
-同时，Graph 对象也支持直接打印，效果等同于调用 `debug()` 方法：
+使用 `debug` 的好处在于，调试信息是 **边构图、边输出** 的，这样如果构图过程中发生错误，容易发现构图时的问题。
 
-```python
-print(linear_graph)
-```
+除了以上介绍的方法外，训练过程中获取参数的梯度、获取 learning rate 等功能，也正在开发中，即将上线。
 
 ## 扩展阅读：动态图与静态图
 
