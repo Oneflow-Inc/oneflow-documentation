@@ -2,13 +2,6 @@
 
 本文将以训练 MNIST 数据集为例，简单地介绍如何使用 OneFlow 完成深度学习中的常见任务。通过文章中的链接可以跳转到各个子任务的专题介绍。
 
-通过以下命令直接体验 OneFlow 训练
-
-```shell
-wget https://docs.oneflow.org/master/code/basics/quickstart.py
-python ./quickstart.py
-```
-
 详细的介绍请阅读本文。让我们先从导入必要的库开始：
 
 ```python

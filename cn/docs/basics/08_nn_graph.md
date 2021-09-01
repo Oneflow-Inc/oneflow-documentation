@@ -178,14 +178,7 @@ plt.plot(x.numpy(),y_fit.numpy())
 
 ### 使用 Graph 做训练
 
-可以直接使用 Graph 做训练。在控制台运行以下命令，体验 Graph 做训练。
-
-```shell
-wget https://docs.oneflow.org/master/code/basics/fit_graph_mode.py
-python3 ./fit_graph_mode.py
-```
-
-点击以下 “Code” 查看详细代码。
+可以直接使用 Graph 做训练。点击以下 “Code” 查看详细代码。
 
 ??? code
     ```python
