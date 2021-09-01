@@ -6,6 +6,9 @@
 ## 创建 Consistent Tensor
 要在有2张 GPU 显卡的主机上交互式体验 consistent tensor，可以用以下方式在2个控制台分别启动 python。
 
+!!! Note
+    分别 **点击** 以下 Terminal 0 或 Terminal 1 标签，查看2个控制台的命令/代码
+
 === "Terminal 0"
     ```shell
     export MASTER_ADDR=127.0.0.1 MASTER_PORT=17789 WORLD_SIZE=2 RANK=0 LOCAL_RANK=0
@@ -17,6 +20,8 @@
     export MASTER_ADDR=127.0.0.1 MASTER_PORT=17789 WORLD_SIZE=2 RANK=1 LOCAL_RANK=1
     python3
     ```
+
+以上的环境变量的设置是做分布式的配置，详细解释及借助工具启动分布式，请参考文末的 [扩展阅读](#_5)
 
 ### 直接创建 consistent tensor
 
@@ -197,7 +202,31 @@
     flow.Size([4, 8])
     ```
 
-## 扩展阅读：Boxing（自动转换 SBP）
+## 扩展阅读
+
+### 多机训练时的环境变量
+
+本文的例子，通过设置环境变量配置分布式训练，仅仅是为了在交互式 Python 环境下方便查看实验效果。
+如果不是学习、试验目的，而是生产需求，可以直接通过 [oneflow.distributed.launch](./04_launch.md) 启动分布式训练，该模块内部根据命令行参数自动设置了必要的环境变量。
+
+- `MASTER_ADDR`：多机训练的第0号机器的 IP
+- `MASTER_PORT`：多机训练的第0号机器的监听端口，不与已经占用的端口冲突即可
+- `WORLD_SIZE`：整个集群中计算设备的数目，因为目前还不支持各个机器上显卡数目不一致，因此 `WORLD_SIZE` 的数目实际上是 $机器数目 \times 每台机器上的显卡数目$。如我们这个例子中，是单机2卡的情况，因此 `WORLD_SIZE=2`
+
+`RANK` 和 `LOCAL_RANK` 都是对计算设备的编号，不同的是 `RANK` 是“全局视角”的编号，`LOCAL_RANK` 某个特定机器上的“局部视角”的编号。当是单机训练（单机单卡或单机多卡）时，两者是没有区别的。以上的例子中，有两个显卡，分别是0号和1号。
+
+当是多机训练时，每台机器上的 `LOCAL_RANK` 的上限，就是每台机器上的计算设备的数目；`RANK` 的上限，就是所有机器上所有计算设备的总和，它们的编号均从0开始。
+
+以两台机器、每台机器上有两张显卡为例，可以整理出每张显卡的 `LOCAL_RANK` 与 `RANK` 对应情况：
+
+|                  | RANK | LOCAL_RANK |
+| ---------------- | ---------- | ---- |
+| 机器0的第0张显卡 | 0          | 0    |
+| 机器0的第1张显卡 | 1          | 1    |
+| 机器1的第0张显卡 | 2          | 0    |
+| 机器1的第1张显卡 | 3          | 1    |
+
+### Boxing（自动转换 SBP）
 
 我们已经通过以上代码的例子，知道一个算子会根据输入 tensor 的 SBP 属性以及算子内置的 SBP Signature，自动设置输出 tensor 的 SBP。
 
