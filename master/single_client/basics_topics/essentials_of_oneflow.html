@@ -1,0 +1,1425 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="OneFlow -- 极致性能的分布式机器学习框架">
+      
+      
+      
+      
+        <link rel="canonical" href="https://docs.oneflow.org/master/single_client/basics_topics/essentials_of_oneflow.html">
+      
+      <link rel="icon" href="../../assets/favicon.png">
+      <meta name="generator" content="mkdocs-1.2.2, mkdocs-material-7.1.11">
+    
+    
+      
+        <title>OneFlow 系统设计 - OneFlow</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.3754935a.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.f1a3b89f.min.css">
+        
+          
+          
+          <meta name="theme-color" content="#4051b5">
+        
+      
+    
+    
+    
+      
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>:root{--md-text-font-family:"Roboto";--md-code-font-family:"Roboto Mono"}</style>
+      
+    
+    
+    
+    
+      
+
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <script>function __prefix(e){return new URL("../..",location).pathname+"."+e}function __get(e,t=localStorage){return JSON.parse(t.getItem(__prefix(e)))}</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#oneflow" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../index.html" title="OneFlow" class="md-header__button md-logo" aria-label="OneFlow" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 89 89">
+  <path d="M3.136,17.387l0,42.932l42.932,21.467l-42.932,-64.399Z" />
+  <path d="M21.91,8l42.933,64.398l-18.775,9.388l-42.932,-64.399l18.774,-9.387Z" style="fill-opacity: 0.5" />
+  <path d="M67.535,17.387l-27.262,18.156l21.878,32.818l5.384,2.691l0,-53.665Z" />
+  <path d="M67.535,17.387l0,53.666l18.774,-9.388l0,-53.665l-18.774,9.387Z" style="fill-opacity: 0.25" />
+</svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            OneFlow
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              OneFlow 系统设计
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <div class="md-header__option">
+        <div class="md-select">
+          
+          <button class="md-header__button md-icon" aria-label="Select language">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.52 17.52 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04M18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12m-2.62 7 1.62-4.33L19.12 17h-3.24z"/></svg>
+          </button>
+          <div class="md-select__inner">
+            <ul class="md-select__list">
+              
+                <li class="md-select__item">
+                  <a href="https://docs.oneflow.org" hreflang="zh" class="md-select__link">
+                    中文
+                  </a>
+                </li>
+                
+            </ul>
+          </div>
+        </div>
+      </div>
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        
+<a href="https://github.com/OneFlow-Inc/oneflow" title="前往 GitHub 仓库" class="md-source"
+  data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    OneFlow
+  </div>
+</a>
+      </div>
+    
+  </nav>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-tabs__inner md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+
+
+  <li class="md-tabs__item">
+    <a href="../../index.html" class="md-tabs__link">
+      首页
+    </a>
+  </li>
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../basics/01_quickstart.html" class="md-tabs__link">
+        基础专题
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../parallelism/01_introduction.html" class="md-tabs__link">
+        分布式训练
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="https://oneflow.readthedocs.io/en/master/" class="md-tabs__link">
+        API
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+    
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../quick_start/introduce.html" class="md-tabs__link md-tabs__link--active">
+        原接口兼容
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../index.html" title="OneFlow" class="md-nav__button md-logo" aria-label="OneFlow" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 89 89">
+  <path d="M3.136,17.387l0,42.932l42.932,21.467l-42.932,-64.399Z" />
+  <path d="M21.91,8l42.933,64.398l-18.775,9.388l-42.932,-64.399l18.774,-9.387Z" style="fill-opacity: 0.5" />
+  <path d="M67.535,17.387l-27.262,18.156l21.878,32.818l5.384,2.691l0,-53.665Z" />
+  <path d="M67.535,17.387l0,53.666l18.774,-9.388l0,-53.665l-18.774,9.387Z" style="fill-opacity: 0.25" />
+</svg>
+
+    </a>
+    OneFlow
+  </label>
+  
+    <div class="md-nav__source">
+      
+<a href="https://github.com/OneFlow-Inc/oneflow" title="前往 GitHub 仓库" class="md-source"
+  data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    OneFlow
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../index.html" class="md-nav__link">
+        首页
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" >
+      
+      <label class="md-nav__link" for="__nav_2">
+        基础专题
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="基础专题" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          基础专题
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../basics/01_quickstart.html" class="md-nav__link">
+        快速上手
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../basics/02_tensor.html" class="md-nav__link">
+        Tensor
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../basics/03_dataset_dataloader.html" class="md-nav__link">
+        Dataset 与 DataLoader
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../basics/04_build_network.html" class="md-nav__link">
+        搭建神经网络
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../basics/05_autograd.html" class="md-nav__link">
+        Autograd
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../basics/06_optimization.html" class="md-nav__link">
+        反向传播与 optimizer
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../basics/07_model_load_save.html" class="md-nav__link">
+        模型的加载与保存
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../basics/08_nn_graph.html" class="md-nav__link">
+        静态图模块 nn.Graph
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" >
+      
+      <label class="md-nav__link" for="__nav_3">
+        分布式训练
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="分布式训练" data-md-level="1">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          分布式训练
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../parallelism/01_introduction.html" class="md-nav__link">
+        常见的分布式并行策略
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../parallelism/02_sbp.html" class="md-nav__link">
+        集群的一致性视角
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../parallelism/03_consistent_tensor.html" class="md-nav__link">
+        Consistent Tensor
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../parallelism/04_launch.html" class="md-nav__link">
+        用 launch 模块启动分布式训练
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../parallelism/05_ddp.html" class="md-nav__link">
+        数据并行训练
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" >
+      
+      <label class="md-nav__link" for="__nav_4">
+        API
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="API" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          API
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://oneflow.readthedocs.io/en/master/" class="md-nav__link">
+        API
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" checked>
+      
+      <label class="md-nav__link" for="__nav_5">
+        原接口兼容
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="原接口兼容" data-md-level="1">
+        <label class="md-nav__title" for="__nav_5">
+          <span class="md-nav__icon md-icon"></span>
+          原接口兼容
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quick_start/introduce.html" class="md-nav__link">
+        说明
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quick_start/quickstart_in_3_min.html" class="md-nav__link">
+        3分钟快速上手
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quick_start/lenet_mnist.html" class="md-nav__link">
+        识别 MNIST 手写体数字
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="data_input.html" class="md-nav__link">
+        数据输入
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="build_nn_with_op_and_layer.html" class="md-nav__link">
+        搭建神经网络
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="optimizer_in_function_config.html" class="md-nav__link">
+        优化算法及超参配置
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="async_get.html" class="md-nav__link">
+        获取作业函数的结果
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="model_load_save.html" class="md-nav__link">
+        模型的加载与保存
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="distributed_train.html" class="md-nav__link">
+        分布式训练
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="concept_explanation.html" class="md-nav__link">
+        OneFlow 概念清单
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          OneFlow 系统设计
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="essentials_of_oneflow.html" class="md-nav__link md-nav__link--active">
+        OneFlow 系统设计
+      </a>
+      
+        
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#oneflow_1" class="md-nav__link">
+    一、OneFlow 的设计目标
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#actor" class="md-nav__link">
+    二、Actor：一套简洁的机制解决几乎所有技术难题
+  </a>
+  
+    <nav class="md-nav" aria-label="二、Actor：一套简洁的机制解决几乎所有技术难题">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-actor" class="md-nav__link">
+    1. Actor 机制实现去中心化调度
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-actor" class="md-nav__link">
+    2. Actor 机制实现流水线
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    3. 数据搬运是一等公民
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4" class="md-nav__link">
+    4. 尽可能并行
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#oneflow_2" class="md-nav__link">
+    三、OneFlow 如何做到分布式最易用
+  </a>
+  
+    <nav class="md-nav" aria-label="三、OneFlow 如何做到分布式最易用">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#placement" class="md-nav__link">
+    Placement
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sbp" class="md-nav__link">
+    SBP
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    最易用的分布式并行框架
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    四、总结
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../extended_topics/job_function_define_call.html" class="md-nav__link">
+        作业函数的定义与调用
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../extended_topics/consistent_mirrored.html" class="md-nav__link">
+        Consistent 与 Mirrored 视角
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../extended_topics/model_mixed_parallel.html" class="md-nav__link">
+        OneFlow 的并行特色
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../extended_topics/ofrecord.html" class="md-nav__link">
+        OFRecord 数据格式
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../extended_topics/how_to_make_ofdataset.html" class="md-nav__link">
+        加载与准备 OFRecord 数据集
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../extended_topics/how_to_convert_image_to_ofrecord.html" class="md-nav__link">
+        将图片文件制作为 OFRecord 数据集
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../extended_topics/watch_watch_diff.html" class="md-nav__link">
+        获取运行时数据
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../extended_topics/oneflow_convert_tools.html" class="md-nav__link">
+        OneFlow 和 ONNX 交互
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#oneflow_1" class="md-nav__link">
+    一、OneFlow 的设计目标
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#actor" class="md-nav__link">
+    二、Actor：一套简洁的机制解决几乎所有技术难题
+  </a>
+  
+    <nav class="md-nav" aria-label="二、Actor：一套简洁的机制解决几乎所有技术难题">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-actor" class="md-nav__link">
+    1. Actor 机制实现去中心化调度
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-actor" class="md-nav__link">
+    2. Actor 机制实现流水线
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    3. 数据搬运是一等公民
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4" class="md-nav__link">
+    4. 尽可能并行
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#oneflow_2" class="md-nav__link">
+    三、OneFlow 如何做到分布式最易用
+  </a>
+  
+    <nav class="md-nav" aria-label="三、OneFlow 如何做到分布式最易用">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#placement" class="md-nav__link">
+    Placement
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sbp" class="md-nav__link">
+    SBP
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    最易用的分布式并行框架
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    四、总结
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                  <a href="https://github.com/OneFlow-Inc/oneflow-documentation/blob/master/cn/docs/single_client/basics_topics/essentials_of_oneflow.md" title="编辑此页" class="md-content__button md-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
+                  </a>
+                
+                
+                <h1 id="oneflow">OneFlow系统设计<a class="headerlink" href="#oneflow" title="Permanent link">&para;</a></h1>
+<p>本文的主要内容如下：</p>
+<ul>
+<li>
+<p>OneFlow 的设计目标</p>
+</li>
+<li>
+<p>OneFlow 的特色一：Actor 机制</p>
+</li>
+<li>
+<p>OneFlow 的特色二：SBP 机制</p>
+</li>
+<li>
+<p>总结</p>
+</li>
+</ul>
+<h2 id="oneflow_1">一、OneFlow 的设计目标<a class="headerlink" href="#oneflow_1" title="Permanent link">&para;</a></h2>
+<p>OneFlow 的设计目标是追求极致的性能，特别是分布式多机多卡环境下的横向扩展性，希望能让用户使用多机多卡就像使用单机单卡一样容易，且享受线性加速的运行效率。</p>
+<p>为什么 OneFlow 要聚焦于分布式场景的性能和易用性呢？随着深度学习的发展，模型越来越大，训练深度学习模型所需的算力会越来越高，同时模型增大的速度要大于 GPU 单卡显存扩容的速度；训练对算力的增长要求要大于 GPU 单卡算力增长的速度。单卡的计算能力和显存远远不能满足深度学习模型训练的需求，必须借助多机多卡并行加速。</p>
+<p>若深度学习框架可以让互联的多个 GPU 协同工作好，实现线性加速比，即使每块 GPU 性能“一般”，也可满足任意规模的算力需求，这就是所谓的横向扩展性，我们坚信这是算力增长的解决之道。</p>
+<p>但是，已有框架都是首先聚焦于单卡的用户体验，仅对适合数据并行的多机多卡场景处理的较好，即把单卡的计算图镜像复制到多机多卡上，各个卡和机器之间辅助于模型同步的模块。</p>
+<p>对于 BERT/GPT-3 等参数量巨大的模型，用户在使用已有深度学习框架时常常会遇到多机多卡不好用、效率低下或无法实现等问题。用户做分布式训练常常需要较高的学习成本，还需要关心多机多卡之间模型的同步问题。业界为解决分布式深度学习的痛点，不仅改进深度学习框架自身，还研发了多种第三方插件，譬如 NCCL，Horovod，BytePS，HugeCTR，Mesh-tensorflow，Gpipe 等等，但仍不能满足用户极致的性能需求。</p>
+<p>OneFlow 的核心设计理念是，让多机多卡分布式训练高效地协同运转，同时要让用户在多机多卡的训练体验上就像单卡一样简单容易。下面我们来介绍OneFlow 实现此目标最核心的两点想法，来说明 OneFlow 是如何看待分布式场景下的深度学习训练的。</p>
+<h2 id="actor">二、Actor：一套简洁的机制解决几乎所有技术难题<a class="headerlink" href="#actor" title="Permanent link">&para;</a></h2>
+<p>关键特性：</p>
+<ul>
+<li>
+<p>去中心化调度</p>
+</li>
+<li>
+<p>流水线</p>
+</li>
+<li>
+<p>数据搬运是一等公民</p>
+</li>
+<li>
+<p>传输被计算掩盖</p>
+</li>
+<li>
+<p>控制逻辑被执行逻辑掩盖</p>
+</li>
+</ul>
+<p>在 OneFlow 的设计中，分为 Compile 和 Runtime 两个时期，Compile 时期把用户定义的神经网络、分布式环境信息等编译成一个静态图的执行计划 Plan，Plan 由执行单元 Actor 的描述信息组成；Runtime 时期，各个机器根据 Plan 里的 Actor 描述信息真实地创建属于自己机器的众多 Actor 实例，然后启动 Actor 运行系统。整个深度学习训练期间，OneFlow 的执行基本单元就是 Actor，Actor 对应静态执行图上的节点，Actor 之间生产、消费的数据存储在 Register 中，Actor 之间通过消息传递来协作运行。</p>
+<h3 id="1-actor">1. Actor 机制实现去中心化调度<a class="headerlink" href="#1-actor" title="Permanent link">&para;</a></h3>
+<p>OneFlow 的运行时去中心化调度就是用 Actor 机制实现的。在整个由 Actor 构成的静态图中，没有一个中心的调度节点，每个 Actor 都只需要关心自己所需数据的生产者（上游 Actor ）和自己生产的数据的消费者（下游 Actor）即可。这样在超大规模的分布式训练场景下， <strong>完全的去中心化</strong> 调度可以避免中心调度的单点性能瓶颈问题。</p>
+<p>每个 Actor 内部都有一个 <strong>状态机</strong> ，Actor 收发的消息、执行的情况都会改变自己的状态。需要注意的是，Register 是存储块，存放了 Actor 生产出来的数据，而消息是包含了 Register 存储块的内存地址的轻量级数据，Actor 之间传递的是消息，而不是 Register，这样就实现了 zero-copy。</p>
+<p>当 Actor 收到了新消息，判断它执行所需要消费的 Register 已经就绪，且它将要生产的数据有空闲的 Register 可以写入时，这个 Actor 就执行（Act）一次，生产出一个 Register。</p>
+<p>生产完以后，该 Actor 就向需要消费这个 Register 的那些消费者 Actor 们发消息，表示 “你们可以来读取我生产的数据了” ；同时该 Actor 还需要把它消费完的那些 Register 还给这些 Regsiter 的生产者 Actor 们，表示 “我用完了你们的数据，你可以回收了” 。Actor 内部的状态机如图1 所示。</p>
+<div align="center">
+    <img src="imgs/actor_state_machine.png" align='center'/>
+</div>
+
+<p><center>
+图1 Actor 内部状态机
+</center></p>
+<p>在 Actor 启动之后，会根据与其他 Actor 之间收发消息来切换自己的两个状态：<strong>等待状态</strong> 和 <strong>执行状态</strong> 。</p>
+<p>一个 Actor 收到的消息一般分为几个类型：</p>
+<ul>
+<li>
+<p>上游的生产者 Actor 发来消息说：你可以来读我生产的数据了；</p>
+</li>
+<li>
+<p>下游的消费者 Actor 发来消息说：我用完你生产的数据了。</p>
+</li>
+</ul>
+<p>当这个数据被所有消费者都用完以后，就可以回收成为空闲块等待下一次被该 Actor 重新生产一份新的数据。</p>
+<p>一个 Actor 收到消息以后都会去尝试判断当前是否满足执行条件，执行条件一般有两个：</p>
+<ul>
+<li>
+<p>需要读取的数据是否都到齐了；</p>
+</li>
+<li>
+<p>是否有空闲块可以拿来被生产。当满足执行状态以后 Actor 就开始调用自己内部的 Kernel 真实的去读写数据。</p>
+</li>
+</ul>
+<p>执行完毕后 Actor 会向上下游发消息：</p>
+<ul>
+<li>
+<p>向下游的消费者 Actor 发消息说：我刚生产了一块数据，你可以来读了；</p>
+</li>
+<li>
+<p>向上游的生产者 Actor 发消息说：我刚用完了你之前发给我的数据了。</p>
+</li>
+</ul>
+<p>Actor 只需要关心上下游的消息就能判断自己能不能执行。每个 Actor 都通过自己内部的状态机和收发消息机制实现了 <strong>完全去中心化</strong> 的分布式协同工作。</p>
+<h3 id="2-actor">2. Actor 机制实现流水线<a class="headerlink" href="#2-actor" title="Permanent link">&para;</a></h3>
+<p>上面我们介绍了 Actor 的内部状态机，Actor 之间的消息传递和数据传递是依赖 Register 实现的。一个 Actor 是否能执行，只跟两个条件相关：</p>
+<ul>
+<li>
+<p>自己消费的那些 Register 是否可读；</p>
+</li>
+<li>
+<p>自己生产的那些 Register 是否有空闲块可写。</p>
+</li>
+</ul>
+<p>对于一个 Register，如果我们运行时给它分配多个空闲块，那么相邻的两个 Actor 就可以同时工作，工作时间重叠起来，这样就实现了各个 Actor 之间的流水线。理想状态下整个静态执行图的执行时间就是整个系统中是性能瓶颈的那个 Actor 运行的总时间，其余 Actor 的执行时间都被流水线掩盖起来了。</p>
+<p>我们举一个例子来解释 Actor 机制下的流水线是如何运转起来的。图2是一个由3个 Actor（a, b, c）组成的计算图的执行时序图。其中深绿色的 Regst方块表示正在被使用的 Register 块，白色的 Regst 方块表示同一个 Register 的备用空闲块。</p>
+<ul>
+<li>
+<p>1）在 Time0 时刻，Actor a 产出了一个 Regst_a_0，Actor b 和  Actor c 由于没有可读的 Register，所以处在等待状态。假设每个 Actor的执行时间都是单位时间。</p>
+</li>
+<li>
+<p>2）到 Time1 时刻，Actor a 给 Actor b 发消息说你可以来读我产出的 Regst_a_0 了，Actor b 收到了消息，并检查自己生产的 Register b 是否有空闲 Regst 块可用，发现有可用的 Regst_b_0，于是 Time1 时刻Actor b 执行，读取 Regst_a_0，写 Regst_b_0；同时 Actor a 还会去看自己是否有空闲块可写，发现有，Time1 时刻 Actor a 也在执行，写 Regst_a_1（这里需要说明的是，Regst_a_0 和 Regst_a_1 逻辑上是属于同一个 Register，只是空间上分成了不同的空闲块备份而已。在深度学习训练任务中，Regst_a_0 和 Regst_a_1 里存放的是同一个 operator 产出的不同batch的数据）。于是 Actor a 和 Actor b 就并行工作起来了。Actor c 由于没有数据可读，仍在等待。</p>
+</li>
+<li>
+<p>3）到 Time2 时刻，Actor b 生产出了 Regst_b_0，于是给下游的消费者Actor c 发消息说你可以来读我生产的 Regst_b_0，同时给上游的生产者Actor a 发消息说我用完了你的 Regst_a_0。此时 Actor a 已经把刚刚生产的 Regst_a_1 又发给了 Actor b，Actor b 检查自己仍有 Regst_b_1 空闲，于是 Actor b 开始读 Regst_a_1，写 Regst_b_1；Actor c 收到 Regst_b_0，发现自己有 Regst_c_0 空闲，于是 Actor c 开始执行，读 Regst_b_0，写 Regst_c_0；Actor a 收到了 Actor b 用完还回来的 Regst_a_0，检查 Regst_a_0 所有的消费者都用完了，于是将 Regst_a_0 回收，标记为空闲块，同时 Actor a 还可以继续执行，写 Regst_a_2。</p>
+</li>
+</ul>
+<div align="center">
+    <img src="imgs/actor_time_sequence.png" align='center'/>
+</div>
+
+<p><center>
+图2 Actor 生产消费关系和执行时序图
+</center></p>
+<p>在上面的例子中，到了 Time2 时刻，其实 Actor a、b、c 都在工作，在深度学习训练任务中，Time2 时刻 Regst_b_0、Regst_c_0 存放的是 Batch 0 的数据，Regst_a_1、Regst_b_1 存放的是 Batch 1 的数据，Regst_a_2 存放的是 Batch 2 的数据。通过一个 Register 有多个空闲块的设计，Actor 机制就实现了流水并行。</p>
+<p>在这里我们抛出一个更进一步深入的问题：整个数据流的执行像一个网络，数据在网络中的流动就完成了计算，如何避免生产者生产太快，消费者消费不及，以及如何避免生产者生产太慢，消费者感到饥饿的问题，这涉及到对计算、内存、传输带宽的规划，尽可能使系统的瓶颈之处最宽，需要解决流控（flow control）的问题以及资源分配问题（如每个 Actor 的 Register 到底分配几个内存块配额），这非常关键，也是 OneFlow 系统已解决的问题。</p>
+<h3 id="3">3. 数据搬运是一等公民<a class="headerlink" href="#3" title="Permanent link">&para;</a></h3>
+<p>在多机多卡的分布式环境中，各个机器和各个设备之间的数据传输往往是影响系统的横向扩展性的最重要因素，如果传输开销可以被计算开销掩盖，那么分布式深度学习训练就可以达到理想的线性加速比。相较于其他的框架，OneFlow 把数据搬运视为跟数据计算同等地位的操作，提出 <strong>数据搬运是一等公民</strong> 的思想。</p>
+<p>已有框架在编译期的关注焦点是数据计算，认为数据搬运是背后隐式发生的，因此在静态分析计算图时略过计算和搬运的重叠编排，OneFlow 在计算图中显式表达了数据搬运，而且在静态分析时同等对待数据搬运和数据计算，以最大化重叠搬运和计算。</p>
+<p>在最终的执行图中，数据搬运操作也是一个个 Actor。除了在设备上做数据计算用的 Actor 以外，还有计算机内存到 GPU 显存之间的数据拷贝 Actor，机器之间做网络通信的网络 Actor，负责数据的切分、合并、复制的Actor，负责读取磁盘数据的 Actor，负责加载保存模型的 Actor 等等。很多其他框架都把数据加载、多卡模型梯度的同步、网络、模型加载更新等分别做成一个单独的模块，而 OneFlow 的设计是所有的功能都在一张由Actor组成的静态执行图里实现了。OneFlow 这样的设计不仅简洁、优雅，还非常高效。</p>
+<div align="center">
+    <img src="imgs/data_transport.png" align='center'/>
+</div>
+
+<p><center>
+图 3 数据是如何从一个设备搬运到另一个设备上的
+</center></p>
+<p>图3表示了没有 GPU-Direct 的况下，在 OneFlow 的 Runtime 阶段，一个设备上的计算节点如果消费了另一个设备的计算节点，数据是如何搬运过去的。</p>
+<h3 id="4">4. 尽可能并行<a class="headerlink" href="#4" title="Permanent link">&para;</a></h3>
+<p>在 OneFlow 的设计中，所有的出发点都是希望可以尽可能并行，从而达到最优的分布式性能。比如考虑到分布式训练模型梯度同步时，显存到内存的传输带宽高于机器之间的网络传输带宽，OneFlow 会做两级的 scatter 和 gather 操作（本机的和各个机器之间的），用于增加 locality，提高整体性能。</p>
+<p>又比如在异步启动深度学习训练时，Python 端用户的控制逻辑跟 OneFlow 运行时的执行图是并行执行的，同时 OneFlow 有一套互斥临界区的设计保证执行的高效性和正确性。</p>
+<p>数据加载部分无论是从磁盘读数据还是从 Python 端喂数据，OneFlow 都能保证尽可能并行，使得计算设备不会因为要等数据而导致性能下降。</p>
+<p>已有框架如果想要尽可能重叠数据搬运和计算，一般借助多层回调（Callback）函数，当嵌套层次过多时，会遇到所谓的 <strong>Callback Hell</strong> 麻烦，正确性和可读性都可能下降。但在 OneFlow 中，以上的这些并行并发特性，都是在这一套简洁的 Actor 机制下实现的，解决了令人头秃的 Callback Hell 问题。</p>
+<p>此外，在多机的网络通信部分，OneFlow 底层的网络通信库原生支持 RDMA 的高性能通信，也有一套基于 epoll 的高效通信设计。而目前最流行的 Pytorch，多机还需要通过 RPC 来做数据同步。</p>
+<h2 id="oneflow_2">三、OneFlow 如何做到分布式最易用<a class="headerlink" href="#oneflow_2" title="Permanent link">&para;</a></h2>
+<p>OneFlow 是目前分布式场景中支持数据并行、模型并行、流水并行等最易用的深度学习框架。用户只需要像单卡一样去搭建网络模型，并告诉 OneFlow 有哪些机器哪些卡，OneFlow 就会用最高效的方式把这些机器和设备使用起来。</p>
+<p>这源于 OneFlow 的一套独特的设计：ConsistentView（一致性视角）。对于多机多卡，OneFlow 会 <strong>把它抽象成一个超级大的设备</strong> ，我们称之为逻辑上的设备，这个逻辑设备的显存是实际多个物理设备的显存之和，这个逻辑设备的算力也是实际多个物理设备的算力之和。</p>
+<p>用户只需要在这个逻辑上的超级设备里，定义深度学习模型是如何构建的，其余的便不需要用户来操作，由 OneFlow 来完成逻辑上的设备到物理上的设备的映射。</p>
+<p>这里先明确两个概念：“逻辑上的”和“物理上的”。“逻辑上的”表示 OneFlow 把分布式集群抽象成一个超级计算机之后的计算和数据，“物理上的”表示那些真实的部署到各个机器和设备上的计算和数据。</p>
+<p>深度学习网络是由 Op 构成的计算图，Op 之间生产消费 Tensor 数据。在多机多卡的环境下，一个逻辑上的 Op 会对应多个真实的物理上的 Op，每个物理上的 Op 实际执行的计算都是这个逻辑 Op 计算的一部分，一个逻辑上的 Tensor 也会对应多个物理上的 Tensor，每个物理上的 Tensor 都是逻辑 Tensor 的一部分。</p>
+<p>对于其他的框架定义的分布式训练，每张卡是一个“world”，多卡之间根据暴露出来的接口来同步模型梯度；而对于 OneFlow 而言，多机多卡也都是一个“world”，我们使用一套 Placement+SBP 的方式做全局的统筹管理。</p>
+<h3 id="placement">Placement<a class="headerlink" href="#placement" title="Permanent link">&para;</a></h3>
+<p>在 OneFlow 的计算图搭建过程中，每个计算 Op 都有一个属性叫做 Placement，表示了该逻辑上的 Op，是要部署到哪些机器哪些设备上的。对于常见的数据并行，就是所有的 Op 都部署到所有的设备上。但 OneFlow 也支持用户指定 Op 的 Placement，比如当网络过大单卡根本放不下的时候，在 OneFlow 可以让网络的前一部分在一张卡上，后一部分在另一张卡上，用一种“接力”的方式工作，实现流水并行。</p>
+<p>图4展示了一种可能的 Placement 例子。用户定义了一个由3个 Op 组成的网络：Op_0 -&gt; Op_1 -&gt; Op_2。</p>
+<p>其中 Op_0 和 Op_1 的 Placement 是 Device 0，Op_2 的 Placement 是 Device 1，这就是一个流水并行的例子，Oneflow 会自动在 Op_1 和 Op_2 之间插入需要的数据搬运的 Copy Op。</p>
+<div align="center">
+    <img src="imgs/pipeline_placement.png" align='center'/>
+</div>
+
+<p><center>
+图4 一个流水并行的Placement示例图
+</center></p>
+<h3 id="sbp">SBP<a class="headerlink" href="#sbp" title="Permanent link">&para;</a></h3>
+<p>SBP 是 OneFlow 独有的概念，他是三个单词的首字母组合：Split、Broadcast、PartialSum（以 PartialSum 为例，实际上还可以是PartialMin、 PartialMax 等 reduce 操作），全称叫 SbpParallel，表示一种逻辑上的 Tensor 跟物理上的多个 Tensor 的映射关系。</p>
+<p>其中 Split 表示物理上的 Tensor 是逻辑 Tensor 按照某一维度切分后得到的， Split 有个参数 axis，表示切分的维度，如果把多个物理上的 Tensor 按照 Split 的维度进行拼接，就能还原出逻辑 Tensor。</p>
+<p>Broadcast 表示物理上的 Tensor 是跟逻辑上的 Tensor 完全相同的。</p>
+<p>PartialSum 表示物理上的 Tensor 虽然跟逻辑上的 Tensor 形状一致，但是物理上的 Tensor 里的值是逻辑 Tensor 里对应位置的一部分，如果把物理上的多个 Tensor 按照对应位置相加，即可还原出逻辑上的 Tensor。</p>
+<p>图5展示了 SBP 的简单示例。</p>
+<div align="center">
+    <img src="imgs/sbp_parallel.png" align='center'/>
+</div>
+
+<p><center>
+图5 几种 SbpParallel 的简单情形
+</center></p>
+<p>SbpSignature 是一个 SbpParallel 的集合，在 OneFlow 的设计里是 Op 的属性，它描绘了一个逻辑上的 Op 被映射成各个设备上的多个物理上的Op以后，这些物理上的 Op 是如何看待他们输入输出Tensor在逻辑上和物理上的映射关系的。一个 Op 会有多个合法的 SbpSignature，一个最简单的合法 signature 就是输入输出都是 Broadcast，这表示了这个 Op 需要整个逻辑上的 Tensor 数据。</p>
+<p>当用户构建的逻辑上的计算图确定以后，OneFlow 在 Compiler 生成分布式的物理上的执行图时，会考虑每个 Op 的 Placement 和该 Op 允许的合法 SbpSignature 列表，在其中选择一个传输开销最小的 SbpSignature 作为本次训练的 SbpSignature，用于指导 Compiler 生成最高效的执行图。</p>
+<p>关于 Op 的合法 SbpSignature 的列表，我们举一个矩阵乘法（matmul）的Op的例子。</p>
+<p>定义: <code>Y = matmul(A, B)</code> , <code>A</code>, <code>B</code>, <code>Y</code> 都是 <code>Tensor</code>，表示 <code>Y = AB</code>。那么至少存在两种合法的 SbpSignature：</p>
+<ul>
+<li>
+<p>1) Y: <code>Split(0)</code>, A: <code>Split(0)</code> , B: <code>Broadcast</code></p>
+</li>
+<li>
+<p>2) Y: <code>Split(1)</code>, A: <code>Broadcast</code>, B: <code>Split(1)</code></p>
+</li>
+</ul>
+<p>两种合法的 signature 在两个设备上的示意图如图6所示。假设逻辑上的 MatMul 的输入输出 Tensor 的形状是：</p>
+<div class="highlight"><pre><span></span><code>A(64, 10) × B(10, 50) -&gt; Y(64, 50)
+</code></pre></div>
+<div align="center">
+    <img src="imgs/sbp_signature.png" align='center'/>
+</div>
+
+<p><center>
+图6 MatMul的两种合法SbpSignature
+</center></p>
+<p>且该 Op 分布在两个设备上。在第一种 SbpSignature 下，0号设备上的A是逻辑上 A 的前一半，1号设备上的 A 是逻辑 A 的后一半（按照第0维切分），而两个设备上的 B 跟逻辑上的 B 完全一致，两个设备输出的 Y 分别是逻辑上的 Y 的前一半和后一半。同样可以分析第二种 SbpSignature。</p>
+<p>值得一提的是，当 A 是数据，B 是模型的时候，第一种 SbpSignature 就是 <strong>数据并行</strong> ，第二种 SbpSignature 就是 <strong>模型并行</strong> 。如果两个相邻的 MatMul op，前一个使用第一种 SbpSignature，后一个使用第二种 SbpSignature，整个网络就实现了 <strong>混合并行</strong> 。</p>
+<p>图7是一个混合并行的示例，定义了 Y0 = MatMul_0(A0, B0) , Y1 = MatMul_1(Y0, B1) 这样一个由两个op组成的计算图，其中A0, Y0, Y1是数据Tensor，B0, B1 是模型Tensor。</p>
+<div align="center">
+    <img src="imgs/mixed_parallel.png" align='center'/>
+</div>
+
+<p><center>
+图7 混合并行示例
+</center></p>
+<p>在图7中 MatMul_0 产出的 Y0 被 MatMul_1 消费，但是这两个 op 对同一个 Tensor 的 SBP 看待方式是不一样的，MatMul_0 认为 Y0 是 Split(axis=0) 切分，但是 MatMul_1 需要一个 Broadcast 的 Y0 输入。这时候OneFlow会自动插入一个“万能”的 Boxing Op 做必要的数据裁剪、拼接、搬运和求和等操作，使得所有的Op都可以在分布式环境下高效的拿到自己想要的数据。</p>
+<p>另外在数据并行的时候，训练的前向模型 Tensor 的是 Broadcast，对应反向传播的梯度就是PartialSum，当 Optimizer 需要全部的梯度来更新模型时，就会触发 OneFlow 的 Boxing 机制进行高效的梯度同步工作。</p>
+<h3 id="_1">最易用的分布式并行框架<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h3>
+<p>OneFlow 的这套 Placement + SBP + Boxing 的机制，可以使得用户定义的计算图中的 Op、Tensor 以任意的方式分布在各个机器和各个设备上，无论是数据并行、模型并行还是流水并行，对于 OneFlow 而言，都只是一个特定 Placement 下的特定 SbpSignature 的组合而已，用户可以方便的配置，也可以交给 OneFlow 来做自动的处理。</p>
+<p>另外，早在微软推出 ZeRO-2 框架之前，OneFlow 就已经支持了类似的功能，多机多卡情况下，每个模型 Tensor 都只保存在其中一个设备上，降低梯度计算中的内存占用。</p>
+<h2 id="_2">四、总结<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<p>综上，在编译期，OneFlow 通过设计一套数学上严谨的形式系统来表示所有合法的并行模式，并支持编译器较方便地自动搜索最优并行方案。</p>
+<p>在运行期，OneFlow 通过 Actor 系统最优地、灵活地支持并行、并发执行。OneFlow 的内核具有简洁、高效和高扩展性的优点。</p>
+<p>基于此设计，OneFlow 使得分布式训练的性能达到极致，且分布式训练跟单卡一样简单易用。</p>
+                
+              
+              
+                
+
+
+<!-- 来必力City版安装代码 -->
+<div id="lv-container" data-id="city" data-uid="MTAyMC81Mzk5NS8zMDQ2Nw==">
+	<script type="text/javascript">
+   (function(d, s) {
+       var j, e = d.getElementsByTagName(s)[0];
+
+       if (typeof LivereTower === 'function') { return; }
+
+       j = d.createElement(s);
+       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+       j.async = true;
+
+       e.parentNode.insertBefore(j, e);
+   })(document, 'script');
+	</script>
+<noscript> 为正常使用来必力评论功能请激活JavaScript</noscript>
+</div>
+<!-- City版安装代码已完成 -->
+
+              
+            </article>
+          </div>
+        </div>
+        
+          <a href="#" class="md-top md-icon" data-md-component="top" data-md-state="hidden">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"/></svg>
+            Back to top
+          </a>
+        
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <nav class="md-footer__inner md-grid" aria-label="Footer">
+      
+        
+        <a href="concept_explanation.html" class="md-footer__link md-footer__link--prev" aria-label="上一页: OneFlow 概念清单" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                上一页
+              </span>
+              OneFlow 概念清单
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="../extended_topics/job_function_define_call.html" class="md-footer__link md-footer__link--next" aria-label="下一页: 作业函数的定义与调用" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                下一页
+              </span>
+              作业函数的定义与调用
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+          <div class="md-footer-copyright__highlight">
+            Copyright &copy; 2017 - 2021 OneFlow
+          </div>
+        
+        Made with
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs
+        </a>
+        
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.top"], "translations": {"clipboard.copy": "\u590d\u5236", "clipboard.copied": "\u5df2\u590d\u5236", "search.config.lang": "ja", "search.config.pipeline": "trimmer, stemmer", "search.config.separator": "[\\uff0c\\u3002]+", "search.placeholder": "\u641c\u7d22", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../assets/javascripts/workers/search.477d984a.min.js", "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.ddd52ceb.min.js"></script>
+      
+        <script src="../../javascripts/config.js"></script>
+      
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>
