@@ -47,7 +47,7 @@ python3 -m oneflow.distributed.launch --nproc_per_node=2 \
 - `--nnodes`：机器的数目(number of nodes)
 - `--node_rank`： 机器的编号，从0开始
 - `--nproc_per_node`：每台机器上要启动的进程数目(number of processes per node)，推荐与 GPU 数目一致
-- `--logdir`：子进程的相对存储路径
+- `--logdir`：子进程日志的相对存储路径
 
 ### launch 模块与并行策略的关系
 
