@@ -13,9 +13,9 @@ BATCH_SIZE=128
 ```
 
 
-## Working with data
+## Working with Data
 
-PyTorch has two primitives to work with data, see in [Dataset 与 Dataloader](./03_dataset_dataloader.md) .
+OneFlow has two primitives to work with data, which are Dataset and Dataloader.
 
 The [oneflow.utils.vision.datasets](https://oneflow.readthedocs.io/en/master/utils.html#module-oneflow.utils.vision.datasets) module contains a number of real data sets (such as MNIST, CIFAR 10, FashionMNIST) .
 
@@ -49,7 +49,7 @@ Extracting data/MNIST/raw/train-images-idx3-ubyte.gz to data/MNIST/raw
 
 This will download and extract the data set to.`./data` directory.
 
-A [oneflow.utils.data.DataLoader](https://oneflow.readthedocs.io/en/master/utils.html#oneflow.utils.data.DataLoader) wraps an iterable around the `dataset` for subsequent training.
+A [oneflow.utils.data.DataLoader](https://oneflow.readthedocs.io/en/master/utils.html#oneflow.utils.data.DataLoader) wraps an iterable around the `dataset`.
 
 
 ```python
@@ -72,11 +72,12 @@ Out:
 x.shape: flow.Size([128, 1, 28, 28])
 y.shape: flow.Size([128])
 ```
-> [ Dataset and Dataloader](./03_dataset_dataloader.md)
 
-## Build Network
+> see in [Dataset and Dataloader](./03_dataset_dataloader.md)
 
-To define a neural network in PyTorch, we create a class that inherits from nn.Module. We define the layers of the network in the `__init__` function and specify how data will pass through the network in the `forward` function. 
+## Building Network
+
+To define a neural network in OneFlow, we create a class that inherits from `nn.Module`. We define the layers of the network in the `__init__` function and specify how data will pass through the network in the `forward` function. 
 
 
 ```python
@@ -118,18 +119,18 @@ NeuralNetwork(
 )
 ```
 
-> [Build Network](./04_build_network.md){ .md-button .md-button--primary}
+> See in [Build Network](./04_build_network.md)
 
-## Traning
+## Training Model
 
-To train a model, we need a loss function (`loss_fn`) and an optimizer (`optimizer`).The loss function is used to evaluate the difference between the prediction of the neural network and the label. The optimizer adjusts the parameters of the neural network to make the prediction more and more close to the label (standard answer) , here, we use [oneflow.optim.SGD](https://oneflow.readthedocs.io/en/master/optim.html?highlight=optim.SGD#oneflow.optim.SGD) to be our optimizer. This process is called back propagation.
+To train a model, we need a loss function (`loss_fn`) and an optimizer (`optimizer`).The loss function is used to evaluate the difference between the prediction of the neural network and the real label. The optimizer adjusts the parameters of the neural network to make the prediction more and more close to the real label (standard answer). Here, we use [oneflow.optim.SGD](https://oneflow.readthedocs.io/en/master/optim.html?highlight=optim.SGD#oneflow.optim.SGD) to be our optimizer. This process is called back propagation.
 
 ```python
 loss_fn = nn.CrossEntropyLoss()
 optimizer = flow.optim.SGD(model.parameters(), lr=1e-3)
 ```
 
-A train function is defined for training, in a single training loop, the model make forward propagation, calculating loss, and back propagation of update model parameters.
+A train function is defined for training. In a single training loop, the model make forward propagation, calculating loss, and back propagation to update model parameters.
 
 
 ```python
@@ -171,7 +172,7 @@ def test(iter, model, loss_fn):
     print(f"Test Error: \n Accuracy: {(100*correct):>0.1f}, Avg loss: {test_loss:>8f}")
 ```
 
-Now can we begin the train process, defining five rounds of epochs, and using test to assess the accuracy of the network after each epoch is trained:
+Now can we use the train function to begin the train process for several epochs and then use test function to assess the accuracy of the network at the end of each epoch:
 
 
 ```python
@@ -201,21 +202,19 @@ loss: 2.288640
 loss: 2.286367
 ...
 ```
-> [Autograd](./05_autograd.md)
-> [Backpropagation and Optimizer](./06_optimization.md)
+> See in [Autograd](./05_autograd.md), [Backpropagation and Optimizer](./06_optimization.md)
 
-## Saving and Loading Models
+## Saving and Loading Model
 
 Use [oneflow.save](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.save#oneflow.save) to saves the model. The saved model can be then loaded by [oneflow.load](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.load#oneflow.load) to re-creating the model structure and make predictions on it.
 
 ```python
 flow.save(model.state_dict(), "./model")
 ```
-> [Model Load and Save](./07_model_load_save.md)
+> See in [Model Load and Save](./07_model_load_save.md)
 
 ## QQ Group
-
-Any problems encountered during the install or use process, welcome to join the QQ Group to discuss with many OneFlow enthusiasts:
+Any problems encountered during the install or usage, welcome to join the QQ Group to discuss with OneFlow developer and enthusiasts:
 
 Add QQ Group by 331883 or SCAN QR code below:
 
