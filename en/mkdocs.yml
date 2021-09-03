@@ -105,7 +105,7 @@ nav:
       - API: https://oneflow.readthedocs.io/en/master/
 
     - Basics:
-      - Quick Start: basics/01_quickstart.md
+      - Build Neural Network: basics/04_build_network.md
 
     - Compatible:
       - Introduce: single_client/index.md
