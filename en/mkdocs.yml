@@ -31,6 +31,7 @@ theme:
   language: en
   features:
     - navigation.tabs
+    - navigation.top
     #- instant
   palette:
     scheme: default
@@ -59,6 +60,7 @@ extra:
     - name: English
       link: https://docs.oneflow.org/en
       lang: en
+  disqus: livere_indeed
 
 # Extensions
 markdown_extensions:
@@ -98,17 +100,19 @@ markdown_extensions:
       custom_checkbox: true
   - pymdownx.tilde
 
+extra_javascript:
+  - javascripts/config.js
+  - https://polyfill.io/v3/polyfill.min.js?features=es6
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+
 nav:
     - Home: index.md
 
     - API:
       - API: https://oneflow.readthedocs.io/en/master/
 
-    - Basics:
-      - Quick Start: basics/01_quickstart.md
-
     - Compatible:
-      - Introduce: single_client/index.md
+      - Introduce: single_client/quick_start/introduce.md
       - Quick Start in 3 Minutes: single_client/quick_start/quickstart_in_3_min.md
       - Recognition of MNIST Handwritten Digits: single_client/quick_start/lenet_mnist.md
       - Data Input: single_client/basics_topics/data_input.md
