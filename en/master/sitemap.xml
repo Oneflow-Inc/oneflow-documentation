@@ -2,102 +2,102 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://docs.oneflow.org/master/index.html</loc>
-         <lastmod>2021-09-02</lastmod>
+         <lastmod>2021-09-06</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.oneflow.org/master/single_client/basics_topics/async_get.html</loc>
-         <lastmod>2021-09-02</lastmod>
+         <lastmod>2021-09-06</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.oneflow.org/master/single_client/basics_topics/build_nn_with_op_and_layer.html</loc>
-         <lastmod>2021-09-02</lastmod>
+         <lastmod>2021-09-06</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.oneflow.org/master/single_client/basics_topics/concept_explanation.html</loc>
-         <lastmod>2021-09-02</lastmod>
+         <lastmod>2021-09-06</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.oneflow.org/master/single_client/basics_topics/data_input.html</loc>
-         <lastmod>2021-09-02</lastmod>
+         <lastmod>2021-09-06</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.oneflow.org/master/single_client/basics_topics/distributed_train.html</loc>
-         <lastmod>2021-09-02</lastmod>
+         <lastmod>2021-09-06</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.oneflow.org/master/single_client/basics_topics/essentials_of_oneflow.html</loc>
-         <lastmod>2021-09-02</lastmod>
+         <lastmod>2021-09-06</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.oneflow.org/master/single_client/basics_topics/model_load_save.html</loc>
-         <lastmod>2021-09-02</lastmod>
+         <lastmod>2021-09-06</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.oneflow.org/master/single_client/basics_topics/optimizer_in_function_config.html</loc>
-         <lastmod>2021-09-02</lastmod>
+         <lastmod>2021-09-06</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.oneflow.org/master/single_client/extended_topics/consistent_mirrored.html</loc>
-         <lastmod>2021-09-02</lastmod>
+         <lastmod>2021-09-06</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.oneflow.org/master/single_client/extended_topics/how_to_convert_image_to_ofrecord.html</loc>
-         <lastmod>2021-09-02</lastmod>
+         <lastmod>2021-09-06</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.oneflow.org/master/single_client/extended_topics/how_to_make_ofdataset.html</loc>
-         <lastmod>2021-09-02</lastmod>
+         <lastmod>2021-09-06</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.oneflow.org/master/single_client/extended_topics/job_function_define_call.html</loc>
-         <lastmod>2021-09-02</lastmod>
+         <lastmod>2021-09-06</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.oneflow.org/master/single_client/extended_topics/model_mixed_parallel.html</loc>
-         <lastmod>2021-09-02</lastmod>
+         <lastmod>2021-09-06</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.oneflow.org/master/single_client/extended_topics/ofrecord.html</loc>
-         <lastmod>2021-09-02</lastmod>
+         <lastmod>2021-09-06</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.oneflow.org/master/single_client/extended_topics/oneflow_convert_tools.html</loc>
-         <lastmod>2021-09-02</lastmod>
+         <lastmod>2021-09-06</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.oneflow.org/master/single_client/extended_topics/watch_watch_diff.html</loc>
-         <lastmod>2021-09-02</lastmod>
+         <lastmod>2021-09-06</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.oneflow.org/master/single_client/quick_start/introduce.html</loc>
-         <lastmod>2021-09-02</lastmod>
+         <lastmod>2021-09-06</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.oneflow.org/master/single_client/quick_start/lenet_mnist.html</loc>
-         <lastmod>2021-09-02</lastmod>
+         <lastmod>2021-09-06</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.oneflow.org/master/single_client/quick_start/quickstart_in_3_min.html</loc>
-         <lastmod>2021-09-02</lastmod>
+         <lastmod>2021-09-06</lastmod>
          <changefreq>daily</changefreq>
     </url>
 </urlset>
