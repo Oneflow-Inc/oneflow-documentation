@@ -1,7 +1,4 @@
 ---
-hide:
-  - navigation
-  - toc
+title: OneFlow -- A Whole New Deep Learning Framework
+template: templates/home.html
 ---
-
-It's coming soon...
