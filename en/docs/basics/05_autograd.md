@@ -1,14 +1,14 @@
-# Autograd
+# AUTOGRAD
 
-神经网络的训练过程离不开 **反向传播算法**，在反向传播过程中，需要获取 loss 函数对模型参数的梯度，用于更新参数。
+The training process of a neural network is powered by **backpropagation algorithm**. In the backpropagation process, we update the parameters by obtaining the gradient of the loss function to the parameters.
 
-OneFlow 提供了自动求导机制，可自动计算神经网络中参数的梯度。
+OneFlow provides an automatic differentiation engine, which can calculate the gradient of the parameters in the neural network automatically.
 
-本文将先介绍计算图的基本概念，它有利于理解 OneFlow 自动求导的常见设置及限制，再介绍 OneFlow 中与自动求导有关的常见接口。
+We will first introduce the basic concepts of the computational graph, which are conducive to understand the common settings and limitations of Oneflow's automatic differentiation. Then we introduce OneFlow's common automatic differentiation interfaces.【待修改】
 
-## 计算图
+##  Computational Graph
 
-张量与算子，共同组成计算图，如以下代码：
+Computational graphs are composed of tensors and operators. We show this in code as below:
 
 ```python
 import oneflow as flow
@@ -16,7 +16,7 @@ import oneflow as flow
 def loss(y_pred, y):
     return flow.sum(1/2*(y_pred-y)**2)
 
-x = flow.ones(1, 5)  # 输入
+x = flow.ones(1, 5)  # input【不确定】
 w = flow.randn(5, 3, requires_grad=True)
 b = flow.randn(1, 3, requires_grad=True)
 z = flow.matmul(x, w) + b
@@ -25,20 +25,20 @@ y = flow.zeros(1, 3)  # label
 l = loss(z,y)
 ```
 
-它对应的计算图如下：
+Corresponding calculation diagram：
 
 ![todo](./imgs/compute_graph.png)
 
-计算图中，像 `x`、`w`、`b`、`y` 这种只有输出，没有输入的节点称为 **叶子节点**；像 `loss` 这种只有输入没有输出的节点，称为 **根节点**。
+In computational graph, leaf nodes are the input tensors, like `x`, `w`, `b`, and `y`, and root nodes are the output tensors, like `loss`.
 
-反向传播过程中，需要求得 `l` 对 `w`、`b` 的梯度，以更新这两个模型参数。因此，我们在创建它们时，设置 `requires_grad` 为 `True`。
+During the backpropagation process, the gradient of `l` to `w` and `b` is required to update `w` and `b`. Therefore, we need to set `requires_grad` as `True` when creating them.
 
 
-## 自动求梯度
+## Automatic Gradient
 
-### backward 与梯度
+### `backward()` and Gradient【不确定】
 
-在反向传播的过程中，需要得到 `l` 分别对 `w`、`b` 的梯度 $\frac{\partial l}{\partial w}$ 和 $\frac{\partial l}{\partial b}$。我们只需要对 `l` 调用 `backward()` 方法，然后 OneFlow 就会自动计算梯度，并且存放到 `w` 与 `b` 的 `grad` 成员中。
+During the backpropagation process, we need to get the gradients of `l` to `w`、`b` respectively, shown as $\frac{\partial l}{\partial w}$ and $\frac{\partial l}{\partial b}$. We only need to call the 'backward()' method on `l`, and then OneFlow will automatically calculate the gradients and store them in the `w.grad` and `b.grad`.【不确定】
 
 ```python
 l.backward()
@@ -55,10 +55,10 @@ tensor([[0.9397, 2.5428, 2.5377],
 tensor([[0.9397, 2.5428, 2.5377]], dtype=oneflow.float32)
 ```
 
-### 对非叶子节点求梯度
-默认情况下，只有 `requires_grad=True` 的叶子节点的梯度会被保留。非叶子节点的 `grad` 属性默认在 `backward` 执行过程中，会自动释放，不能查看。
+### Gradient for Non-leaf Nodes
+By default, only gradients of leaf nodes with `requires_grad=True` will be retained. The 'grad' of a non-leaf node is automatically freed during the calling of 'backward' and cannot be viewed.
 
-如果想保留并查看非叶子节点的梯度，可以调用 `Tensor.retain_grad` 方法：
+`Tensor.retain_grad()` can be called to retain and view the 'grad' of a non-leaf node.
 
 ```python
 from math import pi
@@ -71,18 +71,18 @@ n3.backward()
 print(n1.grad)
 print(n2.grad)
 ```
+we get $\frac{\partial n_3}{\partial n_1}$ and $\frac{\partial n_3}{\partial n_2}$ using the code above.
 
-以上代码，既求 $\frac{\partial n_3}{\partial n_1}$，也求 $\frac{\partial n_3}{\partial n_2}$
 
-输出:
+Output:
 
 ```
 tensor(-8.7423e-08, dtype=oneflow.float32)
 tensor(2., dtype=oneflow.float32)
 ```
 
-### 对一个计算图多次 `backward()`
-默认情况下，对于给定的计算图，只能调用 `backward()` 一次。比如，以下代码会报错：
+### Call `backward()` Multiple Times on a Calculation Graph
+By default, we can only call `backward()` once for each calculation graph. For example, the following code will report an error:
 
 ```python
 n1 = flow.tensor(10., requires_grad=True)
@@ -91,11 +91,11 @@ n2.backward()
 n2.backward()
 ```
 
-报错信息：
+Error message:
 
 > Maybe you try to backward through the node a second time. Specify retain_graph=True when calling .backward() or autograd.grad() the first time.
 
-如果想要在同一个计算图上调用多次 `backward()`，需要在调用时设置 `retain_graph=True`。
+If we need `backward()` multiple times on the same calculation graph, `retain_graph` needs to be set as `True` when calling.
 
 ```python
 n1 = flow.tensor(10., requires_grad=True)
@@ -107,15 +107,16 @@ n2.backward()
 print(n1.grad)
 ```
 
-输出：
+Output：
 
 ```text
 tensor(20., dtype=oneflow.float32)
 tensor(40., dtype=oneflow.float32)
 ```
 
-以上输出可知，OneFlow 会 **累加** 多次 `backward()` 计算得到的梯度。
-如果想清空梯度，可以调用 `zeros_` 方法：
+The above output shows that OneFlow will **accumulate** the gradient calculated by `backward()` multiple times.
+We need to call the `zeros_()` to clear the gradient:
+
 
 ```python
 n1 = flow.tensor(10., requires_grad=True)
@@ -128,17 +129,17 @@ n2.backward()
 print(n1.grad)
 ```
 
-输出：
+Output：
 
 ```text
 tensor(20., dtype=oneflow.float32)
 tensor(20., dtype=oneflow.float32)
 ```
 
-### 不记录某个 Tensor 的梯度
+### Disabled Gradient Calculation
 
-默认情况下，OneFlow 会 tracing `requires_grad` 为 `True` 的 Tensor，自动求梯度。
-不过有些情况可能并不需要 OneFlow 这样做，比如只是想试一试前向推理。那么可以使用 [oneflow.no_grad](https://oneflow.readthedocs.io/en/master/oneflow.html#oneflow.no_grad) 或 [oneflow.Tensor.detach](https://oneflow.readthedocs.io/en/master/tensor.html#oneflow.Tensor.detach) 方法设置。
+By default, OneFlow will trace and calculate gradients of Tensors with `requires_grad = Ture`.
+However, in some cases, we don't need OneFlow to keep tracing gradients such as just wanting to try forward prop. Then we can use [oneflow.no_grad()](https://oneflow.readthedocs.io/en/master/oneflow.html#oneflow.no_grad) or [oneflow.Tensor.detach()](https://oneflow.readthedocs.io/en/master/tensor.html#oneflow.Tensor.detach) to set.
 
 ```python
 z = flow.matmul(x, w)+b
@@ -149,7 +150,7 @@ with flow.no_grad():
 print(z.requires_grad)
 ```
 
-输出：
+Output：
 
 ```text
 True
@@ -161,16 +162,16 @@ z_det = z.detach()
 print(z_det.requires_grad)
 ```
 
-输出：
+Output：
 
 ```text
 False
 ```
 
-### 输出不是标量时如何求梯度
-通常，调用 `backward()` 方法的是神经网络的 loss，是一个标量。
+### Gradients for Non-Scalar Outputs
+Usually, we call `backward()` on scalar `loss`.
 
-但是，如果不是标量，对 Tensor 调用 `backward()` 时会报错。
+However, if `loss` is a tensor, an error will be reported when calling `backward()` on `loss`.
 
 ```python
 x = flow.randn(1, 2, requires_grad=True)
@@ -178,11 +179,11 @@ y = 3*x + 1
 y.backward()
 ```
 
-报错信息：
+Error message：
 
 > Check failed: IsScalarTensor(*outputs.at(i)) Grad can be implicitly created only for scalar outputs
 
-而对 `y` 求 `sum` 后可以求梯度：
+We can get the gradient after `y.sum()`.
 
 ```python
 x = flow.randn(1, 2, requires_grad=True)
@@ -192,17 +193,17 @@ y.backward()
 print(x.grad)
 ```
 
-输出：
+Output：
 
 ```text
 tensor([[3., 3.]], dtype=oneflow.float32)
 ```
 
-错误原因及解决方法的分析请参考下文 “扩展阅读” 部分。
+Please refer to the "Extended Reading" section below for the analysis of the cause and solution of the error.
 
-## 扩展阅读
+## Extended Reading
 
-`x` 张量中有两个元素，记作 $x_1$ 与 $x_2$，`y` 张量中的两个元素记作 $y_1$ 与 $y_2$，并且两者的关系是：
+There are two elements $x_1$ and $x_2$ in Tensor `x`, and two elements $y_1$ and $y_2$ in Tensor `y`. The relationship between them is:
 
 $$
 \mathbf{x} = [x_1, x_2]
@@ -212,27 +213,27 @@ $$
 \mathbf{y} = [y_1, y_2] = [3x_1+1, 3x_2+1]
 $$
 
-此时，想直接求 $\frac{\partial \mathbf{y}}{\partial \mathbf{x}}$
+We want to get $\frac{\partial \mathbf{y}}{\partial \mathbf{x}}$
 
 $$
 \frac{\partial \mathbf{y}}{\partial \mathbf{x}} =
  \frac{[3x_1+1, 3x_2+1]}{[x_1, x_2]}
 $$
 
-在数学上是没有意义的，因此当然就报错了。
-实际上，当用户调用 `y.backward()` 时，其实想要的结果通常是：
+It doesn't make sense in mathematics, so of course an error is reported.
+In fact, when the user calls `y.backward()`, the result desired is usually:
 
 $$
 [\frac{\partial y_1}{\partial x_1}, \frac{\partial y_2}{\partial x_2}]
 $$
 
-当对 `y` 进行 `sum` 运算后：
+After call `sum()` on `y`:
 
 $$
 y = y_1 + y_2 = 3x_1 + 3x_2 + 2
 $$
 
-此时，调用 `backward()` 时，对 $x_1$ 和 $x_2$ 可求梯度：
+At this time, when calling `backward()`, the gradients of $x_1$ and $x_2$ can be calculated:
 
 $$
 \frac{\partial y}{\partial x_1} = \frac{\partial 3x_1 + 3x_2 + 2}{\partial x_1} = 3
@@ -242,7 +243,7 @@ $$
 \frac{\partial y}{\partial x_2} = \frac{\partial 3x_1 + 3x_2 + 2}{\partial x_2} = 3
 $$
 
-除了使用 `sum` 之外，还可以使用更通用方法，即 **Vector Jacobian Product(VJP)** 完成非标量的根节点的梯度计算。依然用上文的例子，在反向传播过程中，OneFlow 会根据计算图生成雅可比矩阵：
+In addition to using `sum()`, **Vector Jacobian Product(VJP)** is a more general method to calculate the gradient of the non-scalar root node. Using the above example, OneFlow will generate the Jacobian matrix according to the computational graph during the backpropagation process:
 
 $$
 J = \begin{pmatrix}
@@ -255,7 +256,7 @@ J = \begin{pmatrix}
 \end{pmatrix}
 $$
 
-只需提供一个与 $\mathbf{y}$ 大小一致的向量 $\mathbf{v}$，即可计算 VJP：
+To calculate VJP, a vector $\mathbf{v}$ with the same size as $\mathbf{y}$ needs to be provided:
 
 $$
 \begin{bmatrix}
@@ -273,9 +274,9 @@ v_2 \frac{\partial y_2}{\partial x_2}
 \end{bmatrix}
 $$
 
-若向量 $\mathbf{v}$ 是反向传播中上一层的梯度，VJP 的结果刚好是当前层要求的梯度。
+If the vector $\mathbf{v}$ is the gradient of the upper layer in the backpropagation, the result of VJP is exactly the gradient required by the current layer.
 
-`backward` 方法是可以接受一个张量做参数的，该参数就是 VJP 中的 $\mathbf{v}$，理解以上道理后，还可以使用以下的方式对张量求梯度：
+`backward()` can accept a tensor as a parameter, when the parameter is $\mathbf{v}$ in VJP. We can also use the following methods to find the gradient of a tensor:
 
 ```python
 x = flow.randn(1, 2, requires_grad=True)
@@ -284,12 +285,12 @@ y.backward(flow.ones_like(y))
 print(x.grad)
 ```
 
-输出：
+Output：
 
 ```text
 tensor([[3., 3.]], dtype=oneflow.float32)
 ```
 
-**外部链接**
+**External links**
 
 - [Automatic Differentiation](http://www.cs.toronto.edu/~rgrosse/courses/csc421_2019/slides/lec06.pdf)
