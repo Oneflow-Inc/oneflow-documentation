@@ -50,15 +50,15 @@ extra:
   version:
     provider: mike
   alternate:
-    # Switch to Chinese
-    - name: 中文
-      link: https://docs.oneflow.org
-      lang: zh
-
     # Switch to English
     - name: English
-      link: https://docs.oneflow.org/en
+      link: https://docs.oneflow.org/en/v0.4.0/
       lang: en
+
+    # Switch to Chinese
+    - name: 中文
+      link: https://docs.oneflow.org/v0.4.0/
+      lang: zh
 
 # Extensions
 markdown_extensions:
