@@ -1,14 +1,14 @@
-# Back propagation and optimizer
+# Backpropagation and Optimizer
 
-So far, we have learned how to use OneFlow to [load data](./03_dataset_dataloader.md),[build models](./04_build_network.md),[calculate gradient of model parameters](./05_autograd.md), and combine them so that we can train models by using backpropagation algorithms.
+So far, we have learned how to use OneFlow to [Dataset and DataLoader](./03_dataset_dataloader.md), [Build Models](./04_build_network.md),[Autograd](./05_autograd.md), and combine them so that we can train models by using backpropagation algorithms.
 
-In [oneflow.optim](https://oneflow.readthedocs.io/en/master/optim.html) ,there are various `optimizer`that simplify the code of back propagation.
+In [oneflow.optim](https://oneflow.readthedocs.io/en/master/optim.html), there are various `optimizer`s that simplify the code of back propagation.
 
 This article will first introduce the basic concepts of back propagation and then show you how to use the `oneflow.optim` class.
 
-## numpy 手工实现反向传播
+## numpy 手工实现反向传播【还不知道怎么翻译】
 
-In order to make it easier for readers to understand the relationship between back propagation and automatic derivation, a training process of a simple model implemented only with numpy is provided here:
+In order to make it easier for readers to understand the relationship between backpropagation and autograd, a training process of a simple model implemented with numpy is provided here:
 
 ```python
 import numpy as np
@@ -16,28 +16,28 @@ import numpy as np
 ITER_COUNT = 500
 LR = 0.01
 
-# forward propagation
+# Forward propagation
 def forward(x, w):
     return np.matmul(x, w)
 
 
-# loss function
+# Loss function
 def loss(y_pred, y):
     return ((y_pred - y) ** 2).sum()
 
 
-# calculate gradient
+# Calculate gradient
 def gradient(x, y, y_pred):
     return np.matmul(x.T, 2 * (y_pred - y))
 
 
 if __name__ == "__main__":
-    # train: Y = 2*X1 + 3*X2
+    # Train: Y = 2*X1 + 3*X2
     x = np.array([[1, 2], [2, 3], [4, 6], [3, 1]], dtype=np.float32)
     y = np.array([[8], [13], [26], [9]], dtype=np.float32)
 
     w = np.array([[2], [1]], dtype=np.float32)
-    # training cycle
+    # Training cycle
     for i in range(0, ITER_COUNT):
         y_pred = forward(x, w)
         l = loss(y_pred, y)
@@ -67,7 +67,7 @@ w:[[2.000001 ]
  [2.9999993]]
 ```
 
-Note that the loss function expression we selected is  $\sum (y_{p} - y)^2$,so the code for gradient of `loss` to parameter `w` is：
+Note that the loss function expression we selected is $\sum (y_{p} - y)^2$, so the code for gradient of `loss` to parameter `w` is：
 
 ```python
 def gradient(x, y, y_pred):
@@ -84,21 +84,21 @@ w -= LR*grad
 In summary, a complete iteration in the training includes the following steps:
 
 1. The model calculates the predicted value based on the input and parameters (`y_pred`)
-2. Calculate loss,which is the error between the predicted value and the label
-3. calculate the gradient of loss to parameter
-4. Update parameter
+2. Calculate loss, which is the error between the predicted value and the label
+3. Calculate the gradient of loss to parameter
+4. Update parameter(s)
 
 1 and 2 are forward propagation process; 3 and 4 are back propagation process.
 
 ## Hyperparameters
 
-Hyperparameters are parameters related to model training settings, which can affect the efficiency and results of model training.As in the above code `ITER_COUNT`,`LR` are super parameters.
+Hyperparameters are parameters related to model training settings, which can affect the efficiency and results of model training.As in the above code `ITER_COUNT`,`LR` are hyperparameters.
 
 ## Using the optimizer class in `oneflow.optim`
 
-Using the optimizer class in `oneflow.optim` for back propagation will be more concise. Next, we show how to use it.
+Using the optimizer class in `oneflow.optim` for back propagation will be more concise.
 
-First, prepare the data and model. The convenience of using Module is that you can place the super parameters in Module for management.
+First, prepare the data and model. The convenience of using Module is that you can place the hyperparameters in Module for management.
 
 ```python
 import oneflow as flow
@@ -121,7 +121,7 @@ class MyLrModule(flow.nn.Module):
 model = MyLrModule(0.01, 500)
 ```
 
-### loss function
+### Loss function
 
 Then, select the loss function. OneFlow comes with a variety of loss functions. We choose [MSELoss](https://oneflow.readthedocs.io/en/master/nn.html?highlight=mseloss#oneflow.nn.MSELoss) here：
 
@@ -129,17 +129,17 @@ Then, select the loss function. OneFlow comes with a variety of loss functions. 
 loss = flow.nn.MSELoss(reduction="sum")
 ```
 ### Construct optimizer
-The logic of back propagation is encapsulated in optimizer.We choose [SGD](https://oneflow.readthedocs.io/en/master/optim.html?highlight=sgd#oneflow.optim.SGD) here, You can choose other optimization algorithms as needed, such as [Adam](https://oneflow.readthedocs.io/en/master/optim.html?highlight=adam#oneflow.optim.Adam) and[AdamW](https://oneflow.readthedocs.io/en/master/optim.html?highlight=adamw#oneflow.optim.AdamW) .
+The logic of back propagation is encapsulated in optimizer. 【前一句不太自然，需要确认修改】We choose [SGD](https://oneflow.readthedocs.io/en/master/optim.html?highlight=sgd#oneflow.optim.SGD) here, You can choose other optimization algorithms as needed, such as [Adam](https://oneflow.readthedocs.io/en/master/optim.html?highlight=adam#oneflow.optim.Adam) and[AdamW](https://oneflow.readthedocs.io/en/master/optim.html?highlight=adamw#oneflow.optim.AdamW) .
 
 ```python
 optimizer = flow.optim.SGD(model.parameters(), model.lr)
 ```
 
-When constructing `optimizer`, pass model parameters and learning rate to `SGD`. Then call `optimizer.step()`, and it automatically completes the gradient of the model parameters and updates the model parameters according to the SGD algorithm.
+When the `optimizer` is constructed, the model parameters and learning rate are given to `SGD`. Then the `optimizer.step()` is called, and it automatically completes the gradient of the model parameters and updates the model parameters according to the SGD algorithm.
 
 ### Train
 
-When the above preparations are completed, you can start training:
+When the above preparations are completed, we can start training:
 
 ```python
 for i in range(0, model.iter_count):
