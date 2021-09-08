@@ -144,7 +144,7 @@
     y.shape
     ```
 
-可以观察到，`flow.matmul` 根据输入 `x` 与 `w` 的 SBP 分别为 `split(0)`、`broadcast`。OneFlow 自动推倒出输出 `y` 的 SBP 应该为 `split(0)`，完成计算，得到 `shape=(4,8)` 的矩阵。输出：
+可以观察到，`flow.matmul` 根据输入 `x` 与 `w` 的 SBP 分别为 `split(0)`、`broadcast`。OneFlow 自动推导出输出 `y` 的 SBP 应该为 `split(0)`，完成计算，得到 `shape=(4,8)` 的矩阵。输出：
 
 === "Terminal 0"
     ```text

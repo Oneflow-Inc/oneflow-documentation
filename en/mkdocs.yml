@@ -108,6 +108,13 @@ extra_javascript:
 nav:
     - Home: index.md
 
+    - Parallelism:
+      - Common Distributed Parallelism: parallelism/01_introduction.md
+      - Consistent View Of Cluster: parallelism/02_sbp.md
+      - Consistent Tensor: parallelism/03_consistent_tensor.md
+      - Start Distributed Training Using launch module: parallelism/04_launch.md
+      - Data-parallelism Training: parallelism/05_ddp.md
+
     - API:
       - API: https://oneflow.readthedocs.io/en/master/
 
