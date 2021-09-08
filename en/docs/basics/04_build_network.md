@@ -70,7 +70,7 @@ You will get output similar to the following:
 Predicted class: tensor([1], dtype=oneflow.int32)
 ```
 
-The above process of data input, network calculation and the output of reasoning is shown in the figure below:
+The above process of data input, network calculation and the output of reasoning is shown in the figure below.
 
 ![todo](./imgs/neural-network-layers.png)
 
@@ -126,15 +126,15 @@ print(f"Predicted class: {y_pred}")
 ```
 
 
-## Module 容器
+## Module container
 
-比较以上 `NeuralNetwork` 与 `FunctionalNeuralNetwork` 实现的异同，可以发现 [nn.Sequential](https://oneflow.readthedocs.io/en/master/nn.html?highlight=nn.Sequential#oneflow.nn.Sequential) 对于简化代码起到了重要作用。
+Comparing the similarities and differences between the `NeuralNetwork` and `FunctionalNeuralNetwork`,we can find that [nn.Sequential](https://oneflow.readthedocs.io/en/master/nn.html?highlight=nn.Sequential#oneflow.nn.Sequential) plays an important role in simplifying the code.
 
-`nn.Sequential` 是一种特殊容器，只要是继承自 `nn.Module` 的类都可以放置放置到其中。
+`nn.Sequential` is a special container. Any class inherited from `nn.Module` can be placed in it.
 
-它的特殊之处在于：当 Sequential 进行前向传播时，Sequential 会自动地将容器中包含的各层“串联”起来。具体来说，会按照各层加入 Sequential 的顺序，自动地将上一层的输出，作为下一层的输入传递，直到得到整个 Moudle 的最后一层的输出。
+Its specialty is that when Sequential propagates forward, Sequential automatically "concatenates" the layers contained in the container. Specifically, the output of the previous layer will be automatically transferred as the input of the next layer according to the sequence of Sequential added to each layer until the output of the last layer of the whole Moudle is obtained.
 
-以下是不使用 Sequential 构建网络的例子（不推荐）：
+The following is an example of building a network without Sequential (not recommended):
 
 ```python
 class MyModel(nn.Module):
@@ -153,7 +153,7 @@ class MyModel(nn.Module):
         return out
 ```
 
-如果使用 Sequential，则看起来是这样，会显得更简洁。
+If sequential is used, it looks like this, which will be more concise.
 
 ```python
 class MySeqModel(nn.Module):
@@ -170,4 +170,5 @@ class MySeqModel(nn.Module):
         return self.seq(x)
 ```
 
-除了 Sequential 外，还有 `nn.Modulelist` 及 `nn.ModuleDict`，除了会自动注册参数到整个网络外，他们的其它行为类似 Python list、Python dict，只是常用简单的容器，不会自动进行前后层的前向传播，需要自己手工遍历完成各层的计算。 
+Besides Sequential, there are `nn.Modulelist` and `nn.ModuleDict`. They can automatically register parameters to the whole network. But their other behavior is similar to Python list and Python dict, which are 
+just simple containers and do not automatically propagate forward. You need manually traverse to complete the calculation of each layer.
