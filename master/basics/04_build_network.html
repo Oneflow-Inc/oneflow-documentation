@@ -1073,7 +1073,7 @@
 <h2 id="module_1">Module 容器<a class="headerlink" href="#module_1" title="Permanent link">&para;</a></h2>
 <p>比较以上 <code>NeuralNetwork</code> 与 <code>FunctionalNeuralNetwork</code> 实现的异同，可以发现 <a href="https://oneflow.readthedocs.io/en/master/nn.html?highlight=nn.Sequential#oneflow.nn.Sequential">nn.Sequential</a> 对于简化代码起到了重要作用。</p>
 <p><code>nn.Sequential</code> 是一种特殊容器，只要是继承自 <code>nn.Module</code> 的类都可以放置放置到其中。</p>
-<p>它的特殊之处在于：当 Sequential 进行前向传播时，Sequential 会自动地将容器中包含的各层“串联”起来。具体来说，会按照各层加入 Sequential 的顺序，自动地将上一层的输出，作为下一层的输入传递，直到得到整个 Moudle 的最后一层的输出。</p>
+<p>它的特殊之处在于：当 Sequential 进行前向传播时，Sequential 会自动地将容器中包含的各层“串联”起来。具体来说，会按照各层加入 Sequential 的顺序，自动地将上一层的输出，作为下一层的输入传递，直到得到整个 Module 的最后一层的输出。</p>
 <p>以下是不使用 Sequential 构建网络的例子（不推荐）：</p>
 <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">MyModel</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
