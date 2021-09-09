@@ -1,19 +1,19 @@
 # STATIC GRAPH -- NN.GRAPH
 
-At present, there are two ways to run models in deep learning framework, **Dynamic Graph** and **Static Graph**, which are also called **Eager Mode** and **Graph  Mode** in OneFlow.
+At present, there are two ways to run models in deep learning framework, **Dynamic Graph** and **Static Graph**, which are also called **Eager Mode** and **Graph Mode** in OneFlow.
 
-There are pros and cons to both approaches, and OneFlow offers support for both, with the  **Eager Mode** by default. If you are reading the tutorials for this basic topic in order, then all the code you have encountered so far is **Eager Mode**.
+There are pros and cons to both approaches, and OneFlow offers support for both, with the  Eager Mode by default. If you are reading the tutorials for this basic topic in order, then all the code you have encountered so far is Eager Mode.
 
-In general, dynamic graphs are easier to use and static graphs have better performance. OneFlow offers [nn.Graph](https://oneflow.readthedocs.io/en/master/graph.html) module, so that users can use `Eager` programming style to build static graphics and train the model.
+In general, dynamic graphs are easier to use and static graphs have better performance. OneFlow offers [nn.Graph](https://oneflow.readthedocs.io/en/master/graph.html) module, so that users can use the eager programming style to build static graphs and train the models.
 
 
-## **Eager Mode** in OneFlow
+## Eager Mode in OneFlow
 
-OneFlow runs in **Eager Mode** by default.
+OneFlow runs in Eager Mode by default.
 
 The following script, using polynomial $y=a+bx+cx^2+dx^3$ to fit the `sine` function $y=sin(x)$, finds a set of approximate fitting parameters $a$, $b$, $c$, $d$.
 
-This example was introduced to show how **Eager Mode** and **Graph  Mode** are related in OneFlow (most of the code is reusable). Readers may be very familiar with OneFlow's **Eager Mode** now, here we do not explain in detail, interested readers can click on “Code”to expand the Code.
+This example was introduced to show how Eager Mode and Graph Mode are related in OneFlow (most of the code is reusable). Readers may be very familiar with OneFlow's Eager Mode now, here we do not explain in detail, interested readers can click on “Code”to expand the Code.
 
 > Note: This sample code is adapted from [PyTorch official tutorial](https://pytorch.org/tutorials/beginner/pytorch_with_examples.html#nn-module).
 
@@ -110,11 +110,11 @@ class MyLinear(nn.Graph):
 The simple example above contains the important steps needed to customize a Graph:
 
 - Inherits `nn.Graph`.
-- Call `super().__init__()` at the begining of `__init__` to get OneFlow to do the necessary initialization for the Graph.
-- Defines the structure and state of a neural network in `__init__`.
-- Describes the computational process in `build`.
+- Call `super().__init__()` at the begining of `__init__` method to get OneFlow to do the necessary initialization for the Graph.
+- Defines the structure and state of a neural network in `__init__` method.
+- Describes the computational process in `build` method.
 
-You can then instantiate and call the Graph.
+You can then instantiate and call the Graph: 
 
 ```python
 mygraph = MyLinear(4, 3)
@@ -130,9 +130,9 @@ tensor([[ 4.0638, -1.4453,  3.9640]], dtype=oneflow.float32)
 ```
 
 
-Note that Graph is similar to Module in that the object itself is callable and it is **not recommended** to explicitly call the `build` method. The definition of a Graph is very similar to the use of a Module, in fact, Graph can directly reuse a defined Module. Users can refer the content in [Build Network](./04_build_network.md) directly to build a neural network in Graph mode.
+Note that Graph is similar to Module in that the object itself is callable and it is **not recommended** to explicitly call the `build` method. The definition of a Graph is very similar to the use of a Module, in fact, Graph can directly reuse a defined Module. Users can refer the content in [Build Network](./04_build_network.md) directly to build a neural network in Graph Mode.
 
-For example, use the `model` for `Eager Mode` above as the network structure:
+For example, use the `model` above as the network structure:
 
 
 ```python
@@ -148,10 +148,10 @@ class ModelGraph(flow.nn.Graph):
 model_graph = ModelGraph()
 ```
 
-The major difference between Module and Graph is that Graph uses `build` rather than `forward` methods to describe the calculation, because the build can contain not only forward calculation, but also set `loss`, optimizer, etc. Below you will see a practical example of using Graph for training.
+The major difference between Module and Graph is that Graph uses `build` method rather than `forward` method to describe the computation process, because the build can contain not only forward computation, but also set `loss`, optimizer, etc. You will see an example of using Graph for training later.
 
 ### Inference in Graph Mode
-The following example for inference in Graph Mode directly using the module, which we have already trained in Eager Mode at the beginning of this article.
+The following example for inference in Graph Mode directly using the model, which we have already trained in Eager Mode at the beginning of this article.
 
 ```python
 class LinearPredictGraph(flow.nn.Graph):
@@ -167,7 +167,7 @@ linear_graph = LinearPredictGraph()
 y_fit = linear_graph(xx)
 ```
 
-Draw the contrast plot between the original function curve and the fitting result:
+Draw the differences between the original function outputs and the fitting results:
 
 ```python
 import matplotlib.pyplot as plt
@@ -179,7 +179,7 @@ plt.plot(x.numpy(),y_fit.numpy())
 
 ### Training in Graph Mode
 
-The Graph can be used for training. Click on the “Code”below to see the detailed Code.
+The Graph can be used for training. Click on the “Code” below to see the detailed code.
 
 ??? code
     ```python
@@ -262,15 +262,15 @@ class LinearTrainGraph(flow.nn.Graph):
         #...
 ```
 
-1. Construct the optimizer object, which is same to the training in Eager Mode introduced in [Backpropagation and Optimizer](./06_optimization.md#optimizer_1).
-2. Call `self.add_optimizer` in Graph's `__init__` to add the optimizer object constructed in the previous step to the Graph.
+1. Constructing the optimizer object, which is same to the training in Eager Mode introduced in [Backpropagation and Optimizer](./06_optimization.md#optimizer_1).
+2. Call `self.add_optimizer` in Graph's `__init__` method to add the optimizer object constructed in the previous step to the Graph.
 3. Call `backward` in Graph's `build` to trigger back propagation.
 
 
 
 ### Debugging in Graph Mode
 
-You can call `print` to output information about the Graph object.
+You can call `print` to show information about the Graph object.
 
 
 ```python
@@ -279,9 +279,9 @@ print(linear_graph)
 
 The output is slightly different depending on whether the Graph object is called:
 
-If you use `print` before the Graph object is called, the output is information about the network structure.
+If you use `print` **before** the Graph object is called, the output is information about the network structure.
 
-The output for `print` used before `linear_graph` is called:  
+The output for `print` used before `linear_graph` is called is like this:  
 
 ```text
 (GRAPH:LinearTrainGraph_0:LinearTrainGraph): (
@@ -298,7 +298,7 @@ The output for `print` used before `linear_graph` is called:
 )
 ```
 
-If you use `print` after the Graph object is called, in addition to the structure of the network, it will print inputs and outputs of the tensors, the output is like this:
+If you use `print` **after** the Graph object is called, in addition to the structure of the network, it will print inputs and outputs of the tensors, the output on the console is like this:
 
 ```text
 (GRAPH:LinearTrainGraph_0:LinearTrainGraph): (
@@ -339,7 +339,7 @@ If you use `print` after the Graph object is called, in addition to the structur
 
 In addition, by calling the `debug` method of Graph objects, Graph’s debug mode is turned on.
 
-OneFlow prints debugging information as it compiles the computation graph.If the `linear_graph.debug()` is removed from the example code above, the output on the console will be like this:
+OneFlow prints debug information when it compiles the computation graph. If the `linear_graph.debug()` is removed from the example code above, the output on the console is like this:
 
 
 ```text
@@ -374,7 +374,7 @@ Note that nn.Graph.debug() only print debug info on rank 0.
 (GRAPH:LinearTrainGraph_0:LinearTrainGraph) end compiling and init graph rumtime.
 ```
 
-The output will display the names of the layers in the computation graph, and input/output tensor information, including shape, device information, data type, and so on.
+It displays the names of the layers in the computation graph and input/output tensor information, including shape, device information, data type, and so on.
 
 The advantage of using `debug`  is that the debug information is composed and printed at the same time, which makes it easy to find the problem if there is any error in the graph building process.
 
@@ -406,8 +406,7 @@ The corresponding computation graph is:
 
 The characteristic of dynamic graph is that it is define by run.
 
-The code above is run like this:
-(Note: the figure below merges simple statements)
+The code above is run like this (Note: the figure below merges simple statements):
 
 ![dynamic graph](./imgs/dynamic_graph.gif)
 
@@ -437,11 +436,10 @@ The two approaches can be summarized as follows:
 
 The Eager Mode in OneFlow is aligned with the PyTorch, which allows users familiar with the PyTorch to get their hands on easily with no more effert. 
 
-The Graph Mode in OneFlow is based on an object-oriented programming style, which allows developers familiar with Eager programming style to benefit from static graph with minimal code changes.
+The Graph Mode in OneFlow is based on the object-oriented programming style, which allows developers familiar with eager programming style to benefit from static graph with minimal code changes.
 
 ## Related Links
 
-Building neural network in OneFlow Eager Mode: [build network](./04_build_network.md)
+Building neural network in OneFlow Eager Mode: [Build Network](./04_build_network.md)
 
-PyTorch 版本的多项式拟合实例代码：[PyTorch: nn](https://pytorch.org/tutorials/beginner/pytorch_with_examples.html#id19)
 PyTorch version of polynomial fitting example: [PyTorch: nn](https://pytorch.org/tutorials/beginner/pytorch_with_examples.html#id19)
