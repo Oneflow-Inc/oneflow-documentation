@@ -211,7 +211,7 @@ The example in this article sets environment variables to configure distributed 
 
 - `MASTER_ADDR`：The IP of the 0th machine in a multi-machine case
 - `MASTER_PORT`：The listening port of the 0th machine in a multi-machine case. Note that this port should not be in use
-- `WORLD_SIZE`：The number of computing devices in the whole cluster. Because currently oneflow only supports having the  same number of GPUs on the machines, `WORLD_SIZE` is actually $the number of machines \times number of GPUs on each machine$. In our example, we have one machine and two GPUs on it, so `WORLD_SIZE=2`
+- `WORLD_SIZE`：The number of computing devices in the whole cluster. Because currently oneflow only supports having the  same number of GPUs on the machines, `WORLD_SIZE` is actually $number\:of\:machines \times number\:of\:GPUs\:on\:one\:machine$. In our example, we have one machine and two GPUs on it, so `WORLD_SIZE=2`
 
 `RANK` and `LOCAL_RANK` are indexs for machines. The difference is that `RANK` is a "global perspective" index, while `LOCAL_RANK` is a "local perspective" index. In the case that only one machine is involved, the `RANK` and `LOCAL_RANK` are the same. In our example, there are two GPUs, indexed 0 and 1.
 
