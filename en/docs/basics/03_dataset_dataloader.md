@@ -4,7 +4,7 @@ The behavior of OneFlow's `Dataset` and `DataLoader` is the same as [PyTorch](ht
 
 [oneflow.utils.vision.datasets](https://oneflow.readthedocs.io/en/master/utils.html#module-oneflow.utils.vision.datasets) provides us a number of classes that can automatically download and load common datasets (such as fashionmnist).
 
-`DataLoader` wraps data into an iterable, for easy iterating and access to samples during training.
+`DataLoader` wraps data into an iterator, for easy iterating and access to samples during training.
 
 ```python
 import matplotlib.pyplot as plt
