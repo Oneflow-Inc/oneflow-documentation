@@ -107,6 +107,8 @@ extra_javascript:
 
 nav:
     - Home: index.md
+    - Basics: 
+      - Quickstart: basics/01_quickstart.md
 
     - API:
       - API: https://oneflow.readthedocs.io/en/master/

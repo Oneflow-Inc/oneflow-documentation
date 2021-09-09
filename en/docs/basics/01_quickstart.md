@@ -1,4 +1,4 @@
-# QUICKSTART
+# Quickstart
 
 This section will take the training process of MNIST as an example to briefly show how OneFlow can be used to accomplish common tasks in deep learning. Refer to the links in each section to the presentation on each subtask.
 
@@ -17,9 +17,9 @@ BATCH_SIZE=128
 
 OneFlow has two primitives to work with data, which are Dataset and Dataloader.
 
-The [oneflow.utils.vision.datasets](https://oneflow.readthedocs.io/en/master/utils.html#module-oneflow.utils.vision.datasets) module contains a number of real data sets (such as MNIST, CIFAR 10, FashionMNIST) .
+The [oneflow.utils.vision.datasets](https://oneflow.readthedocs.io/en/master/utils.html#module-oneflow.utils.vision.datasets) module contains a number of real data sets (such as MNIST, CIFAR 10, FashionMNIST).
 
-We can use `oneflow.utils.vision.datasets.MNIST` to get the training set and test set data of MNIST
+We can use `oneflow.utils.vision.datasets.MNIST` to get the training set and test set data of MNIST.
 
 ```python
 mnist_train = flow.utils.vision.datasets.MNIST(
@@ -73,7 +73,8 @@ x.shape: flow.Size([128, 1, 28, 28])
 y.shape: flow.Size([128])
 ```
 
-> see in [Dataset and Dataloader](./03_dataset_dataloader.md)
+> [:link: Dataset and Dataloader](./03_dataset_dataloader.md){ .md-button .md-button--primary}
+
 
 ## Building Network
 
@@ -119,7 +120,8 @@ NeuralNetwork(
 )
 ```
 
-> See in [Build Network](./04_build_network.md)
+> [:link: Build Network](./04_build_network.md){ .md-button .md-button--primary}
+
 
 ## Training Model
 
@@ -130,7 +132,7 @@ loss_fn = nn.CrossEntropyLoss()
 optimizer = flow.optim.SGD(model.parameters(), lr=1e-3)
 ```
 
-A train function is defined for training. In a single training loop, the model make forward propagation, calculating loss, and back propagation to update model parameters.
+The `train` function is defined for training. In a single training loop, the model make forward propagation, calculating loss, and back propagation to update model parameters.
 
 
 ```python
@@ -151,7 +153,7 @@ def train(iter, model, loss_fn, optimizer):
             print(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")
 ```
 
-We also define a test function to verify the accuracy of the model:
+We also define a `test` function to verify the accuracy of the model:
 
 
 ```python
@@ -172,7 +174,7 @@ def test(iter, model, loss_fn):
     print(f"Test Error: \n Accuracy: {(100*correct):>0.1f}, Avg loss: {test_loss:>8f}")
 ```
 
-Now can we use the train function to begin the train process for several epochs and then use test function to assess the accuracy of the network at the end of each epoch:
+Now we can use the `train` function to begin the train process for several epochs and then use the `test` function to assess the accuracy of the network at the end of each epoch:
 
 
 ```python
@@ -202,17 +204,18 @@ loss: 2.288640
 loss: 2.286367
 ...
 ```
-> See in [Autograd](./05_autograd.md), [Backpropagation and Optimizer](./06_optimization.md)
+
+> [:link: Autograd](./05_autograd.md){ .md-button .md-button--primary}
+> [:link: Backpropagation and Optimizer](./06_optimization.md){ .md-button .md-button--primary}
 
 ## Saving and Loading Model
 
-Use [oneflow.save](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.save#oneflow.save) to saves the model. The saved model can be then loaded by [oneflow.load](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.load#oneflow.load) to re-creating the model structure and make predictions on it.
+Use [oneflow.save](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.save#oneflow.save) to save the model. The saved model can be then loaded by [oneflow.load](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.load#oneflow.load) to make predictions on it.
 
 ```python
 flow.save(model.state_dict(), "./model")
 ```
-> See in [Model Load and Save](./07_model_load_save.md)
-
+> [:link: Model Load and Save](./07_model_load_save.md){ .md-button .md-button--primary}
 ## QQ Group
 Any problems encountered during the install or usage, welcome to join the QQ Group to discuss with OneFlow developer and enthusiasts:
 
