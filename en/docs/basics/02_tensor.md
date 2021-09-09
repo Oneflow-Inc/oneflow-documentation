@@ -1,6 +1,6 @@
-# TENSOR
+# Tensor
 
-The data in the neural network is stored in tensors, which are similar to arrays and mathematical matrices. OneFlow provides a series of operators to operate on tensors. Tensors, together with operators, build up a neural network.
+The data in the neural network is stored in tensors, which are similar to arrays and mathematical matrices. OneFlow provides a series of operators on tensors. Tensors, together with operators, build up a neural network.
 
 Tensors differs from regular multidimensional arrays in that they can run on AI chips（such as the Nvidia GPU）, as well as on CPU, thus increasing computing speed. In addition, OneFlow provides [Autograd](./05_autograd.md) which enable the Tensor to take derivatives automatically.
 
@@ -34,11 +34,11 @@ tensor([[1., 2.],
         [3., 4.]], dtype=oneflow.float32)
 ```
 
-We can see the tensor `x1` and `x2` are created, whose data types are INT64 and FLOAT32 respectively.
+We can see the tensor `x1` and `x2` are created, whose data types are `int64` and `float32` respectively.
 
 ### Create with NumPy array
 
-Tensors can be created from NumPy arrays, simply by passing the NumPy array as a parameter during the creation of the tensor object.
+Tensors can be created from NumPy arrays, simply by passing the NumPy array as a parameter when the tensor object constructed.
 
 ```python
 x3 = flow.tensor(np.ones((2,3)))
@@ -84,14 +84,13 @@ The [randn](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=onef
 
 ```python
 x8 = flow.randn(2,3)
-print(x8)
 ```
 
 ## The difference between `Tensor` and `tensor`
 There are two interfaces([oneflow.Tensor](https://oneflow.readthedocs.io/en/master/tensor.html?highlight=oneflow.Tensor#oneflow.Tensor) and [oneflow.tensor](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.Tensor#oneflow.tensor) ) in OneFlow, both of which can be used to create tensors. What’s the difference?
 
 
-Briefly speaking, the data type of `oneflow.Tensor` is limited to FLOAT32 by default, while the data type of `oneflow.tensor` can be changed when the data is created. The following code illustrates the difference:
+Briefly speaking, the data type of `oneflow.Tensor` is limited to `float32` by default, while the data type of `oneflow.tensor` can be changed when the data is created. The following code illustrates the difference:
 
 ```python
 print(flow.Tensor([1, 2, 3]))
@@ -106,7 +105,7 @@ tensor([1, 2, 3], dtype=oneflow.int64)
 tensor([1., 2., 3.], dtype=oneflow.float32)
 ```
 
-Besides, `oneflow.Tensor` can be created without specifying specific data:
+Besides, `oneflow.Tensor` can be created without specific data:
 
 ```python
 x9 = flow.Tensor(2, 3)
@@ -118,7 +117,7 @@ Out:
 flow.Size([2, 3])
 ```
 
-Therefore, use `oneflow.Tensor` to create a tensor if you do not want to specify the data type, otherwise, you should use `oneflow.tensor`.
+Therefore, use `oneflow.Tensor` to create a tensor if you do not want to specify an explicit value, otherwise, you should use `oneflow.tensor`.
 
 ## Attributes of Tensor
 
@@ -138,7 +137,7 @@ oneflow.float32
 cpu:0
 ```
 
-The output shows the shape, the data type, and the device (on CPU number 0, CPUs were numbered because OneFlow naturally supports distribution, see [Consistent Tensor](../parallelism/03_consistent_tensor.md)) of the tensor.
+The output shows the shape, the data type, and the device (on CPU number 0, CPUs were numbered because OneFlow naturally supports distribution, see [Consistent Tensor](../parallelism/03_consistent_tensor.md)).
 
 
 The shape of the tensor can be changed by the [reshape](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.reshape#oneflow.reshape) method, and the data type and device of the tensor can be changed by the [to](https://oneflow.readthedocs.io/en/master/tensor.html?highlight=Tensor.to#oneflow.Tensor.to) method:
@@ -159,7 +158,7 @@ oneflow.int32 cuda:0
 
 ## Operations on Tensors
 
-A large number of operators are provided in OneFlow to operate on tensors, most of which are in the namespaces of [oneflow](https://oneflow.readthedocs.io/en/master/oneflow.html), [oneflow.nn](https://oneflow.readthedocs.io/en/master/nn.html), and [oneflow.nn.functional](https://oneflow.readthedocs.io/en/master/functional.html).
+A large number of operators are provided in OneFlow, most of which are in the namespaces of [oneflow](https://oneflow.readthedocs.io/en/master/oneflow.html), [oneflow.nn](https://oneflow.readthedocs.io/en/master/nn.html), and [oneflow.nn.functional](https://oneflow.readthedocs.io/en/master/functional.html).
 
 Tensors in OneFlow are as easy to use as the NumPy arrays. For example, slicing in NumPy style is supported:
 

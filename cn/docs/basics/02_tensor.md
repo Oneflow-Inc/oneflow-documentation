@@ -81,7 +81,6 @@ tensor([[1., 0., 0.],
 
 ```python
 x8 = flow.randn(2,3)
-print(x8)
 ```
 
 ## `Tensor` 与 `tensor` 的区别
