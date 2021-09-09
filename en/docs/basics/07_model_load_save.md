@@ -91,7 +91,7 @@ OneFlow can directly load PyTorch's pre-trained model for prediction as long as 
 
 Examples ca be find in [OneFlow Models 仓库的这个 README](https://github.com/Oneflow-Inc/models/tree/main/shufflenetv2#convert-pretrained-model-from-pytorch-to-oneflow).
 
-After sunning the following command line, we can experience how to use the pre-trained model to make predictions:
+Run commands below for trying how to use the pre-trained model to make predictions:
 
 ```bash
 git clone https://github.com/Oneflow-Inc/models.git
