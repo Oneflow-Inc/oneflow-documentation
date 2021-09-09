@@ -1,6 +1,6 @@
 # Consistent Tensor
 
-## The Mapping Between Consistent View And Physical View
+## The Mapping Between Consistent View and Physical View
 
 ## Create Consistent Tensor
 
@@ -21,15 +21,15 @@ To interactively experience consistent tensor on a two-GPU machine, you may laun
     python3
     ```
 
-The above setting of environment variables is configuration for distributed computing. Please refer to the [Extended Reading](#extented-reading) section at the end of this article for detailed explanation and launching distributed computing using some tools.
+Setting environment variables prepares the machines for distributed computing. Please refer to the [Extended Reading](#extented-reading) section at the end of this article for a detailed explanation and ways to launch distributed computing using provided tools.
 
 ### Create Consistent Tensor Directly
 
 In the two consoles, separately import `oneflow` and create `x`.
 
-`flow.palcement("cuda", {0:[0,1]})` appoints the range of consistent tensor in the cluster.  
+`flow.placement("cuda", {0:[0,1]})` sets the range of consistent tensor in the cluster.  
 - `"cuda"` means "on GPU".  The second parameter of 
-- `placement` is a dictionary. Its `key` is the index of machine, `value` is the index of the graphic cards. Therefore, `{0:[0,1]}` means that consistent tensor is on the 0th, 1st graphics card of the 0th machine.
+- `placement` is a dictionary. Its `key` is the index of machine, and its `value` is the index of the graphic cards. Therefore, `{0:[0,1]}` means that consistent tensor is on the 0th, 1st graphic cards of the 0th machine.
 
 === "Terminal 0"
     ```python
@@ -83,9 +83,9 @@ Call [to_local](https://oneflow.readthedocs.io/en/master/tensor.html#oneflow.Ten
         dtype=oneflow.float32)
     ```
 
-###　Convert Local Tensor To Consistent Tensor
+### Convert Local Tensor to Consistent Tensor
 
-User can create local tensor first, then use [Tensor.to_consistent](https://oneflow.readthedocs.io/en/master/tensor.html#oneflow.Tensor.to_consistent) to convert local tensor to consistent tensor.
+Users can create local tensor first, then use [Tensor.to_consistent](https://oneflow.readthedocs.io/en/master/tensor.html#oneflow.Tensor.to_consistent) to convert local tensor to consistent tensor.
 
 In the following example, two local tensor of `shape=(2, 5)` are created on the two machines. Note that after calling `to_consistent`, the result consistent tensor has `shape` `(4, 5)`
 
@@ -113,11 +113,11 @@ This is because of the chosen `sbp=flow.sbp.split(0)`. Two local tensor of shape
     x_consistent.shape
     ```
 
-## Practice with SBP Signature
+## Practice With SBP Signature
 
-### Data-parallelism
+### Data-Parallelism
 
-The following code is an example of data-parallelism of [common distributed parallelism strategy](./01_introduction.md#_4)
+The following code is an example of [data-parallelism of common distributed parallelism](./01_introduction.md#_4)
 
 ![data parallelism](./imgs/matmul_data_paralelism.png)
 
@@ -145,7 +145,7 @@ The following code is an example of data-parallelism of [common distributed para
     y.shape
     ```
 
-Observe that `flow.matmul` checks its input `x` and `w` whose SBP are `split(0)` and `broadcast` respectively. Oneflow then derives and ouputs the SBP of `y` which is `split(0)`. In the end, computation is done with a matrix of `shape=(4,8)`. Output:
+Observe that `flow.matmul` checks its input `x` and `w` whose SBP are `split(0)` and `broadcast`, respectively. Oneflow then derives and outputs the SBP of `y` which is `split(0)`. In the end, computation is done with a matrix of `shape=(4,8)`. Output:
 
 === "Terminal 0"
     ```text
@@ -159,9 +159,9 @@ Observe that `flow.matmul` checks its input `x` and `w` whose SBP are `split(0)`
     flow.Size([4, 8])
     ```
 
-### Model-parallelism
+### Model-Parallelism
 
-The following code is an example of model-parallelism of [common distributed parallelism strategy](./01_introduction.md#_5).
+The following code is an example of [model-parallelism of common distributed parallelism](./01_introduction.md#_5).
 
 ![data parallelism](./imgs/matmul_model_paralelism.png)
 
@@ -189,7 +189,7 @@ The following code is an example of model-parallelism of [common distributed par
     y.shape
     ```
 
-Observe that `flow.matmul` checks its input `x` and `w` whose SBP are `broadcast` and `split(0)` respectively. Oneflow then derives and ouputs the SBP of `y` which is `split(1)`. In the end, computation is done with a matrix of `shape=(4,8)`. Output:
+Observe that `flow.matmul` checks its input `x` and `w` whose SBP are `broadcast` and `split(0)`, respectively. Oneflow then derives and outputs the SBP of `y` which is `split(1)`. In the end, computation is done with a matrix of `shape=(4,8)`. Output:
 
 === "Terminal 0"
     ```text
@@ -203,43 +203,43 @@ Observe that `flow.matmul` checks its input `x` and `w` whose SBP are `broadcast
     flow.Size([4, 8])
     ```
 
-## Extented Reading
+## Extended Reading
 
-### Environment Variables in Multi-machine Training
+### Environment Variables in Multi-Machine Training
 
-The example in this article sets environment variables to configure distributed training. Doing so allows programmers to see the effects and output in a interactive python environment. If the training is needed in production instead of in learning or experiments, one may launch distributed training using [oneflow.distributed.launch](./04_launch.md). This module automatically sets necessary environment variables based on command-line arguments.
+The example in this article sets environment variables to configure distributed training. Doing so allows programmers to see the effects and output in an interactive python environment. If the training is needed in production instead of in learning or experiments, one may launch distributed training using [oneflow.distributed.launch](./04_launch.md). This module automatically sets necessary environment variables based on command-line arguments.
 
 - `MASTER_ADDR`：The IP of the 0th machine in a multi-machine case
 - `MASTER_PORT`：The listening port of the 0th machine in a multi-machine case. Note that this port should not be in use
-- `WORLD_SIZE`：The number of computing devices in the whole cluster. Because currently oneflow only supports having the  same number of GPUs on the machines, `WORLD_SIZE` is actually $number\:of\:machines \times number\:of\:GPUs\:on\:one\:machine$. In our example, we have one machine and two GPUs on it, so `WORLD_SIZE=2`
+- `WORLD_SIZE`：The number of computing devices in the whole cluster. Because currently oneflow only supports having the  same number of GPUs on each machines, `WORLD_SIZE` is actually $number\:of\:machines \times number\:of\:GPUs\:on\:one\:machine$. In our example, we have one machine and two GPUs on it, so `WORLD_SIZE=2`
 
-`RANK` and `LOCAL_RANK` are indexs for machines. The difference is that `RANK` is a "global perspective" index, while `LOCAL_RANK` is a "local perspective" index. In the case that only one machine is involved, the `RANK` and `LOCAL_RANK` are the same. In our example, there are two GPUs, indexed 0 and 1.
+`RANK` and `LOCAL_RANK` are indexes for machines. The difference is that `RANK` is a "global perspective" index, while `LOCAL_RANK` is a "local perspective" index. In the case that only one machine is involved, the `RANK` and `LOCAL_RANK` are the same. In our example, there are two GPUs, indexed 0 and 1.
 
-When there are multiple machines, the upper bound of `LOCAL_RANK` on a machine is the number of computing devices on the machine. The upper bound of `RANK` is the sum  of all computing devices on all machines. The indexing of these computing devices starts from 0.
+When there are multiple machines, the upper bound of `LOCAL_RANK` on a machine is the number of computing devices on the machine. The upper bound of `RANK` is the sum of all computing devices on all machines. The indexing of these computing devices starts from 0. (Both upper bounds are non-inclusive since indexing starts from 0)
 
-Assume that there are two machines and there are two graphics cards on each machine. The list below illustrates the correspondence between `LOCAL_RANK` and `RANK`
+Assume that there are two machines and there are two graphic cards on each machine. The list below illustrates the correspondence between `LOCAL_RANK` and `RANK`
 
-|                      | RANK | LOCAL_RANK |
-| -------------------- | ---- | ---------- |
-| GPU #0 on Machine #0 | 0    | 0          |
-| GPU #1 on Machine #0 | 1    | 1          |
-| GPU #0 on Machine #1 | 2    | 0          |
-| GPU #1 on Machine #1 | 3    | 1          |
+|                    | RANK | LOCAL_RANK |
+| ------------------ | ---- | ---------- |
+| GPU 0 on Machine 0 |   0  |     0      |
+| GPU 1 on Machine 0 |   1  |     1      |
+| GPU 0 on Machine 1 |   2  |     0      |
+| GPU 1 on Machine 1 |   3  |     1      |
 
-### Boxing（Automatic Conversion Of SBP）
+### Boxing（Automatic Conversion of SBP）
 
 From the coding example, we learned that an operator can derive and set the SBP of the output tensor, given the SBP of the input tensor and the built-in SBP Signature of the operator.
 
-But what if the SBP of the output tensor does not satisfy what the next-layer operater requires?
+But what if the SBP of the output tensor does not satisfy what the next-layer operator requires?
 
-Assume that in data-parallelism, there are two layers of matrix multiplication. Both layers uses model-parallelism.
+Assume that in data-parallelism, there are two layers of matrix multiplication. Both layers use model-parallelism.
 
 ![multi-layer-matmul](./imgs/multi-matmul.png)
 
-The SBP (`split(1)`) of the output from the first layer is not what the second layer expects (`broadcast`). In this case, OneFlow automatically inserts Boxing in between the output of the first layer and the input of the second layer. Collective communication is used to perform necessary data conversion.。
+The SBP (`split(1)`) of the output from the first layer is not what the second layer expects (`broadcast`). In this case, OneFlow automatically inserts Boxing in between the output of the first layer and the input of the second layer. Collective communication is used to perform necessary data conversion.
 
 Converting `split(1)` to `broadcast` is equivalent to an `AllGather` operation, as shown in the figure below.
 
 ![s2b](./imgs/boxing_s2b.png)
 
-Because of Boxing, the users only need to focus on the SBP setting of the critical places (like the source operator). The rest are all handled by the OneFlow framework.
+Because of Boxing, the users only need to focus on the SBP setting of the critical places (like the source operator). The rest is all handled by the OneFlow framework.
