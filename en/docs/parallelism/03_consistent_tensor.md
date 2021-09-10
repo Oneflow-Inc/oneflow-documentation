@@ -86,9 +86,9 @@ Call [to_local()](https://oneflow.readthedocs.io/en/master/tensor.html#oneflow.T
 
 Users can create local tensor first, then convert it to consistent tensor with [Tensor.to_consistent](https://oneflow.readthedocs.io/en/master/tensor.html#oneflow.Tensor.to_consistent).
 
-In the following example, local tensor of `shape=(2, 5)` are created separately on two different machines. `x.to_consistent()` will return the consistent tensor with `shape` `(4, 5)`
+In the following example, local tensor of `shape=(2, 5)` are created separately on two different machines. `x.to_consistent()` will return the consistent tensor with `shape` `(4, 5)`.
 
-This is because of the chosen `sbp=flow.sbp.split(0)`. Two local tensor of shape `(2, 5)` needs to be concatenated on the 0th dimension and result in a `(4, 5)` consistent tensor.
+By setting the sbp to `sbp=flow.sbp.split(0)`, two local tensors of shape `(2, 5)` will be concatenated on the 0th dimension, which results in a consistent tensor with logical shape `(4, 5)`.
 
 === "Terminal 0"
     ```python
