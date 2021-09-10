@@ -64,7 +64,7 @@ Output:
 
 ### Get Local Tensor From Consistent Tensor
 
-Call [to_local](https://oneflow.readthedocs.io/en/master/tensor.html#oneflow.Tensor.to_local) to check the local tensor on a device
+Call [to_local()](https://oneflow.readthedocs.io/en/master/tensor.html#oneflow.Tensor.to_local) to check the local tensor on a device
 
 === "Terminal 0"
     ```python
@@ -86,7 +86,7 @@ Call [to_local](https://oneflow.readthedocs.io/en/master/tensor.html#oneflow.Ten
 
 Users can create local tensor first, then convert it to consistent tensor with [Tensor.to_consistent](https://oneflow.readthedocs.io/en/master/tensor.html#oneflow.Tensor.to_consistent).
 
-In the following example, two local tensor of `shape=(2, 5)` are created on the two machines. Note that after calling `to_consistent`, the result consistent tensor has `shape` `(4, 5)`
+In the following example, local tensor of `shape=(2, 5)` are created separately on two different machines. `x.to_consistent()` will return the consistent tensor with `shape` `(4, 5)`
 
 This is because of the chosen `sbp=flow.sbp.split(0)`. Two local tensor of shape `(2, 5)` needs to be concatenated on the 0th dimension and result in a `(4, 5)` consistent tensor.
 
