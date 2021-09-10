@@ -1,0 +1,15 @@
+name: Check PR
+
+on:
+  pull_request:
+    types: [opened, labeled, unlabeled, synchronize]
+
+jobs:
+  check_labels:
+    runs-on: ubuntu-18.04
+    name: Labels
+    steps:
+      - name: Check type labels 'cn, en, fix, enhancement'
+        if: (contains(github.event.pull_request.labels.*.name, 'cn') || contains(github.event.pull_request.labels.*.name, 'enhancement') || contains(github.event.pull_request.labels.*.name, 'en') || contains(github.event.pull_request.labels.*.name, 'fix')) == false
+        run: |
+          exit 1
