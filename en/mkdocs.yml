@@ -111,9 +111,6 @@ nav:
     - API:
       - API: https://oneflow.readthedocs.io/en/master/
 
-    - Basics:
-      - Quick Start: basics/01_quickstart.md
-
     - Compatible:
       - Introduce: single_client/quick_start/introduce.md
       - Quick Start in 3 Minutes: single_client/quick_start/quickstart_in_3_min.md
