@@ -1,10 +1,10 @@
 # DATASETS & DATALOADERS
 
-The behavior of OneFlow's `Dataset` and `DataLoader` is the same as [PyTorch](https://pytorch.org/tutorials/beginner/basics/data_tutorial.html). Both of `Dataset` and `DataLoader` are for data set management and training model decoupling.
+The behavior of OneFlow's `Dataset` and `DataLoader` is the same as [PyTorch](https://pytorch.org/tutorials/beginner/basics/data_tutorial.html). Both of `Dataset` and `DataLoader` are for management of data set and training model decoupling.
 
 [oneflow.utils.vision.datasets](https://oneflow.readthedocs.io/en/master/utils.html#module-oneflow.utils.vision.datasets) provides us a number of classes that can automatically download and load common datasets (such as fashionmnist).
 
-`DataLoader` wraps data into an iterable, for easy iterating and access to samples during training.
+`DataLoader` wraps data into an iterator, for easy iterating and access to samples during training.
 
 ```python
 import matplotlib.pyplot as plt
@@ -42,7 +42,7 @@ test_data = datasets.FashionMNIST(
 )
 ```
 
-The first time it runs, it will download the data set and output:
+The first time it runs, it will download the data set and output the following:
 
 ```text
 Downloading http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/train-images-idx3-ubyte.gz
@@ -145,9 +145,9 @@ Output：
 
 ## Using DataLoader
 
-The Dataset retrieves all our dataset’s features and labels one sample at a time. While training a model, we typically want to pass samples in “minibatches”, which means once load a dataset with batch size, and reshuffle the data at every epoch to reduce model overfitting.
+The Dataset retrieves all features of our dataset and labels one sample at a time. While training a model, we typically want to pass samples in “minibatches”, which means they will load a same amount of data as the batch size at the time, and reshuffle the data at every epoch to reduce model overfitting.
 
-At this time, we can use `DataLoader`. `DataLoader` can wrap `Dataset` as an iterator to access data during the training loop. Here is an example:
+At this time, we can use `DataLoader`. `DataLoader` can wrap `Dataset` into an iterator to access data during the training loop. Here is an example:
 
 - `batch_size=64`: a returned dataset of batch size at each iteration
 - `shuffle`: whether the data is shuffled after we iterate over all batches 

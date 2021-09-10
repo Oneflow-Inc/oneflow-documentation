@@ -89,7 +89,7 @@ OrderedDict([('weight', tensor([[1., 1.],
 
 OneFlow can directly load PyTorch's pre-trained model for prediction as long as the structure and parameter names of the model are aligned with the PyTorch model.
 
-Examples ca be find in [OneFlow Models 仓库的这个 README](https://github.com/Oneflow-Inc/models/tree/main/shufflenetv2#convert-pretrained-model-from-pytorch-to-oneflow).
+Examples ca be find in [ in OneFlow Models](https://github.com/Oneflow-Inc/models/tree/main/shufflenetv2#convert-pretrained-model-from-pytorch-to-oneflow).
 
 After sunning the following command line, we can experience how to use the pre-trained model to make predictions:
 
