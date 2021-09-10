@@ -1,6 +1,6 @@
 # DATASETS & DATALOADERS
 
-The behavior of OneFlow's `Dataset` and `DataLoader` is the same as [PyTorch](https://pytorch.org/tutorials/beginner/basics/data_tutorial.html). Both of `Dataset` and `DataLoader` are for management of data set and training model decoupling.
+The behavior of OneFlow's `Dataset` and `DataLoader` is the same as [PyTorch](https://pytorch.org/tutorials/beginner/basics/data_tutorial.html). Both of `Dataset` and `DataLoader` are for data set management and training model decoupling.
 
 [oneflow.utils.vision.datasets](https://oneflow.readthedocs.io/en/master/utils.html#module-oneflow.utils.vision.datasets) provides us a number of classes that can automatically download and load common datasets (such as fashionmnist).
 
