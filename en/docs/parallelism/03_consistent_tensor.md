@@ -27,9 +27,8 @@ Setting environment variables prepares the machines for distributed computing. P
 
 In the two consoles, separately import `oneflow` and create `x`.
 
-`flow.placement("cuda", {0:[0,1]})` sets the range of consistent tensor in the cluster.  
-- `"cuda"` means "on GPU".  The second parameter of 
-- `placement` is a dictionary. Its `key` is the index of machine, and its `value` is the index of the graphic cards. Therefore, `{0:[0,1]}` means that consistent tensor is on the 0th, 1st graphic cards of the 0th machine.
+`flow.placement("cuda", {0:[0,1]})` declears the devices to place the physical tensors.
+- `"cuda"` means "on GPU".  The second parameter of - `placement` is a dictionary. Its `key` is the index of machine, and its `value` is the index of the computing devices. Therefore, `{0:[0,1]}` means that consistent tensor is on the 0th, 1st graphic cards of the 0th machine.
 
 === "Terminal 0"
     ```python
@@ -85,7 +84,7 @@ Call [to_local](https://oneflow.readthedocs.io/en/master/tensor.html#oneflow.Ten
 
 ### Convert Local Tensor to Consistent Tensor
 
-Users can create local tensor first, then use [Tensor.to_consistent](https://oneflow.readthedocs.io/en/master/tensor.html#oneflow.Tensor.to_consistent) to convert local tensor to consistent tensor.
+Users can create local tensor first, then convert it to consistent tensor with [Tensor.to_consistent](https://oneflow.readthedocs.io/en/master/tensor.html#oneflow.Tensor.to_consistent).
 
 In the following example, two local tensor of `shape=(2, 5)` are created on the two machines. Note that after calling `to_consistent`, the result consistent tensor has `shape` `(4, 5)`
 
