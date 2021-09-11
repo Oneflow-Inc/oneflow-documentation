@@ -82,7 +82,7 @@ tensor(2., dtype=oneflow.float32)
 ```
 
 ### Call `backward()` Multiple Times on a Calculation Graph
-By default, we can only call `backward()` once for each calculation graph. For example, the following code will report an error:
+By default, we can only call `backward()` once for each calculation graph. For example, the following code will raise an error:
 
 ```python
 n1 = flow.tensor(10., requires_grad=True)
