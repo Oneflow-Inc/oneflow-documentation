@@ -18,7 +18,7 @@ import oneflow.utils.vision.datasets as datasets
 
 ## Loading a Dataset
 
-Here is an example of how to load a pre-loaded `Dataset`.
+Here is an example of how to load by `Dataset`.
 
 - `root`: the path where the train/test data is stored,
 - `train`: `True` for training dataset, `False` for test dataset
