@@ -171,7 +171,7 @@ False
 ### Gradients for Non-Scalar Outputs
 Usually, we call `backward()` on scalar `loss`.
 
-However, if `loss` is a tensor, an error will be reported when calling `backward()` on `loss`.
+However, if `loss` is a tensor, an error will be raised when calling `backward()` on `loss`.
 
 ```python
 x = flow.randn(1, 2, requires_grad=True)
