@@ -149,7 +149,7 @@ The Dataset retrieves all features of our dataset and labels one sample at a tim
 
 At this time, we can use `DataLoader`. `DataLoader` can wrap `Dataset` into an iterator to access data during the training loop. Here is an example:
 
-- `batch_size=64`: a returned dataset of batch size at each iteration
+- `batch_size=64`: the batch size at each iteration
 - `shuffle`: whether the data is shuffled after we iterate over all batches 
 
 ```python
