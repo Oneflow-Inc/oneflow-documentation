@@ -62,7 +62,7 @@ The first parameter is the Module parameters, and the second is the saved path. 
 
 ## Loading Models
 
-Using [oneflow.load](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.load#oneflow.load) to load parameters from specified disk path to the memory, and get the dictionary with the parameters.
+Using [oneflow.load](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.load#oneflow.load) to load parameters from disk  to memory with the specified path, and get the dictionary of the parameters.
 
 ```python
 params = flow.load("./model")
