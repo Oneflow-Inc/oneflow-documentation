@@ -1,6 +1,6 @@
 # AUTOGRAD
 
-The training process of a neural network is powered by **backpropagation algorithm**. In the backpropagation process, we update the parameters by obtaining the gradient of the loss function to the parameters.
+The training process of a neural network is powered by **backpropagation algorithm**. In the backpropagation process, we update the parameters by obtaining the gradient of the loss function with respect to the parameters.
 
 OneFlow provides an automatic differentiation engine, which can calculate the gradient of the parameters in the neural network automatically.
 
