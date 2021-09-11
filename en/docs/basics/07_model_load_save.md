@@ -56,7 +56,7 @@ We can use [oneflow.save](https://oneflow.readthedocs.io/en/master/oneflow.html?
 flow.save(m.state_dict(), "./model")
 ```
 
-The first parameter is the Module parameter, and the second is the save path. The above code saves the parameters of the `m` Module object to the path `./model`.
+The first parameter is the Module parameters, and the second is the saved path. The above code saves the parameters of the `m` Module object to the path `./model`.
 
 
 
