@@ -38,7 +38,7 @@ During the backpropagation process, the gradient of `l` to `w` and `b` is requir
 
 ### `backward()` and Gradient【不确定】
 
-During the backpropagation process, we need to get the gradients of `l` to `w`、`b` respectively, shown as $\frac{\partial l}{\partial w}$ and $\frac{\partial l}{\partial b}$. We only need to call the 'backward()' method on `l`, and then OneFlow will automatically calculate the gradients and store them in the `w.grad` and `b.grad`.【不确定】
+During the backpropagation process, we need to get the gradients of `l` to `w`, `b` respectively, shown as $\frac{\partial l}{\partial w}$ and $\frac{\partial l}{\partial b}$. We only need to call the 'backward()' method of `l`, and then OneFlow will automatically calculate the gradients and store them in the `w.grad` and `b.grad`.
 
 ```python
 l.backward()
