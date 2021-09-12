@@ -144,7 +144,7 @@ The following code is an example of [data-parallelism of common distributed para
     y.shape
     ```
 
-Observe that `flow.matmul` checks its input `x` and `w` whose SBP are `split(0)` and `broadcast`, respectively. Oneflow then derives and outputs the SBP of `y` which is `split(0)`. In the end, computation is done with a matrix of `shape=(4,8)`. Output:
+`flow.matmul` supports many SBP signatures of inputs. When the SBP of `x` and `w` are `split(0)` and `broadcast` respectively, the SBP of output `y` is `split(0)` with logical shape `(4, 8)`. Output:
 
 === "Terminal 0"
     ```text
@@ -188,7 +188,7 @@ The following code is an example of [model-parallelism of common distributed par
     y.shape
     ```
 
-Observe that `flow.matmul` checks its input `x` and `w` whose SBP are `broadcast` and `split(0)`, respectively. Oneflow then derives and outputs the SBP of `y` which is `split(1)`. In the end, computation is done with a matrix of `shape=(4,8)`. Output:
+`flow.matmul` supports many SBP signatures of inputs. When the SBP of `x` and `w` are `broadcast` and `split(0)` respectively, the SBP of output `y` is `split(1)` with logical shape `(4, 8)`. Output:
 
 === "Terminal 0"
     ```text
@@ -206,15 +206,15 @@ Observe that `flow.matmul` checks its input `x` and `w` whose SBP are `broadcast
 
 ### Environment Variables in Multi-Machine Training
 
-The example in this article sets environment variables to configure distributed training. Doing so allows programmers to see the effects and output in an interactive python environment. If the training is needed in production instead of in learning or experiments, one may launch distributed training using [oneflow.distributed.launch](./04_launch.md). This module automatically sets necessary environment variables based on command-line arguments.
+As in the examples shown above, users can manually launch the distributed training by setting the environment variables. In this way, users can clearly see the effects and outputs in an interactive python environment which is friendly for debuging. In production, users can instead launch the distributed training with [oneflow.distributed.launch](./04_launch.md). This module automatically sets necessary environment variables based on command-line arguments.
 
-- `MASTER_ADDR`：The IP of the 0th machine in a multi-machine case
-- `MASTER_PORT`：The listening port of the 0th machine in a multi-machine case. Note that this port should not be in use
+- `MASTER_ADDR`：The IP address of the 0th machine in the cluster
+- `MASTER_PORT`：The listening port of the 0th machine in a multi-machine case. Note that this port should not be occupied by another process
 - `WORLD_SIZE`：The number of computing devices in the whole cluster. Because currently oneflow only supports having the  same number of GPUs on each machines, `WORLD_SIZE` is actually $number\:of\:machines \times number\:of\:GPUs\:on\:one\:machine$. In our example, we have one machine and two GPUs on it, so `WORLD_SIZE=2`
 
-`RANK` and `LOCAL_RANK` are indexes for machines. The difference is that `RANK` is a "global perspective" index, while `LOCAL_RANK` is a "local perspective" index. In the case that only one machine is involved, the `RANK` and `LOCAL_RANK` are the same. In our example, there are two GPUs, indexed 0 and 1.
+`RANK` and `LOCAL_RANK` are indexes for processes. The difference is that `RANK` is a "global perspective" index, while `LOCAL_RANK` is a "local perspective" index. They are the same when only one machine is involved. In the above examples, we launch two processes on the same machine, so the `RANK` and `LOCAL_RANK` are the same.
 
-When there are multiple machines, the upper bound of `LOCAL_RANK` on a machine is the number of computing devices on the machine. The upper bound of `RANK` is the sum of all computing devices on all machines. The indexing of these computing devices starts from 0. (Both upper bounds are non-inclusive since indexing starts from 0)
+When launching the distributed training on multiple machines, the upper bound of `LOCAL_RANK` keeps the same with the number of computing devices on single machine. The upper bound of `RANK` keeps the same with the total number of computing devices in the cluster. The indexing of processes starts from 0. (Both upper bounds are non-inclusive since indexing starts from 0)
 
 Assume that there are two machines and there are two graphic cards on each machine. The list below illustrates the correspondence between `LOCAL_RANK` and `RANK`
 
@@ -229,16 +229,16 @@ Assume that there are two machines and there are two graphic cards on each machi
 
 From the coding example, we learned that an operator can derive and set the SBP of the output tensor, given the SBP of the input tensor and the built-in SBP Signature of the operator.
 
-But what if the SBP of the output tensor does not satisfy what the next-layer operator requires?
+But what if the SBP of the output tensor does not satisfy the requirements of the next-layer operator?
 
 Assume that in data-parallelism, there are two layers of matrix multiplication. Both layers use model-parallelism.
 
 ![multi-layer-matmul](./imgs/multi-matmul.png)
 
-The SBP (`split(1)`) of the output from the first layer is not what the second layer expects (`broadcast`). In this case, OneFlow automatically inserts Boxing in between the output of the first layer and the input of the second layer. Collective communication is used to perform necessary data conversion.
+The SBP (`split(1)`) of the output from the first layer is not what the second layer expects (`broadcast`). In this case, OneFlow automatically inserts Boxing operation (AllGather) between the output of the first layer and the input of the second layer to perform necessary data movement.
 
 Converting `split(1)` to `broadcast` is equivalent to an `AllGather` operation, as shown in the figure below.
 
 ![s2b](./imgs/boxing_s2b.png)
 
-Because of Boxing, the users only need to focus on the SBP setting of the critical places (like the source operator). The rest is all handled by the OneFlow framework.
+Thanks to the Boxing mechanism, users only need to set the SBP signature of the critical places (like the source operator). The rest is all handled by the OneFlow framework and no need to insert the colletive communication operations manually.
