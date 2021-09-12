@@ -231,7 +231,7 @@ From the coding example, we learned that an operator can derive and set the SBP 
 
 But what if the SBP of the output tensor does not satisfy the requirements of the next-layer operator?
 
-Assume that in data-parallelism, there are two layers of matrix multiplication. Both layers use model-parallelism.
+Assume that in model-parallelism, there are two layers of matrix multiplication. Both layers use model-parallelism.
 
 ![multi-layer-matmul](./imgs/multi-matmul.png)
 
