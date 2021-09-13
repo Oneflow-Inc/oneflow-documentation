@@ -4,6 +4,7 @@
 
 在 OneFlow 的 [一致性视角](./03_consistent_tensor.md) 下，通过简单的设置 Tensor 的 `placement` 属性，就可以实现流水并行。
 
+<<<<<<< HEAD
 以下代码是简单的示范，它将 [快速上手](../basics/01_quickstart.md) 中的网络，以流水并行的方式运行。前几层的 Module `nn.Flatten`、`nn.Linear(28*28, 512)`、`nn.ReLU()` 在 GPU0 上运行；剩余的网络部分在 GPU1 上运行。
 
 ??? code
@@ -143,3 +144,10 @@ OneFlow 通过这两项配置，获取实现流水并行中的 micro batch 技�
     self.module_pipeline.m_stage1.config.stage_id = 1
     self.config.set_gradient_accumulation_steps(2)
 ```
+=======
+可以用以下命令快速体验 OneFlow 的流水并行：
+
+```shell
+
+```
+>>>>>>> 11e5e1ae54788b33d8fc45a1fc8de92027cf248c
