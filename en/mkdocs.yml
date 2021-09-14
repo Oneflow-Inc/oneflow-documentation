@@ -108,7 +108,9 @@ extra_javascript:
 
 nav:
     - Home: index.md
-    - Basics:
+
+    - Basics: 
+      - Quickstart: basics/01_quickstart.md
       - Tensor: basics/02_tensor.md
 
     - API:
