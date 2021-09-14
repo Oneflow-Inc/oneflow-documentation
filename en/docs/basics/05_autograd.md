@@ -2,7 +2,7 @@
 
 The training process of a neural network is powered by **backpropagation algorithm**. In the backpropagation process, we update the parameters by obtaining the gradient of the loss function with respect to the parameters.
 
-OneFlow provides an automatic differentiation engine, which can calculate the gradient of the parameters in the neural network automatically.
+OneFlow provides an autograd engine, which can calculate the gradient of the parameters in the neural network automatically.
 
 We will first introduce the basic concepts of the computational graph, which are conducive to understand the common settings and limitations of Oneflow's automatic differentiation. Then we introduce OneFlow's common automatic differentiation interfaces.【待修改】
 
