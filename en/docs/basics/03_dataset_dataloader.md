@@ -106,7 +106,7 @@ After inheriting [oneflow.utils.data.Dataset](https://oneflow.readthedocs.io/en/
 Here is an example of how to create a custom `Dataset`, the key steps are:
 
 - Inheriting `oneflow.utils.data.Dataset`
-- The `__len__`  function returns the number of samples in our dataset.
+- Implements the `__len__`  method that returns the number of samples in our dataset.
 - The`__getitem__` function loads and returns a sample from the dataset at the given `dataset_obj[idx]`.
 
 ```python
