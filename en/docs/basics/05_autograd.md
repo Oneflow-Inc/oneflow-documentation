@@ -116,7 +116,7 @@ tensor(40., dtype=oneflow.float32)
 ```
 
 The above output shows that OneFlow will **accumulate** the gradient calculated by `backward()` multiple times.
-We need to call the `zeros_()` to clear the gradient:
+By calling the `zeros_()`, we can clear the gradient:
 
 
 ```python
