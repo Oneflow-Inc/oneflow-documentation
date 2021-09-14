@@ -99,7 +99,7 @@ plt.show()
 
 ![fashionMNIST](./imgs/fashionMNIST.png)
 
-## Creating a Custom Dataset for your files
+## Creating a Custom Dataset for Your Files
 
 After inheriting [oneflow.utils.data.Dataset](https://oneflow.readthedocs.io/en/master/utils.html?highlight=oneflow.utils.data.Dataset#oneflow.utils.data.Dataset), we can custom a `Dataset`. Custom `Dataset` can be used with `Dataloader` introduced in the next section to simplify data processing.
 
