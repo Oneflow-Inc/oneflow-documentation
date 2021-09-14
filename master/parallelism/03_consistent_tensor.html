@@ -1174,11 +1174,11 @@ python3
 </div>
 <p>输出：</p>
 <div class="tabbed-set" data-tabs="3:2"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><label for="__tabbed_3_1">Terminal 0</label><div class="tabbed-content">
-<div class="highlight"><pre><span></span><code>flow.Size([4, 5])
+<div class="highlight"><pre><span></span><code>oneflow.Size([4, 5])
 </code></pre></div>
 </div>
 <input id="__tabbed_3_2" name="__tabbed_3" type="radio" /><label for="__tabbed_3_2">Terminal 1</label><div class="tabbed-content">
-<div class="highlight"><pre><span></span><code>flow.Size([4, 5])
+<div class="highlight"><pre><span></span><code>oneflow.Size([4, 5])
 </code></pre></div>
 </div>
 </div>
@@ -1255,12 +1255,12 @@ python3
 <p>可以观察到，<code>flow.matmul</code> 根据输入 <code>x</code> 与 <code>w</code> 的 SBP 分别为 <code>split(0)</code>、<code>broadcast</code>。OneFlow 自动推倒出输出 <code>y</code> 的 SBP 应该为 <code>split(0)</code>，完成计算，得到 <code>shape=(4,8)</code> 的矩阵。输出：</p>
 <div class="tabbed-set" data-tabs="7:2"><input checked="checked" id="__tabbed_7_1" name="__tabbed_7" type="radio" /><label for="__tabbed_7_1">Terminal 0</label><div class="tabbed-content">
 <div class="highlight"><pre><span></span><code>(oneflow.sbp.split(axis=0),)
-flow.Size([4, 8])
+oneflow.Size([4, 8])
 </code></pre></div>
 </div>
 <input id="__tabbed_7_2" name="__tabbed_7" type="radio" /><label for="__tabbed_7_2">Terminal 1</label><div class="tabbed-content">
 <div class="highlight"><pre><span></span><code>(oneflow.sbp.split(axis=0),)
-flow.Size([4, 8])
+oneflow.Size([4, 8])
 </code></pre></div>
 </div>
 </div>
@@ -1293,12 +1293,12 @@ flow.Size([4, 8])
 <p>可以观察到，<code>flow.matmul</code> 根据输入 <code>x</code> 与 <code>w</code> 的 SBP 分别为 <code>broadcast</code>、<code>split(1)</code>。OneFlow 自动推倒出输出 <code>y</code> 的 SBP 应该为 <code>split(1)</code>，完成计算，得到 <code>shape=(4,8)</code> 的矩阵。输出：</p>
 <div class="tabbed-set" data-tabs="9:2"><input checked="checked" id="__tabbed_9_1" name="__tabbed_9" type="radio" /><label for="__tabbed_9_1">Terminal 0</label><div class="tabbed-content">
 <div class="highlight"><pre><span></span><code>(oneflow.sbp.split(axis=1),)
-flow.Size([4, 8])
+oneflow.Size([4, 8])
 </code></pre></div>
 </div>
 <input id="__tabbed_9_2" name="__tabbed_9" type="radio" /><label for="__tabbed_9_2">Terminal 1</label><div class="tabbed-content">
 <div class="highlight"><pre><span></span><code>(oneflow.sbp.split(axis=1),)
-flow.Size([4, 8])
+oneflow.Size([4, 8])
 </code></pre></div>
 </div>
 </div>
