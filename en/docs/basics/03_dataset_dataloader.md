@@ -20,9 +20,9 @@ import oneflow.utils.vision.datasets as datasets
 
 Here is an example of how to load a pre-loaded `Dataset`.
 
-- `root`: the path where the train/test data is stored,
-- `train`: `True` for training dataset, `False` for test dataset
-- `download=True`: downloads the data from the internet if it’s not available at `root`.
+- `root`: the path where the train/test data is stored;
+- `train`: `True` for training dataset, `False` for test dataset;
+- `download=True`: downloads the data from the internet if it’s not available at `root`;
 - `transforms`: the feature and label transformations.
 
 
@@ -99,15 +99,15 @@ plt.show()
 
 ![fashionMNIST](./imgs/fashionMNIST.png)
 
-## Creating a Custom Dataset for your files
+## Creating a Custom Dataset for Your Files
 
-After inheriting [oneflow.utils.data.Dataset](https://oneflow.readthedocs.io/en/master/utils.html?highlight=oneflow.utils.data.Dataset#oneflow.utils.data.Dataset), we can custom a `Dataset`. Custom `Dataset` can be used with `Dataloader` introduced in the next section to simplify data processing.
+A custom dataset can be defined by inheriting [oneflow.utils.data.Dataset](https://oneflow.readthedocs.io/en/master/utils.html?highlight=oneflow.utils.data.Dataset#oneflow.utils.data.Dataset). Custom `Dataset` can be used with `Dataloader` introduced in the next section to simplify data processing.
 
 Here is an example of how to create a custom `Dataset`, the key steps are:
 
-- inheriting `oneflow.utils.data.Dataset`
-- The `__len__`  function returns the number of samples in our dataset.
-- The`__getitem__` function loads and returns a sample from the dataset at the given `dataset_obj[idx]`.
+- Inheriting `oneflow.utils.data.Dataset`
+- Implements the `__len__`  method that returns the number of samples in our dataset.
+- Implements the `__getitem__` method that loads and returns a sample from the dataset when users call `dataset_obj[idx]`.
 
 ```python
 import numpy as np
@@ -145,11 +145,11 @@ Output：
 
 ## Using DataLoader
 
-The Dataset retrieves all features of our dataset and labels one sample at a time. While training a model, we typically want to pass samples in “minibatches”, which means they will load a same amount of data as the batch size at the time, and reshuffle the data at every epoch to reduce model overfitting.
+The Dataset retrieves all features of our dataset and labels one sample at a time. While training a model, we typically want to pass samples in "minibatches", which means they will load a same amount of data as the batch size at the time, and reshuffle the data at every epoch to reduce model overfitting.
 
 At this time, we can use `DataLoader`. `DataLoader` can wrap `Dataset` into an iterator to access data during the training loop. Here is an example:
 
-- `batch_size=64`: a returned dataset of batch size at each iteration
+- `batch_size=64`: the batch size at each iteration
 - `shuffle`: whether the data is shuffled after we iterate over all batches 
 
 ```python

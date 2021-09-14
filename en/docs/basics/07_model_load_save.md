@@ -7,10 +7,10 @@ There are two common uses for loading and saving models:
 
 We will introduce how to use [save](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.save#oneflow.save) and [load](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.load#oneflow.load) to save and load models as follows.
 
-Also, we will show how to load a pre-trained model to run model predictions.
+Also, we will show how to load a pre-trained model for inference.
 
 ## Saving and Loading Model Parameters
-`Module` provided by OneFlow and defined by users provides the `state_dict` method to obtain all the model parameters, which is stored in a "parameter name-parameter value" dictionary.【不确定】
+`Module` provided by OneFlow and defined by users provides the `state_dict` method to obtain all the model parameters, which is stored in a dictionary with the format "name-value".
 
 ```python
 import oneflow as flow
@@ -18,7 +18,7 @@ m = flow.nn.Linear(2,3)
 print(m.state_dict())
 ```
 
-The code above prints out the parameters in m which is in the pre-constructed Linear Module.
+The above code first constructs a Linear object, then prints its parameters.
 
 ```text
 OrderedDict([('weight',
@@ -56,13 +56,13 @@ We can use [oneflow.save](https://oneflow.readthedocs.io/en/master/oneflow.html?
 flow.save(m.state_dict(), "./model")
 ```
 
-The first parameter is the Module parameter, and the second is the save path. The above code saves the parameters of the `m` Module object to the path `./model`.
+The first parameter is the Module parameters, and the second is the saved path. The above code saves the parameters of the `m` Module object to the path `./model`.
 
 
 
 ## Loading Models
 
-Using [oneflow.load](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.load#oneflow.load) to load parameters from specified disk path to the memory, and get the dictionary with the parameters.
+Using [oneflow.load](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.load#oneflow.load) to load parameters from disk  to memory with the specified path, and get the dictionary of the parameters.
 
 ```python
 params = flow.load("./model")
