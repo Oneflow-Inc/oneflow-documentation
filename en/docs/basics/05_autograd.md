@@ -71,6 +71,7 @@ n3.backward()
 print(n1.grad)
 print(n2.grad)
 ```
+
 we get $\frac{\partial n_3}{\partial n_1}$ and $\frac{\partial n_3}{\partial n_2}$ using the code above.
 
 
