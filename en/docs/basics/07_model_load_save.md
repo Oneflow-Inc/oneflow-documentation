@@ -10,7 +10,7 @@ We will introduce how to use [save](https://oneflow.readthedocs.io/en/master/one
 Also, we will show how to load a pre-trained model to run model predictions.
 
 ## Saving and Loading Model Parameters
-`Module` provided by OneFlow and defined by users provides the `state_dict` method to obtain all the model parameters, which is stored in a "parameter name-parameter value" dictionary.【不确定】
+`Module` provided by OneFlow and defined by users provides the `state_dict` method to obtain all the model parameters, which is stored in a dictionary with the format "name-value".
 
 ```python
 import oneflow as flow
