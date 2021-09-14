@@ -4,11 +4,11 @@ The training process of a neural network is powered by **backpropagation algorit
 
 OneFlow provides an automatic differentiation engine, which can calculate the gradient of the parameters in the neural network automatically.
 
-We will first introduce the basic concepts of the computational graph, which are conducive to understand the common settings and limitations of Oneflow's automatic differentiation. Then we introduce OneFlow's common automatic differentiation interfaces.【待修改】
+We will first introduce the basic concepts of the computation graph, which are conducive to understand the common settings and limitations of Oneflow's automatic differentiation. Then we introduce OneFlow's common automatic differentiation interfaces.【待修改】
 
-##  Computational Graph
+##  Computation Graph
 
-Computational graphs are composed of tensors and operators. We show this in code as below:
+Computation graphs are composed of tensors and operators. We show this in code as below:
 
 ```python
 import oneflow as flow
@@ -16,7 +16,7 @@ import oneflow as flow
 def loss(y_pred, y):
     return flow.sum(1/2*(y_pred-y)**2)
 
-x = flow.ones(1, 5)  # input【不确定】
+x = flow.ones(1, 5)  # input
 w = flow.randn(5, 3, requires_grad=True)
 b = flow.randn(1, 3, requires_grad=True)
 z = flow.matmul(x, w) + b
@@ -29,14 +29,14 @@ Corresponding calculation diagram：
 
 ![todo](./imgs/compute_graph.png)
 
-In computational graph, leaf nodes are the input tensors, like `x`, `w`, `b`, and `y`, and root nodes are the output tensors, like `loss`.
+In computation graph, the nodes only with output and with no input called **leaf node**, like `x`, `w`, `b`, and `y`, and the nodes only with input and without output called **root node**, like `loss`.
 
 During the backpropagation process, the gradient of `l` to `w` and `b` is required to update `w` and `b`. Therefore, we need to set `requires_grad` as `True` when creating them.
 
 
 ## Automatic Gradient
 
-### `backward()` and Gradient【不确定】
+### `backward()` and Gradient
 
 During the backpropagation process, we need to get the gradients of `l` to `w`、`b` respectively, shown as $\frac{\partial l}{\partial w}$ and $\frac{\partial l}{\partial b}$. We only need to call the 'backward()' method on `l`, and then OneFlow will automatically calculate the gradients and store them in the `w.grad` and `b.grad`.【不确定】
 
@@ -81,8 +81,8 @@ tensor(-8.7423e-08, dtype=oneflow.float32)
 tensor(2., dtype=oneflow.float32)
 ```
 
-### Call `backward()` Multiple Times on a Calculation Graph
-By default, we can only call `backward()` once for each calculation graph. For example, the following code will report an error:
+### Call `backward()` Multiple Times on a Computation Graph
+By default, we can only call `backward()` once for each computation graph. For example, the following code will report an error:
 
 ```python
 n1 = flow.tensor(10., requires_grad=True)
@@ -95,7 +95,7 @@ Error message:
 
 > Maybe you try to backward through the node a second time. Specify retain_graph=True when calling .backward() or autograd.grad() the first time.
 
-If we need `backward()` multiple times on the same calculation graph, `retain_graph` needs to be set as `True` when calling.
+If we need `backward()` multiple times on the same computation graph, `retain_graph` needs to be set as `True` when calling.
 
 ```python
 n1 = flow.tensor(10., requires_grad=True)
@@ -243,7 +243,7 @@ $$
 \frac{\partial y}{\partial x_2} = \frac{\partial 3x_1 + 3x_2 + 2}{\partial x_2} = 3
 $$
 
-In addition to using `sum()`, **Vector Jacobian Product(VJP)** is a more general method to calculate the gradient of the non-scalar root node. Using the above example, OneFlow will generate the Jacobian matrix according to the computational graph during the backpropagation process:
+In addition to using `sum()`, **Vector Jacobian Product(VJP)** is a more general method to calculate the gradient of the non-scalar root node. Using the above example, OneFlow will generate the Jacobian matrix according to the computation graph during the backpropagation process:
 
 $$
 J = \begin{pmatrix}
