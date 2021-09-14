@@ -11,7 +11,6 @@
     import oneflow as flow
 
     BATCH_SIZE = 16
-    DEVICE = "cuda"
     BROADCAST = [flow.sbp.broadcast]
     P0 = flow.placement("cuda", {0: [0]})
     P1 = flow.placement("cuda", {0: [1]})
@@ -97,25 +96,21 @@ python3 -m oneflow.distributed.launch --nproc_per_node 2 ./pipeline.py
 ```
 
 ## 代码解读
+### 设置 placement 与 sbp
 
-### Local Tensor 与 Consistent Tensor 的转换
-
-以上代码使用了随机生成的数据作为输入。
+将需要使用的 placement 与 sbp 设置提前准备好：
 
 ```python
-    x = flow.randn(BATCH_SIZE, 1, 28, 28)
-    x = x.to_consistent(P0, BROADCAST)
+BROADCAST = [flow.sbp.broadcast]
+P0 = flow.placement("cuda", {0: [0]})
+P1 = flow.placement("cuda", {0: [1]})
 ```
 
-当使用 `launch` 模块启动训练时，因为命令行参数为 `--nproc_per_node 2`，`launch` 会启动 2 个进程。两个进程均为执行脚本中的代码。其中 `x = flow.randn(BATCH_SIZE, 1, 28, 28)` 返回的是 Local Tensor（只在本进程中有效的本地数据），当运行 `x = x.to_consistent(P0, BROADCAST)` 时，OneFlow 会自动将所有紧张中的 Local Tensor 整合为 Consistent Tensor。
+`P0`、`P1` 分别代表第0号机器上的第0个 GPU 和第1个 GPU。
 
-在实际的训练中，各个计算设备也可以加载属于给自的本地数据，然后通过 `to_consistent` 实现 Local Tensor 到 Consistent Tensor 的转化。
+通过调用 [nn.Module.to_consistent](https://oneflow.readthedocs.io/en/master/module.html?highlight=to_consistent#oneflow.nn.Module.to_consistent) 或 [Tensor.to_consistent](https://oneflow.readthedocs.io/en/master/tensor.html?highlight=to_consistent#oneflow.Tensor.to_consistent) 就可以将模型或张量分配到指定的计算设备上运行，将一个网络拆分为多个流水阶段（stage）。
 
-### 流水设置
-
-通过设置 Module 的 `placement` 和 `sbp` 属性，就可以指定网络分配到哪个计算设备上运行，将一个网络拆分为多个流水阶段（stage）。
-
-在此我们定义了一个 `PipelineModule` 专门设置各阶段的流水信息。
+在此我们定义了一个 `PipelineModule` 专门设置各阶段的流水。
 
 ```python
     class PipelineModule(flow.nn.Module):
@@ -131,6 +126,21 @@ python3 -m oneflow.distributed.launch --nproc_per_node 2 ./pipeline.py
             out_stage1 = self.m_stage1(in_stage1)
             return out_stage1
 ```
+
+### Local Tensor 与 Consistent Tensor 的转换
+
+示例中使用了随机生成的数据作为输入。
+
+```python
+    x = flow.randn(BATCH_SIZE, 1, 28, 28)
+    x = x.to_consistent(P0, BROADCAST)
+```
+
+当使用 `launch` 模块启动训练时，因为命令行参数为 `--nproc_per_node 2`，`launch` 会启动 2 个进程。两个进程均为执行脚本中的代码。
+
+其中 `x = flow.randn(BATCH_SIZE, 1, 28, 28)` 返回的是 Local Tensor（只在本进程中有效的本地数据），当运行 `x = x.to_consistent(P0, BROADCAST)` 时，OneFlow 会自动将所有进程中的 Local Tensor 整合为 Consistent Tensor。
+
+在实际训练中，各个计算设备也可以加载属于各自的本地数据，然后通过 `to_consistent` 实现 Local Tensor 到 Consistent Tensor 的转化。
 
 ### Stage ID 及 梯度累积设置
 
