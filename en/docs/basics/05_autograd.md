@@ -199,7 +199,7 @@ Output：
 tensor([[3., 3.]], dtype=oneflow.float32)
 ```
 
-Please refer to the "Extended Reading" section below for the analysis of the cause and solution of the error.
+Please refer to the "Further Reading" section below for the analysis of the cause and its solution.
 
 ## Extended Reading
 
