@@ -125,7 +125,7 @@ NeuralNetwork(
 
 ## Training Model
 
-To train a model, we need a loss function (`loss_fn`) and an optimizer (`optimizer`).The loss function is used to evaluate the difference between the prediction of the neural network and the real label. The optimizer adjusts the parameters of the neural network to make the prediction more and more close to the real label (standard answer). Here, we use [oneflow.optim.SGD](https://oneflow.readthedocs.io/en/master/optim.html?highlight=optim.SGD#oneflow.optim.SGD) to be our optimizer. This process is called back propagation.
+To train a model, we need a loss function (`loss_fn`) and an optimizer (`optimizer`).The loss function is used to evaluate the difference between the prediction of the neural network and the real label. The optimizer adjusts the parameters of the neural network to make the prediction more and more close to the real label (expected answer). Here, we use [oneflow.optim.SGD](https://oneflow.readthedocs.io/en/master/optim.html?highlight=optim.SGD#oneflow.optim.SGD) to be our optimizer. This process is called back propagation.
 
 ```python
 loss_fn = nn.CrossEntropyLoss()
