@@ -112,6 +112,9 @@ nav:
     - Basics: 
       - Quickstart: basics/01_quickstart.md
       - Tensor: basics/02_tensor.md
+      
+    - Parallelism Training:
+      - Consistent Tensor: parallelism/03_consistent_tensor.md
 
     - API:
       - API: https://oneflow.readthedocs.io/en/master/
