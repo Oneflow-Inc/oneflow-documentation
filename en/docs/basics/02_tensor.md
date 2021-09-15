@@ -14,7 +14,7 @@ There are several ways to create tensors, including:
 
 - Directly from data
 - From a NumPy array
-- Created by an operator 
+- By an operator 
 ### Directly from data
 Tensors can be created directly from data:
 
@@ -55,9 +55,9 @@ tensor([[0.6213, 0.6142, 0.1592],
 ```
 
 
-### Created by an operator 
+### By an operator 
 
-There are also many operators available in OneFlow that you can use to create tensors. For example, [ones](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.ones#oneflow.ones), [zeros](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.zeros#oneflow.zeros) and [eye](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.eye#oneflow.eye) create all 1’s tensor, all 0’s tensor, and the unit tensor, respectively.
+There are also many operators available in OneFlow that can be used to create tensors. For example, [ones](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.ones#oneflow.ones), [zeros](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.zeros#oneflow.zeros) and [eye](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.eye#oneflow.eye), which create the all-ones tensor, zero tensor, and identity tensor, respectively.
 
 
 ```python
@@ -80,7 +80,7 @@ tensor([[1., 0., 0.],
         [0., 0., 1.]], dtype=oneflow.float32)
 ```
 
-The [randn](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.randn#oneflow.randn) method creates a randomized tensor:
+The [randn](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.randn#oneflow.randn) method creates a random tensor:
 
 ```python
 x8 = flow.randn(2,3)
