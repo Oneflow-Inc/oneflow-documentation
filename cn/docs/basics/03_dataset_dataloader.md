@@ -68,7 +68,7 @@ Extracting data/FashionMNIST/raw/t10k-labels-idx1-ubyte.gz to data/FashionMNIST/
 
 ## 遍历数据
 
-`Dataset` 对象，可以像 `list` 一样，用下表索引，比如 `training_data[index]`。
+`Dataset` 对象，可以像 `list` 一样，用下标索引，比如 `training_data[index]`。
 以下的例子，随机访问 `training_data` 中的9个图片，并显示。
 
 ```python
