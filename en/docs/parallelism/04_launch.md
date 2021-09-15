@@ -1,4 +1,4 @@
-#  START DISTRIBUTED TRAINING with the launch MODULE
+#  DISTRIBUTED TRAINING LAUNCHER
 
 OneFlow provides the `oneflow.distributed.launch` module to help users start distributed training more conveniently.
 

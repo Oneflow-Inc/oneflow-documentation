@@ -1,9 +1,10 @@
-# DATA PARALLEL TRAINING
+# DATA PARALLELISM TRAINING
 
 In [Common Distributed Parallel Strategies](./01_introduction.md), we introduced the characteristics of data parallel.
 
 OneFlow provides [oneflow.nn.parallel.DistributedDataParallel](https://oneflow.readthedocs.io/en/master/nn.html#oneflow.nn.parallel.DistributedDataParallel) module and [launcher](https://oneflow.readthedocs.io/en/master/distributed.html#oneflow-distributed), which allows users to run data parallel training almost without modifying the script of a single node.
-A quick start of OneFlow's data parallel:
+
+A quick start of OneFlow's data parallelsim training:
 
 ```shell
 wget https://docs.oneflow.org/master/code/parallelism/ddp_train.py #Download
@@ -65,7 +66,7 @@ Click "Code" below to expand the code of the above running script.
     optimizer = flow.optim.SGD(m.parameters(), m.lr)
 
     for i in range(0, m.iter_count):
-        rank = flow.framework.distribute.get_rank()
+        rank = flow.env.get_rank()
         x = train_x[rank].to("cuda")
         y = train_y[rank].to("cuda")
 
@@ -81,7 +82,7 @@ Click "Code" below to expand the code of the above running script.
     print(f"\nw:{m.w}")
     ```
 
-There are only two differences between the data parallel training code and the stand-alone single-card script:
+There are only two differences between the data parallelism training code and the stand-alone single-card script:
 
 - Use DistributedDataParallel to wrap the module object (`m = ddp(m)`)
 - Use [get_rank](https://oneflow.readthedocs.io/en/master/oneflow.html#oneflow.env.get_rank) to get the current device number and distribute the data to the device.

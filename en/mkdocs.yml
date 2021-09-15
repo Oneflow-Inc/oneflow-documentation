@@ -123,6 +123,8 @@ nav:
       
     - Parallelism Training:
       - Consistent Tensor: parallelism/03_consistent_tensor.md
+      - Distributed Training Launcher: parallelism/04_launch.md
+      - Data Parallelism Training: parallelism/05_ddp.md
 
     - API:
       - API: https://oneflow.readthedocs.io/en/master/
