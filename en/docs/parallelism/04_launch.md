@@ -2,7 +2,7 @@
 
 OneFlow provides the `oneflow.distributed.launch` module to help users start distributed training more conveniently.
 
-Users can start distributed training by the following forms:
+Users can start distributed training by the following commands:
 
 ```shell
 python3 -m oneflow.distributed.launch [Boot Option] training_script.py
@@ -43,15 +43,15 @@ python3 -m oneflow.distributed.launch --nproc_per_node=2 \
 
 We can view the description of the options of the `launch` module after running `python3 -m oneflow.distributed.launch -h`. The following are some common options:
 
--`--nnodes`: number of nodes
--`--node_rank`: the serial number of the machines, starting from 0
--`--nproc_per_node`: The number of processes per node to be started on each machine, which is recommended to be consistent with the number of GPUs
--`--logdir`: The relative storage path of the child process log
+- `--nnodes`: number of nodes
+- `--node_rank`: the serial number of the machines, starting from 0
+- `--nproc_per_node`: The number of processes per node to be started on each machine, which is recommended to be consistent with the number of GPUs
+- `--logdir`: The relative storage path of the child process log
 
 ### The Relationship between Launch Module and Parallel Strategy
 
-The main function of `oneflow.distributed.launch` is to allow users to start distributed training more conveniently after the user completes the distributed program. It saves the trouble of configuring [environment variables](./03_consistent_tensor.md#_5) in the configure cluster.
+The main function of `oneflow.distributed.launch` is to allow users to start distributed training more conveniently after the user completes the distributed program. It saves the trouble of configuring [environment variables](./03_consistent_tensor.md#_5) in the cluster.
 
-But `oneflow.distributed.launch` **does not determine** [Parallel Strategy](./01_introduction.md). the Parallel Strategy is determined by the setting data, the distribution method of the model, and the path on the physical device.
+But `oneflow.distributed.launch` **does not determine** [Parallel Strategy](./01_introduction.md). The Parallel Strategy is determined by the setup of the distribution method of data and the model, and the placement of those on the physical devices.
 
-OneFlow provides [Consistent Perspective](./02_sbp.md) and [Consistent Tensor](./03_consistent_tensor.md) to flexibly configure parallel strategies. And for data parallelism, OneFlow provides the [DistributedDataParallel](./05_ddp.md) module, which can change the stand-alone single-card script to the script of data parallel under the premise of minimal code modification.
+OneFlow provides [Consistent View](./02_sbp.md) and [Consistent Tensor](./03_consistent_tensor.md) to flexibly configure parallel strategies. And for data parallelism, OneFlow provides the [DistributedDataParallel](./05_ddp.md) module, which can change the stand-alone single-card script to the script of data parallel with  minimal code modification.

@@ -2,8 +2,7 @@
 
 In [Common Distributed Parallel Strategies](./01_introduction.md), we introduced the characteristics of data parallel.
 
-OneFlow provides [oneflow.nn.parallel.DistributedDataParallel](https://oneflow.readthedocs.io/en/master/nn.html#oneflow.nn.parallel.DistributedDataParallel) module and [launcher](https://oneflow.readthedocs.io/en/master/distributed.html#oneflow-distributed), which allows users to run data parallel training almost without modifying the script of a single machine or a single GUP.
-
+OneFlow provides [oneflow.nn.parallel.DistributedDataParallel](https://oneflow.readthedocs.io/en/master/nn.html#oneflow.nn.parallel.DistributedDataParallel) module and [launcher](https://oneflow.readthedocs.io/en/master/distributed.html#oneflow-distributed), which allows users to run data parallel training almost without modifying the script of a single node.
 A quick start of OneFlow's data parallel:
 
 ```shell
@@ -84,7 +83,7 @@ Click "Code" below to expand the code of the above running script.
 
 There are only two differences between the data parallel training code and the stand-alone single-card script:
 
-- Use DistributedDataParallel to process the module object (`m = ddp(m)`)
+- Use DistributedDataParallel to wrap the module object (`m = ddp(m)`)
 - Use [get_rank](https://oneflow.readthedocs.io/en/master/oneflow.html#oneflow.env.get_rank) to get the current device number and distribute the data to the device.
 
 Then use `launcher` to run the script, leave everything else to OneFlow, which makes distributed training as simple as stand-alone single-card training:
