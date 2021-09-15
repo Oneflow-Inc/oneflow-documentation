@@ -120,6 +120,8 @@ nav:
       - Static Graph Interface: basics/08_nn_graph.md
       
     - Parallelism Training:
+      - Common Parallel Strategies: parallelism/01_introduction.md
+      - Consistent View: parallelism/02_sbp.md
       - Consistent Tensor: parallelism/03_consistent_tensor.md
       - Distributed Training Launcher: parallelism/04_launch.md
       - Data Parallelism Training: parallelism/05_ddp.md
