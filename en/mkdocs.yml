@@ -108,8 +108,6 @@ extra_javascript:
 
 nav:
     - Home: index.md
-    - Basics: 
-      - Static Graph -- nn.Graph: basics/08_nn_graph.md 
 
     - Basics: 
       - Quickstart: basics/01_quickstart.md
@@ -119,7 +117,7 @@ nav:
       - Autograd: basics/05_autograd.md
       - Backpropagation and Optimizer: basics/06_optimization.md
       - Model saving and loading: basics/07_model_load_save.md
-      - STATIC GRAPH INTERFACE: basics/08_nn_graph.md
+      - Static Graph Interface: basics/08_nn_graph.md
       
     - Parallelism Training:
       - Consistent Tensor: parallelism/03_consistent_tensor.md
