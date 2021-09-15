@@ -6,7 +6,7 @@ In [oneflow.optim](https://oneflow.readthedocs.io/en/master/optim.html), there a
 
 This article will first introduce the basic concepts of back propagation and then show you how to use the `oneflow.optim` class.
 
-## numpy 手工实现反向传播【还不知道怎么翻译】
+## Backpropagation by Numpy Code
 
 In order to make it easier for readers to understand the relationship between backpropagation and autograd, a training process of a simple model implemented with numpy is provided here:
 
@@ -128,8 +128,8 @@ Then, select the loss function. OneFlow comes with a variety of loss functions. 
 ```python
 loss = flow.nn.MSELoss(reduction="sum")
 ```
-### Construct optimizer
-The logic of back propagation is encapsulated in optimizer. 【前一句不太自然，需要确认修改】We choose [SGD](https://oneflow.readthedocs.io/en/master/optim.html?highlight=sgd#oneflow.optim.SGD) here, You can choose other optimization algorithms as needed, such as [Adam](https://oneflow.readthedocs.io/en/master/optim.html?highlight=adam#oneflow.optim.Adam) and[AdamW](https://oneflow.readthedocs.io/en/master/optim.html?highlight=adamw#oneflow.optim.AdamW) .
+### Construct Optimizer
+The logic of back propagation is wrapped in optimizer. We choose [SGD](https://oneflow.readthedocs.io/en/master/optim.html?highlight=sgd#oneflow.optim.SGD) here, You can choose other optimization algorithms as needed, such as [Adam](https://oneflow.readthedocs.io/en/master/optim.html?highlight=adam#oneflow.optim.Adam) and[AdamW](https://oneflow.readthedocs.io/en/master/optim.html?highlight=adamw#oneflow.optim.AdamW) .
 
 ```python
 optimizer = flow.optim.SGD(model.parameters(), model.lr)
