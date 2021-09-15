@@ -1,4 +1,4 @@
-# Quickstart
+# QUICKSTART
 
 This section will take the training process of MNIST as an example to briefly show how OneFlow can be used to accomplish common tasks in deep learning. Refer to the links in each section to the presentation on each subtask.
 
