@@ -47,9 +47,9 @@ Extracting data/MNIST/raw/train-images-idx3-ubyte.gz to data/MNIST/raw
 ...
 ```
 
-This will download and extract the data set to.`./data` directory.
+The data will be downloaded and extracted to`./data` directory.
 
-A [oneflow.utils.data.DataLoader](https://oneflow.readthedocs.io/en/master/utils.html#oneflow.utils.data.DataLoader) wraps an iterable around the `dataset`.
+The [oneflow.utils.data.DataLoader](https://oneflow.readthedocs.io/en/master/utils.html#oneflow.utils.data.DataLoader) wraps an iterable around the `dataset`.
 
 
 ```python
@@ -125,14 +125,14 @@ NeuralNetwork(
 
 ## Training Model
 
-To train a model, we need a loss function (`loss_fn`) and an optimizer (`optimizer`).The loss function is used to evaluate the difference between the prediction of the neural network and the real label. The optimizer adjusts the parameters of the neural network to make the prediction more and more close to the real label (expected answer). Here, we use [oneflow.optim.SGD](https://oneflow.readthedocs.io/en/master/optim.html?highlight=optim.SGD#oneflow.optim.SGD) to be our optimizer. This process is called back propagation.
+To train a model, we need a loss function (`loss_fn`) and an optimizer (`optimizer`). The loss function is used to evaluate the difference between the prediction of the neural network and the real label. The optimizer adjusts the parameters of the neural network to make the prediction closer to the real label (expected answer). Here, we use [oneflow.optim.SGD](https://oneflow.readthedocs.io/en/master/optim.html?highlight=optim.SGD#oneflow.optim.SGD) to be our optimizer. This process is called back propagation.
 
 ```python
 loss_fn = nn.CrossEntropyLoss()
 optimizer = flow.optim.SGD(model.parameters(), lr=1e-3)
 ```
 
-The `train` function is defined for training. In a single training loop, the model make forward propagation, calculating loss, and back propagation to update model parameters.
+The `train` function is defined for training. In a single training loop, the model makes forward propagation, calculates loss, and backpropagates to update the model's parameters.
 
 
 ```python
