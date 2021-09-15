@@ -4,7 +4,7 @@
 
 OneFlow 提供了 [oneflow.nn.parallel.DistributedDataParallel](https://oneflow.readthedocs.io/en/master/nn.html#oneflow.nn.parallel.DistributedDataParallel) 模块及 [launcher](https://oneflow.readthedocs.io/en/master/distributed.html#oneflow-distributed)，可以让用户几乎不用对单机单卡脚本做修改，就能地进行数据并行训练。
 
-可以用快速体验 OneFlow 的数据并行：
+可以用以下命令快速体验 OneFlow 的数据并行：
 
 ```shell
 wget https://docs.oneflow.org/master/code/parallelism/ddp_train.py #下载脚本
@@ -66,7 +66,7 @@ w:tensor([[2.0000],
     optimizer = flow.optim.SGD(m.parameters(), m.lr)
 
     for i in range(0, m.iter_count):
-        rank = flow.framework.distribute.get_rank()
+        rank = flow.env.get_rank()
         x = train_x[rank].to("cuda")
         y = train_y[rank].to("cuda")
 

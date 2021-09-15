@@ -29,7 +29,7 @@ loss = flow.nn.MSELoss(reduction="sum")
 optimizer = flow.optim.SGD(m.parameters(), m.lr)
 
 for i in range(0, m.iter_count):
-    rank = flow.framework.distribute.get_rank()
+    rank = flow.env.get_rank()
     x = train_x[rank].to("cuda")
     y = train_y[rank].to("cuda")
 
