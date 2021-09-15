@@ -1,10 +1,10 @@
-# STATIC GRAPH -- NN.GRAPH
+# STATIC GRAPH INTERFACE: NN.GRAPH
 
 At present, there are two ways to run models in deep learning framework, **Dynamic Graph** and **Static Graph**, which are also called **Eager Mode** and **Graph Mode** in OneFlow.
 
-There are pros and cons to both approaches, and OneFlow offers support for both, with the  Eager Mode by default. If you are reading the tutorials for this basic topic in order, then all the code you have encountered so far is Eager Mode.
+There are pros and cons to both approaches, and OneFlow offers support for both, with the Eager Mode by default. If you are reading the tutorials for this basic topic in order, then all the code you have encountered so far is in Eager Mode.
 
-In general, dynamic graphs are easier to use and static graphs have better performance. OneFlow offers [nn.Graph](https://oneflow.readthedocs.io/en/master/graph.html) module, so that users can use the eager programming style to build static graphs and train the models.
+In general, dynamic graphs are easier to use and static graphs have better performance. OneFlow offers [nn.Graph](https://oneflow.readthedocs.io/en/master/graph.html), so that users can use the eager-like programming style to build static graphs and train the models.
 
 
 ## Eager Mode in OneFlow
@@ -13,7 +13,7 @@ OneFlow runs in Eager Mode by default.
 
 The following script, using polynomial $y=a+bx+cx^2+dx^3$ to fit the `sine` function $y=sin(x)$, finds a set of approximate fitting parameters $a$, $b$, $c$, $d$.
 
-This example was introduced to show how Eager Mode and Graph Mode are related in OneFlow (most of the code is reusable). Readers may be very familiar with OneFlow's Eager Mode now, here we do not explain in detail, interested readers can click on “Code”to expand the Code.
+This example was introduced to show how Eager Mode and Graph Mode are related in OneFlow (most of the code is reusable). Readers may be very familiar with OneFlow's Eager Mode now, here we do not explain in detail, interested readers can click on "Code" to expand the Code.
 
 > Note: This sample code is adapted from [PyTorch official tutorial](https://pytorch.org/tutorials/beginner/pytorch_with_examples.html#nn-module).
 
@@ -130,7 +130,7 @@ tensor([[ 4.0638, -1.4453,  3.9640]], dtype=oneflow.float32)
 ```
 
 
-Note that Graph is similar to Module in that the object itself is callable and it is **not recommended** to explicitly call the `build` method. The definition of a Graph is very similar to the use of a Module, in fact, Graph can directly reuse a defined Module. Users can refer the content in [Build Network](./04_build_network.md) directly to build a neural network in Graph Mode.
+Note that Graph is similar to Module in that the object itself is callable and it is **not recommended** to explicitly call the `build` method. The definition of a Graph is very similar to the use of a Module, in fact, Graph can directly reuse a defined Module. Users can refer the content in [Build Network](./04_build_network.md) directly about how to build a neural network in Graph Mode.
 
 For example, use the `model` above as the network structure:
 
@@ -148,7 +148,7 @@ class ModelGraph(flow.nn.Graph):
 model_graph = ModelGraph()
 ```
 
-The major difference between Module and Graph is that Graph uses `build` method rather than `forward` method to describe the computation process, because the build can contain not only forward computation, but also set `loss`, optimizer, etc. You will see an example of using Graph for training later.
+The major difference between Module and Graph is that Graph uses `build` method rather than `forward` method to describe the computation process, because the build method can contain not only forward computation, but also setting `loss`, optimizer, etc. You will see an example of using Graph for training later.
 
 ### Inference in Graph Mode
 The following example for inference in Graph Mode directly using the model, which we have already trained in Eager Mode at the beginning of this article.
@@ -179,7 +179,7 @@ plt.plot(x.numpy(),y_fit.numpy())
 
 ### Training in Graph Mode
 
-The Graph can be used for training. Click on the “Code” below to see the detailed code.
+The Graph can be used for training. Click on the "Code" below to see the detailed code.
 
 ??? code
     ```python
@@ -258,7 +258,7 @@ class LinearTrainGraph(flow.nn.Graph):
 
     def build(self, x, y):
         #...
-        loss.backward() (3)
+        loss.backward() # (3)
         #...
 ```
 
@@ -381,7 +381,7 @@ The advantage of using `debug`  is that the debug information is composed and pr
 
 In addition to the methods described above, getting the parameters of the gradient during the training process, accessing to the learning rate and other functions are also under development and will come up soon.
 
-## Extended Reading: Dynamic Graph vs. Static Graph
+## Further Reading: Dynamic Graph vs. Static Graph
 
 User-defined neural networks, are transformed by deep learning frameworks into computation graphs, like the example in [Autograd](./05_autograd.md):
 
@@ -404,13 +404,13 @@ The corresponding computation graph is:
 
 **Dynamic Graph**
 
-The characteristic of dynamic graph is that it is define by run.
+The characteristic of dynamic graph is that it is defined by run.
 
 The code above is run like this (Note: the figure below merges simple statements):
 
 ![dynamic graph](./imgs/dynamic_graph.gif)
 
-Because the dynamic graph is define by run, it is very flexible and easy to debug. You can modify the graph structure at any time and get results immediately. However, the deep learning framework can not get the complete graph information(which can be changed at any time and can never be considered as finished), it can not make full global optimization, so its performance is relatively poor.
+Because the dynamic graph is defined by run, it is very flexible and easy to debug. You can modify the graph structure at any time and get results immediately. However, the deep learning framework can not get the complete graph information(which can be changed at any time and can never be considered as finished), it can not make full global optimization, so its performance is relatively poor.
 
 **Static Graph**
 
