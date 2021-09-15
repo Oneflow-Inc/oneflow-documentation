@@ -51,15 +51,16 @@ extra:
   version:
     provider: mike
   alternate:
+    Switch to English
+    - name: English
+      link: https://docs.oneflow.org/en
+      lang: en
+
     # Switch to Chinese
     - name: 中文
       link: https://docs.oneflow.org
       lang: zh
 
-    # Switch to English
-    # - name: English
-    #   link: https://docs.oneflow.org/en
-    #   lang: en
   disqus: livere_indeed
 
 # Extensions
