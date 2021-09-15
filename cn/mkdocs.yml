@@ -51,7 +51,7 @@ extra:
   version:
     provider: mike
   alternate:
-    Switch to English
+    #Switch to English
     - name: English
       link: https://docs.oneflow.org/en
       lang: en
