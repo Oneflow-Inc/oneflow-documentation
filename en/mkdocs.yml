@@ -73,7 +73,8 @@ markdown_extensions:
   - markdown.extensions.meta
   - markdown.extensions.toc:
       permalink: true
-  - pymdownx.arithmatex
+  - pymdownx.arithmatex:
+      generic: true
   - pymdownx.betterem:
       smart_enable: all
   - pymdownx.caret
@@ -109,6 +110,13 @@ nav:
     - Home: index.md
     - Basics: 
       - Static Graph -- nn.Graph: basics/08_nn_graph.md 
+
+    - Basics: 
+      - Quickstart: basics/01_quickstart.md
+      - Tensor: basics/02_tensor.md
+      
+    - Parallelism Training:
+      - Consistent Tensor: parallelism/03_consistent_tensor.md
 
     - API:
       - API: https://oneflow.readthedocs.io/en/master/
