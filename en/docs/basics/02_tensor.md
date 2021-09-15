@@ -1,21 +1,21 @@
-# Tensor
+# TENSORS
 
 The data in the neural network is stored in tensors, which are similar to arrays and mathematical matrices. OneFlow provides a series of operators on tensors. Tensors, together with operators, build up a neural network.
 
-Tensors differs from regular multidimensional arrays in that they can run on AI chips（such as the Nvidia GPU）, as well as on CPU, thus increasing computing speed. In addition, OneFlow provides [Autograd](./05_autograd.md) which enable the Tensor to take derivatives automatically.
+Tensors differ from regular multidimensional arrays in that they can run on AI chips (such as the Nvidia GPU) and CPU, thus increasing computing speed. In addition, OneFlow provides [Autograd](./05_autograd.md) function, which supports automatic differentiation.
 
 ```python
 import oneflow as flow
 import numpy as np
 ```
 
-## Creating Tensor
+## Creating Tensors
 There are several ways to create tensors, including:
 
-- Create directly from data
-- Create with NumPy array
+- Directly from data
+- From a NumPy array
 - Created by an operator 
-### Create directly from data
+### Directly from data
 Tensors can be created directly from data:
 
 ```python
@@ -34,11 +34,11 @@ tensor([[1., 2.],
         [3., 4.]], dtype=oneflow.float32)
 ```
 
-We can see the tensor `x1` and `x2` are created, whose data types are `int64` and `float32` respectively.
+We can see that the tensor `x1` and `x2` are created, whose data types are `int64` and `float32`, respectively.
 
-### Create with NumPy array
+### From a NumPy array
 
-Tensors can be created from NumPy arrays, simply by passing the NumPy array as a parameter when the tensor object constructed.
+Tensors can be created from NumPy arrays by passing the NumPy array as a parameter when the tensor object is constructed.
 
 ```python
 x3 = flow.tensor(np.ones((2,3)))
