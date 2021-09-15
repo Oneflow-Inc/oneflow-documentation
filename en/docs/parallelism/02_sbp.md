@@ -1,17 +1,17 @@
-# Consistent View in Cluster
+# CONSISTENT VIEW
 
-The concept of **consistent view** in OneFlow is introduced to simplify distributed training. In a nutshell, the cluster is abstracted as a “Supercomputing Device” under OneFlow consistent view.
+The concept of **consistent view** in OneFlow is introduced to simplify distributed training. In short, the cluster is abstracted as a "Super Computing Device" under OneFlow consistent view.
 
-Instead of caring about the details of computing and communication in a cluster, users can program like on a single machine single card, and OneFlow can train the model in a distributed way.
+Instead of caring about the details of computing and communication in a cluster, users can program like on a single node, and OneFlow can train the model in a distributed way.
 
 
 ![consistent view](./imgs/consistent-view.png)
 
-OneFlow consistent view relies on several important concepts: **Placement**, **SBP**, and **SBP Signature**.
+OneFlow's consistent view relies on several important concepts: **Placement**, **SBP** and **SBP Signature**.
 
 ## Placement
 
-The Tensor under OneFlow consistent view has a `placement` attribute, specifies which physical device the Tensor is placed on.
+The Tensors of OneFlow has a `placement` attribute in consistent view; the `placement` specifies which physical device the Tensor is placed on.
 
 OneFlow will automatically number the devices in the cluster. For example, if there are four hosts in a cluster and each host has eight cards, then the four hosts correspond to ID: 0,1,2,3. The cards on each host correspond to numbers 0 to 7. To place a Tensor on the first four cards on machine 0, simply configure: `placement("cuda", {0: [0, 1, 2, 3]})`.
 
@@ -20,16 +20,12 @@ Placement makes it easy for OneFlow to support pipelining parallelism, and we’
 
 ## SBP
 
-SBP is a unique concept in OneFlow, which describes the mapping of data from a “Supercomputing Device” perspective to data on real physical devices in a cluster. It is a combination of the initials of three words: `split`, `broadcast`, `partial`.
+SBP is a unique concept in OneFlow, which describes the mapping of data from a "Super Computing Device" perspective to data on real physical devices in a cluster. It is a combination of the initials of three words: `split`, `broadcast`, `partial`.
 
 In detail:
 
 - `split` means that the physical Tensor is obtained by splitting the logical Tensor along a certain dimension. An `axis` parameter is used to indicate the dimension of the split. If multiple physical Tensors are concatenated along the dimension of Split, the logical Tensor can be restored.
-
-
 - `broadcast` indicates that each physical Tensor is exactly a copy of the logical Tensor.
-
-
 - `partial` indicates that although the physical Tensor has the same shape as the logical Tensor, the value in the physical Tensor is a part of the value in the corresponding position in the logical Tensor, if you add multiple physical Tensors at the same positions, you can restore the logical Tensor. Besides `sum`, `min`, `max` and some other opreations are made available for `partial`.
 
 The figures below show some examples of SBP, including `split(0)`, `split(1)`, `broadcast` and `partial sum`.
@@ -131,11 +127,11 @@ Because the shapes of $A_0$ and $B_0$ do not meet the requirements of matrix mul
 We defines **a specific, valid SBP combination** of the inputs and outputs of an operator, as shown above, as a **SBP Signature** of this operator.
 
 
-All operators in OneFlow are presetting all possible SBP signatures according to the operator’s Operation Rules. The user only needs to set the `placement` and `SBP` attributes of the data, the selection process is transparent to the user.
+All operators in OneFlow are presetting all possible SBP signatures according to the operator's Operation Rules. The user only needs to set the `placement` and `SBP` attributes of the data, the selection process is transparent to the user.
 
 
 ## Conclusion
 
 `placement`, `SBP`, and `SBP Signature` are the important guarantee of OneFlow distributed consistent view, which makes OneFlow distributed training as simple as on a single machine single card.
 
-In the next artical [Consistent Tensor](./03_consistent_tensor), we’ll show you an example of programming under the consistent view.
+In the next article [Consistent Tensor](./03_consistent_tensor), we’ll show you an example of programming under the consistent view.
