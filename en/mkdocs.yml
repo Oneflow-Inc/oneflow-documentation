@@ -114,6 +114,12 @@ nav:
     - Basics: 
       - Quickstart: basics/01_quickstart.md
       - Tensor: basics/02_tensor.md
+      - Datesets & Dataloaders: basics/03_dataset_dataloader.md
+      - Build Neural Network: basics/04_build_network.md
+      - Autograd: basics/05_autograd.md
+      - Backpropagation and Optimizer: basics/06_optimization.md
+      - Model saving and loading: basics/07_model_load_save.md
+      - STATIC GRAPH INTERFACE: basics/08_nn_graph.md
       
     - Parallelism Training:
       - Consistent Tensor: parallelism/03_consistent_tensor.md

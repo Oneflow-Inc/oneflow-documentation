@@ -1,4 +1,4 @@
-# Build Neural Network
+# BUILD NEURAL NETWORK
 
 The layers of a neural network can be built by API in namespace [oneflow.nn](https://oneflow.readthedocs.io/en/master/nn.html), It provides common Module (such as [oneflow.nn.Conv2d](https://oneflow.readthedocs.io/en/master/nn.html?highlight=oneflow.nn.Conv2D#oneflow.nn.Conv2d), [oneflow.nn.ReLU](https://oneflow.readthedocs.io/en/master/nn.html?highlight=oneflow.nn.ReLU#oneflow.nn.ReLU)). All Module classes inherit from [oneflow.nn.Module](https://oneflow.readthedocs.io/en/master/module.html#oneflow.nn.Module), and many simple Module can form more complex Module. In this way, users can easily build and manage complex neural networks.
 
