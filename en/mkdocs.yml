@@ -108,6 +108,8 @@ extra_javascript:
 
 nav:
     - Home: index.md
+    - Basics: 
+      - Static Graph -- nn.Graph: basics/08_nn_graph.md 
 
     - Basics: 
       - Quickstart: basics/01_quickstart.md
