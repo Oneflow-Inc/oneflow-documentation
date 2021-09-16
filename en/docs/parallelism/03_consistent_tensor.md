@@ -28,7 +28,8 @@ Setting environment variables prepares the machines for distributed computing. P
 In the two consoles, separately import `oneflow` and create `x`.
 
 `flow.placement("cuda", {0:[0,1]})` declears the devices to place the physical tensors.
-- `"cuda"` means "on GPU".  The second parameter of - `placement` is a dictionary. Its `key` is the index of machine, and its `value` is the index of the graphic cards. Therefore, `{0:[0,1]}` means that the consistent tensor is on the 0th, 1st graphic cards of the 0th machine.
+- `"cuda"` means "on GPU".
+- The second parameter of `placement` is a dictionary. Its `key` is the index of machine, and its `value` is the index of the graphic cards. Therefore, `{0:[0,1]}` means that the consistent tensor is on the 0th, 1st graphic cards of the 0th machine.
 
 === "Terminal 0"
     ```python
