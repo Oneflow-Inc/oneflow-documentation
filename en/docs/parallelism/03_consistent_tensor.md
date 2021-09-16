@@ -1,4 +1,4 @@
-# Consistent Tensor
+# CONSISTENT TENSOR
 
 ## The Mapping Between Consistent View and Physical View
 
@@ -28,7 +28,7 @@ Setting environment variables prepares the machines for distributed computing. P
 In the two consoles, separately import `oneflow` and create `x`.
 
 `flow.placement("cuda", {0:[0,1]})` declears the devices to place the physical tensors.
-- `"cuda"` means "on GPU".  The second parameter of - `placement` is a dictionary. Its `key` is the index of machine, and its `value` is the index of the graphic cards. Therefore, `{0:[0,1]}` means that consistent tensor is on the 0th, 1st graphic cards of the 0th machine.
+- `"cuda"` means "on GPU".  The second parameter of - `placement` is a dictionary. Its `key` is the index of machine, and its `value` is the index of the graphic cards. Therefore, `{0:[0,1]}` means that the consistent tensor is on the 0th, 1st graphic cards of the 0th machine.
 
 === "Terminal 0"
     ```python
@@ -62,9 +62,9 @@ Output:
     flow.Size([4, 5])
     ```
 
-### Get Local Tensor From Consistent Tensor
+### Get Local Tensor from Consistent Tensor
 
-Call [to_local()](https://oneflow.readthedocs.io/en/master/tensor.html#oneflow.Tensor.to_local) to check the local tensor on a device
+Call [to_local()](https://oneflow.readthedocs.io/en/master/tensor.html#oneflow.Tensor.to_local) to check the local tensor on a device.
 
 === "Terminal 0"
     ```python
@@ -86,9 +86,10 @@ Call [to_local()](https://oneflow.readthedocs.io/en/master/tensor.html#oneflow.T
 
 Users can create local tensor first, then convert it to consistent tensor with [Tensor.to_consistent](https://oneflow.readthedocs.io/en/master/tensor.html#oneflow.Tensor.to_consistent).
 
-In the following example, local tensor of `shape=(2, 5)` are created separately on two different machines. `x.to_consistent()` will return the consistent tensor with `shape` `(4, 5)`.
+Two local tensors with the shape of `(2,5)` are created separately on two devices. While after the `to_consistent` method, the consistent tensor with a shape of `(4,5)` is obtained.
 
-By setting the sbp to `sbp=flow.sbp.split(0)`, two local tensors of shape `(2, 5)` will be concatenated on the 0th dimension, which results in a consistent tensor with logical shape `(4, 5)`.
+The reason for this transformation lies in that by setting the sbp with `sbp=flow.sbp.split(0)`, the two local tensors with the shape of `(2, 5)` are concatenated on the 0th dimension.
+
 
 === "Terminal 0"
     ```python
@@ -112,9 +113,9 @@ By setting the sbp to `sbp=flow.sbp.split(0)`, two local tensors of shape `(2, 5
     x_consistent.shape
     ```
 
-## Practice With SBP Signature
+## Practice with SBP Signature
 
-### Data-Parallelism
+### Data Parallelism
 
 The following code is an example of [data-parallelism of common distributed parallelism](./01_introduction.md#_4)
 
@@ -144,7 +145,7 @@ The following code is an example of [data-parallelism of common distributed para
     y.shape
     ```
 
-`flow.matmul` supports many SBP signatures of inputs. When the SBP of `x` and `w` are `split(0)` and `broadcast` respectively, the SBP of output `y` is `split(0)` with logical shape `(4, 8)`. Output:
+`flow.matmul` supports many SBP signatures of inputs. When the SBP of `x` and `w` are `split(0)` and `broadcast` respectively, the SBP of output `y` is `split(0)` with logical shape of `(4, 8)`. Output:
 
 === "Terminal 0"
     ```text
@@ -158,7 +159,7 @@ The following code is an example of [data-parallelism of common distributed para
     flow.Size([4, 8])
     ```
 
-### Model-Parallelism
+### Model Parallelism
 
 The following code is an example of [model-parallelism of common distributed parallelism](./01_introduction.md#_5).
 
@@ -188,7 +189,7 @@ The following code is an example of [model-parallelism of common distributed par
     y.shape
     ```
 
-`flow.matmul` supports many SBP signatures of inputs. When the SBP of `x` and `w` are `broadcast` and `split(0)` respectively, the SBP of output `y` is `split(1)` with logical shape `(4, 8)`. Output:
+`flow.matmul` supports many SBP signatures of inputs. When the SBP of `x` and `w` are `broadcast` and `split(0)` respectively, the SBP of output `y` is `split(1)` with logical shape of `(4, 8)`. Output:
 
 === "Terminal 0"
     ```text
@@ -227,7 +228,7 @@ Assume that there are two machines and there are two graphic cards on each machi
 
 ### Boxing（Automatic Conversion of SBP）
 
-From the coding example, we learned that an operator can derive and set the SBP of the output tensor, given the SBP of the input tensor and the built-in SBP Signature of the operator.
+From the examples above, we learned that an operator can derive and set the SBP of the output tensor, given the SBP of the input tensor and the built-in SBP signature of the operator.
 
 But what if the SBP of the output tensor does not satisfy the requirements of the next-layer operator?
 
@@ -241,4 +242,4 @@ Converting `split(1)` to `broadcast` is equivalent to an `AllGather` operation, 
 
 ![s2b](./imgs/boxing_s2b.png)
 
-Thanks to the Boxing mechanism, users only need to set the SBP signature of the critical places (like the source operator). The rest is all handled by the OneFlow framework and no need to insert the colletive communication operations manually.
+Thanks to the Boxing mechanism, users only need to set the SBP signature of the critical places (like the source operator). The rest is all handled by the OneFlow framework and there is no need to insert the colletive communication operations manually.
