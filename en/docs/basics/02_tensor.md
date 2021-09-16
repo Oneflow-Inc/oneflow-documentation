@@ -86,8 +86,8 @@ The [randn](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=onef
 x8 = flow.randn(2,3)
 ```
 
-## The difference between `Tensor` and `tensor`
-There are two interfaces([oneflow.Tensor](https://oneflow.readthedocs.io/en/master/tensor.html?highlight=oneflow.Tensor#oneflow.Tensor) and [oneflow.tensor](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.Tensor#oneflow.tensor) ) in OneFlow, both of which can be used to create tensors. What’s the difference?
+## Difference Between `Tensor` and `tensor`
+There are two interfaces ([oneflow.Tensor](https://oneflow.readthedocs.io/en/master/tensor.html?highlight=oneflow.Tensor#oneflow.Tensor) and [oneflow.tensor](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.Tensor#oneflow.tensor)) in OneFlow, both of which can be used to create tensors. What’s the difference between them?
 
 
 Briefly speaking, the data type of `oneflow.Tensor` is limited to `float32` by default, while the data type of `oneflow.tensor` can be changed when the data is created. The following code illustrates the difference:
@@ -119,7 +119,7 @@ flow.Size([2, 3])
 
 Therefore, use `oneflow.Tensor` to create a tensor if you do not want to specify an explicit value, otherwise, you should use `oneflow.tensor`.
 
-## Attributes of Tensor
+## Attributes of a Tensor
 
 The `shape`, `dtype`, and `device` attributes of a tensor describe its shape, data type, and device type respectively.
 
@@ -137,7 +137,7 @@ oneflow.float32
 cpu:0
 ```
 
-The output shows the shape, the data type, and the device (on CPU number 0, CPUs were numbered because OneFlow naturally supports distribution, see [Consistent Tensor](../parallelism/03_consistent_tensor.md)).
+The output shows the shape, the data type, and the device (on CPU No. 0, CPUs were numbered because OneFlow naturally supports distribution, see [Consistent Tensor](../parallelism/03_consistent_tensor.md)).
 
 
 The shape of the tensor can be changed by the [reshape](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.reshape#oneflow.reshape) method, and the data type and device of the tensor can be changed by the [to](https://oneflow.readthedocs.io/en/master/tensor.html?highlight=Tensor.to#oneflow.Tensor.to) method:
@@ -181,4 +181,4 @@ tensor([[1., 0., 1., 1.],
         [1., 0., 1., 1.]], dtype=oneflow.float32)
 ```
 
-In addition, there are many other operations in OneFlow, such as [add](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.add#oneflow.add), [sub](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.sub#oneflow.sub), [mul](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.mul#oneflow.mul), [div](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.div#oneflow.div) for arithmetic related operations; [scatter](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.scatter#oneflow.scatter), [gather](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.gather#oneflow.gather), [gather_nd](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.gather_nd#oneflow.gather_nd) for positional related operations; and activation functions([relu](https://oneflow.readthedocs.io/en/master/functional.html?highlight=oneflow.relu#oneflow.nn.functional.relu)), convolution functions([conv2d](https://oneflow.readthedocs.io/en/master/functional.html?highlight=oneflow.conv2d#oneflow.nn.functional.conv2d)), etc. Click on their links to see detailed API description and find out more about other operators.
+In addition, there are many other operations in OneFlow, such as [add](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.add#oneflow.add), [sub](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.sub#oneflow.sub), [mul](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.mul#oneflow.mul), [div](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.div#oneflow.div) for arithmetic operations; [scatter](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.scatter#oneflow.scatter), [gather](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.gather#oneflow.gather), [gather_nd](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.gather_nd#oneflow.gather_nd) for positional operations; and activation functions ([relu](https://oneflow.readthedocs.io/en/master/functional.html?highlight=oneflow.relu#oneflow.nn.functional.relu)), convolution functions ([conv2d](https://oneflow.readthedocs.io/en/master/functional.html?highlight=oneflow.conv2d#oneflow.nn.functional.conv2d)), etc. Click on their links to see detailed API description and find out more about other operators.
