@@ -2,9 +2,9 @@
 
 We have introduced the characteristics of pipelining paralelism in [COMMON DISTRIBUTED PARALLEL STRATIGES](./01_introduction.md).
 
-From OneFlow‘s [consistent view](./03_consistent_tensor.md), pipelining can be achieved by simply setting the placement attribute of Tensor.
+From OneFlow's [consistent view](./03_consistent_tensor.md), pipelining can be achieved by simply setting the placement attribute of Tensor.
 
-The following code is a simple example that will run the network in [QUICKSTART](../basics/01_quickstart.md) with pipelining parallel strategy. `nn.Flatten`, `nn.Linear(28*28, 512)` and `nn.ReLU()` run on GPU0, the rest of the network run on GPU1.
+The following code is a simple example that will run the network in [QUICKSTART](../basics/01_quickstart.md) with pipelining parallel strategy. `nn.Flatten`, `nn.Linear(28*28, 512)` and `nn.ReLU()` run on GPU0, the rest layers of the network run on GPU1.
 
 ??? code
     ```python
@@ -111,9 +111,9 @@ P1 = flow.placement("cuda", {0: [1]})
 
 `P0` and `P1` represent the 0th GPU and the 1st GPU on the 0th machine respectively.
 
-By calling [nn.Module.to_consistent](https://oneflow.readthedocs.io/en/master/module.html?highlight=to_consistent#oneflow.nn.Module.to_consistent) or [Tensor.to_consistent](https://oneflow.readthedocs.io/en/master/tensor.html?highlight=to_consistent#oneflow.Tensor.to_consistent) allows the model or tensor to be assigned to a specific device, breaking a network into stages.
+By calling [nn.Module.to_consistent](https://oneflow.readthedocs.io/en/master/module.html?highlight=to_consistent#oneflow.nn.Module.to_consistent) or [Tensor.to_consistent](https://oneflow.readthedocs.io/en/master/tensor.html?highlight=to_consistent#oneflow.Tensor.to_consistent), the model or tensor will be distributed to the devices specified before, breaking a network into stages.
 
-Here we define a `PipelineModule` that specifically sets the pipeline for each phase.
+Here we define a `PipelineModule` that specifically sets the pipeline for each stage.
 
 
 ```python
@@ -143,10 +143,10 @@ The example uses randomly generated data as input.
 
 When you launch the training by the `launch` module, because the command-line parameter is `--nproc_per_node 2`, `launch` will start two processes. Both processes will execute the code in the script.
 
-Where `x = flow.randn(BATCH_SIZE, 1, 28, 28)` returns Local Tensor (only local data valid in this process), when runs `x = x.to_consistent(P0, BROADCAST)`, OneFlow will automatically integrate the Local Tensor of all processes into Consistent Tensor.
+The statement `x = flow.randn(BATCH_SIZE, 1, 28, 28)` returns Local Tensor (only local data valid in current process), when runs `x = x.to_consistent(P0, BROADCAST)`, OneFlow will automatically integrate the Local Tensor of all processes into Consistent Tensor.
 
 
-In training process, computing devices can also load local data that belongs to them, and then convert Local Tensor to Consistent Tensor via `to_consistent`.
+In practice, each computing device can load data locally, and then convert Local Tensor to Consistent Tensor via `to_consistent`.
 
 
 ### Stage ID and Settings for Gradient Accumulation
