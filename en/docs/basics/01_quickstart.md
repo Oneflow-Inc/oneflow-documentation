@@ -1,4 +1,4 @@
-# Quickstart
+# QUICKSTART
 
 This section will take the training process of MNIST as an example to briefly show how OneFlow can be used to accomplish common tasks in deep learning. Refer to the links in each section to the presentation on each subtask.
 
@@ -47,9 +47,9 @@ Extracting data/MNIST/raw/train-images-idx3-ubyte.gz to data/MNIST/raw
 ...
 ```
 
-This will download and extract the data set to.`./data` directory.
+The data will be downloaded and extracted to`./data` directory.
 
-A [oneflow.utils.data.DataLoader](https://oneflow.readthedocs.io/en/master/utils.html#oneflow.utils.data.DataLoader) wraps an iterable around the `dataset`.
+The [oneflow.utils.data.DataLoader](https://oneflow.readthedocs.io/en/master/utils.html#oneflow.utils.data.DataLoader) wraps an iterable around the `dataset`.
 
 
 ```python
@@ -76,7 +76,7 @@ y.shape: flow.Size([128])
 > [:link: Dataset and Dataloader](./03_dataset_dataloader.md){ .md-button .md-button--primary}
 
 
-## Building Network
+## Building Networks
 
 To define a neural network in OneFlow, we create a class that inherits from `nn.Module`. We define the layers of the network in the `__init__` function and specify how data will pass through the network in the `forward` function. 
 
@@ -123,16 +123,16 @@ NeuralNetwork(
 > [:link: Build Network](./04_build_network.md){ .md-button .md-button--primary}
 
 
-## Training Model
+## Training Models
 
-To train a model, we need a loss function (`loss_fn`) and an optimizer (`optimizer`).The loss function is used to evaluate the difference between the prediction of the neural network and the real label. The optimizer adjusts the parameters of the neural network to make the prediction more and more close to the real label (expected answer). Here, we use [oneflow.optim.SGD](https://oneflow.readthedocs.io/en/master/optim.html?highlight=optim.SGD#oneflow.optim.SGD) to be our optimizer. This process is called back propagation.
+To train a model, we need a loss function (`loss_fn`) and an optimizer (`optimizer`). The loss function is used to evaluate the difference between the prediction of the neural network and the real label. The optimizer adjusts the parameters of the neural network to make the prediction closer to the real label (expected answer). Here, we use [oneflow.optim.SGD](https://oneflow.readthedocs.io/en/master/optim.html?highlight=optim.SGD#oneflow.optim.SGD) to be our optimizer. This process is called back propagation.
 
 ```python
 loss_fn = nn.CrossEntropyLoss()
 optimizer = flow.optim.SGD(model.parameters(), lr=1e-3)
 ```
 
-The `train` function is defined for training. In a single training loop, the model make forward propagation, calculating loss, and back propagation to update model parameters.
+The `train` function is defined for training. In a single training loop, the model makes forward propagation, calculates loss, and backpropagates to update the model's parameters.
 
 
 ```python
@@ -174,7 +174,7 @@ def test(iter, model, loss_fn):
     print(f"Test Error: \n Accuracy: {(100*correct):>0.1f}, Avg loss: {test_loss:>8f}")
 ```
 
-Now we can use the `train` function to begin the train process for several epochs and then use the `test` function to assess the accuracy of the network at the end of each epoch:
+We use the `train` function to begin the train process for several epochs and use the `test` function to assess the accuracy of the network at the end of each epoch:
 
 
 ```python
@@ -208,17 +208,17 @@ loss: 2.286367
 > [:link: Autograd](./05_autograd.md){ .md-button .md-button--primary}
 > [:link: Backpropagation and Optimizer](./06_optimization.md){ .md-button .md-button--primary}
 
-## Saving and Loading Model
+## Saving and Loading Models
 
-Use [oneflow.save](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.save#oneflow.save) to save the model. The saved model can be then loaded by [oneflow.load](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.load#oneflow.load) to make predictions on it.
+Use [oneflow.save](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.save#oneflow.save) to save the model. The saved model can be then loaded by [oneflow.load](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.load#oneflow.load) to make predictions.
 
 ```python
 flow.save(model.state_dict(), "./model")
 ```
 > [:link: Model Load and Save](./07_model_load_save.md){ .md-button .md-button--primary}
 ## QQ Group
-Any problems encountered during the install or usage, welcome to join the QQ Group to discuss with OneFlow developer and enthusiasts:
+Any problems encountered during the installation or usage, welcome to join the QQ Group to discuss with OneFlow developers and enthusiasts:
 
-Add QQ Group by 331883 or SCAN QR code below:
+Add QQ group by 331883 or scan the QR code below:
 
 ![OneFlow QQ Group](./imgs/qq_group.png)

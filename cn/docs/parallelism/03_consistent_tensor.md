@@ -188,7 +188,7 @@
     y.shape
     ```
 
-可以观察到，`flow.matmul` 根据输入 `x` 与 `w` 的 SBP 分别为 `broadcast`、`split(1)`。OneFlow 自动推倒出输出 `y` 的 SBP 应该为 `split(1)`，完成计算，得到 `shape=(4,8)` 的矩阵。输出：
+可以观察到，`flow.matmul` 根据输入 `x` 与 `w` 的 SBP 分别为 `broadcast`、`split(1)`。OneFlow 自动推导出输出 `y` 的 SBP 应该为 `split(1)`，完成计算，得到 `shape=(4,8)` 的矩阵。输出：
 
 === "Terminal 0"
     ```text
@@ -244,3 +244,4 @@
 ![s2b](./imgs/boxing_s2b.png)
 
 因为有 Boxing 机制的存在，使得用户只用关心少数关键地方（如 source 算子）的 SBP 设置，剩下的全部都可以交给 OneFlow 框架。
+
