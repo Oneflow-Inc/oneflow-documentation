@@ -31,6 +31,7 @@ theme:
   language: en
   features:
     - navigation.tabs
+    - navigation.top
     #- instant
   palette:
     scheme: default
@@ -59,6 +60,7 @@ extra:
     - name: English
       link: https://docs.oneflow.org/en
       lang: en
+  disqus: livere_indeed
 
 # Extensions
 markdown_extensions:
@@ -71,7 +73,8 @@ markdown_extensions:
   - markdown.extensions.meta
   - markdown.extensions.toc:
       permalink: true
-  - pymdownx.arithmatex
+  - pymdownx.arithmatex:
+      generic: true
   - pymdownx.betterem:
       smart_enable: all
   - pymdownx.caret
@@ -98,14 +101,37 @@ markdown_extensions:
       custom_checkbox: true
   - pymdownx.tilde
 
+extra_javascript:
+  - javascripts/config.js
+  - https://polyfill.io/v3/polyfill.min.js?features=es6
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+
 nav:
     - Home: index.md
+
+    - Basics: 
+      - Quickstart: basics/01_quickstart.md
+      - Tensor: basics/02_tensor.md
+      - Datesets & Dataloaders: basics/03_dataset_dataloader.md
+      - Build Neural Network: basics/04_build_network.md
+      - Autograd: basics/05_autograd.md
+      - Backpropagation and Optimizer: basics/06_optimization.md
+      - Model saving and loading: basics/07_model_load_save.md
+      - Static Graph Interface: basics/08_nn_graph.md
+      
+    - Parallelism Training:
+      - Common Parallel Strategies: parallelism/01_introduction.md
+      - Consistent View: parallelism/02_sbp.md
+      - Consistent Tensor: parallelism/03_consistent_tensor.md
+      - Distributed Training Launcher: parallelism/04_launch.md
+      - Data Parallelism Training: parallelism/05_ddp.md
+      - Pipelining Parallelism: parallelism/06_pipeline.md
 
     - API:
       - API: https://oneflow.readthedocs.io/en/master/
 
     - Compatible:
-      - Introduce: single_client/index.md
+      - Introduce: single_client/quick_start/introduce.md
       - Quick Start in 3 Minutes: single_client/quick_start/quickstart_in_3_min.md
       - Recognition of MNIST Handwritten Digits: single_client/quick_start/lenet_mnist.md
       - Data Input: single_client/basics_topics/data_input.md
