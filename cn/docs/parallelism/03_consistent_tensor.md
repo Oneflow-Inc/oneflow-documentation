@@ -55,12 +55,12 @@
 
 === "Terminal 0"
     ```text
-    flow.Size([4, 5])
+    oneflow.Size([4, 5])
     ```
 
 === "Terminal 1"
     ```text
-    flow.Size([4, 5])
+    oneflow.Size([4, 5])
     ```
 
 ### 由 consistent tensor 得到 local tensor
@@ -149,13 +149,13 @@
 === "Terminal 0"
     ```text
     (oneflow.sbp.split(axis=0),)
-    flow.Size([4, 8])
+    oneflow.Size([4, 8])
     ```
 
 === "Terminal 1"
     ```text
     (oneflow.sbp.split(axis=0),)
-    flow.Size([4, 8])
+    oneflow.Size([4, 8])
     ```
 
 ### 模型并行
@@ -193,13 +193,13 @@
 === "Terminal 0"
     ```text
     (oneflow.sbp.split(axis=1),)
-    flow.Size([4, 8])
+    oneflow.Size([4, 8])
     ```
 
 === "Terminal 1"
     ```text
     (oneflow.sbp.split(axis=1),)
-    flow.Size([4, 8])
+    oneflow.Size([4, 8])
     ```
 
 ## 扩展阅读
