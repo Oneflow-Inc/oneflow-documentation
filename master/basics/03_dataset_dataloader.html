@@ -122,6 +122,12 @@
             <ul class="md-select__list">
               
                 <li class="md-select__item">
+                  <a href="https://docs.oneflow.org/en" hreflang="en" class="md-select__link">
+                    English
+                  </a>
+                </li>
+                
+                <li class="md-select__item">
                   <a href="https://docs.oneflow.org" hreflang="zh" class="md-select__link">
                     中文
                   </a>
@@ -1050,7 +1056,7 @@ Downloading http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/t10k-labe
 Extracting data/FashionMNIST/raw/t10k-labels-idx1-ubyte.gz to data/FashionMNIST/raw
 </code></pre></div>
 <h2 id="_1">遍历数据<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
-<p><code>Dataset</code> 对象，可以像 <code>list</code> 一样，用下表索引，比如 <code>training_data[index]</code>。
+<p><code>Dataset</code> 对象，可以像 <code>list</code> 一样，用下标索引，比如 <code>training_data[index]</code>。
 以下的例子，随机访问 <code>training_data</code> 中的9个图片，并显示。</p>
 <div class="highlight"><pre><span></span><code><span class="n">labels_map</span> <span class="o">=</span> <span class="p">{</span>
     <span class="mi">0</span><span class="p">:</span> <span class="s2">&quot;T-Shirt&quot;</span><span class="p">,</span>
@@ -1115,7 +1121,7 @@ Extracting data/FashionMNIST/raw/t10k-labels-idx1-ubyte.gz to data/FashionMNIST/
 (array([2., 3.], dtype=float32), array([13.], dtype=float32))
 </code></pre></div>
 <h2 id="dataloader">使用 DataLoader<a class="headerlink" href="#dataloader" title="Permanent link">&para;</a></h2>
-<p>利用 Dataset 可以一次获取到所有数据。但是在训练中，往往有其它的需求，如：一次读取 batch size 份数据；1轮 epoch 训练后，数据重新打乱（reshuffle）等。</p>
+<p>利用 Dataset 可以一次获取一条样本数据。但是在训练中，往往有其它的需求，如：一次读取 batch size 份数据；1轮 epoch 训练后，数据重新打乱（reshuffle）等。</p>
 <p>这时候，使用 <code>DataLoader</code> 即可。 <code>DataLoader</code> 可以将 <code>Dataset</code> 封装为迭代器，方便训练循环中获取数据。如以下例子：</p>
 <ul>
 <li><code>batch_size=64</code> ： 指定一次迭代返回的数据 batch size</li>

@@ -122,6 +122,12 @@
             <ul class="md-select__list">
               
                 <li class="md-select__item">
+                  <a href="https://docs.oneflow.org/en" hreflang="en" class="md-select__link">
+                    English
+                  </a>
+                </li>
+                
+                <li class="md-select__item">
                   <a href="https://docs.oneflow.org" hreflang="zh" class="md-select__link">
                     中文
                   </a>
@@ -1105,7 +1111,6 @@ tensor([[1., 0., 0.],
 </code></pre></div>
 <p><a href="https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.randn#oneflow.randn">randn</a> 方法可以创建随机化的张量：</p>
 <div class="highlight"><pre><span></span><code><span class="n">x8</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">x8</span><span class="p">)</span>
 </code></pre></div>
 <h2 id="tensor-tensor"><code>Tensor</code> 与 <code>tensor</code> 的区别<a class="headerlink" href="#tensor-tensor" title="Permanent link">&para;</a></h2>
 <p>细心的用户会发现，OneFlow 中有 <a href="https://oneflow.readthedocs.io/en/master/tensor.html?highlight=oneflow.Tensor#oneflow.Tensor">oneflow.Tensor</a> 和 <a href="https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.Tensor#oneflow.tensor">oneflow.tensor</a> 两个接口，它们都能用来创建张量。那么它们有什么区别呢？</p>
