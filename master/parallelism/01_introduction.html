@@ -1059,7 +1059,7 @@
 <p>所谓的模型并行，就是每个设备上的数据是完整的、一致的，而模型 <span class="arithmatex">\(w\)</span> 被切分到了各个设备上，每个设备只拥有模型的一部分，所有计算设备上的模型拼在一起，才是完整的模型。</p>
 <p>如下图所示，<span class="arithmatex">\(w\)</span> 被按照第1维度平均切分到2个设备上，两个设备上都有完整的 <span class="arithmatex">\(x\)</span>。两个设备上的输出也需要通过拼接才能得到逻辑上的输出。</p>
 <p><img alt="Model Paralelism" src="imgs/matmul_model_paralelism.png" /></p>
-<p>模型并行的好处是，省去了多个设备之间的梯度 AllReduce；但是，由于每个设备都需要完整的数据输入，因此，数据会在多个设备之间进行广播，产生通信代价。比如，上图中的最终得到的 <span class="arithmatex">\(out~(4\times8)\)</span> ，如果它作为下一层网络的输出，那么它就需要被广播发送到两个设备上。</p>
+<p>模型并行的好处是，省去了多个设备之间的梯度 AllReduce；但是，由于每个设备都需要完整的数据输入，因此，数据会在多个设备之间进行广播，产生通信代价。比如，上图中的最终得到的 <span class="arithmatex">\(out~(4\times8)\)</span> ，如果它作为下一层网络的输入，那么它就需要被广播发送到两个设备上。</p>
 <p>语言模型，如 BERT，常采用模型并行。</p>
 <h3 id="_6">流水并行<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h3>
 <p>当神经网络过于巨大，无法在一个设备上存放时，除了上述的模型并行的策略外，还可以选择流水并行。

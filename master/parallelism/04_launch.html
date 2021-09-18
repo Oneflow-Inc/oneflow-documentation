@@ -976,7 +976,7 @@
 </code></pre></div>
 <p>再比如，启动两台机器，每台机器有两张显卡的训练。</p>
 <p>在0号机器上运行：</p>
-<div class="highlight"><pre><span></span><code>python3 -m oneflow.distributed.launch --nproc_per_node<span class="o">=</span><span class="m">2</span> <span class="se">\</span>
+<div class="highlight"><pre><span></span><code>python3 -m oneflow.distributed.launch <span class="se">\</span>
     --nnodes<span class="o">=</span><span class="m">2</span> <span class="se">\</span>
     --node_rank<span class="o">=</span><span class="m">0</span> <span class="se">\</span>
     --nproc_per_node<span class="o">=</span><span class="m">2</span> <span class="se">\</span>
@@ -985,7 +985,7 @@
     script.py
 </code></pre></div>
 <p>在1号机器上运行：</p>
-<div class="highlight"><pre><span></span><code>python3 -m oneflow.distributed.launch --nproc_per_node<span class="o">=</span><span class="m">2</span> <span class="se">\</span>
+<div class="highlight"><pre><span></span><code>python3 -m oneflow.distributed.launch <span class="se">\</span>
     --nnodes<span class="o">=</span><span class="m">2</span> <span class="se">\</span>
     --node_rank<span class="o">=</span><span class="m">1</span> <span class="se">\</span>
     --nproc_per_node<span class="o">=</span><span class="m">2</span> <span class="se">\</span>
