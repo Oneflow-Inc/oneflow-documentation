@@ -1,0 +1,59 @@
+from oneflow.compatible import single_client as flow
+from oneflow.compatible.single_client import typing as tp
+
+flow.config.enable_legacy_model_io(False)
+BATCH_SIZE = 100
+
+
+def mlp(data):
+    initializer = flow.truncated_normal(0.1)
+    reshape = flow.reshape(data, [data.shape[0], -1])
+    hidden = flow.layers.dense(
+        reshape,
+        512,
+        activation=flow.nn.relu,
+        kernel_initializer=initializer,
+        name="hidden",
+    )
+    return flow.layers.dense(
+        hidden, 10, kernel_initializer=initializer, name="output-weight"
+    )
+
+
+def config_distributed():
+    print("distributed config")
+    # Number of gpu usage per node
+    flow.config.gpu_device_num(1)
+    # control port
+    flow.env.ctrl_port(9988)
+
+    # node configuration 
+    nodes = [{"addr": "192.168.1.12"}, {"addr": "192.168.1.11"}]
+    flow.env.machine(nodes)
+
+
+@flow.global_function(type="train")
+def train_job(
+    images: tp.Numpy.Placeholder((BATCH_SIZE, 1, 28, 28), dtype=flow.float),
+    labels: tp.Numpy.Placeholder((BATCH_SIZE,), dtype=flow.int32),
+) -> tp.Numpy:
+    logits = mlp(images)
+    loss = flow.nn.sparse_softmax_cross_entropy_with_logits(
+        labels, logits, name="softmax_loss"
+    )
+    lr_scheduler = flow.optimizer.PiecewiseConstantScheduler([], [0.1])
+    flow.optimizer.SGD(lr_scheduler, momentum=0).minimize(loss)
+    return loss
+
+
+if __name__ == "__main__":
+    config_distributed()
+    flow.config.enable_debug_mode(True)
+    (train_images, train_labels), (test_images, test_labels) = flow.data.load_mnist(
+        BATCH_SIZE, BATCH_SIZE
+    )
+    for epoch in range(1):
+        for i, (images, labels) in enumerate(zip(train_images, train_labels)):
+            loss = train_job(images, labels)
+            if i % 20 == 0:
+                print(loss.mean())
