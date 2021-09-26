@@ -33,21 +33,23 @@ training_data = flow.utils.vision.datasets.FashionMNIST(
     train=True,
     transform=transforms.ToTensor(),
     download=True,
+    source_url="https://oneflow-public.oss-cn-beijing.aliyuncs.com/datasets/mnist/Fashion-MNIST/",
 
+)
 test_data = flow.utils.vision.datasets.FashionMNIST(
     root="data",
     train=False,
     transform=transforms.ToTensor(),
     download=True,
+    source_url="https://oneflow-public.oss-cn-beijing.aliyuncs.com/datasets/mnist/Fashion-MNIST/",
 )
 ```
 输出：
 
 ```text
-Downloading http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/train-images-idx3-ubyte.gz
-Downloading http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/train-images-idx3-ubyte.gz to data_fashion2/FashionMNIST/raw/train-images-idx3-ubyte.gz
-26422272/? [00:47<00:00, 679825.75it/s]
-Extracting data_fashion2/FashionMNIST/raw/train-images-idx3-ubyte.gz to data_fashion2/FashionMNIST/raw
+Downloading https://oneflow-public.oss-cn-beijing.aliyuncs.com/datasets/mnist/Fashion-MNIST/train-images-idx3-ubyte.gz to data/FashionMNIST/raw/train-images-idx3-ubyte.gz
+26422272/? [00:15<00:00, 2940814.54it/s]
+Extracting data/FashionMNIST/raw/train-images-idx3-ubyte.gz to data/FashionMNIST/raw
 ...
 ```
 
@@ -72,8 +74,8 @@ for x, y in train_dataloader:
 输出：
 
 ```text
-x.shape: flow.Size([128, 1, 28, 28])
-y.shape: flow.Size([128])
+x.shape: flow.Size([64, 1, 28, 28])
+y.shape: flow.Size([64])
 ```
 > [:link: Dataset 与 Dataloader](./03_dataset_dataloader.md){ .md-button .md-button--primary}
 
