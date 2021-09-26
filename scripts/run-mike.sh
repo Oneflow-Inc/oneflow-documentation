@@ -27,3 +27,11 @@ cd cn
 ${MIKE} deploy ${VERSION} -u ${CN_OPTIONS}
 cd ../en
 ${MIKE} deploy ${VERSION} -u ${EN_OPTIONS}
+
+# v0.5.0
+VERSION="v0.5.0"
+cd .. && git checkout ${VERSION}
+cd cn
+${MIKE} deploy ${VERSION} -u ${CN_OPTIONS}
+cd ../en
+${MIKE} deploy ${VERSION} -u ${EN_OPTIONS}
