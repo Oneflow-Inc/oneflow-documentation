@@ -53,12 +53,12 @@ extra:
   alternate:
     #Switch to English
     - name: English
-      link: https://docs.oneflow.org/en
+      link: https://docs.oneflow.org/en/v0.5.0/
       lang: en
 
     # Switch to Chinese
     - name: 中文
-      link: https://docs.oneflow.org
+      link: https://docs.oneflow.org/v0.5.0/
       lang: zh
 
   disqus: livere_indeed
