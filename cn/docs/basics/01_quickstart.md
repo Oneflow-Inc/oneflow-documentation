@@ -1,6 +1,6 @@
 # 快速上手
 
-本文将以训练 MNIST 数据集为例，简单地介绍如何使用 OneFlow 完成深度学习中的常见任务。通过文章中的链接可以跳转到各个子任务的专题介绍。
+本文将以训练 FashionMNIST 数据集为例，简单地介绍如何使用 OneFlow 完成深度学习中的常见任务。通过文章中的链接可以跳转到各个子任务的专题介绍。
 
 详细的介绍请阅读本文。让我们先从导入必要的库开始：
 
@@ -8,10 +8,16 @@
 import oneflow as flow
 import oneflow.nn as nn
 import oneflow.utils.vision.transforms as transforms
-
-BATCH_SIZE=128
 ```
 
+设置 batch size 以及运行设备：
+
+```
+BATCH_SIZE=64
+
+DEVICE = "cuda" if flow.cuda.is_available() else "cpu"
+print("Using {} device".format(DEVICE))
+```
 
 ## 加载数据
 
@@ -19,31 +25,29 @@ OneFlow 可以使用 [Dataset 与 Dataloader](./03_dataset_dataloader.md) 加载
 
 [oneflow.utils.vision.datasets](https://oneflow.readthedocs.io/en/master/utils.html#module-oneflow.utils.vision.datasets) 模块中包含了不少真实的数据集(如 MNIST、CIFAR10、FashionMNIST)。
 
-我们通过 `oneflow.utils.vision.datasets.MNIST` 获取 MNIST 的训练集和测试集数据。
+我们通过 `oneflow.utils.vision.datasets.FashionMNIST` 获取 FashionMNIST 的训练集和测试集数据。
 
 ```python
-mnist_train = flow.utils.vision.datasets.MNIST(
+training_data = flow.utils.vision.datasets.FashionMNIST(
     root="data",
     train=True,
     transform=transforms.ToTensor(),
     download=True,
-    source_url="https://oneflow-public.oss-cn-beijing.aliyuncs.com/datasets/mnist/MNIST/",
-)
-mnist_test = flow.utils.vision.datasets.MNIST(
+
+test_data = flow.utils.vision.datasets.FashionMNIST(
     root="data",
     train=False,
     transform=transforms.ToTensor(),
     download=True,
-    source_url="https://oneflow-public.oss-cn-beijing.aliyuncs.com/datasets/mnist/MNIST/",
 )
 ```
 输出：
 
 ```text
-Downloading https://oneflow-public.oss-cn-beijing.aliyuncs.com/datasets/mnist/MNIST/train-images-idx3-ubyte.gz
-Downloading https://oneflow-public.oss-cn-beijing.aliyuncs.com/datasets/mnist/MNIST/train-images-idx3-ubyte.gz to data/MNIST/raw/train-images-idx3-ubyte.gz
-9913344it [00:00, 36066177.85it/s]
-Extracting data/MNIST/raw/train-images-idx3-ubyte.gz to data/MNIST/raw
+Downloading http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/train-images-idx3-ubyte.gz
+Downloading http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/train-images-idx3-ubyte.gz to data_fashion2/FashionMNIST/raw/train-images-idx3-ubyte.gz
+26422272/? [00:47<00:00, 679825.75it/s]
+Extracting data_fashion2/FashionMNIST/raw/train-images-idx3-ubyte.gz to data_fashion2/FashionMNIST/raw
 ...
 ```
 
@@ -52,14 +56,14 @@ Extracting data/MNIST/raw/train-images-idx3-ubyte.gz to data/MNIST/raw
 利用 [oneflow.utils.data.DataLoader](https://oneflow.readthedocs.io/en/master/utils.html#oneflow.utils.data.DataLoader) 可以将 `dataset` 封装为迭代器，方便后续训练。
 
 ```python
-train_iter = flow.utils.data.DataLoader(
-    mnist_train, BATCH_SIZE, shuffle=True
+train_dataloader = flow.utils.data.DataLoader(
+    training_data, BATCH_SIZE, shuffle=True
 )
-test_iter = flow.utils.data.DataLoader(
-    mnist_test, BATCH_SIZE, shuffle=False
+test_dataloader = flow.utils.data.DataLoader(
+    test_data, BATCH_SIZE, shuffle=False
 )
 
-for x, y in train_iter:
+for x, y in train_dataloader:
     print("x.shape:", x.shape)
     print("y.shape:", y.shape)
     break
@@ -88,7 +92,6 @@ class NeuralNetwork(nn.Module):
             nn.Linear(512, 512),
             nn.ReLU(),
             nn.Linear(512, 10),
-            nn.ReLU()
         )
 
     def forward(self, x):
@@ -96,7 +99,7 @@ class NeuralNetwork(nn.Module):
         logits = self.linear_relu_stack(x)
         return logits
 
-model = NeuralNetwork()
+model = NeuralNetwork().to(DEVICE)
 print(model)
 ```
 
@@ -111,7 +114,6 @@ NeuralNetwork(
     (2): Linear(in_features=512, out_features=512, bias=True)
     (3): ReLU()
     (4): Linear(in_features=512, out_features=10, bias=True)
-    (5): ReLU()
   )
 )
 ```
@@ -123,7 +125,7 @@ NeuralNetwork(
 为了训练模型，我们需要损失函数 `loss_fn` 和优化器 `optimizer`，损失函数用于评价神经网络预测的结果与 label 的差距；`optimizer` 调整网络的参数，使得网络预测的结果越来越接近 label（标准答案），这里选用 [oneflow.optim.SGD](https://oneflow.readthedocs.io/en/master/optim.html?highlight=optim.SGD#oneflow.optim.SGD)。这一过程被称为反向传播。
 
 ```python
-loss_fn = nn.CrossEntropyLoss()
+loss_fn = nn.CrossEntropyLoss().to(DEVICE)
 optimizer = flow.optim.SGD(model.parameters(), lr=1e-3)
 ```
 
@@ -133,6 +135,9 @@ optimizer = flow.optim.SGD(model.parameters(), lr=1e-3)
 def train(iter, model, loss_fn, optimizer):
     size = len(iter.dataset)
     for batch, (x, y) in enumerate(iter):
+        x = x.to(DEVICE)
+        y = y.to(DEVICE)
+
         # Compute prediction error
         pred = model(x)
         loss = loss_fn(pred, y)
@@ -157,6 +162,9 @@ def test(iter, model, loss_fn):
     test_loss, correct = 0, 0
     with flow.no_grad():
         for x, y in iter:
+            x = x.to(DEVICE)
+            y = y.to(DEVICE)
+
             pred = model(x)
             test_loss += loss_fn(pred, y)
             bool_value = (pred.argmax(1).to(dtype=flow.int64)==y)
@@ -173,27 +181,34 @@ def test(iter, model, loss_fn):
 epochs = 5
 for t in range(epochs):
     print(f"Epoch {t+1}\n-------------------------------")
-    train(train_iter, model, loss_fn, optimizer)
-    test(test_iter, model, loss_fn)
+    train(train_dataloader, model, loss_fn, optimizer)
+    test(test_dataloader, model, loss_fn)
 print("Done!")
 ```
 
 输出：
 
 ```text
-loss: 2.299633
-loss: 2.303208
-loss: 2.298017
-loss: 2.297773
-loss: 2.294673
-loss: 2.295637
-Test Error:
- Accuracy: 22.1%, Avg loss: 2.292105
-
+Epoch 1
+-------------------------------
+loss: 2.152148  [    0/60000]
+loss: 2.140148  [ 6400/60000]
+loss: 2.147773  [12800/60000]
+loss: 2.088032  [19200/60000]
+loss: 2.074728  [25600/60000]
+loss: 2.034325  [32000/60000]
+loss: 1.994112  [38400/60000]
+loss: 1.984397  [44800/60000]
+loss: 1.918280  [51200/60000]
+loss: 1.884574  [57600/60000]
+test_loss tensor(1.9015, device='cuda:0', dtype=oneflow.float32) num_batches  157
+Test Error: 
+ Accuracy: 56.3, Avg loss: 1.901461
 Epoch 2
 -------------------------------
-loss: 2.288640
-loss: 2.286367
+loss: 1.914766  [    0/60000]
+loss: 1.817333  [ 6400/60000]
+loss: 1.835239  [12800/60000]
 ...
 ```
 > [:link: 自动求梯度](./05_autograd.md){ .md-button .md-button--primary}

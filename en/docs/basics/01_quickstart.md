@@ -1,6 +1,6 @@
 # QUICKSTART
 
-This section will take the training process of MNIST as an example to briefly show how OneFlow can be used to accomplish common tasks in deep learning. Refer to the links in each section to the presentation on each subtask.
+This section will take the training process of FashionMNIST as an example to briefly show how OneFlow can be used to accomplish common tasks in deep learning. Refer to the links in each section to the presentation on each subtask.
 
 Let’s start by importing the necessary libraries:
 
@@ -9,7 +9,15 @@ import oneflow as flow
 import oneflow.nn as nn
 import oneflow.utils.vision.transforms as transforms
 
-BATCH_SIZE=128
+```
+
+Settting batch size and device：
+
+```
+BATCH_SIZE=64
+
+DEVICE = "cuda" if flow.cuda.is_available() else "cpu"
+print("Using {} device".format(DEVICE))
 ```
 
 
@@ -19,31 +27,29 @@ OneFlow has two primitives to work with data, which are Dataset and Dataloader.
 
 The [oneflow.utils.vision.datasets](https://oneflow.readthedocs.io/en/master/utils.html#module-oneflow.utils.vision.datasets) module contains a number of real data sets (such as MNIST, CIFAR 10, FashionMNIST).
 
-We can use `oneflow.utils.vision.datasets.MNIST` to get the training set and test set data of MNIST.
+We can use `oneflow.utils.vision.datasets.FashionMNIST` to get the training set and test set data of FashionMNIST.
 
 ```python
-mnist_train = flow.utils.vision.datasets.MNIST(
+training_data = flow.utils.vision.datasets.FashionMNIST(
     root="data",
     train=True,
     transform=transforms.ToTensor(),
     download=True,
-    source_url="https://oneflow-public.oss-cn-beijing.aliyuncs.com/datasets/mnist/MNIST/",
 )
-mnist_test = flow.utils.vision.datasets.MNIST(
+test_data = flow.utils.vision.datasets.FashionMNIST(
     root="data",
     train=False,
     transform=transforms.ToTensor(),
     download=True,
-    source_url="https://oneflow-public.oss-cn-beijing.aliyuncs.com/datasets/mnist/MNIST/",
 )
 ```
 Out:
 
 ```text
-Downloading https://oneflow-public.oss-cn-beijing.aliyuncs.com/datasets/mnist/MNIST/train-images-idx3-ubyte.gz
-Downloading https://oneflow-public.oss-cn-beijing.aliyuncs.com/datasets/mnist/MNIST/train-images-idx3-ubyte.gz to data/MNIST/raw/train-images-idx3-ubyte.gz
-9913344it [00:00, 36066177.85it/s]
-Extracting data/MNIST/raw/train-images-idx3-ubyte.gz to data/MNIST/raw
+Downloading http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/train-images-idx3-ubyte.gz
+Downloading http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/train-images-idx3-ubyte.gz to data_fashion2/FashionMNIST/raw/train-images-idx3-ubyte.gz
+26422272/? [00:47<00:00, 679825.75it/s]
+Extracting data_fashion2/FashionMNIST/raw/train-images-idx3-ubyte.gz to data_fashion2/FashionMNIST/raw
 ...
 ```
 
@@ -53,14 +59,14 @@ The [oneflow.utils.data.DataLoader](https://oneflow.readthedocs.io/en/master/uti
 
 
 ```python
-train_iter = flow.utils.data.DataLoader(
-    mnist_train, BATCH_SIZE, shuffle=True
+train_dataloader = flow.utils.data.DataLoader(
+    training_data, BATCH_SIZE, shuffle=True
 )
-test_iter = flow.utils.data.DataLoader(
-    mnist_test, BATCH_SIZE, shuffle=False
+test_dataloader = flow.utils.data.DataLoader(
+    test_data, BATCH_SIZE, shuffle=False
 )
 
-for x, y in train_iter:
+for x, y in train_dataloader:
     print("x.shape:", x.shape)
     print("y.shape:", y.shape)
     break
@@ -92,7 +98,6 @@ class NeuralNetwork(nn.Module):
             nn.Linear(512, 512),
             nn.ReLU(),
             nn.Linear(512, 10),
-            nn.ReLU()
         )
 
     def forward(self, x):
@@ -100,7 +105,7 @@ class NeuralNetwork(nn.Module):
         logits = self.linear_relu_stack(x)
         return logits
 
-model = NeuralNetwork()
+model = NeuralNetwork().to(DEVICE)
 print(model)
 ```
 
@@ -115,7 +120,6 @@ NeuralNetwork(
     (2): Linear(in_features=512, out_features=512, bias=True)
     (3): ReLU()
     (4): Linear(in_features=512, out_features=10, bias=True)
-    (5): ReLU()
   )
 )
 ```
@@ -128,7 +132,7 @@ NeuralNetwork(
 To train a model, we need a loss function (`loss_fn`) and an optimizer (`optimizer`). The loss function is used to evaluate the difference between the prediction of the neural network and the real label. The optimizer adjusts the parameters of the neural network to make the prediction closer to the real label (expected answer). Here, we use [oneflow.optim.SGD](https://oneflow.readthedocs.io/en/master/optim.html?highlight=optim.SGD#oneflow.optim.SGD) to be our optimizer. This process is called back propagation.
 
 ```python
-loss_fn = nn.CrossEntropyLoss()
+loss_fn = nn.CrossEntropyLoss().to(DEVICE)
 optimizer = flow.optim.SGD(model.parameters(), lr=1e-3)
 ```
 
@@ -139,6 +143,9 @@ The `train` function is defined for training. In a single training loop, the mod
 def train(iter, model, loss_fn, optimizer):
     size = len(iter.dataset)
     for batch, (x, y) in enumerate(iter):
+        x = x.to(DEVICE)
+        y = y.to(DEVICE)
+
         # Compute prediction error
         pred = model(x)
         loss = loss_fn(pred, y)
@@ -164,6 +171,9 @@ def test(iter, model, loss_fn):
     test_loss, correct = 0, 0
     with flow.no_grad():
         for x, y in iter:
+            x = x.to(DEVICE)
+            y = y.to(DEVICE)
+
             pred = model(x)
             test_loss += loss_fn(pred, y)
             bool_value = (pred.argmax(1).to(dtype=flow.int64)==y)
@@ -181,27 +191,34 @@ We use the `train` function to begin the train process for several epochs and us
 epochs = 5
 for t in range(epochs):
     print(f"Epoch {t+1}\n-------------------------------")
-    train(train_iter, model, loss_fn, optimizer)
-    test(test_iter, model, loss_fn)
+    train(train_dataloader, model, loss_fn, optimizer)
+    test(test_dataloader, model, loss_fn)
 print("Done!")
 ```
 
 Out:
 
 ```text
-loss: 2.299633
-loss: 2.303208
-loss: 2.298017
-loss: 2.297773
-loss: 2.294673
-loss: 2.295637
-Test Error:
- Accuracy: 22.1%, Avg loss: 2.292105
-
+Epoch 1
+-------------------------------
+loss: 2.152148  [    0/60000]
+loss: 2.140148  [ 6400/60000]
+loss: 2.147773  [12800/60000]
+loss: 2.088032  [19200/60000]
+loss: 2.074728  [25600/60000]
+loss: 2.034325  [32000/60000]
+loss: 1.994112  [38400/60000]
+loss: 1.984397  [44800/60000]
+loss: 1.918280  [51200/60000]
+loss: 1.884574  [57600/60000]
+test_loss tensor(1.9015, device='cuda:0', dtype=oneflow.float32) num_batches  157
+Test Error: 
+ Accuracy: 56.3, Avg loss: 1.901461
 Epoch 2
 -------------------------------
-loss: 2.288640
-loss: 2.286367
+loss: 1.914766  [    0/60000]
+loss: 1.817333  [ 6400/60000]
+loss: 1.835239  [12800/60000]
 ...
 ```
 
