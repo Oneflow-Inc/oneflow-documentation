@@ -257,7 +257,7 @@ class LinearTrainGraph(flow.nn.Graph):
 
     def build(self, x, y):
         #...
-        loss.backward() (3)
+        loss.backward() # (3)
         #...
 ```
 
