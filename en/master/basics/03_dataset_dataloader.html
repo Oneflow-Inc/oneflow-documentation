@@ -1024,35 +1024,37 @@
     <span class="n">root</span><span class="o">=</span><span class="s2">&quot;data&quot;</span><span class="p">,</span>
     <span class="n">train</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">download</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">transform</span><span class="o">=</span><span class="n">ToTensor</span><span class="p">()</span>
+    <span class="n">transform</span><span class="o">=</span><span class="n">ToTensor</span><span class="p">(),</span>
+    <span class="n">source_url</span><span class="o">=</span><span class="s2">&quot;https://oneflow-public.oss-cn-beijing.aliyuncs.com/datasets/mnist/Fashion-MNIST/&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="n">test_data</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">FashionMNIST</span><span class="p">(</span>
     <span class="n">root</span><span class="o">=</span><span class="s2">&quot;data&quot;</span><span class="p">,</span>
     <span class="n">train</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">download</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">transform</span><span class="o">=</span><span class="n">ToTensor</span><span class="p">()</span>
+    <span class="n">transform</span><span class="o">=</span><span class="n">ToTensor</span><span class="p">(),</span>
+    <span class="n">source_url</span><span class="o">=</span><span class="s2">&quot;https://oneflow-public.oss-cn-beijing.aliyuncs.com/datasets/mnist/Fashion-MNIST/&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 </code></pre></div>
 <p>The first time it runs, it will download the data set and output the following:</p>
-<div class="highlight"><pre><span></span><code>Downloading http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/train-images-idx3-ubyte.gz
-Downloading http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/train-images-idx3-ubyte.gz to data/FashionMNIST/raw/train-images-idx3-ubyte.gz
-26422272it [00:17, 1504123.86it/s]
+<div class="highlight"><pre><span></span><code>Downloading https://oneflow-public.oss-cn-beijing.aliyuncs.com/datasets/mnist/Fashion-MNIST/train-images-idx3-ubyte.gz
+Downloading https://oneflow-public.oss-cn-beijing.aliyuncs.com/datasets/mnist/Fashion-MNIST/train-images-idx3-ubyte.gz to data/FashionMNIST/raw/train-images-idx3-ubyte.gz
+26422272/? [00:02&lt;00:00, 8090800.72it/s]
 Extracting data/FashionMNIST/raw/train-images-idx3-ubyte.gz to data/FashionMNIST/raw
 
-Downloading http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/train-labels-idx1-ubyte.gz
-Downloading http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/train-labels-idx1-ubyte.gz to data/FashionMNIST/raw/train-labels-idx1-ubyte.gz
-29696it [00:00, 98468.01it/s]
+Downloading https://oneflow-public.oss-cn-beijing.aliyuncs.com/datasets/mnist/Fashion-MNIST/train-labels-idx1-ubyte.gz
+Downloading https://oneflow-public.oss-cn-beijing.aliyuncs.com/datasets/mnist/Fashion-MNIST/train-labels-idx1-ubyte.gz to data/FashionMNIST/raw/train-labels-idx1-ubyte.gz
+29696/? [00:00&lt;00:00, 806948.09it/s]
 Extracting data/FashionMNIST/raw/train-labels-idx1-ubyte.gz to data/FashionMNIST/raw
 
-Downloading http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/t10k-images-idx3-ubyte.gz
-Downloading http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/t10k-images-idx3-ubyte.gz to data/FashionMNIST/raw/t10k-images-idx3-ubyte.gz
-4422656it [00:07, 620608.04it/s]
+Downloading https://oneflow-public.oss-cn-beijing.aliyuncs.com/datasets/mnist/Fashion-MNIST/t10k-images-idx3-ubyte.gz
+Downloading https://oneflow-public.oss-cn-beijing.aliyuncs.com/datasets/mnist/Fashion-MNIST/t10k-images-idx3-ubyte.gz to data/FashionMNIST/raw/t10k-images-idx3-ubyte.gz
+4422656/? [00:00&lt;00:00, 19237994.98it/s]
 Extracting data/FashionMNIST/raw/t10k-images-idx3-ubyte.gz to data/FashionMNIST/raw
 
-Downloading http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/t10k-labels-idx1-ubyte.gz
-Downloading http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/t10k-labels-idx1-ubyte.gz to data/FashionMNIST/raw/t10k-labels-idx1-ubyte.gz
-6144it [00:00, 19231196.85it/s]
+Downloading https://oneflow-public.oss-cn-beijing.aliyuncs.com/datasets/mnist/Fashion-MNIST/t10k-labels-idx1-ubyte.gz
+Downloading https://oneflow-public.oss-cn-beijing.aliyuncs.com/datasets/mnist/Fashion-MNIST/t10k-labels-idx1-ubyte.gz to data/FashionMNIST/raw/t10k-labels-idx1-ubyte.gz
+6144/? [00:00&lt;00:00, 152710.85it/s]
 Extracting data/FashionMNIST/raw/t10k-labels-idx1-ubyte.gz to data/FashionMNIST/raw
 </code></pre></div>
 <h2 id="iterating-the-dataset">Iterating the Dataset<a class="headerlink" href="#iterating-the-dataset" title="Permanent link">&para;</a></h2>

@@ -1015,57 +1015,61 @@
                 
                 
                 <h1 id="quickstart">QUICKSTART<a class="headerlink" href="#quickstart" title="Permanent link">&para;</a></h1>
-<p>This section will take the training process of MNIST as an example to briefly show how OneFlow can be used to accomplish common tasks in deep learning. Refer to the links in each section to the presentation on each subtask.</p>
+<p>This section will take the training process of FashionMNIST as an example to briefly show how OneFlow can be used to accomplish common tasks in deep learning. Refer to the links in each section to the presentation on each subtask.</p>
 <p>Let’s start by importing the necessary libraries:</p>
 <div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">oneflow</span> <span class="k">as</span> <span class="nn">flow</span>
 <span class="kn">import</span> <span class="nn">oneflow.nn</span> <span class="k">as</span> <span class="nn">nn</span>
 <span class="kn">import</span> <span class="nn">oneflow.utils.vision.transforms</span> <span class="k">as</span> <span class="nn">transforms</span>
+</code></pre></div>
+<p>Settting batch size and device：</p>
+<div class="highlight"><pre><span></span><code>BATCH_SIZE=64
 
-<span class="n">BATCH_SIZE</span><span class="o">=</span><span class="mi">128</span>
+DEVICE = &quot;cuda&quot; if flow.cuda.is_available() else &quot;cpu&quot;
+print(&quot;Using {} device&quot;.format(DEVICE))
 </code></pre></div>
 <h2 id="working-with-data">Working with Data<a class="headerlink" href="#working-with-data" title="Permanent link">&para;</a></h2>
 <p>OneFlow has two primitives to work with data, which are Dataset and Dataloader.</p>
 <p>The <a href="https://oneflow.readthedocs.io/en/master/utils.html#module-oneflow.utils.vision.datasets">oneflow.utils.vision.datasets</a> module contains a number of real data sets (such as MNIST, CIFAR 10, FashionMNIST).</p>
-<p>We can use <code>oneflow.utils.vision.datasets.MNIST</code> to get the training set and test set data of MNIST.</p>
-<p><div class="highlight"><pre><span></span><code><span class="n">mnist_train</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">vision</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">MNIST</span><span class="p">(</span>
+<p>We can use <code>oneflow.utils.vision.datasets.FashionMNIST</code> to get the training set and test set data of FashionMNIST.</p>
+<p><div class="highlight"><pre><span></span><code><span class="n">training_data</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">vision</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">FashionMNIST</span><span class="p">(</span>
     <span class="n">root</span><span class="o">=</span><span class="s2">&quot;data&quot;</span><span class="p">,</span>
     <span class="n">train</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">transform</span><span class="o">=</span><span class="n">transforms</span><span class="o">.</span><span class="n">ToTensor</span><span class="p">(),</span>
     <span class="n">download</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">source_url</span><span class="o">=</span><span class="s2">&quot;https://oneflow-public.oss-cn-beijing.aliyuncs.com/datasets/mnist/MNIST/&quot;</span><span class="p">,</span>
+    <span class="n">source_url</span><span class="o">=</span><span class="s2">&quot;https://oneflow-public.oss-cn-beijing.aliyuncs.com/datasets/mnist/Fashion-MNIST/&quot;</span><span class="p">,</span>
+
 <span class="p">)</span>
-<span class="n">mnist_test</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">vision</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">MNIST</span><span class="p">(</span>
+<span class="n">test_data</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">vision</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">FashionMNIST</span><span class="p">(</span>
     <span class="n">root</span><span class="o">=</span><span class="s2">&quot;data&quot;</span><span class="p">,</span>
     <span class="n">train</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">transform</span><span class="o">=</span><span class="n">transforms</span><span class="o">.</span><span class="n">ToTensor</span><span class="p">(),</span>
     <span class="n">download</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">source_url</span><span class="o">=</span><span class="s2">&quot;https://oneflow-public.oss-cn-beijing.aliyuncs.com/datasets/mnist/MNIST/&quot;</span><span class="p">,</span>
+    <span class="n">source_url</span><span class="o">=</span><span class="s2">&quot;https://oneflow-public.oss-cn-beijing.aliyuncs.com/datasets/mnist/Fashion-MNIST/&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 </code></pre></div>
 Out:</p>
-<div class="highlight"><pre><span></span><code>Downloading https://oneflow-public.oss-cn-beijing.aliyuncs.com/datasets/mnist/MNIST/train-images-idx3-ubyte.gz
-Downloading https://oneflow-public.oss-cn-beijing.aliyuncs.com/datasets/mnist/MNIST/train-images-idx3-ubyte.gz to data/MNIST/raw/train-images-idx3-ubyte.gz
-9913344it [00:00, 36066177.85it/s]
-Extracting data/MNIST/raw/train-images-idx3-ubyte.gz to data/MNIST/raw
+<div class="highlight"><pre><span></span><code>Downloading https://oneflow-public.oss-cn-beijing.aliyuncs.com/datasets/mnist/Fashion-MNIST/train-images-idx3-ubyte.gz to data/FashionMNIST/raw/train-images-idx3-ubyte.gz
+26422272/? [00:15&lt;00:00, 2940814.54it/s]
+Extracting data/FashionMNIST/raw/train-images-idx3-ubyte.gz to data/FashionMNIST/raw
 ...
 </code></pre></div>
 <p>The data will be downloaded and extracted to<code>./data</code> directory.</p>
 <p>The <a href="https://oneflow.readthedocs.io/en/master/utils.html#oneflow.utils.data.DataLoader">oneflow.utils.data.DataLoader</a> wraps an iterable around the <code>dataset</code>.</p>
-<div class="highlight"><pre><span></span><code><span class="n">train_iter</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">(</span>
-    <span class="n">mnist_train</span><span class="p">,</span> <span class="n">BATCH_SIZE</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span>
+<div class="highlight"><pre><span></span><code><span class="n">train_dataloader</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">(</span>
+    <span class="n">training_data</span><span class="p">,</span> <span class="n">BATCH_SIZE</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span>
 <span class="p">)</span>
-<span class="n">test_iter</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">(</span>
-    <span class="n">mnist_test</span><span class="p">,</span> <span class="n">BATCH_SIZE</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span>
+<span class="n">test_dataloader</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">(</span>
+    <span class="n">test_data</span><span class="p">,</span> <span class="n">BATCH_SIZE</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span>
 <span class="p">)</span>
 
-<span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">train_iter</span><span class="p">:</span>
+<span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">train_dataloader</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;x.shape:&quot;</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;y.shape:&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
     <span class="k">break</span>
 </code></pre></div>
 <p>Out:</p>
-<div class="highlight"><pre><span></span><code>x.shape: flow.Size([128, 1, 28, 28])
-y.shape: flow.Size([128])
+<div class="highlight"><pre><span></span><code>x.shape: flow.Size([64, 1, 28, 28])
+y.shape: flow.Size([64])
 </code></pre></div>
 <blockquote>
 <p><a class="md-button md-button--primary" href="03_dataset_dataloader.html"><img alt="🔗" class="twemoji" src="https://twemoji.maxcdn.com/v/latest/svg/1f517.svg" title=":link:" /> Dataset and Dataloader</a></p>
@@ -1082,7 +1086,6 @@ y.shape: flow.Size([128])
             <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">512</span><span class="p">,</span> <span class="mi">512</span><span class="p">),</span>
             <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">(),</span>
             <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">512</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span>
-            <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">()</span>
         <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
@@ -1090,7 +1093,7 @@ y.shape: flow.Size([128])
         <span class="n">logits</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">linear_relu_stack</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">logits</span>
 
-<span class="n">model</span> <span class="o">=</span> <span class="n">NeuralNetwork</span><span class="p">()</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">NeuralNetwork</span><span class="p">()</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">DEVICE</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
 </code></pre></div>
 <p>Out:</p>
@@ -1102,7 +1105,6 @@ y.shape: flow.Size([128])
     (2): Linear(in_features=512, out_features=512, bias=True)
     (3): ReLU()
     (4): Linear(in_features=512, out_features=10, bias=True)
-    (5): ReLU()
   )
 )
 </code></pre></div>
@@ -1111,13 +1113,16 @@ y.shape: flow.Size([128])
 </blockquote>
 <h2 id="training-models">Training Models<a class="headerlink" href="#training-models" title="Permanent link">&para;</a></h2>
 <p>To train a model, we need a loss function (<code>loss_fn</code>) and an optimizer (<code>optimizer</code>). The loss function is used to evaluate the difference between the prediction of the neural network and the real label. The optimizer adjusts the parameters of the neural network to make the prediction closer to the real label (expected answer). Here, we use <a href="https://oneflow.readthedocs.io/en/master/optim.html?highlight=optim.SGD#oneflow.optim.SGD">oneflow.optim.SGD</a> to be our optimizer. This process is called back propagation.</p>
-<div class="highlight"><pre><span></span><code><span class="n">loss_fn</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">CrossEntropyLoss</span><span class="p">()</span>
+<div class="highlight"><pre><span></span><code><span class="n">loss_fn</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">CrossEntropyLoss</span><span class="p">()</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">DEVICE</span><span class="p">)</span>
 <span class="n">optimizer</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">)</span>
 </code></pre></div>
 <p>The <code>train</code> function is defined for training. In a single training loop, the model makes forward propagation, calculates loss, and backpropagates to update the model's parameters.</p>
 <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="nb">iter</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">loss_fn</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">):</span>
     <span class="n">size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">iter</span><span class="o">.</span><span class="n">dataset</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">batch</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">iter</span><span class="p">):</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">DEVICE</span><span class="p">)</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">DEVICE</span><span class="p">)</span>
+
         <span class="c1"># Compute prediction error</span>
         <span class="n">pred</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
         <span class="n">loss</span> <span class="o">=</span> <span class="n">loss_fn</span><span class="p">(</span><span class="n">pred</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
@@ -1139,6 +1144,9 @@ y.shape: flow.Size([128])
     <span class="n">test_loss</span><span class="p">,</span> <span class="n">correct</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span>
     <span class="k">with</span> <span class="n">flow</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
         <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">iter</span><span class="p">:</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">DEVICE</span><span class="p">)</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">DEVICE</span><span class="p">)</span>
+
             <span class="n">pred</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
             <span class="n">test_loss</span> <span class="o">+=</span> <span class="n">loss_fn</span><span class="p">(</span><span class="n">pred</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
             <span class="n">bool_value</span> <span class="o">=</span> <span class="p">(</span><span class="n">pred</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">flow</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span><span class="o">==</span><span class="n">y</span><span class="p">)</span>
@@ -1152,24 +1160,31 @@ y.shape: flow.Size([128])
 <div class="highlight"><pre><span></span><code><span class="n">epochs</span> <span class="o">=</span> <span class="mi">5</span>
 <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">epochs</span><span class="p">):</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Epoch </span><span class="si">{</span><span class="n">t</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="se">\n</span><span class="s2">-------------------------------&quot;</span><span class="p">)</span>
-    <span class="n">train</span><span class="p">(</span><span class="n">train_iter</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">loss_fn</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">)</span>
-    <span class="n">test</span><span class="p">(</span><span class="n">test_iter</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">loss_fn</span><span class="p">)</span>
+    <span class="n">train</span><span class="p">(</span><span class="n">train_dataloader</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">loss_fn</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">)</span>
+    <span class="n">test</span><span class="p">(</span><span class="n">test_dataloader</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">loss_fn</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Done!&quot;</span><span class="p">)</span>
 </code></pre></div>
 <p>Out:</p>
-<div class="highlight"><pre><span></span><code>loss: 2.299633
-loss: 2.303208
-loss: 2.298017
-loss: 2.297773
-loss: 2.294673
-loss: 2.295637
-Test Error:
- Accuracy: 22.1%, Avg loss: 2.292105
-
+<div class="highlight"><pre><span></span><code>Epoch 1
+-------------------------------
+loss: 2.152148  [    0/60000]
+loss: 2.140148  [ 6400/60000]
+loss: 2.147773  [12800/60000]
+loss: 2.088032  [19200/60000]
+loss: 2.074728  [25600/60000]
+loss: 2.034325  [32000/60000]
+loss: 1.994112  [38400/60000]
+loss: 1.984397  [44800/60000]
+loss: 1.918280  [51200/60000]
+loss: 1.884574  [57600/60000]
+test_loss tensor(1.9015, device=&#39;cuda:0&#39;, dtype=oneflow.float32) num_batches  157
+Test Error: 
+ Accuracy: 56.3, Avg loss: 1.901461
 Epoch 2
 -------------------------------
-loss: 2.288640
-loss: 2.286367
+loss: 1.914766  [    0/60000]
+loss: 1.817333  [ 6400/60000]
+loss: 1.835239  [12800/60000]
 ...
 </code></pre></div>
 <blockquote>
