@@ -1015,7 +1015,7 @@
 <ul>
 <li><code>split</code> 表示物理设备上的 Tensor，是将一致性视角的 Tensor 切分得到的。切分时，需要指定切分的维度。物理设备上的 Tensor ，经过拼接，可以还原得到一致性视角的 Tensor 。</li>
 <li><code>broadcast</code> 表示一致性视角下的 Tensor，会复制并广播到所有的物理设备上。</li>
-<li><code>partial</code> 表示一致性视角下的 Tensor 与物理设备上的 Tensor 的 <strong>形状相同</strong>，但是物理设备上的值，只是一致性视角下 Tensor 的 <strong>一部分</strong>。以 <code>partial sum</code> 为例，如果我们将集群中所有设备的张量按位置相加，那么久可以还原得到一致性视角的 Tensor。除了 <code>sum</code> 外，<code>min</code>、<code>max</code> 等操作也适用于 <code>partial</code>。</li>
+<li><code>partial</code> 表示一致性视角下的 Tensor 与物理设备上的 Tensor 的 <strong>形状相同</strong>，但是物理设备上的值，只是一致性视角下 Tensor 的 <strong>一部分</strong>。以 <code>partial sum</code> 为例，如果我们将集群中所有设备的张量按位置相加，那么就可以还原得到一致性视角的 Tensor。除了 <code>sum</code> 外，<code>min</code>、<code>max</code> 等操作也适用于 <code>partial</code>。</li>
 </ul>
 <p>下图中分别展示了 SBP 的情况，分别是 <code>split(0)</code>、<code>split(1)</code>、<code>broadcast</code>、<code>partial sum</code>。</p>
 <p><img alt="SBP Example" src="imgs/sbp-example.png" /></p>

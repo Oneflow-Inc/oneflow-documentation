@@ -1156,9 +1156,11 @@ python3
 <p>以上的环境变量的设置是做分布式的配置，详细解释及借助工具启动分布式，请参考文末的 <a href="#_5">扩展阅读</a></p>
 <h3 id="consistent-tensor_2">直接创建 consistent tensor<a class="headerlink" href="#consistent-tensor_2" title="Permanent link">&para;</a></h3>
 <p>在两个控制台，分别导入 <code>oneflow</code>，并创建 <code>x</code>。</p>
-<p>其中 <code>flow.placement("cuda",{0:[0,1]})</code> 指定了 consistent tensor 在集群的范围。
-- <code>"cuda"</code> 表示在 GPU 设备上。
-- <code>placement</code> 的第二个参数是一个字典，它的 <code>key</code> 代表机器编号，<code>value</code> 代表显卡编号。因此 <code>{0:[0,1]}</code> 表示 consistent tensor 在第 0 台机器的第0、1张显卡上。</p>
+<p>其中 <code>flow.placement("cuda",{0:[0,1]})</code> 指定了 consistent tensor 在集群的范围。</p>
+<ul>
+<li><code>"cuda"</code> 表示在 GPU 设备上。</li>
+<li><code>placement</code> 的第二个参数是一个字典，它的 <code>key</code> 代表机器编号，<code>value</code> 代表显卡编号。因此 <code>{0:[0,1]}</code> 表示 consistent tensor 在第 0 台机器的第0、1张显卡上。</li>
+</ul>
 <div class="tabbed-set" data-tabs="2:2"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><label for="__tabbed_2_1">Terminal 0</label><div class="tabbed-content">
 <div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">oneflow</span> <span class="k">as</span> <span class="nn">flow</span>
 
