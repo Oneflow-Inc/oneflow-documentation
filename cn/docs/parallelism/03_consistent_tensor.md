@@ -28,6 +28,7 @@
 在两个控制台，分别导入 `oneflow`，并创建 `x`。
 
 其中 `flow.placement("cuda",{0:[0,1]})` 指定了 consistent tensor 在集群的范围。
+
 - `"cuda"` 表示在 GPU 设备上。
 - `placement` 的第二个参数是一个字典，它的 `key` 代表机器编号，`value` 代表显卡编号。因此 `{0:[0,1]}` 表示 consistent tensor 在第 0 台机器的第0、1张显卡上。
 
