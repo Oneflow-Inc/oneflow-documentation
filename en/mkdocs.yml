@@ -60,7 +60,7 @@ extra:
     - name: English
       link: https://docs.oneflow.org/en
       lang: en
-  disqus: livere_indeed
+  # disqus: livere_indeed  # livere 英文版带了广告
 
 # Extensions
 markdown_extensions:
