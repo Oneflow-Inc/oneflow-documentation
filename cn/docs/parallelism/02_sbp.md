@@ -23,7 +23,7 @@ SBP 是 OneFlow 发明的概念，描述了“超级计算设备”一致性视�
 
 - `split` 表示物理设备上的 Tensor，是将一致性视角的 Tensor 切分得到的。切分时，需要指定切分的维度。物理设备上的 Tensor ，经过拼接，可以还原得到一致性视角的 Tensor 。
 - `broadcast` 表示一致性视角下的 Tensor，会复制并广播到所有的物理设备上。
-- `partial` 表示一致性视角下的 Tensor 与物理设备上的 Tensor 的 **形状相同**，但是物理设备上的值，只是一致性视角下 Tensor 的 **一部分**。以 `partial sum` 为例，如果我们将集群中所有设备的张量按位置相加，那么久可以还原得到一致性视角的 Tensor。除了 `sum` 外，`min`、`max` 等操作也适用于 `partial`。
+- `partial` 表示一致性视角下的 Tensor 与物理设备上的 Tensor 的 **形状相同**，但是物理设备上的值，只是一致性视角下 Tensor 的 **一部分**。以 `partial sum` 为例，如果我们将集群中所有设备的张量按位置相加，那么就可以还原得到一致性视角的 Tensor。除了 `sum` 外，`min`、`max` 等操作也适用于 `partial`。
 
 下图中分别展示了 SBP 的情况，分别是 `split(0)`、`split(1)`、`broadcast`、`partial sum`。
 

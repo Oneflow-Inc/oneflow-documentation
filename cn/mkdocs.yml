@@ -129,7 +129,7 @@ nav:
       - 流水并行训练: parallelism/06_pipeline.md
 
     - API:
-      - API: https://oneflow.readthedocs.io/en/master/
+      - API: https://start.oneflow.org/oneflow-api-cn/
 
     - 原接口兼容:
       - 说明: single_client/quick_start/introduce.md
