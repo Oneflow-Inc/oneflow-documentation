@@ -119,7 +119,7 @@ nav:
       - Model saving and loading: basics/07_model_load_save.md
       - Static Graph Interface: basics/08_nn_graph.md
       
-    - Parallelism Training:
+    - Distributed Training:
       - Common Parallel Strategies: parallelism/01_introduction.md
       - Consistent View: parallelism/02_sbp.md
       - Consistent Tensor: parallelism/03_consistent_tensor.md
