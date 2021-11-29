@@ -11,80 +11,68 @@
 
 OneFlow 默认以 Eager 模式运行。
 
-以下脚本，用多项式 $y=a+bx+cx^2+dx^3$ 拟合正弦函数 $y=sin(x)$，求出一组近似拟合参数 $a$, $b$, $c$, $d$。
-
-引入这个例子是为了展示 OneFlow 中 Eager 与 Graph 的关联（大部分代码可以复用）。相信读者对 OneFlow 的 Eager 模式已经很熟悉了，在此我们不再详细解释，感兴趣的读者可以点击 “Code” 展开代码。
-
-
-> 注：该例子代码改编自 [PyTorch 官网教程](https://pytorch.org/tutorials/beginner/pytorch_with_examples.html#nn-module)。
+以下脚本，使用 CIFAR10 数据集训练 `mobilenet_v2` 模型。
 
 ??? code
     ```python
-    import math
-    import numpy as np
     import oneflow as flow
+    import oneflow.nn as nn
+    import flowvision
+    import flowvision.transforms as transforms
 
-    device = flow.device("cuda")
-    dtype = flow.float32
+    BATCH_SIZE=64
+    EPOCH_NUM = 1
 
-    # Create Tensors to hold input and outputs.
-    x = flow.tensor(np.linspace(-math.pi, math.pi, 2000), device=device, dtype=dtype)
-    y = flow.tensor(np.sin(x), device=device, dtype=dtype)
+    DEVICE = "cuda" if flow.cuda.is_available() else "cpu"
+    print("Using {} device".format(DEVICE))
 
-    # For this example, the output y is a linear function of (x, x^2, x^3), so
-    # we can consider it as a linear layer neural network. Let's prepare the
-    # tensor (x, x^2, x^3).
-    xx = flow.cat(
-        [x.unsqueeze(-1).pow(1), x.unsqueeze(-1).pow(2), x.unsqueeze(-1).pow(3)], dim=1
+    training_data = flowvision.datasets.CIFAR10(
+        root="data",
+        train=True,
+        transform=transforms.ToTensor(),
+        download=True,
     )
-    # The Linear Module
-    model = flow.nn.Sequential(flow.nn.Linear(3, 1), flow.nn.Flatten(0, 1))
-    model.to(device)
 
-    # Loss Function
-    loss_fn = flow.nn.MSELoss(reduction="sum")
-    loss_fn.to(device)
-
-    # Optimizer
-    optimizer = flow.optim.SGD(model.parameters(), lr=1e-6)
-
-    for t in range(2000):
-        # Forward pass: compute predicted y by passing x to the model.
-        y_pred = model(xx)
-
-        # Compute and print loss.
-        loss = loss_fn(y_pred, y)
-        if t % 100 == 99:
-            print(t, loss.numpy())
-
-        # Use the optimizer object to zero all of the gradients for the variables
-        # it will update (which are the learnable weights of the model).
-        optimizer.zero_grad()
-
-        # Backward pass: compute gradient of the loss with respect to model
-        # parameters.
-        loss.backward()
-
-        # Calling the step function on an Optimizer makes an update to its
-        # parameters.
-        optimizer.step()
-
-    linear_layer = model[0]
-
-    print(
-        f"Result: y = {linear_layer.bias.numpy()[0]} + {linear_layer.weight[:, 0].numpy()[0]}*x + {linear_layer.weight[:, 1].numpy()[0]}*x^2 + {linear_layer.weight[:, 2].numpy()[0]}*x^3"
+    train_dataloader = flow.utils.data.DataLoader(
+        training_data, BATCH_SIZE, shuffle=True
     )
+
+    model = flowvision.models.mobilenet_v2().to(DEVICE)
+    model.classifer = nn.Sequential(nn.Dropout(0.2), nn.Linear(model.last_channel, 10))
+
+    loss_fn = nn.CrossEntropyLoss().to(DEVICE)
+    optimizer = flow.optim.SGD(model.parameters(), lr=1e-3)
+
+
+    for t in range(EPOCH_NUM):
+        print(f"Epoch {t+1}\n-------------------------------")
+        size = len(train_dataloader.dataset)
+        for batch, (x, y) in enumerate(train_dataloader):
+            x = x.to(DEVICE)
+            y = y.to(DEVICE)
+
+            # Compute prediction error
+            pred = model(x)
+            loss = loss_fn(pred, y)
+
+            # Backpropagation
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
+
+            current = batch * BATCH_SIZE
+            if batch % 5 == 0:
+                print(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")
     ```
 
 输出：
 
 ```text
-99 582.7045
+loss: 6.921304  [    0/50000]
+loss: 6.824391  [  320/50000]
+loss: 6.688272  [  640/50000]
+loss: 6.644351  [  960/50000]
 ...
-1799 9.326502
-1899 9.154123
-1999 9.040091
-Result: y = -0.0013652867637574673 + 0.8422811627388*x + 0.0002355352626182139*x^2 + -0.09127362817525864*x^3
 ```
 
 ## OneFlow 的 Graph 模式
@@ -97,39 +85,49 @@ OneFlow 提供了 [nn.Graph](https://oneflow.readthedocs.io/en/master/graph.html
 import oneflow as flow
 import oneflow.nn as nn
 
-class MyLinear(nn.Graph):
-  def __init__(self, in_features, out_features):
+class ModuleMyLinear(nn.Module):
+    def __init__(self, in_features, out_features):
+        super().__init__()
+        self.weight = nn.Parameter(flow.randn(in_features, out_features))
+        self.bias = nn.Parameter(flow.randn(out_features))
+
+    def forward(self, input):
+        return flow.matmul(input, self.weight) + self.bias
+
+model = ModuleMyLinear(4, 3)
+
+class GraphMyLinear(nn.Graph):
+  def __init__(self):
     super().__init__()
-    self.weight = nn.Parameter(flow.randn(in_features, out_features))
-    self.bias = nn.Parameter(flow.randn(out_features))
+    self.model = model
 
   def build(self, input):
-    return flow.matmul(input, self.weight) + self.bias
+    return self.model(input)
 ```
 
 以上简单的例子，包含了自定义 Graph 所需的重要步骤：
 
 - 继承 `nn.Graph`
 - 在 `__init__` 最开始调用 `super().__init__()`，让 OneFlow 完成 Graph 必要的初始化工作
-- 在 `__init__` 中定义神经网络的结构和状态
+- 在 `__init__` 中复用 Eager 模式下的 `nn.Module` 对象（`self.model = model`）
 - 在 `build` 中描述计算过程
 
 然后，就可以实例化并调用 Graph。
 
 ```python
-mygraph = MyLinear(4, 3)
+graph_mylinear = GraphMyLinear()
 input = flow.randn(1, 4)
-out = mygraph(input)
+out = graph_mylinear(input)
 print(out)
 ```
 
 输出：
 
 ```text
-tensor([[ 4.0638, -1.4453,  3.9640]], dtype=oneflow.float32)
+tensor([[-0.3298, -3.7907,  0.1661]], dtype=oneflow.float32)
 ```
 
-注意，Graph 与 Module 类似，对象本身是可调用的，并且 **不推荐** 显式调用 `build` 方法。Graph 的定义与使用与 Module 非常类似，实际上，Graph 可以直接复用已经定义好的 Module。因此，用户可以直接参考 [搭建神经网络](./04_build_network.md) 中的内容在 Graph 模式下搭建神经网络。
+注意，Graph 与 Module 类似，对象本身是可调用的，并且 **不推荐** 显式调用 `build` 方法。Graph 可以直接复用已经定义好的 Module。因此，用户可以直接参考 [搭建神经网络](./04_build_network.md) 中的内容搭建好神经网络，然后在 Graph 的 `__init__` 中将 Module 设置为 Graph 的成员即可。
 
 比如，直接使用以上 Eager 模式示例的 `model`，作为网络结构：
 
@@ -150,10 +148,11 @@ model_graph = ModelGraph()
 
 
 ### 使用 Graph 做预测
+
 以下 Graph 做预测的例子，直接使用了本文开始 Eager 模式训练好的 module。
 
 ```python
-class LinearPredictGraph(flow.nn.Graph):
+class GraphMobileNetV2(flow.nn.Graph):
     def __init__(self):
         super().__init__()
         self.model = model
@@ -162,19 +161,12 @@ class LinearPredictGraph(flow.nn.Graph):
         return self.model(x)
 
 
-linear_graph = LinearPredictGraph()
-y_fit = linear_graph(xx)
+graph_mobile_net_v2 = GraphMobileNetV2()
+
+x, _ = next(iter(train_dataloader))
+x = x.to(DEVICE)
+y_pred = graph_mobile_net_v2(x)
 ```
-
-绘制原函数曲线与拟合效果的对比图
-
-```python
-import matplotlib.pyplot as plt
-plt.plot(x.numpy(),y.numpy())
-plt.plot(x.numpy(),y_fit.numpy())
-```
-
-![poly_fit](./imgs/poly_fit.png)
 
 ### 使用 Graph 做训练
 
@@ -182,38 +174,35 @@ plt.plot(x.numpy(),y_fit.numpy())
 
 ??? code
     ```python
-    import math
-    import numpy as np
     import oneflow as flow
+    import oneflow.nn as nn
+    import flowvision
+    import flowvision.transforms as transforms
 
-    device = flow.device("cuda")
-    dtype = flow.float32
+    BATCH_SIZE=64
+    EPOCH_NUM = 1
 
-    # Create Tensors to hold input and outputs.
-    x = flow.tensor(np.linspace(-math.pi, math.pi, 2000), device=device, dtype=dtype)
-    y = flow.tensor(np.sin(x), device=device, dtype=dtype)
+    DEVICE = "cuda" if flow.cuda.is_available() else "cpu"
+    print("Using {} device".format(DEVICE))
 
-    # For this example, the output y is a linear function of (x, x^2, x^3), so
-    # we can consider it as a linear layer neural network. Let's prepare the
-    # tensor (x, x^2, x^3).
-    xx = flow.cat(
-        [x.unsqueeze(-1).pow(1), x.unsqueeze(-1).pow(2), x.unsqueeze(-1).pow(3)], dim=1
+    training_data = flowvision.datasets.CIFAR10(
+        root="data",
+        train=True,
+        transform=transforms.ToTensor(),
+        download=True,
     )
 
-    # The Linear Module
-    model = flow.nn.Sequential(flow.nn.Linear(3, 1), flow.nn.Flatten(0, 1))
-    model.to(device)
+    train_dataloader = flow.utils.data.DataLoader(
+        training_data, BATCH_SIZE, shuffle=True
+    )
 
-    # Loss Function
-    loss_fn = flow.nn.MSELoss(reduction="sum")
-    loss_fn.to(device)
+    model = flowvision.models.mobilenet_v2().to(DEVICE)
+    model.classifer = nn.Sequential(nn.Dropout(0.2), nn.Linear(model.last_channel, 10))
 
-    # Optimizer
-    optimizer = flow.optim.SGD(model.parameters(), lr=1e-6)
+    loss_fn = nn.CrossEntropyLoss().to(DEVICE)
+    optimizer = flow.optim.SGD(model.parameters(), lr=1e-3)
 
-
-    # The Linear Train Graph
-    class LinearTrainGraph(flow.nn.Graph):
+    class GraphMobileNetV2(flow.nn.Graph):
         def __init__(self):
             super().__init__()
             self.model = model
@@ -227,38 +216,37 @@ plt.plot(x.numpy(),y_fit.numpy())
             return loss
 
 
-    linear_graph = LinearTrainGraph()
-    # linear_graph.debug()
+    graph_mobile_net_v2 = GraphMobileNetV2()
+    # graph_mobile_net_v2.debug()
 
-    for t in range(2000):
-        # Print loss.
-        loss = linear_graph(xx, y)
-        if t % 100 == 99:
-            print(t, loss.numpy())
-
-
-    linear_layer = model[0]
-    print(
-        f"Result: y = {linear_layer.bias.numpy()} + {linear_layer.weight[:, 0].numpy()} x + {linear_layer.weight[:, 1].numpy()} x^2 + {linear_layer.weight[:, 2].numpy()} x^3"
-    )
+    for t in range(EPOCH_NUM):
+        print(f"Epoch {t+1}\n-------------------------------")
+        size = len(train_dataloader.dataset)
+        for batch, (x, y) in enumerate(train_dataloader):
+            x = x.to(DEVICE)
+            y = y.to(DEVICE)
+            loss = graph_mobile_net_v2(x, y)
+            current = batch * BATCH_SIZE
+            if batch % 5 == 0:
+                print(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")
     ```
 
 与 Graph 做预测的代码做比较，可以发现，只有以下几点是 Graph 做训练时特有的：
 
 ```python
 # Optimizer
-optimizer = flow.optim.SGD(model.parameters(), lr=1e-6) # (1)
+optimizer = flow.optim.SGD(model.parameters(), lr=1e-3) # (1)
 
-# The Linear Train Graph
-class LinearTrainGraph(flow.nn.Graph):
+# The MobileNetV2 Graph
+class GraphMobileNetV2(flow.nn.Graph):
     def __init__(self):
-        #...
+        # ...
         self.add_optimizer(optimizer) # (2)
 
     def build(self, x, y):
-        #...
+        # ...
         loss.backward() # (3)
-        #...
+        # ...
 ```
 
 1. 构造 optimizer 对象，这点和 [反向传播与 optimizer](./06_optimization.md#optimizer_1) 介绍的 Eager 模式的使用方法是完全一致的。
@@ -269,113 +257,113 @@ class LinearTrainGraph(flow.nn.Graph):
 
 ### Graph 调试
 
-可以调用 `print` 输出 Graph 对象的信息。
+可以调用 `print` 打印 Graph 对象，输出 Graph 对象的信息。
 
 ```python
-print(linear_graph)
+print(graph_mobile_net_v2)
 ```
 
-根据 Graph 对象是否调用，输出的效果略有不同：
+根据 Graph 对象是否 **已经被调用过**，输出的效果略有不同：
 
 如果 Graph 对象调用前 `print`，输出的是网络结构的信息。
 
-以上 `linear_graph` 调用前 `print` 效果：
+以上 `graph_mobile_net_v2` 调用前 `print` 效果：
 
 ```text
-(GRAPH:LinearTrainGraph_0:LinearTrainGraph): (
-  (MODULE:model:Sequential()): (
-    (MODULE:model.0:Linear(in_features=3, out_features=1, bias=True)): (
-      (PARAMETER:model.0.weight:tensor(..., device='cuda:0', size=(1, 3), dtype=oneflow.float32,
-             requires_grad=True)): ()
-      (PARAMETER:model.0.bias:tensor(..., device='cuda:0', size=(1,), dtype=oneflow.float32,
-             requires_grad=True)): ()
+(GRAPH:GraphMobileNetV2_0:GraphMobileNetV2): (
+  (CONFIG:config:GraphConfig(training=True, ))
+  (MODULE:model:MobileNetV2()): (
+    (MODULE:model.features:Sequential()): (
+      (MODULE:model.features.0:ConvBNActivation()): (
+        (MODULE:model.features.0.0:Conv2d(3, 32, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False)): (
+          (PARAMETER:model.features.0.0.weight:tensor(..., device='cuda:0', size=(32, 3, 3, 3), dtype=oneflow.float32,
+                 requires_grad=True)): ()
+        )
+    ...
+    (MODULE:model.classifer:Sequential()): (
+      (MODULE:model.classifer.0:Dropout(p=0.2, inplace=False)): ()
+      (MODULE:model.classifer.1:Linear(in_features=1280, out_features=10, bias=True)): (
+        (PARAMETER:model.classifer.1.weight:tensor(..., size=(10, 1280), dtype=oneflow.float32, requires_grad=True)): ()
+        (PARAMETER:model.classifer.1.bias:tensor(..., size=(10,), dtype=oneflow.float32, requires_grad=True)): ()
+      )
     )
-    (MODULE:model.1:Flatten(start_dim=0, end_dim=1)): ()
   )
-  (MODULE:loss_fn:MSELoss()): ()
+  (MODULE:loss_fn:CrossEntropyLoss()): ()
 )
 ```
 
-如果是 Graph 对象调用后 `print`，除了网络的结构信息外，还会打印输入输出张量的信息，又如下类似效果：
+如果是 Graph 对象调用后 `print`，除了网络的结构信息外，还会打印输入输出张量的信息，有如下类似效果：
 
 ```text
-(GRAPH:LinearTrainGraph_0:LinearTrainGraph): (
-  (INPUT:_LinearTrainGraph_0-input_0:tensor(..., device='cuda:0', size=(2000, 3), dtype=oneflow.float32))
-  (INPUT:_LinearTrainGraph_0-input_1:tensor(..., device='cuda:0', size=(2000,), dtype=oneflow.float32))
-  (MODULE:model:Sequential()): (
-    (INPUT:_model-input_0:tensor(..., device='cuda:0', is_lazy='True', size=(2000, 3),
+(GRAPH:GraphMobileNetV2_0:GraphMobileNetV2): (
+  (CONFIG:config:GraphConfig(training=True, ))
+  (INPUT:_GraphMobileNetV2_0-input_0:tensor(..., device='cuda:0', size=(64, 3, 32, 32), dtype=oneflow.float32))
+  (INPUT:_GraphMobileNetV2_0-input_1:tensor(..., device='cuda:0', size=(64,), dtype=oneflow.int64))
+  (MODULE:model:MobileNetV2()): (
+    (INPUT:_model-input_0:tensor(..., device='cuda:0', is_lazy='True', size=(64, 3, 32, 32),
            dtype=oneflow.float32))
-    (MODULE:model.0:Linear(in_features=3, out_features=1, bias=True)): (
-      (INPUT:_model.0-input_0:tensor(..., device='cuda:0', is_lazy='True', size=(2000, 3),
+    (MODULE:model.features:Sequential()): (
+      (INPUT:_model.features-input_0:tensor(..., device='cuda:0', is_lazy='True', size=(64, 3, 32, 32),
              dtype=oneflow.float32))
-      (PARAMETER:model.0.weight:tensor(..., device='cuda:0', size=(1, 3), dtype=oneflow.float32,
-             requires_grad=True)): ()
-      (PARAMETER:model.0.bias:tensor(..., device='cuda:0', size=(1,), dtype=oneflow.float32,
-             requires_grad=True)): ()
-      (OUTPUT:_model.0-output_0:tensor(..., device='cuda:0', is_lazy='True', size=(2000, 1),
-             dtype=oneflow.float32))
-    )
-    (MODULE:model.1:Flatten(start_dim=0, end_dim=1)): (
-      (INPUT:_model.1-input_0:tensor(..., device='cuda:0', is_lazy='True', size=(2000, 1),
-             dtype=oneflow.float32))
-      (OUTPUT:_model.1-output_0:tensor(..., device='cuda:0', is_lazy='True', size=(2000,),
-             dtype=oneflow.float32))
-    )
-    (OUTPUT:_model-output_0:tensor(..., device='cuda:0', is_lazy='True', size=(2000,),
-           dtype=oneflow.float32))
-  )
-  (MODULE:loss_fn:MSELoss()): (
-    (INPUT:_loss_fn-input_0:tensor(..., device='cuda:0', is_lazy='True', size=(2000,),
-           dtype=oneflow.float32))
-    (INPUT:_loss_fn-input_1:tensor(..., device='cuda:0', is_lazy='True', size=(2000,),
-           dtype=oneflow.float32))
-    (OUTPUT:_loss_fn-output_0:tensor(..., device='cuda:0', is_lazy='True', size=(), dtype=oneflow.float32))
-  )
-  (OUTPUT:_LinearTrainGraph_0-output_0:tensor(..., device='cuda:0', is_lazy='True', size=(), dtype=oneflow.float32))
-)
+      (MODULE:model.features.0:ConvBNActivation()): (
+        (INPUT:_model.features.0-input_0:tensor(..., device='cuda:0', is_lazy='True', size=(64, 3, 32, 32),
+               dtype=oneflow.float32))
+        (MODULE:model.features.0.0:Conv2d(3, 32, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False)): (
+          (INPUT:_model.features.0.0-input_0:tensor(..., device='cuda:0', is_lazy='True', size=(64, 3, 32, 32),
+                 dtype=oneflow.float32))
+          (PARAMETER:model.features.0.0.weight:tensor(..., device='cuda:0', size=(32, 3, 3, 3), dtype=oneflow.float32,
+                 requires_grad=True)): ()
+          (OUTPUT:_model.features.0.0-output_0:tensor(..., device='cuda:0', is_lazy='True', size=(64, 32, 16, 16),
+                 dtype=oneflow.float32))
+        )
+    ...
 ```
 
-此外，调用 Graph 对象的 `debug` 方法，就开启了 Graph 的调试模式。
+此外，调用 Graph 对象的 [debug](https://oneflow.readthedocs.io/en/master/graph.html#oneflow.nn.Graph.debug) 方法，就开启了 Graph 的调试模式。
 
-OneFlow 在编译生成计算图的过程中会打印调试信息，比如，将上面例子代码中`linear_graph.debug()`的注释去掉，将在控制台上输出如下输出：
+OneFlow 在编译生成计算图的过程中会打印调试信息，比如，将上面例子代码中 `graph_mobile_net_v2.debug()` 的注释去掉，将在控制台上输出如下输出：
 
 ```text
-Note that nn.Graph.debug() only print debug info on rank 0.
-(GRAPH:LinearTrainGraph_0:LinearTrainGraph) start building forward graph.
-(INPUT:_LinearTrainGraph_0-input_0:tensor(..., device='cuda:0', size=(20, 3), dtype=oneflow.float32))
-(INPUT:_LinearTrainGraph_0-input_1:tensor(..., device='cuda:0', size=(20,), dtype=oneflow.float32))
-(MODULE:model:Sequential())
-(INPUT:_model-input_0:tensor(..., device='cuda:0', is_lazy='True', size=(20, 3),
-       dtype=oneflow.float32))
-(MODULE:model.0:Linear(in_features=3, out_features=1, bias=True))
-(INPUT:_model.0-input_0:tensor(..., device='cuda:0', is_lazy='True', size=(20, 3),
-       dtype=oneflow.float32))
-(PARAMETER:model.0.weight:tensor(..., device='cuda:0', size=(1, 3), dtype=oneflow.float32,
-       requires_grad=True))
-(PARAMETER:model.0.bias:tensor(..., device='cuda:0', size=(1,), dtype=oneflow.float32,
-       requires_grad=True))
-(OUTPUT:_model.0-output_0:tensor(..., device='cuda:0', is_lazy='True', size=(20, 1),
-       dtype=oneflow.float32))
-(MODULE:model.1:Flatten(start_dim=0, end_dim=1))
-(INPUT:_model.1-input_0:tensor(..., device='cuda:0', is_lazy='True', size=(20, 1),
-       dtype=oneflow.float32))
-(OUTPUT:_model.1-output_0:tensor(..., device='cuda:0', is_lazy='True', size=(20,), dtype=oneflow.float32))
-(OUTPUT:_model-output_0:tensor(..., device='cuda:0', is_lazy='True', size=(20,), dtype=oneflow.float32))
-(MODULE:loss_fn:MSELoss())
-(INPUT:_loss_fn-input_0:tensor(..., device='cuda:0', is_lazy='True', size=(20,), dtype=oneflow.float32))
-(INPUT:_loss_fn-input_1:tensor(..., device='cuda:0', is_lazy='True', size=(20,), dtype=oneflow.float32))
-(OUTPUT:_loss_fn-output_0:tensor(..., device='cuda:0', is_lazy='True', size=(), dtype=oneflow.float32))
-(OUTPUT:_LinearTrainGraph_0-output_0:tensor(..., device='cuda:0', is_lazy='True', size=(), dtype=oneflow.float32))
-(GRAPH:LinearTrainGraph_0:LinearTrainGraph) end building forward graph.
-(GRAPH:LinearTrainGraph_0:LinearTrainGraph) start compiling and init graph runtime.
-(GRAPH:LinearTrainGraph_0:LinearTrainGraph) end compiling and init graph rumtime.
+(GRAPH:GraphMobileNetV2_0:GraphMobileNetV2) end building graph.
+(GRAPH:GraphMobileNetV2_0:GraphMobileNetV2) start compiling plan and init graph runtime.
+(GRAPH:GraphMobileNetV2_0:GraphMobileNetV2) end compiling plan and init graph rumtime.
 ```
-
-输出中将显示包括计算图中各层的名称、输入输出张量的信息，包括形状、设备信息、数据类型等。
 
 使用 `debug` 的好处在于，调试信息是 **边构图、边输出** 的，这样如果构图过程中发生错误，容易发现构图时的问题。
 
+还可以通过设置 `v_level` 参数，调整 `debug` 的输出详细程度：
+
+```python
+graph_mobile_net_v2.debug(v_level=1)  # 输出详细信息
+```
+
 除了以上介绍的方法外，训练过程中获取参数的梯度、获取 learning rate 等功能，也正在开发中，即将上线。
+
+### Graph 的保存与加载
+
+Graph 复用了 Module 的网络参数，因此 Graph 没有自己的 `save` 与 `load` 接口，直接使用 Module 的接口即可。可以参考 [模型的保存与加载](./07_model_load_save.md) 即可。
+
+如以上的 `graph_mobile_net_v2`，若想保存它的训练结果，其实应该保存它其中的 Module（即之前 `model = flowvision.models.mobilenet_v2().to(DEVICE)` 得到的 `model`。
+
+```python
+flow.save(model.state_dict(), "./graph_model")
+```
+
+!!! Note
+    **不能** 用以下方式保存。因为 Graph 在初始化时，会对成员做处理，所以 `graph_mobile_net_v2.model` 其实已经不再是 Module 类型：
+
+    ```python
+    flow.save(graph_mobile_net_v2.model.state_dict(), "./graph_model")  # 会报错
+    ```
+
+加载之前保存好的模型，也是 Module 的工作：
+
+```python
+model = flowvision.models.mobilenet_v2().to(DEVICE)
+model.classifer = nn.Sequential(nn.Dropout(0.2), nn.Linear(model.last_channel, 10))
+model.load_state_dict(flow.load("./graph_model")) # 加载保存好的模型
+# ...
+```
 
 ## 扩展阅读：动态图与静态图
 
@@ -438,5 +426,3 @@ OneFlow 提供的 Graph 模式，也基于面向对象的编程风格，让熟�
 ## 相关链接
 
 OneFlow Eager模式下的神经网络搭建：[搭建神经网络](./04_build_network.md)
-
-PyTorch 版本的多项式拟合实例代码：[PyTorch: nn](https://pytorch.org/tutorials/beginner/pytorch_with_examples.html#id19)
