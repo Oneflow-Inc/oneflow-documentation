@@ -426,5 +426,3 @@ OneFlow 提供的 Graph 模式，也基于面向对象的编程风格，让熟�
 ## 相关链接
 
 OneFlow Eager模式下的神经网络搭建：[搭建神经网络](./04_build_network.md)
-
-PyTorch 版本的多项式拟合实例代码：[PyTorch: nn](https://pytorch.org/tutorials/beginner/pytorch_with_examples.html#id19)
