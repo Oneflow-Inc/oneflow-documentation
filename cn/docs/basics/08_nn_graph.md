@@ -319,9 +319,9 @@ print(graph_mobile_net_v2)
     ...
 ```
 
-此外，调用 Graph 对象的 `debug` 方法，就开启了 Graph 的调试模式。
+此外，调用 Graph 对象的 [debug](https://oneflow.readthedocs.io/en/master/graph.html#oneflow.nn.Graph.debug) 方法，就开启了 Graph 的调试模式。
 
-OneFlow 在编译生成计算图的过程中会打印调试信息，比如，将上面例子代码中`graph_mobile_net_v2.debug()`的注释去掉，将在控制台上输出如下输出：
+OneFlow 在编译生成计算图的过程中会打印调试信息，比如，将上面例子代码中 `graph_mobile_net_v2.debug()` 的注释去掉，将在控制台上输出如下输出：
 
 ```text
 (GRAPH:GraphMobileNetV2_0:GraphMobileNetV2) end building graph.
@@ -331,17 +331,30 @@ OneFlow 在编译生成计算图的过程中会打印调试信息，比如，将
 
 使用 `debug` 的好处在于，调试信息是 **边构图、边输出** 的，这样如果构图过程中发生错误，容易发现构图时的问题。
 
+还可以通过设置 `v_level` 参数，调整 `debug` 的输出详细程度：
+
+```python
+graph_mobile_net_v2.debug(v_level=1)  # 输出详细信息
+```
+
 除了以上介绍的方法外，训练过程中获取参数的梯度、获取 learning rate 等功能，也正在开发中，即将上线。
 
 ### Graph 的保存与加载
 
 Graph 复用了 Module 的网络参数，因此 Graph 没有自己的 `save` 与 `load` 接口，直接使用 Module 的接口即可。可以参考 [模型的保存与加载](./07_model_load_save.md) 即可。
 
-如以上的 `graph_mobile_net_v2`，若想保存它的训练结果，可以这样调用 `save`：
+如以上的 `graph_mobile_net_v2`，若想保存它的训练结果，其实应该保存它其中的 Module（即之前 `model = flowvision.models.mobilenet_v2().to(DEVICE)` 得到的 `model`。
 
 ```python
-flow.save(graph_mobile_net_v2.model.state_dict(), "./graph_model")
+flow.save(model.state_dict(), "./graph_model")
 ```
+
+!!! Note
+    **不能** 用以下方式保存。因为 Graph 在初始化时，会对成员做处理，所以 `graph_mobile_net_v2.model` 其实已经不再是 Module 类型：
+
+    ```python
+    flow.save(graph_mobile_net_v2.model.state_dict(), "./graph_model")  # 会报错
+    ```
 
 加载之前保存好的模型，也是 Module 的工作：
 
