@@ -529,6 +529,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#graph_4" class="md-nav__link">
+    Graph 的保存与加载
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1032,6 +1039,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#graph_4" class="md-nav__link">
+    Graph 的保存与加载
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1074,76 +1088,65 @@
 <p>一般而言，动态图更易用，静态图性能更具优势。OneFlow 提供的 <a href="https://oneflow.readthedocs.io/en/master/graph.html">nn.Graph</a> 模块，让用户可以用类似 Eager 的编程习惯，构建静态图并训练模型。</p>
 <h2 id="oneflow-eager">OneFlow 的 Eager 模式<a class="headerlink" href="#oneflow-eager" title="Permanent link">&para;</a></h2>
 <p>OneFlow 默认以 Eager 模式运行。</p>
-<p>以下脚本，用多项式 <span class="arithmatex">\(y=a+bx+cx^2+dx^3\)</span> 拟合正弦函数 <span class="arithmatex">\(y=sin(x)\)</span>，求出一组近似拟合参数 <span class="arithmatex">\(a\)</span>, <span class="arithmatex">\(b\)</span>, <span class="arithmatex">\(c\)</span>, <span class="arithmatex">\(d\)</span>。</p>
-<p>引入这个例子是为了展示 OneFlow 中 Eager 与 Graph 的关联（大部分代码可以复用）。相信读者对 OneFlow 的 Eager 模式已经很熟悉了，在此我们不再详细解释，感兴趣的读者可以点击 “Code” 展开代码。</p>
-<blockquote>
-<p>注：该例子代码改编自 <a href="https://pytorch.org/tutorials/beginner/pytorch_with_examples.html#nn-module">PyTorch 官网教程</a>。</p>
-</blockquote>
+<p>以下脚本，使用 CIFAR10 数据集训练 <code>mobilenet_v2</code> 模型。</p>
 <details class="code">
 <summary>Code</summary>
-<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">math</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">oneflow</span> <span class="k">as</span> <span class="nn">flow</span>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">oneflow</span> <span class="k">as</span> <span class="nn">flow</span>
+<span class="kn">import</span> <span class="nn">oneflow.nn</span> <span class="k">as</span> <span class="nn">nn</span>
+<span class="kn">import</span> <span class="nn">flowvision</span>
+<span class="kn">import</span> <span class="nn">flowvision.transforms</span> <span class="k">as</span> <span class="nn">transforms</span>
 
-<span class="n">device</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s2">&quot;cuda&quot;</span><span class="p">)</span>
-<span class="n">dtype</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">float32</span>
+<span class="n">BATCH_SIZE</span><span class="o">=</span><span class="mi">64</span>
+<span class="n">EPOCH_NUM</span> <span class="o">=</span> <span class="mi">1</span>
 
-<span class="c1"># Create Tensors to hold input and outputs.</span>
-<span class="n">x</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="mi">2000</span><span class="p">),</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
-<span class="n">y</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
+<span class="n">DEVICE</span> <span class="o">=</span> <span class="s2">&quot;cuda&quot;</span> <span class="k">if</span> <span class="n">flow</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">()</span> <span class="k">else</span> <span class="s2">&quot;cpu&quot;</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Using </span><span class="si">{}</span><span class="s2"> device&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">DEVICE</span><span class="p">))</span>
 
-<span class="c1"># For this example, the output y is a linear function of (x, x^2, x^3), so</span>
-<span class="c1"># we can consider it as a linear layer neural network. Let&#39;s prepare the</span>
-<span class="c1"># tensor (x, x^2, x^3).</span>
-<span class="n">xx</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span>
-    <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">x</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="n">x</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="mi">3</span><span class="p">)],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span>
+<span class="n">training_data</span> <span class="o">=</span> <span class="n">flowvision</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">CIFAR10</span><span class="p">(</span>
+    <span class="n">root</span><span class="o">=</span><span class="s2">&quot;data&quot;</span><span class="p">,</span>
+    <span class="n">train</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">transform</span><span class="o">=</span><span class="n">transforms</span><span class="o">.</span><span class="n">ToTensor</span><span class="p">(),</span>
+    <span class="n">download</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="c1"># The Linear Module</span>
-<span class="n">model</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Flatten</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
-<span class="n">model</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
 
-<span class="c1"># Loss Function</span>
-<span class="n">loss_fn</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">MSELoss</span><span class="p">(</span><span class="n">reduction</span><span class="o">=</span><span class="s2">&quot;sum&quot;</span><span class="p">)</span>
-<span class="n">loss_fn</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
-
-<span class="c1"># Optimizer</span>
-<span class="n">optimizer</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">)</span>
-
-<span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2000</span><span class="p">):</span>
-    <span class="c1"># Forward pass: compute predicted y by passing x to the model.</span>
-    <span class="n">y_pred</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">xx</span><span class="p">)</span>
-
-    <span class="c1"># Compute and print loss.</span>
-    <span class="n">loss</span> <span class="o">=</span> <span class="n">loss_fn</span><span class="p">(</span><span class="n">y_pred</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">t</span> <span class="o">%</span> <span class="mi">100</span> <span class="o">==</span> <span class="mi">99</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">loss</span><span class="o">.</span><span class="n">numpy</span><span class="p">())</span>
-
-    <span class="c1"># Use the optimizer object to zero all of the gradients for the variables</span>
-    <span class="c1"># it will update (which are the learnable weights of the model).</span>
-    <span class="n">optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
-
-    <span class="c1"># Backward pass: compute gradient of the loss with respect to model</span>
-    <span class="c1"># parameters.</span>
-    <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
-
-    <span class="c1"># Calling the step function on an Optimizer makes an update to its</span>
-    <span class="c1"># parameters.</span>
-    <span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
-
-<span class="n">linear_layer</span> <span class="o">=</span> <span class="n">model</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-
-<span class="nb">print</span><span class="p">(</span>
-    <span class="sa">f</span><span class="s2">&quot;Result: y = </span><span class="si">{</span><span class="n">linear_layer</span><span class="o">.</span><span class="n">bias</span><span class="o">.</span><span class="n">numpy</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> + </span><span class="si">{</span><span class="n">linear_layer</span><span class="o">.</span><span class="n">weight</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">numpy</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">*x + </span><span class="si">{</span><span class="n">linear_layer</span><span class="o">.</span><span class="n">weight</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">numpy</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">*x^2 + </span><span class="si">{</span><span class="n">linear_layer</span><span class="o">.</span><span class="n">weight</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">numpy</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">*x^3&quot;</span>
+<span class="n">train_dataloader</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">(</span>
+    <span class="n">training_data</span><span class="p">,</span> <span class="n">BATCH_SIZE</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span>
 <span class="p">)</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">flowvision</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">mobilenet_v2</span><span class="p">()</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">DEVICE</span><span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">classifer</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="mf">0.2</span><span class="p">),</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">last_channel</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+
+<span class="n">loss_fn</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">CrossEntropyLoss</span><span class="p">()</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">DEVICE</span><span class="p">)</span>
+<span class="n">optimizer</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">)</span>
+
+
+<span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">EPOCH_NUM</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Epoch </span><span class="si">{</span><span class="n">t</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="se">\n</span><span class="s2">-------------------------------&quot;</span><span class="p">)</span>
+    <span class="n">size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">train_dataloader</span><span class="o">.</span><span class="n">dataset</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">batch</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">train_dataloader</span><span class="p">):</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">DEVICE</span><span class="p">)</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">DEVICE</span><span class="p">)</span>
+
+        <span class="c1"># Compute prediction error</span>
+        <span class="n">pred</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="n">loss_fn</span><span class="p">(</span><span class="n">pred</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+
+        <span class="c1"># Backpropagation</span>
+        <span class="n">optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+        <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+        <span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+
+        <span class="n">current</span> <span class="o">=</span> <span class="n">batch</span> <span class="o">*</span> <span class="n">BATCH_SIZE</span>
+        <span class="k">if</span> <span class="n">batch</span> <span class="o">%</span> <span class="mi">5</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;loss: </span><span class="si">{</span><span class="n">loss</span><span class="si">:</span><span class="s2">&gt;7f</span><span class="si">}</span><span class="s2">  [</span><span class="si">{</span><span class="n">current</span><span class="si">:</span><span class="s2">&gt;5d</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">size</span><span class="si">:</span><span class="s2">&gt;5d</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
 </code></pre></div>
 </details>
 <p>输出：</p>
-<div class="highlight"><pre><span></span><code>99 582.7045
+<div class="highlight"><pre><span></span><code>loss: 6.921304  [    0/50000]
+loss: 6.824391  [  320/50000]
+loss: 6.688272  [  640/50000]
+loss: 6.644351  [  960/50000]
 ...
-1799 9.326502
-1899 9.154123
-1999 9.040091
-Result: y = -0.0013652867637574673 + 0.8422811627388*x + 0.0002355352626182139*x^2 + -0.09127362817525864*x^3
 </code></pre></div>
 <h2 id="oneflow-graph">OneFlow 的 Graph 模式<a class="headerlink" href="#oneflow-graph" title="Permanent link">&para;</a></h2>
 <h3 id="graph">自定义一个 Graph<a class="headerlink" href="#graph" title="Permanent link">&para;</a></h3>
@@ -1151,32 +1154,42 @@ Result: y = -0.0013652867637574673 + 0.8422811627388*x + 0.0002355352626182139*x
 <div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">oneflow</span> <span class="k">as</span> <span class="nn">flow</span>
 <span class="kn">import</span> <span class="nn">oneflow.nn</span> <span class="k">as</span> <span class="nn">nn</span>
 
-<span class="k">class</span> <span class="nc">MyLinear</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Graph</span><span class="p">):</span>
-  <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_features</span><span class="p">,</span> <span class="n">out_features</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">ModuleMyLinear</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_features</span><span class="p">,</span> <span class="n">out_features</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">weight</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">in_features</span><span class="p">,</span> <span class="n">out_features</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bias</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">out_features</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">flow</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">weight</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">bias</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">ModuleMyLinear</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">GraphMyLinear</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Graph</span><span class="p">):</span>
+  <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">weight</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">in_features</span><span class="p">,</span> <span class="n">out_features</span><span class="p">))</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">bias</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">out_features</span><span class="p">))</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
 
   <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">flow</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">weight</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">bias</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
 </code></pre></div>
 <p>以上简单的例子，包含了自定义 Graph 所需的重要步骤：</p>
 <ul>
 <li>继承 <code>nn.Graph</code></li>
 <li>在 <code>__init__</code> 最开始调用 <code>super().__init__()</code>，让 OneFlow 完成 Graph 必要的初始化工作</li>
-<li>在 <code>__init__</code> 中定义神经网络的结构和状态</li>
+<li>在 <code>__init__</code> 中复用 Eager 模式下的 <code>nn.Module</code> 对象（<code>self.model = model</code>）</li>
 <li>在 <code>build</code> 中描述计算过程</li>
 </ul>
 <p>然后，就可以实例化并调用 Graph。</p>
-<div class="highlight"><pre><span></span><code><span class="n">mygraph</span> <span class="o">=</span> <span class="n">MyLinear</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><span class="n">graph_mylinear</span> <span class="o">=</span> <span class="n">GraphMyLinear</span><span class="p">()</span>
 <span class="nb">input</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
-<span class="n">out</span> <span class="o">=</span> <span class="n">mygraph</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
+<span class="n">out</span> <span class="o">=</span> <span class="n">graph_mylinear</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
 </code></pre></div>
 <p>输出：</p>
-<div class="highlight"><pre><span></span><code>tensor([[ 4.0638, -1.4453,  3.9640]], dtype=oneflow.float32)
+<div class="highlight"><pre><span></span><code>tensor([[-0.3298, -3.7907,  0.1661]], dtype=oneflow.float32)
 </code></pre></div>
-<p>注意，Graph 与 Module 类似，对象本身是可调用的，并且 <strong>不推荐</strong> 显式调用 <code>build</code> 方法。Graph 的定义与使用与 Module 非常类似，实际上，Graph 可以直接复用已经定义好的 Module。因此，用户可以直接参考 <a href="04_build_network.html">搭建神经网络</a> 中的内容在 Graph 模式下搭建神经网络。</p>
+<p>注意，Graph 与 Module 类似，对象本身是可调用的，并且 <strong>不推荐</strong> 显式调用 <code>build</code> 方法。Graph 可以直接复用已经定义好的 Module。因此，用户可以直接参考 <a href="04_build_network.html">搭建神经网络</a> 中的内容搭建好神经网络，然后在 Graph 的 <code>__init__</code> 中将 Module 设置为 Graph 的成员即可。</p>
 <p>比如，直接使用以上 Eager 模式示例的 <code>model</code>，作为网络结构：</p>
 <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">ModelGraph</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Graph</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1192,7 +1205,7 @@ Result: y = -0.0013652867637574673 + 0.8422811627388*x + 0.0002355352626182139*x
 <p>与 Module 的显著区别在于，Graph 使用 <code>build</code> 而不是 <code>forward</code> 方法描述计算过程，这是因为 <code>build</code> 不仅可以包含前向计算，还可以设置 <code>loss</code>，优化器等，在下文会看到使用 Graph 做训练的实际例子。</p>
 <h3 id="graph_1">使用 Graph 做预测<a class="headerlink" href="#graph_1" title="Permanent link">&para;</a></h3>
 <p>以下 Graph 做预测的例子，直接使用了本文开始 Eager 模式训练好的 module。</p>
-<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">LinearPredictGraph</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Graph</span><span class="p">):</span>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">GraphMobileNetV2</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Graph</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
@@ -1201,51 +1214,45 @@ Result: y = -0.0013652867637574673 + 0.8422811627388*x + 0.0002355352626182139*x
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
 
-<span class="n">linear_graph</span> <span class="o">=</span> <span class="n">LinearPredictGraph</span><span class="p">()</span>
-<span class="n">y_fit</span> <span class="o">=</span> <span class="n">linear_graph</span><span class="p">(</span><span class="n">xx</span><span class="p">)</span>
+<span class="n">graph_mobile_net_v2</span> <span class="o">=</span> <span class="n">GraphMobileNetV2</span><span class="p">()</span>
+
+<span class="n">x</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">train_dataloader</span><span class="p">))</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">DEVICE</span><span class="p">)</span>
+<span class="n">y_pred</span> <span class="o">=</span> <span class="n">graph_mobile_net_v2</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 </code></pre></div>
-<p>绘制原函数曲线与拟合效果的对比图</p>
-<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span><span class="n">y</span><span class="o">.</span><span class="n">numpy</span><span class="p">())</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span><span class="n">y_fit</span><span class="o">.</span><span class="n">numpy</span><span class="p">())</span>
-</code></pre></div>
-<p><img alt="poly_fit" src="imgs/poly_fit.png" /></p>
 <h3 id="graph_2">使用 Graph 做训练<a class="headerlink" href="#graph_2" title="Permanent link">&para;</a></h3>
 <p>可以直接使用 Graph 做训练。点击以下 “Code” 查看详细代码。</p>
 <details class="code">
 <summary>Code</summary>
-<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">math</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">oneflow</span> <span class="k">as</span> <span class="nn">flow</span>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">oneflow</span> <span class="k">as</span> <span class="nn">flow</span>
+<span class="kn">import</span> <span class="nn">oneflow.nn</span> <span class="k">as</span> <span class="nn">nn</span>
+<span class="kn">import</span> <span class="nn">flowvision</span>
+<span class="kn">import</span> <span class="nn">flowvision.transforms</span> <span class="k">as</span> <span class="nn">transforms</span>
 
-<span class="n">device</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s2">&quot;cuda&quot;</span><span class="p">)</span>
-<span class="n">dtype</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">float32</span>
+<span class="n">BATCH_SIZE</span><span class="o">=</span><span class="mi">64</span>
+<span class="n">EPOCH_NUM</span> <span class="o">=</span> <span class="mi">1</span>
 
-<span class="c1"># Create Tensors to hold input and outputs.</span>
-<span class="n">x</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="mi">2000</span><span class="p">),</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
-<span class="n">y</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
+<span class="n">DEVICE</span> <span class="o">=</span> <span class="s2">&quot;cuda&quot;</span> <span class="k">if</span> <span class="n">flow</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">()</span> <span class="k">else</span> <span class="s2">&quot;cpu&quot;</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Using </span><span class="si">{}</span><span class="s2"> device&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">DEVICE</span><span class="p">))</span>
 
-<span class="c1"># For this example, the output y is a linear function of (x, x^2, x^3), so</span>
-<span class="c1"># we can consider it as a linear layer neural network. Let&#39;s prepare the</span>
-<span class="c1"># tensor (x, x^2, x^3).</span>
-<span class="n">xx</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span>
-    <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">x</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="n">x</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="mi">3</span><span class="p">)],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span>
+<span class="n">training_data</span> <span class="o">=</span> <span class="n">flowvision</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">CIFAR10</span><span class="p">(</span>
+    <span class="n">root</span><span class="o">=</span><span class="s2">&quot;data&quot;</span><span class="p">,</span>
+    <span class="n">train</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">transform</span><span class="o">=</span><span class="n">transforms</span><span class="o">.</span><span class="n">ToTensor</span><span class="p">(),</span>
+    <span class="n">download</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="c1"># The Linear Module</span>
-<span class="n">model</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Flatten</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
-<span class="n">model</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+<span class="n">train_dataloader</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">(</span>
+    <span class="n">training_data</span><span class="p">,</span> <span class="n">BATCH_SIZE</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span>
+<span class="p">)</span>
 
-<span class="c1"># Loss Function</span>
-<span class="n">loss_fn</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">MSELoss</span><span class="p">(</span><span class="n">reduction</span><span class="o">=</span><span class="s2">&quot;sum&quot;</span><span class="p">)</span>
-<span class="n">loss_fn</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">flowvision</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">mobilenet_v2</span><span class="p">()</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">DEVICE</span><span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">classifer</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="mf">0.2</span><span class="p">),</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">last_channel</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
 
-<span class="c1"># Optimizer</span>
-<span class="n">optimizer</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">)</span>
+<span class="n">loss_fn</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">CrossEntropyLoss</span><span class="p">()</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">DEVICE</span><span class="p">)</span>
+<span class="n">optimizer</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">)</span>
 
-
-<span class="c1"># The Linear Train Graph</span>
-<span class="k">class</span> <span class="nc">LinearTrainGraph</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Graph</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">GraphMobileNetV2</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Graph</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
@@ -1259,36 +1266,35 @@ Result: y = -0.0013652867637574673 + 0.8422811627388*x + 0.0002355352626182139*x
         <span class="k">return</span> <span class="n">loss</span>
 
 
-<span class="n">linear_graph</span> <span class="o">=</span> <span class="n">LinearTrainGraph</span><span class="p">()</span>
-<span class="c1"># linear_graph.debug()</span>
+<span class="n">graph_mobile_net_v2</span> <span class="o">=</span> <span class="n">GraphMobileNetV2</span><span class="p">()</span>
+<span class="c1"># graph_mobile_net_v2.debug()</span>
 
-<span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2000</span><span class="p">):</span>
-    <span class="c1"># Print loss.</span>
-    <span class="n">loss</span> <span class="o">=</span> <span class="n">linear_graph</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">t</span> <span class="o">%</span> <span class="mi">100</span> <span class="o">==</span> <span class="mi">99</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">loss</span><span class="o">.</span><span class="n">numpy</span><span class="p">())</span>
-
-
-<span class="n">linear_layer</span> <span class="o">=</span> <span class="n">model</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-<span class="nb">print</span><span class="p">(</span>
-    <span class="sa">f</span><span class="s2">&quot;Result: y = </span><span class="si">{</span><span class="n">linear_layer</span><span class="o">.</span><span class="n">bias</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span><span class="si">}</span><span class="s2"> + </span><span class="si">{</span><span class="n">linear_layer</span><span class="o">.</span><span class="n">weight</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span><span class="si">}</span><span class="s2"> x + </span><span class="si">{</span><span class="n">linear_layer</span><span class="o">.</span><span class="n">weight</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span><span class="si">}</span><span class="s2"> x^2 + </span><span class="si">{</span><span class="n">linear_layer</span><span class="o">.</span><span class="n">weight</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span><span class="si">}</span><span class="s2"> x^3&quot;</span>
-<span class="p">)</span>
+<span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">EPOCH_NUM</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Epoch </span><span class="si">{</span><span class="n">t</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="se">\n</span><span class="s2">-------------------------------&quot;</span><span class="p">)</span>
+    <span class="n">size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">train_dataloader</span><span class="o">.</span><span class="n">dataset</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">batch</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">train_dataloader</span><span class="p">):</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">DEVICE</span><span class="p">)</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">DEVICE</span><span class="p">)</span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="n">graph_mobile_net_v2</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+        <span class="n">current</span> <span class="o">=</span> <span class="n">batch</span> <span class="o">*</span> <span class="n">BATCH_SIZE</span>
+        <span class="k">if</span> <span class="n">batch</span> <span class="o">%</span> <span class="mi">5</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;loss: </span><span class="si">{</span><span class="n">loss</span><span class="si">:</span><span class="s2">&gt;7f</span><span class="si">}</span><span class="s2">  [</span><span class="si">{</span><span class="n">current</span><span class="si">:</span><span class="s2">&gt;5d</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">size</span><span class="si">:</span><span class="s2">&gt;5d</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
 </code></pre></div>
 </details>
 <p>与 Graph 做预测的代码做比较，可以发现，只有以下几点是 Graph 做训练时特有的：</p>
 <div class="highlight"><pre><span></span><code><span class="c1"># Optimizer</span>
-<span class="n">optimizer</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">)</span> <span class="c1"># (1)</span>
+<span class="n">optimizer</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">)</span> <span class="c1"># (1)</span>
 
-<span class="c1"># The Linear Train Graph</span>
-<span class="k">class</span> <span class="nc">LinearTrainGraph</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Graph</span><span class="p">):</span>
+<span class="c1"># The MobileNetV2 Graph</span>
+<span class="k">class</span> <span class="nc">GraphMobileNetV2</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Graph</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c1">#...</span>
+        <span class="c1"># ...</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_optimizer</span><span class="p">(</span><span class="n">optimizer</span><span class="p">)</span> <span class="c1"># (2)</span>
 
     <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
-        <span class="c1">#...</span>
+        <span class="c1"># ...</span>
         <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span> <span class="c1"># (3)</span>
-        <span class="c1">#...</span>
+        <span class="c1"># ...</span>
 </code></pre></div>
 <ol>
 <li>构造 optimizer 对象，这点和 <a href="06_optimization.html#optimizer_1">反向传播与 optimizer</a> 介绍的 Eager 模式的使用方法是完全一致的。</li>
@@ -1296,96 +1302,85 @@ Result: y = -0.0013652867637574673 + 0.8422811627388*x + 0.0002355352626182139*x
 <li>在 Graph 类的 <code>build</code> 中调用 <code>backward</code>，触发反向传播</li>
 </ol>
 <h3 id="graph_3">Graph 调试<a class="headerlink" href="#graph_3" title="Permanent link">&para;</a></h3>
-<p>可以调用 <code>print</code> 输出 Graph 对象的信息。</p>
-<div class="highlight"><pre><span></span><code><span class="nb">print</span><span class="p">(</span><span class="n">linear_graph</span><span class="p">)</span>
+<p>可以调用 <code>print</code> 打印 Graph 对象，输出 Graph 对象的信息。</p>
+<div class="highlight"><pre><span></span><code><span class="nb">print</span><span class="p">(</span><span class="n">graph_mobile_net_v2</span><span class="p">)</span>
 </code></pre></div>
-<p>根据 Graph 对象是否调用，输出的效果略有不同：</p>
+<p>根据 Graph 对象是否 <strong>已经被调用过</strong>，输出的效果略有不同：</p>
 <p>如果 Graph 对象调用前 <code>print</code>，输出的是网络结构的信息。</p>
-<p>以上 <code>linear_graph</code> 调用前 <code>print</code> 效果：</p>
-<div class="highlight"><pre><span></span><code>(GRAPH:LinearTrainGraph_0:LinearTrainGraph): (
-  (MODULE:model:Sequential()): (
-    (MODULE:model.0:Linear(in_features=3, out_features=1, bias=True)): (
-      (PARAMETER:model.0.weight:tensor(..., device=&#39;cuda:0&#39;, size=(1, 3), dtype=oneflow.float32,
-             requires_grad=True)): ()
-      (PARAMETER:model.0.bias:tensor(..., device=&#39;cuda:0&#39;, size=(1,), dtype=oneflow.float32,
-             requires_grad=True)): ()
+<p>以上 <code>graph_mobile_net_v2</code> 调用前 <code>print</code> 效果：</p>
+<div class="highlight"><pre><span></span><code>(GRAPH:GraphMobileNetV2_0:GraphMobileNetV2): (
+  (CONFIG:config:GraphConfig(training=True, ))
+  (MODULE:model:MobileNetV2()): (
+    (MODULE:model.features:Sequential()): (
+      (MODULE:model.features.0:ConvBNActivation()): (
+        (MODULE:model.features.0.0:Conv2d(3, 32, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False)): (
+          (PARAMETER:model.features.0.0.weight:tensor(..., device=&#39;cuda:0&#39;, size=(32, 3, 3, 3), dtype=oneflow.float32,
+                 requires_grad=True)): ()
+        )
+    ...
+    (MODULE:model.classifer:Sequential()): (
+      (MODULE:model.classifer.0:Dropout(p=0.2, inplace=False)): ()
+      (MODULE:model.classifer.1:Linear(in_features=1280, out_features=10, bias=True)): (
+        (PARAMETER:model.classifer.1.weight:tensor(..., size=(10, 1280), dtype=oneflow.float32, requires_grad=True)): ()
+        (PARAMETER:model.classifer.1.bias:tensor(..., size=(10,), dtype=oneflow.float32, requires_grad=True)): ()
+      )
     )
-    (MODULE:model.1:Flatten(start_dim=0, end_dim=1)): ()
   )
-  (MODULE:loss_fn:MSELoss()): ()
+  (MODULE:loss_fn:CrossEntropyLoss()): ()
 )
 </code></pre></div>
-<p>如果是 Graph 对象调用后 <code>print</code>，除了网络的结构信息外，还会打印输入输出张量的信息，又如下类似效果：</p>
-<div class="highlight"><pre><span></span><code>(GRAPH:LinearTrainGraph_0:LinearTrainGraph): (
-  (INPUT:_LinearTrainGraph_0-input_0:tensor(..., device=&#39;cuda:0&#39;, size=(2000, 3), dtype=oneflow.float32))
-  (INPUT:_LinearTrainGraph_0-input_1:tensor(..., device=&#39;cuda:0&#39;, size=(2000,), dtype=oneflow.float32))
-  (MODULE:model:Sequential()): (
-    (INPUT:_model-input_0:tensor(..., device=&#39;cuda:0&#39;, is_lazy=&#39;True&#39;, size=(2000, 3),
+<p>如果是 Graph 对象调用后 <code>print</code>，除了网络的结构信息外，还会打印输入输出张量的信息，有如下类似效果：</p>
+<div class="highlight"><pre><span></span><code>(GRAPH:GraphMobileNetV2_0:GraphMobileNetV2): (
+  (CONFIG:config:GraphConfig(training=True, ))
+  (INPUT:_GraphMobileNetV2_0-input_0:tensor(..., device=&#39;cuda:0&#39;, size=(64, 3, 32, 32), dtype=oneflow.float32))
+  (INPUT:_GraphMobileNetV2_0-input_1:tensor(..., device=&#39;cuda:0&#39;, size=(64,), dtype=oneflow.int64))
+  (MODULE:model:MobileNetV2()): (
+    (INPUT:_model-input_0:tensor(..., device=&#39;cuda:0&#39;, is_lazy=&#39;True&#39;, size=(64, 3, 32, 32),
            dtype=oneflow.float32))
-    (MODULE:model.0:Linear(in_features=3, out_features=1, bias=True)): (
-      (INPUT:_model.0-input_0:tensor(..., device=&#39;cuda:0&#39;, is_lazy=&#39;True&#39;, size=(2000, 3),
+    (MODULE:model.features:Sequential()): (
+      (INPUT:_model.features-input_0:tensor(..., device=&#39;cuda:0&#39;, is_lazy=&#39;True&#39;, size=(64, 3, 32, 32),
              dtype=oneflow.float32))
-      (PARAMETER:model.0.weight:tensor(..., device=&#39;cuda:0&#39;, size=(1, 3), dtype=oneflow.float32,
-             requires_grad=True)): ()
-      (PARAMETER:model.0.bias:tensor(..., device=&#39;cuda:0&#39;, size=(1,), dtype=oneflow.float32,
-             requires_grad=True)): ()
-      (OUTPUT:_model.0-output_0:tensor(..., device=&#39;cuda:0&#39;, is_lazy=&#39;True&#39;, size=(2000, 1),
-             dtype=oneflow.float32))
-    )
-    (MODULE:model.1:Flatten(start_dim=0, end_dim=1)): (
-      (INPUT:_model.1-input_0:tensor(..., device=&#39;cuda:0&#39;, is_lazy=&#39;True&#39;, size=(2000, 1),
-             dtype=oneflow.float32))
-      (OUTPUT:_model.1-output_0:tensor(..., device=&#39;cuda:0&#39;, is_lazy=&#39;True&#39;, size=(2000,),
-             dtype=oneflow.float32))
-    )
-    (OUTPUT:_model-output_0:tensor(..., device=&#39;cuda:0&#39;, is_lazy=&#39;True&#39;, size=(2000,),
-           dtype=oneflow.float32))
-  )
-  (MODULE:loss_fn:MSELoss()): (
-    (INPUT:_loss_fn-input_0:tensor(..., device=&#39;cuda:0&#39;, is_lazy=&#39;True&#39;, size=(2000,),
-           dtype=oneflow.float32))
-    (INPUT:_loss_fn-input_1:tensor(..., device=&#39;cuda:0&#39;, is_lazy=&#39;True&#39;, size=(2000,),
-           dtype=oneflow.float32))
-    (OUTPUT:_loss_fn-output_0:tensor(..., device=&#39;cuda:0&#39;, is_lazy=&#39;True&#39;, size=(), dtype=oneflow.float32))
-  )
-  (OUTPUT:_LinearTrainGraph_0-output_0:tensor(..., device=&#39;cuda:0&#39;, is_lazy=&#39;True&#39;, size=(), dtype=oneflow.float32))
-)
+      (MODULE:model.features.0:ConvBNActivation()): (
+        (INPUT:_model.features.0-input_0:tensor(..., device=&#39;cuda:0&#39;, is_lazy=&#39;True&#39;, size=(64, 3, 32, 32),
+               dtype=oneflow.float32))
+        (MODULE:model.features.0.0:Conv2d(3, 32, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False)): (
+          (INPUT:_model.features.0.0-input_0:tensor(..., device=&#39;cuda:0&#39;, is_lazy=&#39;True&#39;, size=(64, 3, 32, 32),
+                 dtype=oneflow.float32))
+          (PARAMETER:model.features.0.0.weight:tensor(..., device=&#39;cuda:0&#39;, size=(32, 3, 3, 3), dtype=oneflow.float32,
+                 requires_grad=True)): ()
+          (OUTPUT:_model.features.0.0-output_0:tensor(..., device=&#39;cuda:0&#39;, is_lazy=&#39;True&#39;, size=(64, 32, 16, 16),
+                 dtype=oneflow.float32))
+        )
+    ...
 </code></pre></div>
-<p>此外，调用 Graph 对象的 <code>debug</code> 方法，就开启了 Graph 的调试模式。</p>
-<p>OneFlow 在编译生成计算图的过程中会打印调试信息，比如，将上面例子代码中<code>linear_graph.debug()</code>的注释去掉，将在控制台上输出如下输出：</p>
-<div class="highlight"><pre><span></span><code>Note that nn.Graph.debug() only print debug info on rank 0.
-(GRAPH:LinearTrainGraph_0:LinearTrainGraph) start building forward graph.
-(INPUT:_LinearTrainGraph_0-input_0:tensor(..., device=&#39;cuda:0&#39;, size=(20, 3), dtype=oneflow.float32))
-(INPUT:_LinearTrainGraph_0-input_1:tensor(..., device=&#39;cuda:0&#39;, size=(20,), dtype=oneflow.float32))
-(MODULE:model:Sequential())
-(INPUT:_model-input_0:tensor(..., device=&#39;cuda:0&#39;, is_lazy=&#39;True&#39;, size=(20, 3),
-       dtype=oneflow.float32))
-(MODULE:model.0:Linear(in_features=3, out_features=1, bias=True))
-(INPUT:_model.0-input_0:tensor(..., device=&#39;cuda:0&#39;, is_lazy=&#39;True&#39;, size=(20, 3),
-       dtype=oneflow.float32))
-(PARAMETER:model.0.weight:tensor(..., device=&#39;cuda:0&#39;, size=(1, 3), dtype=oneflow.float32,
-       requires_grad=True))
-(PARAMETER:model.0.bias:tensor(..., device=&#39;cuda:0&#39;, size=(1,), dtype=oneflow.float32,
-       requires_grad=True))
-(OUTPUT:_model.0-output_0:tensor(..., device=&#39;cuda:0&#39;, is_lazy=&#39;True&#39;, size=(20, 1),
-       dtype=oneflow.float32))
-(MODULE:model.1:Flatten(start_dim=0, end_dim=1))
-(INPUT:_model.1-input_0:tensor(..., device=&#39;cuda:0&#39;, is_lazy=&#39;True&#39;, size=(20, 1),
-       dtype=oneflow.float32))
-(OUTPUT:_model.1-output_0:tensor(..., device=&#39;cuda:0&#39;, is_lazy=&#39;True&#39;, size=(20,), dtype=oneflow.float32))
-(OUTPUT:_model-output_0:tensor(..., device=&#39;cuda:0&#39;, is_lazy=&#39;True&#39;, size=(20,), dtype=oneflow.float32))
-(MODULE:loss_fn:MSELoss())
-(INPUT:_loss_fn-input_0:tensor(..., device=&#39;cuda:0&#39;, is_lazy=&#39;True&#39;, size=(20,), dtype=oneflow.float32))
-(INPUT:_loss_fn-input_1:tensor(..., device=&#39;cuda:0&#39;, is_lazy=&#39;True&#39;, size=(20,), dtype=oneflow.float32))
-(OUTPUT:_loss_fn-output_0:tensor(..., device=&#39;cuda:0&#39;, is_lazy=&#39;True&#39;, size=(), dtype=oneflow.float32))
-(OUTPUT:_LinearTrainGraph_0-output_0:tensor(..., device=&#39;cuda:0&#39;, is_lazy=&#39;True&#39;, size=(), dtype=oneflow.float32))
-(GRAPH:LinearTrainGraph_0:LinearTrainGraph) end building forward graph.
-(GRAPH:LinearTrainGraph_0:LinearTrainGraph) start compiling and init graph runtime.
-(GRAPH:LinearTrainGraph_0:LinearTrainGraph) end compiling and init graph rumtime.
+<p>此外，调用 Graph 对象的 <a href="https://oneflow.readthedocs.io/en/master/graph.html#oneflow.nn.Graph.debug">debug</a> 方法，就开启了 Graph 的调试模式。</p>
+<p>OneFlow 在编译生成计算图的过程中会打印调试信息，比如，将上面例子代码中 <code>graph_mobile_net_v2.debug()</code> 的注释去掉，将在控制台上输出如下输出：</p>
+<div class="highlight"><pre><span></span><code>(GRAPH:GraphMobileNetV2_0:GraphMobileNetV2) end building graph.
+(GRAPH:GraphMobileNetV2_0:GraphMobileNetV2) start compiling plan and init graph runtime.
+(GRAPH:GraphMobileNetV2_0:GraphMobileNetV2) end compiling plan and init graph rumtime.
 </code></pre></div>
-<p>输出中将显示包括计算图中各层的名称、输入输出张量的信息，包括形状、设备信息、数据类型等。</p>
 <p>使用 <code>debug</code> 的好处在于，调试信息是 <strong>边构图、边输出</strong> 的，这样如果构图过程中发生错误，容易发现构图时的问题。</p>
+<p>还可以通过设置 <code>v_level</code> 参数，调整 <code>debug</code> 的输出详细程度：</p>
+<div class="highlight"><pre><span></span><code><span class="n">graph_mobile_net_v2</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">v_level</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># 输出详细信息</span>
+</code></pre></div>
 <p>除了以上介绍的方法外，训练过程中获取参数的梯度、获取 learning rate 等功能，也正在开发中，即将上线。</p>
+<h3 id="graph_4">Graph 的保存与加载<a class="headerlink" href="#graph_4" title="Permanent link">&para;</a></h3>
+<p>Graph 复用了 Module 的网络参数，因此 Graph 没有自己的 <code>save</code> 与 <code>load</code> 接口，直接使用 Module 的接口即可。可以参考 <a href="07_model_load_save.html">模型的保存与加载</a> 即可。</p>
+<p>如以上的 <code>graph_mobile_net_v2</code>，若想保存它的训练结果，其实应该保存它其中的 Module（即之前 <code>model = flowvision.models.mobilenet_v2().to(DEVICE)</code> 得到的 <code>model</code>。</p>
+<div class="highlight"><pre><span></span><code><span class="n">flow</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span> <span class="s2">&quot;./graph_model&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><strong>不能</strong> 用以下方式保存。因为 Graph 在初始化时，会对成员做处理，所以 <code>graph_mobile_net_v2.model</code> 其实已经不再是 Module 类型：</p>
+<div class="highlight"><pre><span></span><code><span class="n">flow</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">graph_mobile_net_v2</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span> <span class="s2">&quot;./graph_model&quot;</span><span class="p">)</span>  <span class="c1"># 会报错</span>
+</code></pre></div>
+</div>
+<p>加载之前保存好的模型，也是 Module 的工作：</p>
+<div class="highlight"><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="n">flowvision</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">mobilenet_v2</span><span class="p">()</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">DEVICE</span><span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">classifer</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="mf">0.2</span><span class="p">),</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">last_channel</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+<span class="n">model</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;./graph_model&quot;</span><span class="p">))</span> <span class="c1"># 加载保存好的模型</span>
+<span class="c1"># ...</span>
+</code></pre></div>
 <h2 id="_1">扩展阅读：动态图与静态图<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
 <p>用户定义的神经网络，都会被深度学习框架转为计算图，如 <a href="05_autograd.html">自动求梯度</a> 中的例子：</p>
 <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">loss</span><span class="p">(</span><span class="n">y_pred</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
@@ -1443,7 +1438,6 @@ Result: y = -0.0013652867637574673 + 0.8422811627388*x + 0.0002355352626182139*x
 OneFlow 提供的 Graph 模式，也基于面向对象的编程风格，让熟悉 Eager 开发的用户，只需要改很少量的代码，就可以使用高效率的静态图。</p>
 <h2 id="_2">相关链接<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
 <p>OneFlow Eager模式下的神经网络搭建：<a href="04_build_network.html">搭建神经网络</a></p>
-<p>PyTorch 版本的多项式拟合实例代码：<a href="https://pytorch.org/tutorials/beginner/pytorch_with_examples.html#id19">PyTorch: nn</a></p>
                 
               
               
