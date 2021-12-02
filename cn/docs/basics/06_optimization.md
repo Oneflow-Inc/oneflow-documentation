@@ -128,7 +128,9 @@ model = MyLrModule(0.01, 500)
 ```python
 loss = flow.nn.MSELoss(reduction="sum")
 ```
+
 ### 构造 optimizer
+
 反向传播的逻辑，都被封装在 optimizer 中。我们在此选择 [SGD](https://oneflow.readthedocs.io/en/master/optim.html?highlight=sgd#oneflow.optim.SGD)，你可以根据需要选择其它的优化算法，如 [Adam](https://oneflow.readthedocs.io/en/master/optim.html?highlight=adam#oneflow.optim.Adam)、[AdamW](https://oneflow.readthedocs.io/en/master/optim.html?highlight=adamw#oneflow.optim.AdamW) 等。
 
 ```python
@@ -156,6 +158,7 @@ print(f"\nw: {model.w}")
 ```
 
 输出：
+
 ```text
 50/500 loss:0.003451163647696376
 100/500 loss:1.965773662959691e-06

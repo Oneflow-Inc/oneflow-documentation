@@ -6,7 +6,6 @@ There are pros and cons to both approaches, and OneFlow offers support for both,
 
 In general, dynamic graphs are easier to use and static graphs have better performance. OneFlow offers [nn.Graph](https://oneflow.readthedocs.io/en/master/graph.html), so that users can use the eager-like programming style to build static graphs and train the models.
 
-
 ## Eager Mode in OneFlow
 
 OneFlow runs in Eager Mode by default.
@@ -92,7 +91,6 @@ Result: y = -0.0013652867637574673 + 0.8422811627388*x + 0.0002355352626182139*x
 
 OneFlow provide the base class [nn.Graph](https://oneflow.readthedocs.io/en/master/graph.html), which can be inherited to create a customized Graph class.
 
-
 ```python
 import oneflow as flow
 import oneflow.nn as nn
@@ -114,7 +112,7 @@ The simple example above contains the important steps needed to customize a Grap
 - Defines the structure and state of a neural network in `__init__` method.
 - Describes the computational process in `build` method.
 
-You can then instantiate and call the Graph: 
+You can then instantiate and call the Graph:
 
 ```python
 mygraph = MyLinear(4, 3)
@@ -129,11 +127,9 @@ Out:
 tensor([[ 4.0638, -1.4453,  3.9640]], dtype=oneflow.float32)
 ```
 
-
 Note that Graph is similar to Module in that the object itself is callable and it is **not recommended** to explicitly call the `build` method. The definition of a Graph is very similar to the use of a Module, in fact, Graph can directly reuse a defined Module. Users can refer the content in [Build Network](./04_build_network.md) directly about how to build a neural network in Graph Mode.
 
 For example, use the `model` above as the network structure:
-
 
 ```python
 class ModelGraph(flow.nn.Graph):
@@ -151,6 +147,7 @@ model_graph = ModelGraph()
 The major difference between Module and Graph is that Graph uses `build` method rather than `forward` method to describe the computation process, because the build method can contain not only forward computation, but also setting `loss`, optimizer, etc. You will see an example of using Graph for training later.
 
 ### Inference in Graph Mode
+
 The following example for inference in Graph Mode directly using the model, which we have already trained in Eager Mode at the beginning of this article.
 
 ```python
@@ -266,12 +263,9 @@ class LinearTrainGraph(flow.nn.Graph):
 2. Call `self.add_optimizer` in Graph's `__init__` method to add the optimizer object constructed in the previous step to the Graph.
 3. Call `backward` in Graph's `build` to trigger back propagation.
 
-
-
 ### Debugging in Graph Mode
 
 You can call `print` to show information about the Graph object.
-
 
 ```python
 print(linear_graph)
@@ -281,7 +275,7 @@ The output is slightly different depending on whether the Graph object is called
 
 If you use `print` **before** the Graph object is called, the output is information about the network structure.
 
-The output for `print` used before `linear_graph` is called is like this:  
+The output for `print` used before `linear_graph` is called is like this:
 
 ```text
 (GRAPH:LinearTrainGraph_0:LinearTrainGraph): (
@@ -340,7 +334,6 @@ If you use `print` **after** the Graph object is called, in addition to the stru
 In addition, by calling the `debug` method of Graph objects, Graph’s debug mode is turned on.
 
 OneFlow prints debug information when it compiles the computation graph. If the `linear_graph.debug()` is removed from the example code above, the output on the console is like this:
-
 
 ```text
 Note that nn.Graph.debug() only print debug info on rank 0.
@@ -424,7 +417,6 @@ Static graph, which get the complete network first, then compile and run, can be
 
 However, when the actual computation takes place in a static graph, it is no longer directly related to the user’s code, so debugging the static graph is not convenient.
 
-
 The two approaches can be summarized as follows:
 
 |              | Dynamic Graph | Static Graph   |
@@ -433,8 +425,7 @@ The two approaches can be summarized as follows:
 | Pros     | The code is flexible and easy to debug.                |  Good performance, easy to optimize and deploy.   |
 | Cons     |  Poor performance and portability.                    | Not easy to debug.                 |
 
-
-The Eager Mode in OneFlow is aligned with the PyTorch, which allows users familiar with the PyTorch to get their hands on easily with no more effert. 
+The Eager Mode in OneFlow is aligned with the PyTorch, which allows users familiar with the PyTorch to get their hands on easily with no more effert.
 
 The Graph Mode in OneFlow is based on the object-oriented programming style, which allows developers familiar with eager programming style to benefit from static graph with minimal code changes.
 

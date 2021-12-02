@@ -33,7 +33,6 @@ l = loss(z,y)
 
 反向传播过程中，需要求得 `l` 对 `w`、`b` 的梯度，以更新这两个模型参数。因此，我们在创建它们时，设置 `requires_grad` 为 `True`。
 
-
 ## 自动求梯度
 
 ### backward 与梯度
@@ -56,6 +55,7 @@ tensor([[0.9397, 2.5428, 2.5377]], dtype=oneflow.float32)
 ```
 
 ### 对非叶子节点求梯度
+
 默认情况下，只有 `requires_grad=True` 的叶子节点的梯度会被保留。非叶子节点的 `grad` 属性默认在 `backward` 执行过程中，会自动释放，不能查看。
 
 如果想保留并查看非叶子节点的梯度，可以调用 `Tensor.retain_grad` 方法：
@@ -82,6 +82,7 @@ tensor(2., dtype=oneflow.float32)
 ```
 
 ### 对一个计算图多次 `backward()`
+
 默认情况下，对于给定的计算图，只能调用 `backward()` 一次。比如，以下代码会报错：
 
 ```python
@@ -168,6 +169,7 @@ False
 ```
 
 ### 输出不是标量时如何求梯度
+
 通常，调用 `backward()` 方法的是神经网络的 loss，是一个标量。
 
 但是，如果不是标量，对 Tensor 调用 `backward()` 时会报错。

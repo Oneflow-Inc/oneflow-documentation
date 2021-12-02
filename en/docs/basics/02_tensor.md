@@ -10,12 +10,15 @@ import numpy as np
 ```
 
 ## Creating Tensors
+
 There are several ways to create tensors, including:
 
 - Directly from data
 - From a NumPy array
-- By an operator 
+- By an operator
+
 ### Directly from data
+
 Tensors can be created directly from data:
 
 ```python
@@ -25,8 +28,8 @@ print(x1)
 print(x2)
 ```
 
-
 Out:
+
 ```text
 tensor([[1, 2],
         [3, 4]], dtype=oneflow.int64)
@@ -46,7 +49,9 @@ x4 = flow.tensor(np.random.rand(2,3))
 print(x3)
 print(x4)
 ```
+
 Out:
+
 ```text
 tensor([[1., 1., 1.],
         [1., 1., 1.]], dtype=oneflow.float64)
@@ -54,11 +59,9 @@ tensor([[0.6213, 0.6142, 0.1592],
         [0.5539, 0.8453, 0.8576]], dtype=oneflow.float64)
 ```
 
-
-### By an operator 
+### By an operator
 
 There are also many operators available in OneFlow that can be used to create tensors. For example, [ones](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.ones#oneflow.ones), [zeros](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.zeros#oneflow.zeros) and [eye](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.eye#oneflow.eye), which create the all-ones tensor, zero tensor, and identity tensor, respectively.
-
 
 ```python
 x5 = flow.ones(2, 3)
@@ -70,6 +73,7 @@ print(x7)
 ```
 
 Out:
+
 ```text
 tensor([[1., 1., 1.],
         [1., 1., 1.]], dtype=oneflow.float32)
@@ -87,8 +91,8 @@ x8 = flow.randn(2,3)
 ```
 
 ## Difference Between `Tensor` and `tensor`
-There are two interfaces ([oneflow.Tensor](https://oneflow.readthedocs.io/en/master/tensor.html?highlight=oneflow.Tensor#oneflow.Tensor) and [oneflow.tensor](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.Tensor#oneflow.tensor)) in OneFlow, both of which can be used to create tensors. What’s the difference between them?
 
+There are two interfaces ([oneflow.Tensor](https://oneflow.readthedocs.io/en/master/tensor.html?highlight=oneflow.Tensor#oneflow.Tensor) and [oneflow.tensor](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.Tensor#oneflow.tensor)) in OneFlow, both of which can be used to create tensors. What’s the difference between them?
 
 Briefly speaking, the data type of `oneflow.Tensor` is limited to `float32` by default, while the data type of `oneflow.tensor` can be changed when the data is created. The following code illustrates the difference:
 
@@ -99,6 +103,7 @@ print(flow.tensor([1.0, 2.0, 3.0]))
 ```
 
 Out:
+
 ```text
 tensor([1., 2., 3.], dtype=oneflow.float32)
 tensor([1, 2, 3], dtype=oneflow.int64)
@@ -113,6 +118,7 @@ print(x9.shape)
 ```
 
 Out:
+
 ```text
 flow.Size([2, 3])
 ```
@@ -131,6 +137,7 @@ print(x9.device)
 ```
 
 Out:
+
 ```text
 flow.Size([1, 4])
 oneflow.float32
@@ -138,7 +145,6 @@ cpu:0
 ```
 
 The output shows the shape, the data type, and the device (on CPU No. 0, CPUs were numbered because OneFlow naturally supports distribution, see [Consistent Tensor](../parallelism/03_consistent_tensor.md)).
-
 
 The shape of the tensor can be changed by the [reshape](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.reshape#oneflow.reshape) method, and the data type and device of the tensor can be changed by the [to](https://oneflow.readthedocs.io/en/master/tensor.html?highlight=Tensor.to#oneflow.Tensor.to) method:
 
@@ -149,8 +155,8 @@ print(x10.shape)
 print(x11.dtype, x11.device)
 ```
 
-
 Out:
+
 ```text
 flow.Size([2, 2])
 oneflow.int32 cuda:0
@@ -170,7 +176,9 @@ print('Last column:', tensor[..., -1])
 tensor[:,1] = 0
 print(tensor)
 ```
+
 Out:
+
 ```text
 First row:  tensor([1., 1., 1., 1.], dtype=oneflow.float32)
 First column:  tensor([1., 1., 1., 1.], dtype=oneflow.float32)

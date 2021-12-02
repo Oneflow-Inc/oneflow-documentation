@@ -1,4 +1,4 @@
-#  模型的加载与保存
+# 模型的加载与保存
 
 对于模型的加载与保存，常用的场景有：
 
@@ -10,6 +10,7 @@
 同时也会展示，如何加载预训练模型，完成预测任务。
 
 ## 模型参数的获取与加载
+
 OneFlow 预先提供的各种 `Module` 或者用户自定义的 `Module`，都提供了 `state_dict` 方法获取模型所有的参数，它是以 “参数名-参数值” 形式存放的字典。
 
 ```python
@@ -48,8 +49,8 @@ OrderedDict([('weight',
               tensor([0., 0., 0.], dtype=oneflow.float32, requires_grad=True))])
 ```
 
-
 ## 模型保存
+
 我们可以使用 [oneflow.save](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.save#oneflow.save)方法保存模型。
 
 ```python
@@ -57,8 +58,6 @@ flow.save(m.state_dict(), "./model")
 ```
 
 它的第一个参数的 Module 的参数，第二个是保存路径。以上代码，将 `m` Module 对象的参数，保存到了 `./model` 目录下。
-
-
 
 ## 模型加载
 
@@ -83,7 +82,6 @@ OrderedDict([('weight', tensor([[1., 1.],
         [1., 1.],
         [1., 1.]], dtype=oneflow.float32, requires_grad=True)), ('bias', tensor([0., 0., 0.], dtype=oneflow.float32, requires_grad=True))])
 ```
-
 
 ### 使用预训练模型进行预测
 

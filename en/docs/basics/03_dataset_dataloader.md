@@ -25,7 +25,6 @@ Here is an example of how to load by `Dataset`.
 - `download=True`: downloads the data from the internet if it’s not available at `root`;
 - `transforms`: the feature and label transformations.
 
-
 ```python
 training_data = datasets.FashionMNIST(
     root="data",
@@ -152,7 +151,7 @@ The Dataset retrieves all features of our dataset and labels one sample at a tim
 At this time, we can use `DataLoader`. `DataLoader` can wrap `Dataset` into an iterator to access data during the training loop. Here is an example:
 
 - `batch_size=64`: the batch size at each iteration
-- `shuffle`: whether the data is shuffled after we iterate over all batches 
+- `shuffle`: whether the data is shuffled after we iterate over all batches
 
 ```python
 from oneflow.utils.data import DataLoader

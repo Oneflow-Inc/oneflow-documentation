@@ -7,13 +7,12 @@ import oneflow as flow
 import oneflow.nn as nn
 ```
 
-
 ## Define Module class
 
 `oneflow.nn` provides common Module classes and we can use them easily. Or we can build a neural network by customizing the Module class on the basis. This method consists of three parts：
 
 - Write a class that inherits from `oneflow.nn.Module` class
-- Write the method of `__init__` class, in which we construct the network structure 
+- Write the method of `__init__` class, in which we construct the network structure
 - Write the method of `forward` class, which calculates on the basis of the input of Module
 
 ```python
@@ -88,10 +87,11 @@ In fact, most of the Module provided by OneFlow is the result of encapsulating t
 The following example uses the methods in `nn.functional` to build a Module `FunctionalNeuralNetwork` equivalent to the `NeuralNetwork` class above. Readers can appreciate the similarities and differences between the two:
 
 ```python
-class FunctionalNeuralNetwork(nn.Module):    
+class FunctionalNeuralNetwork(nn.Module):
+
     def __init__(self):
         super(FunctionalNeuralNetwork, self).__init__()
-        
+
         self.weight1 = nn.Parameter(flow.randn(28*28, 512))
         self.bias1 = nn.Parameter(flow.randn(512))
 
@@ -100,7 +100,7 @@ class FunctionalNeuralNetwork(nn.Module):
 
         self.weight3 = nn.Parameter(flow.randn(512, 10))
         self.bias3 = nn.Parameter(flow.randn(10))
-        
+
     def forward(self, x):
         x = x.reshape(1, 28*28)
         out = flow.matmul(x, self.weight1)
@@ -124,7 +124,6 @@ pred_probab = nn.Softmax(dim=1)(logits)
 y_pred = pred_probab.argmax(1)
 print(f"Predicted class: {y_pred}")
 ```
-
 
 ## Module container
 
@@ -170,5 +169,4 @@ class MySeqModel(nn.Module):
         return self.seq(x)
 ```
 
-Besides Sequential, there are `nn.Modulelist` and `nn.ModuleDict`. They can automatically register parameters to the whole network. But their other behavior is similar to Python list and Python dict, which are 
-just simple containers and do not automatically propagate forward. You need manually traverse to complete the calculation of each layer.
+Besides Sequential, there are `nn.Modulelist` and `nn.ModuleDict`. They can automatically register parameters to the whole network. But their other behavior is similar to Python list and Python dict, which are just simple containers and do not automatically propagate forward. You need manually traverse to complete the calculation of each layer.

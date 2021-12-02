@@ -20,7 +20,6 @@ DEVICE = "cuda" if flow.cuda.is_available() else "cpu"
 print("Using {} device".format(DEVICE))
 ```
 
-
 ## Working with Data
 
 OneFlow has two primitives to work with data, which are Dataset and Dataloader.
@@ -46,6 +45,7 @@ test_data = flow.utils.vision.datasets.FashionMNIST(
     source_url="https://oneflow-public.oss-cn-beijing.aliyuncs.com/datasets/mnist/Fashion-MNIST/",
 )
 ```
+
 Out:
 
 ```text
@@ -58,7 +58,6 @@ Extracting data/FashionMNIST/raw/train-images-idx3-ubyte.gz to data/FashionMNIST
 The data will be downloaded and extracted to`./data` directory.
 
 The [oneflow.utils.data.DataLoader](https://oneflow.readthedocs.io/en/master/utils.html#oneflow.utils.data.DataLoader) wraps an iterable around the `dataset`.
-
 
 ```python
 train_dataloader = flow.utils.data.DataLoader(
@@ -83,11 +82,9 @@ y.shape: flow.Size([64])
 
 > [:link: Dataset and Dataloader](./03_dataset_dataloader.md){ .md-button .md-button--primary}
 
-
 ## Building Networks
 
-To define a neural network in OneFlow, we create a class that inherits from `nn.Module`. We define the layers of the network in the `__init__` function and specify how data will pass through the network in the `forward` function. 
-
+To define a neural network in OneFlow, we create a class that inherits from `nn.Module`. We define the layers of the network in the `__init__` function and specify how data will pass through the network in the `forward` function.
 
 ```python
 class NeuralNetwork(nn.Module):
@@ -128,7 +125,6 @@ NeuralNetwork(
 
 > [:link: Build Network](./04_build_network.md){ .md-button .md-button--primary}
 
-
 ## Training Models
 
 To train a model, we need a loss function (`loss_fn`) and an optimizer (`optimizer`). The loss function is used to evaluate the difference between the prediction of the neural network and the real label. The optimizer adjusts the parameters of the neural network to make the prediction closer to the real label (expected answer). Here, we use [oneflow.optim.SGD](https://oneflow.readthedocs.io/en/master/optim.html?highlight=optim.SGD#oneflow.optim.SGD) to be our optimizer. This process is called back propagation.
@@ -139,7 +135,6 @@ optimizer = flow.optim.SGD(model.parameters(), lr=1e-3)
 ```
 
 The `train` function is defined for training. In a single training loop, the model makes forward propagation, calculates loss, and backpropagates to update the model's parameters.
-
 
 ```python
 def train(iter, model, loss_fn, optimizer):
@@ -164,7 +159,6 @@ def train(iter, model, loss_fn, optimizer):
 
 We also define a `test` function to verify the accuracy of the model:
 
-
 ```python
 def test(iter, model, loss_fn):
     size = len(iter.dataset)
@@ -187,7 +181,6 @@ def test(iter, model, loss_fn):
 ```
 
 We use the `train` function to begin the train process for several epochs and use the `test` function to assess the accuracy of the network at the end of each epoch:
-
 
 ```python
 epochs = 5
@@ -214,7 +207,7 @@ loss: 1.984397  [44800/60000]
 loss: 1.918280  [51200/60000]
 loss: 1.884574  [57600/60000]
 test_loss tensor(1.9015, device='cuda:0', dtype=oneflow.float32) num_batches  157
-Test Error: 
+Test Error:
  Accuracy: 56.3, Avg loss: 1.901461
 Epoch 2
 -------------------------------
@@ -234,8 +227,11 @@ Use [oneflow.save](https://oneflow.readthedocs.io/en/master/oneflow.html?highlig
 ```python
 flow.save(model.state_dict(), "./model")
 ```
+
 > [:link: Model Load and Save](./07_model_load_save.md){ .md-button .md-button--primary}
+
 ## QQ Group
+
 Any problems encountered during the installation or usage, welcome to join the QQ Group to discuss with OneFlow developers and enthusiasts:
 
 Add QQ group by 331883 or scan the QR code below:

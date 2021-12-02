@@ -7,7 +7,6 @@ import oneflow as flow
 import oneflow.nn as nn
 ```
 
-
 ## 定义 Module 类
 
 `oneflow.nn` 下提供了常见的 Module 类，我们可以直接使用它们，或者在它们的基础上，通过自定义 Module 类搭建神经网络。搭建过程包括：
@@ -83,15 +82,15 @@ Predicted class: tensor([1], dtype=oneflow.int32)
 - `nn` 下的 API 是类，需要先构造实例化对象，再调用；`nn.functional` 下的 API 是作为函数直接调用
 - `nn` 下的类内部自己管理了网络参数；而 `nn.functional` 下的函数，需要我们自己定义参数，每次调用时手动传入
 
-实际上，OneFlow 提供的大部分 Module 是通过封装 `nn.functional` 下的方法得到的。`nn.functional` 提供了更加细粒度管理网络的可能。 
+实际上，OneFlow 提供的大部分 Module 是通过封装 `nn.functional` 下的方法得到的。`nn.functional` 提供了更加细粒度管理网络的可能。
 
 以下的例子，使用 `nn.functional` 中的方法，构建与上文中 `NeuralNetwork` 类等价的 Module `FunctionalNeuralNetwork`，读者可以体会两者的异同：
 
 ```python
-class FunctionalNeuralNetwork(nn.Module):    
+class FunctionalNeuralNetwork(nn.Module):
     def __init__(self):
         super(FunctionalNeuralNetwork, self).__init__()
-        
+
         self.weight1 = nn.Parameter(flow.randn(28*28, 512))
         self.bias1 = nn.Parameter(flow.randn(512))
 
@@ -100,7 +99,7 @@ class FunctionalNeuralNetwork(nn.Module):
 
         self.weight3 = nn.Parameter(flow.randn(512, 10))
         self.bias3 = nn.Parameter(flow.randn(10))
-        
+
     def forward(self, x):
         x = x.reshape(1, 28*28)
         out = flow.matmul(x, self.weight1)
@@ -124,7 +123,6 @@ pred_probab = nn.Softmax(dim=1)(logits)
 y_pred = pred_probab.argmax(1)
 print(f"Predicted class: {y_pred}")
 ```
-
 
 ## Module 容器
 
@@ -170,4 +168,4 @@ class MySeqModel(nn.Module):
         return self.seq(x)
 ```
 
-除了 Sequential 外，还有 `nn.Modulelist` 及 `nn.ModuleDict`，除了会自动注册参数到整个网络外，他们的其它行为类似 Python list、Python dict，只是常用简单的容器，不会自动进行前后层的前向传播，需要自己手工遍历完成各层的计算。 
+除了 Sequential 外，还有 `nn.Modulelist` 及 `nn.ModuleDict`，除了会自动注册参数到整个网络外，他们的其它行为类似 Python list、Python dict，只是常用简单的容器，不会自动进行前后层的前向传播，需要自己手工遍历完成各层的计算。
