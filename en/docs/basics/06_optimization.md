@@ -128,7 +128,9 @@ Then, select the loss function. OneFlow comes with a variety of loss functions. 
 ```python
 loss = flow.nn.MSELoss(reduction="sum")
 ```
+
 ### Construct Optimizer
+
 The logic of back propagation is wrapped in optimizer. We choose [SGD](https://oneflow.readthedocs.io/en/master/optim.html?highlight=sgd#oneflow.optim.SGD) here, You can choose other optimization algorithms as needed, such as [Adam](https://oneflow.readthedocs.io/en/master/optim.html?highlight=adam#oneflow.optim.Adam) and[AdamW](https://oneflow.readthedocs.io/en/master/optim.html?highlight=adamw#oneflow.optim.AdamW) .
 
 ```python
@@ -156,6 +158,7 @@ print(f"\nw: {model.w}")
 ```
 
 output：
+
 ```text
 50/500 loss:0.003451163647696376
 100/500 loss:1.965773662959691e-06

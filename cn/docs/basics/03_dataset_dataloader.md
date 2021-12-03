@@ -25,7 +25,6 @@ import oneflow.utils.vision.datasets as datasets
 - `download=True`： 如果 `root` 路径下数据集不存在，则从网络下载
 - `transforms`：指定的数据转换方式
 
-
 ```python
 training_data = datasets.FashionMNIST(
     root="data",
@@ -163,6 +162,7 @@ print(f"shape of x:{x.shape}, shape of label: {label.shape}")
 ```
 
 输出：
+
 ```text
 shape of x:flow.Size([64, 1, 28, 28]), shape of label: flow.Size([64])
 ```

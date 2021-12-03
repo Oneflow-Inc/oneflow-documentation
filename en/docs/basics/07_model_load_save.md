@@ -1,4 +1,4 @@
-#  SAVE AND LOAD THE MODEL
+# SAVE AND LOAD THE MODEL
 
 There are two common uses for loading and saving models:
 
@@ -10,6 +10,7 @@ We will introduce how to use [save](https://oneflow.readthedocs.io/en/master/one
 Also, we will show how to load a pre-trained model for inference.
 
 ## Saving and Loading Model Parameters
+
 `Module` provided by OneFlow and defined by users provides the `state_dict` method to obtain all the model parameters, which is stored in a dictionary with the format "name-value".
 
 ```python
@@ -48,8 +49,8 @@ OrderedDict([('weight',
               tensor([0., 0., 0.], dtype=oneflow.float32, requires_grad=True))])
 ```
 
-
 ## Saving Models
+
 We can use [oneflow.save](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.save#oneflow.save) to save models.
 
 ```python
@@ -57,8 +58,6 @@ flow.save(m.state_dict(), "./model")
 ```
 
 The first parameter is the Module parameters, and the second is the saved path. The above code saves the parameters of the `m` Module object to the path `./model`.
-
-
 
 ## Loading Models
 
@@ -83,7 +82,6 @@ OrderedDict([('weight', tensor([[1., 1.],
         [1., 1.],
         [1., 1.]], dtype=oneflow.float32, requires_grad=True)), ('bias', tensor([0., 0., 0.], dtype=oneflow.float32, requires_grad=True))])
 ```
-
 
 ### Using a Pre-trained Model to Make Predictions
 

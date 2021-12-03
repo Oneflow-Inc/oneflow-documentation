@@ -33,7 +33,6 @@ In computation graph, the nodes only with output and with no input called leaf n
 
 During the backpropagation process, the gradient of `l` to `w` and `b` is required to update `w` and `b`. Therefore, we need to set `requires_grad` as `True` when creating them.
 
-
 ## Automatic Gradient
 
 ### `backward()` and Gradient
@@ -56,6 +55,7 @@ tensor([[0.9397, 2.5428, 2.5377]], dtype=oneflow.float32)
 ```
 
 ### Gradient for Non-leaf Nodes
+
 By default, only gradients of leaf nodes with `requires_grad=True` will be retained. The 'grad' of a non-leaf node is automatically freed during the calling of 'backward' and cannot be viewed.
 
 `Tensor.retain_grad()` can be called to retain and view the 'grad' of a non-leaf node.
@@ -74,7 +74,6 @@ print(n2.grad)
 
 we get $\frac{\partial n_3}{\partial n_1}$ and $\frac{\partial n_3}{\partial n_2}$ using the code above.
 
-
 Output:
 
 ```
@@ -83,6 +82,7 @@ tensor(2., dtype=oneflow.float32)
 ```
 
 ### Call `backward()` Multiple Times on a Computation Graph
+
 By default, we can only call `backward()` once for each computation graph. For example, the following code will raise an error:
 
 ```python
@@ -170,6 +170,7 @@ False
 ```
 
 ### Gradients for Non-Scalar Outputs
+
 Usually, we call `backward()` on scalar `loss`.
 
 However, if `loss` is a tensor, an error will be raised when calling `backward()` on `loss`.

@@ -10,6 +10,7 @@ import numpy as np
 ```
 
 ## 创建 Tensor
+
 有多种方法创建 Tensor，包括：
 
 - 直接从数据创建
@@ -17,6 +18,7 @@ import numpy as np
 - 使用算子创建
 
 ### 直接从数据创建
+
 可以直接从数据创建 Tensor：
 
 ```python
@@ -53,7 +55,6 @@ tensor([[0.6213, 0.6142, 0.1592],
         [0.5539, 0.8453, 0.8576]], dtype=oneflow.float64)
 ```
 
-
 ### 通过算子创建
 
 OneFlow 中还提供了一些算子，可以通过它们创建 Tensor。比如 [ones](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.ones#oneflow.ones)、 [zeros](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.zeros#oneflow.zeros),、[eye](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.eye#oneflow.eye)，它们分别创建全为1的张量、全为0的张量和单位张量。
@@ -84,6 +85,7 @@ x8 = flow.randn(2,3)
 ```
 
 ## `Tensor` 与 `tensor` 的区别
+
 细心的用户会发现，OneFlow 中有 [oneflow.Tensor](https://oneflow.readthedocs.io/en/master/tensor.html?highlight=oneflow.Tensor#oneflow.Tensor) 和 [oneflow.tensor](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.Tensor#oneflow.tensor) 两个接口，它们都能用来创建张量。那么它们有什么区别呢？
 
 简单而言，大写的 `Tensor` 数据类型默认限定为 `float32`，而小写的 `tensor` 的数据类型可以随着创建时的数据改变。以下代码展示了两者这方面的区别：

@@ -44,6 +44,7 @@ test_data = flow.utils.vision.datasets.FashionMNIST(
     source_url="https://oneflow-public.oss-cn-beijing.aliyuncs.com/datasets/mnist/Fashion-MNIST/",
 )
 ```
+
 输出：
 
 ```text
@@ -77,6 +78,7 @@ for x, y in train_dataloader:
 x.shape: flow.Size([64, 1, 28, 28])
 y.shape: flow.Size([64])
 ```
+
 > [:link: Dataset 与 Dataloader](./03_dataset_dataloader.md){ .md-button .md-button--primary}
 
 ## 搭建网络
@@ -204,7 +206,7 @@ loss: 1.984397  [44800/60000]
 loss: 1.918280  [51200/60000]
 loss: 1.884574  [57600/60000]
 test_loss tensor(1.9015, device='cuda:0', dtype=oneflow.float32) num_batches  157
-Test Error: 
+Test Error:
  Accuracy: 56.3, Avg loss: 1.901461
 Epoch 2
 -------------------------------
@@ -213,6 +215,7 @@ loss: 1.817333  [ 6400/60000]
 loss: 1.835239  [12800/60000]
 ...
 ```
+
 > [:link: 自动求梯度](./05_autograd.md){ .md-button .md-button--primary}
 > [:link: 反向传播与 optimizer](./06_optimization.md){ .md-button .md-button--primary}
 
@@ -223,12 +226,13 @@ loss: 1.835239  [12800/60000]
 ```python
 flow.save(model.state_dict(), "./model")
 ```
+
 > [:link: 模型的加载与保存](./07_model_load_save.md){ .md-button .md-button--primary}
 
 ## 交流 QQ 群
 
 安装或使用过程遇到问题，欢迎入群与众多 OneFlow 爱好者共同讨论交流：
 
-加 QQ 群 **331883** 或扫描二维码
+加 QQ 群 **331883** 或扫描二维码：
 
 ![OneFlow 技术交流](./imgs/qq_group.png)

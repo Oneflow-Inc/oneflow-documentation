@@ -6,7 +6,6 @@
 
 一般而言，动态图更易用，静态图性能更具优势。OneFlow 提供的 [nn.Graph](https://oneflow.readthedocs.io/en/master/graph.html) 模块，让用户可以用类似 Eager 的编程习惯，构建静态图并训练模型。
 
-
 ## OneFlow 的 Eager 模式
 
 OneFlow 默认以 Eager 模式运行。
@@ -146,7 +145,6 @@ model_graph = ModelGraph()
 
 与 Module 的显著区别在于，Graph 使用 `build` 而不是 `forward` 方法描述计算过程，这是因为 `build` 不仅可以包含前向计算，还可以设置 `loss`，优化器等，在下文会看到使用 Graph 做训练的实际例子。
 
-
 ### 使用 Graph 做预测
 
 以下 Graph 做预测的例子，直接使用了本文开始 Eager 模式训练好的 module。
@@ -252,8 +250,6 @@ class GraphMobileNetV2(flow.nn.Graph):
 1. 构造 optimizer 对象，这点和 [反向传播与 optimizer](./06_optimization.md#optimizer_1) 介绍的 Eager 模式的使用方法是完全一致的。
 2. 在 Graph 类的 `__init__` 中，调用 `self.add_optimizer` 方法，将上一步构造的 optimizer 对象添加进 Graph 中。
 3. 在 Graph 类的 `build` 中调用 `backward`，触发反向传播
-
-
 
 ### Graph 调试
 
@@ -396,8 +392,6 @@ l = loss(z,y)
 
 因为动态图是一边执行一边构图，所以很灵活，可以随时修改图的结构，运行一行代码就能得到一行的结果，易于调试。但是因为深度学习框架无法获取完整的图信息（随时可以改变、永远不能认为构图已经完成），因此无法进行充分的全局优化，在性能上会相对欠缺。
 
-
-
 **静态图（Static Graph）**
 
 与动态图不同，静态图先定义完整的计算图。即需要用户先声明所有计算节点后，框架才开始进行计算。这可以理解为在用户代码与最终运行的计算图之间，框架起到了编译器的作用。
@@ -410,7 +404,6 @@ l = loss(z,y)
 
 不过，在静态图中真正的计算发生时，已经与用户的代码没有直接关系了，因此静态图的调试较不方便。
 
-
 两种方式对比总结如下：
 
 |              | 动态图 | 静态图   |
@@ -418,7 +411,6 @@ l = loss(z,y)
 | 计算方式 | Eager 模式                             | Graph 模式                 |
 | 优点     | 代码编写灵活，易于调试                | 性能好，易于优化和部署   |
 | 缺点     | 性能及可移植性差                      | 不易调试                 |
-
 
 OneFlow 提供的 Eager 模式，与 PyTorch 对齐，让熟悉 PyTorch 的用户可以零成本直接上手。
 OneFlow 提供的 Graph 模式，也基于面向对象的编程风格，让熟悉 Eager 开发的用户，只需要改很少量的代码，就可以使用高效率的静态图。
