@@ -1050,9 +1050,9 @@
 <li><code>nn</code> 下的 API 是类，需要先构造实例化对象，再调用；<code>nn.functional</code> 下的 API 是作为函数直接调用</li>
 <li><code>nn</code> 下的类内部自己管理了网络参数；而 <code>nn.functional</code> 下的函数，需要我们自己定义参数，每次调用时手动传入</li>
 </ul>
-<p>实际上，OneFlow 提供的大部分 Module 是通过封装 <code>nn.functional</code> 下的方法得到的。<code>nn.functional</code> 提供了更加细粒度管理网络的可能。 </p>
+<p>实际上，OneFlow 提供的大部分 Module 是通过封装 <code>nn.functional</code> 下的方法得到的。<code>nn.functional</code> 提供了更加细粒度管理网络的可能。</p>
 <p>以下的例子，使用 <code>nn.functional</code> 中的方法，构建与上文中 <code>NeuralNetwork</code> 类等价的 Module <code>FunctionalNeuralNetwork</code>，读者可以体会两者的异同：</p>
-<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">FunctionalNeuralNetwork</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>    
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">FunctionalNeuralNetwork</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">FunctionalNeuralNetwork</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
@@ -1122,7 +1122,7 @@
     <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">seq</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 </code></pre></div>
-<p>除了 Sequential 外，还有 <code>nn.Modulelist</code> 及 <code>nn.ModuleDict</code>，除了会自动注册参数到整个网络外，他们的其它行为类似 Python list、Python dict，只是常用简单的容器，不会自动进行前后层的前向传播，需要自己手工遍历完成各层的计算。 </p>
+<p>除了 Sequential 外，还有 <code>nn.Modulelist</code> 及 <code>nn.ModuleDict</code>，除了会自动注册参数到整个网络外，他们的其它行为类似 Python list、Python dict，只是常用简单的容器，不会自动进行前后层的前向传播，需要自己手工遍历完成各层的计算。</p>
                 
               
               

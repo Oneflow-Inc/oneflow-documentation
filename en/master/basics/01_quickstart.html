@@ -1031,7 +1031,7 @@ print(&quot;Using {} device&quot;.format(DEVICE))
 <p>OneFlow has two primitives to work with data, which are Dataset and Dataloader.</p>
 <p>The <a href="https://oneflow.readthedocs.io/en/master/utils.html#module-oneflow.utils.vision.datasets">oneflow.utils.vision.datasets</a> module contains a number of real data sets (such as MNIST, CIFAR 10, FashionMNIST).</p>
 <p>We can use <code>oneflow.utils.vision.datasets.FashionMNIST</code> to get the training set and test set data of FashionMNIST.</p>
-<p><div class="highlight"><pre><span></span><code><span class="n">training_data</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">vision</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">FashionMNIST</span><span class="p">(</span>
+<div class="highlight"><pre><span></span><code><span class="n">training_data</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">vision</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">FashionMNIST</span><span class="p">(</span>
     <span class="n">root</span><span class="o">=</span><span class="s2">&quot;data&quot;</span><span class="p">,</span>
     <span class="n">train</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">transform</span><span class="o">=</span><span class="n">transforms</span><span class="o">.</span><span class="n">ToTensor</span><span class="p">(),</span>
@@ -1047,7 +1047,7 @@ print(&quot;Using {} device&quot;.format(DEVICE))
     <span class="n">source_url</span><span class="o">=</span><span class="s2">&quot;https://oneflow-public.oss-cn-beijing.aliyuncs.com/datasets/mnist/Fashion-MNIST/&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 </code></pre></div>
-Out:</p>
+<p>Out:</p>
 <div class="highlight"><pre><span></span><code>Downloading https://oneflow-public.oss-cn-beijing.aliyuncs.com/datasets/mnist/Fashion-MNIST/train-images-idx3-ubyte.gz to data/FashionMNIST/raw/train-images-idx3-ubyte.gz
 26422272/? [00:15&lt;00:00, 2940814.54it/s]
 Extracting data/FashionMNIST/raw/train-images-idx3-ubyte.gz to data/FashionMNIST/raw
@@ -1075,7 +1075,7 @@ y.shape: flow.Size([64])
 <p><a class="md-button md-button--primary" href="03_dataset_dataloader.html"><img alt="🔗" class="twemoji" src="https://twemoji.maxcdn.com/v/latest/svg/1f517.svg" title=":link:" /> Dataset and Dataloader</a></p>
 </blockquote>
 <h2 id="building-networks">Building Networks<a class="headerlink" href="#building-networks" title="Permanent link">&para;</a></h2>
-<p>To define a neural network in OneFlow, we create a class that inherits from <code>nn.Module</code>. We define the layers of the network in the <code>__init__</code> function and specify how data will pass through the network in the <code>forward</code> function. </p>
+<p>To define a neural network in OneFlow, we create a class that inherits from <code>nn.Module</code>. We define the layers of the network in the <code>__init__</code> function and specify how data will pass through the network in the <code>forward</code> function.</p>
 <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">NeuralNetwork</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">NeuralNetwork</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
@@ -1178,7 +1178,7 @@ loss: 1.984397  [44800/60000]
 loss: 1.918280  [51200/60000]
 loss: 1.884574  [57600/60000]
 test_loss tensor(1.9015, device=&#39;cuda:0&#39;, dtype=oneflow.float32) num_batches  157
-Test Error: 
+Test Error:
  Accuracy: 56.3, Avg loss: 1.901461
 Epoch 2
 -------------------------------

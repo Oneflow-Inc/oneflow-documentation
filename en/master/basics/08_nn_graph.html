@@ -1167,7 +1167,7 @@ Result: y = -0.0013652867637574673 + 0.8422811627388*x + 0.0002355352626182139*x
 <li>Defines the structure and state of a neural network in <code>__init__</code> method.</li>
 <li>Describes the computational process in <code>build</code> method.</li>
 </ul>
-<p>You can then instantiate and call the Graph: </p>
+<p>You can then instantiate and call the Graph:</p>
 <div class="highlight"><pre><span></span><code><span class="n">mygraph</span> <span class="o">=</span> <span class="n">MyLinear</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
 <span class="nb">input</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
 <span class="n">out</span> <span class="o">=</span> <span class="n">mygraph</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
@@ -1301,7 +1301,7 @@ Result: y = -0.0013652867637574673 + 0.8422811627388*x + 0.0002355352626182139*x
 </code></pre></div>
 <p>The output is slightly different depending on whether the Graph object is called:</p>
 <p>If you use <code>print</code> <strong>before</strong> the Graph object is called, the output is information about the network structure.</p>
-<p>The output for <code>print</code> used before <code>linear_graph</code> is called is like this:  </p>
+<p>The output for <code>print</code> used before <code>linear_graph</code> is called is like this:</p>
 <div class="highlight"><pre><span></span><code>(GRAPH:LinearTrainGraph_0:LinearTrainGraph): (
   (MODULE:model:Sequential()): (
     (MODULE:model.0:Linear(in_features=3, out_features=1, bias=True)): (
@@ -1439,7 +1439,7 @@ Result: y = -0.0013652867637574673 + 0.8422811627388*x + 0.0002355352626182139*x
 </tr>
 </tbody>
 </table>
-<p>The Eager Mode in OneFlow is aligned with the PyTorch, which allows users familiar with the PyTorch to get their hands on easily with no more effert. </p>
+<p>The Eager Mode in OneFlow is aligned with the PyTorch, which allows users familiar with the PyTorch to get their hands on easily with no more effert.</p>
 <p>The Graph Mode in OneFlow is based on the object-oriented programming style, which allows developers familiar with eager programming style to benefit from static graph with minimal code changes.</p>
 <h2 id="related-links">Related Links<a class="headerlink" href="#related-links" title="Permanent link">&para;</a></h2>
 <p>Building neural network in OneFlow Eager Mode: <a href="04_build_network.html">Build Network</a></p>

@@ -1065,7 +1065,7 @@
 <ul>
 <li>Directly from data</li>
 <li>From a NumPy array</li>
-<li>By an operator </li>
+<li>By an operator</li>
 </ul>
 <h3 id="directly-from-data">Directly from data<a class="headerlink" href="#directly-from-data" title="Permanent link">&para;</a></h3>
 <p>Tensors can be created directly from data:</p>
@@ -1074,26 +1074,26 @@
 <span class="nb">print</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">x2</span><span class="p">)</span>
 </code></pre></div>
-<p>Out:
+<p>Out:</p>
 <div class="highlight"><pre><span></span><code>tensor([[1, 2],
         [3, 4]], dtype=oneflow.int64)
 tensor([[1., 2.],
         [3., 4.]], dtype=oneflow.float32)
-</code></pre></div></p>
+</code></pre></div>
 <p>We can see that the tensor <code>x1</code> and <code>x2</code> are created, whose data types are <code>int64</code> and <code>float32</code>, respectively.</p>
 <h3 id="from-a-numpy-array">From a NumPy array<a class="headerlink" href="#from-a-numpy-array" title="Permanent link">&para;</a></h3>
 <p>Tensors can be created from NumPy arrays by passing the NumPy array as a parameter when the tensor object is constructed.</p>
-<p><div class="highlight"><pre><span></span><code><span class="n">x3</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">)))</span>
+<div class="highlight"><pre><span></span><code><span class="n">x3</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">)))</span>
 <span class="n">x4</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">x3</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">x4</span><span class="p">)</span>
 </code></pre></div>
-Out:
+<p>Out:</p>
 <div class="highlight"><pre><span></span><code>tensor([[1., 1., 1.],
         [1., 1., 1.]], dtype=oneflow.float64)
 tensor([[0.6213, 0.6142, 0.1592],
         [0.5539, 0.8453, 0.8576]], dtype=oneflow.float64)
-</code></pre></div></p>
+</code></pre></div>
 <h3 id="by-an-operator">By an operator<a class="headerlink" href="#by-an-operator" title="Permanent link">&para;</a></h3>
 <p>There are also many operators available in OneFlow that can be used to create tensors. For example, <a href="https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.ones#oneflow.ones">ones</a>, <a href="https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.zeros#oneflow.zeros">zeros</a> and <a href="https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.eye#oneflow.eye">eye</a>, which create the all-ones tensor, zero tensor, and identity tensor, respectively.</p>
 <div class="highlight"><pre><span></span><code><span class="n">x5</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
@@ -1103,7 +1103,7 @@ tensor([[0.6213, 0.6142, 0.1592],
 <span class="nb">print</span><span class="p">(</span><span class="n">x6</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">x7</span><span class="p">)</span>
 </code></pre></div>
-<p>Out:
+<p>Out:</p>
 <div class="highlight"><pre><span></span><code>tensor([[1., 1., 1.],
         [1., 1., 1.]], dtype=oneflow.float32)
 tensor([[0., 0., 0.],
@@ -1111,7 +1111,7 @@ tensor([[0., 0., 0.],
 tensor([[1., 0., 0.],
         [0., 1., 0.],
         [0., 0., 1.]], dtype=oneflow.float32)
-</code></pre></div></p>
+</code></pre></div>
 <p>The <a href="https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.randn#oneflow.randn">randn</a> method creates a random tensor:</p>
 <div class="highlight"><pre><span></span><code><span class="n">x8</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
 </code></pre></div>
@@ -1122,18 +1122,18 @@ tensor([[1., 0., 0.],
 <span class="nb">print</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]))</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">]))</span>
 </code></pre></div>
-<p>Out:
+<p>Out:</p>
 <div class="highlight"><pre><span></span><code>tensor([1., 2., 3.], dtype=oneflow.float32)
 tensor([1, 2, 3], dtype=oneflow.int64)
 tensor([1., 2., 3.], dtype=oneflow.float32)
-</code></pre></div></p>
+</code></pre></div>
 <p>Besides, <code>oneflow.Tensor</code> can be created without specific data:</p>
 <div class="highlight"><pre><span></span><code><span class="n">x9</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">Tensor</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">x9</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
 </code></pre></div>
-<p>Out:
+<p>Out:</p>
 <div class="highlight"><pre><span></span><code>flow.Size([2, 3])
-</code></pre></div></p>
+</code></pre></div>
 <p>Therefore, use <code>oneflow.Tensor</code> to create a tensor if you do not want to specify an explicit value, otherwise, you should use <code>oneflow.tensor</code>.</p>
 <h2 id="attributes-of-a-tensor">Attributes of a Tensor<a class="headerlink" href="#attributes-of-a-tensor" title="Permanent link">&para;</a></h2>
 <p>The <code>shape</code>, <code>dtype</code>, and <code>device</code> attributes of a tensor describe its shape, data type, and device type respectively.</p>
@@ -1142,11 +1142,11 @@ tensor([1., 2., 3.], dtype=oneflow.float32)
 <span class="nb">print</span><span class="p">(</span><span class="n">x9</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">x9</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
 </code></pre></div>
-<p>Out:
+<p>Out:</p>
 <div class="highlight"><pre><span></span><code>flow.Size([1, 4])
 oneflow.float32
 cpu:0
-</code></pre></div></p>
+</code></pre></div>
 <p>The output shows the shape, the data type, and the device (on CPU No. 0, CPUs were numbered because OneFlow naturally supports distribution, see <a href="../parallelism/03_consistent_tensor.html">Consistent Tensor</a>).</p>
 <p>The shape of the tensor can be changed by the <a href="https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.reshape#oneflow.reshape">reshape</a> method, and the data type and device of the tensor can be changed by the <a href="https://oneflow.readthedocs.io/en/master/tensor.html?highlight=Tensor.to#oneflow.Tensor.to">to</a> method:</p>
 <div class="highlight"><pre><span></span><code>x10 = x9.reshape(2, 2)
@@ -1154,21 +1154,21 @@ x11 = x10.to(dtype=flow.int32, device=flow.device(&quot;cuda&quot;))
 print(x10.shape)
 print(x11.dtype, x11.device)
 </code></pre></div>
-<p>Out:
+<p>Out:</p>
 <div class="highlight"><pre><span></span><code>flow.Size([2, 2])
 oneflow.int32 cuda:0
-</code></pre></div></p>
+</code></pre></div>
 <h2 id="operations-on-tensors">Operations on Tensors<a class="headerlink" href="#operations-on-tensors" title="Permanent link">&para;</a></h2>
 <p>A large number of operators are provided in OneFlow, most of which are in the namespaces of <a href="https://oneflow.readthedocs.io/en/master/oneflow.html">oneflow</a>, <a href="https://oneflow.readthedocs.io/en/master/nn.html">oneflow.nn</a>, and <a href="https://oneflow.readthedocs.io/en/master/functional.html">oneflow.nn.functional</a>.</p>
 <p>Tensors in OneFlow are as easy to use as the NumPy arrays. For example, slicing in NumPy style is supported:</p>
-<p><div class="highlight"><pre><span></span><code><span class="n">tensor</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><span class="n">tensor</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;First row: &#39;</span><span class="p">,</span><span class="n">tensor</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;First column: &#39;</span><span class="p">,</span> <span class="n">tensor</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])</span>
 <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Last column:&#39;</span><span class="p">,</span> <span class="n">tensor</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">])</span>
 <span class="n">tensor</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">tensor</span><span class="p">)</span>
 </code></pre></div>
-Out:
+<p>Out:</p>
 <div class="highlight"><pre><span></span><code>First row:  tensor([1., 1., 1., 1.], dtype=oneflow.float32)
 First column:  tensor([1., 1., 1., 1.], dtype=oneflow.float32)
 Last column: tensor([1., 1., 1., 1.], dtype=oneflow.float32)
@@ -1176,7 +1176,7 @@ tensor([[1., 0., 1., 1.],
         [1., 0., 1., 1.],
         [1., 0., 1., 1.],
         [1., 0., 1., 1.]], dtype=oneflow.float32)
-</code></pre></div></p>
+</code></pre></div>
 <p>In addition, there are many other operations in OneFlow, such as <a href="https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.add#oneflow.add">add</a>, <a href="https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.sub#oneflow.sub">sub</a>, <a href="https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.mul#oneflow.mul">mul</a>, <a href="https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.div#oneflow.div">div</a> for arithmetic operations; <a href="https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.scatter#oneflow.scatter">scatter</a>, <a href="https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.gather#oneflow.gather">gather</a>, <a href="https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.gather_nd#oneflow.gather_nd">gather_nd</a> for positional operations; and activation functions (<a href="https://oneflow.readthedocs.io/en/master/functional.html?highlight=oneflow.relu#oneflow.nn.functional.relu">relu</a>), convolution functions (<a href="https://oneflow.readthedocs.io/en/master/functional.html?highlight=oneflow.conv2d#oneflow.nn.functional.conv2d">conv2d</a>), etc. Click on their links to see detailed API description and find out more about other operators.</p>
                 
               

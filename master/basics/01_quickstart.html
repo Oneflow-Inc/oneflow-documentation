@@ -1031,7 +1031,7 @@ print(&quot;Using {} device&quot;.format(DEVICE))
 <p>OneFlow 可以使用 <a href="03_dataset_dataloader.html">Dataset 与 Dataloader</a> 加载数据。</p>
 <p><a href="https://oneflow.readthedocs.io/en/master/utils.html#module-oneflow.utils.vision.datasets">oneflow.utils.vision.datasets</a> 模块中包含了不少真实的数据集(如 MNIST、CIFAR10、FashionMNIST)。</p>
 <p>我们通过 <code>oneflow.utils.vision.datasets.FashionMNIST</code> 获取 FashionMNIST 的训练集和测试集数据。</p>
-<p><div class="highlight"><pre><span></span><code><span class="n">training_data</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">vision</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">FashionMNIST</span><span class="p">(</span>
+<div class="highlight"><pre><span></span><code><span class="n">training_data</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">vision</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">FashionMNIST</span><span class="p">(</span>
     <span class="n">root</span><span class="o">=</span><span class="s2">&quot;data&quot;</span><span class="p">,</span>
     <span class="n">train</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">transform</span><span class="o">=</span><span class="n">transforms</span><span class="o">.</span><span class="n">ToTensor</span><span class="p">(),</span>
@@ -1047,7 +1047,7 @@ print(&quot;Using {} device&quot;.format(DEVICE))
     <span class="n">source_url</span><span class="o">=</span><span class="s2">&quot;https://oneflow-public.oss-cn-beijing.aliyuncs.com/datasets/mnist/Fashion-MNIST/&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 </code></pre></div>
-输出：</p>
+<p>输出：</p>
 <div class="highlight"><pre><span></span><code>Downloading https://oneflow-public.oss-cn-beijing.aliyuncs.com/datasets/mnist/Fashion-MNIST/train-images-idx3-ubyte.gz to data/FashionMNIST/raw/train-images-idx3-ubyte.gz
 26422272/? [00:15&lt;00:00, 2940814.54it/s]
 Extracting data/FashionMNIST/raw/train-images-idx3-ubyte.gz to data/FashionMNIST/raw
@@ -1178,7 +1178,7 @@ loss: 1.984397  [44800/60000]
 loss: 1.918280  [51200/60000]
 loss: 1.884574  [57600/60000]
 test_loss tensor(1.9015, device=&#39;cuda:0&#39;, dtype=oneflow.float32) num_batches  157
-Test Error: 
+Test Error:
  Accuracy: 56.3, Avg loss: 1.901461
 Epoch 2
 -------------------------------
@@ -1200,7 +1200,7 @@ loss: 1.835239  [12800/60000]
 </blockquote>
 <h2 id="qq">交流 QQ 群<a class="headerlink" href="#qq" title="Permanent link">&para;</a></h2>
 <p>安装或使用过程遇到问题，欢迎入群与众多 OneFlow 爱好者共同讨论交流：</p>
-<p>加 QQ 群 <strong>331883</strong> 或扫描二维码</p>
+<p>加 QQ 群 <strong>331883</strong> 或扫描二维码：</p>
 <p><img alt="OneFlow 技术交流" src="imgs/qq_group.png" /></p>
                 
               

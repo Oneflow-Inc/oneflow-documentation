@@ -995,7 +995,7 @@
 <p><code>oneflow.nn</code> provides common Module classes and we can use them easily. Or we can build a neural network by customizing the Module class on the basis. This method consists of three parts：</p>
 <ul>
 <li>Write a class that inherits from <code>oneflow.nn.Module</code> class</li>
-<li>Write the method of <code>__init__</code> class, in which we construct the network structure </li>
+<li>Write the method of <code>__init__</code> class, in which we construct the network structure</li>
 <li>Write the method of <code>forward</code> class, which calculates on the basis of the input of Module</li>
 </ul>
 <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">NeuralNetwork</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
@@ -1052,7 +1052,8 @@
 </ul>
 <p>In fact, most of the Module provided by OneFlow is the result of encapsulating the methods under <code>nn.functional</code>. <code>nn.functional</code> can manage the network more finely.</p>
 <p>The following example uses the methods in <code>nn.functional</code> to build a Module <code>FunctionalNeuralNetwork</code> equivalent to the <code>NeuralNetwork</code> class above. Readers can appreciate the similarities and differences between the two:</p>
-<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">FunctionalNeuralNetwork</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>    
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">FunctionalNeuralNetwork</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">FunctionalNeuralNetwork</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
@@ -1122,8 +1123,7 @@
     <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">seq</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 </code></pre></div>
-<p>Besides Sequential, there are <code>nn.Modulelist</code> and <code>nn.ModuleDict</code>. They can automatically register parameters to the whole network. But their other behavior is similar to Python list and Python dict, which are 
-just simple containers and do not automatically propagate forward. You need manually traverse to complete the calculation of each layer.</p>
+<p>Besides Sequential, there are <code>nn.Modulelist</code> and <code>nn.ModuleDict</code>. They can automatically register parameters to the whole network. But their other behavior is similar to Python list and Python dict, which are just simple containers and do not automatically propagate forward. You need manually traverse to complete the calculation of each layer.</p>
                 
               
               
