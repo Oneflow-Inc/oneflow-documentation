@@ -12,6 +12,7 @@
 以下代码，是通过配置设置 consistent 张量，完成数据并行训练。点击以下 “Code” 查看详细代码。
 
 ??? code
+    ```python
     import oneflow as flow
     import oneflow.nn as nn
     import flowvision
@@ -19,6 +20,10 @@
 
     BATCH_SIZE=64
     EPOCH_NUM = 1
+
+    PLACEMENT = flow.placement("cuda",{0:[0,1]})
+    S0 = flow.sbp.split(0)
+    B = flow.sbp.broadcast
 
     DEVICE = "cuda" if flow.cuda.is_available() else "cpu"
     print("Using {} device".format(DEVICE))
@@ -36,15 +41,10 @@
 
     model = flowvision.models.mobilenet_v2().to(DEVICE)
     model.classifer = nn.Sequential(nn.Dropout(0.2), nn.Linear(model.last_channel, 10))
+    model = model.to_consistent(placement=PLACEMENT, sbp=B)
 
     loss_fn = nn.CrossEntropyLoss().to(DEVICE)
     optimizer = flow.optim.SGD(model.parameters(), lr=1e-3)
-
-    PLACEMENT = flow.placement("cuda",{0:[0,1]})
-    S0 = flow.sbp.split(0)
-    B = flow.sbp.broadcast
-
-    model = model.to_consistent(placement=PLACEMENT, sbp=B)
 
     for t in range(EPOCH_NUM):
         print(f"Epoch {t+1}\n-------------------------------")
@@ -65,6 +65,7 @@
             current = batch * BATCH_SIZE
             if batch % 5 == 0:
                 print(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")
+    ```
 
 可以发现，这个脚本的与单机单卡的训练脚本几乎是一样的。少数的区别在于几行与 consistent tensor 有关的配置代码外，它们是：
 
