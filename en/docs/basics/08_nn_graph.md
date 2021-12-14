@@ -10,7 +10,7 @@ In general, dynamic graphs are easier to use and static graphs have better perfo
 
 OneFlow runs in Eager Mode by default.
 
-The following script, using data set CIFAR10 to train model `mobilenet_v2`.
+The following script uses data set CIFAR10 to train model `mobilenet_v2`.
 
 ??? code
     ```python
