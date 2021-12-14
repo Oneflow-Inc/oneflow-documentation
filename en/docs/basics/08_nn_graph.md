@@ -338,7 +338,7 @@ In addition to the methods described above, getting the parameters of the gradie
 
 ### Save and Load of Graph
 
-Graph reuses the network parameters of the Module, so Graph does not have its own `save` and `load` interfaces, just use the Module interface directly. You can refer to [Model saving and loading](./07_model_load_save.md).
+Graph reuses the network parameters of the Module, so Graph does not have its own `save` and `load` interfaces and it directly uses the Module interface. For more information, you can refer to [Model saving and loading](./07_model_load_save.md).
 
 If you want to save the training results of the above `graph_mobile_net_v2`, you should actually save its Module (`model` obtained by `model = flowvision.models.mobilenet_v2().to(DEVICE)` before)
 
