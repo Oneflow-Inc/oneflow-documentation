@@ -331,7 +331,7 @@ The advantage of using `debug`  is that the debug information is composed and pr
 The Level of detail of `debug` 's output can be adjusted by setting the `v_level` parameter:
 
 ```python
-graph_mobile_net_v2.debug(v_level=1)  # 输出详细信息
+graph_mobile_net_v2.debug(v_level=1)  # print the detailed information
 ```
 
 In addition to the methods described above, getting the parameters of the gradient during the training process, accessing to the learning rate and other functions are also under development and will come up soon.
