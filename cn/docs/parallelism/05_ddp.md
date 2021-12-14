@@ -50,8 +50,8 @@
         print(f"Epoch {t+1}\n-------------------------------")
         size = len(train_dataloader.dataset)
         for batch, (x, y) in enumerate(train_dataloader):
-            x = x.to_consistent(placement=PLACEMENT, sbp=[S0])
-            y = y.to_consistent(placement=PLACEMENT, sbp=[S0])
+            x = x.to_consistent(placement=PLACEMENT, sbp=S0)
+            y = y.to_consistent(placement=PLACEMENT, sbp=S0)
 
             # Compute prediction error
             pred = model(x)
