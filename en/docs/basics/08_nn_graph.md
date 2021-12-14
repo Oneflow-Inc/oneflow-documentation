@@ -348,7 +348,7 @@ flow.save(model.state_dict(), "./graph_model")
 
 !!! Note
 
-    **Don't** save in the following way. Because Graph will process members when it is initialized, `graph_mobile_net_v2.model` is actually no longer a Module type:
+    **Don't** save in the following way. Because Graph will process members when it is initialized, and `graph_mobile_net_v2.model` is actually no longer a Module type:
 
     ```python
     flow.save(graph_mobile_net_v2.model.state_dict(), "./graph_model")  # it will report an error
