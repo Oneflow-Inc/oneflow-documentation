@@ -118,8 +118,6 @@ w:tensor([[2.0000],
        grad_fn=<accumulate_grad>)
 ```
 
-### 代码
-
 点击以下 “Code” 可以展开以上运行脚本的代码。
 
 ??? code
