@@ -1075,8 +1075,8 @@
 <ul>
 <li>数据在集群上按 <code>split(0)</code> 做切分：</li>
 </ul>
-<div class="highlight"><pre><span></span><code>    <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">to_consistent</span><span class="p">(</span><span class="n">placement</span><span class="o">=</span><span class="n">PLACEMENT</span><span class="p">,</span> <span class="n">sbp</span><span class="o">=</span><span class="p">[</span><span class="n">S0</span><span class="p">])</span>
-    <span class="n">y</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">to_consistent</span><span class="p">(</span><span class="n">placement</span><span class="o">=</span><span class="n">PLACEMENT</span><span class="p">,</span> <span class="n">sbp</span><span class="o">=</span><span class="p">[</span><span class="n">S0</span><span class="p">])</span>
+<div class="highlight"><pre><span></span><code>    <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">to_consistent</span><span class="p">(</span><span class="n">placement</span><span class="o">=</span><span class="n">PLACEMENT</span><span class="p">,</span> <span class="n">sbp</span><span class="o">=</span><span class="n">S0</span><span class="p">)</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">to_consistent</span><span class="p">(</span><span class="n">placement</span><span class="o">=</span><span class="n">PLACEMENT</span><span class="p">,</span> <span class="n">sbp</span><span class="o">=</span><span class="n">S0</span><span class="p">)</span>
 </code></pre></div>
 <p>这样，按照 <a href="01_introduction.html">常见的分布式并行策略</a> 中的介绍，我们就通过对数据进行 <code>split(0)</code> 切分，对模型进行广播，进行了分布式数据并行训练。</p>
 <h2 id="distributeddataparallel">使用 DistributedDataParallel 做数据并行训练<a class="headerlink" href="#distributeddataparallel" title="Permanent link">&para;</a></h2>
