@@ -93,6 +93,6 @@ Run commands below for trying how to use the pre-trained model to make predictio
 
 ```bash
 git clone https://github.com/Oneflow-Inc/models.git
-cd models/shufflenetv2
+cd models/Vision/classification/image/shufflenetv2/
 bash infer.sh
 ```

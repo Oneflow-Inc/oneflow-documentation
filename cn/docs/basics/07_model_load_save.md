@@ -94,6 +94,6 @@ OneFlow 是可以直接加载 PyTorch 的预训练模型，用于预测的。
 
 ```bash
 git clone https://github.com/Oneflow-Inc/models.git
-cd models/shufflenetv2
+cd models/Vision/classification/image/shufflenetv2/
 bash infer.sh
 ```
