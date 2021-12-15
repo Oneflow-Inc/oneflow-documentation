@@ -88,7 +88,7 @@ OrderedDict([('weight', tensor([[1., 1.],
 OneFlow 是可以直接加载 PyTorch 的预训练模型，用于预测的。
 只要模型的作者能够确保搭建的模型的结构、参数名与 PyTorch 模型对齐。
 
-相关的例子可以在 [OneFlow Models 仓库的这个 README](https://github.com/Oneflow-Inc/models/tree/main/shufflenetv2#convert-pretrained-model-from-pytorch-to-oneflow) 查看。
+相关的例子可以在 [OneFlow Models 仓库的这个 README](https://github.com/Oneflow-Inc/models/blob/main/README_zh-CN.md) 查看。
 
 以下命令行，可以体验如何使用预训练好的模型，进行预测：
 
