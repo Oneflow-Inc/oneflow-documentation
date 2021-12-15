@@ -577,8 +577,8 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#_2" class="md-nav__link">
-    通过设置  做数据并行训练
+  <a href="#sbp" class="md-nav__link">
+    通过设置 SBP 做数据并行训练
   </a>
   
 </li>
@@ -590,13 +590,6 @@
   
     <nav class="md-nav" aria-label="使用 DistributedDataParallel 做数据并行训练">
       <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#_3" class="md-nav__link">
-    代码
-  </a>
-  
-</li>
         
           <li class="md-nav__item">
   <a href="#distributedsampler" class="md-nav__link">
@@ -962,8 +955,8 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#_2" class="md-nav__link">
-    通过设置  做数据并行训练
+  <a href="#sbp" class="md-nav__link">
+    通过设置 SBP 做数据并行训练
   </a>
   
 </li>
@@ -975,13 +968,6 @@
   
     <nav class="md-nav" aria-label="使用 DistributedDataParallel 做数据并行训练">
       <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#_3" class="md-nav__link">
-    代码
-  </a>
-  
-</li>
         
           <li class="md-nav__item">
   <a href="#distributedsampler" class="md-nav__link">
@@ -1017,7 +1003,7 @@
 在 OneFlow 中，提供了两种做数据并行的方式。</p>
 <p>一种是使用 OneFlow 的原生的 SBP 概念，通过设置 consistent 张量，进行数据并行训练，这也是用 OneFlow 做数据并行训练的 <strong>推荐方式</strong> 。</p>
 <p>此外，为了方便从 PyTorch 迁移到 OneFlow 的用户，OneFlow 提供了与 <code>torch.nn.parallel.DistributedDataParallel</code> 对齐一致的接口 <a href="https://oneflow.readthedocs.io/en/master/nn.html#oneflow.nn.parallel.DistributedDataParallel">oneflow.nn.parallel.DistributedDataParallel</a>，它也能让用户方便地从单机训练脚本，扩展为数据并行训练。</p>
-<h2 id="_2">通过设置  做数据并行训练<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<h2 id="sbp">通过设置 SBP 做数据并行训练<a class="headerlink" href="#sbp" title="Permanent link">&para;</a></h2>
 <p>以下代码，是通过配置设置 consistent 张量，完成数据并行训练。点击以下 “Code” 查看详细代码。</p>
 <details class="code">
 <summary>Code</summary>
@@ -1113,7 +1099,6 @@ w:tensor([[2.0000],
         [3.0000]], device=&#39;cuda:0&#39;, dtype=oneflow.float32,
        grad_fn=&lt;accumulate_grad&gt;)
 </code></pre></div>
-<h3 id="_3">代码<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>
 <p>点击以下 “Code” 可以展开以上运行脚本的代码。</p>
 <details class="code">
 <summary>Code</summary>
