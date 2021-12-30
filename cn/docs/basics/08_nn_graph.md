@@ -315,6 +315,14 @@ print(graph_mobile_net_v2)
     ...
 ```
 
+为了开发者对 Graph 对象有更清晰的认知，对以上`print`输出的内容进行分析，包括 `GRAPH`、`CONFIG`、`MODULE`、`PARAMETER`、`INPUT`和`OUTPUT`六个分等级的标签。
+
+ - **GRAPH**：如本例中的`(GRAPH:GraphMobileNetV2_0:GraphMobileNetV2)`，其中， `GraphMobileNetV2`是用户定义的Graph类名称。
+ - **CONFIG**：如本例中的`(CONFIG:config:GraphConfig(training=True, )`，其中， `training=True`表示Graph处于训练模式，如果在Graph的预测模式，则对应`training=False`。
+ - **MODULE**：MODULE可以在Graph标签下。如本例中的`(MODULE:model:MobileNetV2())`，其中，`MobileNetV2`为用户复用 Eager 模式下的 Module 类名。同时，多个MODULE之间也存在层级关系。在上面的调试信息中，表示基于Sequential模型，网络中自定义了`ConvBNActivation(`对应`MBConv`模块)、卷积层(包括详细的`channel`、`kernel_size`和`stride`等参数信息)、`Dropout`和全连接层等结构。
+ - **PARAMETER**：对比MODULE给出了更清晰的weight和bias内容，tensor的信息可以在这里被发现。此外，池化层等往往没有该内容。
+ - **INPUT和OUTPUT**：即在调用 Graph 对象后`print`，表示输入输出的张量信息。
+
 此外，调用 Graph 对象的 [debug](https://oneflow.readthedocs.io/en/master/graph.html#oneflow.nn.Graph.debug) 方法，就开启了 Graph 的调试模式。
 
 OneFlow 在编译生成计算图的过程中会打印调试信息，比如，将上面例子代码中 `graph_mobile_net_v2.debug()` 的注释去掉，将在控制台上输出如下输出：
