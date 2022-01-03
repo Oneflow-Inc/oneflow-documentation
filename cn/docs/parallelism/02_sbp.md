@@ -114,9 +114,74 @@ $$
 
 我们将上文出现的，对于某个算子，其输入输出的一个 **特定的、合法的 SBP 组合**，称为这个算子的一个 **SBP Signature**。
 
-OneFlow 中的算子，都会由算子作者根据算子的运算法则，预设好该算子所有可能的 SBP Signature，用户只需要设置数据的 `placement` 和 `SBP` 属性，在运行时，OneFlow 会自动选择最优的 SBP Signature，这个选择过程对用户而言是透明的。
+## SBP Signature 自动推导及 Boxing 机制
+
+有了 SBP Signature 的概念后，我们可能会提出两个问题：
+
+- Op 的所有 Sbp Signature 是由 OneFlow 推导出来的吗？
+- 作为算法工程师，我是否要为每层网络都设置输入的 SBP？
+- 如果有多个 Sbp Signature 可供选择，那么应该选择哪一个呢？
+
+对于前一个问题，答案是否定的，因为 Op 输入输出的 SBP 属性的组合是否合法，与 Op 的运算规则有关，属于业务逻辑的范畴，OneFlow 不可能预先知晓所有已经存在的、还未发明的 Op 的运算规则。
+
+罗列某个算子所有可能的 SBP Signature 的工作，是 **算子作者** 的责任。OneFlow 中的算子，都会由算子作者根据算子的运算法则，预设好该算子所有可能的 SBP Signature。
+
+对于后两个问题，其实都不需要用户特意操心，因为 OneFlow 有 **Boxing** 及 **SBP Signature 自动推导** 机制。
+
+Boxing 机制的作用是：当上一层的网络的输出与下一层网络的输入的 SBP 属性不匹配时，做自动转换。比如以下的代码：
+
+```python
+import oneflow as flow
+
+P0 = flow.placement("cuda", {0:[0,1]})
+P1 = flow.placement("cuda", {1:[0,1]})
+a0_sbp = flow.sbp.split(0)
+b0_sbp = flow.sbp.broadcast
+y0_sbp = flow.sbp.broadcast
+b1_sbp = flow.sbp.split(1)
+
+A0 = flow.randn(4, 5, placement=P0, sbp=a0_sbp)
+B0 = flow.randn(5, 8, placement=P0, sbp=b0_sbp)
+Y0 = flow.matmul(A0, B0)
+
+Y0.toconsistent(placement=P1, sbp=y0_sbp)
+B1 = flow.randn(8, 6, placement=P1, sbp=b1_sbp)
+Y2 = flow.matmul(Y0, B1)
+```
+
+它的逻辑图和物理执行图的对应关系如下：
+
+![](./imgs/sbp_translation.png)
+
+因为上一层网络的输出 `Y0` 的 SBP 属性是 `split(0)`，而下一层网络输入需要 `Y0` 的 SBP 其实应该是 `broadcast`，这时，OneFlow 会自动检测到这种不一致，并且在上游的输出和下游的输入间插入一个 `boxing` 算子，做相关的转换工作。
+
+SBP Signature 自动推导机制，会根据输入张量的 SBP 属性，自动根据代价模型选择最优的 SBP Signature，确认输出张量的 SBP。通常情况下，用户只需要指定网络起始层的 SBP，其余网络层的 SBP Signature，都可以交给 OneFlow。比如，以上的代码例子，去掉设置 `Y0.toconsistent(placement=P1, sbp=y0_sbp)` 后也是可以正常运行的：
+
+```python
+import oneflow as flow
+
+P0 = flow.placement("cuda", {0:[0,1]})
+P1 = flow.placement("cuda", {1:[0,1]})
+a0_sbp = flow.sbp.split(0)
+b0_sbp = flow.sbp.broadcast
+y0_sbp = flow.sbp.broadcast
+b1_sbp = flow.sbp.split(1)
+
+A0 = flow.randn(4, 5, placement=P0, sbp=a0_sbp)
+B0 = flow.randn(5, 8, placement=P0, sbp=b0_sbp)
+Y0 = flow.matmul(A0, B0)
+
+#Y0.toconsistent(placement=P1, sbp=y0_sbp) # 不做设置，则 OneFlow 会自动推导 SBP Signature
+B1 = flow.randn(8, 6, placement=P1, sbp=b1_sbp)
+Y2 = flow.matmul(Y0, B1)
+```
+
+只有当用户想指定某一层的 SBP Signature 时，才需要特意设置，因为当用户显式指定了 SBP，OneFlow 就仅会在符合用户指定的 SBP Signature 中做选择。
 
 ## 总结
+
 `placement` 与 `SBP`、`SBP Signature` 是 OneFlow 分布式一致性视角的重要保证，OneFlow 的一致性视角使得 OneFlow 的分布式训练与单机单卡一样简单。
+
+通常情况下，用户只需要在起始网络层设置 `SBP`，由此可以省略传统分布式训练中手写通信操作的麻烦。更值得一提的是，除了本文介绍的 SBP Signature 自动推导机制外，OneFlow 团队正在研发一种寻求全局最优解的自动并行方法，正在内测，等它上线后，用户可以不做任何 SBP 配置就得到很好的分布式训练效果，敬请期待。
 
 在下一篇 [Consistent Tensor](./03_consistent_tensor) 中，我们将看到一致性视角的编程例子。
