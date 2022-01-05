@@ -2,13 +2,14 @@
 
 OneFlow 提出了 **一致性视角（consistent view）** 的概念，用于简化分布式训练。简单而言，在 OneFlow 的一致性视角下，集群被抽象为一台“超级计算设备”。
 
-用户不用关系集群中计算、通信的细节，只用关心逻辑上的数据与计算，依然像单机单卡那样思考、编程，就能进行分布式训练。
+用户不用关心集群中计算、通信的细节，只需关心逻辑上的数据与计算，依然像单机单卡那样思考、编程，就能进行分布式训练。
 
 ![consistent view](./imgs/consistent-view.png)
 
 OneFlow 的一致性视角，依赖几个重要概念：Placement、SBP 与 SBP Signature。
 
 ## Placement
+
 OneFlow 一致性视角下的 Tensor 有 `placement` 属性，通过 `placement` 属性可以指定该 Tensor 存放在哪个物理设备上。
 
 OneFlow 会自动为集群中的计算设备编号。比如，如果集群中有4台主机，每台主机上有8张显卡，那么4台主机分别对应了 ID：0、1、2、3；每台主机上的显卡分别对应了编号0到7。如果想将 Tensor 放置在第0台机器的前4张显卡上，只需要配置：`placement("cuda", {0: [0, 1, 2, 3]})`。
@@ -25,7 +26,7 @@ SBP 是 OneFlow 发明的概念，描述了“超级计算设备”一致性视�
 - `broadcast` 表示一致性视角下的 Tensor，会复制并广播到所有的物理设备上。
 - `partial` 表示一致性视角下的 Tensor 与物理设备上的 Tensor 的 **形状相同**，但是物理设备上的值，只是一致性视角下 Tensor 的 **一部分**。以 `partial sum` 为例，如果我们将集群中所有设备的张量按位置相加，那么就可以还原得到一致性视角的 Tensor。除了 `sum` 外，`min`、`max` 等操作也适用于 `partial`。
 
-下图中分别展示了 SBP 的情况，分别是 `split(0)`、`split(1)`、`broadcast`、`partial sum`。
+下图中分别展示了 SBP 的情况，分别是 `split(0)`、`split(1)`、`broadcast` 和 `partial sum`。
 
 ![SBP Example](./imgs/sbp-example.png)
 
