@@ -1180,7 +1180,7 @@
 </ul>
 <p>当 Data Reader Op 工作时，会调用 <code>loader_</code> 中的相关方法打开文件系统中的文件，并调用 <code>loader_</code> 的 <code>Next</code> 方法按照 Op 作者预定的逻辑从文件系统读取数据，然后，再调用 <code>parser_</code> 的 <code>Parser</code> 方法，将数据设置到 Op 的输出中。</p>
 <p>以下的伪代码展示了以上类关系和调用过程，实际代码比伪代码要复杂，并不是一一对应的关系：
-<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">DataReader</span><span class="p">{</span><span class="w"></span>
+<div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">DataReader</span><span class="p">{</span><span class="w"></span>
 <span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">Read</span><span class="p">(</span><span class="n">user_op</span><span class="o">::</span><span class="n">KernelComputeContext</span><span class="o">*</span><span class="w"> </span><span class="n">ctx</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">    </span><span class="c1">// 运行到此处，已经启动了多线程加速数据处理</span>
 <span class="w">    </span><span class="n">loader</span><span class="o">-&gt;</span><span class="n">next</span><span class="p">();</span><span class="w"></span>
@@ -1190,12 +1190,12 @@
 <span class="w">    </span><span class="n">Parser</span><span class="o">*</span><span class="w">  </span><span class="n">parser_</span><span class="p">;</span><span class="w"></span>
 <span class="p">};</span><span class="w"></span>
 
-<span class="k">class</span> <span class="nc">MiniDataReader</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">DataReader</span><span class="p">{</span><span class="w"></span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MiniDataReader</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">DataReader</span><span class="p">{</span><span class="w"></span>
 <span class="w">    </span><span class="n">loader_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">MiniDataSet</span><span class="p">;</span><span class="w"></span>
 <span class="w">    </span><span class="n">parser_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">MiniParser</span><span class="p">;</span><span class="w"></span>
 <span class="p">};</span><span class="w"></span>
 
-<span class="k">class</span> <span class="nc">MiniDataset</span><span class="o">:</span><span class="w"> </span><span class="n">Dataset</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MiniDataset</span><span class="o">:</span><span class="w"> </span><span class="n">Dataset</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">  </span><span class="n">MiniDataset</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">    </span><span class="c1">//在文件系统中找到数据集，并打开文件，初始化输入流</span>
 <span class="w">    </span><span class="c1">//...</span>
@@ -1206,7 +1206,7 @@
 <span class="w">  </span><span class="p">}</span><span class="w"></span>
 <span class="p">};</span><span class="w"></span>
 
-<span class="k">class</span> <span class="nc">MiniParser</span><span class="o">:</span><span class="w"> </span><span class="n">Parser</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MiniParser</span><span class="o">:</span><span class="w"> </span><span class="n">Parser</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">Parse</span><span class="p">(){</span><span class="w"></span>
 <span class="w">    </span><span class="c1">// 将 DataSet 中的数据 设置到 Op 的输出中</span>
 <span class="w">  </span><span class="p">}</span><span class="w"></span>
@@ -1241,7 +1241,7 @@
 可以看到，因为 Data Reader 是比较特殊的 Op，只有输出，没有输入（数据来自文件系统，而不是神经网络中的某个上游节点），因此我们只通过 <code>Out</code> 方法设置了输出，并在 <code>SetTensorDescInferFn</code> 设置了输出的性质为每行2列，数据类为 <code>DataType::kDouble</code>。同理，在设置 <code>SetGetSbpFn</code> 中设置 SBP Signature 时，只需要设置输出的 SBP 属性，我们将其设置为 Split(0)。</p>
 <p>而设置的各种属性（<code>data_dir</code>、<code>data_part_num</code> 等），沿用了 <a href="ofrecord.html#ofrecord">OFRecord 数据集</a> 中关于文件命名规范的要求，这使得我们可以复用 OneFlow 中已有的相关代码，像 <a href="how_to_make_ofdataset.html#ofrecord_1">加载 OFRecord 数据集</a> 那样，加载我们自定义格式的文件。</p>
 <p>接着看这个 Op 的 Kernel 实现：
-<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">MiniReaderKernel</span><span class="w"> </span><span class="k">final</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">user_op</span><span class="o">::</span><span class="n">OpKernel</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">MiniReaderKernel</span><span class="w"> </span><span class="k">final</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">user_op</span><span class="o">::</span><span class="n">OpKernel</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w"> </span><span class="k">public</span><span class="o">:</span><span class="w"></span>
 <span class="w">  </span><span class="c1">//...</span>
 
@@ -1268,7 +1268,7 @@
 <p>当我们进行 <code>Compute</code> 时，有时除了从 <code>ctx</code> 获取的信息外，我们还需要维护一些其他的对象，这种对象不需要反复创建，但是其中的信息状态可能随着 <code>Compute</code> 多次调用而改变。为了应对这种需求，OneFlow 提供了2个参数的 <code>Compute</code> 的重载，为了使用它，我们必须同时重写 <code>CreateOpKernelState</code>，<code>CreateOpKernelState</code> 的作用是返回一个 <code>user_op::OpKernelState</code> 派生类对象，这个对象，将在 <code>Compute</code> 调用时，作为第二个参数传递。</p>
 <p>为此，我们只需要将除 <code>ctx</code> 外想要维护的信息，封装为 <code>user_op::OpKernelState</code> 的派生类，并在 <code>CreateOpKernelState</code> 实例化并返回即可。</p>
 <p>具体到我们实现的 Mini Reader 的 Kernel，我们先实现了一个继承自 <code>user_op::OpKernelState</code> 的类 <code>MiniReaderWrapper</code>， 它是对 <code>MiniDataReader</code> 的简单封装，之所以封装一层 <code>MiniReaderWrapper</code> 而不直接使用 <code>MiniDataReader</code>，仅仅是为了符合以上所述的 OneFlow 框架要求。
-<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">MiniReaderWrapper</span><span class="w"> </span><span class="k">final</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">user_op</span><span class="o">::</span><span class="n">OpKernelState</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">MiniReaderWrapper</span><span class="w"> </span><span class="k">final</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">user_op</span><span class="o">::</span><span class="n">OpKernelState</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w"> </span><span class="k">public</span><span class="o">:</span><span class="w"></span>
 <span class="w">  </span><span class="k">explicit</span><span class="w"> </span><span class="n">MiniReaderWrapper</span><span class="p">(</span><span class="n">user_op</span><span class="o">::</span><span class="n">KernelInitContext</span><span class="o">*</span><span class="w"> </span><span class="n">ctx</span><span class="p">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">reader_</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span><span class="w"></span>
 <span class="w">  </span><span class="o">~</span><span class="n">MiniReaderWrapper</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">default</span><span class="p">;</span><span class="w"></span>
@@ -1294,7 +1294,7 @@
 <h3 id="minidatareader">MiniDataReader<a class="headerlink" href="#minidatareader" title="Permanent link">&para;</a></h3>
 <p>上文伪代码中已经提及，在 <code>MiniDataReader</code> 内部，会实例化一个 <code>MiniDataset</code> 并赋值给 <code>loader_</code> 指针。
 以下是真实代码：
-<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">MiniDataReader</span><span class="w"> </span><span class="k">final</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">DataReader</span><span class="o">&lt;</span><span class="n">TensorBuffer</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">MiniDataReader</span><span class="w"> </span><span class="k">final</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">DataReader</span><span class="o">&lt;</span><span class="n">TensorBuffer</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w"> </span><span class="k">public</span><span class="o">:</span><span class="w"></span>
 <span class="w">  </span><span class="n">MiniDataReader</span><span class="p">(</span><span class="n">user_op</span><span class="o">::</span><span class="n">KernelInitContext</span><span class="o">*</span><span class="w"> </span><span class="n">ctx</span><span class="p">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">DataReader</span><span class="o">&lt;</span><span class="n">TensorBuffer</span><span class="o">&gt;</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">    </span><span class="n">loader_</span><span class="p">.</span><span class="n">reset</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">MiniDataset</span><span class="p">(</span><span class="n">ctx</span><span class="p">));</span><span class="w"></span>
@@ -1362,7 +1362,7 @@
 <p><code>MiniDataSet</code> 完成从文件到内存缓冲区的工作，接着，我们将使用 <code>MiniParser</code>，将缓冲区中的内容，设置到 Op 的输出中。</p>
 <h3 id="miniparser">MiniParser<a class="headerlink" href="#miniparser" title="Permanent link">&para;</a></h3>
 <p><code>MiniParser</code> 继承自 <code>Parser</code>，我们只需要重写其中的 <code>Parser</code> 方法即可：
-<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">MiniParser</span><span class="w"> </span><span class="k">final</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">Parser</span><span class="o">&lt;</span><span class="n">TensorBuffer</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">MiniParser</span><span class="w"> </span><span class="k">final</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">Parser</span><span class="o">&lt;</span><span class="n">TensorBuffer</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w"> </span><span class="k">public</span><span class="o">:</span><span class="w"></span>
 <span class="w">  </span><span class="k">using</span><span class="w"> </span><span class="n">LoadTargetPtr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">TensorBuffer</span><span class="o">&gt;</span><span class="p">;</span><span class="w"></span>
 <span class="w">  </span><span class="k">using</span><span class="w"> </span><span class="n">LoadTargetPtrList</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">LoadTargetPtr</span><span class="o">&gt;</span><span class="p">;</span><span class="w"></span>
@@ -1409,7 +1409,7 @@
 <span class="w">    </span><span class="p">});</span><span class="w"></span>
 </code></pre></div></p>
 <p>Mini Decoder 的 Kernel 的实现：
-<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">MiniDecoderKernel</span><span class="w"> </span><span class="k">final</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">user_op</span><span class="o">::</span><span class="n">OpKernel</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">MiniDecoderKernel</span><span class="w"> </span><span class="k">final</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">user_op</span><span class="o">::</span><span class="n">OpKernel</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">  </span><span class="c1">//...</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">Compute</span><span class="p">(</span><span class="n">user_op</span><span class="o">::</span><span class="n">KernelComputeContext</span><span class="o">*</span><span class="w"> </span><span class="n">ctx</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">override</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">    </span><span class="n">user_op</span><span class="o">::</span><span class="n">Tensor</span><span class="o">*</span><span class="w"> </span><span class="n">in_blob</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ctx</span><span class="o">-&gt;</span><span class="n">Tensor4ArgNameAndIndex</span><span class="p">(</span><span class="s">&quot;in&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span><span class="w"></span>

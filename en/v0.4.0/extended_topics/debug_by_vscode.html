@@ -1013,12 +1013,12 @@ By the extension "Remote SSH" of VS Code, we can connect to a remote server thro
 <div class="highlight"><pre><span></span><code>ln -s ./build/compile_commands.json compile_commands.json
 </code></pre></div>
 <p>Then press <code>Ctrl+Shift+P</code> (<code>command+shift+p</code> on MacOS) to find the <code>Open Remote Settings</code> option and open the <code>settings.json</code> file and add the following configuration:</p>
-<p><div class="highlight"><pre><span></span><code>    <span class="nt">&quot;clangd.path&quot;</span><span class="p">:</span> <span class="s2">&quot;/path/to/bin/clangd&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;clangd.arguments&quot;</span><span class="p">:</span> <span class="p">[</span>
-        <span class="s2">&quot;-j&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;12&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;-clang-tidy&quot;</span>
-    <span class="p">]</span>
+<p><div class="highlight"><pre><span></span><code><span class="w">    </span><span class="nt">&quot;clangd.path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/path/to/bin/clangd&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;clangd.arguments&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">        </span><span class="s2">&quot;-j&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">        </span><span class="s2">&quot;12&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">        </span><span class="s2">&quot;-clang-tidy&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="p">]</span><span class="w"></span>
 </code></pre></div>
 The meaning of <code>clangd.arguments</code> and more options can be found by <code>clangd --help</code>.</p>
 <h4 id="using-clangd">Using clangd<a class="headerlink" href="#using-clangd" title="Permanent link">&para;</a></h4>
@@ -1030,20 +1030,20 @@ The meaning of <code>clangd.arguments</code> and more options can be found by <c
 <p>And then we choose <code>Create a launch.json file</code> first and next choose gdb template.</p>
 <p><img alt="gdb" src="imgs/gdb-select.png" /></p>
 <p>And then we can set the options:
-<div class="highlight"><pre><span></span><code><span class="p">{</span>
-    <span class="nt">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;0.2.0&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;configurations&quot;</span><span class="p">:</span> <span class="p">[</span>
-        <span class="p">{</span>
-            <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;lenet&quot;</span><span class="p">,</span> <span class="err">//de</span><span class="kc">f</span><span class="err">i</span><span class="kc">ne</span><span class="err">d</span> <span class="err">job</span> <span class="kc">na</span><span class="err">me</span>
-            <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;gdb&quot;</span><span class="p">,</span>
-            <span class="nt">&quot;request&quot;</span><span class="p">:</span> <span class="s2">&quot;launch&quot;</span><span class="p">,</span>
-            <span class="nt">&quot;target&quot;</span><span class="p">:</span> <span class="s2">&quot;/home/yaochi/.conda/envs/ycof/bin/python3&quot;</span><span class="p">,</span> <span class="err">//py</span><span class="kc">t</span><span class="err">ho</span><span class="kc">n</span> <span class="err">pa</span><span class="kc">t</span><span class="err">h</span>
-            <span class="nt">&quot;arguments&quot;</span><span class="p">:</span> <span class="s2">&quot;lenet_train.py&quot;</span><span class="p">,</span> <span class="err">//scrip</span><span class="kc">t</span>
-            <span class="nt">&quot;cwd&quot;</span><span class="p">:</span> <span class="s2">&quot;/home/yaochi/of_example&quot;</span><span class="p">,</span> <span class="err">//scrip</span><span class="kc">t</span> <span class="err">pa</span><span class="kc">t</span><span class="err">h</span>
-            <span class="nt">&quot;valuesFormatting&quot;</span><span class="p">:</span> <span class="s2">&quot;parseText&quot;</span>
-        <span class="p">}</span>
-    <span class="p">]</span>
-<span class="p">}</span>
+<div class="highlight"><pre><span></span><code><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;0.2.0&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;configurations&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">        </span><span class="p">{</span><span class="w"></span>
+<span class="w">            </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;lenet&quot;</span><span class="p">,</span><span class="w"> </span><span class="err">//de</span><span class="kc">f</span><span class="err">i</span><span class="kc">ne</span><span class="err">d</span><span class="w"> </span><span class="err">job</span><span class="w"> </span><span class="kc">na</span><span class="err">me</span><span class="w"></span>
+<span class="w">            </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;gdb&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="nt">&quot;request&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;launch&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="nt">&quot;target&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/home/yaochi/.conda/envs/ycof/bin/python3&quot;</span><span class="p">,</span><span class="w"> </span><span class="err">//py</span><span class="kc">t</span><span class="err">ho</span><span class="kc">n</span><span class="w"> </span><span class="err">pa</span><span class="kc">t</span><span class="err">h</span><span class="w"></span>
+<span class="w">            </span><span class="nt">&quot;arguments&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;lenet_train.py&quot;</span><span class="p">,</span><span class="w"> </span><span class="err">//scrip</span><span class="kc">t</span><span class="w"></span>
+<span class="w">            </span><span class="nt">&quot;cwd&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/home/yaochi/of_example&quot;</span><span class="p">,</span><span class="w"> </span><span class="err">//scrip</span><span class="kc">t</span><span class="w"> </span><span class="err">pa</span><span class="kc">t</span><span class="err">h</span><span class="w"></span>
+<span class="w">            </span><span class="nt">&quot;valuesFormatting&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;parseText&quot;</span><span class="w"></span>
+<span class="w">        </span><span class="p">}</span><span class="w"></span>
+<span class="w">    </span><span class="p">]</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </code></pre></div></p>
 <p>After we set the breakpoint, we can press F5 to start debugging.</p>
 <p><img alt="snapshot of debugging" src="imgs/debug_snapshot.png" /></p>

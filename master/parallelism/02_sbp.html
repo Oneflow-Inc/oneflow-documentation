@@ -1002,7 +1002,7 @@
                 
                 <h1 id="_1">集群的一致性视角<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
 <p>OneFlow 提出了 <strong>一致性视角（consistent view）</strong> 的概念，用于简化分布式训练。简单而言，在 OneFlow 的一致性视角下，集群被抽象为一台“超级计算设备”。</p>
-<p>用户不用关系集群中计算、通信的细节，只用关心逻辑上的数据与计算，依然像单机单卡那样思考、编程，就能进行分布式训练。</p>
+<p>用户不用关心集群中计算、通信的细节，只需关心逻辑上的数据与计算，依然像单机单卡那样思考、编程，就能进行分布式训练。</p>
 <p><img alt="consistent view" src="imgs/consistent-view.png" /></p>
 <p>OneFlow 的一致性视角，依赖几个重要概念：Placement、SBP 与 SBP Signature。</p>
 <h2 id="placement">Placement<a class="headerlink" href="#placement" title="Permanent link">&para;</a></h2>
@@ -1017,7 +1017,7 @@
 <li><code>broadcast</code> 表示一致性视角下的 Tensor，会复制并广播到所有的物理设备上。</li>
 <li><code>partial</code> 表示一致性视角下的 Tensor 与物理设备上的 Tensor 的 <strong>形状相同</strong>，但是物理设备上的值，只是一致性视角下 Tensor 的 <strong>一部分</strong>。以 <code>partial sum</code> 为例，如果我们将集群中所有设备的张量按位置相加，那么就可以还原得到一致性视角的 Tensor。除了 <code>sum</code> 外，<code>min</code>、<code>max</code> 等操作也适用于 <code>partial</code>。</li>
 </ul>
-<p>下图中分别展示了 SBP 的情况，分别是 <code>split(0)</code>、<code>split(1)</code>、<code>broadcast</code>、<code>partial sum</code>。</p>
+<p>下图中分别展示了 SBP 的情况，分别是 <code>split(0)</code>、<code>split(1)</code>、<code>broadcast</code> 和 <code>partial sum</code>。</p>
 <p><img alt="SBP Example" src="imgs/sbp-example.png" /></p>
 <p>在创建 Consistent Tensor 时，可以指定 Tensor 的 SBP，实际的代码例子将在下一篇文章 <a href="03_consistent_tensor.html">Consistent Tensor</a> 中看到。</p>
 <h2 id="spb-signature">SPB Signature<a class="headerlink" href="#spb-signature" title="Permanent link">&para;</a></h2>
