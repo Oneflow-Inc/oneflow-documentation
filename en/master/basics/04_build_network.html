@@ -1123,7 +1123,7 @@
     <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">seq</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 </code></pre></div>
-<p>Besides Sequential, there are <code>nn.Modulelist</code> and <code>nn.ModuleDict</code>. They can automatically register parameters to the whole network. But their other behavior is similar to Python list and Python dict, which are just simple containers and do not automatically propagate forward. You need manually traverse to complete the calculation of each layer.</p>
+<p>Besides Sequential, there are <code>nn.ModuleList</code> and <code>nn.ModuleDict</code>. They can automatically register parameters to the whole network. But their other behavior is similar to Python list and Python dict, which are just simple containers and do not automatically propagate forward. You need manually traverse to complete the calculation of each layer.</p>
                 
               
               
