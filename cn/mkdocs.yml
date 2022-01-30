@@ -128,6 +128,9 @@ nav:
       - 数据并行训练: parallelism/05_ddp.md
       - 流水并行训练: parallelism/06_pipeline.md
 
+    - OneFlow Cookies:
+      - 模型部署: cookies/serving.md
+
     - API:
       - API: https://start.oneflow.org/oneflow-api-cn/
 
