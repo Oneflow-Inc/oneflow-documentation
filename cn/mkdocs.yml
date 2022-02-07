@@ -61,7 +61,7 @@ extra:
       link: https://docs.oneflow.org
       lang: zh
 
-  disqus: livere_indeed
+  #disqus: livere_indeed
 
 # Extensions
 markdown_extensions:

@@ -169,4 +169,4 @@ class MySeqModel(nn.Module):
         return self.seq(x)
 ```
 
-Besides Sequential, there are `nn.Modulelist` and `nn.ModuleDict`. They can automatically register parameters to the whole network. But their other behavior is similar to Python list and Python dict, which are just simple containers and do not automatically propagate forward. You need manually traverse to complete the calculation of each layer.
+Besides Sequential, there are `nn.ModuleList` and `nn.ModuleDict`. They can automatically register parameters to the whole network. But their other behavior is similar to Python list and Python dict, which are just simple containers and do not automatically propagate forward. You need manually traverse to complete the calculation of each layer.
