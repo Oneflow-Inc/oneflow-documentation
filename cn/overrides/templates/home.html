@@ -250,7 +250,7 @@
                   padding: 20px;
                   margin-top: 10px;
                 }
-                .sml-vers{
+                .smlVers{
                   overflow: hidden;
                 }
               </style>
@@ -298,13 +298,18 @@
                   let condition = {
                     versions: 'Stable',
                     framework: 'CUDA',
-                    smlVers: '10.0',
+                    smlVers: '10.2',
                   }
                   selectCommands(condition)
                   let items = document.querySelectorAll('#instruction li')
                   
                   function selectCommands(conditioning) {
-                    let filter = commands.filter(e => e.versions == conditioning.versions).filter(e => e.framework == conditioning.framework).filter(e => e.smlVers == conditioning.smlVers)
+                      let filter = null
+                    if(conditioning.smlVers == "CPU"){
+                      filter = commands.filter(e => e.versions == conditioning.versions).filter(e => e.framework == conditioning.framework)
+                    }else{
+                      filter = commands.filter(e => e.versions == conditioning.versions).filter(e => e.framework == conditioning.framework).filter(e => e.smlVers == conditioning.smlVers)
+                    }
                     if (filter && filter[0]) {
                       document.querySelector('.panel-code').innerHTML = filter[0].command
                     }
@@ -320,9 +325,9 @@
                       condition[attach] = this.innerHTML
                       if (this.innerHTML == 'CPU') {
                         condition['smlVers'] = 'CPU'
-                        document.querySelector('.sml-vers').style.height = '0px'
+                        document.querySelector('.smlVers').style.height = '0px'
                       } else {
-                        document.querySelector('.sml-vers').style.height = '48px'
+                        document.querySelector('.smlVers').style.height = '48px'
                       }
                       console.log(condition)
                       selectCommands(condition)
@@ -340,9 +345,9 @@
                   <li attach="framework" class="active">CUDA</li>
                   <li attach="framework">CPU</li>
                 </ul>
-                <ul class="sml-vers">
-                  <li attach="sml-vers" class="active">10.2</li>
-                  <li attach="sml-vers">11.2</li>
+                <ul class="smlVers">
+                  <li attach="smlVers" class="active">10.2</li>
+                  <li attach="smlVers">11.2</li>
                 </ul>
                 <div class="command">
                   <p>执行以下命令安装</p>
