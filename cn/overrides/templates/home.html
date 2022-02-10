@@ -188,37 +188,173 @@
     }
 </style>
 
-<!-- Main site Entry button descriptions -->
-<section class="tx-container">
-    <div class="md-grid md-typeset">
-        <div class="mdx-hero">
-
-          <!-- Hero image -->
-          <div class="mdx-hero__image">
-            <img
-              src="assets/product-layer.png"
-              alt=""
-              width="1659"
-              height="1200"
-              draggable="false"
-            >
-          </div>
-
-          <!-- Hero content -->
-          <div class="mdx-hero__content">
-            <h1>OneFlow</h1>
-            <p>OneFlow 是开源的、采用全新架构设计，世界领先的工业级通用深度学习框架。</p>
-            <a href="{{ page.next_page.url | url }}" title="{{ page.next_page.title | striptags }}" class="md-button md-button--primary">
+    <!-- Main site Entry button descriptions -->
+    <section class="tx-container">
+        <div class="md-grid md-typeset">
+          <div class="mdx-hero">
+  
+            <!-- Hero image -->
+            <div class="mdx-hero__image">
+              <img src="assets/product-layer.png" alt="" width="1659" height="1200" draggable="false">
+            </div>
+  
+            <!-- Hero content -->
+            <div class="mdx-hero__content">
+              <h1>OneFlow</h1>
+              <p>OneFlow 是开源的、采用全新架构设计，世界领先的工业级通用深度学习框架。</p>
+              <a href="basics/01_quickstart.html" title="快速上手" class="md-button md-button--primary">
                 马上体验
               </a>
-              <a href="https://github.com/OneFlow-Inc/oneflow" title="{{ lang.t('source.link.title') }}" class="md-button">
+              <a href="https://github.com/OneFlow-Inc/oneflow" title="前往 GitHub 仓库" class="md-button">
                 GitHub 仓库
               </a>
+  
+              <style>
+                #instruction ul, #instruction li, #instruction p{
+                  margin: 0;
+                  padding: 0;
+                }
+                #instruction{
+                  padding-top: 20px;
+                  width: 700px;
+                }
+                #instruction ul{
+                  display: flex;
+                  width: 100%;
+                  margin: 10px -3px 0;
+                }
+                #instruction li{
+                  border: 2px solid #FFF;
+                  height: 48px;
+                  line-height: 48px;
+                  cursor: pointer;
+                  text-align: center;
+                  list-style: none;
+                  flex: 1;
+                  margin: 0 3px;
+                  border-radius: 4px;
+                  transition: all .3s;
+                }
+                #instruction li.active{
+                  border: 2px solid #526cfe;
+                  background: #526cfe;
+                }
+                
+                #instruction .command{
+                  padding-top: 10px;
+                }
+                #instruction .panel-code{
+                  border-radius: 4px;
+                  background: #FFF;
+                  color: #333;
+                  padding: 20px;
+                  margin-top: 10px;
+                }
+                .sml-vers{
+                  overflow: hidden;
+                }
+              </style>
+              <script>
+              ;(function(){
+                window.addEventListener('load', () => {
+                  let commands = [
+                    {
+                      versions: 'Stable',
+                      framework: 'CUDA',
+                      smlVers: '10.2',
+                      command: 'python3 -m pip install -f https://release.oneflow.info oneflow==0.6.0+cu102'
+                    },
+                    {
+                      versions: 'Stable',
+                      framework: 'CUDA',
+                      smlVers: '11.2',
+                      command: 'python3 -m pip install -f https://release.oneflow.info oneflow==0.6.0+cu112'
+                    },
+                    {
+                      versions: 'Nightly',
+                      framework: 'CUDA',
+                      smlVers: '10.2',
+                      command: 'python3 -m pip install -f https://staging.oneflow.info/branch/master/cu102 --pre oneflow'
+                    },
+                    {
+                      versions: 'Nightly',
+                      framework: 'CUDA',
+                      smlVers: '11.2',
+                      command: 'python3 -m pip install -f https://staging.oneflow.info/branch/master/cu112 --pre oneflow'
+                    },
+                    {
+                      versions: 'Stable',
+                      framework: 'CPU',
+                      smlVers: '',
+                      command: 'python3 -m pip install -f https://release.oneflow.info oneflow==0.6.0+cpu'
+                    },
+                    {
+                      versions: 'Nightly',
+                      framework: 'CPU',
+                      smlVers: '',
+                      command: 'python3 -m pip install -f https://staging.oneflow.info/branch/master/cpu --pre oneflow'
+                    },
+                  ]
+                  let condition = {
+                    versions: 'Stable',
+                    framework: 'CUDA',
+                    smlVers: '10.0',
+                  }
+                  selectCommands(condition)
+                  let items = document.querySelectorAll('#instruction li')
+                  
+                  function selectCommands(conditioning) {
+                    let filter = commands.filter(e => e.versions == conditioning.versions).filter(e => e.framework == conditioning.framework).filter(e => e.smlVers == conditioning.smlVers)
+                    if (filter && filter[0]) {
+                      document.querySelector('.panel-code').innerHTML = filter[0].command
+                    }
+                  }
+                  items.forEach(e => {
+                    e.addEventListener('click', function() {
+                      let attach = this.getAttribute('attach')
+                      let tempItems = document.querySelectorAll(`[attach=${attach}]`)
+                      tempItems.forEach(e => {
+                        e.className = ''
+                      })
+                      this.className = 'active'
+                      condition[attach] = this.innerHTML
+                      if (this.innerHTML == 'CPU') {
+                        condition['smlVers'] = 'CPU'
+                        document.querySelector('.sml-vers').style.height = '0px'
+                      } else {
+                        document.querySelector('.sml-vers').style.height = '48px'
+                      }
+                      console.log(condition)
+                      selectCommands(condition)
+                    })
+                  })
+                })
+              })();
+              </script>
+              <div id="instruction">
+                <ul class="versions">
+                  <li attach="versions" class="active">Stable</li>
+                  <li attach="versions">Nightly</li>
+                </ul>
+                <ul class="framework">
+                  <li attach="framework" class="active">CUDA</li>
+                  <li attach="framework">CPU</li>
+                </ul>
+                <ul class="sml-vers">
+                  <li attach="sml-vers" class="active">10.2</li>
+                  <li attach="sml-vers">11.2</li>
+                </ul>
+                <div class="command">
+                  <p>执行以下命令安装</p>
+                  <p class="panel-code">python3 -m pip install -f https://staging.oneflow.info/branch/master/cpu oneflow</p>
+                </div>
+              </div>
+              
+            </div>
           </div>
         </div>
-      </div>
-
-</section>
+  
+      </section>
 
 <!-- Main site box descriptions -->
 <div class="top-hr">
