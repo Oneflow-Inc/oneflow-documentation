@@ -39,3 +39,7 @@ wget url:://xxx.zip | unzip xxx.zip && docker run ...
 ### 启动 serving
 
 【docker 启动的命令解释和更详细的参考资料指引】
+
+## 扩展阅读：模型部署
+
+
