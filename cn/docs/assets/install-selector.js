@@ -81,7 +81,6 @@
                     } else {
                         document.querySelector('.smlVers').style.height = '48px'
                     }
-                    console.log(condition)
                     selectCommands(condition)
                 })
             })
