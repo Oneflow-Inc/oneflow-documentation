@@ -12,51 +12,48 @@
     <div class="md-grid md-typeset">
         <div class="mdx-hero">
 
-          <!-- Hero image -->
-          <div class="mdx-hero__image">
-            <img
-              src="assets/product-layer.png"
-              alt=""
-              width="1659"
-              height="1200"
-              draggable="false"
-            >
-          </div>
+            <!-- Hero image -->
+            <div class="mdx-hero__image">
+                <img src="assets/product-layer.png" alt="" width="1659" height="1200" draggable="false">
+            </div>
 
-          <!-- Hero content -->
-          <div class="mdx-hero__content">
-            <h1>OneFlow</h1>
-            <p>OneFlow 是开源的、采用全新架构设计，世界领先的工业级通用深度学习框架。</p>
-            <a href="{{ page.next_page.url | url }}" title="{{ page.next_page.title | striptags }}" class="md-button md-button--primary">
-                马上体验
-              </a>
-              <a href="https://github.com/OneFlow-Inc/oneflow" title="{{ lang.t('source.link.title') }}" class="md-button">
-                GitHub 仓库
-              </a>
+            <!-- Hero content -->
+            <div class="mdx-hero__content">
+                <h1>OneFlow</h1>
+                <p>OneFlow 是开源的、采用全新架构设计，世界领先的工业级通用深度学习框架。</p>
+                <a href="{{ page.next_page.url | url }}" title="{{ page.next_page.title | striptags }}"
+                    class="md-button md-button--primary">
+                    马上体验
+                </a>
+                <a href="https://github.com/OneFlow-Inc/oneflow" title="{{ lang.t('source.link.title') }}"
+                    class="md-button">
+                    GitHub 仓库
+                </a>
 
-        <script type="text/javascript" src="assets/install-selector.js"></script>
-        <div id="instruction">
-        <ul class="versions">
-            <li attach="versions" class="active">Stable</li>
-            <li attach="versions">Nightly</li>
-        </ul>
-        <ul class="framework">
-            <li attach="framework" class="active">CUDA</li>
-            <li attach="framework">CPU</li>
-        </ul>
-        <ul class="smlVers">
-            <li attach="smlVers" class="active">10.2</li>
-            <li attach="smlVers">11.2</li>
-        </ul>
-        <div class="command">
-            <p>执行以下命令安装</p>
-            <p class="panel-code">python3 -m pip install -f https://staging.oneflow.info/branch/master/cpu oneflow</p>
+                <script type="text/javascript" src="assets/install-selector.js"></script>
+                <div id="instruction">
+                    <ul class="versions">
+                        <li attach="versions" class="active">Stable</li>
+                        <li attach="versions">Nightly</li>
+                    </ul>
+                    <ul class="framework">
+                        <li attach="framework" class="active">CUDA</li>
+                        <li attach="framework">CPU</li>
+                    </ul>
+                    <ul class="smlVers">
+                        <li attach="smlVers" class="active">10.2</li>
+                        <li attach="smlVers">11.2</li>
+                    </ul>
+                    <div class="command">
+                        <p>执行以下命令安装</p>
+                        <p class="panel-code">python3 -m pip install -f https://staging.oneflow.info/branch/master/cpu
+                            oneflow</p>
+                    </div>
+                </div>
+
+            </div>
         </div>
-        </div>
-        
     </div>
-    </div>
-</div>
 
 </section>
 
