@@ -1,43 +1,47 @@
 ;(function(){
     window.addEventListener('load', () => {
-        let commands = [
-        {
-            versions: 'Stable',
-            framework: 'CUDA',
-            smlVers: '10.2',
-            command: 'python3 -m pip install -f https://release.oneflow.info oneflow==0.6.0+cu102'
-        },
-        {
-            versions: 'Stable',
-            framework: 'CUDA',
-            smlVers: '11.2',
-            command: 'python3 -m pip install -f https://release.oneflow.info oneflow==0.6.0+cu112'
-        },
-        {
-            versions: 'Nightly',
-            framework: 'CUDA',
-            smlVers: '10.2',
-            command: 'python3 -m pip install -f https://staging.oneflow.info/branch/master/cu102 --pre oneflow'
-        },
-        {
-            versions: 'Nightly',
-            framework: 'CUDA',
-            smlVers: '11.2',
-            command: 'python3 -m pip install -f https://staging.oneflow.info/branch/master/cu112 --pre oneflow'
-        },
-        {
-            versions: 'Stable',
-            framework: 'CPU',
-            smlVers: '',
-            command: 'python3 -m pip install -f https://release.oneflow.info oneflow==0.6.0+cpu'
-        },
-        {
-            versions: 'Nightly',
-            framework: 'CPU',
-            smlVers: '',
-            command: 'python3 -m pip install -f https://staging.oneflow.info/branch/master/cpu --pre oneflow'
-        },
-        ]
+        function get_commands(){
+            let commands = [
+                {
+                    versions: 'Stable',
+                    framework: 'CUDA',
+                    smlVers: '10.2',
+                    command: 'python3 -m pip install -f https://release.oneflow.info oneflow==0.6.0+cu102'
+                },
+                {
+                    versions: 'Stable',
+                    framework: 'CUDA',
+                    smlVers: '11.2',
+                    command: 'python3 -m pip install -f https://release.oneflow.info oneflow==0.6.0+cu112'
+                },
+                {
+                    versions: 'Nightly',
+                    framework: 'CUDA',
+                    smlVers: '10.2',
+                    command: 'python3 -m pip install -f https://staging.oneflow.info/branch/master/cu102 --pre oneflow'
+                },
+                {
+                    versions: 'Nightly',
+                    framework: 'CUDA',
+                    smlVers: '11.2',
+                    command: 'python3 -m pip install -f https://staging.oneflow.info/branch/master/cu112 --pre oneflow'
+                },
+                {
+                    versions: 'Stable',
+                    framework: 'CPU',
+                    smlVers: '',
+                    command: 'python3 -m pip install -f https://release.oneflow.info oneflow==0.6.0+cpu'
+                },
+                {
+                    versions: 'Nightly',
+                    framework: 'CPU',
+                    smlVers: '',
+                    command: 'python3 -m pip install -f https://staging.oneflow.info/branch/master/cpu --pre oneflow'
+                },
+                ]
+            return commands
+        }
+        let commands = get_commands()
         let condition = {
         versions: 'Stable',
         framework: 'CUDA',

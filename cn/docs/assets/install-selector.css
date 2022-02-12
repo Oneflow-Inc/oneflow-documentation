@@ -41,3 +41,9 @@
 .smlVers{
     overflow: hidden;
 }
+
+@media screen and (max-width: 29.9375em) {
+    #instruction{
+        display: none;
+    }
+}
