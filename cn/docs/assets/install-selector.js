@@ -58,8 +58,10 @@
             function selectCommands(conditioning) {
                 let filter = null
                 if (conditioning.smlVers == "CPU") {
+                    document.querySelector('.smlVers').style.height = '0px'
                     filter = commands.filter(e => e.versions == conditioning.versions).filter(e => e.framework == conditioning.framework)
                 } else {
+                    document.querySelector('.smlVers').style.height = '48px'
                     filter = commands.filter(e => e.versions == conditioning.versions).filter(e => e.framework == conditioning.framework).filter(e => e.smlVers == conditioning.smlVers)
                 }
                 if (filter && filter[0]) {
