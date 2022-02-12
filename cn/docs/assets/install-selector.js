@@ -1,18 +1,28 @@
-;(function(){
+; (function () {
     window.addEventListener('load', () => {
-        function get_commands(){
+
+        function get_commands(latest_version) {
+            let stable_command_102 = 'python3 -m pip install -f https://release.oneflow.info oneflow==VERSION+cu102'
+            let stable_command_112 = 'python3 -m pip install -f https://release.oneflow.info oneflow==VERSION+cu112'
+            let stable_command_cpu = 'python3 -m pip install -f https://release.oneflow.info oneflow==VERSION+cpu'
             let commands = [
                 {
                     versions: 'Stable',
                     framework: 'CUDA',
                     smlVers: '10.2',
-                    command: 'python3 -m pip install -f https://release.oneflow.info oneflow==0.6.0+cu102'
+                    command: stable_command_102.replace("VERSION", latest_version)
                 },
                 {
                     versions: 'Stable',
                     framework: 'CUDA',
                     smlVers: '11.2',
-                    command: 'python3 -m pip install -f https://release.oneflow.info oneflow==0.6.0+cu112'
+                    command: stable_command_112.replace("VERSION", latest_version)
+                },
+                {
+                    versions: 'Stable',
+                    framework: 'CPU',
+                    smlVers: '',
+                    command: stable_command_cpu.replace("VERSION", latest_version)
                 },
                 {
                     versions: 'Nightly',
@@ -27,58 +37,72 @@
                     command: 'python3 -m pip install -f https://staging.oneflow.info/branch/master/cu112 --pre oneflow'
                 },
                 {
-                    versions: 'Stable',
-                    framework: 'CPU',
-                    smlVers: '',
-                    command: 'python3 -m pip install -f https://release.oneflow.info oneflow==0.6.0+cpu'
-                },
-                {
                     versions: 'Nightly',
                     framework: 'CPU',
                     smlVers: '',
                     command: 'python3 -m pip install -f https://staging.oneflow.info/branch/master/cpu --pre oneflow'
                 },
-                ]
+            ]
             return commands
         }
-        let commands = get_commands()
-        let condition = {
-        versions: 'Stable',
-        framework: 'CUDA',
-        smlVers: '10.2',
-        }
-        selectCommands(condition)
-        let items = document.querySelectorAll('#instruction li')
-        
-        function selectCommands(conditioning) {
-            let filter = null
-        if(conditioning.smlVers == "CPU"){
-            filter = commands.filter(e => e.versions == conditioning.versions).filter(e => e.framework == conditioning.framework)
-        }else{
-            filter = commands.filter(e => e.versions == conditioning.versions).filter(e => e.framework == conditioning.framework).filter(e => e.smlVers == conditioning.smlVers)
-        }
-        if (filter && filter[0]) {
-            document.querySelector('.panel-code').innerHTML = filter[0].command
-        }
-        }
-        items.forEach(e => {
-        e.addEventListener('click', function() {
-            let attach = this.getAttribute('attach')
-            let tempItems = document.querySelectorAll(`[attach=${attach}]`)
-            tempItems.forEach(e => {
-            e.className = ''
-            })
-            this.className = 'active'
-            condition[attach] = this.innerHTML
-            if (this.innerHTML == 'CPU') {
-            condition['smlVers'] = 'CPU'
-            document.querySelector('.smlVers').style.height = '0px'
-            } else {
-            document.querySelector('.smlVers').style.height = '48px'
+
+        function init_selector(commands) {
+            let condition = {
+                versions: 'Stable',
+                framework: 'CUDA',
+                smlVers: '10.2',
             }
-            console.log(condition)
             selectCommands(condition)
-        })
-        })
+            let items = document.querySelectorAll('#instruction li')
+
+            function selectCommands(conditioning) {
+                let filter = null
+                if (conditioning.smlVers == "CPU") {
+                    filter = commands.filter(e => e.versions == conditioning.versions).filter(e => e.framework == conditioning.framework)
+                } else {
+                    filter = commands.filter(e => e.versions == conditioning.versions).filter(e => e.framework == conditioning.framework).filter(e => e.smlVers == conditioning.smlVers)
+                }
+                if (filter && filter[0]) {
+                    document.querySelector('.panel-code').innerHTML = filter[0].command
+                }
+            }
+            items.forEach(e => {
+                e.addEventListener('click', function () {
+                    let attach = this.getAttribute('attach')
+                    let tempItems = document.querySelectorAll(`[attach=${attach}]`)
+                    tempItems.forEach(e => {
+                        e.className = ''
+                    })
+                    this.className = 'active'
+                    condition[attach] = this.innerHTML
+                    if (this.innerHTML == 'CPU') {
+                        condition['smlVers'] = 'CPU'
+                        document.querySelector('.smlVers').style.height = '0px'
+                    } else {
+                        document.querySelector('.smlVers').style.height = '48px'
+                    }
+                    console.log(condition)
+                    selectCommands(condition)
+                })
+            })
+        }
+
+        let TAGS_API_URL = 'https://api.github.com/repos/Oneflow-Inc/oneflow/tags'
+        let xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function () {
+            if (xmlhttp.readyState == 4) {// 4 = "loaded"
+                if (xmlhttp.status == 200) {// 200 = "OK"
+                    let latest_version = eval(xmlhttp.responseText)[0].name.replace("v", "") // eg: v0.6.0 => 0.6.0
+                    let commands = get_commands(latest_version)
+                    init_selector(commands)
+                }
+                else {
+                    let commands = get_commands("0.6.0") // using latest version in hard-code way if request fails
+                    init_selector(commands)
+                }
+            }
+        }
+        xmlhttp.open("GET", TAGS_API_URL, true)
+        xmlhttp.send(null)
     })
-    })();
+})();
