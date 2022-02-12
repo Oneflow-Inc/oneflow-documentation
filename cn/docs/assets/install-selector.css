@@ -24,8 +24,8 @@
     transition: all .3s;
 }
 #instruction li.active{
-    border: 2px solid #526cfe;
-    background: #526cfe;
+    border: 2px solid #FFFFFF;
+    background: #526cfe6b;
 }
 
 #instruction .command{
