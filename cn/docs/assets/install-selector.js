@@ -57,11 +57,9 @@
 
             function selectCommands(conditioning) {
                 let filter = null
-                if (conditioning.smlVers == "CPU") {
-                    document.querySelector('.smlVers').style.height = '0px'
+                if (conditioning.framework == "CPU") {
                     filter = commands.filter(e => e.versions == conditioning.versions).filter(e => e.framework == conditioning.framework)
                 } else {
-                    document.querySelector('.smlVers').style.height = '48px'
                     filter = commands.filter(e => e.versions == conditioning.versions).filter(e => e.framework == conditioning.framework).filter(e => e.smlVers == conditioning.smlVers)
                 }
                 if (filter && filter[0]) {
@@ -77,8 +75,7 @@
                     })
                     this.className = 'active'
                     condition[attach] = this.innerHTML
-                    if (this.innerHTML == 'CPU') {
-                        condition['smlVers'] = 'CPU'
+                    if (condition['framework'] == 'CPU') {
                         document.querySelector('.smlVers').style.height = '0px'
                     } else {
                         document.querySelector('.smlVers').style.height = '48px'
