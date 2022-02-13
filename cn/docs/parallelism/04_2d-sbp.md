@@ -1,21 +1,18 @@
 # 2D SBP
 
-阅读 [集群的一致性视角](./02_sbp.md) 和 [Consistent Tensor](./03_consistent_tensor.md) 之后，相信你已经掌握了 SBP 和 SBP Signature 的基本概念，并且能够上手相关的编程任务。实际上，以上资料中涉及都是 **1D SBP**。
+阅读 [集群的一致性视角](./02_sbp.md) 和 [Global Tensor](./03_consistent_tensor.md) 之后，相信你已经掌握了 SBP 和 SBP Signature 的基本概念，并且能够上手相关的编程任务。实际上，以上资料中涉及都是 **1D SBP**。
 
 本文将在读者掌握 1D SBP 的基础上，介绍 2D SBP，它能够更灵活地应对更复杂的分布式训练场景。
 
-## 2D SBP
-
-### 2D 设备矩阵
+## 2D 设备阵列
 
 我们已经熟悉 1D SBP 的 placement 配置，在 1D SBP 的场景下，通过 [oneflow.placement](https://start.oneflow.org/oneflow-api-cn/placement.html#oneflow.placement) 接口配置集群，比如使用第 0 号机器上的 0~3 号 GPU 显卡：
 
 ```python
 >>> placement1 = flow.placement("cuda", {0:[0,1,2,3]})
->>> placement2 = flow.placement("cuda", {0:[0,1], 1:[0,1]})
 ```
 
-其实，除了设备类型和使用的计算设备 2 个配置参数外， `oneflow.placement` 还有第三个参数，我们通过打印以上配置好的 `placement` 对象就可以发现：
+以上的 `"cuda"` 指定了设备类型，`{0:[0,1,2,3]}` 指定了集群中的计算设备。其实，除了设备类型和计算设备这 2 个配置参数外， `oneflow.placement` 还有第三个参数，我们通过打印以上配置好的 `placement` 对象就可以发现：
 
 ```python
 >>> placement1
@@ -24,39 +21,39 @@ oneflow.placement(device_type="cuda", machine_device_ids={0 : [0, 1, 2, 3]}, hie
 oneflow.placement(device_type="cuda", machine_device_ids={0 : [0, 1], 1 : [0, 1]}, hierarchy=(4,))
 ```
 
-可以发现，`placement` 其实还有第 3 个参数，它是一个 `tuple`，当我们不设置它时，它的值为 `(设备数目, )`。
+可以发现，`placement` 其实还有第 3 个参数，它是一个 `tuple`，当我们不设置它时，它的值为 `(设备总数, )`。
 
-这个参数用于描述集群中的设备分组，当不设置它时，默认所有的设备组成一个 1D 设备向量，是一维的，这也是 1D SBP 名称的由来。
+这个参数用于描述集群中的设备阵列，当不设置它时，默认所有的设备组成一个 1D 设备向量，是一维的，这也是 1D SBP 名称的由来。
 
-OneFlow 还支持把所有设备分组为设备矩阵，可以通过设置 `placement` 的第三个参数，显式指定设备矩阵的行、列大小。比如：
+OneFlow 还支持把所有设备分组为设备阵列，可以通过设置 `placement` 的第三个参数，显式指定设备阵列的行、列大小。比如：
 
 ```python
 >>> placement3 = flow.placement("cuda", {0:[0,1,2,3]}, (2,2))
 ```
 
-四个计算设备就被划分为了 $2 \times 2$ 的设备矩阵。
+四个计算设备就被划分为了 $2 \times 2$ 的设备阵列。
 
 
-### 2D SBP
+## 2D SBP
 
-我们已经知道，构造 Consistent Tensor 时，需要同时指定 `placement` 与 `SBP`。当 `placement` 中的集群是 2 维的设备矩阵时；SBP 也必需与之对应，是一个 2 维的 `tuple` 或者 `list`，这个`tuple` 或者 `list` 中的第 0 个、第 1 个 元素，分别描述了 Consistent Tensor 张量在设备矩阵第 0 维、第 1 维的分布。
+我们已经知道，构造 Global Tensor 时，需要同时指定 `placement` 与 `SBP`。当 `placement` 中的集群是 2 维的设备阵列时；SBP 也必需与之对应，是一个长度为 2 的 `tuple` 或者 `list`，这个`tuple` 或者 `list` 中的第 0 个、第 1 个 元素，分别描述了 Global Tensor 张量在设备阵列第 0 维、第 1 维的分布。
 
-比如，以下代码，配置了 $2 \times 2$ 的设备矩阵，并且设置 2D SBP 为 `(broadcast, split(0))`。
+比如，以下代码，配置了 $2 \times 2$ 的设备阵列，并且设置 2D SBP 为 `(broadcast, split(0))`。
 
 ```python
 >>> a = flow.Tensor([[1,2],[3,4]])
 >>> placement = flow.placement("cuda", {0:[0,1], 1:[0,1]}, (2,2))
 >>> sbp = (flow.sbp.broadcast, flow.sbp.split(0))
->>> a_to_consistent = a.to_consistent(placement=placement, sbp=sbp)
+>>> a_to_global = a.to_global(placement=placement, sbp=sbp)
 ```
 
-它意味着，逻辑上的数据，在整个设备矩阵上，在第 0 维度（“竖着看”）做 `broadcast`；在第 1 维度（“横着看”）做 `split(0)`。
+它意味着，逻辑上的数据，在整个设备阵列上，在第 0 维度（“竖着看”）做 `broadcast`；在第 1 维度（“横着看”）做 `split(0)`。
 
 我们通过下图做阐述：
 
 ![](./imgs/2d-sbp.png)
 
-此图的最左边是逻辑上的数据，最右边是设备矩阵上各个设备的数据。可以看到，从第 0 维的角度看，它们都是 `broadcast` 的关系：
+此图的最左边是逻辑上的数据，最右边是设备阵列上各个设备的数据。可以看到，从第 0 维的角度看，它们都是 `broadcast` 的关系：
 
 - (group0, device0) 与 (group1, device0) 中数据一致，互为 `broadcast` 关系
 - (group0, device1) 与 (group1, device1) 中数据一致，互为 `broadcast` 关系
@@ -66,10 +63,10 @@ OneFlow 还支持把所有设备分组为设备矩阵，可以通过设置 `plac
 - (group0, device0) 与 (group0, device1) 互为 `split(0)` 关系
 - (group1, device0) 与 (group1, device1) 互为 `split(0)` 关系
 
-直接理解逻辑数据和最终的设备矩阵中的物理数据对应关系可能有一定难度，大家在思考 2D SBP 时，可以假想一个上图中中间灰色图形那样的中间状态，以 `(broadcast, split(0))` 为例：
+直接理解逻辑数据和最终的设备阵列中的物理数据对应关系可能有一定难度，大家在思考 2D SBP 时，可以假想一个上图中中间灰色图形那样的中间状态，以 `(broadcast, split(0))` 为例：
 
 - 原始逻辑张量，先经过 `broadcast`，广播到 2 个 group 上，得到中间的状态
-- 在中间状态的基础上，继续在各自的 group 上，做 `split(0)`，得到最终设备矩阵中各个物理张量的状态
+- 在中间状态的基础上，继续在各自的 group 上，做 `split(0)`，得到最终设备阵列中各个物理张量的状态
 
 ## 2D SBP Signature
 
@@ -79,18 +76,15 @@ OneFlow 还支持把所有设备分组为设备矩阵，可以通过设置 `plac
 
 我们以矩阵乘法为例，先回顾 1D SBP 的情况，假定有 $x \times w = y$ 可以有以下的 SBP Signature：
 
-- $ broadcast \times split(1) = split(1) $
-- $ split(0) \times broadcast = split(0) $
+$$ broadcast \times split(1) = split(1) $$
+
+以及
+
+$$ split(0) \times broadcast = split(0) $$
 
 现在，假定我们给 $x$ 设置了 2D SBP 为：$(broadcast, split(0))$， 给 $w$ 设置 2D SBP 为 $(split(0), broadcast)$，那么，在 2D SBP 的背景下， $x \times w = y$ 运算，得到 $y$ 的 SBP
  属性为 $(split(1), split(0))$。
 
- 也就是说，以下几个 2D SBP，构成矩阵乘法的要给 SBP Signature：
+ 也就是说，以下几个 2D SBP，构成矩阵乘法的 2D SBP Signature：
 
- $$(broadcast, split(0) \times (split(0), broadcast) => (split(1), split(0))$$
-
- ### 2D SBP 的优点
-
-## 2D SBP 实例
-
-https://github.com/Oneflow-Inc/libai/pull/19/files
+$$ (broadcast, split(0)) \times (split(0), broadcast) =  (split(1), split(0)) $$
