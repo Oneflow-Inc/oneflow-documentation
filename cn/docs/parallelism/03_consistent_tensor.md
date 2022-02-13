@@ -86,10 +86,10 @@
 
 ### 由 local tensor 转换得到 global tensor
 
-可以先创建 local tensor，再利用 [Tensor.to_consistent](https://oneflow.readthedocs.io/en/master/tensor.html#oneflow.Tensor.to_consistent) 方法，将 local tensor 转为 global tensor。
+可以先创建 local tensor，再利用 [Tensor.to_global](https://oneflow.readthedocs.io/en/master/tensor.html#oneflow.Tensor.to_global) 方法，将 local tensor 转为 global tensor。
 
 下面的例子中，在2台设备上分别创建了 `shape=(2,5)` 的2个 local tensor。
-注意经过 `to_consistent` 方法后，得到的 global tensor 的 `shape` 为 `(4,5)`。
+注意经过 `to_global` 方法后，得到的 global tensor 的 `shape` 为 `(4,5)`。
 
 这是因为选择的 `sbp=flow.sbp.split(0)`，2个形状为 `(2,5)` 的 local tensor，需要在第0维拼接，得到 `(4,5)` 的 global tensor。
 
@@ -100,8 +100,8 @@
     x = flow.randn(2,5)
     placement = flow.placement("cuda",{0:[0,1]})
     sbp = flow.sbp.split(0)
-    x_consistent = x.to_consistent(placement=placement, sbp=sbp)
-    x_consistent.shape
+    x_global = x.to_global(placement=placement, sbp=sbp)
+    x_global.shape
     ```
 
 === "Terminal 1"
@@ -111,8 +111,8 @@
     x = flow.randn(2,5)
     placement = flow.placement("cuda",{0:[0,1]})
     sbp = flow.sbp.split(0)
-    x_consistent = x.to_consistent(placement=placement, sbp=sbp)
-    x_consistent.shape
+    x_global = x.to_global(placement=placement, sbp=sbp)
+    x_global.shape
     ```
 
 ## 实践 SBP Signature 的作用

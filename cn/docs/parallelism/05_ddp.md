@@ -41,7 +41,7 @@
 
     model = flowvision.models.mobilenet_v2().to(DEVICE)
     model.classifer = nn.Sequential(nn.Dropout(0.2), nn.Linear(model.last_channel, 10))
-    model = model.to_consistent(placement=PLACEMENT, sbp=B)
+    model = model.to_global(placement=PLACEMENT, sbp=B)
 
     loss_fn = nn.CrossEntropyLoss().to(DEVICE)
     optimizer = flow.optim.SGD(model.parameters(), lr=1e-3)
@@ -50,8 +50,8 @@
         print(f"Epoch {t+1}\n-------------------------------")
         size = len(train_dataloader.dataset)
         for batch, (x, y) in enumerate(train_dataloader):
-            x = x.to_consistent(placement=PLACEMENT, sbp=S0)
-            y = y.to_consistent(placement=PLACEMENT, sbp=S0)
+            x = x.to_global(placement=PLACEMENT, sbp=S0)
+            y = y.to_global(placement=PLACEMENT, sbp=S0)
 
             # Compute prediction error
             pred = model(x)
@@ -78,14 +78,14 @@
 - 模型在集群上做广播
 
 ```python
-    model = model.to_consistent(placement=PLACEMENT, sbp=B)
+    model = model.to_global(placement=PLACEMENT, sbp=B)
 ```
 
 - 数据在集群上按 `split(0)` 做切分：
 
 ```python
-    x = x.to_consistent(placement=PLACEMENT, sbp=S0)
-    y = y.to_consistent(placement=PLACEMENT, sbp=S0)
+    x = x.to_global(placement=PLACEMENT, sbp=S0)
+    y = y.to_global(placement=PLACEMENT, sbp=S0)
 ```
 
 这样，按照 [常见的分布式并行策略](./01_introduction.md) 中的介绍，我们就通过对数据进行 `split(0)` 切分，对模型进行广播，进行了分布式数据并行训练。

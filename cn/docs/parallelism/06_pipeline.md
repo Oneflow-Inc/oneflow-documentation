@@ -49,12 +49,12 @@
             self.m_stage0 = Stage0Module()
             self.m_stage1 = Stage1Module()
 
-            self.m_stage0.to_consistent(placement=P0, sbp=BROADCAST)
-            self.m_stage1.to_consistent(placement=P1, sbp=BROADCAST)
+            self.m_stage0.to_global(placement=P0, sbp=BROADCAST)
+            self.m_stage1.to_global(placement=P1, sbp=BROADCAST)
 
         def forward(self, x):
             out_stage0 = self.m_stage0(x)
-            in_stage1 = out_stage0.to_consistent(placement=P1, sbp=BROADCAST)
+            in_stage1 = out_stage0.to_global(placement=P1, sbp=BROADCAST)
             out_stage1 = self.m_stage1(in_stage1)
             return out_stage1
 
@@ -80,9 +80,9 @@
     graph_pipeline = PipelineGraph()
 
     x = flow.randn(BATCH_SIZE, 1, 28, 28)
-    x = x.to_consistent(P0, BROADCAST)
+    x = x.to_global(P0, BROADCAST)
     y = flow.randint(0, 10, (BATCH_SIZE,))
-    y = y.to_consistent(P1, BROADCAST)
+    y = y.to_global(P1, BROADCAST)
 
     for i in range(20):
         loss = graph_pipeline(x, y)
@@ -108,7 +108,7 @@ P1 = flow.placement("cuda", {0: [1]})
 
 `P0`、`P1` 分别代表第0号机器上的第0个 GPU 和第1个 GPU。
 
-通过调用 [nn.Module.to_consistent](https://oneflow.readthedocs.io/en/master/module.html?highlight=to_consistent#oneflow.nn.Module.to_consistent) 或 [Tensor.to_consistent](https://oneflow.readthedocs.io/en/master/tensor.html?highlight=to_consistent#oneflow.Tensor.to_consistent) 就可以将模型或张量分配到指定的计算设备上运行，将一个网络拆分为多个流水阶段（stage）。
+通过调用 [nn.Module.to_global](https://oneflow.readthedocs.io/en/master/module.html?highlight=to_global#oneflow.nn.Module.to_global) 或 [Tensor.to_global](https://oneflow.readthedocs.io/en/master/tensor.html?highlight=to_global#oneflow.Tensor.to_global) 就可以将模型或张量分配到指定的计算设备上运行，将一个网络拆分为多个流水阶段（stage）。
 
 在此我们定义了一个 `PipelineModule` 专门设置各阶段的流水。
 
@@ -117,12 +117,12 @@ P1 = flow.placement("cuda", {0: [1]})
         def __init__(self):
             #...
             
-            self.m_stage0.to_consistent(placement=P0, sbp=BROADCAST)
-            self.m_stage1.to_consistent(placement=P1, sbp=BROADCAST)
+            self.m_stage0.to_global(placement=P0, sbp=BROADCAST)
+            self.m_stage1.to_global(placement=P1, sbp=BROADCAST)
 
         def forward(self, x):
             out_stage0 = self.m_stage0(x)
-            in_stage1 = out_stage0.to_consistent(placement=P1, sbp=BROADCAST)
+            in_stage1 = out_stage0.to_global(placement=P1, sbp=BROADCAST)
             out_stage1 = self.m_stage1(in_stage1)
             return out_stage1
 ```
@@ -133,14 +133,14 @@ P1 = flow.placement("cuda", {0: [1]})
 
 ```python
     x = flow.randn(BATCH_SIZE, 1, 28, 28)
-    x = x.to_consistent(P0, BROADCAST)
+    x = x.to_global(P0, BROADCAST)
 ```
 
 当使用 `launch` 模块启动训练时，因为命令行参数为 `--nproc_per_node 2`，`launch` 会启动 2 个进程。两个进程均为执行脚本中的代码。
 
-其中 `x = flow.randn(BATCH_SIZE, 1, 28, 28)` 返回的是 Local Tensor（只在本进程中有效的本地数据），当运行 `x = x.to_consistent(P0, BROADCAST)` 时，OneFlow 会自动将所有进程中的 Local Tensor 整合为 Global Tensor。
+其中 `x = flow.randn(BATCH_SIZE, 1, 28, 28)` 返回的是 Local Tensor（只在本进程中有效的本地数据），当运行 `x = x.to_global(P0, BROADCAST)` 时，OneFlow 会自动将所有进程中的 Local Tensor 整合为 Global Tensor。
 
-在实际训练中，各个计算设备也可以加载属于各自的本地数据，然后通过 `to_consistent` 实现 Local Tensor 到 Global Tensor 的转化。
+在实际训练中，各个计算设备也可以加载属于各自的本地数据，然后通过 `to_global` 实现 Local Tensor 到 Global Tensor 的转化。
 
 ### Stage ID 及 梯度累积设置
 
