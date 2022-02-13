@@ -1,10 +1,10 @@
-# 集群的一致性视角
+# 集群的全局视角
 
-OneFlow 提出了 **一致性视角（consistent view）** 的概念，用于简化分布式训练。简单而言，在 OneFlow 的一致性视角下，集群被抽象为一台“超级计算设备”。
+OneFlow 提出了 **全局视角（Global View）** 的概念，用于简化分布式训练。简单而言，在 OneFlow 的一致性视角下，集群被抽象为一台“超级计算设备”。
 
 用户不用关心集群中计算、通信的细节，只需关心逻辑上的数据与计算，依然像单机单卡那样思考、编程，就能进行分布式训练。
 
-![consistent view](./imgs/consistent-view.png)
+![global view](./imgs/consistent-view.png)
 
 OneFlow 的一致性视角，依赖几个重要概念：Placement、SBP 与 SBP Signature。
 
@@ -30,7 +30,7 @@ SBP 是 OneFlow 发明的概念，描述了“超级计算设备”一致性视�
 
 ![SBP Example](./imgs/sbp-example.png)
 
-在创建 Consistent Tensor 时，可以指定 Tensor 的 SBP，实际的代码例子将在下一篇文章 [Consistent Tensor](./03_consistent_tensor.md) 中看到。
+在创建 Global Tensor 时，可以指定 Tensor 的 SBP，实际的代码例子将在下一篇文章 [Global Tensor](./03_consistent_tensor.md) 中看到。
 
 ## SPB Signature
 
@@ -174,4 +174,4 @@ Y2 = flow.matmul(Y0, B1)
 
 通常情况下，用户只需要在起始网络层设置 `SBP`，由此可以省略传统分布式训练中手写通信操作的麻烦。更值得一提的是，除了本文介绍的 SBP Signature 自动推导机制外，OneFlow 团队正在研发一种寻求全局最优解的自动并行方法，正在内测，等它上线后，用户可以不做任何 SBP 配置就得到很好的分布式训练效果，敬请期待。
 
-在下一篇 [Consistent Tensor](./03_consistent_tensor) 中，我们将看到一致性视角的编程例子。
+在下一篇 [Global Tensor](./03_consistent_tensor) 中，我们将看到一致性视角的编程例子。

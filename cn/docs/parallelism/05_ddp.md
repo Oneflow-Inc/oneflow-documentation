@@ -3,13 +3,13 @@
 在 [常见的分布式并行策略](./01_introduction.md) 一文中介绍了数据并行的特点。
 在 OneFlow 中，提供了两种做数据并行的方式。
 
-一种是使用 OneFlow 的原生的 SBP 概念，通过设置 consistent 张量，进行数据并行训练，这也是用 OneFlow 做数据并行训练的 **推荐方式** 。
+一种是使用 OneFlow 的原生的 SBP 概念，通过设置 global 张量，进行数据并行训练，这也是用 OneFlow 做数据并行训练的 **推荐方式** 。
 
 此外，为了方便从 PyTorch 迁移到 OneFlow 的用户，OneFlow 提供了与 `torch.nn.parallel.DistributedDataParallel` 对齐一致的接口 [oneflow.nn.parallel.DistributedDataParallel](https://oneflow.readthedocs.io/en/master/nn.html#oneflow.nn.parallel.DistributedDataParallel)，它也能让用户方便地从单机训练脚本，扩展为数据并行训练。
 
 ## 通过设置 SBP 做数据并行训练
 
-以下代码，是通过配置设置 consistent 张量，完成数据并行训练。点击以下 “Code” 查看详细代码。
+以下代码，是通过配置设置 global 张量，完成数据并行训练。点击以下 “Code” 查看详细代码。
 
 ??? code
     ```python
@@ -67,7 +67,7 @@
                 print(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")
     ```
 
-可以发现，这个脚本的与单机单卡的训练脚本几乎是一样的。少数的区别在于几行与 consistent tensor 有关的配置代码外，它们是：
+可以发现，这个脚本的与单机单卡的训练脚本几乎是一样的。少数的区别在于几行与 global tensor 有关的配置代码外，它们是：
 
 - 设置 placement，让训练放置在 0号、1号 GPU 上：
 

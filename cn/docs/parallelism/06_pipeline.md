@@ -2,7 +2,7 @@
 
 在 [常见的分布式并行策略](./01_introduction.md) 一文中介绍了流水并行的特点。
 
-在 OneFlow 的 [一致性视角](./03_consistent_tensor.md) 下，通过简单的设置 Tensor 的 `placement` 属性，就可以实现流水并行。
+在 OneFlow 的 [全局视角](./03_consistent_tensor.md) 下，通过简单的设置 Tensor 的 `placement` 属性，就可以实现流水并行。
 
 以下代码是简单的示范，它将 [快速上手](../basics/01_quickstart.md) 中的网络，以流水并行的方式运行。前几层的 Module `nn.Flatten`、`nn.Linear(28*28, 512)`、`nn.ReLU()` 在 GPU0 上运行；剩余的网络部分在 GPU1 上运行。
 
@@ -127,7 +127,7 @@ P1 = flow.placement("cuda", {0: [1]})
             return out_stage1
 ```
 
-### Local Tensor 与 Consistent Tensor 的转换
+### Local Tensor 与 Global Tensor 的转换
 
 示例中使用了随机生成的数据作为输入。
 
@@ -138,9 +138,9 @@ P1 = flow.placement("cuda", {0: [1]})
 
 当使用 `launch` 模块启动训练时，因为命令行参数为 `--nproc_per_node 2`，`launch` 会启动 2 个进程。两个进程均为执行脚本中的代码。
 
-其中 `x = flow.randn(BATCH_SIZE, 1, 28, 28)` 返回的是 Local Tensor（只在本进程中有效的本地数据），当运行 `x = x.to_consistent(P0, BROADCAST)` 时，OneFlow 会自动将所有进程中的 Local Tensor 整合为 Consistent Tensor。
+其中 `x = flow.randn(BATCH_SIZE, 1, 28, 28)` 返回的是 Local Tensor（只在本进程中有效的本地数据），当运行 `x = x.to_consistent(P0, BROADCAST)` 时，OneFlow 会自动将所有进程中的 Local Tensor 整合为 Global Tensor。
 
-在实际训练中，各个计算设备也可以加载属于各自的本地数据，然后通过 `to_consistent` 实现 Local Tensor 到 Consistent Tensor 的转化。
+在实际训练中，各个计算设备也可以加载属于各自的本地数据，然后通过 `to_consistent` 实现 Local Tensor 到 Global Tensor 的转化。
 
 ### Stage ID 及 梯度累积设置
 
