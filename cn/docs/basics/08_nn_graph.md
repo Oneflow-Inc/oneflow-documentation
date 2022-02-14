@@ -361,6 +361,53 @@ model.load_state_dict(flow.load("./graph_model")) # 加载保存好的模型
 # ...
 ```
 
+### Graph 与部署
+
+OneFlow 通过对接 Nvidia Triton 实现了训练、部署一体化。
+
+如果有模型部署的需求，那么应该通过 `oneflow.save` 接口，将 `Graph` 对象导出为部署需要的格式：
+
+```python
+flow.save(graph_mobile_net_v2, "./1/model")
+```
+
+这样，`./1/model` 目录下会同时保存部署所需的模型参数和计算图。详细的部署流程可以参阅 [模型部署](../cookies/serving.md) 一文。
+
+因为部署所需的格式，必需通过 Graph 对象导出。所以，如果是 Eager 模式下训练得到的模型（即 `nn.Module` 对象），需要用 `Graph` 将 Module 封装后再导出。
+
+下面我们以 flowvision 仓库中的 `neural_style_transfer` 为例子，展示如何封装并导出 `nn.Module` 模型。
+
+```python
+import oneflow as flow
+import oneflow.nn as nn
+from flowvision.models.neural_style_transfer.stylenet import neural_style_transfer
+
+
+class MyGraph(nn.Graph):
+    def __init__(self, model):
+        super().__init__()
+        self.model = model
+
+    def build(self, *input):
+        return self.model(*input)
+
+
+if __name__ == "__main__":
+    fake_image = flow.ones((1, 3, 1024, 1024))
+    model = neural_style_transfer(pretrained=True, progress=True)
+    model.eval()
+    graph = MyGraph(model)
+    out = graph(fake_image)
+    flow.save(graph, "1/model")
+```
+
+以上代码几处的关键代码：
+
+- 定义了一个 `MyGraph` 类，将 `nn.Module` 对象简单地封装一层（`return self.model(*input)`），作为仅仅是将 `nn.Module` 转为 `Graph` 对象。
+- 实例化得到 `Graph` 对象（`graph = MyGraph(model)`）
+- 调用一次 `Graph` 实例化对象（`out = graph(fake_image)`）。它内部的机理是利用 “假数据” 在模型中流动一遍（即 tracing 机制）来建立计算图。
+- 导出部署所需的模型：`flow.save(graph, "1/model")`
+
 ## 扩展阅读：动态图与静态图
 
 用户定义的神经网络，都会被深度学习框架转为计算图，如 [自动求梯度](./05_autograd.md) 中的例子：
