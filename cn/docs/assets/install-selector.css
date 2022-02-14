@@ -42,8 +42,17 @@
     overflow: hidden;
 }
 
+.command-copy{
+    margin-top: 5px;
+    margin-bottom: 0px;
+    width: 0%;
+    height: 0%;
+    float: right;
+}
+
 @media screen and (max-width: 29.9375em) {
     #instruction{
-        display: none;
+        padding-top: 20px;
+        width: 95%;
     }
 }
