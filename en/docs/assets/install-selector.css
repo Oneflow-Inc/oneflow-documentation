@@ -44,6 +44,7 @@
 
 @media screen and (max-width: 29.9375em) {
     #instruction{
-        display: none;
+        padding-top: 20px;
+        width: 95%;
     }
 }
