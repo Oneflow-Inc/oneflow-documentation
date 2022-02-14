@@ -85,7 +85,7 @@ model_repository/
 
 - `model_repository` 是模型仓库根目录，在 triton 启动时，可以通过 `--model-repository` 选项指定模型仓库根目录
 - `fast_neural_style` 是模型仓库中的一个模型。一个模型仓库下，可以有多个模型，每个一级子目录就是一个模型，在这里我们只准备了 `fast_neural_style` 这一个模型
-- 其中的 `1/model` 目录，就是我们之前通过 `flow.save(graph, "1/model")` 保存的模型。其中的 `1` 为版本号，Triton 中约定，一个模型目录下可以有多个模型版本，模型版本的文件夹名必需为 **纯数字**。在模型版本文件夹下，需要放置名为 `model` 的文件夹，其中保存有模型参数和计算题
+- 其中的 `1/model` 目录，就是我们之前通过 `flow.save(graph, "1/model")` 保存的模型。其中的 `1` 为版本号，Triton 中约定，一个模型目录下可以有多个模型版本，模型版本的文件夹名必须为 **纯数字**。在模型版本文件夹下，需要放置名为 `model` 的文件夹，其中保存有模型参数和计算图
 - `config.pbtxt` 是一个纯文本文件，用于配置该模型仓库的基本信息，我们接下来详细介绍
 
 
@@ -134,7 +134,7 @@ name: "fast_neural_style"
 backend: "oneflow"
 ```
 
-`backend` 用于指定 Triton 后端，OneFlow 部署，此指端必需指定为 `oneflow`。
+`backend` 用于指定 Triton 后端，用 OneFlow 部署，此字段必须指定为 `oneflow`。
 
 接着，需要定义模型的输入和输出形状。下面的输入输出名字字段，我们需要按照模型的输入输出顺序填写，并且命名格式是 `INPUT_<index>` 和 `OUTPUT_<index>`，用 `<index>` 表示模型输入的顺序，默认从 0 开始。`data_type` 字段定义了数据类型，`dims` 字段定义了张量的形状。
 
