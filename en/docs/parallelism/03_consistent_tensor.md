@@ -35,7 +35,6 @@ In each of the two consoles, import `oneflow` and create `x`.
 === "Terminal 0"
     ```python
     import oneflow as flow
-    ```
 
     placement = flow.placement("cuda",{0:[0,1]})
     sbp = flow.sbp.split(0)
@@ -96,7 +95,6 @@ The reason for this transformation lies in that by setting the sbp with `sbp=flo
 === "Terminal 0"
     ```python
     import oneflow as flow
-    ```
 
     x = flow.randn(2,5)
     placement = flow.placement("cuda",{0:[0,1]})
