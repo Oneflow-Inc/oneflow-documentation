@@ -35,7 +35,6 @@ In each of the two consoles, import `oneflow` and create `x`.
 === "Terminal 0"
     ```python
     import oneflow as flow
-    ```
 
     placement = flow.placement("cuda",{0:[0,1]})
     sbp = flow.sbp.split(0)
