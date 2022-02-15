@@ -1163,12 +1163,12 @@ python3
 </ul>
 <div class="tabbed-set" data-tabs="2:2"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><label for="__tabbed_2_1">Terminal 0</label><div class="tabbed-content">
 <div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">oneflow</span> <span class="k">as</span> <span class="nn">flow</span>
+
+<span class="n">placement</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">placement</span><span class="p">(</span><span class="s2">&quot;cuda&quot;</span><span class="p">,{</span><span class="mi">0</span><span class="p">:[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]})</span>
+<span class="n">sbp</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">sbp</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="n">placement</span><span class="o">=</span><span class="n">placement</span><span class="p">,</span> <span class="n">sbp</span><span class="o">=</span><span class="n">sbp</span><span class="p">)</span>
+<span class="n">x</span><span class="o">.</span><span class="n">shape</span>
 </code></pre></div>
-<p>placement = flow.placement("cuda",{0:[0,1]})
-sbp = flow.sbp.split(0)
-x = flow.randn(4,5,placement=placement, sbp=sbp)
-x.shape
-```</p>
 </div>
 <input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><label for="__tabbed_2_2">Terminal 1</label><div class="tabbed-content">
 <div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">oneflow</span> <span class="k">as</span> <span class="nn">flow</span>
@@ -1213,13 +1213,13 @@ x.shape
 <p>The reason for this transformation lies in that by setting the sbp with <code>sbp=flow.sbp.split(0)</code>, the two local tensors with the shape of <code>(2, 5)</code> are concatenated on the 0<sup>th</sup> dimension.</p>
 <div class="tabbed-set" data-tabs="5:2"><input checked="checked" id="__tabbed_5_1" name="__tabbed_5" type="radio" /><label for="__tabbed_5_1">Terminal 0</label><div class="tabbed-content">
 <div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">oneflow</span> <span class="k">as</span> <span class="nn">flow</span>
+
+<span class="n">x</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">placement</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">placement</span><span class="p">(</span><span class="s2">&quot;cuda&quot;</span><span class="p">,{</span><span class="mi">0</span><span class="p">:[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]})</span>
+<span class="n">sbp</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">sbp</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">x_consistent</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">to_consistent</span><span class="p">(</span><span class="n">placement</span><span class="o">=</span><span class="n">placement</span><span class="p">,</span> <span class="n">sbp</span><span class="o">=</span><span class="n">sbp</span><span class="p">)</span>
+<span class="n">x_consistent</span><span class="o">.</span><span class="n">shape</span>
 </code></pre></div>
-<p>x = flow.randn(2,5)
-placement = flow.placement("cuda",{0:[0,1]})
-sbp = flow.sbp.split(0)
-x_consistent = x.to_consistent(placement=placement, sbp=sbp)
-x_consistent.shape
-```</p>
 </div>
 <input id="__tabbed_5_2" name="__tabbed_5" type="radio" /><label for="__tabbed_5_2">Terminal 1</label><div class="tabbed-content">
 <div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">oneflow</span> <span class="k">as</span> <span class="nn">flow</span>
