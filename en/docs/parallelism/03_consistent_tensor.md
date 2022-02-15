@@ -1,10 +1,10 @@
 # CONSISTENT TENSOR
 
-## The Mapping Between Consistent View and Physical View
+## The Mapping Between Global View and Physical View
 
-## Create Consistent Tensor
+## Create Global Tensor
 
-To interactively experience consistent tensor on a two-GPU machine, you can launch python separately in two consoles in the following way.
+To interactively experience global tensor on a two-GPU machine, you can launch python separately in two consoles in the following way.
 
 !!! Note
     **Click** the Terminal 0 or Terminal 1 label to check the commands/code
@@ -23,14 +23,14 @@ To interactively experience consistent tensor on a two-GPU machine, you can laun
 
 Setting environment variables prepares the machines for distributed computing. Please refer to the [Extended Reading](#extented-reading) section at the end of this article for a detailed explanation and ways to launch distributed computing using provided tools.
 
-### Create Consistent Tensor Directly
+### Create Global Tensor Directly
 
 In each of the two consoles, import `oneflow` and create `x`.
 
-`flow.placement("cuda", {0:[0,1]})` specifies the device to place the consistent tensors.
+`flow.placement("cuda", {0:[0,1]})` specifies the device to place the global tensors.
 
 - `"cuda"` means "on GPU".
-- The second parameter of `placement` is a dictionary. Its `key` is the index of machine, and its `value` is the index of the graphic cards. Therefore, `{0:[0,1]}` means that the consistent tensor is on the 0th, 1st graphic cards of the 0th machine.
+- The second parameter of `placement` is a dictionary. Its `key` is the index of machine, and its `value` is the index of the graphic cards. Therefore, `{0:[0,1]}` means that the global tensor is on the 0th, 1st graphic cards of the 0th machine.
 
 === "Terminal 0"
     ```python
@@ -64,7 +64,7 @@ Output:
     flow.Size([4, 5])
     ```
 
-### Get Local Tensor from Consistent Tensor
+### Get Local Tensor from Global Tensor
 
 Call [to_local()](https://oneflow.readthedocs.io/en/master/tensor.html#oneflow.Tensor.to_local) to check the local tensor on a device.
 
@@ -84,11 +84,11 @@ Call [to_local()](https://oneflow.readthedocs.io/en/master/tensor.html#oneflow.T
         dtype=oneflow.float32)
     ```
 
-### Convert Local Tensor to Consistent Tensor
+### Convert Local Tensor to Global Tensor
 
-Developers can create local tensor first, then convert it to consistent tensor with [Tensor.to_consistent](https://oneflow.readthedocs.io/en/master/tensor.html#oneflow.Tensor.to_consistent).
+Developers can create local tensor first, then convert it to global tensor with [Tensor.to_global](https://oneflow.readthedocs.io/en/master/tensor.html#oneflow.Tensor.to_global).
 
-Two local tensors with the shape of `(2,5)` are created separately on two devices. While after the `to_consistent` method, the consistent tensor with a shape of `(4,5)` is obtained.
+Two local tensors with the shape of `(2,5)` are created separately on two devices. While after the `to_global` method, the global tensor with a shape of `(4,5)` is obtained.
 
 The reason for this transformation lies in that by setting the sbp with `sbp=flow.sbp.split(0)`, the two local tensors with the shape of `(2, 5)` are concatenated on the 0th dimension.
 
@@ -99,8 +99,8 @@ The reason for this transformation lies in that by setting the sbp with `sbp=flo
     x = flow.randn(2,5)
     placement = flow.placement("cuda",{0:[0,1]})
     sbp = flow.sbp.split(0)
-    x_consistent = x.to_consistent(placement=placement, sbp=sbp)
-    x_consistent.shape
+    x_global = x.to_global(placement=placement, sbp=sbp)
+    x_global.shape
     ```
 
 === "Terminal 1"
@@ -110,8 +110,8 @@ The reason for this transformation lies in that by setting the sbp with `sbp=flo
     x = flow.randn(2,5)
     placement = flow.placement("cuda",{0:[0,1]})
     sbp = flow.sbp.split(0)
-    x_consistent = x.to_consistent(placement=placement, sbp=sbp)
-    x_consistent.shape
+    x_global = x.to_global(placement=placement, sbp=sbp)
+    x_global.shape
     ```
 
 ## Practice with SBP Signature
