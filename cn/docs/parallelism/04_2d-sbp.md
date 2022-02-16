@@ -6,32 +6,21 @@
 
 ## 2D 设备阵列
 
-我们已经熟悉 1D SBP 的 placement 配置，在 1D SBP 的场景下，通过 [oneflow.placement](https://start.oneflow.org/oneflow-api-cn/placement.html#oneflow.placement) 接口配置集群，比如使用第 0 号机器上的 0~3 号 GPU 显卡：
+我们已经熟悉 1D SBP 的 placement 配置，在 1D SBP 的场景下，通过 [oneflow.placement](https://start.oneflow.org/oneflow-api-cn/placement.html#oneflow.placement) 接口配置集群，比如使用集群中的第 0~3 号 GPU 显卡：
 
 ```python
->>> placement1 = flow.placement("cuda", {0:[0,1,2,3]})
+>>> placement1 = flow.placement("cuda", ranks=[0, 1, 2, 3])
 ```
 
-以上的 `"cuda"` 指定了设备类型，`{0:[0,1,2,3]}` 指定了集群中的计算设备。其实，除了设备类型和计算设备这 2 个配置参数外， `oneflow.placement` 还有第三个参数，我们通过打印以上配置好的 `placement` 对象就可以发现：
+以上的 `"cuda"` 指定了设备类型，`ranks=[0, 1, 2, 3]` 指定了集群中的计算设备。其实，`ranks` 不仅可以是“list of int”，还可以是“list of list”：
 
 ```python
->>> placement1
-oneflow.placement(device_type="cuda", machine_device_ids={0 : [0, 1, 2, 3]}, hierarchy=(4,))
->>> placement2
-oneflow.placement(device_type="cuda", machine_device_ids={0 : [0, 1], 1 : [0, 1]}, hierarchy=(4,))
+placement2 = flow.placement("cuda", ranks=[[0, 1], [2, 3]])
 ```
 
-可以发现，`placement` 其实还有第 3 个参数，它是一个 `tuple`，当我们不设置它时，它的值为 `(设备总数, )`。
+当 `ranks` 是 `ranks=[0, 1, 2, 3]` 这种的 “list of int” 的形式时，集群中的所有设备组成了一个 1D 设备向量，是一维的，这也是 1D SBP 名称的由来。
 
-这个参数用于描述集群中的设备阵列，当不设置它时，默认所有的设备组成一个 1D 设备向量，是一维的，这也是 1D SBP 名称的由来。
-
-OneFlow 还支持把所有设备分组为设备阵列，可以通过设置 `placement` 的第三个参数，显式指定设备阵列的行、列大小。比如：
-
-```python
->>> placement3 = flow.placement("cuda", {0:[0,1,2,3]}, (2,2))
-```
-
-四个计算设备就被划分为了 $2 \times 2$ 的设备阵列。
+当 `ranks` 是“list of list”的形式时，集群中的设备被分组为一个二维的设备阵列。`ranks=[[0, 1], [2, 3]]` 表示集群中的四个计算设备被划分为了 $2 \times 2$ 的设备阵列。
 
 
 ## 2D SBP
@@ -42,7 +31,7 @@ OneFlow 还支持把所有设备分组为设备阵列，可以通过设置 `plac
 
 ```python
 >>> a = flow.Tensor([[1,2],[3,4]])
->>> placement = flow.placement("cuda", {0:[0,1], 1:[0,1]}, (2,2))
+>>> placement = flow.placement("cuda", ranks=[[0, 1], [2, 3]])
 >>> sbp = (flow.sbp.broadcast, flow.sbp.split(0))
 >>> a_to_global = a.to_global(placement=placement, sbp=sbp)
 ```
@@ -53,7 +42,7 @@ OneFlow 还支持把所有设备分组为设备阵列，可以通过设置 `plac
 
 ![](./imgs/2d-sbp.png)
 
-此图的最左边是逻辑上的数据，最右边是设备阵列上各个设备的数据。可以看到，从第 0 维的角度看，它们都是 `broadcast` 的关系：
+此图的最左边是全局视角的数据，最右边是设备阵列上各个设备的数据。可以看到，从第 0 维的角度看，它们都是 `broadcast` 的关系：
 
 - (group0, device0) 与 (group1, device0) 中数据一致，互为 `broadcast` 关系
 - (group0, device1) 与 (group1, device1) 中数据一致，互为 `broadcast` 关系
@@ -63,7 +52,7 @@ OneFlow 还支持把所有设备分组为设备阵列，可以通过设置 `plac
 - (group0, device0) 与 (group0, device1) 互为 `split(0)` 关系
 - (group1, device0) 与 (group1, device1) 互为 `split(0)` 关系
 
-直接理解逻辑数据和最终的设备阵列中的物理数据对应关系可能有一定难度，大家在思考 2D SBP 时，可以假想一个上图中中间灰色图形那样的中间状态，以 `(broadcast, split(0))` 为例：
+直接理解逻辑数据和最终的设备阵列中的物理数据对应关系可能有一定难度，大家在思考 2D SBP 时，可以假想一个中间状态（上图中灰色部分），以 `(broadcast, split(0))` 为例：
 
 - 原始逻辑张量，先经过 `broadcast`，广播到 2 个 group 上，得到中间的状态
 - 在中间状态的基础上，继续在各自的 group 上，做 `split(0)`，得到最终设备阵列中各个物理张量的状态
