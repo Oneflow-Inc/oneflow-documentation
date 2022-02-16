@@ -144,7 +144,7 @@ oneflow.float32
 cpu:0
 ```
 
-The output shows the shape, the data type, and the device (on CPU No. 0, CPUs were numbered because OneFlow naturally supports distribution, see [Consistent Tensor](../parallelism/03_consistent_tensor.md)).
+The output shows the shape, the data type, and the device (on CPU No. 0, CPUs were numbered because OneFlow naturally supports distribution, see [Global Tensor](../parallelism/03_consistent_tensor.md)).
 
 The shape of the tensor can be changed by the [reshape](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.reshape#oneflow.reshape) method, and the data type and device of the tensor can be changed by the [to](https://oneflow.readthedocs.io/en/master/tensor.html?highlight=Tensor.to#oneflow.Tensor.to) method:
 

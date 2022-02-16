@@ -3,13 +3,13 @@
 在 [常见的分布式并行策略](./01_introduction.md) 一文中介绍了数据并行的特点。
 在 OneFlow 中，提供了两种做数据并行的方式。
 
-一种是使用 OneFlow 的原生的 SBP 概念，通过设置 consistent 张量，进行数据并行训练，这也是用 OneFlow 做数据并行训练的 **推荐方式** 。
+一种是使用 OneFlow 的原生的 SBP 概念，通过设置 global 张量，进行数据并行训练，这也是用 OneFlow 做数据并行训练的 **推荐方式** 。
 
 此外，为了方便从 PyTorch 迁移到 OneFlow 的用户，OneFlow 提供了与 `torch.nn.parallel.DistributedDataParallel` 对齐一致的接口 [oneflow.nn.parallel.DistributedDataParallel](https://oneflow.readthedocs.io/en/master/nn.html#oneflow.nn.parallel.DistributedDataParallel)，它也能让用户方便地从单机训练脚本，扩展为数据并行训练。
 
 ## 通过设置 SBP 做数据并行训练
 
-以下代码，是通过配置设置 consistent 张量，完成数据并行训练。点击以下 “Code” 查看详细代码。
+以下代码，是通过配置设置 global 张量，完成数据并行训练。点击以下 “Code” 查看详细代码。
 
 ??? code
     ```python
@@ -41,7 +41,7 @@
 
     model = flowvision.models.mobilenet_v2().to(DEVICE)
     model.classifer = nn.Sequential(nn.Dropout(0.2), nn.Linear(model.last_channel, 10))
-    model = model.to_consistent(placement=PLACEMENT, sbp=B)
+    model = model.to_global(placement=PLACEMENT, sbp=B)
 
     loss_fn = nn.CrossEntropyLoss().to(DEVICE)
     optimizer = flow.optim.SGD(model.parameters(), lr=1e-3)
@@ -50,8 +50,8 @@
         print(f"Epoch {t+1}\n-------------------------------")
         size = len(train_dataloader.dataset)
         for batch, (x, y) in enumerate(train_dataloader):
-            x = x.to_consistent(placement=PLACEMENT, sbp=S0)
-            y = y.to_consistent(placement=PLACEMENT, sbp=S0)
+            x = x.to_global(placement=PLACEMENT, sbp=S0)
+            y = y.to_global(placement=PLACEMENT, sbp=S0)
 
             # Compute prediction error
             pred = model(x)
@@ -67,7 +67,7 @@
                 print(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")
     ```
 
-可以发现，这个脚本的与单机单卡的训练脚本几乎是一样的。少数的区别在于几行与 consistent tensor 有关的配置代码外，它们是：
+可以发现，这个脚本的与单机单卡的训练脚本几乎是一样的。少数的区别在于几行与 global tensor 有关的配置代码外，它们是：
 
 - 设置 placement，让训练放置在 0号、1号 GPU 上：
 
@@ -78,14 +78,14 @@
 - 模型在集群上做广播
 
 ```python
-    model = model.to_consistent(placement=PLACEMENT, sbp=B)
+    model = model.to_global(placement=PLACEMENT, sbp=B)
 ```
 
 - 数据在集群上按 `split(0)` 做切分：
 
 ```python
-    x = x.to_consistent(placement=PLACEMENT, sbp=S0)
-    y = y.to_consistent(placement=PLACEMENT, sbp=S0)
+    x = x.to_global(placement=PLACEMENT, sbp=S0)
+    y = y.to_global(placement=PLACEMENT, sbp=S0)
 ```
 
 这样，按照 [常见的分布式并行策略](./01_introduction.md) 中的介绍，我们就通过对数据进行 `split(0)` 切分，对模型进行广播，进行了分布式数据并行训练。

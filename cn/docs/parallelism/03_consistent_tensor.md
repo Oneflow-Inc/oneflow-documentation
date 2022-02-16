@@ -1,10 +1,10 @@
-# Consistent Tensor
+# Global Tensor
 
-## 一致性视角与物理视角的映射
+## 全局视角与物理视角的映射
 
 
-## 创建 Consistent Tensor
-要在有2张 GPU 显卡的主机上交互式体验 consistent tensor，可以用以下方式在2个控制台分别启动 python。
+## 创建 Global Tensor
+要在有2张 GPU 显卡的主机上交互式体验 global tensor，可以用以下方式在2个控制台分别启动 python。
 
 !!! Note
     分别 **点击** 以下 Terminal 0 或 Terminal 1 标签，查看2个控制台的命令/代码
@@ -23,14 +23,14 @@
 
 以上的环境变量的设置是做分布式的配置，详细解释及借助工具启动分布式，请参考文末的 [扩展阅读](#_5)
 
-### 直接创建 consistent tensor
+### 直接创建 global tensor
 
 在两个控制台，分别导入 `oneflow`，并创建 `x`。
 
-其中 `flow.placement("cuda",{0:[0,1]})` 指定了 consistent tensor 在集群的范围。
+其中 `flow.placement("cuda",{0:[0,1]})` 指定了 global tensor 在集群的范围。
 
 - `"cuda"` 表示在 GPU 设备上。
-- `placement` 的第二个参数是一个字典，它的 `key` 代表机器编号，`value` 代表显卡编号。因此 `{0:[0,1]}` 表示 consistent tensor 在第 0 台机器的第0、1张显卡上。
+- `placement` 的第二个参数是一个字典，它的 `key` 代表机器编号，`value` 代表显卡编号。因此 `{0:[0,1]}` 表示 global tensor 在第 0 台机器的第0、1张显卡上。
 
 === "Terminal 0"
     ```python
@@ -64,7 +64,7 @@
     oneflow.Size([4, 5])
     ```
 
-### 由 consistent tensor 得到 local tensor
+### 由 global tensor 得到 local tensor
 
 通过 [to_local](https://oneflow.readthedocs.io/en/master/tensor.html#oneflow.Tensor.to_local) 方法可以查看物理设备上的 local tensor：
 
@@ -84,14 +84,14 @@
         dtype=oneflow.float32)
     ```
 
-### 由 local tensor 转换得到 consistent tensor
+### 由 local tensor 转换得到 global tensor
 
-可以先创建 local tensor，再利用 [Tensor.to_consistent](https://oneflow.readthedocs.io/en/master/tensor.html#oneflow.Tensor.to_consistent) 方法，将 local tensor 转为 consistent tensor。
+可以先创建 local tensor，再利用 [Tensor.to_global](https://oneflow.readthedocs.io/en/master/tensor.html#oneflow.Tensor.to_global) 方法，将 local tensor 转为 global tensor。
 
 下面的例子中，在2台设备上分别创建了 `shape=(2,5)` 的2个 local tensor。
-注意经过 `to_consistent` 方法后，得到的 consistent tensor 的 `shape` 为 `(4,5)`。
+注意经过 `to_global` 方法后，得到的 global tensor 的 `shape` 为 `(4,5)`。
 
-这是因为选择的 `sbp=flow.sbp.split(0)`，2个形状为 `(2,5)` 的 local tensor，需要在第0维拼接，得到 `(4,5)` 的 consistent tensor。
+这是因为选择的 `sbp=flow.sbp.split(0)`，2个形状为 `(2,5)` 的 local tensor，需要在第0维拼接，得到 `(4,5)` 的 global tensor。
 
 === "Terminal 0"
     ```python
@@ -100,8 +100,8 @@
     x = flow.randn(2,5)
     placement = flow.placement("cuda",{0:[0,1]})
     sbp = flow.sbp.split(0)
-    x_consistent = x.to_consistent(placement=placement, sbp=sbp)
-    x_consistent.shape
+    x_global = x.to_global(placement=placement, sbp=sbp)
+    x_global.shape
     ```
 
 === "Terminal 1"
@@ -111,8 +111,8 @@
     x = flow.randn(2,5)
     placement = flow.placement("cuda",{0:[0,1]})
     sbp = flow.sbp.split(0)
-    x_consistent = x.to_consistent(placement=placement, sbp=sbp)
-    x_consistent.shape
+    x_global = x.to_global(placement=placement, sbp=sbp)
+    x_global.shape
     ```
 
 ## 实践 SBP Signature 的作用

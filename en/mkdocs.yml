@@ -121,8 +121,8 @@ nav:
       
     - Distributed Training:
       - Common Parallel Strategies: parallelism/01_introduction.md
-      - Consistent View: parallelism/02_sbp.md
-      - Consistent Tensor: parallelism/03_consistent_tensor.md
+      - Global View: parallelism/02_sbp.md
+      - Global Tensor: parallelism/03_consistent_tensor.md
       - Distributed Training Launcher: parallelism/04_launch.md
       - Data Parallelism Training: parallelism/05_ddp.md
       - Pipelining Parallelism: parallelism/06_pipeline.md
@@ -143,7 +143,7 @@ nav:
       - Term & Concept Explanation: single_client/basics_topics/concept_explanation.md
       - OneFlow System Design: single_client/basics_topics/essentials_of_oneflow.md
       - The Definition and Call of Job Function: single_client/extended_topics/job_function_define_call.md
-      - Consistent & Mirrored View: single_client/extended_topics/consistent_mirrored.md
+      - Global & Mirrored View: single_client/extended_topics/consistent_mirrored.md
       - Features of Parallelism in OneFlow: single_client/extended_topics/model_mixed_parallel.md
       - The OFRecord Data Format: single_client/extended_topics/ofrecord.md
       - Loading and Preparing OFRecord Dataset: single_client/extended_topics/how_to_make_ofdataset.md
