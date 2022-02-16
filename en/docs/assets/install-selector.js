@@ -103,3 +103,8 @@
         xmlhttp.send(null)
     })
 })();
+
+function copyPipCommand() {
+    var copyText = document.querySelector('.panel-code').innerHTML
+    navigator.clipboard.writeText(copyText)
+}
