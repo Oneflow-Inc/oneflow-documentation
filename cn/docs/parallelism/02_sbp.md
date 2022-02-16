@@ -150,8 +150,8 @@ $$
 ```python
 import oneflow as flow
 
-P0 = flow.placement("cuda", {0:[0,1]})
-P1 = flow.placement("cuda", {1:[0,1]})
+P0 = flow.placement("cuda", ranks=[0, 1])
+P1 = flow.placement("cuda", ranks=[2, 3])
 a0_sbp = flow.sbp.split(0)
 b0_sbp = flow.sbp.broadcast
 y0_sbp = flow.sbp.broadcast
