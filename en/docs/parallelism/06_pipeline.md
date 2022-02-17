@@ -12,8 +12,8 @@ The following code is a simple example that will run the network in [QUICKSTART]
 
     BATCH_SIZE = 16
     BROADCAST = [flow.sbp.broadcast]
-    P0 = flow.placement("cuda", {0: [0]})
-    P1 = flow.placement("cuda", {0: [1]})
+    P0 = flow.placement("cuda", [0])
+    P1 = flow.placement("cuda", [1])
 
     class Stage0Module(flow.nn.Module):
         def __init__(self):
@@ -104,8 +104,8 @@ Setting up the `placement` and `SBP` at the begining:
 
 ```python
 BROADCAST = [flow.sbp.broadcast]
-P0 = flow.placement("cuda", {0: [0]})
-P1 = flow.placement("cuda", {0: [1]})
+P0 = flow.placement("cuda", [0])
+P1 = flow.placement("cuda", [1])
 ```
 
 `P0` and `P1` represent the 0th GPU and the 1st GPU on the 0th machine respectively.
