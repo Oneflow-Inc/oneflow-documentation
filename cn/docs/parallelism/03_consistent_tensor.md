@@ -4,6 +4,7 @@
 
 
 ## 创建 Global Tensor
+
 要在有2张 GPU 显卡的主机上交互式体验 global tensor，可以用以下方式在2个控制台分别启动 python。
 
 !!! Note
@@ -27,16 +28,16 @@
 
 在两个控制台，分别导入 `oneflow`，并创建 `x`。
 
-其中 `flow.placement("cuda",{0:[0,1]})` 指定了 global tensor 在集群的范围。
+其中 `flow.placement("cuda", [0,1])` 指定了 global tensor 在集群的范围。
 
 - `"cuda"` 表示在 GPU 设备上。
-- `placement` 的第二个参数是一个字典，它的 `key` 代表机器编号，`value` 代表显卡编号。因此 `{0:[0,1]}` 表示 global tensor 在第 0 台机器的第0、1张显卡上。
+- `placement` 的第二个参数是一个 `list`，集群中的设备会被自动编号，通过数字指定使用哪些设备。`[0,1]` 表示 global tensor 使用第 0、1 张显卡上。
 
 === "Terminal 0"
     ```python
     import oneflow as flow
 
-    placement = flow.placement("cuda",{0:[0,1]})
+    placement = flow.placement("cuda", [0,1])
     sbp = flow.sbp.split(0)
     x = flow.randn(4,5,placement=placement, sbp=sbp)
     x.shape
@@ -46,7 +47,7 @@
     ```python
     import oneflow as flow
 
-    placement = flow.placement("cuda",{0:[0,1]})
+    placement = flow.placement("cuda", [0,1])
     sbp = flow.sbp.split(0)
     x = flow.randn(4,5,placement=placement, sbp=sbp)
     x.shape
@@ -98,7 +99,7 @@
     import oneflow as flow
 
     x = flow.randn(2,5)
-    placement = flow.placement("cuda",{0:[0,1]})
+    placement = flow.placement("cuda", [0,1])
     sbp = flow.sbp.split(0)
     x_global = x.to_global(placement=placement, sbp=sbp)
     x_global.shape
@@ -109,13 +110,14 @@
     import oneflow as flow
 
     x = flow.randn(2,5)
-    placement = flow.placement("cuda",{0:[0,1]})
+    placement = flow.placement("cuda", [0,1])
     sbp = flow.sbp.split(0)
     x_global = x.to_global(placement=placement, sbp=sbp)
     x_global.shape
     ```
 
 ## 实践 SBP Signature 的作用
+
 ### 数据并行
 以下的代码对应了 [常见的分布式策略](./01_introduction.md#_4) 的数据并行。
 
@@ -125,7 +127,7 @@
     ```python
     import oneflow as flow
 
-    placement = flow.placement("cuda",{0:[0,1]})
+    placement = flow.placement("cuda", [0,1])
     x = flow.randn(4,5,placement=placement, sbp=flow.sbp.split(0))
     w = flow.randn(5,8,placement=placement, sbp=flow.sbp.broadcast)
     y = flow.matmul(x,w)
@@ -137,7 +139,7 @@
     ```python
     import oneflow as flow
 
-    placement = flow.placement("cuda",{0:[0,1]})
+    placement = flow.placement("cuda", [0,1])
     x = flow.randn(4,5,placement=placement, sbp=flow.sbp.split(0))
     w = flow.randn(5,8,placement=placement, sbp=flow.sbp.broadcast)
     y = flow.matmul(x,w)
@@ -169,7 +171,7 @@
     ```python
     import oneflow as flow
 
-    placement = flow.placement("cuda",{0:[0,1]})
+    placement = flow.placement("cuda", [0,1])
     x = flow.randn(4,5,placement=placement, sbp=flow.sbp.broadcast)
     w = flow.randn(5,8,placement=placement, sbp=flow.sbp.split(1))
     y = flow.matmul(x,w)
@@ -181,7 +183,7 @@
     ```python
     import oneflow as flow
 
-    placement = flow.placement("cuda",{0:[0,1]})
+    placement = flow.placement("cuda", [0,1])
     x = flow.randn(4,5,placement=placement, sbp=flow.sbp.broadcast)
     w = flow.randn(5,8,placement=placement, sbp=flow.sbp.split(1))
     y = flow.matmul(x,w)

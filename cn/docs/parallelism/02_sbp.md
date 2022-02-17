@@ -12,7 +12,11 @@ OneFlow 的全局视角，依赖几个重要概念：Placement、SBP 与 SBP Sig
 
 OneFlow 全局视角下的 Tensor 有 `placement` 属性，通过 `placement` 属性可以指定该 Tensor 存放在哪个物理设备上。
 
-OneFlow 会自动为集群中的计算设备编号。比如，如果集群中有4台主机，每台主机上有8张显卡，那么4台主机分别对应了 ID：0、1、2、3；每台主机上的显卡分别对应了编号0到7。如果想将 Tensor 放置在第0台机器的前4张显卡上，只需要配置：`placement("cuda", {0: [0, 1, 2, 3]})`。
+OneFlow 会自动为集群中的计算设备编号。比如，如果集群中有 4 台主机，每台主机上有 8 张显卡，一共 32 张显卡，那么 OneFlow 会将这 32 张显卡自动编号为 0~31。
+
+如果想将 Tensor 放置在第 0 台机器的前 4 张显卡上，只需要配置：`placement("cuda", [0, 1, 2, 3]`。
+
+如果想将 Tensor 放置在第 0 台机器的后 4 张显卡上，只需要配置：`placement("cuda", [4, 5, 6, 7])`。
 
 `placement` 使得 OneFlow 很容易支持流水并行，我们将在本专题的其它文章中看到与 `placement` 有关的实际例子。
 
@@ -146,8 +150,8 @@ $$
 ```python
 import oneflow as flow
 
-P0 = flow.placement("cuda", {0:[0,1]})
-P1 = flow.placement("cuda", {1:[0,1]})
+P0 = flow.placement("cuda", ranks=[0, 1])
+P1 = flow.placement("cuda", ranks=[2, 3])
 a0_sbp = flow.sbp.split(0)
 b0_sbp = flow.sbp.broadcast
 y0_sbp = flow.sbp.broadcast

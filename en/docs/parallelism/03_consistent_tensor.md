@@ -27,7 +27,7 @@ Setting environment variables prepares the machines for distributed computing. P
 
 In each of the two consoles, import `oneflow` and create `x`.
 
-`flow.placement("cuda", {0:[0,1]})` specifies the device to place the global tensors.
+`flow.placement("cuda", [0,1])` specifies the device to place the global tensors.
 
 - `"cuda"` means "on GPU".
 - The second parameter of `placement` is a dictionary. Its `key` is the index of machine, and its `value` is the index of the graphic cards. Therefore, `{0:[0,1]}` means that the global tensor is on the 0th, 1st graphic cards of the 0th machine.
@@ -36,7 +36,7 @@ In each of the two consoles, import `oneflow` and create `x`.
     ```python
     import oneflow as flow
 
-    placement = flow.placement("cuda",{0:[0,1]})
+    placement = flow.placement("cuda", [0,1])
     sbp = flow.sbp.split(0)
     x = flow.randn(4,5,placement=placement, sbp=sbp)
     x.shape
@@ -46,7 +46,7 @@ In each of the two consoles, import `oneflow` and create `x`.
     ```python
     import oneflow as flow
 
-    placement = flow.placement("cuda",{0:[0,1]})
+    placement = flow.placement("cuda", [0,1])
     sbp = flow.sbp.split(0)
     x = flow.randn(4,5,placement=placement, sbp=sbp)
     x.shape
@@ -97,7 +97,7 @@ The reason for this transformation lies in that by setting the sbp with `sbp=flo
     import oneflow as flow
 
     x = flow.randn(2,5)
-    placement = flow.placement("cuda",{0:[0,1]})
+    placement = flow.placement("cuda", [0,1])
     sbp = flow.sbp.split(0)
     x_global = x.to_global(placement=placement, sbp=sbp)
     x_global.shape
@@ -108,7 +108,7 @@ The reason for this transformation lies in that by setting the sbp with `sbp=flo
     import oneflow as flow
 
     x = flow.randn(2,5)
-    placement = flow.placement("cuda",{0:[0,1]})
+    placement = flow.placement("cuda", [0,1])
     sbp = flow.sbp.split(0)
     x_global = x.to_global(placement=placement, sbp=sbp)
     x_global.shape
@@ -126,7 +126,7 @@ The following code is an example of data parallelism of [common distributed stra
     ```python
     import oneflow as flow
 
-    placement = flow.placement("cuda",{0:[0,1]})
+    placement = flow.placement("cuda", [0,1])
     x = flow.randn(4,5,placement=placement, sbp=flow.sbp.split(0))
     w = flow.randn(5,8,placement=placement, sbp=flow.sbp.broadcast)
     y = flow.matmul(x,w)
@@ -138,7 +138,7 @@ The following code is an example of data parallelism of [common distributed stra
     ```python
     import oneflow as flow
 
-    placement = flow.placement("cuda",{0:[0,1]})
+    placement = flow.placement("cuda", [0,1])
     x = flow.randn(4,5,placement=placement, sbp=flow.sbp.split(0))
     w = flow.randn(5,8,placement=placement, sbp=flow.sbp.broadcast)
     y = flow.matmul(x,w)
@@ -170,7 +170,7 @@ The following code is an example of model parallelism of [common distributed str
     ```python
     import oneflow as flow
 
-    placement = flow.placement("cuda",{0:[0,1]})
+    placement = flow.placement("cuda", [0,1])
     x = flow.randn(4,5,placement=placement, sbp=flow.sbp.broadcast)
     w = flow.randn(5,8,placement=placement, sbp=flow.sbp.split(1))
     y = flow.matmul(x,w)
@@ -182,7 +182,7 @@ The following code is an example of model parallelism of [common distributed str
     ```python
     import oneflow as flow
 
-    placement = flow.placement("cuda",{0:[0,1]})
+    placement = flow.placement("cuda", [0,1])
     x = flow.randn(4,5,placement=placement, sbp=flow.sbp.broadcast)
     w = flow.randn(5,8,placement=placement, sbp=flow.sbp.split(1))
     y = flow.matmul(x,w)

@@ -12,8 +12,8 @@
 
     BATCH_SIZE = 16
     BROADCAST = [flow.sbp.broadcast]
-    P0 = flow.placement("cuda", {0: [0]})
-    P1 = flow.placement("cuda", {0: [1]})
+    P0 = flow.placement("cuda", ranks=[0])
+    P1 = flow.placement("cuda", ranks=[1])
 
     class Stage0Module(flow.nn.Module):
         def __init__(self):
@@ -102,11 +102,11 @@ python3 -m oneflow.distributed.launch --nproc_per_node 2 ./pipeline.py
 
 ```python
 BROADCAST = [flow.sbp.broadcast]
-P0 = flow.placement("cuda", {0: [0]})
-P1 = flow.placement("cuda", {0: [1]})
+P0 = flow.placement("cuda", ranks=[0])
+P1 = flow.placement("cuda", ranks=[1])
 ```
 
-`P0`、`P1` 分别代表第0号机器上的第0个 GPU 和第1个 GPU。
+`P0`、`P1` 分别代表集群的第 0 个 GPU 和第 1 个 GPU。
 
 通过调用 [nn.Module.to_global](https://oneflow.readthedocs.io/en/master/module.html?highlight=to_global#oneflow.nn.Module.to_global) 或 [Tensor.to_global](https://oneflow.readthedocs.io/en/master/tensor.html?highlight=to_global#oneflow.Tensor.to_global) 就可以将模型或张量分配到指定的计算设备上运行，将一个网络拆分为多个流水阶段（stage）。
 
@@ -144,7 +144,7 @@ P1 = flow.placement("cuda", {0: [1]})
 
 ### Stage ID 及 梯度累积设置
 
-通过设置 Module 的 `config.stage_id` 属性，设置 Stage ID，Stage ID 从0开始编号，依次加1。
+通过设置 Module 的 `config.stage_id` 属性，设置 Stage ID，Stage ID 从 0 开始编号，依次加1。
 调用 `self.config.set_gradient_accumulation_steps` 方法，设置梯度累积的步长。
 OneFlow 通过这两项配置，获取实现流水并行中的 micro batch 技术所需的信息。
 

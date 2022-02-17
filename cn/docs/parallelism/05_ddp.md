@@ -21,7 +21,7 @@
     BATCH_SIZE=64
     EPOCH_NUM = 1
 
-    PLACEMENT = flow.placement("cuda",{0:[0,1]})
+    PLACEMENT = flow.placement("cuda", [0,1])
     S0 = flow.sbp.split(0)
     B = flow.sbp.broadcast
 
@@ -69,10 +69,10 @@
 
 可以发现，这个脚本的与单机单卡的训练脚本几乎是一样的。少数的区别在于几行与 global tensor 有关的配置代码外，它们是：
 
-- 设置 placement，让训练放置在 0号、1号 GPU 上：
+- 设置 placement，让训练放置在集群第 0号、1号 GPU 上：
 
 ```python
-    PLACEMENT = flow.placement("cuda",{0:[0,1]})
+    PLACEMENT = flow.placement("cuda", [0,1])
 ```
 
 - 模型在集群上做广播
