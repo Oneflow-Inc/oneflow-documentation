@@ -13,7 +13,11 @@ OneFlow's global view relies on several important concepts: **Placement**, **SBP
 
 The Tensors of OneFlow has a `placement` attribute in global view; the `placement` specifies which physical device the Tensor is placed on.
 
-OneFlow will automatically number the devices in the cluster. For example, if there are four hosts in a cluster and each host has eight cards, then the four hosts correspond to ID: 0,1,2,3. The cards on each host correspond to numbers 0 to 7. To place a Tensor on the first four cards on machine 0, simply configure: `placement("cuda", {0: [0, 1, 2, 3]})`.
+OneFlow will automatically number the devices in the cluster. For example, if there are four hosts in a cluster and each host has eight GPU cards, so that 32 cards in total. The 32 devices in the cluser will be numbered 0 to 31.
+
+To place a Tensor on the first four cards on machine 0, simply configure: `placement("cuda", [0, 1, 2, 3])`.
+
+To place a Tensor on the last four cards on machine 0, simply configure: `placement("cuda", [4, 5, 6, 7])`.
 
 Placement makes it easy for OneFlow to support pipelining parallelism, and we’ll see examples of `placement` in other articles on this topic.
 
