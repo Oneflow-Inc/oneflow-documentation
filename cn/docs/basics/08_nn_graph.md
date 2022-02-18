@@ -253,7 +253,7 @@ class GraphMobileNetV2(flow.nn.Graph):
 
 ### Graph 调试
 
-可以调用 `print` 打印 Graph 对象，输出 Graph 对象的信息。
+当前输出Graph的调试信息共有两种方式。**第一种** 可以调用 `print` 打印 Graph 对象，输出 Graph 对象的信息。
 
 ```python
 print(graph_mobile_net_v2)
@@ -315,7 +315,11 @@ print(graph_mobile_net_v2)
     ...
 ```
 
-此外，调用 Graph 对象的 [debug](https://oneflow.readthedocs.io/en/master/graph.html#oneflow.nn.Graph.debug) 方法，就开启了 Graph 的调试模式。
+**第二种** 方式是调用 Graph 对象的 [debug](https://oneflow.readthedocs.io/en/master/graph.html#oneflow.nn.Graph.debug) 方法，就开启了 Graph 的调试模式。
+
+```python
+graph_mobile_net_v2.debug(v_level=1) #v_level参数默认值为0
+```
 
 OneFlow 在编译生成计算图的过程中会打印调试信息，比如，将上面例子代码中 `graph_mobile_net_v2.debug()` 的注释去掉，将在控制台上输出如下输出：
 
@@ -326,6 +330,32 @@ OneFlow 在编译生成计算图的过程中会打印调试信息，比如，将
 ```
 
 使用 `debug` 的好处在于，调试信息是 **边构图、边输出** 的，这样如果构图过程中发生错误，容易发现构图时的问题。
+
+当前可以使用 `v_level` 选择详细调试信息级别，默认级别为 0，最大级别为 3。
+
+- v_level=0 时，
+- v_level=1 时，
+- v_level=2 时，
+- v_level=3 时，
+
+此外，为了开发者对 Graph 对象下的类型有更清晰的认知，下面对 `debug` 输出的内容进行分析，基本包括 `GRAPH`、`CONFIG`、`MODULE`、`PARAMETER`、`BUFFER`、`INPUT` 和 `OUTPUT` 七个等级的标签。
+
+|     header     |                             info                             |                  example                  |
+| :------------: | :----------------------------------------------------------: | :---------------------------------------: |
+|     GRAPH      |                   用户所定义的graph类名称                    | GRAPH:GraphMobileNetV2_0:GraphMobileNetV2 |
+|     CONFIG     | graph的配置信息，如是否处于训练模式，是否开启amp，是否开启checkpoint |    training=True，表示模型处在训练模式    |
+|     MODULE     |                                                              |                                           |
+|   PARAMETER    |                                                              |                                           |
+|     BUFFER     |                                                              |                                           |
+| INPUT & OUPTUT |                                                              |                                           |
+
+
+TODO...
+
+
+
+
+
 
 还可以通过设置 `v_level` 参数，调整 `debug` 的输出详细程度：
 
