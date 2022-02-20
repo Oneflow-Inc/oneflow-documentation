@@ -20,7 +20,7 @@ OneFlow Cloud 上准备了一个 [图像风格迁移：基于 OneFlow-Serving](#
 
 分析项目代码可以发现，有以下几个关键处：
 
-- [run.sh](#xxx) 中通过 docker 启动了 Triton 服务与 WEB 应用服务：
+- [run_cloud.sh](#xxx) 中启动了 Triton 服务与 WEB 应用服务：
 ```bash
 /opt/tritonserver/bin/tritonserver --model-store $(pwd)/model_repo > 1.txt && python3 server.py
 ```
@@ -38,7 +38,13 @@ def stylize(content_path, output_path, style='udnie'):
 
 - 预训练模型放置在 [model_repo](#yyy) 下，它按照 Triton 的约定组织格式
 
-这个简单的在线示例展示了 OneFlow 模型如何通过 Triton 部署，同时也展示业务模块如何与 Triton 服务端交互获取推理结果。 
+这个简单的在线示例展示了 OneFlow 模型如何通过 Triton 部署，同时也展示业务模块如何与 Triton 服务端交互获取推理结果。
+
+如果你想在本地运行这个例子，也可以下载 [demo.zip](#xxx)，解压后运行其中的 `run.sh` 文件。
+
+```shell
+bash run.sh
+```
 
 接下来，我们会详细介绍 OneFlow 从训练到部署的详细流程。
 
