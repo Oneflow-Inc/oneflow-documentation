@@ -18,7 +18,7 @@
     
     
       
-        <title>Consistent Tensor - OneFlow</title>
+        <title>Global Tensor - OneFlow</title>
       
     
     
@@ -69,7 +69,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#consistent-tensor" class="md-skip">
+        <a href="#global-tensor" class="md-skip">
           跳转至
         </a>
       
@@ -104,7 +104,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Consistent Tensor
+              Global Tensor
             
           </span>
         </div>
@@ -509,7 +509,7 @@
   
     <li class="md-nav__item">
       <a href="02_sbp.html" class="md-nav__link">
-        集群的一致性视角
+        集群的全局视角
       </a>
     </li>
   
@@ -530,12 +530,12 @@
       
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
-          Consistent Tensor
+          Global Tensor
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <a href="03_consistent_tensor.html" class="md-nav__link md-nav__link--active">
-        Consistent Tensor
+        Global Tensor
       </a>
       
         
@@ -554,36 +554,36 @@
       
         <li class="md-nav__item">
   <a href="#_1" class="md-nav__link">
-    一致性视角与物理视角的映射
+    全局视角与物理视角的映射
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#consistent-tensor_1" class="md-nav__link">
-    创建 Consistent Tensor
+  <a href="#global-tensor_1" class="md-nav__link">
+    创建 Global Tensor
   </a>
   
-    <nav class="md-nav" aria-label="创建 Consistent Tensor">
+    <nav class="md-nav" aria-label="创建 Global Tensor">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#consistent-tensor_2" class="md-nav__link">
-    直接创建 consistent tensor
+  <a href="#global-tensor_2" class="md-nav__link">
+    直接创建 global tensor
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#consistent-tensor-local-tensor" class="md-nav__link">
-    由 consistent tensor 得到 local tensor
+  <a href="#global-tensor-local-tensor" class="md-nav__link">
+    由 global tensor 得到 local tensor
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#local-tensor-consistent-tensor" class="md-nav__link">
-    由 local tensor 转换得到 consistent tensor
+  <a href="#local-tensor-global-tensor" class="md-nav__link">
+    由 local tensor 转换得到 global tensor
   </a>
   
 </li>
@@ -913,7 +913,7 @@
   
     <li class="md-nav__item">
       <a href="../single_client/extended_topics/consistent_mirrored.html" class="md-nav__link">
-        Consistent 与 Mirrored 视角
+        Global 与 Mirrored 视角
       </a>
     </li>
   
@@ -1024,36 +1024,36 @@
       
         <li class="md-nav__item">
   <a href="#_1" class="md-nav__link">
-    一致性视角与物理视角的映射
+    全局视角与物理视角的映射
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#consistent-tensor_1" class="md-nav__link">
-    创建 Consistent Tensor
+  <a href="#global-tensor_1" class="md-nav__link">
+    创建 Global Tensor
   </a>
   
-    <nav class="md-nav" aria-label="创建 Consistent Tensor">
+    <nav class="md-nav" aria-label="创建 Global Tensor">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#consistent-tensor_2" class="md-nav__link">
-    直接创建 consistent tensor
+  <a href="#global-tensor_2" class="md-nav__link">
+    直接创建 global tensor
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#consistent-tensor-local-tensor" class="md-nav__link">
-    由 consistent tensor 得到 local tensor
+  <a href="#global-tensor-local-tensor" class="md-nav__link">
+    由 global tensor 得到 local tensor
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#local-tensor-consistent-tensor" class="md-nav__link">
-    由 local tensor 转换得到 consistent tensor
+  <a href="#local-tensor-global-tensor" class="md-nav__link">
+    由 local tensor 转换得到 global tensor
   </a>
   
 </li>
@@ -1134,10 +1134,10 @@
                   </a>
                 
                 
-                <h1 id="consistent-tensor">Consistent Tensor<a class="headerlink" href="#consistent-tensor" title="Permanent link">&para;</a></h1>
-<h2 id="_1">一致性视角与物理视角的映射<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
-<h2 id="consistent-tensor_1">创建 Consistent Tensor<a class="headerlink" href="#consistent-tensor_1" title="Permanent link">&para;</a></h2>
-<p>要在有2张 GPU 显卡的主机上交互式体验 consistent tensor，可以用以下方式在2个控制台分别启动 python。</p>
+                <h1 id="global-tensor">Global Tensor<a class="headerlink" href="#global-tensor" title="Permanent link">&para;</a></h1>
+<h2 id="_1">全局视角与物理视角的映射<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<h2 id="global-tensor_1">创建 Global Tensor<a class="headerlink" href="#global-tensor_1" title="Permanent link">&para;</a></h2>
+<p>要在有2张 GPU 显卡的主机上交互式体验 global tensor，可以用以下方式在2个控制台分别启动 python。</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>分别 <strong>点击</strong> 以下 Terminal 0 或 Terminal 1 标签，查看2个控制台的命令/代码</p>
@@ -1154,17 +1154,17 @@ python3
 </div>
 </div>
 <p>以上的环境变量的设置是做分布式的配置，详细解释及借助工具启动分布式，请参考文末的 <a href="#_5">扩展阅读</a></p>
-<h3 id="consistent-tensor_2">直接创建 consistent tensor<a class="headerlink" href="#consistent-tensor_2" title="Permanent link">&para;</a></h3>
+<h3 id="global-tensor_2">直接创建 global tensor<a class="headerlink" href="#global-tensor_2" title="Permanent link">&para;</a></h3>
 <p>在两个控制台，分别导入 <code>oneflow</code>，并创建 <code>x</code>。</p>
-<p>其中 <code>flow.placement("cuda",{0:[0,1]})</code> 指定了 consistent tensor 在集群的范围。</p>
+<p>其中 <code>flow.placement("cuda", [0,1])</code> 指定了 global tensor 在集群的范围。</p>
 <ul>
 <li><code>"cuda"</code> 表示在 GPU 设备上。</li>
-<li><code>placement</code> 的第二个参数是一个字典，它的 <code>key</code> 代表机器编号，<code>value</code> 代表显卡编号。因此 <code>{0:[0,1]}</code> 表示 consistent tensor 在第 0 台机器的第0、1张显卡上。</li>
+<li><code>placement</code> 的第二个参数是一个 <code>list</code>，集群中的设备会被自动编号，通过数字指定使用哪些设备。<code>[0,1]</code> 表示 global tensor 使用第 0、1 张显卡上。</li>
 </ul>
 <div class="tabbed-set" data-tabs="2:2"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><label for="__tabbed_2_1">Terminal 0</label><div class="tabbed-content">
 <div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">oneflow</span> <span class="k">as</span> <span class="nn">flow</span>
 
-<span class="n">placement</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">placement</span><span class="p">(</span><span class="s2">&quot;cuda&quot;</span><span class="p">,{</span><span class="mi">0</span><span class="p">:[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]})</span>
+<span class="n">placement</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">placement</span><span class="p">(</span><span class="s2">&quot;cuda&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span>
 <span class="n">sbp</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">sbp</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 <span class="n">x</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="n">placement</span><span class="o">=</span><span class="n">placement</span><span class="p">,</span> <span class="n">sbp</span><span class="o">=</span><span class="n">sbp</span><span class="p">)</span>
 <span class="n">x</span><span class="o">.</span><span class="n">shape</span>
@@ -1173,7 +1173,7 @@ python3
 <input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><label for="__tabbed_2_2">Terminal 1</label><div class="tabbed-content">
 <div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">oneflow</span> <span class="k">as</span> <span class="nn">flow</span>
 
-<span class="n">placement</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">placement</span><span class="p">(</span><span class="s2">&quot;cuda&quot;</span><span class="p">,{</span><span class="mi">0</span><span class="p">:[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]})</span>
+<span class="n">placement</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">placement</span><span class="p">(</span><span class="s2">&quot;cuda&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span>
 <span class="n">sbp</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">sbp</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 <span class="n">x</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="n">placement</span><span class="o">=</span><span class="n">placement</span><span class="p">,</span> <span class="n">sbp</span><span class="o">=</span><span class="n">sbp</span><span class="p">)</span>
 <span class="n">x</span><span class="o">.</span><span class="n">shape</span>
@@ -1190,7 +1190,7 @@ python3
 </code></pre></div>
 </div>
 </div>
-<h3 id="consistent-tensor-local-tensor">由 consistent tensor 得到 local tensor<a class="headerlink" href="#consistent-tensor-local-tensor" title="Permanent link">&para;</a></h3>
+<h3 id="global-tensor-local-tensor">由 global tensor 得到 local tensor<a class="headerlink" href="#global-tensor-local-tensor" title="Permanent link">&para;</a></h3>
 <p>通过 <a href="https://oneflow.readthedocs.io/en/master/tensor.html#oneflow.Tensor.to_local">to_local</a> 方法可以查看物理设备上的 local tensor：</p>
 <div class="tabbed-set" data-tabs="4:2"><input checked="checked" id="__tabbed_4_1" name="__tabbed_4" type="radio" /><label for="__tabbed_4_1">Terminal 0</label><div class="tabbed-content">
 <div class="highlight"><pre><span></span><code><span class="n">x</span><span class="o">.</span><span class="n">to_local</span><span class="p">()</span>
@@ -1207,29 +1207,29 @@ python3
 </code></pre></div>
 </div>
 </div>
-<h3 id="local-tensor-consistent-tensor">由 local tensor 转换得到 consistent tensor<a class="headerlink" href="#local-tensor-consistent-tensor" title="Permanent link">&para;</a></h3>
-<p>可以先创建 local tensor，再利用 <a href="https://oneflow.readthedocs.io/en/master/tensor.html#oneflow.Tensor.to_consistent">Tensor.to_consistent</a> 方法，将 local tensor 转为 consistent tensor。</p>
+<h3 id="local-tensor-global-tensor">由 local tensor 转换得到 global tensor<a class="headerlink" href="#local-tensor-global-tensor" title="Permanent link">&para;</a></h3>
+<p>可以先创建 local tensor，再利用 <a href="https://oneflow.readthedocs.io/en/master/tensor.html#oneflow.Tensor.to_global">Tensor.to_global</a> 方法，将 local tensor 转为 global tensor。</p>
 <p>下面的例子中，在2台设备上分别创建了 <code>shape=(2,5)</code> 的2个 local tensor。
-注意经过 <code>to_consistent</code> 方法后，得到的 consistent tensor 的 <code>shape</code> 为 <code>(4,5)</code>。</p>
-<p>这是因为选择的 <code>sbp=flow.sbp.split(0)</code>，2个形状为 <code>(2,5)</code> 的 local tensor，需要在第0维拼接，得到 <code>(4,5)</code> 的 consistent tensor。</p>
+注意经过 <code>to_global</code> 方法后，得到的 global tensor 的 <code>shape</code> 为 <code>(4,5)</code>。</p>
+<p>这是因为选择的 <code>sbp=flow.sbp.split(0)</code>，2个形状为 <code>(2,5)</code> 的 local tensor，需要在第0维拼接，得到 <code>(4,5)</code> 的 global tensor。</p>
 <div class="tabbed-set" data-tabs="5:2"><input checked="checked" id="__tabbed_5_1" name="__tabbed_5" type="radio" /><label for="__tabbed_5_1">Terminal 0</label><div class="tabbed-content">
 <div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">oneflow</span> <span class="k">as</span> <span class="nn">flow</span>
 
 <span class="n">x</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">)</span>
-<span class="n">placement</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">placement</span><span class="p">(</span><span class="s2">&quot;cuda&quot;</span><span class="p">,{</span><span class="mi">0</span><span class="p">:[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]})</span>
+<span class="n">placement</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">placement</span><span class="p">(</span><span class="s2">&quot;cuda&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span>
 <span class="n">sbp</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">sbp</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-<span class="n">x_consistent</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">to_consistent</span><span class="p">(</span><span class="n">placement</span><span class="o">=</span><span class="n">placement</span><span class="p">,</span> <span class="n">sbp</span><span class="o">=</span><span class="n">sbp</span><span class="p">)</span>
-<span class="n">x_consistent</span><span class="o">.</span><span class="n">shape</span>
+<span class="n">x_global</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">to_global</span><span class="p">(</span><span class="n">placement</span><span class="o">=</span><span class="n">placement</span><span class="p">,</span> <span class="n">sbp</span><span class="o">=</span><span class="n">sbp</span><span class="p">)</span>
+<span class="n">x_global</span><span class="o">.</span><span class="n">shape</span>
 </code></pre></div>
 </div>
 <input id="__tabbed_5_2" name="__tabbed_5" type="radio" /><label for="__tabbed_5_2">Terminal 1</label><div class="tabbed-content">
 <div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">oneflow</span> <span class="k">as</span> <span class="nn">flow</span>
 
 <span class="n">x</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">)</span>
-<span class="n">placement</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">placement</span><span class="p">(</span><span class="s2">&quot;cuda&quot;</span><span class="p">,{</span><span class="mi">0</span><span class="p">:[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]})</span>
+<span class="n">placement</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">placement</span><span class="p">(</span><span class="s2">&quot;cuda&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span>
 <span class="n">sbp</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">sbp</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-<span class="n">x_consistent</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">to_consistent</span><span class="p">(</span><span class="n">placement</span><span class="o">=</span><span class="n">placement</span><span class="p">,</span> <span class="n">sbp</span><span class="o">=</span><span class="n">sbp</span><span class="p">)</span>
-<span class="n">x_consistent</span><span class="o">.</span><span class="n">shape</span>
+<span class="n">x_global</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">to_global</span><span class="p">(</span><span class="n">placement</span><span class="o">=</span><span class="n">placement</span><span class="p">,</span> <span class="n">sbp</span><span class="o">=</span><span class="n">sbp</span><span class="p">)</span>
+<span class="n">x_global</span><span class="o">.</span><span class="n">shape</span>
 </code></pre></div>
 </div>
 </div>
@@ -1240,7 +1240,7 @@ python3
 <div class="tabbed-set" data-tabs="6:2"><input checked="checked" id="__tabbed_6_1" name="__tabbed_6" type="radio" /><label for="__tabbed_6_1">Terminal 0</label><div class="tabbed-content">
 <div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">oneflow</span> <span class="k">as</span> <span class="nn">flow</span>
 
-<span class="n">placement</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">placement</span><span class="p">(</span><span class="s2">&quot;cuda&quot;</span><span class="p">,{</span><span class="mi">0</span><span class="p">:[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]})</span>
+<span class="n">placement</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">placement</span><span class="p">(</span><span class="s2">&quot;cuda&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span>
 <span class="n">x</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="n">placement</span><span class="o">=</span><span class="n">placement</span><span class="p">,</span> <span class="n">sbp</span><span class="o">=</span><span class="n">flow</span><span class="o">.</span><span class="n">sbp</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
 <span class="n">w</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="n">placement</span><span class="o">=</span><span class="n">placement</span><span class="p">,</span> <span class="n">sbp</span><span class="o">=</span><span class="n">flow</span><span class="o">.</span><span class="n">sbp</span><span class="o">.</span><span class="n">broadcast</span><span class="p">)</span>
 <span class="n">y</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">w</span><span class="p">)</span>
@@ -1251,7 +1251,7 @@ python3
 <input id="__tabbed_6_2" name="__tabbed_6" type="radio" /><label for="__tabbed_6_2">Terminal 1</label><div class="tabbed-content">
 <div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">oneflow</span> <span class="k">as</span> <span class="nn">flow</span>
 
-<span class="n">placement</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">placement</span><span class="p">(</span><span class="s2">&quot;cuda&quot;</span><span class="p">,{</span><span class="mi">0</span><span class="p">:[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]})</span>
+<span class="n">placement</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">placement</span><span class="p">(</span><span class="s2">&quot;cuda&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span>
 <span class="n">x</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="n">placement</span><span class="o">=</span><span class="n">placement</span><span class="p">,</span> <span class="n">sbp</span><span class="o">=</span><span class="n">flow</span><span class="o">.</span><span class="n">sbp</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
 <span class="n">w</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="n">placement</span><span class="o">=</span><span class="n">placement</span><span class="p">,</span> <span class="n">sbp</span><span class="o">=</span><span class="n">flow</span><span class="o">.</span><span class="n">sbp</span><span class="o">.</span><span class="n">broadcast</span><span class="p">)</span>
 <span class="n">y</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">w</span><span class="p">)</span>
@@ -1278,7 +1278,7 @@ oneflow.Size([4, 8])
 <div class="tabbed-set" data-tabs="8:2"><input checked="checked" id="__tabbed_8_1" name="__tabbed_8" type="radio" /><label for="__tabbed_8_1">Terminal 0</label><div class="tabbed-content">
 <div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">oneflow</span> <span class="k">as</span> <span class="nn">flow</span>
 
-<span class="n">placement</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">placement</span><span class="p">(</span><span class="s2">&quot;cuda&quot;</span><span class="p">,{</span><span class="mi">0</span><span class="p">:[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]})</span>
+<span class="n">placement</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">placement</span><span class="p">(</span><span class="s2">&quot;cuda&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span>
 <span class="n">x</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="n">placement</span><span class="o">=</span><span class="n">placement</span><span class="p">,</span> <span class="n">sbp</span><span class="o">=</span><span class="n">flow</span><span class="o">.</span><span class="n">sbp</span><span class="o">.</span><span class="n">broadcast</span><span class="p">)</span>
 <span class="n">w</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="n">placement</span><span class="o">=</span><span class="n">placement</span><span class="p">,</span> <span class="n">sbp</span><span class="o">=</span><span class="n">flow</span><span class="o">.</span><span class="n">sbp</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
 <span class="n">y</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">w</span><span class="p">)</span>
@@ -1289,7 +1289,7 @@ oneflow.Size([4, 8])
 <input id="__tabbed_8_2" name="__tabbed_8" type="radio" /><label for="__tabbed_8_2">Terminal 1</label><div class="tabbed-content">
 <div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">oneflow</span> <span class="k">as</span> <span class="nn">flow</span>
 
-<span class="n">placement</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">placement</span><span class="p">(</span><span class="s2">&quot;cuda&quot;</span><span class="p">,{</span><span class="mi">0</span><span class="p">:[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]})</span>
+<span class="n">placement</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">placement</span><span class="p">(</span><span class="s2">&quot;cuda&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span>
 <span class="n">x</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="n">placement</span><span class="o">=</span><span class="n">placement</span><span class="p">,</span> <span class="n">sbp</span><span class="o">=</span><span class="n">flow</span><span class="o">.</span><span class="n">sbp</span><span class="o">.</span><span class="n">broadcast</span><span class="p">)</span>
 <span class="n">w</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="n">placement</span><span class="o">=</span><span class="n">placement</span><span class="p">,</span> <span class="n">sbp</span><span class="o">=</span><span class="n">flow</span><span class="o">.</span><span class="n">sbp</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
 <span class="n">y</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">w</span><span class="p">)</span>
@@ -1386,7 +1386,7 @@ oneflow.Size([4, 8])
     <nav class="md-footer__inner md-grid" aria-label="Footer">
       
         
-        <a href="02_sbp.html" class="md-footer__link md-footer__link--prev" aria-label="上一页: 集群的一致性视角" rel="prev">
+        <a href="02_sbp.html" class="md-footer__link md-footer__link--prev" aria-label="上一页: 集群的全局视角" rel="prev">
           <div class="md-footer__button md-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
           </div>
@@ -1395,7 +1395,7 @@ oneflow.Size([4, 8])
               <span class="md-footer__direction">
                 上一页
               </span>
-              集群的一致性视角
+              集群的全局视角
             </div>
           </div>
         </a>

@@ -509,7 +509,7 @@
   
     <li class="md-nav__item">
       <a href="02_sbp.html" class="md-nav__link">
-        Consistent View
+        Global View
       </a>
     </li>
   
@@ -521,7 +521,7 @@
   
     <li class="md-nav__item">
       <a href="03_consistent_tensor.html" class="md-nav__link">
-        Consistent Tensor
+        Global Tensor
       </a>
     </li>
   
@@ -604,8 +604,8 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#transforming-the-local-tensor-to-the-consistent-tensor" class="md-nav__link">
-    Transforming the Local Tensor to the Consistent Tensor
+  <a href="#transforming-the-local-tensor-to-the-global-tensor" class="md-nav__link">
+    Transforming the Local Tensor to the Global Tensor
   </a>
   
 </li>
@@ -852,7 +852,7 @@
   
     <li class="md-nav__item">
       <a href="../single_client/extended_topics/consistent_mirrored.html" class="md-nav__link">
-        Consistent & Mirrored View
+        Global & Mirrored View
       </a>
     </li>
   
@@ -977,8 +977,8 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#transforming-the-local-tensor-to-the-consistent-tensor" class="md-nav__link">
-    Transforming the Local Tensor to the Consistent Tensor
+  <a href="#transforming-the-local-tensor-to-the-global-tensor" class="md-nav__link">
+    Transforming the Local Tensor to the Global Tensor
   </a>
   
 </li>
@@ -1014,7 +1014,7 @@
                 
                 <h1 id="pipelining-parallelism">PIPELINING PARALLELISM<a class="headerlink" href="#pipelining-parallelism" title="Permanent link">&para;</a></h1>
 <p>We have introduced the characteristics of pipelining parallelism in <a href="01_introduction.html">COMMON DISTRIBUTED PARALLEL STRATEGIES</a>.</p>
-<p>From OneFlow's <a href="03_consistent_tensor.html">consistent view</a>, pipelining can be achieved by simply setting the placement attribute of Tensor.</p>
+<p>From OneFlow's <a href="03_consistent_tensor.html">global view</a>, pipelining can be achieved by simply setting the placement attribute of Tensor.</p>
 <p>The following code is a simple example that will run the network in <a href="../basics/01_quickstart.html">QUICKSTART</a> with pipelining parallelism. <code>nn.Flatten</code>, <code>nn.Linear(28*28, 512)</code> and <code>nn.ReLU()</code> run on GPU0, and the rest layers of the network run on GPU1.</p>
 <details class="code">
 <summary>Code</summary>
@@ -1022,8 +1022,8 @@
 
 <span class="n">BATCH_SIZE</span> <span class="o">=</span> <span class="mi">16</span>
 <span class="n">BROADCAST</span> <span class="o">=</span> <span class="p">[</span><span class="n">flow</span><span class="o">.</span><span class="n">sbp</span><span class="o">.</span><span class="n">broadcast</span><span class="p">]</span>
-<span class="n">P0</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">placement</span><span class="p">(</span><span class="s2">&quot;cuda&quot;</span><span class="p">,</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">]})</span>
-<span class="n">P1</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">placement</span><span class="p">(</span><span class="s2">&quot;cuda&quot;</span><span class="p">,</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">]})</span>
+<span class="n">P0</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">placement</span><span class="p">(</span><span class="s2">&quot;cuda&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">P1</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">placement</span><span class="p">(</span><span class="s2">&quot;cuda&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 
 <span class="k">class</span> <span class="nc">Stage0Module</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1059,12 +1059,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">m_stage0</span> <span class="o">=</span> <span class="n">Stage0Module</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">m_stage1</span> <span class="o">=</span> <span class="n">Stage1Module</span><span class="p">()</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">m_stage0</span><span class="o">.</span><span class="n">to_consistent</span><span class="p">(</span><span class="n">placement</span><span class="o">=</span><span class="n">P0</span><span class="p">,</span> <span class="n">sbp</span><span class="o">=</span><span class="n">BROADCAST</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">m_stage1</span><span class="o">.</span><span class="n">to_consistent</span><span class="p">(</span><span class="n">placement</span><span class="o">=</span><span class="n">P1</span><span class="p">,</span> <span class="n">sbp</span><span class="o">=</span><span class="n">BROADCAST</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">m_stage0</span><span class="o">.</span><span class="n">to_global</span><span class="p">(</span><span class="n">placement</span><span class="o">=</span><span class="n">P0</span><span class="p">,</span> <span class="n">sbp</span><span class="o">=</span><span class="n">BROADCAST</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">m_stage1</span><span class="o">.</span><span class="n">to_global</span><span class="p">(</span><span class="n">placement</span><span class="o">=</span><span class="n">P1</span><span class="p">,</span> <span class="n">sbp</span><span class="o">=</span><span class="n">BROADCAST</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
         <span class="n">out_stage0</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">m_stage0</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-        <span class="n">in_stage1</span> <span class="o">=</span> <span class="n">out_stage0</span><span class="o">.</span><span class="n">to_consistent</span><span class="p">(</span><span class="n">placement</span><span class="o">=</span><span class="n">P1</span><span class="p">,</span> <span class="n">sbp</span><span class="o">=</span><span class="n">BROADCAST</span><span class="p">)</span>
+        <span class="n">in_stage1</span> <span class="o">=</span> <span class="n">out_stage0</span><span class="o">.</span><span class="n">to_global</span><span class="p">(</span><span class="n">placement</span><span class="o">=</span><span class="n">P1</span><span class="p">,</span> <span class="n">sbp</span><span class="o">=</span><span class="n">BROADCAST</span><span class="p">)</span>
         <span class="n">out_stage1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">m_stage1</span><span class="p">(</span><span class="n">in_stage1</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">out_stage1</span>
 
@@ -1090,9 +1090,9 @@
 <span class="n">graph_pipeline</span> <span class="o">=</span> <span class="n">PipelineGraph</span><span class="p">()</span>
 
 <span class="n">x</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">BATCH_SIZE</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">28</span><span class="p">,</span> <span class="mi">28</span><span class="p">)</span>
-<span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">to_consistent</span><span class="p">(</span><span class="n">P0</span><span class="p">,</span> <span class="n">BROADCAST</span><span class="p">)</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">to_global</span><span class="p">(</span><span class="n">P0</span><span class="p">,</span> <span class="n">BROADCAST</span><span class="p">)</span>
 <span class="n">y</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="p">(</span><span class="n">BATCH_SIZE</span><span class="p">,))</span>
-<span class="n">y</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">to_consistent</span><span class="p">(</span><span class="n">P1</span><span class="p">,</span> <span class="n">BROADCAST</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">to_global</span><span class="p">(</span><span class="n">P1</span><span class="p">,</span> <span class="n">BROADCAST</span><span class="p">)</span>
 
 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">20</span><span class="p">):</span>
     <span class="n">loss</span> <span class="o">=</span> <span class="n">graph_pipeline</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
@@ -1106,33 +1106,33 @@
 <h3 id="setting-placement-and-sbp">Setting <code>placement</code> and <code>SBP</code><a class="headerlink" href="#setting-placement-and-sbp" title="Permanent link">&para;</a></h3>
 <p>Setting up the <code>placement</code> and <code>SBP</code> at the begining:</p>
 <div class="highlight"><pre><span></span><code><span class="n">BROADCAST</span> <span class="o">=</span> <span class="p">[</span><span class="n">flow</span><span class="o">.</span><span class="n">sbp</span><span class="o">.</span><span class="n">broadcast</span><span class="p">]</span>
-<span class="n">P0</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">placement</span><span class="p">(</span><span class="s2">&quot;cuda&quot;</span><span class="p">,</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">]})</span>
-<span class="n">P1</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">placement</span><span class="p">(</span><span class="s2">&quot;cuda&quot;</span><span class="p">,</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">]})</span>
+<span class="n">P0</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">placement</span><span class="p">(</span><span class="s2">&quot;cuda&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">P1</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">placement</span><span class="p">(</span><span class="s2">&quot;cuda&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 </code></pre></div>
 <p><code>P0</code> and <code>P1</code> represent the 0<sup>th</sup> GPU and the 1<sup>st</sup> GPU on the 0<sup>th</sup> machine respectively.</p>
-<p>By calling <a href="https://oneflow.readthedocs.io/en/master/module.html?highlight=to_consistent#oneflow.nn.Module.to_consistent">nn.Module.to_consistent</a> or <a href="https://oneflow.readthedocs.io/en/master/tensor.html?highlight=to_consistent#oneflow.Tensor.to_consistent">Tensor.to_consistent</a>, the model or tensor will be distributed to the devices specified before, breaking a network into stages.</p>
+<p>By calling <a href="https://oneflow.readthedocs.io/en/master/module.html?highlight=to_global#oneflow.nn.Module.to_global">nn.Module.to_global</a> or <a href="https://oneflow.readthedocs.io/en/master/tensor.html?highlight=to_global#oneflow.Tensor.to_global">Tensor.to_global</a>, the model or tensor will be distributed to the devices specified before, breaking a network into stages.</p>
 <p>Here we define a <code>PipelineModule</code> that specifically sets the pipeline for each stage.</p>
 <div class="highlight"><pre><span></span><code>    <span class="k">class</span> <span class="nc">PipelineModule</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
         <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="c1">#...</span>
 
-            <span class="bp">self</span><span class="o">.</span><span class="n">m_stage0</span><span class="o">.</span><span class="n">to_consistent</span><span class="p">(</span><span class="n">placement</span><span class="o">=</span><span class="n">P0</span><span class="p">,</span> <span class="n">sbp</span><span class="o">=</span><span class="n">BROADCAST</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">m_stage1</span><span class="o">.</span><span class="n">to_consistent</span><span class="p">(</span><span class="n">placement</span><span class="o">=</span><span class="n">P1</span><span class="p">,</span> <span class="n">sbp</span><span class="o">=</span><span class="n">BROADCAST</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">m_stage0</span><span class="o">.</span><span class="n">to_global</span><span class="p">(</span><span class="n">placement</span><span class="o">=</span><span class="n">P0</span><span class="p">,</span> <span class="n">sbp</span><span class="o">=</span><span class="n">BROADCAST</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">m_stage1</span><span class="o">.</span><span class="n">to_global</span><span class="p">(</span><span class="n">placement</span><span class="o">=</span><span class="n">P1</span><span class="p">,</span> <span class="n">sbp</span><span class="o">=</span><span class="n">BROADCAST</span><span class="p">)</span>
 
         <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
             <span class="n">out_stage0</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">m_stage0</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-            <span class="n">in_stage1</span> <span class="o">=</span> <span class="n">out_stage0</span><span class="o">.</span><span class="n">to_consistent</span><span class="p">(</span><span class="n">placement</span><span class="o">=</span><span class="n">P1</span><span class="p">,</span> <span class="n">sbp</span><span class="o">=</span><span class="n">BROADCAST</span><span class="p">)</span>
+            <span class="n">in_stage1</span> <span class="o">=</span> <span class="n">out_stage0</span><span class="o">.</span><span class="n">to_global</span><span class="p">(</span><span class="n">placement</span><span class="o">=</span><span class="n">P1</span><span class="p">,</span> <span class="n">sbp</span><span class="o">=</span><span class="n">BROADCAST</span><span class="p">)</span>
             <span class="n">out_stage1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">m_stage1</span><span class="p">(</span><span class="n">in_stage1</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">out_stage1</span>
 </code></pre></div>
-<h3 id="transforming-the-local-tensor-to-the-consistent-tensor">Transforming the Local Tensor to the Consistent Tensor<a class="headerlink" href="#transforming-the-local-tensor-to-the-consistent-tensor" title="Permanent link">&para;</a></h3>
+<h3 id="transforming-the-local-tensor-to-the-global-tensor">Transforming the Local Tensor to the Global Tensor<a class="headerlink" href="#transforming-the-local-tensor-to-the-global-tensor" title="Permanent link">&para;</a></h3>
 <p>The example uses randomly generated data as input.</p>
 <div class="highlight"><pre><span></span><code>    <span class="n">x</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">BATCH_SIZE</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">28</span><span class="p">,</span> <span class="mi">28</span><span class="p">)</span>
-    <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">to_consistent</span><span class="p">(</span><span class="n">P0</span><span class="p">,</span> <span class="n">BROADCAST</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">to_global</span><span class="p">(</span><span class="n">P0</span><span class="p">,</span> <span class="n">BROADCAST</span><span class="p">)</span>
 </code></pre></div>
 <p>The <code>launch</code> will start two processes when you launch the training by the <code>launch</code> module because the command-line parameter is <code>--nproc_per_node 2</code>. Both processes will execute the code in the script.</p>
-<p>The statement <code>x = flow.randn(BATCH_SIZE, 1, 28, 28)</code> returns the Local Tensor (the local data only valid in current process). when running <code>x = x.to_consistent(P0, BROADCAST)</code>, OneFlow will automatically integrate the Local Tensor of all processes into the Consistent Tensor.</p>
-<p>In practice, each computing device can load data locally, and then convert the Local Tensor to the Consistent Tensor via <code>to_consistent</code>.</p>
+<p>The statement <code>x = flow.randn(BATCH_SIZE, 1, 28, 28)</code> returns the Local Tensor (the local data only valid in current process). when running <code>x = x.to_global(P0, BROADCAST)</code>, OneFlow will automatically integrate the Local Tensor of all processes into the Global Tensor.</p>
+<p>In practice, each computing device can load data locally, and then convert the Local Tensor to the Global Tensor via <code>to_global</code>.</p>
 <h3 id="stage-id-and-settings-for-gradient-accumulation">Stage ID and Settings for Gradient Accumulation<a class="headerlink" href="#stage-id-and-settings-for-gradient-accumulation" title="Permanent link">&para;</a></h3>
 <p>We can set Stage ID by setting the <code>config.stage_id</code> attribute of Module. The Stage ID is numbered starting from 0 and increasing by 1.</p>
 <p>Call <code>self.config.set_gradient_accumulation_steps</code> method to set the step size of gradient accumulation.</p>

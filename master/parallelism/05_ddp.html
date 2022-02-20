@@ -509,7 +509,7 @@
   
     <li class="md-nav__item">
       <a href="02_sbp.html" class="md-nav__link">
-        集群的一致性视角
+        集群的全局视角
       </a>
     </li>
   
@@ -521,7 +521,7 @@
   
     <li class="md-nav__item">
       <a href="03_consistent_tensor.html" class="md-nav__link">
-        Consistent Tensor
+        Global Tensor
       </a>
     </li>
   
@@ -845,7 +845,7 @@
   
     <li class="md-nav__item">
       <a href="../single_client/extended_topics/consistent_mirrored.html" class="md-nav__link">
-        Consistent 与 Mirrored 视角
+        Global 与 Mirrored 视角
       </a>
     </li>
   
@@ -1001,10 +1001,10 @@
                 <h1 id="_1">数据并行训练<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
 <p>在 <a href="01_introduction.html">常见的分布式并行策略</a> 一文中介绍了数据并行的特点。
 在 OneFlow 中，提供了两种做数据并行的方式。</p>
-<p>一种是使用 OneFlow 的原生的 SBP 概念，通过设置 consistent 张量，进行数据并行训练，这也是用 OneFlow 做数据并行训练的 <strong>推荐方式</strong> 。</p>
+<p>一种是使用 OneFlow 的原生的 SBP 概念，通过设置 global 张量，进行数据并行训练，这也是用 OneFlow 做数据并行训练的 <strong>推荐方式</strong> 。</p>
 <p>此外，为了方便从 PyTorch 迁移到 OneFlow 的用户，OneFlow 提供了与 <code>torch.nn.parallel.DistributedDataParallel</code> 对齐一致的接口 <a href="https://oneflow.readthedocs.io/en/master/nn.html#oneflow.nn.parallel.DistributedDataParallel">oneflow.nn.parallel.DistributedDataParallel</a>，它也能让用户方便地从单机训练脚本，扩展为数据并行训练。</p>
 <h2 id="sbp">通过设置 SBP 做数据并行训练<a class="headerlink" href="#sbp" title="Permanent link">&para;</a></h2>
-<p>以下代码，是通过配置设置 consistent 张量，完成数据并行训练。点击以下 “Code” 查看详细代码。</p>
+<p>以下代码，是通过配置设置 global 张量，完成数据并行训练。点击以下 “Code” 查看详细代码。</p>
 <details class="code">
 <summary>Code</summary>
 <div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">oneflow</span> <span class="k">as</span> <span class="nn">flow</span>
@@ -1015,7 +1015,7 @@
 <span class="n">BATCH_SIZE</span><span class="o">=</span><span class="mi">64</span>
 <span class="n">EPOCH_NUM</span> <span class="o">=</span> <span class="mi">1</span>
 
-<span class="n">PLACEMENT</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">placement</span><span class="p">(</span><span class="s2">&quot;cuda&quot;</span><span class="p">,{</span><span class="mi">0</span><span class="p">:[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]})</span>
+<span class="n">PLACEMENT</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">placement</span><span class="p">(</span><span class="s2">&quot;cuda&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span>
 <span class="n">S0</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">sbp</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 <span class="n">B</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">sbp</span><span class="o">.</span><span class="n">broadcast</span>
 
@@ -1035,7 +1035,7 @@
 
 <span class="n">model</span> <span class="o">=</span> <span class="n">flowvision</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">mobilenet_v2</span><span class="p">()</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">DEVICE</span><span class="p">)</span>
 <span class="n">model</span><span class="o">.</span><span class="n">classifer</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="mf">0.2</span><span class="p">),</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">last_channel</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
-<span class="n">model</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">to_consistent</span><span class="p">(</span><span class="n">placement</span><span class="o">=</span><span class="n">PLACEMENT</span><span class="p">,</span> <span class="n">sbp</span><span class="o">=</span><span class="n">B</span><span class="p">)</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">to_global</span><span class="p">(</span><span class="n">placement</span><span class="o">=</span><span class="n">PLACEMENT</span><span class="p">,</span> <span class="n">sbp</span><span class="o">=</span><span class="n">B</span><span class="p">)</span>
 
 <span class="n">loss_fn</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">CrossEntropyLoss</span><span class="p">()</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">DEVICE</span><span class="p">)</span>
 <span class="n">optimizer</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">)</span>
@@ -1044,8 +1044,8 @@
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Epoch </span><span class="si">{</span><span class="n">t</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="se">\n</span><span class="s2">-------------------------------&quot;</span><span class="p">)</span>
     <span class="n">size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">train_dataloader</span><span class="o">.</span><span class="n">dataset</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">batch</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">train_dataloader</span><span class="p">):</span>
-        <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">to_consistent</span><span class="p">(</span><span class="n">placement</span><span class="o">=</span><span class="n">PLACEMENT</span><span class="p">,</span> <span class="n">sbp</span><span class="o">=</span><span class="n">S0</span><span class="p">)</span>
-        <span class="n">y</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">to_consistent</span><span class="p">(</span><span class="n">placement</span><span class="o">=</span><span class="n">PLACEMENT</span><span class="p">,</span> <span class="n">sbp</span><span class="o">=</span><span class="n">S0</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">to_global</span><span class="p">(</span><span class="n">placement</span><span class="o">=</span><span class="n">PLACEMENT</span><span class="p">,</span> <span class="n">sbp</span><span class="o">=</span><span class="n">S0</span><span class="p">)</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">to_global</span><span class="p">(</span><span class="n">placement</span><span class="o">=</span><span class="n">PLACEMENT</span><span class="p">,</span> <span class="n">sbp</span><span class="o">=</span><span class="n">S0</span><span class="p">)</span>
 
         <span class="c1"># Compute prediction error</span>
         <span class="n">pred</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
@@ -1061,22 +1061,22 @@
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;loss: </span><span class="si">{</span><span class="n">loss</span><span class="si">:</span><span class="s2">&gt;7f</span><span class="si">}</span><span class="s2">  [</span><span class="si">{</span><span class="n">current</span><span class="si">:</span><span class="s2">&gt;5d</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">size</span><span class="si">:</span><span class="s2">&gt;5d</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
 </code></pre></div>
 </details>
-<p>可以发现，这个脚本的与单机单卡的训练脚本几乎是一样的。少数的区别在于几行与 consistent tensor 有关的配置代码外，它们是：</p>
+<p>可以发现，这个脚本的与单机单卡的训练脚本几乎是一样的。少数的区别在于几行与 global tensor 有关的配置代码外，它们是：</p>
 <ul>
-<li>设置 placement，让训练放置在 0号、1号 GPU 上：</li>
+<li>设置 placement，让训练放置在集群第 0号、1号 GPU 上：</li>
 </ul>
-<div class="highlight"><pre><span></span><code>    <span class="n">PLACEMENT</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">placement</span><span class="p">(</span><span class="s2">&quot;cuda&quot;</span><span class="p">,{</span><span class="mi">0</span><span class="p">:[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]})</span>
+<div class="highlight"><pre><span></span><code>    <span class="n">PLACEMENT</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">placement</span><span class="p">(</span><span class="s2">&quot;cuda&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span>
 </code></pre></div>
 <ul>
 <li>模型在集群上做广播</li>
 </ul>
-<div class="highlight"><pre><span></span><code>    <span class="n">model</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">to_consistent</span><span class="p">(</span><span class="n">placement</span><span class="o">=</span><span class="n">PLACEMENT</span><span class="p">,</span> <span class="n">sbp</span><span class="o">=</span><span class="n">B</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code>    <span class="n">model</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">to_global</span><span class="p">(</span><span class="n">placement</span><span class="o">=</span><span class="n">PLACEMENT</span><span class="p">,</span> <span class="n">sbp</span><span class="o">=</span><span class="n">B</span><span class="p">)</span>
 </code></pre></div>
 <ul>
 <li>数据在集群上按 <code>split(0)</code> 做切分：</li>
 </ul>
-<div class="highlight"><pre><span></span><code>    <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">to_consistent</span><span class="p">(</span><span class="n">placement</span><span class="o">=</span><span class="n">PLACEMENT</span><span class="p">,</span> <span class="n">sbp</span><span class="o">=</span><span class="n">S0</span><span class="p">)</span>
-    <span class="n">y</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">to_consistent</span><span class="p">(</span><span class="n">placement</span><span class="o">=</span><span class="n">PLACEMENT</span><span class="p">,</span> <span class="n">sbp</span><span class="o">=</span><span class="n">S0</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code>    <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">to_global</span><span class="p">(</span><span class="n">placement</span><span class="o">=</span><span class="n">PLACEMENT</span><span class="p">,</span> <span class="n">sbp</span><span class="o">=</span><span class="n">S0</span><span class="p">)</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">to_global</span><span class="p">(</span><span class="n">placement</span><span class="o">=</span><span class="n">PLACEMENT</span><span class="p">,</span> <span class="n">sbp</span><span class="o">=</span><span class="n">S0</span><span class="p">)</span>
 </code></pre></div>
 <p>这样，按照 <a href="01_introduction.html">常见的分布式并行策略</a> 中的介绍，我们就通过对数据进行 <code>split(0)</code> 切分，对模型进行广播，进行了分布式数据并行训练。</p>
 <h2 id="distributeddataparallel">使用 DistributedDataParallel 做数据并行训练<a class="headerlink" href="#distributeddataparallel" title="Permanent link">&para;</a></h2>

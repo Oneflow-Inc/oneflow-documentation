@@ -597,7 +597,7 @@
   
     <li class="md-nav__item">
       <a href="../parallelism/02_sbp.html" class="md-nav__link">
-        Consistent View
+        Global View
       </a>
     </li>
   
@@ -609,7 +609,7 @@
   
     <li class="md-nav__item">
       <a href="../parallelism/03_consistent_tensor.html" class="md-nav__link">
-        Consistent Tensor
+        Global Tensor
       </a>
     </li>
   
@@ -873,7 +873,7 @@
   
     <li class="md-nav__item">
       <a href="../single_client/extended_topics/consistent_mirrored.html" class="md-nav__link">
-        Consistent & Mirrored View
+        Global & Mirrored View
       </a>
     </li>
   
@@ -1147,7 +1147,7 @@ tensor([1., 2., 3.], dtype=oneflow.float32)
 oneflow.float32
 cpu:0
 </code></pre></div>
-<p>The output shows the shape, the data type, and the device (on CPU No. 0, CPUs were numbered because OneFlow naturally supports distribution, see <a href="../parallelism/03_consistent_tensor.html">Consistent Tensor</a>).</p>
+<p>The output shows the shape, the data type, and the device (on CPU No. 0, CPUs were numbered because OneFlow naturally supports distribution, see <a href="../parallelism/03_consistent_tensor.html">Global Tensor</a>).</p>
 <p>The shape of the tensor can be changed by the <a href="https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.reshape#oneflow.reshape">reshape</a> method, and the data type and device of the tensor can be changed by the <a href="https://oneflow.readthedocs.io/en/master/tensor.html?highlight=Tensor.to#oneflow.Tensor.to">to</a> method:</p>
 <div class="highlight"><pre><span></span><code>x10 = x9.reshape(2, 2)
 x11 = x10.to(dtype=flow.int32, device=flow.device(&quot;cuda&quot;))

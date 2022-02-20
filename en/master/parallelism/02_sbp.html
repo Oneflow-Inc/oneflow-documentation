@@ -18,7 +18,7 @@
     
     
       
-        <title>Consistent View - OneFlow</title>
+        <title>Global View - OneFlow</title>
       
     
     
@@ -104,7 +104,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Consistent View
+              Global View
             
           </span>
         </div>
@@ -518,12 +518,12 @@
       
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
-          Consistent View
+          Global View
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <a href="02_sbp.html" class="md-nav__link md-nav__link--active">
-        Consistent View
+        Global View
       </a>
       
         
@@ -582,7 +582,7 @@
   
     <li class="md-nav__item">
       <a href="03_consistent_tensor.html" class="md-nav__link">
-        Consistent Tensor
+        Global Tensor
       </a>
     </li>
   
@@ -846,7 +846,7 @@
   
     <li class="md-nav__item">
       <a href="../single_client/extended_topics/consistent_mirrored.html" class="md-nav__link">
-        Consistent & Mirrored View
+        Global & Mirrored View
       </a>
     </li>
   
@@ -1001,30 +1001,32 @@
                 
                 
                 <h1 id="consistent-view">CONSISTENT VIEW<a class="headerlink" href="#consistent-view" title="Permanent link">&para;</a></h1>
-<p>The concept of <strong>consistent view</strong> in OneFlow is introduced to simplify distributed training. In short, the cluster is abstracted as a "Super Computing Device" under OneFlow consistent view.</p>
+<p>The concept of <strong>global view</strong> in OneFlow is introduced to simplify distributed training. In short, the cluster is abstracted as a "Super Computing Device" under OneFlow global view.</p>
 <p>Instead of caring about the details of computing and communication in a cluster, users can program like on a single node, and OneFlow can train the model in a distributed way.</p>
-<p><img alt="consistent view" src="imgs/consistent-view.png" /></p>
-<p>OneFlow's consistent view relies on several important concepts: <strong>Placement</strong>, <strong>SBP</strong> and <strong>SBP Signature</strong>.</p>
+<p><img alt="global view" src="imgs/consistent-view.png" /></p>
+<p>OneFlow's global view relies on several important concepts: <strong>Placement</strong>, <strong>SBP</strong> and <strong>SBP Signature</strong>.</p>
 <h2 id="placement">Placement<a class="headerlink" href="#placement" title="Permanent link">&para;</a></h2>
-<p>The Tensors of OneFlow has a <code>placement</code> attribute in consistent view; the <code>placement</code> specifies which physical device the Tensor is placed on.</p>
-<p>OneFlow will automatically number the devices in the cluster. For example, if there are four hosts in a cluster and each host has eight cards, then the four hosts correspond to ID: 0,1,2,3. The cards on each host correspond to numbers 0 to 7. To place a Tensor on the first four cards on machine 0, simply configure: <code>placement("cuda", {0: [0, 1, 2, 3]})</code>.</p>
+<p>The Tensors of OneFlow has a <code>placement</code> attribute in global view; the <code>placement</code> specifies which local physical device the Tensor is placed on.</p>
+<p>OneFlow will automatically number the devices in the cluster. For example, if there are four hosts in a cluster and each host has eight GPU cards, so that 32 cards in total. The 32 devices in the cluser will be numbered 0 to 31.</p>
+<p>To place a Tensor on the first four cards on machine 0, simply configure: <code>placement("cuda", [0, 1, 2, 3])</code>.</p>
+<p>To place a Tensor on the last four cards on machine 0, simply configure: <code>placement("cuda", [4, 5, 6, 7])</code>.</p>
 <p>Placement makes it easy for OneFlow to support pipelining parallelism, and we’ll see examples of <code>placement</code> in other articles on this topic.</p>
 <h2 id="sbp">SBP<a class="headerlink" href="#sbp" title="Permanent link">&para;</a></h2>
-<p>SBP is a unique concept in OneFlow, which describes the mapping of data from a "Super Computing Device" perspective to data on real physical devices in a cluster. It is a combination of the initials of three words: <code>split</code>, <code>broadcast</code>, <code>partial</code>.</p>
+<p>SBP is a unique concept in OneFlow, which describes the mapping of data from a "Super Computing Device" perspective to data on local physical devices in a cluster. It is a combination of the initials of three words: <code>split</code>, <code>broadcast</code>, <code>partial</code>.</p>
 <p>In detail:</p>
 <ul>
-<li><code>split</code> means that the physical Tensor is obtained by splitting the logical Tensor along a certain dimension. An <code>axis</code> parameter is used to indicate the dimension of the split. If multiple physical Tensors are concatenated along the dimension of Split, the logical Tensor can be restored.</li>
-<li><code>broadcast</code> indicates that each physical Tensor is exactly a copy of the logical Tensor.</li>
-<li><code>partial</code> indicates that although the physical Tensor has the same shape as the logical Tensor, the value in the physical Tensor is a part of the value in the corresponding position in the logical Tensor, if you add multiple physical Tensors at the same positions, you can restore the logical Tensor. Besides <code>sum</code>, <code>min</code>, <code>max</code> and some other opreations are made available for <code>partial</code>.</li>
+<li><code>split</code> means that the local Tensor is obtained by splitting the global Tensor along a certain dimension. An <code>axis</code> parameter is used to indicate the dimension of the split. If multiple local Tensors are concatenated along the dimension of Split, the global Tensor can be restored.</li>
+<li><code>broadcast</code> indicates that each local Tensor is exactly a copy of the global Tensor.</li>
+<li><code>partial</code> indicates that although the local Tensor has the same shape as the global Tensor, the value in the local Tensor is a part of the value in the corresponding position in the global Tensor, if you add multiple local Tensors at the same positions, you can restore the global Tensor. Besides <code>sum</code>, <code>min</code> or <code>max</code> and some other opreations are made available for <code>partial</code>.</li>
 </ul>
 <p>The figures below show some examples of SBP, including <code>split(0)</code>, <code>split(1)</code>, <code>broadcast</code> and <code>partial sum</code>.</p>
 <p><img alt="SBP Example" src="imgs/sbp-example.png" /></p>
-<p>When you create a Consistent Tensor, you can specify the SBP of the Tensor. The example will be seen in the next article: <a href="03_consistent_tensor.html">Consistent Tensor</a>.</p>
+<p>When you create a Global Tensor, you can specify the SBP of the Tensor. The example will be seen in the next article: <a href="03_consistent_tensor.html">Global Tensor</a>.</p>
 <h2 id="spb-signature">SPB Signature<a class="headerlink" href="#spb-signature" title="Permanent link">&para;</a></h2>
-<p>SBP describes the mapping relationship between the data under the consistent view and the data on the physical devices. When doing distributed training, OneFlow distributes the data to the physical devices, computes the results according to the SBP attributes of the data.</p>
-<p>For an isolated Tensor, we can set its SBP attributes at will. However, for an operator with input and output data, we can not arbitrarily set the SBP attributes of its input and output. This is because arbitrarily setting the SBP attributes of an operator’s input and output may not conform to the algorithm of the operator under consistent view.</p>
+<p>SBP describes the mapping relationship between the data under the global view and the data on the local physical devices. When doing distributed training, OneFlow distributes the data to the local physical devices, computes the results according to the SBP attributes of the data.</p>
+<p>For an isolated Tensor, we can set its SBP attributes at will. However, for an operator with input and output data, we can not arbitrarily set the SBP attributes of its input and output. This is because arbitrarily setting the SBP attributes of an operator’s input and output may not conform to the algorithm of the operator under global view.</p>
 <p>Let us discuss this problem with the example of matrix multiplication. Look at how the input and output SBP of matrix multiplication are combined to be legal and illegal in a distributed system with tow devices.</p>
-<p>Suppose, from the consistent view, that a matrix <span class="arithmatex">\(A\)</span> with the shape $<span class="arithmatex">\((m, k)\)</span> is multiplied by a matrix <span class="arithmatex">\(B\)</span> with the shape <span class="arithmatex">\((k, n)\)</span> to get $y $, the shape of <span class="arithmatex">\(y\)</span> must be <span class="arithmatex">\((m, n)\)</span>.</p>
+<p>Suppose, from the global view, that a matrix <span class="arithmatex">\(A\)</span> with the shape $<span class="arithmatex">\((m, k)\)</span> is multiplied by a matrix <span class="arithmatex">\(B\)</span> with the shape <span class="arithmatex">\((k, n)\)</span> to get $y $, the shape of <span class="arithmatex">\(y\)</span> must be <span class="arithmatex">\((m, n)\)</span>.</p>
 <p>According to the rule of matrix multiplication, we can divide the matrix <span class="arithmatex">\(A\)</span> into two matrices <span class="arithmatex">\(A_0\)</span> and <span class="arithmatex">\(A_1\)</span> by dimension 0, with the shapes of <span class="arithmatex">\((m_0, k)\)</span>, <span class="arithmatex">\((m_1, k)\)</span> respectively:</p>
 <p>Device 1:</p>
 <div class="arithmatex">\[
@@ -1042,7 +1044,7 @@ A_1     \times     B     =     Y_1
 (m_1, k)     (k, n)      (m_1, n)
 \end{matrix}
 \]</div>
-<p>It’s easy to configure the relationship among physical Tensors <span class="arithmatex">\(A_0\)</span>, <span class="arithmatex">\(A_1\)</span> and the Tensor <span class="arithmatex">\(A\)</span>, which is under the consistent view. And also the relationship between <span class="arithmatex">\(Y_0\)</span>, <span class="arithmatex">\(Y_1\)</span> and the consistent view data <span class="arithmatex">\(Y\)</span>:</p>
+<p>It’s easy to configure the relationship among local Tensors <span class="arithmatex">\(A_0\)</span>, <span class="arithmatex">\(A_1\)</span> and the Tensor <span class="arithmatex">\(A\)</span>, which is under the global view. And also the relationship between <span class="arithmatex">\(Y_0\)</span>, <span class="arithmatex">\(Y_1\)</span> and the global view data <span class="arithmatex">\(Y\)</span>:</p>
 <div class="arithmatex">\[
 \begin{matrix}
 A &amp;= concat&amp;(A_0 ,&amp; A_1) \\
@@ -1058,7 +1060,7 @@ Y &amp;= concat&amp;(Y_0 ,&amp; Y_1) \\
 <blockquote>
 <p>Note: The <code>concat</code> above represents a concatenate operation.</p>
 </blockquote>
-<p>In this way, it is possible to execute the operation and get the correct result from the consistent view by distributing the data to each physical device. <strong>The long story we talked above, described in SBP, are surprisingly simple:</strong></p>
+<p>In this way, it is possible to execute the operation and get the correct result from the global view by distributing the data to each local physical device. <strong>The long story we talked above, described in SBP, are surprisingly simple:</strong></p>
 <p><span class="arithmatex">\(A\)</span> is <code>split(0)</code>, <span class="arithmatex">\(B\)</span> is <code>broadcast</code>, and <span class="arithmatex">\(Y\)</span> is <code>split(0)</code>.</p>
 <p>We can see that for matrix multiplication, the SBP of its input and output combined in the above way, is legal. <strong>For matrix multiplication, there are more than one valid SBP combinations, such as:</strong></p>
 <p><span class="arithmatex">\(A\)</span> is <code>broadcast</code>, <span class="arithmatex">\(B\)</span> is <code>split(1)</code>, and <span class="arithmatex">\(Y\)</span> is <code>split(1)</code>.</p>
@@ -1077,12 +1079,12 @@ B &amp;= concat&amp;(B_0 ,&amp; B_1) \\
 (k,n) &amp;  &amp; (k_0, n) &amp; (k_1, n)
 \end{matrix}
 \]</div>
-<p>Because the shapes of <span class="arithmatex">\(A_0\)</span> and <span class="arithmatex">\(B_0\)</span> do not meet the requirements of matrix multiplication, it is impossible to compute the matrix multiplication on physical devices. We can say that the combination of <span class="arithmatex">\(A\)</span> as <code>split(0)</code> and <span class="arithmatex">\(B\)</span> as <code>split(0)</code> is illegal.</p>
+<p>Because the shapes of <span class="arithmatex">\(A_0\)</span> and <span class="arithmatex">\(B_0\)</span> do not meet the requirements of matrix multiplication, it is impossible to compute the matrix multiplication on local physical devices. We can say that the combination of <span class="arithmatex">\(A\)</span> as <code>split(0)</code> and <span class="arithmatex">\(B\)</span> as <code>split(0)</code> is illegal.</p>
 <p>We defines <strong>a specific, valid SBP combination</strong> of the inputs and outputs of an operator, as shown above, as a <strong>SBP Signature</strong> of this operator.</p>
 <p>All operators in OneFlow are presetting all possible SBP signatures according to the operator's Operation Rules. The user only needs to set the <code>placement</code> and <code>SBP</code> attributes of the data, the selection process is transparent to the user.</p>
 <h2 id="conclusion">Conclusion<a class="headerlink" href="#conclusion" title="Permanent link">&para;</a></h2>
-<p><code>placement</code>, <code>SBP</code>, and <code>SBP Signature</code> are the important guarantee of OneFlow distributed consistent view, which makes OneFlow distributed training as simple as on a single machine single card.</p>
-<p>In the next article <a href="./03_consistent_tensor">Consistent Tensor</a>, we’ll show you an example of programming under the consistent view.</p>
+<p><code>placement</code>, <code>SBP</code>, and <code>SBP Signature</code> are the important guarantee of OneFlow distributed global view, which makes OneFlow distributed training as simple as on a single machine single card.</p>
+<p>In the next article <a href="./03_consistent_tensor">Global Tensor</a>, we’ll show you an example of programming under the global view.</p>
                 
               
               
@@ -1123,13 +1125,13 @@ B &amp;= concat&amp;(B_0 ,&amp; B_1) \\
       
       
         
-        <a href="03_consistent_tensor.html" class="md-footer__link md-footer__link--next" aria-label="Next: Consistent Tensor" rel="next">
+        <a href="03_consistent_tensor.html" class="md-footer__link md-footer__link--next" aria-label="Next: Global Tensor" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 Next
               </span>
-              Consistent Tensor
+              Global Tensor
             </div>
           </div>
           <div class="md-footer__button md-icon">
