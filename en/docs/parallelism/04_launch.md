@@ -45,7 +45,7 @@ We can view the description of the options of the `launch` module after running 
 
 - `--nnodes`: number of nodes
 - `--node_rank`: the serial number of the machines, starting from 0
-- `--nproc_per_node`: The number of processes per node to be started on each machine, which is recommended to be consistent with the number of GPUs
+- `--nproc_per_node`: The number of processes per node to be started on each machine, which is recommended to be global with the number of GPUs
 - `--logdir`: The relative storage path of the child process log
 
 ### The Relationship between Launch Module and Parallel Strategy
@@ -54,4 +54,4 @@ The main function of `oneflow.distributed.launch` is to allow users to start dis
 
 But `oneflow.distributed.launch` **does not determine** [Parallel Strategy](./01_introduction.md). The Parallel Strategy is determined by the setup of the distribution method of data and the model, and the placement of those on the physical devices.
 
-OneFlow provides [Consistent View](./02_sbp.md) and [Consistent Tensor](./03_consistent_tensor.md) to flexibly configure parallel strategies. And for data parallelism, OneFlow provides the [DistributedDataParallel](./05_ddp.md) module, which can change the stand-alone single-card script to the script of data parallel with  minimal code modification.
+OneFlow provides [Global View](./02_sbp.md) and [Global Tensor](./03_consistent_tensor.md) to flexibly configure parallel strategies. And for data parallelism, OneFlow provides the [DistributedDataParallel](./05_ddp.md) module, which can change the stand-alone single-card script to the script of data parallel with  minimal code modification.
