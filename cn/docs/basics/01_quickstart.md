@@ -23,7 +23,7 @@ print("Using {} device".format(DEVICE))
 
 ## 加载数据
 
-OneFlow 可以使用 [Dataset 与 Dataloader](./03_dataset_dataloader.md) 加载数据。
+OneFlow 可以使用 [Dataset 与 DataLoader](./03_dataset_dataloader.md) 加载数据。
 
 [flowvision.datasets](https://flowvision.readthedocs.io/en/stable/flowvision.datasets.html) 模块中包含了不少真实的数据集(如 MNIST、CIFAR10、FashionMNIST)。
 

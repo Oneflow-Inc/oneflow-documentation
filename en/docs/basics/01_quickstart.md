@@ -21,9 +21,9 @@ DEVICE = "cuda" if flow.cuda.is_available() else "cpu"
 print("Using {} device".format(DEVICE))
 ```
 
-## Working with Data
+## Loading Data
 
-OneFlow has two primitives to work with data, which are Dataset and Dataloader.
+OneFlow has two primitives to load data, which are [Dataset and DataLoader](./03_dataset_dataloader.md). 
 
 The [flowvision.datasets](https://flowvision.readthedocs.io/en/stable/flowvision.datasets.html)  module contains a number of real data sets (such as MNIST, CIFAR 10, FashionMNIST).
 
