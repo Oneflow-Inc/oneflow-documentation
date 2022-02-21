@@ -2,172 +2,172 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://docs.oneflow.org/v0.4.0/index.html</loc>
-         <lastmod>2022-02-20</lastmod>
+         <lastmod>2022-02-21</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.oneflow.org/v0.4.0/adv_examples/alexnet.html</loc>
-         <lastmod>2022-02-20</lastmod>
+         <lastmod>2022-02-21</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.oneflow.org/v0.4.0/adv_examples/bert.html</loc>
-         <lastmod>2022-02-20</lastmod>
+         <lastmod>2022-02-21</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.oneflow.org/v0.4.0/adv_examples/dcgan.html</loc>
-         <lastmod>2022-02-20</lastmod>
+         <lastmod>2022-02-21</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.oneflow.org/v0.4.0/adv_examples/mask_rcnn.html</loc>
-         <lastmod>2022-02-20</lastmod>
+         <lastmod>2022-02-21</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.oneflow.org/v0.4.0/adv_examples/resnet.html</loc>
-         <lastmod>2022-02-20</lastmod>
+         <lastmod>2022-02-21</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.oneflow.org/v0.4.0/adv_examples/wide_deep.html</loc>
-         <lastmod>2022-02-20</lastmod>
+         <lastmod>2022-02-21</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.oneflow.org/v0.4.0/adv_examples/yolov3.html</loc>
-         <lastmod>2022-02-20</lastmod>
+         <lastmod>2022-02-21</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.oneflow.org/v0.4.0/arch_design/infer_sbp_signature.html</loc>
-         <lastmod>2022-02-20</lastmod>
+         <lastmod>2022-02-21</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.oneflow.org/v0.4.0/arch_design/overview.html</loc>
-         <lastmod>2022-02-20</lastmod>
+         <lastmod>2022-02-21</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.oneflow.org/v0.4.0/basics_topics/async_get.html</loc>
-         <lastmod>2022-02-20</lastmod>
+         <lastmod>2022-02-21</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.oneflow.org/v0.4.0/basics_topics/build_nn_with_op_and_layer.html</loc>
-         <lastmod>2022-02-20</lastmod>
+         <lastmod>2022-02-21</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.oneflow.org/v0.4.0/basics_topics/concept_explanation.html</loc>
-         <lastmod>2022-02-20</lastmod>
+         <lastmod>2022-02-21</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.oneflow.org/v0.4.0/basics_topics/data_input.html</loc>
-         <lastmod>2022-02-20</lastmod>
+         <lastmod>2022-02-21</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.oneflow.org/v0.4.0/basics_topics/distributed_train.html</loc>
-         <lastmod>2022-02-20</lastmod>
+         <lastmod>2022-02-21</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.oneflow.org/v0.4.0/basics_topics/essentials_of_oneflow.html</loc>
-         <lastmod>2022-02-20</lastmod>
+         <lastmod>2022-02-21</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.oneflow.org/v0.4.0/basics_topics/model_load_save.html</loc>
-         <lastmod>2022-02-20</lastmod>
+         <lastmod>2022-02-21</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.oneflow.org/v0.4.0/basics_topics/optimizer_in_function_config.html</loc>
-         <lastmod>2022-02-20</lastmod>
+         <lastmod>2022-02-21</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.oneflow.org/v0.4.0/contribute/intro.html</loc>
-         <lastmod>2022-02-20</lastmod>
+         <lastmod>2022-02-21</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.oneflow.org/v0.4.0/extended_topics/consistent_mirrored.html</loc>
-         <lastmod>2022-02-20</lastmod>
+         <lastmod>2022-02-21</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.oneflow.org/v0.4.0/extended_topics/debug_by_vscode.html</loc>
-         <lastmod>2022-02-20</lastmod>
+         <lastmod>2022-02-21</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.oneflow.org/v0.4.0/extended_topics/how_to_convert_image_to_ofrecord.html</loc>
-         <lastmod>2022-02-20</lastmod>
+         <lastmod>2022-02-21</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.oneflow.org/v0.4.0/extended_topics/how_to_make_ofdataset.html</loc>
-         <lastmod>2022-02-20</lastmod>
+         <lastmod>2022-02-21</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.oneflow.org/v0.4.0/extended_topics/implement_data_loader.html</loc>
-         <lastmod>2022-02-20</lastmod>
+         <lastmod>2022-02-21</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.oneflow.org/v0.4.0/extended_topics/job_function_define_call.html</loc>
-         <lastmod>2022-02-20</lastmod>
+         <lastmod>2022-02-21</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.oneflow.org/v0.4.0/extended_topics/model_mixed_parallel.html</loc>
-         <lastmod>2022-02-20</lastmod>
+         <lastmod>2022-02-21</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.oneflow.org/v0.4.0/extended_topics/ofrecord.html</loc>
-         <lastmod>2022-02-20</lastmod>
+         <lastmod>2022-02-21</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.oneflow.org/v0.4.0/extended_topics/oneflow_convert_tools.html</loc>
-         <lastmod>2022-02-20</lastmod>
+         <lastmod>2022-02-21</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.oneflow.org/v0.4.0/extended_topics/python_kernel_op.html</loc>
-         <lastmod>2022-02-20</lastmod>
+         <lastmod>2022-02-21</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.oneflow.org/v0.4.0/extended_topics/user_op.html</loc>
-         <lastmod>2022-02-20</lastmod>
+         <lastmod>2022-02-21</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.oneflow.org/v0.4.0/extended_topics/watch_watch_diff.html</loc>
-         <lastmod>2022-02-20</lastmod>
+         <lastmod>2022-02-21</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.oneflow.org/v0.4.0/quick_start/install.html</loc>
-         <lastmod>2022-02-20</lastmod>
+         <lastmod>2022-02-21</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.oneflow.org/v0.4.0/quick_start/lenet_mnist.html</loc>
-         <lastmod>2022-02-20</lastmod>
+         <lastmod>2022-02-21</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.oneflow.org/v0.4.0/quick_start/quickstart_in_3_min.html</loc>
-         <lastmod>2022-02-20</lastmod>
+         <lastmod>2022-02-21</lastmod>
          <changefreq>daily</changefreq>
     </url>
 </urlset>

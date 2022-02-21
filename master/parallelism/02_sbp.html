@@ -555,14 +555,14 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#spb-signature" class="md-nav__link">
-    SPB Signature
+  <a href="#sbp-signature" class="md-nav__link">
+    SBP Signature
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#sbp-signature" class="md-nav__link">
+  <a href="#sbp-signature_1" class="md-nav__link">
     SBP Signature 自动推导
   </a>
   
@@ -990,14 +990,14 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#spb-signature" class="md-nav__link">
-    SPB Signature
+  <a href="#sbp-signature" class="md-nav__link">
+    SBP Signature
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#sbp-signature" class="md-nav__link">
+  <a href="#sbp-signature_1" class="md-nav__link">
     SBP Signature 自动推导
   </a>
   
@@ -1062,7 +1062,7 @@
 <p>下图中分别展示了 SBP 的情况，分别是 <code>split(0)</code>、<code>split(1)</code>、<code>broadcast</code> 和 <code>partial sum</code>。</p>
 <p><img alt="SBP Example" src="imgs/sbp-example.png" /></p>
 <p>在创建 Global Tensor 时，可以指定 Tensor 的 SBP，实际的代码例子将在下一篇文章 <a href="03_consistent_tensor.html">Global Tensor</a> 中看到。</p>
-<h2 id="spb-signature">SPB Signature<a class="headerlink" href="#spb-signature" title="Permanent link">&para;</a></h2>
+<h2 id="sbp-signature">SBP Signature<a class="headerlink" href="#sbp-signature" title="Permanent link">&para;</a></h2>
 <p>SBP 描述了全局视角下的数据与物理设备上的数据的映射关系，当进行分布式训练时，OneFlow 根据数据的 SBP 属性，将数据分发到各个物理设备，进行计算，并输出结果。</p>
 <p>对于一个孤立的 Tensor，我们可以随意设置它的 SBP 属性。
 但是，对于一个有输入、输出数据的算子，我们却不可以随意设置它的输入、输出的 SBP 属性。这是因为随意设置一个算子输入输出的 SBP 属性，可能不符合全局视角下算子的运算法则。</p>
@@ -1122,7 +1122,7 @@ B &amp;= concat&amp;(B_0 ,&amp; B_1) \\
 \]</div>
 <p>那么在物理设备上，因为 <span class="arithmatex">\(A_0\)</span> 与 <span class="arithmatex">\(B_0\)</span> 的形状，并不满足矩阵乘法的要求，也就无法在物理设备上完成矩阵乘法。我们可以说， <span class="arithmatex">\(A\)</span> 为 <code>split(0)</code>， <span class="arithmatex">\(B\)</span> 为 <code>split(0)</code> 的 SBP 组合是不合法的。</p>
 <p>我们将上文出现的，对于某个算子，其输入输出的一个 <strong>特定的、合法的 SBP 组合</strong>，称为这个算子的一个 <strong>SBP Signature</strong>。</p>
-<h2 id="sbp-signature">SBP Signature 自动推导<a class="headerlink" href="#sbp-signature" title="Permanent link">&para;</a></h2>
+<h2 id="sbp-signature_1">SBP Signature 自动推导<a class="headerlink" href="#sbp-signature_1" title="Permanent link">&para;</a></h2>
 <p>有了 SBP Signature 的概念后，我们可能会提出几个问题：</p>
 <ul>
 <li>用户是否要知道算子的所有 SBP Signature，才能用 OneFlow 做好分布式训练？</li>
