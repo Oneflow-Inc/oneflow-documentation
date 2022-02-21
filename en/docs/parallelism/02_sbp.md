@@ -126,12 +126,62 @@ Because the shapes of $A_0$ and $B_0$ do not meet the requirements of matrix mul
 
 We defines **a specific, valid SBP combination** of the inputs and outputs of an operator, as shown above, as a **SBP Signature** of this operator.
 
-
-All operators in OneFlow are presetting all possible SBP signatures according to the operator's Operation Rules. The user only needs to set the `placement` and `SBP` attributes of the data, the selection process is transparent to the user.
-
-
+​
+## Automatic derivation of SBP Signature
+​
+With the concept of SBP Signature, we may ask several questions:
+​
+- Does the user need to know all SBP Signature of operators before they use Oneflow for distributed training ？
+- Does the user set the input SBP for each layer of the network as an algorithm engineer?
+​
+For the previous question, the user certainly does not need to know all the SBP Signature of the operator. It is the responsibility of  **operator author** to list all possible SBP Signature of an operator. According to the algorithm of the operator, the operator author has already listed and preset all possible SBP Signatures of the operator when developing it.
+​
+We can also get the answer of the second question: because there is a preset SBP Signature, as long as a certain layer operator has an input SBP, OneFlow can deduce the SBP output by this layer of operator according to the SBP Signature. The output of the upstream operator is also the input of the downstream operator. In this way, the SBP input by the downstream operator is determined, and then its output can be determined according to the SBP Signature... 
+It continues to derive and propagate. So in general the user does not need to set the SBP input for each layer of the network. Explicit specification is only required when the layer is initially input, or when it is necessary to force the SBP of a specific layer.
+​
+The users may also have new questions:
+​
+- There are multiple valid SBP Signatures for an operator. Which one will Oneflow choose when it runs? What is it based on?
+​
+For this problem, you need to understand the **SBP Signature automatic derivation** mechanism in Oneflow. The automatic derivation of SBP Signature refers to: given all the valid SBP Signatures of operators, OneFlow has a set of algorithms that will score each valid SBP Signature based on the transmission cost, and select it with the least transmission cost. This maximizes the throughput efficiency of the system
+​
+### Boxing mechanism
+​
+Strictly the Boxing mechanism of OneFlow is actually transparent to users. When users use OneFlow for distributed training, they do not need to know it. 
+​
+But some thoughtful users will ask some questions after understanding the automatic derivation of SBP Signature:
+​
+- With the SBP Signature automatically selected by OneFlow if the output of the upper layer operator does not match the SBP attribute of the input of the lower layer operator , what should we do?
+​
+For example, in the following code, the output SBP of the upper operator `matmul` was originally `split(0)`, but the input of the lower operator `matmul` was converted to `broadcast`. At this time, the SBP of upper layer's output and of lower layer's input are inconsistent.
+​
+```python
+import oneflow as flow
+P0 = flow.placement("cuda", {0:[0,1]})
+P1 = flow.placement("cuda", {1:[0,1]})
+a0_sbp = flow.sbp.split(0)
+b0_sbp = flow.sbp.broadcast
+y0_sbp = flow.sbp.broadcast
+b1_sbp = flow.sbp.split(1)
+A0 = flow.randn(4, 5, placement=P0, sbp=a0_sbp)
+B0 = flow.randn(5, 8, placement=P0, sbp=b0_sbp)
+Y0 = flow.matmul(A0, B0)
+Y0.to_consistent(placement=P1, sbp=y0_sbp)
+B1 = flow.randn(8, 6, placement=P1, sbp=b1_sbp)
+Y2 = flow.matmul(Y0, B1)
+```
+​
+In this case, Oneflow will detect the inconsistency and insert an operator between the upstream output and the downstream input to do the relevant conversion work. This type of operator that is automatically added for conversion is called **Boxing operator**。
+​
+The corresponding relationship between the logical diagram and thephysical execution diagram of the above code is as follows:
+​
+![](./imgs/sbp_translation.png)
+​
 ## Conclusion
-
-`placement`, `SBP`, and `SBP Signature` are the important guarantee of OneFlow distributed consistent view, which makes OneFlow distributed training as simple as on a single machine single card.
-
+​
+`placement` , `SBP` and `SBP Signature` are the important guarantee of OneFlow distributed consistent view, which makes OneFlow distributed training as simple as on a single machine single card. 
+​
+Usually, the users only need to set `SBP` in the initial network layer, which can omit the trouble of handwritten communication operations in traditional distributed training. It is worth mentioning that, in addtion to the automatic derivation mechanism of SBP Signature introduced in this article, the OneFlow team is developing an automatic parallel method to find the global optimal solution, and it is under internal testing. After it goes online, the users can get a good distributed training effect without any SBP configuration. So stay tuned.
+​
 In the next article [Consistent Tensor](./03_consistent_tensor), we’ll show you an example of programming under the consistent view.
+
