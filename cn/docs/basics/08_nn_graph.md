@@ -288,6 +288,8 @@ print(graph_mobile_net_v2)
 )
 ```
 
+在上面的调试信息中，表示基于 Sequential 模型，网络中自定义了 `ConvBNActivation` (对应 `MBConv` 模块)、卷积层(包括详细的`channel`、`kernel_size`和`stride`等参数信息)、`Dropout` 和全连接层等结构。
+
 如果是 Graph 对象调用后 `print`，除了网络的结构信息外，还会打印输入输出张量的信息，有如下类似效果：
 
 ```text
@@ -321,6 +323,12 @@ print(graph_mobile_net_v2)
 graph_mobile_net_v2.debug(v_level=1) #v_level参数默认值为0
 ```
 
+可以简写为：
+
+```python
+graph_mobile_net_v2.debug(1)
+```
+
 OneFlow 在编译生成计算图的过程中会打印调试信息，比如，将上面例子代码中 `graph_mobile_net_v2.debug()` 的注释去掉，将在控制台上输出如下输出：
 
 ```text
@@ -333,37 +341,25 @@ OneFlow 在编译生成计算图的过程中会打印调试信息，比如，将
 
 当前可以使用 `v_level` 选择详细调试信息级别，默认级别为 0，最大级别为 3。
 
-- v_level=0 时，
-- v_level=1 时，
-- v_level=2 时，
-- v_level=3 时，
+- v_level=0 时，只输出最基础的警告和构图阶段信息，如构图时间。
+- v_level=1 时，将额外打印每个 `nn.Module` 的构图信息，具体内容在下面的表格中介绍。
+- v_level=2 时，在构图阶段，将额外打印每个 `Op` 的创建信息，包括名称、输入内容、设备和 `SBP` 信息等。
+- v_level=3 时，将额外打印每个 `Op` 更详细的信息，如 `loc` 信息方便问题代码定位。
 
 此外，为了开发者对 Graph 对象下的类型有更清晰的认知，下面对 `debug` 输出的内容进行分析，基本包括 `GRAPH`、`CONFIG`、`MODULE`、`PARAMETER`、`BUFFER`、`INPUT` 和 `OUTPUT` 七个等级的标签。
 
-|     header     |                             info                             |                  example                  |
-| :------------: | :----------------------------------------------------------: | :---------------------------------------: |
-|     GRAPH      |                   用户所定义的graph类名称                    | GRAPH:GraphMobileNetV2_0:GraphMobileNetV2 |
-|     CONFIG     | graph的配置信息，如是否处于训练模式，是否开启amp，是否开启checkpoint |    training=True，表示模型处在训练模式    |
-|     MODULE     |                                                              |                                           |
-|   PARAMETER    |                                                              |                                           |
-|     BUFFER     |                                                              |                                           |
-| INPUT & OUPTUT |                                                              |                                           |
-
-
-TODO...
-
-
-
-
-
-
-还可以通过设置 `v_level` 参数，调整 `debug` 的输出详细程度：
-
-```python
-graph_mobile_net_v2.debug(v_level=1)  # 输出详细信息
-```
+|      Name      |                             Info                             |                           Example                            |
+| :------------: | :----------------------------------------------------------: | :----------------------------------------------------------: |
+|     GRAPH      |    用户所定义的 Graph 信息，依次是类型：名字：构造方法。     |        `(GRAPH:GraphMobileNetV2_0:GraphMobileNetV2)`         |
+|     CONFIG     | Graph 的配置信息。如是否处于训练模式，`training=True` 表示 Graph 处于训练模式，如果在 Graph 的预测模式，则对应 `training=False`。 |        `(CONFIG:config:GraphConfig(training=True, )`         |
+|     MODULE     | 对应 `nn.Module` ，MODULE 可以在 Graph 标签下层，同时，多个 MODULE 之间也存在层级关系。 | `(MODULE:model:MobileNetV2())`，其中，`MobileNetV2` 为用户复用 Eager 模式下的 Module 类名。 |
+|   PARAMETER    | 对比 MODULE 给出了更清晰的 weight 和 bias 信息，tensor 的信息可以在这里被发现。在构图时，tensor 的数据内容不太重要，所以只展示了核心信息，这些信息对构建网络更为重要。此外，池化层等往往没有该内容。 | `(PARAMETER:model.features.0.1.weight:tensor(..., device='cuda:0', size=(32,), dtype=oneflow.float32, requires_grad=True))` |
+|     BUFFER     |                在训练时产生的统计特性等内容。                | `(BUFFER:model.features.0.1.running_mean:tensor(..., device='cuda:0', size=(32,), dtype=oneflow.float32))` |
+| INPUT & OUPTUT |                   表示输入输出的张量信息。                   | `(INPUT:_model_input.0.0_2:tensor(..., device='cuda:0', is_lazy='True', size=(16, 3, 32, 32), dtype=oneflow.float32))` |
 
 除了以上介绍的方法外，训练过程中获取参数的梯度、获取 learning rate 等功能，也正在开发中，即将上线。
+
+
 
 ### Graph 的保存与加载
 
