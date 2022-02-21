@@ -7,12 +7,14 @@
 ```python
 import oneflow as flow
 import oneflow.nn as nn
-import oneflow.utils.vision.transforms as transforms
+from flowvision import transforms
+from flowvision import datasets
 ```
+[FlowVision](https://github.com/Oneflow-Inc/vision) 是与 OneFlow 配套的、专用于计算机视觉任务的工具库，包含诸多模型、数据增强方法、数据变换操作、数据集等。我们在这里导入并使用 FlowVision 提供的数据变换模块 `transforms` 和数据集模块 `datasets`。
 
 设置 batch size 以及运行设备：
 
-```
+```python
 BATCH_SIZE=64
 
 DEVICE = "cuda" if flow.cuda.is_available() else "cpu"
@@ -23,12 +25,12 @@ print("Using {} device".format(DEVICE))
 
 OneFlow 可以使用 [Dataset 与 Dataloader](./03_dataset_dataloader.md) 加载数据。
 
-[oneflow.utils.vision.datasets](https://oneflow.readthedocs.io/en/master/utils.html#module-oneflow.utils.vision.datasets) 模块中包含了不少真实的数据集(如 MNIST、CIFAR10、FashionMNIST)。
+[flowvision.datasets](https://flowvision.readthedocs.io/en/stable/flowvision.datasets.html) 模块中包含了不少真实的数据集(如 MNIST、CIFAR10、FashionMNIST)。
 
-我们通过 `oneflow.utils.vision.datasets.FashionMNIST` 获取 FashionMNIST 的训练集和测试集数据。
+我们通过 `flowvision.datasets.FashionMNIST` 获取 FashionMNIST 的训练集和测试集数据。
 
 ```python
-training_data = flow.utils.vision.datasets.FashionMNIST(
+training_data = datasets.FashionMNIST(
     root="data",
     train=True,
     transform=transforms.ToTensor(),
@@ -36,7 +38,7 @@ training_data = flow.utils.vision.datasets.FashionMNIST(
     source_url="https://oneflow-public.oss-cn-beijing.aliyuncs.com/datasets/mnist/Fashion-MNIST/",
 
 )
-test_data = flow.utils.vision.datasets.FashionMNIST(
+test_data = datasets.FashionMNIST(
     root="data",
     train=False,
     transform=transforms.ToTensor(),

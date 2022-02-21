@@ -7,13 +7,14 @@ Let’s start by importing the necessary libraries:
 ```python
 import oneflow as flow
 import oneflow.nn as nn
-import oneflow.utils.vision.transforms as transforms
-
+from flowvision import transforms
+from flowvision import datasets
 ```
+[FlowVision](https://github.com/Oneflow-Inc/vision) is a tool library matching with OneFlow, specific to computer vision tasks. It contains a number of models, data augmentation methods, data transformation operations and datasets. Here we import and use the data transformation module `transforms` and datasets module `datasets` provided by FlowVision.
 
 Settting batch size and device：
 
-```
+```python
 BATCH_SIZE=64
 
 DEVICE = "cuda" if flow.cuda.is_available() else "cpu"
@@ -24,12 +25,12 @@ print("Using {} device".format(DEVICE))
 
 OneFlow has two primitives to work with data, which are Dataset and Dataloader.
 
-The [oneflow.utils.vision.datasets](https://oneflow.readthedocs.io/en/master/utils.html#module-oneflow.utils.vision.datasets) module contains a number of real data sets (such as MNIST, CIFAR 10, FashionMNIST).
+The [flowvision.datasets](https://flowvision.readthedocs.io/en/stable/flowvision.datasets.html)  module contains a number of real data sets (such as MNIST, CIFAR 10, FashionMNIST).
 
-We can use `oneflow.utils.vision.datasets.FashionMNIST` to get the training set and test set data of FashionMNIST.
+We can use `flowvision.datasets.FashionMNIST` to get the training set and test set data of FashionMNIST.
 
 ```python
-training_data = flow.utils.vision.datasets.FashionMNIST(
+training_data = datasets.FashionMNIST(
     root="data",
     train=True,
     transform=transforms.ToTensor(),
@@ -37,7 +38,7 @@ training_data = flow.utils.vision.datasets.FashionMNIST(
     source_url="https://oneflow-public.oss-cn-beijing.aliyuncs.com/datasets/mnist/Fashion-MNIST/",
 
 )
-test_data = flow.utils.vision.datasets.FashionMNIST(
+test_data = datasets.FashionMNIST(
     root="data",
     train=False,
     transform=transforms.ToTensor(),
