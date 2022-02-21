@@ -128,7 +128,7 @@ print(x9.dtype)
 print(x9.device)
 ```
 
-输出结果分别展示了张量的形状、数据类型和所处的设备（第0号 CPU 上，之所以有编号，是因为 OneFlow 很方便自然地支持分布式，可参考 [Consistent Tensor](../parallelism/03_consistent_tensor.md)）
+输出结果分别展示了张量的形状、数据类型和所处的设备（第0号 CPU 上，之所以有编号，是因为 OneFlow 很方便自然地支持分布式，可参考 [Global Tensor](../parallelism/03_consistent_tensor.md)）
 
 ```text
 flow.Size([1, 4])
