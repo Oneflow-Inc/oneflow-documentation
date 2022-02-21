@@ -14,7 +14,7 @@ OneFlow 用户训练好模型后，可以直接通过 Triton 部署模型，并�
 
 ## OneFlow 部署快速上手
 
-OneFlow Cloud 上准备了一个 [图像风格迁移：基于 OneFlow-Serving](https://oneflow.cloud/#/project/public/code?id=2eec2f768cdfe5709dc4c01e389fd65c) 项目，参照项目说明用户可以一键部署项目，并且查看项目运行效果。
+OneFlow Cloud 上准备了一个 [OneFlow Serving: Neural Style Transfer](https://oneflow.cloud/#/project/public/code?id=2eec2f768cdfe5709dc4c01e389fd65c) 项目，参照项目说明用户可以一键部署项目，并且查看项目运行效果。
 
 ![](./imgs/oneflow-serving-demo.png)
 
@@ -22,7 +22,8 @@ OneFlow Cloud 上准备了一个 [图像风格迁移：基于 OneFlow-Serving](h
 
 - `run_cloud.sh` 中启动了 Triton 服务器与 WEB 应用服务器：
 ```bash
-/opt/tritonserver/bin/tritonserver --model-store $(pwd)/model_repo > 1.txt && python3 server.py
+/opt/tritonserver/bin/tritonserver --model-store $(pwd)/model_repo > 1.txt &
+  python3 server.py
 ```
 
 - `server.py` 中只是简单和普通的 URL 路由，真正做推理工作是由 `infer.py` 中的 `stylize` 完成的。`stylize` 函数内部，通过 HTTP 与 Triton 服务器交互得到推理结果。
@@ -149,14 +150,14 @@ input [
   {
     name: "INPUT_0"
     data_type: TYPE_FP32
-    dims: [ 3, 1024, 1024 ]
+    dims: [ 3, 256, 256 ]
   }
 ]
 output [
   {
     name: "OUTPUT_0"
     data_type: TYPE_FP32
-    dims: [ 3, 1024, 1024 ]
+    dims: [ 3, 256, 256 ]
   }
 ]
 ```
@@ -205,7 +206,7 @@ pip3 install tritonclient[all]
 > 实际上，客户端可以通过 [HTTP、gRPC 或者 C API 等多种方式](https://github.com/triton-inference-server/server/blob/main/docs/inference_protocols.md) 与 Triton Server 交互，具体内容可以参阅以上文档。
 
 
-以下代码，是图片进行风格化的核心部分，可以将命令行传递来的图片文件，进行风格化。
+以下代码，是图片进行风格化的核心部分，可以将命令行传递来的图片文件，进行风格化。完整代码可以在云平台上查看，或者下载 [demo.zip](https://oneflow-public.oss-cn-beijing.aliyuncs.com/oneflow-documentation/serving/demo.zip)
 
 ```python
 #...
@@ -218,7 +219,7 @@ if __name__ == '__main__':
                         help='the image to transfer style')
     FLAGS = parser.parse_args()
     triton_client = httpclient.InferenceServerClient(url='127.0.0.1:8000')
-    image, w, h = load_image(FLAGS.image, 1024, 1024)
+    image, w, h = load_image(FLAGS.image, 256, 256)
     inputs = []
     inputs.append(httpclient.InferInput('INPUT_0', image.shape, 'FP32'))
     inputs[0].set_data_from_numpy(image, binary_data=True)
