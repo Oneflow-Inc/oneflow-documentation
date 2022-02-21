@@ -40,7 +40,7 @@ def stylize(content_path, output_path, style='udnie'):
 
 这个简单的在线示例展示了 OneFlow 模型如何通过 Triton 部署，同时也展示业务模块如何与 Triton 服务端交互获取推理结果。
 
-如果你想在本地运行这个例子，也可以下载 [demo.zip](#xxx)，解压后运行其中的 `run.sh` 文件。
+如果你想在本地运行这个例子，也可以下载 [demo.zip](https://oneflow-public.oss-cn-beijing.aliyuncs.com/oneflow-documentation/serving/demo.zip)，解压后运行其中的 `run.sh` 文件。
 
 ```shell
 bash run.sh
