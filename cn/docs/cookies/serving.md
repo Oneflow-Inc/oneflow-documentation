@@ -259,9 +259,9 @@ triton_client = httpclient.InferenceServerClient(url='127.0.0.1:8000')
 ```
 
 
-我们对一只猫进行推理，可以得到如下结果。
+我们用下面的命令，对指定的图片进行推理风格化，结果将会保存在 `result.jpg` 下面。
 
 ```
 $ curl -o cat.jpg https://images.pexels.com/photos/156934/pexels-photo-156934.jpeg
-$ python client.py --image cat.jpg 
+$ python infer.py --image cat.jpg 
 ```
