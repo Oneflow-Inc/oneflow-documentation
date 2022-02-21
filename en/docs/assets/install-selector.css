@@ -1,0 +1,58 @@
+#instruction ul, #instruction li, #instruction p{
+    margin: 0;
+    padding: 0;
+}
+#instruction{
+    padding-top: 20px;
+    width: 700px;
+}
+#instruction ul{
+    display: flex;
+    width: 100%;
+    margin: 10px -3px 0;
+}
+#instruction li{
+    border: 2px solid #FFF;
+    height: 48px;
+    line-height: 48px;
+    cursor: pointer;
+    text-align: center;
+    list-style: none;
+    flex: 1;
+    margin: 0 3px;
+    border-radius: 4px;
+    transition: all .3s;
+}
+#instruction li.active{
+    border: 2px solid #FFFFFF;
+    background: #526cfe6b;
+}
+
+#instruction .command{
+    padding-top: 10px;
+}
+#instruction .panel-code{
+    border-radius: 4px;
+    background: #FFF;
+    color: #333;
+    padding: 20px;
+    margin-top: 10px;
+}
+.smlVers{
+    overflow: hidden;
+}
+
+.command-copy{
+    margin-top: 5px;
+    margin-bottom: 0px;
+    width: 0%;
+    height: 0%;
+    float: right;
+}
+
+@media screen and (max-width: 29.9375em) {
+    #instruction{
+        padding-top: 20px;
+        width: 95%;
+    }
+}
