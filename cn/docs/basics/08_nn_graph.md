@@ -363,7 +363,7 @@ model.load_state_dict(flow.load("./graph_model")) # 加载保存好的模型
 
 ### Graph 与部署
 
-OneFlow 通过对接 Nvidia Triton 实现了训练、部署一体化。
+nn.Graph 支持保存计算图和模型参数，可以很方便的支持模型部署。
 
 如果有模型部署的需求，那么应该通过 `oneflow.save` 接口，将 `Graph` 对象导出为部署需要的格式：
 
