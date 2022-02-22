@@ -1302,7 +1302,7 @@ loss: 6.644351  [  960/50000]
 <li>在 Graph 类的 <code>build</code> 中调用 <code>backward</code>，触发反向传播</li>
 </ol>
 <h3 id="graph_3">Graph 调试<a class="headerlink" href="#graph_3" title="Permanent link">&para;</a></h3>
-<p>可以调用 <code>print</code> 打印 Graph 对象，输出 Graph 对象的信息。</p>
+<p>当前输出 Graph 的调试信息共有两种方式。<strong>第一种</strong> 可以调用 <code>print</code> 打印 Graph 对象，输出 Graph 对象的信息。</p>
 <div class="highlight"><pre><span></span><code><span class="nb">print</span><span class="p">(</span><span class="n">graph_mobile_net_v2</span><span class="p">)</span>
 </code></pre></div>
 <p>根据 Graph 对象是否 <strong>已经被调用过</strong>，输出的效果略有不同：</p>
@@ -1329,6 +1329,7 @@ loss: 6.644351  [  960/50000]
   (MODULE:loss_fn:CrossEntropyLoss()): ()
 )
 </code></pre></div>
+<p>在上面的调试信息中，表示基于 Sequential 模型，网络中自定义了 <code>ConvBNActivation</code> (对应 <code>MBConv</code> 模块)、卷积层(包括详细的 <code>channel</code>、<code>kernel_size</code> 和 <code>stride</code> 等参数信息)、<code>Dropout</code>  和全连接层等结构。</p>
 <p>如果是 Graph 对象调用后 <code>print</code>，除了网络的结构信息外，还会打印输入输出张量的信息，有如下类似效果：</p>
 <div class="highlight"><pre><span></span><code>(GRAPH:GraphMobileNetV2_0:GraphMobileNetV2): (
   (CONFIG:config:GraphConfig(training=True, ))
@@ -1353,16 +1354,67 @@ loss: 6.644351  [  960/50000]
         )
     ...
 </code></pre></div>
-<p>此外，调用 Graph 对象的 <a href="https://oneflow.readthedocs.io/en/master/graph.html#oneflow.nn.Graph.debug">debug</a> 方法，就开启了 Graph 的调试模式。</p>
+<p><strong>第二种</strong> 方式是调用 Graph 对象的 <a href="https://start.oneflow.org/oneflow-api-cn/graph.html#oneflow.nn.Graph.debug">debug</a> 方法，就开启了 Graph 的调试模式。</p>
+<div class="highlight"><pre><span></span><code><span class="n">graph_mobile_net_v2</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">v_level</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="c1"># v_level 参数默认值为 0</span>
+</code></pre></div>
+<p>可以简写为：</p>
+<div class="highlight"><pre><span></span><code><span class="n">graph_mobile_net_v2</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</code></pre></div>
 <p>OneFlow 在编译生成计算图的过程中会打印调试信息，比如，将上面例子代码中 <code>graph_mobile_net_v2.debug()</code> 的注释去掉，将在控制台上输出如下输出：</p>
 <div class="highlight"><pre><span></span><code>(GRAPH:GraphMobileNetV2_0:GraphMobileNetV2) end building graph.
 (GRAPH:GraphMobileNetV2_0:GraphMobileNetV2) start compiling plan and init graph runtime.
 (GRAPH:GraphMobileNetV2_0:GraphMobileNetV2) end compiling plan and init graph rumtime.
 </code></pre></div>
 <p>使用 <code>debug</code> 的好处在于，调试信息是 <strong>边构图、边输出</strong> 的，这样如果构图过程中发生错误，容易发现构图时的问题。</p>
-<p>还可以通过设置 <code>v_level</code> 参数，调整 <code>debug</code> 的输出详细程度：</p>
-<div class="highlight"><pre><span></span><code><span class="n">graph_mobile_net_v2</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">v_level</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># 输出详细信息</span>
-</code></pre></div>
+<p>当前可以使用 <code>v_level</code> 选择详细调试信息级别，默认级别为 0，最大级别为 3。</p>
+<ul>
+<li><code>v_level=0</code> 时，只输出最基础的警告和构图阶段信息，如构图时间。</li>
+<li><code>v_level=1</code> 时，将额外打印每个 <code>nn.Module</code> 的构图信息，具体内容在下面的表格中介绍。</li>
+<li><code>v_level=2</code> 时，在构图阶段，将额外打印每个 Op 的创建信息，包括名称、输入内容、设备和 SBP 信息等。</li>
+<li><code>v_level=3</code> 时，将额外打印每个 Op 更详细的信息，如与代码位置有关的信息，方便定位代码问题。</li>
+</ul>
+<p>此外，为了开发者对 Graph 对象下的类型有更清晰的认知，下面对 <code>debug</code> 输出的内容进行分析，基本包括 <code>GRAPH</code>、<code>CONFIG</code>、<code>MODULE</code>、<code>PARAMETER</code>、<code>BUFFER</code>、<code>INPUT</code> 和 <code>OUTPUT</code> 七个类别的标签。</p>
+<table>
+<thead>
+<tr>
+<th align="center">Name</th>
+<th align="center">Info</th>
+<th align="center">Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center">GRAPH</td>
+<td align="center">用户所定义的 Graph 信息，依次是类型：名字：构造方法。</td>
+<td align="center"><code>(GRAPH:GraphMobileNetV2_0:GraphMobileNetV2)</code></td>
+</tr>
+<tr>
+<td align="center">CONFIG</td>
+<td align="center">Graph 的配置信息。如是否处于训练模式，<code>training=True</code> 表示 Graph 处于训练模式，如果在 Graph 的预测模式，则对应 <code>training=False</code>。</td>
+<td align="center"><code>(CONFIG:config:GraphConfig(training=True, )</code></td>
+</tr>
+<tr>
+<td align="center">MODULE</td>
+<td align="center">对应 <code>nn.Module</code> ，MODULE 可以在 Graph 标签下层，同时，多个 MODULE 之间也存在层级关系。</td>
+<td align="center"><code>(MODULE:model:MobileNetV2())</code>，其中，<code>MobileNetV2</code> 为用户复用 Eager 模式下的 Module 类名。</td>
+</tr>
+<tr>
+<td align="center">PARAMETER</td>
+<td align="center">给出了更清晰的 weight 和 bias 信息。此外，在构图时，tensor 的数据内容不太重要，所以只展示了 tensor 的元信息，这些信息对构建网络更为重要。</td>
+<td align="center"><code>(PARAMETER:model.features.0.1.weight:tensor(..., device='cuda:0', size=(32,), dtype=oneflow.float32, requires_grad=True))</code></td>
+</tr>
+<tr>
+<td align="center">BUFFER</td>
+<td align="center">在训练时产生的统计特性等内容，如 running_mean 和   running_var。</td>
+<td align="center"><code>(BUFFER:model.features.0.1.running_mean:tensor(..., device='cuda:0', size=(32,), dtype=oneflow.float32))</code></td>
+</tr>
+<tr>
+<td align="center">INPUT &amp; OUPTUT</td>
+<td align="center">表示输入输出的张量信息。</td>
+<td align="center"><code>(INPUT:_model_input.0.0_2:tensor(..., device='cuda:0', is_lazy='True', size=(16, 3, 32, 32), dtype=oneflow.float32))</code></td>
+</tr>
+</tbody>
+</table>
 <p>除了以上介绍的方法外，训练过程中获取参数的梯度、获取 learning rate 等功能，也正在开发中，即将上线。</p>
 <h3 id="graph_4">Graph 的保存与加载<a class="headerlink" href="#graph_4" title="Permanent link">&para;</a></h3>
 <p>Graph 复用了 Module 的网络参数，因此 Graph 没有自己的 <code>save</code> 与 <code>load</code> 接口，直接使用 Module 的接口即可。可以参考 <a href="07_model_load_save.html">模型的保存与加载</a> 即可。</p>
