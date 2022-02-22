@@ -1,4 +1,4 @@
-# CONSISTENT VIEW
+# GLOBAL VIEW
 
 The concept of **global view** in OneFlow is introduced to simplify distributed training. In short, the cluster is abstracted as a "Super Computing Device" under OneFlow global view.
 
@@ -161,8 +161,8 @@ For example, in the following code, the output SBP of the upper operator `matmul
 ​
 ```python
 import oneflow as flow
-P0 = flow.placement("cuda", {0:[0,1]})
-P1 = flow.placement("cuda", {1:[0,1]})
+P0 = flow.placement("cuda", ranks=[0, 1])
+P1 = flow.placement("cuda", ranks=[2, 3])
 a0_sbp = flow.sbp.split(0)
 b0_sbp = flow.sbp.broadcast
 y0_sbp = flow.sbp.broadcast
@@ -170,7 +170,7 @@ b1_sbp = flow.sbp.split(1)
 A0 = flow.randn(4, 5, placement=P0, sbp=a0_sbp)
 B0 = flow.randn(5, 8, placement=P0, sbp=b0_sbp)
 Y0 = flow.matmul(A0, B0)
-Y0.to_consistent(placement=P1, sbp=y0_sbp)
+Y0.to_global(placement=P1, sbp=y0_sbp)
 B1 = flow.randn(8, 6, placement=P1, sbp=b1_sbp)
 Y2 = flow.matmul(Y0, B1)
 ```
@@ -183,9 +183,9 @@ The corresponding relationship between the logical diagram and thephysical execu
 ​
 ## Conclusion
 ​
-`placement` , `SBP` and `SBP Signature` are the important guarantee of OneFlow distributed consistent view, which makes OneFlow distributed training as simple as on a single machine single card. 
+`placement` , `SBP` and `SBP Signature` are the important guarantee of OneFlow distributed global view, which makes OneFlow distributed training as simple as on a single machine single card. 
 ​
 Usually, the users only need to set `SBP` in the initial network layer, which can omit the trouble of handwritten communication operations in traditional distributed training. It is worth mentioning that, in addtion to the automatic derivation mechanism of SBP Signature introduced in this article, the OneFlow team is developing an automatic parallel method to find the global optimal solution, and it is under internal testing. After it goes online, the users can get a good distributed training effect without any SBP configuration. So stay tuned.
 ​
-In the next article [Consistent Tensor](./03_consistent_tensor), we’ll show you an example of programming under the consistent view.
+In the next article [Global Tensor](./03_consistent_tensor), we’ll show you an example of programming under the global view.
 
