@@ -253,7 +253,7 @@ class GraphMobileNetV2(flow.nn.Graph):
 
 ### Debugging in Graph Mode
 
-There are two ways to show the debug information of the Graph at present. **The first** You can call `print` to print the Graph object, and show information about it.
+There are two ways to show the debug information of the Graph at present. **Firstly** you can call `print` to print the Graph object, and show information about it.
 
 ```python
 print(graph_mobile_net_v2)
