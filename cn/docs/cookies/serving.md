@@ -86,8 +86,7 @@ model_repository/
 └── fast_neural_style
     ├── 1
     │   └── model
-    ├── config.pbtxt
-    └── labels.txt
+    └── config.pbtxt
 ```
 
 - `model_repository` 是模型仓库根目录，在 triton 启动时，可以通过 `--model-repository` 选项指定模型仓库根目录
@@ -206,7 +205,7 @@ pip3 install tritonclient[all]
 > 实际上，客户端可以通过 [HTTP、gRPC 或者 C API 等多种方式](https://github.com/triton-inference-server/server/blob/main/docs/inference_protocols.md) 与 Triton Server 交互，具体内容可以参阅以上文档。
 
 
-以下代码，是图片进行风格化的核心部分，可以将命令行传递来的图片文件，进行风格化。完整代码可以在云平台上查看，或者下载 [demo.zip](https://oneflow-public.oss-cn-beijing.aliyuncs.com/oneflow-documentation/serving/demo.zip)
+以下代码，是图片进行风格化的核心部分，可以将命令行传递来的图片文件，进行风格化。完整代码可以在 [云平台]((https://oneflow.cloud/#/project/public/code?id=2eec2f768cdfe5709dc4c01e389fd65c)) 上查看，或者下载 [demo.zip](https://oneflow-public.oss-cn-beijing.aliyuncs.com/oneflow-documentation/serving/demo.zip)
 
 ```python
 #...

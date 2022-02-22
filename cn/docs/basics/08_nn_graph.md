@@ -335,11 +335,11 @@ graph_mobile_net_v2.debug(v_level=1)  # 输出详细信息
 
 除了以上介绍的方法外，训练过程中获取参数的梯度、获取 learning rate 等功能，也正在开发中，即将上线。
 
-### Graph 的保存与加载
+### Graph 的保存与加载模型参数
 
-Graph 复用了 Module 的网络参数，因此 Graph 没有自己的 `save` 与 `load` 接口，直接使用 Module 的接口即可。可以参考 [模型的保存与加载](./07_model_load_save.md) 即可。
+Graph 复用了 Module 的网络参数，可以复用 Module 的 `save` 与 `load` 接口。可以参考 [模型的保存与加载](./07_model_load_save.md) 。
 
-如以上的 `graph_mobile_net_v2`，若想保存它的训练结果，其实应该保存它其中的 Module（即之前 `model = flowvision.models.mobilenet_v2().to(DEVICE)` 得到的 `model`。
+如以上的 `graph_mobile_net_v2`，若想保存它的训练后的模型参数，其实应该保存它其中的 Module（即之前 `model = flowvision.models.mobilenet_v2().to(DEVICE)` 得到的 `model`。
 
 ```python
 flow.save(model.state_dict(), "./graph_model")
@@ -371,6 +371,14 @@ OneFlow 通过对接 Nvidia Triton 实现了训练、部署一体化。
 flow.save(graph_mobile_net_v2, "./1/model")
 ```
 
+!!! Note
+    注意和上一节保存模型参数的区别。上一节中保存模型参数会报错，是因为 Graph 初始化对 model 成员进行了处理。这一节中调用 `save` 接口没有问题，`save` 接口直接支持保存 Graph 对象，既保存模型参数，又保存模型结构。
+
+    ```python
+    flow.save(graph_mobile_net_v2.model.state_dict(), "./graph_model")  # 会报错
+    flow.save(graph_mobile_net_v2, "./1/model")
+    ```
+
 这样，`./1/model` 目录下会同时保存部署所需的模型参数和计算图。详细的部署流程可以参阅 [模型部署](../cookies/serving.md) 一文。
 
 因为部署所需的格式，必需通过 Graph 对象导出。所以，如果是 Eager 模式下训练得到的模型（即 `nn.Module` 对象），需要用 `Graph` 将 Module 封装后再导出。
@@ -393,7 +401,7 @@ class MyGraph(nn.Graph):
 
 
 if __name__ == "__main__":
-    fake_image = flow.ones((1, 3, 1024, 1024))
+    fake_image = flow.ones((1, 3, 256, 256))
     model = neural_style_transfer(pretrained=True, progress=True)
     model.eval()
     graph = MyGraph(model)
@@ -403,7 +411,7 @@ if __name__ == "__main__":
 
 以上代码几处的关键代码：
 
-- 定义了一个 `MyGraph` 类，将 `nn.Module` 对象简单地封装一层（`return self.model(*input)`），作为仅仅是将 `nn.Module` 转为 `Graph` 对象。
+- 定义了一个 `MyGraph` 类，将 `nn.Module` 对象简单地封装一层（`return self.model(*input)`），作用仅仅是将 `nn.Module` 转为 `Graph` 对象。
 - 实例化得到 `Graph` 对象（`graph = MyGraph(model)`）
 - 调用一次 `Graph` 实例化对象（`out = graph(fake_image)`）。它内部的机理是利用 “假数据” 在模型中流动一遍（即 tracing 机制）来建立计算图。
 - 导出部署所需的模型：`flow.save(graph, "1/model")`
