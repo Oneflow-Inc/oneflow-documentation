@@ -427,8 +427,8 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#loading-a-dataset" class="md-nav__link">
-    Loading a Dataset
+  <a href="#loading-a-dataset-using-flowvision" class="md-nav__link">
+    Loading a Dataset Using FlowVision
   </a>
   
 </li>
@@ -956,8 +956,8 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#loading-a-dataset" class="md-nav__link">
-    Loading a Dataset
+  <a href="#loading-a-dataset-using-flowvision" class="md-nav__link">
+    Loading a Dataset Using FlowVision
   </a>
   
 </li>
@@ -1001,30 +1001,30 @@
                 
                 
                 <h1 id="datasets-dataloaders">DATASETS &amp; DATALOADERS<a class="headerlink" href="#datasets-dataloaders" title="Permanent link">&para;</a></h1>
-<p>The behavior of OneFlow's <code>Dataset</code> and <code>DataLoader</code> is the same as <a href="https://pytorch.org/tutorials/beginner/basics/data_tutorial.html">PyTorch</a>. Both <code>Dataset</code> and <code>DataLoader</code> are for designed for making dataset management decoupling with model training.</p>
-<p><a href="https://oneflow.readthedocs.io/en/master/utils.html#module-oneflow.utils.vision.datasets">oneflow.utils.vision.datasets</a> provides us a number of classes that can automatically download and load prevailing datasets (such as fashionmnist).</p>
-<p><code>DataLoader</code> wraps data into an iterator, for easy iterating and access to samples during training.</p>
-<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<p>The behavior of OneFlow's <code>Dataset</code> and <code>DataLoader</code> is the same as <a href="https://pytorch.org/tutorials/beginner/basics/data_tutorial.html">PyTorch</a>. Both <code>Dataset</code> and <code>DataLoader</code> are designed for making dataset management decoupling with model training.</p>
+<p><code>Dataset</code> classes are used to define how to read data. For common computer vision datasets (e.g. FashionMNIST), we can use the dataset classes from <code>datasets</code> module of <a href="https://github.com/Oneflow-Inc/vision">FlowVision</a> library. These dataset classes can help us download and load some prevailing datasets automatically, and all of them inherit the <code>Dataset</code> class indirectly. For other datasets, we can define custom dataset classes through inheriting the <code>Dataset</code> class.</p>
+<p><code>DataLoader</code> wraps <code>Dataset</code> into an iterator, for easy iterating and access to samples during training.</p>
+<p><div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 
 <span class="kn">import</span> <span class="nn">oneflow</span> <span class="k">as</span> <span class="nn">flow</span>
 <span class="kn">import</span> <span class="nn">oneflow.nn</span> <span class="k">as</span> <span class="nn">nn</span>
-<span class="kn">from</span> <span class="nn">oneflow.utils.vision.transforms</span> <span class="kn">import</span> <span class="n">ToTensor</span>
 <span class="kn">from</span> <span class="nn">oneflow.utils.data</span> <span class="kn">import</span> <span class="n">Dataset</span>
-<span class="kn">import</span> <span class="nn">oneflow.utils.vision.datasets</span> <span class="k">as</span> <span class="nn">datasets</span>
+<span class="kn">from</span> <span class="nn">flowvision</span> <span class="kn">import</span> <span class="n">datasets</span>
+<span class="kn">from</span> <span class="nn">flowvision</span> <span class="kn">import</span> <span class="n">transforms</span>
 </code></pre></div>
-<h2 id="loading-a-dataset">Loading a Dataset<a class="headerlink" href="#loading-a-dataset" title="Permanent link">&para;</a></h2>
-<p>Here is an example of how to load by <code>Dataset</code>.</p>
-<ul>
-<li><code>root</code>: the path where the train/test data is stored;</li>
-<li><code>train</code>: <code>True</code> for training dataset, <code>False</code> for test dataset;</li>
-<li><code>download=True</code>: downloads the data from the internet if it’s not available at <code>root</code>;</li>
-<li><code>transforms</code>: the feature and label transformations.</li>
-</ul>
+The <a href="https://flowvision.readthedocs.io/en/stable/flowvision.transforms.html">flowvision.transforms</a> imported above provides some image data transformation operations (e.g. <code>ToTensor</code> is able to convert PIL images or NumPy ndarrays to tensors), which can be used in dataset classes directly.</p>
+<h2 id="loading-a-dataset-using-flowvision">Loading a Dataset Using FlowVision<a class="headerlink" href="#loading-a-dataset-using-flowvision" title="Permanent link">&para;</a></h2>
+<p>Here is an example of how to load FashionMNIST dataset by <code>flowvision.datasets</code>.</p>
+<p>We pass the following parameters to the <code>FashionMNIST</code> class:
+- <code>root</code>: the path where the train/test data is stored;
+- <code>train</code>: <code>True</code> for training dataset, <code>False</code> for test dataset;
+- <code>download=True</code>: downloads the data from the internet if it’s not available at <code>root</code>;
+- <code>transforms</code>: the feature and label transformations.</p>
 <div class="highlight"><pre><span></span><code><span class="n">training_data</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">FashionMNIST</span><span class="p">(</span>
     <span class="n">root</span><span class="o">=</span><span class="s2">&quot;data&quot;</span><span class="p">,</span>
     <span class="n">train</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">download</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">transform</span><span class="o">=</span><span class="n">ToTensor</span><span class="p">(),</span>
+    <span class="n">transform</span><span class="o">=</span><span class="n">transforms</span><span class="o">.</span><span class="n">ToTensor</span><span class="p">(),</span>
     <span class="n">source_url</span><span class="o">=</span><span class="s2">&quot;https://oneflow-public.oss-cn-beijing.aliyuncs.com/datasets/mnist/Fashion-MNIST/&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
@@ -1032,7 +1032,7 @@
     <span class="n">root</span><span class="o">=</span><span class="s2">&quot;data&quot;</span><span class="p">,</span>
     <span class="n">train</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">download</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">transform</span><span class="o">=</span><span class="n">ToTensor</span><span class="p">(),</span>
+    <span class="n">transform</span><span class="o">=</span><span class="n">transforms</span><span class="o">.</span><span class="n">ToTensor</span><span class="p">(),</span>
     <span class="n">source_url</span><span class="o">=</span><span class="s2">&quot;https://oneflow-public.oss-cn-beijing.aliyuncs.com/datasets/mnist/Fashion-MNIST/&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 </code></pre></div>
@@ -1148,7 +1148,7 @@ The following example randomly accesses 9 pictures in <code>training_data</code>
 <p><img alt="dataloader item" src="imgs/dataloader_item.png" /></p>
 <div class="highlight"><pre><span></span><code>tensor(9, dtype=oneflow.int64)
 </code></pre></div>
-<p>We can also use the <code>Dataloader</code> iterator during the training loop.</p>
+<p>We can also use the <code>DataLoader</code> iterator during the training loop.</p>
 <div class="highlight"><pre><span></span><code><span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">train_dataloader</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">label</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
     <span class="c1"># training...</span>

@@ -427,8 +427,8 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#dataset" class="md-nav__link">
-    Dataset 加载数据
+  <a href="#flowvision" class="md-nav__link">
+    使用 FlowVision 加载数据集
   </a>
   
 </li>
@@ -441,7 +441,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#dataset_1" class="md-nav__link">
+  <a href="#dataset" class="md-nav__link">
     自定义 Dataset
   </a>
   
@@ -956,8 +956,8 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#dataset" class="md-nav__link">
-    Dataset 加载数据
+  <a href="#flowvision" class="md-nav__link">
+    使用 FlowVision 加载数据集
   </a>
   
 </li>
@@ -970,7 +970,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#dataset_1" class="md-nav__link">
+  <a href="#dataset" class="md-nav__link">
     自定义 Dataset
   </a>
   
@@ -1002,29 +1002,29 @@
                 
                 <h1 id="dataset-dataloader">Dataset 与 DataLoader<a class="headerlink" href="#dataset-dataloader" title="Permanent link">&para;</a></h1>
 <p>OneFlow 的 <code>Dataset</code> 与 <code>DataLoader</code> 的行为与 <a href="https://pytorch.org/tutorials/beginner/basics/data_tutorial.html">PyTorch</a> 的是一致的，都是为了让数据集管理与模型训练解耦。</p>
-<p>在 <a href="https://oneflow.readthedocs.io/en/master/utils.html#module-oneflow.utils.vision.datasets">oneflow.utils.vision.datasets</a> 下，提供的类可以帮助我们自动下载、加载常见的数据集（如 FashionMNIST）。</p>
-<p><code>DataLoader</code> 将数据集封装为迭代器，方便训练时遍历并操作数据。</p>
-<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<p><code>Dataset</code> 类用于定义如何读取数据。对于常见的计算机视觉数据集（如 FashionMNIST），可以直接使用 <a href="https://github.com/Oneflow-Inc/vision">FlowVision</a> 库的 <code>datasets</code> 模块提供的数据集类，可以帮助我们自动下载并加载一些流行的数据集，这些类都间接继承了 <code>Dataset</code> 类。对于其他数据集，可以通过继承 <code>Dataset</code> 类来自定义数据集类。</p>
+<p><code>DataLoader</code> 将 <code>Dataset</code> 封装为迭代器，方便训练时遍历并操作数据。</p>
+<p><div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 
 <span class="kn">import</span> <span class="nn">oneflow</span> <span class="k">as</span> <span class="nn">flow</span>
 <span class="kn">import</span> <span class="nn">oneflow.nn</span> <span class="k">as</span> <span class="nn">nn</span>
-<span class="kn">from</span> <span class="nn">oneflow.utils.vision.transforms</span> <span class="kn">import</span> <span class="n">ToTensor</span>
 <span class="kn">from</span> <span class="nn">oneflow.utils.data</span> <span class="kn">import</span> <span class="n">Dataset</span>
-<span class="kn">import</span> <span class="nn">oneflow.utils.vision.datasets</span> <span class="k">as</span> <span class="nn">datasets</span>
+<span class="kn">from</span> <span class="nn">flowvision</span> <span class="kn">import</span> <span class="n">datasets</span>
+<span class="kn">from</span> <span class="nn">flowvision</span> <span class="kn">import</span> <span class="n">transforms</span>
 </code></pre></div>
-<h2 id="dataset">Dataset 加载数据<a class="headerlink" href="#dataset" title="Permanent link">&para;</a></h2>
-<p>以下的例子展示了如何使用内置的 <code>Dataset</code> 加载数据。</p>
-<ul>
-<li><code>root</code>：数据集存放的路径</li>
-<li><code>train</code>： <code>True</code> 代表下载训练集、<code>False</code> 代表下载测试集</li>
-<li><code>download=True</code>： 如果 <code>root</code> 路径下数据集不存在，则从网络下载</li>
-<li><code>transforms</code>：指定的数据转换方式</li>
-</ul>
+上面导入的 <a href="https://flowvision.readthedocs.io/en/stable/flowvision.transforms.html">flowvision.transforms</a> 提供了一些对图像数据进行变换的操作（如 <code>ToTensor</code> 可以将 PIL 图像或 NumPy 数组转换为张量），可以在数据集类中直接使用。</p>
+<h2 id="flowvision">使用 FlowVision 加载数据集<a class="headerlink" href="#flowvision" title="Permanent link">&para;</a></h2>
+<p>以下的例子展示了如何使用 <code>flowvision.datasets</code> 加载 FashionMNIST 数据集。</p>
+<p>我们向 <code>FashionMNIST</code> 类传入以下参数：
+- <code>root</code>：数据集存放的路径
+- <code>train</code>： <code>True</code> 代表下载训练集、<code>False</code> 代表下载测试集
+- <code>download=True</code>： 如果 <code>root</code> 路径下数据集不存在，则从网络下载
+- <code>transforms</code>：指定的数据转换方式</p>
 <div class="highlight"><pre><span></span><code><span class="n">training_data</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">FashionMNIST</span><span class="p">(</span>
     <span class="n">root</span><span class="o">=</span><span class="s2">&quot;data&quot;</span><span class="p">,</span>
     <span class="n">train</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">download</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">transform</span><span class="o">=</span><span class="n">ToTensor</span><span class="p">(),</span>
+    <span class="n">transform</span><span class="o">=</span><span class="n">transforms</span><span class="o">.</span><span class="n">ToTensor</span><span class="p">(),</span>
     <span class="n">source_url</span><span class="o">=</span><span class="s2">&quot;https://oneflow-public.oss-cn-beijing.aliyuncs.com/datasets/mnist/Fashion-MNIST/&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
@@ -1032,7 +1032,7 @@
     <span class="n">root</span><span class="o">=</span><span class="s2">&quot;data&quot;</span><span class="p">,</span>
     <span class="n">train</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">download</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">transform</span><span class="o">=</span><span class="n">ToTensor</span><span class="p">(),</span>
+    <span class="n">transform</span><span class="o">=</span><span class="n">transforms</span><span class="o">.</span><span class="n">ToTensor</span><span class="p">(),</span>
     <span class="n">source_url</span><span class="o">=</span><span class="s2">&quot;https://oneflow-public.oss-cn-beijing.aliyuncs.com/datasets/mnist/Fashion-MNIST/&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 </code></pre></div>
@@ -1085,7 +1085,7 @@ Extracting data/FashionMNIST/raw/t10k-labels-idx1-ubyte.gz to data/FashionMNIST/
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </code></pre></div>
 <p><img alt="fashionMNIST" src="imgs/fashionMNIST.png" /></p>
-<h2 id="dataset_1">自定义 Dataset<a class="headerlink" href="#dataset_1" title="Permanent link">&para;</a></h2>
+<h2 id="dataset">自定义 Dataset<a class="headerlink" href="#dataset" title="Permanent link">&para;</a></h2>
 <p>通过继承 <a href="https://oneflow.readthedocs.io/en/master/utils.html?highlight=oneflow.utils.data.Dataset#oneflow.utils.data.Dataset">oneflow.utils.data.Dataset</a> 可以实现自定义 <code>Dataset</code>，自定义 <code>Dataset</code> 同样可以配合下一节介绍的 <code>Dataloader</code> 使用，简化数据处理的流程。</p>
 <p>以下的例子展示了如何实现一个自定义 <code>Dataset</code>，它的关键步骤是：</p>
 <ul>
@@ -1148,7 +1148,7 @@ Extracting data/FashionMNIST/raw/t10k-labels-idx1-ubyte.gz to data/FashionMNIST/
 <p><img alt="dataloader item" src="imgs/dataloader_item.png" /></p>
 <div class="highlight"><pre><span></span><code>tensor(9, dtype=oneflow.int64)
 </code></pre></div>
-<p>自然我们也可以在训练的循环中，使用 <code>Dataloader</code> 迭代器：</p>
+<p>自然我们也可以在训练的循环中，使用 <code>DataLoader</code> 迭代器：</p>
 <div class="highlight"><pre><span></span><code><span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">train_dataloader</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">label</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
     <span class="c1"># training...</span>

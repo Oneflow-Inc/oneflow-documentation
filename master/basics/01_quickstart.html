@@ -1017,21 +1017,23 @@
                 <h1 id="_1">快速上手<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
 <p>本文将以训练 FashionMNIST 数据集为例，简单地介绍如何使用 OneFlow 完成深度学习中的常见任务。通过文章中的链接可以跳转到各个子任务的专题介绍。</p>
 <p>详细的介绍请阅读本文。让我们先从导入必要的库开始：</p>
-<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">oneflow</span> <span class="k">as</span> <span class="nn">flow</span>
+<p><div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">oneflow</span> <span class="k">as</span> <span class="nn">flow</span>
 <span class="kn">import</span> <span class="nn">oneflow.nn</span> <span class="k">as</span> <span class="nn">nn</span>
-<span class="kn">import</span> <span class="nn">oneflow.utils.vision.transforms</span> <span class="k">as</span> <span class="nn">transforms</span>
+<span class="kn">from</span> <span class="nn">flowvision</span> <span class="kn">import</span> <span class="n">transforms</span>
+<span class="kn">from</span> <span class="nn">flowvision</span> <span class="kn">import</span> <span class="n">datasets</span>
 </code></pre></div>
+<a href="https://github.com/Oneflow-Inc/vision">FlowVision</a> 是与 OneFlow 配套的、专用于计算机视觉任务的工具库，包含诸多模型、数据增强方法、数据变换操作、数据集等。我们在这里导入并使用 FlowVision 提供的数据变换模块 <code>transforms</code> 和数据集模块 <code>datasets</code>。</p>
 <p>设置 batch size 以及运行设备：</p>
-<div class="highlight"><pre><span></span><code>BATCH_SIZE=64
+<div class="highlight"><pre><span></span><code><span class="n">BATCH_SIZE</span><span class="o">=</span><span class="mi">64</span>
 
-DEVICE = &quot;cuda&quot; if flow.cuda.is_available() else &quot;cpu&quot;
-print(&quot;Using {} device&quot;.format(DEVICE))
+<span class="n">DEVICE</span> <span class="o">=</span> <span class="s2">&quot;cuda&quot;</span> <span class="k">if</span> <span class="n">flow</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">()</span> <span class="k">else</span> <span class="s2">&quot;cpu&quot;</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Using </span><span class="si">{}</span><span class="s2"> device&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">DEVICE</span><span class="p">))</span>
 </code></pre></div>
 <h2 id="_2">加载数据<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
-<p>OneFlow 可以使用 <a href="03_dataset_dataloader.html">Dataset 与 Dataloader</a> 加载数据。</p>
-<p><a href="https://oneflow.readthedocs.io/en/master/utils.html#module-oneflow.utils.vision.datasets">oneflow.utils.vision.datasets</a> 模块中包含了不少真实的数据集(如 MNIST、CIFAR10、FashionMNIST)。</p>
-<p>我们通过 <code>oneflow.utils.vision.datasets.FashionMNIST</code> 获取 FashionMNIST 的训练集和测试集数据。</p>
-<div class="highlight"><pre><span></span><code><span class="n">training_data</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">vision</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">FashionMNIST</span><span class="p">(</span>
+<p>OneFlow 可以使用 <a href="03_dataset_dataloader.html">Dataset 与 DataLoader</a> 加载数据。</p>
+<p><a href="https://flowvision.readthedocs.io/en/stable/flowvision.datasets.html">flowvision.datasets</a> 模块中包含了不少真实的数据集(如 MNIST、CIFAR10、FashionMNIST)。</p>
+<p>我们通过 <code>flowvision.datasets.FashionMNIST</code> 获取 FashionMNIST 的训练集和测试集数据。</p>
+<div class="highlight"><pre><span></span><code><span class="n">training_data</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">FashionMNIST</span><span class="p">(</span>
     <span class="n">root</span><span class="o">=</span><span class="s2">&quot;data&quot;</span><span class="p">,</span>
     <span class="n">train</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">transform</span><span class="o">=</span><span class="n">transforms</span><span class="o">.</span><span class="n">ToTensor</span><span class="p">(),</span>
@@ -1039,7 +1041,7 @@ print(&quot;Using {} device&quot;.format(DEVICE))
     <span class="n">source_url</span><span class="o">=</span><span class="s2">&quot;https://oneflow-public.oss-cn-beijing.aliyuncs.com/datasets/mnist/Fashion-MNIST/&quot;</span><span class="p">,</span>
 
 <span class="p">)</span>
-<span class="n">test_data</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">vision</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">FashionMNIST</span><span class="p">(</span>
+<span class="n">test_data</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">FashionMNIST</span><span class="p">(</span>
     <span class="n">root</span><span class="o">=</span><span class="s2">&quot;data&quot;</span><span class="p">,</span>
     <span class="n">train</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">transform</span><span class="o">=</span><span class="n">transforms</span><span class="o">.</span><span class="n">ToTensor</span><span class="p">(),</span>

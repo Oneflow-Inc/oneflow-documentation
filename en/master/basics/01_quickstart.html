@@ -403,8 +403,8 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#working-with-data" class="md-nav__link">
-    Working with Data
+  <a href="#loading-data" class="md-nav__link">
+    Loading Data
   </a>
   
 </li>
@@ -963,8 +963,8 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#working-with-data" class="md-nav__link">
-    Working with Data
+  <a href="#loading-data" class="md-nav__link">
+    Loading Data
   </a>
   
 </li>
@@ -1017,21 +1017,23 @@
                 <h1 id="quickstart">QUICKSTART<a class="headerlink" href="#quickstart" title="Permanent link">&para;</a></h1>
 <p>This section will take the training process of FashionMNIST as an example to briefly show how OneFlow can be used to accomplish common tasks in deep learning. Refer to the links in each section to the presentation on each subtask.</p>
 <p>Let’s start by importing the necessary libraries:</p>
-<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">oneflow</span> <span class="k">as</span> <span class="nn">flow</span>
+<p><div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">oneflow</span> <span class="k">as</span> <span class="nn">flow</span>
 <span class="kn">import</span> <span class="nn">oneflow.nn</span> <span class="k">as</span> <span class="nn">nn</span>
-<span class="kn">import</span> <span class="nn">oneflow.utils.vision.transforms</span> <span class="k">as</span> <span class="nn">transforms</span>
+<span class="kn">from</span> <span class="nn">flowvision</span> <span class="kn">import</span> <span class="n">transforms</span>
+<span class="kn">from</span> <span class="nn">flowvision</span> <span class="kn">import</span> <span class="n">datasets</span>
 </code></pre></div>
+<a href="https://github.com/Oneflow-Inc/vision">FlowVision</a> is a tool library matching with OneFlow, specific to computer vision tasks. It contains a number of models, data augmentation methods, data transformation operations and datasets. Here we import and use the data transformation module <code>transforms</code> and datasets module <code>datasets</code> provided by FlowVision.</p>
 <p>Settting batch size and device：</p>
-<div class="highlight"><pre><span></span><code>BATCH_SIZE=64
+<div class="highlight"><pre><span></span><code><span class="n">BATCH_SIZE</span><span class="o">=</span><span class="mi">64</span>
 
-DEVICE = &quot;cuda&quot; if flow.cuda.is_available() else &quot;cpu&quot;
-print(&quot;Using {} device&quot;.format(DEVICE))
+<span class="n">DEVICE</span> <span class="o">=</span> <span class="s2">&quot;cuda&quot;</span> <span class="k">if</span> <span class="n">flow</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">()</span> <span class="k">else</span> <span class="s2">&quot;cpu&quot;</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Using </span><span class="si">{}</span><span class="s2"> device&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">DEVICE</span><span class="p">))</span>
 </code></pre></div>
-<h2 id="working-with-data">Working with Data<a class="headerlink" href="#working-with-data" title="Permanent link">&para;</a></h2>
-<p>OneFlow has two primitives to work with data, which are Dataset and Dataloader.</p>
-<p>The <a href="https://oneflow.readthedocs.io/en/master/utils.html#module-oneflow.utils.vision.datasets">oneflow.utils.vision.datasets</a> module contains a number of real data sets (such as MNIST, CIFAR 10, FashionMNIST).</p>
-<p>We can use <code>oneflow.utils.vision.datasets.FashionMNIST</code> to get the training set and test set data of FashionMNIST.</p>
-<div class="highlight"><pre><span></span><code><span class="n">training_data</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">vision</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">FashionMNIST</span><span class="p">(</span>
+<h2 id="loading-data">Loading Data<a class="headerlink" href="#loading-data" title="Permanent link">&para;</a></h2>
+<p>OneFlow has two primitives to load data, which are <a href="03_dataset_dataloader.html">Dataset and DataLoader</a>. </p>
+<p>The <a href="https://flowvision.readthedocs.io/en/stable/flowvision.datasets.html">flowvision.datasets</a>  module contains a number of real data sets (such as MNIST, CIFAR 10, FashionMNIST).</p>
+<p>We can use <code>flowvision.datasets.FashionMNIST</code> to get the training set and test set data of FashionMNIST.</p>
+<div class="highlight"><pre><span></span><code><span class="n">training_data</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">FashionMNIST</span><span class="p">(</span>
     <span class="n">root</span><span class="o">=</span><span class="s2">&quot;data&quot;</span><span class="p">,</span>
     <span class="n">train</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">transform</span><span class="o">=</span><span class="n">transforms</span><span class="o">.</span><span class="n">ToTensor</span><span class="p">(),</span>
@@ -1039,7 +1041,7 @@ print(&quot;Using {} device&quot;.format(DEVICE))
     <span class="n">source_url</span><span class="o">=</span><span class="s2">&quot;https://oneflow-public.oss-cn-beijing.aliyuncs.com/datasets/mnist/Fashion-MNIST/&quot;</span><span class="p">,</span>
 
 <span class="p">)</span>
-<span class="n">test_data</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">vision</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">FashionMNIST</span><span class="p">(</span>
+<span class="n">test_data</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">FashionMNIST</span><span class="p">(</span>
     <span class="n">root</span><span class="o">=</span><span class="s2">&quot;data&quot;</span><span class="p">,</span>
     <span class="n">train</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">transform</span><span class="o">=</span><span class="n">transforms</span><span class="o">.</span><span class="n">ToTensor</span><span class="p">(),</span>
