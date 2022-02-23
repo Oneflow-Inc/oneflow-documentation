@@ -1,6 +1,6 @@
 # 2D SBP
 
-阅读 [集群的一致性视角](./02_sbp.md) 和 [Global Tensor](./03_consistent_tensor.md) 之后，相信你已经掌握了 SBP 和 SBP Signature 的基本概念，并且能够上手相关的编程任务。实际上，以上资料中涉及都是 **1D SBP**。
+阅读 [集群的全局视角](./02_sbp.md) 和 [Global Tensor](./03_consistent_tensor.md) 之后，相信你已经掌握了 SBP 和 SBP Signature 的基本概念，并且能够上手相关的编程任务。实际上，以上资料中涉及都是 **1D SBP**。
 
 本文将在读者掌握 1D SBP 的基础上，介绍 2D SBP，它能够更灵活地应对更复杂的分布式训练场景。
 
