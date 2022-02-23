@@ -12,7 +12,7 @@
 >>> placement1 = flow.placement("cuda", ranks=[0, 1, 2, 3])
 ```
 
-以上的 `"cuda"` 指定了设备类型，`ranks=[0, 1, 2, 3]` 指定了集群中的计算设备。其实，`ranks` 不仅可以是“list of int”，还可以是“list of list”：
+以上的 `"cuda"` 指定了设备类型，`ranks=[0, 1, 2, 3]` 指定了集群中的计算设备。其实，`ranks` 不仅可以是一维的int list，还可以是多维的int数组：
 
 ```python
 placement2 = flow.placement("cuda", ranks=[[0, 1], [2, 3]])
