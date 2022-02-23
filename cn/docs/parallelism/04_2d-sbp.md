@@ -25,7 +25,7 @@ placement2 = flow.placement("cuda", ranks=[[0, 1], [2, 3]])
 
 ## 2D SBP
 
-我们已经知道，构造 Global Tensor 时，需要同时指定 `placement` 与 `SBP`。当 `placement` 中的集群是 2 维的设备阵列时；SBP 也必需与之对应，是一个长度为 2 的 `tuple` 或者 `list`，这个`tuple` 或者 `list` 中的第 0 个、第 1 个 元素，分别描述了 Global Tensor 张量在设备阵列第 0 维、第 1 维的分布。
+我们已经知道，构造 Global Tensor 时，需要同时指定 `placement` 与 `SBP`。当 `placement` 中的集群是 2 维的设备阵列时；SBP 也必需与之对应，是一个长度为 2 的 `tuple`，这个`tuple`中的第 0 个、第 1 个 元素，分别描述了 Global Tensor 张量在设备阵列第 0 维、第 1 维的分布。
 
 比如，以下代码，配置了 $2 \times 2$ 的设备阵列，并且设置 2D SBP 为 `(broadcast, split(0))`。
 
