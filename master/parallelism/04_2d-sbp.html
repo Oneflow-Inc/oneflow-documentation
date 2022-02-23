@@ -999,7 +999,7 @@
                 
                 
                 <h1 id="2d-sbp">2D SBP<a class="headerlink" href="#2d-sbp" title="Permanent link">&para;</a></h1>
-<p>阅读 <a href="02_sbp.html">集群的一致性视角</a> 和 <a href="03_consistent_tensor.html">Global Tensor</a> 之后，相信你已经掌握了 SBP 和 SBP Signature 的基本概念，并且能够上手相关的编程任务。实际上，以上资料中涉及都是 <strong>1D SBP</strong>。</p>
+<p>阅读 <a href="02_sbp.html">集群的全局视角</a> 和 <a href="03_consistent_tensor.html">Global Tensor</a> 之后，相信你已经掌握了 SBP 和 SBP Signature 的基本概念，并且能够上手相关的编程任务。实际上，以上资料中涉及都是 <strong>1D SBP</strong>。</p>
 <p>本文将在读者掌握 1D SBP 的基础上，介绍 2D SBP，它能够更灵活地应对更复杂的分布式训练场景。</p>
 <h2 id="2d">2D 设备阵列<a class="headerlink" href="#2d" title="Permanent link">&para;</a></h2>
 <p>我们已经熟悉 1D SBP 的 placement 配置，在 1D SBP 的场景下，通过 <a href="https://start.oneflow.org/oneflow-api-cn/placement.html#oneflow.placement">oneflow.placement</a> 接口配置集群，比如使用集群中的第 0~3 号 GPU 显卡：</p>
