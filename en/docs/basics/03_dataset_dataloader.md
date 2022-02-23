@@ -1,25 +1,27 @@
 # DATASETS & DATALOADERS
 
-The behavior of OneFlow's `Dataset` and `DataLoader` is the same as [PyTorch](https://pytorch.org/tutorials/beginner/basics/data_tutorial.html). Both `Dataset` and `DataLoader` are for designed for making dataset management decoupling with model training.
+The behavior of OneFlow's `Dataset` and `DataLoader` is the same as [PyTorch](https://pytorch.org/tutorials/beginner/basics/data_tutorial.html). Both `Dataset` and `DataLoader` are designed for making dataset management decoupling with model training.
 
-[oneflow.utils.vision.datasets](https://oneflow.readthedocs.io/en/master/utils.html#module-oneflow.utils.vision.datasets) provides us a number of classes that can automatically download and load prevailing datasets (such as fashionmnist).
+`Dataset` classes are used to define how to read data. For common computer vision datasets (e.g. FashionMNIST), we can use the dataset classes from `datasets` module of [FlowVision](https://github.com/Oneflow-Inc/vision) library. These dataset classes can help us download and load some prevailing datasets automatically, and all of them inherit the `Dataset` class indirectly. For other datasets, we can define custom dataset classes through inheriting the `Dataset` class.
 
-`DataLoader` wraps data into an iterator, for easy iterating and access to samples during training.
+`DataLoader` wraps `Dataset` into an iterator, for easy iterating and access to samples during training.
 
 ```python
 import matplotlib.pyplot as plt
 
 import oneflow as flow
 import oneflow.nn as nn
-from oneflow.utils.vision.transforms import ToTensor
 from oneflow.utils.data import Dataset
-import oneflow.utils.vision.datasets as datasets
+from flowvision import datasets
+from flowvision import transforms
 ```
+The [flowvision.transforms](https://flowvision.readthedocs.io/en/stable/flowvision.transforms.html) imported above provides some image data transformation operations (e.g. `ToTensor` is able to convert PIL images or NumPy ndarrays to tensors), which can be used in dataset classes directly.
 
-## Loading a Dataset
+## Loading a Dataset Using FlowVision
 
-Here is an example of how to load by `Dataset`.
+Here is an example of how to load FashionMNIST dataset by `flowvision.datasets`.
 
+We pass the following parameters to the `FashionMNIST` class:
 - `root`: the path where the train/test data is stored;
 - `train`: `True` for training dataset, `False` for test dataset;
 - `download=True`: downloads the data from the internet if it’s not available at `root`;
@@ -30,7 +32,7 @@ training_data = datasets.FashionMNIST(
     root="data",
     train=True,
     download=True,
-    transform=ToTensor(),
+    transform=transforms.ToTensor(),
     source_url="https://oneflow-public.oss-cn-beijing.aliyuncs.com/datasets/mnist/Fashion-MNIST/",
 )
 
@@ -38,7 +40,7 @@ test_data = datasets.FashionMNIST(
     root="data",
     train=False,
     download=True,
-    transform=ToTensor(),
+    transform=transforms.ToTensor(),
     source_url="https://oneflow-public.oss-cn-beijing.aliyuncs.com/datasets/mnist/Fashion-MNIST/",
 )
 ```
@@ -182,7 +184,7 @@ Output：(output a picture randomly)
 tensor(9, dtype=oneflow.int64)
 ```
 
-We can also use the `Dataloader` iterator during the training loop.
+We can also use the `DataLoader` iterator during the training loop.
 
 ```python
 for x, label in train_dataloader:
