@@ -251,6 +251,22 @@
   
   
     <li class="md-tabs__item">
+      <a href="../cookies/serving.html" class="md-tabs__link">
+        OneFlow Cookies
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
       <a href="https://start.oneflow.org/oneflow-api-cn/" class="md-tabs__link">
         API
       </a>
@@ -531,7 +547,14 @@
         
           <li class="md-nav__item">
   <a href="#graph_4" class="md-nav__link">
-    Graph 的保存与加载
+    Graph 的保存与加载模型参数
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#graph_5" class="md-nav__link">
+    Graph 与部署
   </a>
   
 </li>
@@ -697,11 +720,53 @@
         <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" >
       
       <label class="md-nav__link" for="__nav_4">
+        OneFlow Cookies
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="OneFlow Cookies" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          OneFlow Cookies
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cookies/serving.html" class="md-nav__link">
+        模型部署
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" >
+      
+      <label class="md-nav__link" for="__nav_5">
         API
         <span class="md-nav__icon md-icon"></span>
       </label>
       <nav class="md-nav" aria-label="API" data-md-level="1">
-        <label class="md-nav__title" for="__nav_4">
+        <label class="md-nav__title" for="__nav_5">
           <span class="md-nav__icon md-icon"></span>
           API
         </label>
@@ -736,14 +801,14 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6" type="checkbox" id="__nav_6" >
       
-      <label class="md-nav__link" for="__nav_5">
+      <label class="md-nav__link" for="__nav_6">
         原接口兼容
         <span class="md-nav__icon md-icon"></span>
       </label>
       <nav class="md-nav" aria-label="原接口兼容" data-md-level="1">
-        <label class="md-nav__title" for="__nav_5">
+        <label class="md-nav__title" for="__nav_6">
           <span class="md-nav__icon md-icon"></span>
           原接口兼容
         </label>
@@ -1053,7 +1118,14 @@
         
           <li class="md-nav__item">
   <a href="#graph_4" class="md-nav__link">
-    Graph 的保存与加载
+    Graph 的保存与加载模型参数
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#graph_5" class="md-nav__link">
+    Graph 与部署
   </a>
   
 </li>
@@ -1428,9 +1500,9 @@ loss: 6.644351  [  960/50000]
 </tbody>
 </table>
 <p>除了以上介绍的方法外，训练过程中获取参数的梯度、获取 learning rate 等功能，也正在开发中，即将上线。</p>
-<h3 id="graph_4">Graph 的保存与加载<a class="headerlink" href="#graph_4" title="Permanent link">&para;</a></h3>
-<p>Graph 复用了 Module 的网络参数，因此 Graph 没有自己的 <code>save</code> 与 <code>load</code> 接口，直接使用 Module 的接口即可。可以参考 <a href="07_model_load_save.html">模型的保存与加载</a> 即可。</p>
-<p>如以上的 <code>graph_mobile_net_v2</code>，若想保存它的训练结果，其实应该保存它其中的 Module（即之前 <code>model = flowvision.models.mobilenet_v2().to(DEVICE)</code> 得到的 <code>model</code>。</p>
+<h3 id="graph_4">Graph 的保存与加载模型参数<a class="headerlink" href="#graph_4" title="Permanent link">&para;</a></h3>
+<p>Graph 复用了 Module 的网络参数，可以复用 Module 的 <code>save</code> 与 <code>load</code> 接口。可以参考 <a href="07_model_load_save.html">模型的保存与加载</a> 。</p>
+<p>如以上的 <code>graph_mobile_net_v2</code>，若想保存它的训练后的模型参数，其实应该保存它其中的 Module（即之前 <code>model = flowvision.models.mobilenet_v2().to(DEVICE)</code> 得到的 <code>model</code>。</p>
 <div class="highlight"><pre><span></span><code><span class="n">flow</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span> <span class="s2">&quot;./graph_model&quot;</span><span class="p">)</span>
 </code></pre></div>
 <div class="admonition note">
@@ -1445,6 +1517,50 @@ loss: 6.644351  [  960/50000]
 <span class="n">model</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;./graph_model&quot;</span><span class="p">))</span> <span class="c1"># 加载保存好的模型</span>
 <span class="c1"># ...</span>
 </code></pre></div>
+<h3 id="graph_5">Graph 与部署<a class="headerlink" href="#graph_5" title="Permanent link">&para;</a></h3>
+<p>nn.Graph 支持保存计算图和模型参数，可以很方便的支持模型部署。</p>
+<p>如果有模型部署的需求，那么应该通过 <code>oneflow.save</code> 接口，将 <code>Graph</code> 对象导出为部署需要的格式：</p>
+<div class="highlight"><pre><span></span><code><span class="n">flow</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">graph_mobile_net_v2</span><span class="p">,</span> <span class="s2">&quot;./1/model&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>注意和上一节保存模型参数的区别。上一节中保存模型参数会报错，是因为 Graph 初始化对 model 成员进行了处理。这一节中调用 <code>save</code> 接口没有问题，<code>save</code> 接口直接支持保存 Graph 对象，既保存模型参数，又保存模型结构。</p>
+<div class="highlight"><pre><span></span><code><span class="n">flow</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">graph_mobile_net_v2</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span> <span class="s2">&quot;./graph_model&quot;</span><span class="p">)</span>  <span class="c1"># 会报错</span>
+<span class="n">flow</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">graph_mobile_net_v2</span><span class="p">,</span> <span class="s2">&quot;./1/model&quot;</span><span class="p">)</span>
+</code></pre></div>
+</div>
+<p>这样，<code>./1/model</code> 目录下会同时保存部署所需的模型参数和计算图。详细的部署流程可以参阅 <a href="../cookies/serving.html">模型部署</a> 一文。</p>
+<p>因为部署所需的格式，必需通过 Graph 对象导出。所以，如果是 Eager 模式下训练得到的模型（即 <code>nn.Module</code> 对象），需要用 <code>Graph</code> 将 Module 封装后再导出。</p>
+<p>下面我们以 flowvision 仓库中的 <code>neural_style_transfer</code> 为例子，展示如何封装并导出 <code>nn.Module</code> 模型。</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">oneflow</span> <span class="k">as</span> <span class="nn">flow</span>
+<span class="kn">import</span> <span class="nn">oneflow.nn</span> <span class="k">as</span> <span class="nn">nn</span>
+<span class="kn">from</span> <span class="nn">flowvision.models.neural_style_transfer.stylenet</span> <span class="kn">import</span> <span class="n">neural_style_transfer</span>
+
+
+<span class="k">class</span> <span class="nc">MyGraph</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Graph</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
+
+    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="nb">input</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="o">*</span><span class="nb">input</span><span class="p">)</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">fake_image</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">256</span><span class="p">,</span> <span class="mi">256</span><span class="p">))</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">neural_style_transfer</span><span class="p">(</span><span class="n">pretrained</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">progress</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+    <span class="n">graph</span> <span class="o">=</span> <span class="n">MyGraph</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="n">graph</span><span class="p">(</span><span class="n">fake_image</span><span class="p">)</span>
+    <span class="n">flow</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="s2">&quot;1/model&quot;</span><span class="p">)</span>
+</code></pre></div>
+<p>以上代码几处的关键代码：</p>
+<ul>
+<li>定义了一个 <code>MyGraph</code> 类，将 <code>nn.Module</code> 对象简单地封装一层（<code>return self.model(*input)</code>），作用仅仅是将 <code>nn.Module</code> 转为 <code>Graph</code> 对象。</li>
+<li>实例化得到 <code>Graph</code> 对象（<code>graph = MyGraph(model)</code>）</li>
+<li>调用一次 <code>Graph</code> 实例化对象（<code>out = graph(fake_image)</code>）。它内部的机理是利用 “假数据” 在模型中流动一遍（即 tracing 机制）来建立计算图。</li>
+<li>导出部署所需的模型：<code>flow.save(graph, "1/model")</code></li>
+</ul>
 <h2 id="_1">扩展阅读：动态图与静态图<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
 <p>用户定义的神经网络，都会被深度学习框架转为计算图，如 <a href="05_autograd.html">自动求梯度</a> 中的例子：</p>
 <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">loss</span><span class="p">(</span><span class="n">y_pred</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
