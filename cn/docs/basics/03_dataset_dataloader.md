@@ -2,24 +2,26 @@
 
 OneFlow 的 `Dataset` 与 `DataLoader` 的行为与 [PyTorch](https://pytorch.org/tutorials/beginner/basics/data_tutorial.html) 的是一致的，都是为了让数据集管理与模型训练解耦。
 
-在 [oneflow.utils.vision.datasets](https://oneflow.readthedocs.io/en/master/utils.html#module-oneflow.utils.vision.datasets) 下，提供的类可以帮助我们自动下载、加载常见的数据集（如 FashionMNIST）。
+`Dataset` 类用于定义如何读取数据。对于常见的计算机视觉数据集（如 FashionMNIST），可以直接使用 [FlowVision](https://github.com/Oneflow-Inc/vision) 库的 `datasets` 模块提供的数据集类，可以帮助我们自动下载并加载一些流行的数据集，这些类都间接继承了 `Dataset` 类。对于其他数据集，可以通过继承 `Dataset` 类来自定义数据集类。
 
-`DataLoader` 将数据集封装为迭代器，方便训练时遍历并操作数据。
+`DataLoader` 将 `Dataset` 封装为迭代器，方便训练时遍历并操作数据。
 
 ```python
 import matplotlib.pyplot as plt
 
 import oneflow as flow
 import oneflow.nn as nn
-from oneflow.utils.vision.transforms import ToTensor
 from oneflow.utils.data import Dataset
-import oneflow.utils.vision.datasets as datasets
+from flowvision import datasets
+from flowvision import transforms
 ```
+上面导入的 [flowvision.transforms](https://flowvision.readthedocs.io/en/stable/flowvision.transforms.html) 提供了一些对图像数据进行变换的操作（如 `ToTensor` 可以将 PIL 图像或 NumPy 数组转换为张量），可以在数据集类中直接使用。
 
-## Dataset 加载数据
+## 使用 FlowVision 加载数据集
 
-以下的例子展示了如何使用内置的 `Dataset` 加载数据。
+以下的例子展示了如何使用 `flowvision.datasets` 加载 FashionMNIST 数据集。
 
+我们向 `FashionMNIST` 类传入以下参数：
 - `root`：数据集存放的路径
 - `train`： `True` 代表下载训练集、`False` 代表下载测试集
 - `download=True`： 如果 `root` 路径下数据集不存在，则从网络下载
@@ -30,7 +32,7 @@ training_data = datasets.FashionMNIST(
     root="data",
     train=True,
     download=True,
-    transform=ToTensor(),
+    transform=transforms.ToTensor(),
     source_url="https://oneflow-public.oss-cn-beijing.aliyuncs.com/datasets/mnist/Fashion-MNIST/",
 )
 
@@ -38,7 +40,7 @@ test_data = datasets.FashionMNIST(
     root="data",
     train=False,
     download=True,
-    transform=ToTensor(),
+    transform=transforms.ToTensor(),
     source_url="https://oneflow-public.oss-cn-beijing.aliyuncs.com/datasets/mnist/Fashion-MNIST/",
 )
 ```
@@ -183,7 +185,7 @@ print(label)
 tensor(9, dtype=oneflow.int64)
 ```
 
-自然我们也可以在训练的循环中，使用 `Dataloader` 迭代器：
+自然我们也可以在训练的循环中，使用 `DataLoader` 迭代器：
 
 ```python
 for x, label in train_dataloader:
