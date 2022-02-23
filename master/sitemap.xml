@@ -61,6 +61,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://docs.oneflow.org/master/parallelism/04_2d-sbp.html</loc>
+         <lastmod>2022-02-23</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://docs.oneflow.org/master/parallelism/04_launch.html</loc>
          <lastmod>2022-02-23</lastmod>
          <changefreq>daily</changefreq>
