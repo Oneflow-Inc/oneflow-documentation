@@ -359,13 +359,11 @@ OneFlow 在编译生成计算图的过程中会打印调试信息，比如，将
 
 除了以上介绍的方法外，训练过程中获取参数的梯度、获取 learning rate 等功能，也正在开发中，即将上线。
 
+### Graph 的保存与加载模型参数
 
+Graph 复用了 Module 的网络参数，可以复用 Module 的 `save` 与 `load` 接口。可以参考 [模型的保存与加载](./07_model_load_save.md) 。
 
-### Graph 的保存与加载
-
-Graph 复用了 Module 的网络参数，因此 Graph 没有自己的 `save` 与 `load` 接口，直接使用 Module 的接口即可。可以参考 [模型的保存与加载](./07_model_load_save.md) 即可。
-
-如以上的 `graph_mobile_net_v2`，若想保存它的训练结果，其实应该保存它其中的 Module（即之前 `model = flowvision.models.mobilenet_v2().to(DEVICE)` 得到的 `model`。
+如以上的 `graph_mobile_net_v2`，若想保存它的训练后的模型参数，其实应该保存它其中的 Module（即之前 `model = flowvision.models.mobilenet_v2().to(DEVICE)` 得到的 `model`。
 
 ```python
 flow.save(model.state_dict(), "./graph_model")
@@ -386,6 +384,61 @@ model.classifer = nn.Sequential(nn.Dropout(0.2), nn.Linear(model.last_channel, 1
 model.load_state_dict(flow.load("./graph_model")) # 加载保存好的模型
 # ...
 ```
+
+### Graph 与部署
+
+nn.Graph 支持保存计算图和模型参数，可以很方便的支持模型部署。
+
+如果有模型部署的需求，那么应该通过 `oneflow.save` 接口，将 `Graph` 对象导出为部署需要的格式：
+
+```python
+flow.save(graph_mobile_net_v2, "./1/model")
+```
+
+!!! Note
+    注意和上一节保存模型参数的区别。上一节中保存模型参数会报错，是因为 Graph 初始化对 model 成员进行了处理。这一节中调用 `save` 接口没有问题，`save` 接口直接支持保存 Graph 对象，既保存模型参数，又保存模型结构。
+
+    ```python
+    flow.save(graph_mobile_net_v2.model.state_dict(), "./graph_model")  # 会报错
+    flow.save(graph_mobile_net_v2, "./1/model")
+    ```
+
+这样，`./1/model` 目录下会同时保存部署所需的模型参数和计算图。详细的部署流程可以参阅 [模型部署](../cookies/serving.md) 一文。
+
+因为部署所需的格式，必需通过 Graph 对象导出。所以，如果是 Eager 模式下训练得到的模型（即 `nn.Module` 对象），需要用 `Graph` 将 Module 封装后再导出。
+
+下面我们以 flowvision 仓库中的 `neural_style_transfer` 为例子，展示如何封装并导出 `nn.Module` 模型。
+
+```python
+import oneflow as flow
+import oneflow.nn as nn
+from flowvision.models.neural_style_transfer.stylenet import neural_style_transfer
+
+
+class MyGraph(nn.Graph):
+    def __init__(self, model):
+        super().__init__()
+        self.model = model
+
+    def build(self, *input):
+        return self.model(*input)
+
+
+if __name__ == "__main__":
+    fake_image = flow.ones((1, 3, 256, 256))
+    model = neural_style_transfer(pretrained=True, progress=True)
+    model.eval()
+    graph = MyGraph(model)
+    out = graph(fake_image)
+    flow.save(graph, "1/model")
+```
+
+以上代码几处的关键代码：
+
+- 定义了一个 `MyGraph` 类，将 `nn.Module` 对象简单地封装一层（`return self.model(*input)`），作用仅仅是将 `nn.Module` 转为 `Graph` 对象。
+- 实例化得到 `Graph` 对象（`graph = MyGraph(model)`）
+- 调用一次 `Graph` 实例化对象（`out = graph(fake_image)`）。它内部的机理是利用 “假数据” 在模型中流动一遍（即 tracing 机制）来建立计算图。
+- 导出部署所需的模型：`flow.save(graph, "1/model")`
 
 ## 扩展阅读：动态图与静态图
 
