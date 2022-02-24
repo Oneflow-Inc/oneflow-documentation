@@ -288,7 +288,7 @@ The output for `print` used before `graph_mobile_net_v2` is called is like this:
 )
 ```
 
-In the above debug information, it means that based on Sequential model, the network customizes structures like `ConvBNActivation` ( Corresponds to the `MBConv` module )、convolutional layer( including detailed parameter information such as `channel`、 `kernel_size` and `stride` )、`Dropout`  and fully connected layer etc.
+In the above debug information, it means that based on Sequential model, the network customizes structures such as `ConvBNActivation` ( Corresponds to the `MBConv` module )、convolutional layer( including detailed parameter information such as `channel`、 `kernel_size` and `stride` )、`Dropout`  and fully connected layer.
 
 If you use `print` **after** the Graph object is called, in addition to the structure of the network, it will print inputs and outputs of the tensors, the output on the console is like this:
 
@@ -323,7 +323,7 @@ If you use `print` **after** the Graph object is called, in addition to the stru
 graph_mobile_net_v2.debug(v_level=1) # The defalut of v_level is 0.
 ```
 
-can be abbreviated as:
+which can also be written in a simplified way:
 
 ```python
 graph_mobile_net_v2.debug(1)
@@ -343,8 +343,8 @@ Use `v_level` to choose verbose debug info level, default level is 0, max level 
 
 - `v_level=0` will only print basic information of warning and graph building stages, like graph building time.
 - `v_level=1` will additionally print graph build info of each `nn.Module`, the specific content is described in the table below.
-- `v_level=2` will additionally print graph build info of each operation, including name, input, device and SBP information etc in graph builiding stages.
-- `v_level=3` will additionally print more detailed info of each operation, like information about the location of the code, which is convenient for locating code problems. 
+- `v_level=2` will additionally print graph build info of each operation in graph building stages, including name, input, device, SBP information, etc.
+- `v_level=3` will additionally print more detailed info of each operation, like information about the location of the code, which is convenient for locating problems in file. 
 
 In addition, in order for developers to have a clearer understanding of the types under the Graph object, the following is an analysis of the output of `debug`, which basically includes seven categories of tags: `GRAPH`, `CONFIG`, `MODULE`, `PARAMETER`, `BUFFER`, `INPUT` and `OUTPUT`.
 
