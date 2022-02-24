@@ -288,7 +288,7 @@ The output for `print` used before `graph_mobile_net_v2` is called is like this:
 )
 ```
 
-In the above debug information, it means that based on Sequential model, the network customizes structures such as `ConvBNActivation` ( Corresponds to the `MBConv` module )、convolutional layer( including detailed parameter information such as `channel`、 `kernel_size` and `stride` )、`Dropout`  and fully connected layer.
+In the above debug information, it means that based on Sequential model, the network customizes structures such as `ConvBNActivation` ( Corresponds to the `MBConv` module ), convolutional layer( including detailed parameter information such as `channel`, `kernel_size` and `stride` ), `Dropout`  and fully connected layer.
 
 If you use `print` **after** the Graph object is called, in addition to the structure of the network, it will print inputs and outputs of the tensors, the output on the console is like this:
 
