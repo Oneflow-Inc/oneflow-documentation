@@ -359,13 +359,11 @@ In addition, in order for developers to have a clearer understanding of the type
 
 In addition to the methods described above, getting the parameters of the gradient during the training process, accessing to the learning rate and other functions are also under development and will come up soon.
 
+### Save of Graph and load model paramters
 
+Graph reuses the network parameters of the Module, so Graph could reuse the `save` and `load` interfaces of Module. For more information, you can refer to [Model saving and loading](./07_model_load_save.md).
 
-### Save and Load of Graph
-
-Graph reuses the network parameters of the Module, so Graph does not have its own `save` and `load` interfaces and it directly uses the Module interface. For more information, you can refer to [Model saving and loading](./07_model_load_save.md).
-
-If you want to save the training results of the above `graph_mobile_net_v2`, you can actually save its Module (`model` obtained by `model = flowvision.models.mobilenet_v2().to(DEVICE)` before).
+If you want to save the trained model parameters of the above `graph_mobile_net_v2`, you can actually save its Module (`model` obtained by `model = flowvision.models.mobilenet_v2().to(DEVICE)` before).
 
 ```python
 flow.save(model.state_dict(), "./graph_model")
@@ -387,6 +385,60 @@ model.classifer = nn.Sequential(nn.Dropout(0.2), nn.Linear(model.last_channel, 1
 model.load_state_dict(flow.load("./graph_model")) # Load the saved model
 # ...
 ```
+### Graph and Deployment
+
+nn.Graph supports saving computation graph and model parameters, which can easily support model deployment.
+
+If there is a need for model deployment, the `Graph` object should be exported to the format required for deployment through the `oneflow.save` interface:
+
+```python
+flow.save(graph_mobile_net_v2, "./1/model")
+```
+
+!!! Note
+    Note the difference from the previous section on saving model parameters. Saving model parameters in the previous section will report an error because Graph initialization processes model members. There is no problem in calling the `save` interface in this section. The `save` interface directly supports saving Graph object, saving both model parameters and model structures.
+
+    ```python
+    flow.save(graph_mobile_net_v2.model.state_dict(), "./graph_model")  # it will report an error
+    flow.save(graph_mobile_net_v2, "./1/model")
+    ```
+
+In this way, the `./1/model` directory will save both model parameters and computation graph required for deployment. The detailed deployment process can be found in the [Model Deployment](../cookies/serving.md) article.
+
+Because of the format required for deployment, it must be exported via a Graph object. Therefore, if it is a model (ie `nn.Module` object) trained in Eager mode, you need to use `Graph` to encapsulate the Module and then export it.
+
+We take the `neural_style_transfer` as an example in the flowvision repository to show how to encapsulate and export the `nn.Module` model.
+
+```python
+import oneflow as flow
+import oneflow.nn as nn
+from flowvision.models.neural_style_transfer.stylenet import neural_style_transfer
+
+
+class MyGraph(nn.Graph):
+    def __init__(self, model):
+        super().__init__()
+        self.model = model
+
+    def build(self, *input):
+        return self.model(*input)
+
+
+if __name__ == "__main__":
+    fake_image = flow.ones((1, 3, 256, 256))
+    model = neural_style_transfer(pretrained=True, progress=True)
+    model.eval()
+    graph = MyGraph(model)
+    out = graph(fake_image)
+    flow.save(graph, "1/model")
+```
+
+The key sections in the above code:：
+
+- Define a `MyGraph` class, which simply encapsulates the `nn.Module` object (`return self.model(*input)`), which is only used to convert `nn.Module` into a `Graph` object.
+- Instantiate the `Graph` object（`graph = MyGraph(model)`).
+- Call once instantiated `Graph` object (`out = graph(fake_image)`). Its internal mechanism is to use "fake data" to flow through the model (that is, the tracing mechanism) to build a computation graph.
+- Export the model required for deployment:`flow.save(graph, "1/model")`
 
 ## Further Reading: Dynamic Graph vs. Static Graph
 
