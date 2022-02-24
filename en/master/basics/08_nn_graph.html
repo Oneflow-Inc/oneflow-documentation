@@ -1302,7 +1302,7 @@ loss: 6.644351  [  960/50000]
 <li>Call <code>backward</code> in Graph's <code>build</code> to trigger back propagation.</li>
 </ol>
 <h3 id="debugging-in-graph-mode">Debugging in Graph Mode<a class="headerlink" href="#debugging-in-graph-mode" title="Permanent link">&para;</a></h3>
-<p>You can call <code>print</code> to print the Graph object, and show information about it.</p>
+<p>There are two ways to show the debug information of the Graph at present. <strong>Firstly</strong> you can call <code>print</code> to print the Graph object, and show information about it.</p>
 <div class="highlight"><pre><span></span><code><span class="nb">print</span><span class="p">(</span><span class="n">graph_mobile_net_v2</span><span class="p">)</span>
 </code></pre></div>
 <p>The output is slightly different depending on whether the Graph object <strong>has been called</strong>:</p>
@@ -1329,6 +1329,7 @@ loss: 6.644351  [  960/50000]
   (MODULE:loss_fn:CrossEntropyLoss()): ()
 )
 </code></pre></div>
+<p>In the above debug information, it means that based on Sequential model, the network customizes structures such as <code>ConvBNActivation</code> ( Corresponds to the <code>MBConv</code> module ), convolutional layer( including detailed parameter information such as <code>channel</code>, <code>kernel_size</code> and <code>stride</code> ), <code>Dropout</code>  and fully connected layer.</p>
 <p>If you use <code>print</code> <strong>after</strong> the Graph object is called, in addition to the structure of the network, it will print inputs and outputs of the tensors, the output on the console is like this:</p>
 <div class="highlight"><pre><span></span><code>(GRAPH:GraphMobileNetV2_0:GraphMobileNetV2): (
   (CONFIG:config:GraphConfig(training=True, ))
@@ -1353,16 +1354,67 @@ loss: 6.644351  [  960/50000]
         )
     ...
 </code></pre></div>
-<p>In addition, by calling the <a href="https://oneflow.readthedocs.io/en/master/graph.html#oneflow.nn.Graph.debug">debug</a> method of Graph objects, Graph’s debug mode is turned on.</p>
+<p><strong>The second</strong> way is that by calling the <a href="https://oneflow.readthedocs.io/en/master/graph.html#oneflow.nn.Graph.debug">debug</a> method of Graph objects, Graph’s debug mode is turned on.</p>
+<div class="highlight"><pre><span></span><code><span class="n">graph_mobile_net_v2</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">v_level</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="c1"># The defalut of v_level is 0.</span>
+</code></pre></div>
+<p>which can also be written in a simplified way:</p>
+<div class="highlight"><pre><span></span><code><span class="n">graph_mobile_net_v2</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</code></pre></div>
 <p>OneFlow prints debug information when it compiles the computation graph. If the <code>graph_mobile_net_v2.debug()</code> is removed from the example code above, the output on the console is like this:</p>
 <div class="highlight"><pre><span></span><code>(GRAPH:GraphMobileNetV2_0:GraphMobileNetV2) end building graph.
 (GRAPH:GraphMobileNetV2_0:GraphMobileNetV2) start compiling plan and init graph runtime.
 (GRAPH:GraphMobileNetV2_0:GraphMobileNetV2) end compiling plan and init graph rumtime.
 </code></pre></div>
 <p>The advantage of using <code>debug</code>  is that the debug information is composed and printed at the same time, which makes it easy to find the problem if there is any error in the graph building process.</p>
-<p>The Level of detail of <code>debug</code> 's output can be adjusted by setting the <code>v_level</code> parameter:</p>
-<div class="highlight"><pre><span></span><code><span class="n">graph_mobile_net_v2</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">v_level</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># print the detailed information</span>
-</code></pre></div>
+<p>Use <code>v_level</code> to choose verbose debug info level, default level is 0, max level is 3. </p>
+<ul>
+<li><code>v_level=0</code> will only print basic information of warning and graph building stages, like graph building time.</li>
+<li><code>v_level=1</code> will additionally print graph build info of each <code>nn.Module</code>, the specific content is described in the table below.</li>
+<li><code>v_level=2</code> will additionally print graph build info of each operation in graph building stages, including name, input, device, SBP information, etc.</li>
+<li><code>v_level=3</code> will additionally print more detailed info of each operation, like information about the location of the code, which is convenient for locating problems in file. </li>
+</ul>
+<p>In addition, in order for developers to have a clearer understanding of the types under the Graph object, the following is an analysis of the output of <code>debug</code>, which basically includes seven categories of tags: <code>GRAPH</code>, <code>CONFIG</code>, <code>MODULE</code>, <code>PARAMETER</code>, <code>BUFFER</code>, <code>INPUT</code> and <code>OUTPUT</code>.</p>
+<table>
+<thead>
+<tr>
+<th align="center">Name</th>
+<th align="center">Info</th>
+<th align="center">Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center">GRAPH</td>
+<td align="center">User-defined Graph information, followed by type: name: construction method.</td>
+<td align="center"><code>(GRAPH:GraphMobileNetV2_0:GraphMobileNetV2)</code></td>
+</tr>
+<tr>
+<td align="center">CONFIG</td>
+<td align="center">Graph configuration information. <code>training=True</code> indicates that the Graph is in training mode, and if in the evaluation mode, it corresponds to <code>training=False</code>.</td>
+<td align="center"><code>(CONFIG:config:GraphConfig(training=True, )</code></td>
+</tr>
+<tr>
+<td align="center">MODULE</td>
+<td align="center">Corresponding to <code>nn.Module</code> , MODULE can be under the Graph tag, and there is also a hierarchical relationship between multiple modules.</td>
+<td align="center"><code>(MODULE:model:MobileNetV2())</code>, and  <code>MobileNetV2</code> reuses the Module class name in Eager mode for users.</td>
+</tr>
+<tr>
+<td align="center">PARAMETER</td>
+<td align="center">Shows the clearer information of weight and bias. In addition, when building the graph, the data content of the tensor is less important, so it is more important for building network to only display the meta information of the tensor.</td>
+<td align="center"><code>(PARAMETER:model.features.0.1.weight:tensor(..., device='cuda:0', size=(32,), dtype=oneflow.float32, requires_grad=True))</code></td>
+</tr>
+<tr>
+<td align="center">BUFFER</td>
+<td align="center">Statistical characteristics and other content generated during training, such as running_mean and running_var.</td>
+<td align="center"><code>(BUFFER:model.features.0.1.running_mean:tensor(..., device='cuda:0', size=(32,), dtype=oneflow.float32))</code></td>
+</tr>
+<tr>
+<td align="center">INPUT &amp; OUPTUT</td>
+<td align="center">Tensor information representing input and output.</td>
+<td align="center"><code>(INPUT:_model_input.0.0_2:tensor(..., device='cuda:0', is_lazy='True', size=(16, 3, 32, 32), dtype=oneflow.float32))</code></td>
+</tr>
+</tbody>
+</table>
 <p>In addition to the methods described above, getting the parameters of the gradient during the training process, accessing to the learning rate and other functions are also under development and will come up soon.</p>
 <h3 id="save-and-load-of-graph">Save and Load of Graph<a class="headerlink" href="#save-and-load-of-graph" title="Permanent link">&para;</a></h3>
 <p>Graph reuses the network parameters of the Module, so Graph does not have its own <code>save</code> and <code>load</code> interfaces and it directly uses the Module interface. For more information, you can refer to <a href="07_model_load_save.html">Model saving and loading</a>.</p>
