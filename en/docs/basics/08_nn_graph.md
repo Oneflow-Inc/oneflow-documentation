@@ -359,7 +359,7 @@ In addition, in order for developers to have a clearer understanding of the type
 
 In addition to the methods described above, getting the parameters of the gradient during the training process, accessing to the learning rate and other functions are also under development and will come up soon.
 
-### Save of Graph and load model paramters
+### Save of Graph and Load Model Paramters
 
 Graph reuses the network parameters of the Module, so Graph could reuse the `save` and `load` interfaces of Module. For more information, you can refer to [Model saving and loading](./07_model_load_save.md).
 
@@ -433,7 +433,7 @@ if __name__ == "__main__":
     flow.save(graph, "1/model")
 ```
 
-The key sections in the above code:：
+The key points in the above code:
 
 - Define a `MyGraph` class, which simply encapsulates the `nn.Module` object (`return self.model(*input)`), which is only used to convert `nn.Module` into a `Graph` object.
 - Instantiate the `Graph` object（`graph = MyGraph(model)`).
