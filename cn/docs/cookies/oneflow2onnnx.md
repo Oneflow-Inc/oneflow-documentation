@@ -14,7 +14,7 @@ ONNX 对应多个相关库，常见的几个库的功能如下所述。本教程
 - [onnxoptimizer](https://github.com/onnx/optimizer): 用于通过图变换等方式优化 ONNX 模型。
 
 
-## 将 OneFlow 模型 导出为 ONNX 模型
+## 将 OneFlow 模型导出为 ONNX 模型
 [oneflow-onnx](https://github.com/Oneflow-Inc/oneflow_convert) 是 OneFlow 官方提供的模型转换工具，支持将 OneFlow 静态图模型导出为 ONNX 模型。目前 oneflow-onnx 支持80多种 OneFlow OP 导出为 ONNX OP，具体可参见：[OneFlow2ONNX 支持的OP列表](https://github.com/Oneflow-Inc/oneflow_convert/blob/main/docs/oneflow2onnx/op_list.md)。
 
 ### 安装 oneflow-onnx
