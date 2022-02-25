@@ -361,7 +361,7 @@ In addition to the methods described above, getting the parameters of the gradie
 
 ### Save of Graph and Load Model Paramters
 
-Graph reuses the network parameters of the Module, so Graph could reuse the `save` and `load` interfaces of Module. For more information, you can refer to [Model saving and loading](./07_model_load_save.md).
+Graph reuses the network parameters of the Module, such as the `save` and `load` interfaces. For more information, you can refer to [Model saving and loading](./07_model_load_save.md).
 
 If you want to save the trained model parameters of the above `graph_mobile_net_v2`, you can actually save its Module (`model` obtained by `model = flowvision.models.mobilenet_v2().to(DEVICE)` before).
 
@@ -396,7 +396,7 @@ flow.save(graph_mobile_net_v2, "./1/model")
 ```
 
 !!! Note
-    Note the difference from the previous section on saving model parameters. Saving model parameters in the previous section will report an error because Graph initialization processes model members. There is no problem in calling the `save` interface in this section. The `save` interface directly supports saving Graph object, saving both model parameters and model structures.
+    Note the difference from the previous section on saving model parameters. It will report an error because Graph initialization processes model members. There is no problem in calling the `save` interface in this section. The `save` interface directly supports saving Graph object, saving both model parameters and model structures.
 
     ```python
     flow.save(graph_mobile_net_v2.model.state_dict(), "./graph_model")  # it will report an error
