@@ -253,7 +253,7 @@ class GraphMobileNetV2(flow.nn.Graph):
 
 ### Debugging in Graph Mode
 
-You can call `print` to print the Graph object, and show information about it.
+There are two ways to show the debug information of the Graph at present. **Firstly** you can call `print` to print the Graph object, and show information about it.
 
 ```python
 print(graph_mobile_net_v2)
@@ -288,6 +288,8 @@ The output for `print` used before `graph_mobile_net_v2` is called is like this:
 )
 ```
 
+In the above debug information, it means that based on Sequential model, the network customizes structures such as `ConvBNActivation` ( Corresponds to the `MBConv` module ), convolutional layer( including detailed parameter information such as `channel`, `kernel_size` and `stride` ), `Dropout`  and fully connected layer.
+
 If you use `print` **after** the Graph object is called, in addition to the structure of the network, it will print inputs and outputs of the tensors, the output on the console is like this:
 
 ```text
@@ -315,8 +317,17 @@ If you use `print` **after** the Graph object is called, in addition to the stru
     ...
 ```
 
+**The second** way is that by calling the [debug](https://oneflow.readthedocs.io/en/master/graph.html#oneflow.nn.Graph.debug) method of Graph objects, Graph’s debug mode is turned on.
 
-In addition, by calling the [debug](https://oneflow.readthedocs.io/en/master/graph.html#oneflow.nn.Graph.debug) method of Graph objects, Graph’s debug mode is turned on.
+```python
+graph_mobile_net_v2.debug(v_level=1) # The defalut of v_level is 0.
+```
+
+which can also be written in a simplified way:
+
+```python
+graph_mobile_net_v2.debug(1)
+```
 
 OneFlow prints debug information when it compiles the computation graph. If the `graph_mobile_net_v2.debug()` is removed from the example code above, the output on the console is like this:
 
@@ -328,13 +339,27 @@ OneFlow prints debug information when it compiles the computation graph. If the 
 
 The advantage of using `debug`  is that the debug information is composed and printed at the same time, which makes it easy to find the problem if there is any error in the graph building process.
 
-The Level of detail of `debug` 's output can be adjusted by setting the `v_level` parameter:
+Use `v_level` to choose verbose debug info level, default level is 0, max level is 3. 
 
-```python
-graph_mobile_net_v2.debug(v_level=1)  # print the detailed information
-```
+- `v_level=0` will only print basic information of warning and graph building stages, like graph building time.
+- `v_level=1` will additionally print graph build info of each `nn.Module`, the specific content is described in the table below.
+- `v_level=2` will additionally print graph build info of each operation in graph building stages, including name, input, device, SBP information, etc.
+- `v_level=3` will additionally print more detailed info of each operation, like information about the location of the code, which is convenient for locating problems in file. 
+
+In addition, in order for developers to have a clearer understanding of the types under the Graph object, the following is an analysis of the output of `debug`, which basically includes seven categories of tags: `GRAPH`, `CONFIG`, `MODULE`, `PARAMETER`, `BUFFER`, `INPUT` and `OUTPUT`.
+
+|      Name      |                             Info                             |                           Example                            |
+| :------------: | :----------------------------------------------------------: | :----------------------------------------------------------: |
+|     GRAPH      |    User-defined Graph information, followed by type: name: construction method.     |        `(GRAPH:GraphMobileNetV2_0:GraphMobileNetV2)`         |
+|     CONFIG     | Graph configuration information. `training=True` indicates that the Graph is in training mode, and if in the evaluation mode, it corresponds to `training=False`.|        `(CONFIG:config:GraphConfig(training=True, )`         |
+|     MODULE     | Corresponding to `nn.Module` , MODULE can be under the Graph tag, and there is also a hierarchical relationship between multiple modules. | `(MODULE:model:MobileNetV2())`, and  `MobileNetV2` reuses the Module class name in Eager mode for users. |
+|   PARAMETER    | Shows the clearer information of weight and bias. In addition, when building the graph, the data content of the tensor is less important, so it is more important for building network to only display the meta information of the tensor. | `(PARAMETER:model.features.0.1.weight:tensor(..., device='cuda:0', size=(32,), dtype=oneflow.float32, requires_grad=True))` |
+|     BUFFER     |                Statistical characteristics and other content generated during training, such as running_mean and running_var.                | `(BUFFER:model.features.0.1.running_mean:tensor(..., device='cuda:0', size=(32,), dtype=oneflow.float32))` |
+| INPUT & OUPTUT |                   Tensor information representing input and output.                   | `(INPUT:_model_input.0.0_2:tensor(..., device='cuda:0', is_lazy='True', size=(16, 3, 32, 32), dtype=oneflow.float32))` |
 
 In addition to the methods described above, getting the parameters of the gradient during the training process, accessing to the learning rate and other functions are also under development and will come up soon.
+
+
 
 ### Save and Load of Graph
 
