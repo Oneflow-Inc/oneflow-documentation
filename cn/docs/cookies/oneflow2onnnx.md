@@ -52,7 +52,7 @@ export_onnx_model(graph,
 ```
 各参数的含义如下:
 
-1. graph: 需要转换的 graph (oneflow.nn.Graph 类类型的对象)
+1. graph: 需要转换的 graph ( [Graph](../basics/08_nn_graph.md) 对象)
 
 2. external_data: 将权重另存为 ONNX 模型的外部数据，通常是为了避免 protobuf 的 2GB 文件大小限制
 
