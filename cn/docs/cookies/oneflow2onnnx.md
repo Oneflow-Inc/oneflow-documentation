@@ -75,10 +75,10 @@ convert_to_onnx_and_check(...)
 `convert_to_onnx_and_check` 函数的参数是 `export_onnx_model` 函数的参数的超集，可以额外传入 `print_outlier=True` 来输出检查过程中发现的超出合理误差范围内的异常值。
 
 ### 导出模型时的注意点
-* 在导出模型之前，需要将模型设置成 eval 模式，因为 dropout、BatchNorm 等操作在训练和推理模型下的行为不同
-* 在构建静态图模型时，需要指定一个输入，此输入的值可以是随机的，但要保证它是正确的数据类型和形状
-* ONNX 模型接受的输入的形状是固定的，batch 维度的大小可以是变化的，通过将 `dynamic_batch_size` 参数设为 `True` 可以使得导出的 ONNX 模型支持动态 batch 大小
-* oneflow-onnx 必须使用静态图模型（ Graph 模式）作为导出函数的参数。对于动态图模型（Eager 模式），需要将动态图模型构建为静态图模型，可参见下文的示例。
+- 在导出模型之前，需要将模型设置成 eval 模式，因为 dropout、BatchNorm 等操作在训练和推理模型下的行为不同
+- 在构建静态图模型时，需要指定一个输入，此输入的值可以是随机的，但要保证它是正确的数据类型和形状
+- ONNX 模型接受的输入的形状是固定的，batch 维度的大小可以是变化的，通过将 `dynamic_batch_size` 参数设为 `True` 可以使得导出的 ONNX 模型支持动态 batch 大小
+- oneflow-onnx 必须使用静态图模型（Graph 模式）作为导出函数的参数。对于动态图模型（Eager 模式），需要将动态图模型构建为静态图模型，可参见下文的示例。
 
 
 ## 用法示例
