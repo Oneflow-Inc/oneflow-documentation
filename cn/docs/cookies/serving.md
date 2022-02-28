@@ -14,7 +14,7 @@ OneFlow 用户训练好模型后，可以直接通过 Triton 部署模型，并�
 
 ## OneFlow 部署快速上手
 
-OneFlow Cloud 上准备了一个 [OneFlow Serving: Neural Style Transfer](https://oneflow.cloud/#/project/public/code?id=2eec2f768cdfe5709dc4c01e389fd65c) 项目，参照项目说明用户可以一键部署项目，并且查看项目运行效果。
+OneFlow Cloud 上准备了一个 [OneFlow Serving: Neural Style Transfer](https://oneflow.cloud/#/project/public/code?id=7fc904d8dbe0069820da5d6d32a764fe) 项目，参照项目说明用户可以一键部署项目，并且查看项目运行效果。
 
 ![](./imgs/oneflow-serving-demo.png)
 
