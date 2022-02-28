@@ -71,7 +71,6 @@ export_onnx_model(graph,
 from oneflow_onnx.oneflow2onnx.util import convert_to_onnx_and_check
 
 convert_to_onnx_and_check(...)
-```
 `convert_to_onnx_and_check` 函数的参数是 `export_onnx_model` 函数的参数的超集，可以额外传入 `print_outlier=True` 来输出检查过程中发现的超出合理误差范围内的异常值。
 
 ### 导出模型时的注意点
