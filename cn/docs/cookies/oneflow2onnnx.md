@@ -49,7 +49,7 @@ export_onnx_model(graph,
 
 1. graph: 需要转换的 graph ( [Graph](../basics/08_nn_graph.md) 对象)
 
-2. external_data: 将权重另存为 ONNX 模型的外部数据，通常是为了避免 protobuf 的 2GB 文件大小限制
+2. external_data: 是否将权重另存为 ONNX 模型的外部数据，为 `True` 时通常是为了避免 protobuf 的 2GB 文件大小限制
 
 3. opset: 指定转换模型的版本 ( int，默认为 10 )
 
@@ -132,7 +132,7 @@ convert_to_onnx_and_check(resnet34_graph,
 
 ### 使用 ONNX 模型进行推理
 
-进行推理之前，要保证已经安装了 ONNX Runtime, 即 onnxruntime 或 onnxruntime-gpu。在本教程的实验环境中，安装的是 onnxruntime-gpu 以优先调用 GPU 进行计算，如果运行的机器上没有可用的 GPU，则会使用 CPU。
+进行推理之前，要保证已经安装了 ONNX Runtime, 即 onnxruntime 或 onnxruntime-gpu。在本教程的实验环境中，安装的是 onnxruntime-gpu 以调用 GPU 进行计算，但如果机器上没有 GPU，也可以指定使用 CPU 进行计算，详见下文。
 
 我们使用下面这张图像作为模型的输入：
 <div align="center">
@@ -174,7 +174,7 @@ def preprocess_image(img, input_hw = (224, 224)):
 
 接下来，使用 ONNX 模型进行推理，主要步骤包括：创建一个 InferenceSession 对象，然后调用其 `run` 方法进行推理。
 
-在 onnxruntime(-gpu) 1.9 及以上版本中，创建 InferenceSession 对象时需要显式指定 `providers` 参数来选择使用的硬件。对于 onnxruntime-gpu，可以指定的值包括 `TensorrtExecutionProvider`、`CUDAExecutionProvider`、`CPUExecutionProvider`。推理时将会按照此先后顺序依次尝试调用对应的硬件进行计算。
+在 onnxruntime(-gpu) 1.9 及以上版本中，创建 InferenceSession 对象时需要显式指定 `providers` 参数来选择使用的硬件。对于 onnxruntime-gpu，可以指定的值包括 `TensorrtExecutionProvider`、`CUDAExecutionProvider`、`CPUExecutionProvider`。如果运行的机器上没有 GPU，可以将 `providers` 参数指定为 `['CPUExecutionProvider']` 来使用 CPU 进行计算。
 
 ONNX 模型的输入数据的类型是一个 dict，其 keys 为导出 ONNX 模型时的输入名称 "input names"，values 为 NumPy 数组类型的实际输入数据。可以通过 InferenceSession 对象的 `get_inputs` 方法获取"input names"，该方法的返回值是 `onnxruntime.NodeArg` 类型的对象组成的 list，对于 NodeArg 对象，可使用其 `name` 属性获取 str 类型的名称。在本教程中，输入只有图像数据本身，因此可以通过在 InferenceSession 对象上调用 `.get_inputs()[0].name`，获取输入对应的 "input names"，其值为 `_ResNet34Graph_0-input_0/out`，将此值作为 key 构造输入 ONNX 模型的 dict。当然，也可以不预先指定，而在运行时动态获取。
 
@@ -206,4 +206,4 @@ InferenceSession 对象的 `run` 方法的输出是 NumPy 数组构成的 list�
 285: 'Egyptian cat',
 ```
 
-以上推理是在 Python 环境下进行的，实际使用时可以根据部署环境选择不同的 ONNX Runtime 来使用导出的 ONNX 模型。
+以上是在 Python 环境中使用 GPU 或 CPU 进行推理，实际使用时可以根据部署环境选择不同的 ONNX Runtime 来使用导出的 ONNX 模型。
