@@ -8,7 +8,8 @@
 [ONNX](https://onnx.ai/index.html) 的全称为 Open Neural Network Exchange (开放神经网络交换)，是一种针对机器学习算法所设计的开放式文件格式标准，用于存储训练好的算法模型。许多主流的深度学习框架（如 OneFlow、PyTorch、TensorFlow、MXNet）都支持将模型导出为 ONNX 模型。ONNX 使得不同的深度学习框架可以以一种统一的格式存储模型数据以及进行交互。另外，ONNX 有相应的运行时（Runtime）—— [ONNX Runtime](https://onnxruntime.ai/)，便于在多种平台（Linux、Windows、Mac OS、Android、iOS等）及多种硬件（CPU、GPU等）上进行模型部署和推理。
 
 ### ONNX 相关库
-ONNX 对应多个相关库，常见的几个库的功能如下所述。本教程中主要涉及 onnxruntime-gpu。
+
+ONNX 对应多个相关库，常见的几个库的功能如下所述。本教程中涉及的是 onnxruntime-gpu，可通过 `pip install onnxruntime-gpu` 进行安装。
 
 1. [onnx](https://github.com/onnx/onnx): ONNX 模型格式标准
 
@@ -20,24 +21,18 @@ ONNX 对应多个相关库，常见的几个库的功能如下所述。本教程
 
 
 ## 将 OneFlow 模型导出为 ONNX 模型
+
 [oneflow-onnx](https://github.com/Oneflow-Inc/oneflow_convert) 是 OneFlow 团队提供的模型转换工具，支持将 OneFlow 静态图模型导出为 ONNX 模型。目前 oneflow-onnx 支持 80 多种 OneFlow OP 导出为 ONNX OP，具体可参见：[OneFlow2ONNX 支持的OP列表](https://github.com/Oneflow-Inc/oneflow_convert/blob/main/docs/oneflow2onnx/op_list.md)。
 
 ### 安装 oneflow-onnx
-oneflow-onnx 独立于 OneFlow，需要单独安装。安装方式如下所述：
 
-通过 pip 安装：
-```python
+oneflow-onnx 独立于 OneFlow，需要单独通过 pip 安装：
+```bash
 pip install oneflow-onnx
 ```
 
-通过源码安装：
-```python
-git clone https://github.com/Oneflow-Inc/oneflow_convert
-cd oneflow_convert
-python3 setup.py install
-```
-
 ### oneflow-onnx 的使用方法
+
 要将 OneFlow 静态图模型导出为 ONNX 模型，只需调用 `export_onnx_model` 函数。
 
 ```python
@@ -71,19 +66,23 @@ export_onnx_model(graph,
 from oneflow_onnx.oneflow2onnx.util import convert_to_onnx_and_check
 
 convert_to_onnx_and_check(...)
+```
 `convert_to_onnx_and_check` 函数的参数是 `export_onnx_model` 函数的参数的超集，可以额外传入 `print_outlier=True` 来输出检查过程中发现的超出合理误差范围内的异常值。
 
 ### 导出模型时的注意点
-- 在导出模型之前，需要将模型设置成 eval 模式，因为 dropout、BatchNorm 等操作在训练和推理模型下的行为不同
+
+- 在导出模型之前，需要将模型设置成 eval 模式，因为 Dropout、Batch Normalization 等操作在训练和推理模型下的行为不同
 - 在构建静态图模型时，需要指定一个输入，此输入的值可以是随机的，但要保证它是正确的数据类型和形状
 - ONNX 模型接受的输入的形状是固定的，batch 维度的大小可以是变化的，通过将 `dynamic_batch_size` 参数设为 `True` 可以使得导出的 ONNX 模型支持动态 batch 大小
 - oneflow-onnx 必须使用静态图模型（Graph 模式）作为导出函数的参数。对于动态图模型（Eager 模式），需要将动态图模型构建为静态图模型，可参见下文的示例。
 
 
 ## 用法示例
+
 在本节中，将以常见的 ResNet-34 模型为例，介绍将 OneFlow 模型导出为 ONNX 模型并进行推理的流程。我们在此直接使用 [FlowVision](https://github.com/Oneflow-Inc/vision) 库提供的 ResNet-34 模型，并使用 FlowVision 提供的在 ImageNet 数据集上训练得到的 ResNet-34 权重。
 
 ### 导出为 ONNX 模型
+
 导入相关依赖：
 ```python
 import oneflow as flow
@@ -130,7 +129,8 @@ convert_to_onnx_and_check(resnet34_graph,
 运行完毕后，可以在当前目录中找到名为 `model.onnx` 的文件，即导出的 ONNX 模型。
 
 ### 使用 ONNX 模型进行推理
-进行推理之前，要保证已经安装了 ONNX Runtime, 即 onnxruntime 或 onnxruntime-gpu。在本教程的实验环境中，安装的是 onnxruntime-gpu 以调用 GPU 进行计算。
+
+进行推理之前，要保证已经安装了 ONNX Runtime, 即 onnxruntime 或 onnxruntime-gpu。在本教程的实验环境中，安装的是 onnxruntime-gpu 以优先调用 GPU 进行计算，如果运行的机器上没有可用的 GPU，则会使用 CPU。
 
 我们使用下面这张图像作为模型的输入：
 <div align="center">
