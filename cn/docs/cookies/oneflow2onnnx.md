@@ -94,6 +94,7 @@ from oneflow_onnx.oneflow2onnx.util import convert_to_onnx_and_check
 ```
 
 使用动态图模型构建静态图模型，详情请参见：[静态图模块 nn.Graph](../basics/08_nn_graph.md)
+
 ```python
 class ResNet34Graph(nn.Graph):
     def __init__(self, eager_model):
