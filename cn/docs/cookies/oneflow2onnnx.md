@@ -8,10 +8,14 @@
 
 ### ONNX 相关库
 ONNX 对应多个相关库，常见的几个库的功能如下所述。本教程中主要涉及 onnxruntime-gpu。
-- [onnx](https://github.com/onnx/onnx): ONNX 模型格式标准。
-- [onnxruntime & onnxruntime-gpu](https://github.com/microsoft/onnxruntime): ONNX 运行时，用于加载 ONNX 模型进行推理。onnxruntime 和 onnxruntime-gpu 分别支持 CPU 推理和 GPU推理。
-- [onnx-simplifier](https://github.com/daquexian/onnx-simplifier): 用于简化 ONNX 模型的结构，例如消除结果恒为常量的算子。
-- [onnxoptimizer](https://github.com/onnx/optimizer): 用于通过图变换等方式优化 ONNX 模型。
+
+1. [onnx](https://github.com/onnx/onnx): ONNX 模型格式标准
+
+2. [onnxruntime & onnxruntime-gpu](https://github.com/microsoft/onnxruntime): ONNX 运行时，用于加载 ONNX 模型进行推理。onnxruntime 和 onnxruntime-gpu 分别支持 CPU 推理和 GPU推理
+
+3. [onnx-simplifier](https://github.com/daquexian/onnx-simplifier): 用于简化 ONNX 模型的结构，例如消除结果恒为常量的算子
+   
+4. [onnxoptimizer](https://github.com/onnx/optimizer): 用于通过图变换等方式优化 ONNX 模型
 
 
 ## 将 OneFlow 模型导出为 ONNX 模型
@@ -46,12 +50,18 @@ export_onnx_model(graph,
                   dynamic_batch_size=False)
 ```
 各参数的含义如下:
-- graph: 需要转换的 graph (oneflow.nn.Graph 类类型的对象)。
-- external_data: 将权重另存为 ONNX 模型的外部数据，通常是为了避免 protobuf 的 2GB 文件大小限制。
-- opset: 指定转换模型的版本 (int，默认为 `oneflow_onnx.constants.PREFERRED_OPSET`)。
-- flow_weight_dir: OneFlow模型权重的保存路径。
-- onnx_model_path: 导出的 ONNX 模型保存路径。用户需要调用 `check_point.save(flow_weight_dir)`，等待OneFlow模型权重保存完成。
-- dynamic_batch_size: 导出的 ONNX 模型是否支持动态 batch，默认为False。
+
+1. graph: 需要转换的 graph (oneflow.nn.Graph 类类型的对象)
+
+2. external_data: 将权重另存为 ONNX 模型的外部数据，通常是为了避免 protobuf 的 2GB 文件大小限制
+
+3. opset: 指定转换模型的版本 (int，默认为 `oneflow_onnx.constants.PREFERRED_OPSET`)
+
+4. flow_weight_dir: OneFlow 模型权重的保存路径
+
+5. onnx_model_path: 导出的 ONNX 模型保存路径
+
+6. dynamic_batch_size: 导出的 ONNX 模型是否支持动态 batch，默认为False
 
 
 另外，oneflow-onnx 还提供了一个名为 `convert_to_onnx_and_check` 的函数，用于转换并检查转换出的 ONNX 模型。其中的检查指的是将同样的输入分别送入原本的 OneFlow 模型和转换后的 ONNX 模型，然后比较两个输出中对应的每个数值之差是否在合理的误差范围内。
@@ -64,10 +74,10 @@ convert_to_onnx_and_check(...)
 `convert_to_onnx_and_check` 函数的参数是 `export_onnx_model` 函数的参数的超集，可以额外传入 `print_outlier=True` 来输出检查过程中发现的超出合理误差范围内的异常值。
 
 ### 导出模型时的注意点
-- 在导出模型之前，需要将模型设置成 eval 模式，因为 dropout、BatchNorm 等操作在训练和推理模型下的行为不同
-- 在构建静态图模型时，需要指定一个输入，此输入的值可以是随机的，但要保证它是正确的数据类型和形状
-- ONNX 模型接受的输入的形状是固定的，batch 维度的大小可以是变化的，通过将 `dynamic_batch_size` 参数设为 `True` 可以使得导出的 ONNX 模型支持动态 batch 大小
-- oneflow-onnx 必须使用静态图模型（ Graph 模式）作为导出函数的参数。对于动态图模型（Eager 模式），需要将动态图模型构建为静态图模型，可参见下文的示例。
+* 在导出模型之前，需要将模型设置成 eval 模式，因为 dropout、BatchNorm 等操作在训练和推理模型下的行为不同
+* 在构建静态图模型时，需要指定一个输入，此输入的值可以是随机的，但要保证它是正确的数据类型和形状
+* ONNX 模型接受的输入的形状是固定的，batch 维度的大小可以是变化的，通过将 `dynamic_batch_size` 参数设为 `True` 可以使得导出的 ONNX 模型支持动态 batch 大小
+* oneflow-onnx 必须使用静态图模型（ Graph 模式）作为导出函数的参数。对于动态图模型（Eager 模式），需要将动态图模型构建为静态图模型，可参见下文的示例。
 
 
 ## 用法示例
