@@ -4,7 +4,8 @@
 
 
 ## ONNX 简介
-[ONNX](https://onnx.ai/index.html) 的全称为 Open Neural Network Exchange (开放神经网络交换)，是一种针对机器学习算法所设计的开放式文件格式标准，用于存储训练好的算法模型。许多主流的深度学习框架（如 OneFlow、PyTorch、TensorFlow、MXNet）都支持将模型导出为 ONNX 模型。ONNX 使得不同的深度学习框架可以以一种统一的格式存储模型数据以及进行交互。另外，ONNX 有相应的运行时（Runtime）—— [ONNX Runtime](https://onnxruntime.ai/)，便于在多种平台（Linux、Windows、Mac OS、Android、iOS等）及多种硬件（CPU、GPU等）上进行模型部署和推理。ONNX 模型也可以作为一种中间格式，便于多种框架下的模型互相转换。
+
+[ONNX](https://onnx.ai/index.html) 的全称为 Open Neural Network Exchange (开放神经网络交换)，是一种针对机器学习算法所设计的开放式文件格式标准，用于存储训练好的算法模型。许多主流的深度学习框架（如 OneFlow、PyTorch、TensorFlow、MXNet）都支持将模型导出为 ONNX 模型。ONNX 使得不同的深度学习框架可以以一种统一的格式存储模型数据以及进行交互。另外，ONNX 有相应的运行时（Runtime）—— [ONNX Runtime](https://onnxruntime.ai/)，便于在多种平台（Linux、Windows、Mac OS、Android、iOS等）及多种硬件（CPU、GPU等）上进行模型部署和推理。
 
 ### ONNX 相关库
 ONNX 对应多个相关库，常见的几个库的功能如下所述。本教程中主要涉及 onnxruntime-gpu。
