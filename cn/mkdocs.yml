@@ -130,8 +130,8 @@ nav:
       - 流水并行训练: parallelism/06_pipeline.md
 
     - OneFlow Cookies:
-      - 模型部署: cookies/serving.md
       - OneFlow 与 ONNX 交互: cookies/oneflow2onnnx.md
+      - 模型部署: cookies/serving.md
 
     - API:
       - API: https://start.oneflow.org/oneflow-api-cn/
