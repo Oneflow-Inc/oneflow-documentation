@@ -12,9 +12,9 @@ This document is divided into the following three sections:
 - Introduction to OneFlow Serving Architecture
 - Process from Model Training to Deployment in OneFlow
 
-## Quick Start of OneFlow deployment
+## Quick Start 
 
-[OneFlow Serving: Neural Style Transfer](https://oneflow.cloud/#/project/public/code?id=2eec2f768cdfe5709dc4c01e389fd65c) is available on OneFlow Cloud. By referring to the project description, you can deploy the project and see the running result with just one click.
+[OneFlow Serving: Neural Style Transfer](https://oneflow.cloud/#/project/public/code?id=7fc904d8dbe0069820da5d6d32a764fe) is available on OneFlow Cloud. By referring to the project description, you can deploy the project and see the running result with just one click.
 
 ![](./imgs/oneflow-serving-demo.png)
 
@@ -49,7 +49,7 @@ bash run.sh
 
 Next we will introduce the detailed process from training to deployment in OneFlow.
 
-## Analysis of OneFlow Process from Training to Deployment
+## Process from Model Training to Deployment in OneFlow
 
 The following figure gives you a general description of the relationship between OneFlow and Triton.
 
@@ -68,7 +68,7 @@ After understanding these basic concepts, let's analyze the process from model t
 - Start service
 - Client sending request
 
-### Model Save
+### Model Saving
 
 The model trained in Graph mode can be directly exported in the required format for deployment through `oneflow.save`; if it is trained in Eager mode, after simple conversion, it can be exported in the required format. For details, refer to [Graph and Deployment](../basics/08_nn_graph.md#graph_5).
 
@@ -76,9 +76,9 @@ The model trained in Graph mode can be directly exported in the required format 
 
 Triton has certain requirements for the layout of the model, so we need follow [Triton's convention](https://github.com/triton-inference-server/server/blob/main/docs/model_repository.md#repository-layout) to organize the model layout and write related configuration files.
 
-**Directory Structure**
+**Layout**
 
-In this example program, the model files are placed in the `model_repository` directory, and its structure conforms to Triton's conventions. Let's see how it is organized and explain:
+In this example program, the model files are placed in the `model_repository` directory, and its layout conforms to Triton's conventions. Let's see how it is organized and explain:
 
 ```
 $ tree  -L 3 model_repository/
