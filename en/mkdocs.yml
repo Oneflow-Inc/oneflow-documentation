@@ -127,5 +127,8 @@ nav:
       - Data Parallelism Training: parallelism/05_ddp.md
       - Pipelining Parallelism: parallelism/06_pipeline.md
 
+    - OneFlow Cookies:
+      - Model Deployment: cookies/serving.md
+
     - API:
       - API: https://oneflow.readthedocs.io/en/master/
