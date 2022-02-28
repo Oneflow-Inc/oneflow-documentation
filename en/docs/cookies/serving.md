@@ -1,20 +1,20 @@
 #  Model Deployment
 
-Trained model needs to go through "Model Deployment" before it can be integrated into the product and launched. Because the software and hardware environment and the connection method between models and business modules may change when the product is launched, the deployed solutions are also varied. For example, some schemes convert the trained model to other formats (such as ONNX), and then rely on a specific runtime deployment; some schemes will directly use C/C++ and other languages that can generate native code to re-implement the model, and introduce code optimization in pursuit of hardware adaptation or deployment performance.
+Trained model needs to go through "Model Deployment" before it can be integrated into the product and launched. Because the software and hardware environment and the connection method between models and business modules may change when the product is launched, the deployed solutions are also varied. For example, some solutions convert the trained model to other formats (such as ONNX), and then rely on a specific runtime deployment; some solutions will directly use C/C++ or other languages that can generate native code to re-implement the model, and introduce code optimization in pursuit of hardware adaptation or deployment performance.
 
 OneFlow provides services for the model by docking with the [Triton Inference Server](https://github.com/Triton-inference-server/server). 
 
-OneFlow developers can deploy the model directly through Triton after training the model, use the rich features of Triton, such as Dynamic batching, Model Pipelines and HTTP/gRPC interface, and integrate it into online products quickly and efficiently.
+After training the model, OneFlow's users can deploy the model directly through Triton, use the rich features of Triton, such as Dynamic batching, Model Pipelines, and HTTP/gRPC interface to integrate it into online products quickly and efficiently.
 
-Contents of this article：
+This document is divided into the following three sections:
 
-- Quick Start of OneFlow deployment
+- Quick Start
 - Introduction to OneFlow Serving Architecture
-- Analysis of OneFlow Process from Training to Deployment
+- Process from Model Training to Deployment in OneFlow
 
 ## Quick Start of OneFlow deployment
 
-The project [OneFlow Serving: Neural Style Transfer](https://oneflow.cloud/#/project/public/code?id=2eec2f768cdfe5709dc4c01e389fd65c) has been prepared on OneFlow Cloud. Referring to the description, developers can deploy the project with one click and view the running result.
+[OneFlow Serving: Neural Style Transfer](https://oneflow.cloud/#/project/public/code?id=2eec2f768cdfe5709dc4c01e389fd65c) is available on OneFlow Cloud. By referring to the project description, you can deploy the project and see the running result with just one click.
 
 ![](./imgs/oneflow-serving-demo.png)
 
@@ -26,7 +26,7 @@ Analyzing the code, we can find the following key points:
   python3 server.py
 ```
 
-- `server.py` is just simple and normal URL routing, so `stylize` in `infer.py` does the real inference work. Its result is obtained inside the `stylize` function through interacting with the HTTP and Triton server.
+- There are simple and normal URL routings in `server.py` file and `stylize` in `infer.py` does the inference work. Its result is obtained inside the `stylize` function through interacting with the HTTP and Triton server.
 ```python
 def stylize(content_path, output_path, style='udnie'):
     triton_client = httpclient.InferenceServerClient(url='127.0.0.1:8000')
@@ -37,44 +37,44 @@ def stylize(content_path, output_path, style='udnie'):
     ...
 ```
 
-- Pretrained models are placed under `model_repo`, which is organized according to Triton's conventions.
+- Pretrained models are placed under `model_repo`, whose format is organized according to Triton's conventions.
 
-This simple online example illustrates that how the OneFlow model can be deployed through Triton and how business modules interact with the Triton server to obtain inference results.
+This simple online example illustrates how OneFlow models can be deployed through Triton and how business modules interact with the Triton server to obtain inference results.
 
-If you want to run this example locally, you can also download [demo.zip](https://oneflow-public.oss-cn-beijing.aliyuncs.com/oneflow-documentation/serving/demo.zip), unzip it and run the file `run.sh` in it.
+If you want to run this example locally, download [demo.zip](https://oneflow-public.oss-cn-beijing.aliyuncs.com/oneflow-documentation/serving/demo.zip), then unzip it and run the file `run.sh`.
 
 ```shell
 bash run.sh
 ```
 
-Next we will introduce the detailed process of OneFlow from training to deployment in detail.
+Next we will introduce the detailed process from training to deployment in OneFlow.
 
 ## Analysis of OneFlow Process from Training to Deployment
 
-Firstly we can understand the relationship between OneFlow and Triton in general through the following figure.
+The following figure gives you a general description of the relationship between OneFlow and Triton.
 
 ![](./imgs/triton-oneflow-backend.png)
 
-As can be seen from the above figure, Triton is in the position of connecting the client and OneFlow: it provides HTTP, gRPC and C interfaces, so that developers can flexibly make an inference request and get the result. 
+It can be seen that Triton is in the position of connecting the client and OneFlow: it provides HTTP, gRPC, and C interfaces, so that users can flexibly make an inference request and get the result. 
 
-OneFlow and Model Repository provide Triton in its architecture with back-end reasoning capabilities together. OneFlow provides a corresponding interface to export the trained model to the organizational format that is preset by Triton.
+In Triton's architecture, OneFlow and Model Repository provide Triton with back-end inference capabilities. OneFlow provides a corresponding interface to export the trained model to the organizational format that is preset by Triton.
 
-In addition, Triton also provides built-in functions such as task scheduling to ensure performance. For details, please refer to [Triton's official documentation](https://github.com/triton-inference-server/server#features).
+In addition, Triton also provides built-in features such as task scheduling to ensure better performance. For details, refer to [Triton's official documentation](https://github.com/triton-inference-server/server#features).
 
-After understanding these basic concepts, let's analyze the process of OneFlow from model training to deployment in detail:
+After understanding these basic concepts, let's analyze the process from model training to deployment in OneFlow:
 
-- Model save
+- Model saving
 - Model deployment
 - Start service
-- Client sends request
+- Client sending request
 
 ### Model Save
 
-The model trained in Graph mode can be directly exported to the format required for deployment through `oneflow.save`; if it is trained in Eager mode, it can be exported to the required format after simple conversion. For details, please refer to [Graph and Deployment](../basics/08_nn_graph.md#graph_5).
+The model trained in Graph mode can be directly exported in the required format for deployment through `oneflow.save`; if it is trained in Eager mode, after simple conversion, it can be exported in the required format. For details, refer to [Graph and Deployment](../basics/08_nn_graph.md#graph_5).
 
 ### Model Deployment
 
-Triton has certain requirements for the directory structure of the model, so we need follow [Triton's convention](https://github.com/triton-inference-server/server/blob/main/docs/model_repository.md#repository-layout) to organize the model directory structure and write related configuration files.
+Triton has certain requirements for the layout of the model, so we need follow [Triton's convention](https://github.com/triton-inference-server/server/blob/main/docs/model_repository.md#repository-layout) to organize the model layout and write related configuration files.
 
 **Directory Structure**
 
@@ -90,14 +90,14 @@ model_repository/
 ```
 
 - `model_repository` is the root directory of the model repository. When starting Triton, you can specify it through the `--model-repository` option.
-- `fast_neural_style` is a model in repository. There can be multiple models in a repository, and each first-level subdirectory is a model. Here we only prepare the `fast_neural_style` model.
-- The `1/model` directory is the model we saved earlier through `flow.save(graph, "1/model")`. `1` is the version number in it. There can be multiple model versions in a model directory agreed in Triton, and the folder name of the model version must be **pure number**. Under the model version folder, you need to place a folder named `model`, which saves model parameters and computation graphs.(!需要检查)
-- `config.pbtxt` is a plain text file used to configure the basic information of the model repository, we will introduce it in detail next.
+- `fast_neural_style` is a model in the repository. There can be multiple models in a repository, and each first-level sub-directory is a model. Here we only have the `fast_neural_style` model.
+- The `1/model` directory is the model we saved earlier through `flow.save(graph, "1/model")`. `1` is the version number. In Triton, there can be multiple model versions in a model directory, and the folder name of the model version must be **number**. Under the model version folder, you need to place a folder named `model`, which saves model parameters and computation graphs.
+- `config.pbtxt` is a plain text file used to configure the basic information of the model repository, explained as follows.
 
 
 **Model repository configuration**
 
-`config.pbtxt` is a configuration file in protobuf text format. By writing this file, you can configure the information of model services, such as Specified hardware, input and output. The example content is as follows:
+`config.pbtxt` is a configuration file in protobuf text format. By writing this file, you can configure model services, such as specified hardware, input, and output. The example is as follows:
 
 ```text
 name: "fast_neural_style"
@@ -127,22 +127,22 @@ instance_group [
 ]
 ```
 
-Next we explain the configuration items in turn.
+Next we explain the configuration items one by one.
 
 
 ```python
 name: "fast_neural_style"
 ```
 
-The `name` field（!字段不确定是不是用field) is used to specified model. This line indicates that when using `fast_neural_style` model, its name needs to be the same as the model folder name introduced above.
+The `name` field is used to specify the model. This line indicates that we use the `fast_neural_style` model, whose name needs to be the same as the model's folder name mentioned above.
 
 ```
 backend: "oneflow"
 ```
 
-`backend` deployed with Oneflow is used to specify the Triton backend, and this field must be specified as `oneflow`.
+`backend` specifies the Triton backend. If you deploy with Oneflow, this field must be specified as `oneflow`.
 
-Next the shapes of input and output in model need to be defined. We need to fill in the order of according to their name fields, and the naming format is `INPUT_<index>` and `OUTPUT_<index>`, using `<index>` to indicate the order of model input. Start at 0 by default. The `data_type` field defines the data type, and the `dims` defines the shape of the tensor.
+Next we need to define the shapes of input and output. For the name field, we need to follow the input and output order of the model and the format is `INPUT_<index>` and `OUTPUT_<index>`, where `<index>` indicates the order of model's input or output. Start at 0 by default. The `data_type` field defines the data type, and `dims` defines the shape of the tensor.
 
 ```
 input [
@@ -161,9 +161,9 @@ output [
 ]
 ```
 
-The above model name, inference backend, and input and output configuration are the most basic configurations. Once configured, we can start working.
+The above model name, inference backend, and input and output configuration are the most basic configurations. Once configured, OneFlow can start working.
 
-The `instance_group` after that is used to configure hardware information.
+`instance_group` is used to configure hardware information.
 
 ```
 instance_group [
@@ -175,20 +175,20 @@ instance_group [
 ]
 ```
 
-It means we instantiate one model and place it on GPU 0. For more flexible configuration options, please refer to [Model Configuration Documentation for Triton Inference Server](https://github.com/triton-inference-server/server/blob/main/docs/model_configuration.md).
+It means we instantiate one model and place it on GPU 0. For more flexible configuration options, refer to [Model Configuration Documentation for Triton Inference Server](https://github.com/triton-inference-server/server/blob/main/docs/model_configuration.md).
 
 
 
 ### Start Service
 
-OneFlow Serving provides Docker images which uses Docker to start model service. After organizing the files according to the above directory structure, you can map the path to the container and start the service.
+OneFlow Serving provides Docker images with which you can start model service. After organizing the files according to the above layout, you can map the path to the container and start the service.
 
 ```
 docker run --rm --runtime=nvidia --network=host -v$(pwd)/model_repository:/models \
   oneflowinc/oneflow-serving:0.0.1 /opt/tritonserver/bin/tritonserver --model-store /models
 ```
 
-Run the command below to check whether the model service is start. When you see the http 200 status code, the service has started.
+Run the command below to check whether the model service is starting. When you see the http 200 status code, the service has started.
 
 ```
 curl -v localhost:8000/v2/health/ready
@@ -202,10 +202,10 @@ In this example, we use [tritonclient](https://pypi.org/project/tritonclient/) t
 pip3 install tritonclient[all]
 ```
 
-> Actually, clients can interact with Triton Server via [HTTP, gRPC or C API etc.](https://github.com/triton-inference-server/server/blob/main/docs/inference_protocols.md) For details, please refer to the above document.
+> Actually, clients can interact with Triton Server via [HTTP, gRPC or C API etc.](https://github.com/triton-inference-server/server/blob/main/docs/inference_protocols.md).
 
 
-The following code is the core part of image stylization, which can stylize the image file passed from the command. You can view the complete code on [Cloud Platform](https://oneflow.cloud/#/project/public/code?id=2eec2f768cdfe5709dc4c01e389fd65c), or download [demo.zip](https://oneflow-public.oss-cn-beijing.aliyuncs.com/oneflow-documentation/serving/demo.zip).
+The following code is the core part of image stylization, which can stylize the images passed from the command. You can view the complete code on [Cloud Platform](https://oneflow.cloud/#/project/public/code?id=2eec2f768cdfe5709dc4c01e389fd65c), or download [demo.zip](https://oneflow-public.oss-cn-beijing.aliyuncs.com/oneflow-documentation/serving/demo.zip).
 
 ```python
 #...
@@ -236,10 +236,10 @@ First create a `triton_client` where `127.0.0.1:8000` is the default port for th
 triton_client = httpclient.InferenceServerClient(url='127.0.0.1:8000')
 ```
 
-Then through the `triton_client.infer` interface, you can initiate an inference request to the Triton Server and get the output.
+Then through the `triton_client.infer` interface, you can send an inference request to the Triton Server and get the output.
 A Tirton inference request needs to specify the model, input and output.
 
-You can see the following code, mainly constructing input and output objects. Their configuration is consistent with the previous that in `config.pbtxt`. And finally through `triton_client.infer('fast_neural_style', inputs=inputs, outputs=outputs)` to initiate an inference request, its `fast_neural_style` is also consistent with the configuration in `config.pbtxt`.
+The following code is mainly constructing input and output objects. The configuration is consistent with that in the `config.pbtxt`. And the inference request is sent through `triton_client.infer('fast_neural_style', inputs=inputs, outputs=outputs)`. The `fast_neural_style` is also the same as the one in `config.pbtxt`.
 
 ```python
     inputs = []
@@ -259,7 +259,7 @@ Convert the format of the obtained inference result and save the result as the o
 ```
 
 
-We use the following command to infer and stylize the specified image, and the result will be saved under `result.jpg`.
+You can use the following command to infer and stylize images, and the result will be saved in `result.jpg`.
 
 ```
 $ curl -o cat.jpg https://images.pexels.com/photos/156934/pexels-photo-156934.jpeg

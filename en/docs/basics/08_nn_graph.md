@@ -359,9 +359,9 @@ In addition, in order for developers to have a clearer understanding of the type
 
 In addition to the methods described above, getting the parameters of the gradient during the training process, accessing to the learning rate and other functions are also under development and will come up soon.
 
-### Save of Graph and Load Model Paramters
+### Save and Load Model Parameters of Graph
 
-Graph reuses the network parameters of the Module, such as the `save` and `load` interfaces. For more information, you can refer to [Model saving and loading](./07_model_load_save.md).
+Graph reuses the network parameters of the Module, so it can reuse the `save` and `load` interfaces of Module. For more information, you can refer to [Model saving and loading](./07_model_load_save.md).
 
 If you want to save the trained model parameters of the above `graph_mobile_net_v2`, you can actually save its Module (`model` obtained by `model = flowvision.models.mobilenet_v2().to(DEVICE)` before).
 
@@ -396,18 +396,18 @@ flow.save(graph_mobile_net_v2, "./1/model")
 ```
 
 !!! Note
-    Note the difference from the previous section on saving model parameters. It will report an error because Graph initialization processes model members. There is no problem in calling the `save` interface in this section. The `save` interface directly supports saving Graph object, saving both model parameters and model structures.
+    Note the difference between the saving model parameters in this section and the above section. In the above section, saving model parameters will report an error because Graph's initialization processes model members. In this section, there is no problem in calling the `save` interface because the `save` interface supports saving Graph object directly, which saves both model parameters and model structures.
 
     ```python
     flow.save(graph_mobile_net_v2.model.state_dict(), "./graph_model")  # it will report an error
     flow.save(graph_mobile_net_v2, "./1/model")
     ```
 
-In this way, the `./1/model` directory will save both model parameters and computation graph required for deployment. The detailed deployment process can be found in the [Model Deployment](../cookies/serving.md) article.
+In this way, both model parameters and computation graph required for deployment will be saved in the `./1/model` directory. For detailed deployment process, refer to [Model Deployment](../cookies/serving.md).
 
-Because of the format required for deployment, it must be exported via a Graph object. Therefore, if it is a model (ie `nn.Module` object) trained in Eager mode, you need to use `Graph` to encapsulate the Module and then export it.
+You must export the model via a Graph object to meet the format requirement for deployment. If it is a model trained in Eager mode (i.e. `nn.Module` object), you need to use `Graph` to encapsulate the Module and then export it.
 
-We take the `neural_style_transfer` as an example in the flowvision repository to show how to encapsulate and export the `nn.Module` model.
+Next, we take the `neural_style_transfer` as an example in the flowvision repository to show how to encapsulate and export the `nn.Module` model.
 
 ```python
 import oneflow as flow
@@ -433,13 +433,12 @@ if __name__ == "__main__":
     flow.save(graph, "1/model")
 ```
 
-The key points in the above code:
+The above code:
 
-- Define a `MyGraph` class, which simply encapsulates the `nn.Module` object (`return self.model(*input)`), which is only used to convert `nn.Module` into a `Graph` object.
-- Instantiate the `Graph` object（`graph = MyGraph(model)`).
-- Call once instantiated `Graph` object (`out = graph(fake_image)`). Its internal mechanism is to use "fake data" to flow through the model (that is, the tracing mechanism) to build a computation graph.
-- Export the model required for deployment:`flow.save(graph, "1/model")`
-
+- Defines a `MyGraph` class, and simply encapsulates the `nn.Module` object (`return self.model(*input)`), which is only used to convert `nn.Module` into a `Graph` object
+- Instantiates the model to get the `Graph` object（`graph = MyGraph(model)`)
+- Calls once the `Graph` object (`out = graph(fake_image)`). Its internal mechanism is to use "fake data" to flow through the model (tracing mechanism) to build a computation graph
+- Exports the model required for deployment:`flow.save(graph, "1/model")`
 ## Further Reading: Dynamic Graph vs. Static Graph
 
 User-defined neural networks, are transformed by deep learning frameworks into computation graphs, like the example in [Autograd](./05_autograd.md):
