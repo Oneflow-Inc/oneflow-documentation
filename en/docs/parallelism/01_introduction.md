@@ -25,7 +25,7 @@ In the single machine single card training situaiton, the above matrix multiplic
 In distributed training, there are "**Data Parallelism**" and "**Model Parallelism**" strategies depending on whether $x$ or $w$ is partitioned. In the next section, we will introduce common strategies for parallelism.
 
 
-### Data Paralelism
+### Data Parallelism
 
 Data parallelism slices $x$, while the model parameter $w$ on each device is complete and consistent. As shown in the figure below, $x$ is split evenly into two devices by dimension 0, each with a full $w$.
 
