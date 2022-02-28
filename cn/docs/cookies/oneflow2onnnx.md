@@ -51,7 +51,7 @@ export_onnx_model(graph,
 
 2. external_data: 将权重另存为 ONNX 模型的外部数据，通常是为了避免 protobuf 的 2GB 文件大小限制
 
-3. opset: 指定转换模型的版本 (int，默认为 `oneflow_onnx.constants.PREFERRED_OPSET`)
+3. opset: 指定转换模型的版本 ( int，默认为 10 )
 
 4. flow_weight_dir: OneFlow 模型权重的保存路径
 
@@ -79,7 +79,9 @@ convert_to_onnx_and_check(...)
 
 ## 用法示例
 
-在本节中，将以常见的 ResNet-34 模型为例，介绍将 OneFlow 模型导出为 ONNX 模型并进行推理的流程。我们在此直接使用 [FlowVision](https://github.com/Oneflow-Inc/vision) 库提供的 ResNet-34 模型，并使用 FlowVision 提供的在 ImageNet 数据集上训练得到的 ResNet-34 权重。
+在本节中，将以常见的 ResNet-34 模型为例，介绍将 OneFlow 模型导出为 ONNX 模型并进行推理的流程。
+
+下面的代码中使用到了 [FlowVision](https://github.com/Oneflow-Inc/vision)，它是一个与 OneFlow 配套的、专用于计算机视觉任务的工具库，包含诸多模型、数据增强方法、数据变换操作、数据集等。我们在此直接使用 FlowVision 库提供的 ResNet-34 模型，并使用 FlowVision 提供的在 ImageNet 数据集上训练得到的 ResNet-34 权重。
 
 ### 导出为 ONNX 模型
 
