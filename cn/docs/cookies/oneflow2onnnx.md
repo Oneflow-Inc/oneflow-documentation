@@ -81,7 +81,7 @@ convert_to_onnx_and_check(...)
 
 在本节中，将以常见的 ResNet-34 模型为例，介绍将 OneFlow 模型导出为 ONNX 模型并进行推理的流程。
 
-下面的代码中使用到了 [FlowVision](https://github.com/Oneflow-Inc/vision)，它是一个与 OneFlow 配套的、专用于计算机视觉任务的工具库，包含诸多模型、数据增强方法、数据变换操作、数据集等。我们在此直接使用 FlowVision 库提供的 ResNet-34 模型，并使用 FlowVision 提供的在 ImageNet 数据集上训练得到的 ResNet-34 权重。
+下面的代码中使用到了 [FlowVision](https://github.com/Oneflow-Inc/vision)，它是基于 OneFlow 搭建的、专用于计算机视觉任务的工具库，包含诸多模型、数据增强方法、数据变换操作、数据集等。我们在此直接使用 FlowVision 库提供的 ResNet-34 模型，并使用 FlowVision 提供的在 ImageNet 数据集上训练得到的 ResNet-34 权重。
 
 ### 导出为 ONNX 模型
 
