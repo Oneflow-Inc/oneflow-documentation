@@ -251,6 +251,22 @@
   
   
     <li class="md-tabs__item">
+      <a href="../cookies/serving.html" class="md-tabs__link">
+        OneFlow Cookies
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
       <a href="https://oneflow.readthedocs.io/en/master/" class="md-tabs__link">
         API
       </a>
@@ -514,8 +530,15 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#save-and-load-of-graph" class="md-nav__link">
-    Save and Load of Graph
+  <a href="#save-and-load-model-parameters-of-graph" class="md-nav__link">
+    Save and Load Model Parameters of Graph
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#graph-and-deployment" class="md-nav__link">
+    Graph and Deployment
   </a>
   
 </li>
@@ -669,11 +692,53 @@
         <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" >
       
       <label class="md-nav__link" for="__nav_4">
+        OneFlow Cookies
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="OneFlow Cookies" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          OneFlow Cookies
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cookies/serving.html" class="md-nav__link">
+        Model Deployment
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" >
+      
+      <label class="md-nav__link" for="__nav_5">
         API
         <span class="md-nav__icon md-icon"></span>
       </label>
       <nav class="md-nav" aria-label="API" data-md-level="1">
-        <label class="md-nav__title" for="__nav_4">
+        <label class="md-nav__title" for="__nav_5">
           <span class="md-nav__icon md-icon"></span>
           API
         </label>
@@ -766,8 +831,15 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#save-and-load-of-graph" class="md-nav__link">
-    Save and Load of Graph
+  <a href="#save-and-load-model-parameters-of-graph" class="md-nav__link">
+    Save and Load Model Parameters of Graph
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#graph-and-deployment" class="md-nav__link">
+    Graph and Deployment
   </a>
   
 </li>
@@ -1142,9 +1214,9 @@ loss: 6.644351  [  960/50000]
 </tbody>
 </table>
 <p>In addition to the methods described above, getting the parameters of the gradient during the training process, accessing to the learning rate and other functions are also under development and will come up soon.</p>
-<h3 id="save-and-load-of-graph">Save and Load of Graph<a class="headerlink" href="#save-and-load-of-graph" title="Permanent link">&para;</a></h3>
-<p>Graph reuses the network parameters of the Module, so Graph does not have its own <code>save</code> and <code>load</code> interfaces and it directly uses the Module interface. For more information, you can refer to <a href="07_model_load_save.html">Model saving and loading</a>.</p>
-<p>If you want to save the training results of the above <code>graph_mobile_net_v2</code>, you can actually save its Module (<code>model</code> obtained by <code>model = flowvision.models.mobilenet_v2().to(DEVICE)</code> before).</p>
+<h3 id="save-and-load-model-parameters-of-graph">Save and Load Model Parameters of Graph<a class="headerlink" href="#save-and-load-model-parameters-of-graph" title="Permanent link">&para;</a></h3>
+<p>Graph reuses the network parameters of the Module, so it can reuse the <code>save</code> and <code>load</code> interfaces of Module. For more information, you can refer to <a href="07_model_load_save.html">Model saving and loading</a>.</p>
+<p>If you want to save the trained model parameters of the above <code>graph_mobile_net_v2</code>, you can actually save its Module (<code>model</code> obtained by <code>model = flowvision.models.mobilenet_v2().to(DEVICE)</code> before).</p>
 <div class="highlight"><pre><span></span><code><span class="n">flow</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span> <span class="s2">&quot;./graph_model&quot;</span><span class="p">)</span>
 </code></pre></div>
 <div class="admonition note">
@@ -1159,6 +1231,50 @@ loss: 6.644351  [  960/50000]
 <span class="n">model</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;./graph_model&quot;</span><span class="p">))</span> <span class="c1"># Load the saved model</span>
 <span class="c1"># ...</span>
 </code></pre></div>
+<h3 id="graph-and-deployment">Graph and Deployment<a class="headerlink" href="#graph-and-deployment" title="Permanent link">&para;</a></h3>
+<p>nn.Graph supports saving computation graph and model parameters, which can easily support model deployment.</p>
+<p>If there is a need for model deployment, the <code>Graph</code> object should be exported to the format required for deployment through the <code>oneflow.save</code> interface:</p>
+<div class="highlight"><pre><span></span><code><span class="n">flow</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">graph_mobile_net_v2</span><span class="p">,</span> <span class="s2">&quot;./1/model&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Note the difference between the saving model parameters in this section and the above section. In the above section, saving model parameters will report an error because Graph's initialization processes model members. In this section, there is no problem in calling the <code>save</code> interface because the <code>save</code> interface supports saving Graph object directly, which saves both model parameters and model structures.</p>
+<div class="highlight"><pre><span></span><code><span class="n">flow</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">graph_mobile_net_v2</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span> <span class="s2">&quot;./graph_model&quot;</span><span class="p">)</span>  <span class="c1"># it will report an error</span>
+<span class="n">flow</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">graph_mobile_net_v2</span><span class="p">,</span> <span class="s2">&quot;./1/model&quot;</span><span class="p">)</span>
+</code></pre></div>
+</div>
+<p>In this way, both model parameters and computation graph required for deployment will be saved in the <code>./1/model</code> directory. For detailed deployment process, refer to <a href="../cookies/serving.html">Model Deployment</a>.</p>
+<p>You must export the model via a Graph object to meet the format requirement for deployment. If it is a model trained in Eager mode (i.e. <code>nn.Module</code> object), you need to use <code>Graph</code> to encapsulate the Module and then export it.</p>
+<p>Next, we take the <code>neural_style_transfer</code> as an example in the flowvision repository to show how to encapsulate and export the <code>nn.Module</code> model.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">oneflow</span> <span class="k">as</span> <span class="nn">flow</span>
+<span class="kn">import</span> <span class="nn">oneflow.nn</span> <span class="k">as</span> <span class="nn">nn</span>
+<span class="kn">from</span> <span class="nn">flowvision.models.neural_style_transfer.stylenet</span> <span class="kn">import</span> <span class="n">neural_style_transfer</span>
+
+
+<span class="k">class</span> <span class="nc">MyGraph</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Graph</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
+
+    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="nb">input</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="o">*</span><span class="nb">input</span><span class="p">)</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">fake_image</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">256</span><span class="p">,</span> <span class="mi">256</span><span class="p">))</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">neural_style_transfer</span><span class="p">(</span><span class="n">pretrained</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">progress</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+    <span class="n">graph</span> <span class="o">=</span> <span class="n">MyGraph</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="n">graph</span><span class="p">(</span><span class="n">fake_image</span><span class="p">)</span>
+    <span class="n">flow</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="s2">&quot;1/model&quot;</span><span class="p">)</span>
+</code></pre></div>
+<p>The above code:</p>
+<ul>
+<li>Defines a <code>MyGraph</code> class, and simply encapsulates the <code>nn.Module</code> object (<code>return self.model(*input)</code>), which is only used to convert <code>nn.Module</code> into a <code>Graph</code> object</li>
+<li>Instantiates the model to get the <code>Graph</code> object（<code>graph = MyGraph(model)</code>)</li>
+<li>Calls once the <code>Graph</code> object (<code>out = graph(fake_image)</code>). Its internal mechanism is to use "fake data" to flow through the model (tracing mechanism) to build a computation graph</li>
+<li>Exports the model required for deployment:<code>flow.save(graph, "1/model")</code></li>
+</ul>
 <h2 id="further-reading-dynamic-graph-vs-static-graph">Further Reading: Dynamic Graph vs. Static Graph<a class="headerlink" href="#further-reading-dynamic-graph-vs-static-graph" title="Permanent link">&para;</a></h2>
 <p>User-defined neural networks, are transformed by deep learning frameworks into computation graphs, like the example in <a href="05_autograd.html">Autograd</a>:</p>
 <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">loss</span><span class="p">(</span><span class="n">y_pred</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
