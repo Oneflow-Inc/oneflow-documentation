@@ -36,7 +36,7 @@ SBP 是 OneFlow 发明的概念，描述了“超级计算设备”全局视角�
 
 在创建 Global Tensor 时，可以指定 Tensor 的 SBP，实际的代码例子将在下一篇文章 [Global Tensor](./03_consistent_tensor.md) 中看到。
 
-## SPB Signature
+## SBP Signature
 
 SBP 描述了全局视角下的数据与物理设备上的数据的映射关系，当进行分布式训练时，OneFlow 根据数据的 SBP 属性，将数据分发到各个物理设备，进行计算，并输出结果。
 

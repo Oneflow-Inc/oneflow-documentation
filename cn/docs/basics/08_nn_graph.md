@@ -253,7 +253,7 @@ class GraphMobileNetV2(flow.nn.Graph):
 
 ### Graph 调试
 
-可以调用 `print` 打印 Graph 对象，输出 Graph 对象的信息。
+当前输出 Graph 的调试信息共有两种方式。**第一种** 可以调用 `print` 打印 Graph 对象，输出 Graph 对象的信息。
 
 ```python
 print(graph_mobile_net_v2)
@@ -288,6 +288,8 @@ print(graph_mobile_net_v2)
 )
 ```
 
+在上面的调试信息中，表示基于 Sequential 模型，网络中自定义了 `ConvBNActivation` (对应 `MBConv` 模块)、卷积层(包括详细的 `channel`、`kernel_size` 和 `stride` 等参数信息)、`Dropout`  和全连接层等结构。
+
 如果是 Graph 对象调用后 `print`，除了网络的结构信息外，还会打印输入输出张量的信息，有如下类似效果：
 
 ```text
@@ -315,7 +317,17 @@ print(graph_mobile_net_v2)
     ...
 ```
 
-此外，调用 Graph 对象的 [debug](https://oneflow.readthedocs.io/en/master/graph.html#oneflow.nn.Graph.debug) 方法，就开启了 Graph 的调试模式。
+**第二种** 方式是调用 Graph 对象的 [debug](https://start.oneflow.org/oneflow-api-cn/graph.html#oneflow.nn.Graph.debug) 方法，就开启了 Graph 的调试模式。
+
+```python
+graph_mobile_net_v2.debug(v_level=1) # v_level 参数默认值为 0
+```
+
+可以简写为：
+
+```python
+graph_mobile_net_v2.debug(1)
+```
 
 OneFlow 在编译生成计算图的过程中会打印调试信息，比如，将上面例子代码中 `graph_mobile_net_v2.debug()` 的注释去掉，将在控制台上输出如下输出：
 
@@ -327,19 +339,31 @@ OneFlow 在编译生成计算图的过程中会打印调试信息，比如，将
 
 使用 `debug` 的好处在于，调试信息是 **边构图、边输出** 的，这样如果构图过程中发生错误，容易发现构图时的问题。
 
-还可以通过设置 `v_level` 参数，调整 `debug` 的输出详细程度：
+当前可以使用 `v_level` 选择详细调试信息级别，默认级别为 0，最大级别为 3。
 
-```python
-graph_mobile_net_v2.debug(v_level=1)  # 输出详细信息
-```
+- `v_level=0` 时，只输出最基础的警告和构图阶段信息，如构图时间。
+- `v_level=1` 时，将额外打印每个 `nn.Module` 的构图信息，具体内容在下面的表格中介绍。
+- `v_level=2` 时，在构图阶段，将额外打印每个 Op 的创建信息，包括名称、输入内容、设备和 SBP 信息等。
+- `v_level=3` 时，将额外打印每个 Op 更详细的信息，如与代码位置有关的信息，方便定位代码问题。
+
+此外，为了开发者对 Graph 对象下的类型有更清晰的认知，下面对 `debug` 输出的内容进行分析，基本包括 `GRAPH`、`CONFIG`、`MODULE`、`PARAMETER`、`BUFFER`、`INPUT` 和 `OUTPUT` 七个类别的标签。
+
+|      Name      |                             Info                             |                           Example                            |
+| :------------: | :----------------------------------------------------------: | :----------------------------------------------------------: |
+|     GRAPH      |    用户所定义的 Graph 信息，依次是类型：名字：构造方法。     |        `(GRAPH:GraphMobileNetV2_0:GraphMobileNetV2)`         |
+|     CONFIG     | Graph 的配置信息。如是否处于训练模式，`training=True` 表示 Graph 处于训练模式，如果在 Graph 的预测模式，则对应 `training=False`。 |        `(CONFIG:config:GraphConfig(training=True, )`         |
+|     MODULE     | 对应 `nn.Module` ，MODULE 可以在 Graph 标签下层，同时，多个 MODULE 之间也存在层级关系。 | `(MODULE:model:MobileNetV2())`，其中，`MobileNetV2` 为用户复用 Eager 模式下的 Module 类名。 |
+|   PARAMETER    | 给出了更清晰的 weight 和 bias 信息。此外，在构图时，tensor 的数据内容不太重要，所以只展示了 tensor 的元信息，这些信息对构建网络更为重要。 | `(PARAMETER:model.features.0.1.weight:tensor(..., device='cuda:0', size=(32,), dtype=oneflow.float32, requires_grad=True))` |
+|     BUFFER     |                在训练时产生的统计特性等内容，如 running_mean 和   running_var。                | `(BUFFER:model.features.0.1.running_mean:tensor(..., device='cuda:0', size=(32,), dtype=oneflow.float32))` |
+| INPUT & OUPTUT |                   表示输入输出的张量信息。                   | `(INPUT:_model_input.0.0_2:tensor(..., device='cuda:0', is_lazy='True', size=(16, 3, 32, 32), dtype=oneflow.float32))` |
 
 除了以上介绍的方法外，训练过程中获取参数的梯度、获取 learning rate 等功能，也正在开发中，即将上线。
 
-### Graph 的保存与加载
+### Graph 的保存与加载模型参数
 
-Graph 复用了 Module 的网络参数，因此 Graph 没有自己的 `save` 与 `load` 接口，直接使用 Module 的接口即可。可以参考 [模型的保存与加载](./07_model_load_save.md) 即可。
+Graph 复用了 Module 的网络参数，可以复用 Module 的 `save` 与 `load` 接口。可以参考 [模型的保存与加载](./07_model_load_save.md) 。
 
-如以上的 `graph_mobile_net_v2`，若想保存它的训练结果，其实应该保存它其中的 Module（即之前 `model = flowvision.models.mobilenet_v2().to(DEVICE)` 得到的 `model`。
+如以上的 `graph_mobile_net_v2`，若想保存它的训练后的模型参数，其实应该保存它其中的 Module（即之前 `model = flowvision.models.mobilenet_v2().to(DEVICE)` 得到的 `model`。
 
 ```python
 flow.save(model.state_dict(), "./graph_model")
@@ -360,6 +384,61 @@ model.classifer = nn.Sequential(nn.Dropout(0.2), nn.Linear(model.last_channel, 1
 model.load_state_dict(flow.load("./graph_model")) # 加载保存好的模型
 # ...
 ```
+
+### Graph 与部署
+
+nn.Graph 支持保存计算图和模型参数，可以很方便的支持模型部署。
+
+如果有模型部署的需求，那么应该通过 `oneflow.save` 接口，将 `Graph` 对象导出为部署需要的格式：
+
+```python
+flow.save(graph_mobile_net_v2, "./1/model")
+```
+
+!!! Note
+    注意和上一节保存模型参数的区别。上一节中保存模型参数会报错，是因为 Graph 初始化对 model 成员进行了处理。这一节中调用 `save` 接口没有问题，`save` 接口直接支持保存 Graph 对象，既保存模型参数，又保存模型结构。
+
+    ```python
+    flow.save(graph_mobile_net_v2.model.state_dict(), "./graph_model")  # 会报错
+    flow.save(graph_mobile_net_v2, "./1/model")
+    ```
+
+这样，`./1/model` 目录下会同时保存部署所需的模型参数和计算图。详细的部署流程可以参阅 [模型部署](../cookies/serving.md) 一文。
+
+因为部署所需的格式，必需通过 Graph 对象导出。所以，如果是 Eager 模式下训练得到的模型（即 `nn.Module` 对象），需要用 `Graph` 将 Module 封装后再导出。
+
+下面我们以 flowvision 仓库中的 `neural_style_transfer` 为例子，展示如何封装并导出 `nn.Module` 模型。
+
+```python
+import oneflow as flow
+import oneflow.nn as nn
+from flowvision.models.neural_style_transfer.stylenet import neural_style_transfer
+
+
+class MyGraph(nn.Graph):
+    def __init__(self, model):
+        super().__init__()
+        self.model = model
+
+    def build(self, *input):
+        return self.model(*input)
+
+
+if __name__ == "__main__":
+    fake_image = flow.ones((1, 3, 256, 256))
+    model = neural_style_transfer(pretrained=True, progress=True)
+    model.eval()
+    graph = MyGraph(model)
+    out = graph(fake_image)
+    flow.save(graph, "1/model")
+```
+
+以上代码几处的关键代码：
+
+- 定义了一个 `MyGraph` 类，将 `nn.Module` 对象简单地封装一层（`return self.model(*input)`），作用仅仅是将 `nn.Module` 转为 `Graph` 对象。
+- 实例化得到 `Graph` 对象（`graph = MyGraph(model)`）
+- 调用一次 `Graph` 实例化对象（`out = graph(fake_image)`）。它内部的机理是利用 “假数据” 在模型中流动一遍（即 tracing 机制）来建立计算图。
+- 导出部署所需的模型：`flow.save(graph, "1/model")`
 
 ## 扩展阅读：动态图与静态图
 

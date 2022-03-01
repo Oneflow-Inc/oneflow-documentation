@@ -124,30 +124,14 @@ nav:
       - 常见的分布式并行策略: parallelism/01_introduction.md
       - 集群的全局视角: parallelism/02_sbp.md
       - Global Tensor: parallelism/03_consistent_tensor.md
+      - 2D SBP: parallelism/04_2d-sbp.md
       - 用 launch 模块启动分布式训练: parallelism/04_launch.md
       - 数据并行训练: parallelism/05_ddp.md
       - 流水并行训练: parallelism/06_pipeline.md
 
+    - OneFlow Cookies:
+      - OneFlow 与 ONNX 交互: cookies/oneflow2onnnx.md
+      - 模型部署: cookies/serving.md
+
     - API:
       - API: https://start.oneflow.org/oneflow-api-cn/
-
-    - 原接口兼容:
-      - 说明: single_client/quick_start/introduce.md
-      - 3分钟快速上手: single_client/quick_start/quickstart_in_3_min.md
-      - 识别 MNIST 手写体数字: single_client/quick_start/lenet_mnist.md
-      - 数据输入: single_client/basics_topics/data_input.md
-      - 搭建神经网络: single_client/basics_topics/build_nn_with_op_and_layer.md
-      - 优化算法及超参配置: single_client/basics_topics/optimizer_in_function_config.md
-      - 获取作业函数的结果: single_client/basics_topics/async_get.md
-      - 模型的加载与保存: single_client/basics_topics/model_load_save.md
-      - 分布式训练: single_client/basics_topics/distributed_train.md
-      - OneFlow 概念清单: single_client/basics_topics/concept_explanation.md
-      - OneFlow 系统设计: single_client/basics_topics/essentials_of_oneflow.md
-      - 作业函数的定义与调用: single_client/extended_topics/job_function_define_call.md
-      - Global 与 Mirrored 视角: single_client/extended_topics/consistent_mirrored.md
-      - OneFlow 的并行特色: single_client/extended_topics/model_mixed_parallel.md
-      - OFRecord 数据格式: single_client/extended_topics/ofrecord.md
-      - 加载与准备 OFRecord 数据集: single_client/extended_topics/how_to_make_ofdataset.md
-      - 将图片文件制作为 OFRecord 数据集: single_client/extended_topics/how_to_convert_image_to_ofrecord.md
-      - 获取运行时数据: single_client/extended_topics/watch_watch_diff.md
-      - OneFlow 和 ONNX 交互: single_client/extended_topics/oneflow_convert_tools.md
