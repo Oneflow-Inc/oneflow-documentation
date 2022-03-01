@@ -26,7 +26,7 @@ Analyzing the code, we can find the following key points:
   python3 server.py
 ```
 
-- There are simple and normal URL routings in `server.py` file and `stylize` in `infer.py` does the inference work. Its result is obtained inside the `stylize` function through interacting with the HTTP and Triton server.
+- There are simple and normal URL routings in `server.py` file and `stylize` in `infer.py` for inference work. Its result is obtained inside the `stylize` function through interacting with the HTTP and Triton server.
 ```python
 def stylize(content_path, output_path, style='udnie'):
     triton_client = httpclient.InferenceServerClient(url='127.0.0.1:8000')
@@ -37,7 +37,7 @@ def stylize(content_path, output_path, style='udnie'):
     ...
 ```
 
-- Pretrained models are placed under `model_repo`, whose format is organized according to Triton's conventions.
+- Pretrained models are placed under `model_repo`, whose hierarchy is organized according to Triton's conventions.
 
 This simple online example illustrates how OneFlow models can be deployed through Triton and how business modules interact with the Triton server to obtain inference results.
 
@@ -57,7 +57,7 @@ The following figure gives you a general description of the relationship between
 
 It can be seen that Triton is in the position of connecting the client and OneFlow: it provides HTTP, gRPC, and C interfaces, so that users can flexibly make an inference request and get the result. 
 
-In Triton's architecture, OneFlow and Model Repository provide Triton with back-end inference capabilities. OneFlow provides a corresponding interface to export the trained model to the organizational format that is preset by Triton.
+In Triton's architecture, OneFlow and Model Repository provide Triton with backend inference capabilities. OneFlow provides a corresponding interface to export the trained model that is under Triton's rule.
 
 In addition, Triton also provides built-in features such as task scheduling to ensure better performance. For details, refer to [Triton's official documentation](https://github.com/triton-inference-server/server#features).
 
@@ -66,7 +66,7 @@ After understanding these basic concepts, let's analyze the process from model t
 - Model saving
 - Model deployment
 - Start service
-- Client sending request
+- Client request
 
 ### Model Saving
 
@@ -78,7 +78,7 @@ Triton has certain requirements for the layout of the model, so we need follow [
 
 **Layout**
 
-In this example program, the model files are placed in the `model_repository` directory, and its layout conforms to Triton's conventions. Let's see how it is organized and explain:
+In this example program, the model files are placed in the `model_repository` directory, and its layout conforms to Triton's conventions. Let's see how it is organized:
 
 ```
 $ tree  -L 3 model_repository/
@@ -175,7 +175,7 @@ instance_group [
 ]
 ```
 
-It means we instantiate one model and place it on GPU 0. For more flexible configuration options, refer to [Model Configuration Documentation for Triton Inference Server](https://github.com/triton-inference-server/server/blob/main/docs/model_configuration.md).
+It means we instantiate one model and place it on GPU 0. For more configuration options, refer to [Model Configuration Documentation for Triton Inference Server](https://github.com/triton-inference-server/server/blob/main/docs/model_configuration.md).
 
 
 
@@ -194,7 +194,7 @@ Run the command below to check whether the model service is starting. When you s
 curl -v localhost:8000/v2/health/ready
 ```
 
-### Send Request to Triton Server
+### Request to Triton Server
 
 In this example, we use [tritonclient](https://pypi.org/project/tritonclient/) to interact with Triton Server. We need to install a python package first.
 
