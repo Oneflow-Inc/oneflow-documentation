@@ -2,13 +2,13 @@
 
 In [Common Distributed Parallel Strategies](./01_introduction.md), we introduced the characteristics of data parallel.
 
-Oneflow provides two ways to accomplish data parallel, and one of them is to use the original concept of Oneflow to run data parallel training by configurating consistent tensor. This is also the **recommanded way** to run data parallel training on Oneflow.
+Oneflow provides two ways to accomplish data parallel, and one of them is to use the original concept of Oneflow to run data parallel training by configurating global tensor. This is also the **recommanded way** to run data parallel training on Oneflow.
 
-Besides, to facilitate the users who are transferring from Pytorch to Oneflow, Oneflow offers the interface consistent with Pytorch `torch.nn.parallel.DistributedDataParallel` , [oneflow.nn.parallel.DistributedDataParallel](https://oneflow.readthedocs.io/en/master/nn.html#oneflow.nn.parallel.DistributedDataParallel) so that users can also conveniently extend single machine training to data parallel training. 
+Besides, to facilitate the users who are transferring from Pytorch to Oneflow, Oneflow offers the interface global with Pytorch `torch.nn.parallel.DistributedDataParallel` , [oneflow.nn.parallel.DistributedDataParallel](https://oneflow.readthedocs.io/en/master/nn.html#oneflow.nn.parallel.DistributedDataParallel) so that users can also conveniently extend single machine training to data parallel training. 
 
-## Run Data Parallel Training With Configuration
+## Run Data Parallel Training With SBP Configuration
 
-The following code runs data parallel training by configurating consistent tensor. 
+The following code runs data parallel training by configurating global tensor. 
 
 ??? code
     ```python
@@ -20,7 +20,7 @@ The following code runs data parallel training by configurating consistent tenso
     BATCH_SIZE=64
     EPOCH_NUM = 1
 
-    PLACEMENT = flow.placement("cuda",{0:[0,1]})
+    PLACEMENT = flow.placement("cuda", [0,1])
     S0 = flow.sbp.split(0)
     B = flow.sbp.broadcast
 
@@ -40,7 +40,7 @@ The following code runs data parallel training by configurating consistent tenso
 
     model = flowvision.models.mobilenet_v2().to(DEVICE)
     model.classifer = nn.Sequential(nn.Dropout(0.2), nn.Linear(model.last_channel, 10))
-    model = model.to_consistent(placement=PLACEMENT, sbp=B)
+    model = model.to_global(placement=PLACEMENT, sbp=B)
 
     loss_fn = nn.CrossEntropyLoss().to(DEVICE)
     optimizer = flow.optim.SGD(model.parameters(), lr=1e-3)
@@ -49,8 +49,8 @@ The following code runs data parallel training by configurating consistent tenso
         print(f"Epoch {t+1}\n-------------------------------")
         size = len(train_dataloader.dataset)
         for batch, (x, y) in enumerate(train_dataloader):
-            x = x.to_consistent(placement=PLACEMENT, sbp=S0)
-            y = y.to_consistent(placement=PLACEMENT, sbp=S0)
+            x = x.to_global(placement=PLACEMENT, sbp=S0)
+            y = y.to_global(placement=PLACEMENT, sbp=S0)
 
             # Compute prediction error
             pred = model(x)
@@ -66,25 +66,25 @@ The following code runs data parallel training by configurating consistent tenso
                 print(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")
     ```
 
-We can see that this script is almost identical to the training script for the single-machine and single-card configuration, with a few exceptions on some lines related to consitent tensor set-ups. These codes are:
+We can see that this script is almost identical to the training script for the single-machine and single-device configuration, with a few exceptions on some lines related to consitent tensor set-ups. These codes are:
 
 - Set placement to place the training one GPU 0 and 1: 
 
 ```python
-    PLACEMENT = flow.placement("cuda",{0:[0,1]})
+    PLACEMENT = flow.placement("cuda", [0,1])
 ```
 
 - Broadcast the model on clusters:
 
 ```python
-    model = model.to_consistent(placement=PLACEMENT, sbp=B)
+    model = model.to_global(placement=PLACEMENT, sbp=B)
 ```
 
 - Split the data on cluster with `split(0)`: 
 
 ```python
-    x = x.to_consistent(placement=PLACEMENT, sbp=S0)
-    y = y.to_consistent(placement=PLACEMENT, sbp=S0)
+    x = x.to_global(placement=PLACEMENT, sbp=S0)
+    y = y.to_global(placement=PLACEMENT, sbp=S0)
 ```
 
 This allows us to follow the instructions in [Common Distributed Parallel Strategies](./01_introduction.md)
@@ -115,8 +115,6 @@ w:tensor([[2.0000],
         [3.0000]], device='cuda:0', dtype=oneflow.float32,
        grad_fn=<accumulate_grad>)
 ```
-
-### Codes
 
 Click "Code" below to expand the code of the above running script.
 
