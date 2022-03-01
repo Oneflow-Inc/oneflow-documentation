@@ -4,7 +4,7 @@
 
 ## Create Global Tensor
 
-To interactively experience global tensor on a two-GPU machine, you can launch python separately in two consoles in the following way.
+To interactively experience global tensor on a two-GPU device, you can launch python separately in two consoles in the following way.
 
 !!! Note
     **Click** the Terminal 0 or Terminal 1 label to check the commands/code
@@ -206,7 +206,7 @@ The following code is an example of model parallelism of [common distributed str
 
 ## Extended Reading
 
-### Environment Variables in Multi-Machine Training
+### Environment Variables in Multi-Node Training
 
 As in the examples shown above, developers can manually launch the distributed training by setting the environment variables. In this way, developers can clearly see the effects and outputs in an interactive Python environment which is friendly for debugging. 
 

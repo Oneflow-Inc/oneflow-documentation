@@ -10,7 +10,7 @@ In order to solve the problem of insufficient increase speed of computing power,
 
 ## Common Parallel Strategies
 
-Simply stacking machines does not increase computing power necessarily. Because the training of neural networks can not be simply "divide the work done by one device to multiple ones". It requires not only multiple devices to perform computing, but also data transmission between devices, only by coordinating the computing and communication in the cluster, can we do efficient distributed training.
+Simply stacking machines does not increase computing power necessarily. Because the training of neural networks is not simply "divide the tasks done by one device to multiple ones". it not only requires multiple devices to conduct computation, but also involves data transmission between devices. Only by coordinating the computing and communication in the cluster, can we do efficient distributed training.
 
 We will explain the difference between data parallelism and model parallelism with an example of matrix multiplication.
 
@@ -20,31 +20,31 @@ If a layer in the neural network is doing matrix multiplication, where the shape
 
 ![matmul](./imgs/matmul_logical.png)
 
-In the single machine single card training situaiton, the above matrix multiplication first calculates $out$, passes $out$ to the next layer, and finally calculates $loss$, and then in the backpropagation process, gets $\frac{\partial loss}{\partial w}$, which then be used to update $w$.
+In the single-node single-GPU training, the above matrix multiplication first calculates $out$, passes $out$ to the next layer, and finally calculates $loss$, and then in the backpropagation process, gets $\frac{\partial loss}{\partial w}$, which then be used to update $w$.
 
-In distributed training, there are "**Data Parallelism**" and "**Model Parallelism**" strategies depending on whether $x$ or $w$ is partitioned. In the next section, we will introduce common strategies for parallelism.
+In distributed training, there are "**data parallelism**" and "**model parallelism**" strategies depending on whether $x$ or $w$ is partitioned. In the next section, we will introduce common strategies for parallelism.
 
 
 ### Data Parallelism
 
 Data parallelism slices $x$, while the model parameter $w$ on each device is complete and consistent. As shown in the figure below, $x$ is split evenly into two devices by dimension 0, each with a full $w$.
 
-In this way, the output on each device is only half the logical output, which shape is $2\times8$. The output on both devices combind together to produce the logically complete output.
+In this way, the output on each device is only half of the logical output, which shape is $2\times8$. The output on both devices combind together to produce the logically complete output.
 
 ![Data Paralelism](./imgs/matmul_data_paralelism.png)
 
-Note that because the data is distributed to two devices, the backpropagation process will get different values for $\frac{\partial loss}{\partial w}$, if the models are updated directly using the gradients on each device, it would cause the models on the two devices to be inconsistent, and the training would be meaningless(Which model should be used?).
+Note that because the data is distributed to two devices, the backpropagation process will get different values for $\frac{\partial loss}{\partial w}$, if the models are updated directly using the gradients on each device, it would cause the models on the two devices to be inconsistent, and the training would be meaningless (Then which model should be used?).
 
-Therefore, in the process of backpropagation under data parallelism strategy, the gradients on each device should do [AllReduce](https://docs.nvidia.com/deeplearning/nccl/user-guide/docs/usage/collectives.html#allreduce) before use, which ensures the model on each device is always consistent.
+Therefore, in the process of backpropagation under data parallelism strategy, the gradients on each device should do [AllReduce](https://docs.nvidia.com/deeplearning/nccl/user-guide/docs/usage/collectives.html#allreduce) before using, which ensures the models on each device are always consistent.
 
 When the dataset is large and the model is small, and the communication cost for the gradients synchronization is small in the backpropagation process, so it is more advantageous to choose data parallelism in this situation. For example, the common vision classification model, such as ResNet50, is more suitable to use data parallelism strategy.
 
 
 ### Model Parallelism
 
-When the neural network is very large, the cost of gradients synchronization will be very high, moreover, the network may be too large to be stored in a single computing device, then the model parallelism strategy can be used.
+When the neural network is huge, the cost of gradients synchronization will be high, moreover, the network may be too large to be stored in a single computing device, then the model parallelism strategy can be used.
 
-The so called model parallelism is that the data on each device is complete and consistent, while the model $w$ is split into different devices, each device only has a part of the model, all the parts of model on the computing device put together forms the complete model.
+In model parallelism, the data on each device is complete and consistent, while the model $w$ is split into different devices, each device only has a part of the model, and all the parts of model on the computing device put together forms the complete model.
 
 
 As shown in the figure below, $w$ is split evenly into two devices by the first dimension, each with a full $x$. The output on both devices also needs to be combind together to get the logical output.
@@ -52,14 +52,14 @@ As shown in the figure below, $w$ is split evenly into two devices by the first 
 ![Model Paralelism](./imgs/matmul_model_paralelism.png)
 
 
-The benefit of model parallelism is that it eliminates the gradient AllReduce between multiple devices. However, since each device requires complete input data, the input is broadcasted among multiple devices with some communication cost. For example, the $out~(4\times8)$ shown above needs to be broadcast to both devices if it is the input of the next layer.
+The benefit of model parallelism is that it eliminates the gradient AllReduce between multiple devices. However, since each device requires complete input data, the input is broadcasted among multiple devices with some communication cost. For example, the $out~(4\times8)$ shown above needs to be broadcasted to both devices if it is the input of the next layer.
 
 Language models, such as BERT, often use model parallelism.
 
 
 ### Pipelining Parallelism
 
-When the neural network is too large to be stored on a single device, in addition to the above parallel strategies, we can also choose pipelining parallel strategy. Pipelining paralelism divides the network into stages and places it to different computing devices, each of which completes the training in a "relay" manner.
+When the neural network is too large to be stored on a single device, in addition to the above parallel strategies, we can also choose pipelining parallel strategy. Pipelining parallelism divides the network into stages and allocates them to different computing devices, and each of computing device completes the training in a "relay" manner.
 
 The figure below shows how to run with pipelining parallelism with a logical four-layer network (`T1` to `T4`).
 
@@ -79,4 +79,5 @@ This large GPT network is partitioned into 64 stages, with each stage running on
 
 ![gpt-3](./imgs/gpt3-overview.png)
 
-The choice of parallelism strategy affects the efficiency of training. Whether the interface of framework supports parallelism well also determines the efficiency of algorithm engineer. OneFlow's system-level design and innovation for distributed training will help users to get comfortable well with distributed training. The related examples will be shown in other articles on this topic.
+The choice of parallelism strategy affects the efficiency of training. The support for parallel training of framework's interface determines the development efficiency of algorithm engineers. OneFlow's system-level design and innovation for distributed training help users easily get started with distributed training. The related examples will be shown in other articles on this topic.
+
