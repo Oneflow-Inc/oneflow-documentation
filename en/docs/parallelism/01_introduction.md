@@ -25,7 +25,7 @@ In the single machine single card training situaiton, the above matrix multiplic
 In distributed training, there are "**Data Parallelism**" and "**Model Parallelism**" strategies depending on whether $x$ or $w$ is partitioned. In the next section, we will introduce common strategies for parallelism.
 
 
-### Data Paralelism
+### Data Parallelism
 
 Data parallelism slices $x$, while the model parameter $w$ on each device is complete and consistent. As shown in the figure below, $x$ is split evenly into two devices by dimension 0, each with a full $w$.
 
@@ -40,7 +40,7 @@ Therefore, in the process of backpropagation under data parallelism strategy, th
 When the dataset is large and the model is small, and the communication cost for the gradients synchronization is small in the backpropagation process, so it is more advantageous to choose data parallelism in this situation. For example, the common vision classification model, such as ResNet50, is more suitable to use data parallelism strategy.
 
 
-### Model Paralelism
+### Model Parallelism
 
 When the neural network is very large, the cost of gradients synchronization will be very high, moreover, the network may be too large to be stored in a single computing device, then the model parallelism strategy can be used.
 
@@ -57,7 +57,7 @@ The benefit of model parallelism is that it eliminates the gradient AllReduce be
 Language models, such as BERT, often use model parallelism.
 
 
-### Pipelining Paralelism
+### Pipelining Parallelism
 
 When the neural network is too large to be stored on a single device, in addition to the above parallel strategies, we can also choose pipelining parallel strategy. Pipelining paralelism divides the network into stages and places it to different computing devices, each of which completes the training in a "relay" manner.
 
@@ -71,7 +71,7 @@ After computing the first two layers on `GPU0`, its output is treated as the inp
 <img src="./imgs/realy.png" width="50%" alt="Relay"/>
 </div>
 
-### Hybrid Paralelism
+### Hybrid Parallelism
 
 You can also mix with a variety of parallelism strategies when training a network, take GPT-3 as an example, the parallelism strategy for training could be like this:
 
