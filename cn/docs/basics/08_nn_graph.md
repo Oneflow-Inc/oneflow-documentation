@@ -361,29 +361,7 @@ OneFlow 在编译生成计算图的过程中会打印调试信息，比如，将
 
 ### Graph 的保存与加载模型参数
 
-Graph 复用了 Module 的网络参数，可以复用 Module 的 `save` 与 `load` 接口。可以参考 [模型的保存与加载](./07_model_load_save.md) 。
-
-如以上的 `graph_mobile_net_v2`，若想保存它的训练后的模型参数，其实应该保存它其中的 Module（即之前 `model = flowvision.models.mobilenet_v2().to(DEVICE)` 得到的 `model`。
-
-```python
-flow.save(model.state_dict(), "./graph_model")
-```
-
-!!! Note
-    **不能** 用以下方式保存。因为 Graph 在初始化时，会对成员做处理，所以 `graph_mobile_net_v2.model` 其实已经不再是 Module 类型：
-
-    ```python
-    flow.save(graph_mobile_net_v2.model.state_dict(), "./graph_model")  # 会报错
-    ```
-
-加载之前保存好的模型，也是 Module 的工作：
-
-```python
-model = flowvision.models.mobilenet_v2().to(DEVICE)
-model.classifer = nn.Sequential(nn.Dropout(0.2), nn.Linear(model.last_channel, 10))
-model.load_state_dict(flow.load("./graph_model")) # 加载保存好的模型
-# ...
-```
+【待更新】
 
 ### Graph 与部署
 
