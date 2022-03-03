@@ -69,6 +69,7 @@ from oneflow_onnx.oneflow2onnx.util import convert_to_onnx_and_check
 
 convert_to_onnx_and_check(...)
 ```
+
 The parameters of the `convert_to_onnx_and_check` are almost the same as those of `export_onnx_model`, besides  you can pass `print_outlier` parameter additionally. When `print_outlier=True`, it will output any abnormal values found during the check process that exceed the reasonable error range. 
 
 ### Considerations when Exporting Models
@@ -132,6 +133,7 @@ convert_to_onnx_and_check(resnet34_graph,
                           print_outlier=True,
                           dynamic_batch_size=True)
 ```
+
 After running,  a file named `model.onnx` is  in the current directory, which is the exported ONNX model.
 
 ### Inference with ONNX models
@@ -145,6 +147,7 @@ We use the following image as input to the model:
 
 
 Import related dependencies:
+
 ```python
 import numpy as np
 import cv2
@@ -152,6 +155,7 @@ from onnxruntime import InferenceSession
 ```
 
 Define a function to pre-process the image to a format and size accepted by the ONNX model:
+
 ```python
 def preprocess_image(img, input_hw = (224, 224)):
     h, w, _ = img.shape
@@ -205,6 +209,7 @@ print(CLASS_NAMES[np.argmax(results[0])])
 The output of the `run` method of the InferenceSession object is a list of NumPy arrays, and each NumPy array corresponds to a set of outputs. Since there is only one set of inputs, the element with index 0 is the output, and the shape of it is `(1, 1000)`, which corresponds to the probability of 1000 categories (if n images are input as a batch, the shape of them will be `(n, 1000)`). After obtaining the index corresponding to the category with the highest probability via `np.argmax`, the index is mapped to the category name.
 
 Run the code and get the result:
+
 ```text
 (base) root@training-notebook-654c6f-654c6f-jupyter-master-0:/workspace# python infer.py 
 285: 'Egyptian cat',
