@@ -13,7 +13,7 @@ There are several ONNX-related libraries, and the features of several common lib
 
 1. [onnx](https://github.com/onnx/onnx): ONNX model format standard
 
-2. [onnxruntime & onnxruntime-gpu](https://github.com/microsoft/onnxruntime): ONNX runtime that is used to load the ONNX model for inference. ?onnxruntime and onnxruntime-gpu support CPU inference and GPU inference respectively.
+2. [onnxruntime & onnxruntime-gpu](https://github.com/microsoft/onnxruntime): ONNX runtime that is used to load the ONNX model for inference. onnxruntime and onnxruntime-gpu support CPU inference and GPU inference respectively.
 
 3. [onnx-simplifier](https://github.com/daquexian/onnx-simplifier): structure for simplifying ONNX models, e.g. eliminating operators with constant results
    
@@ -132,7 +132,7 @@ After running, you can find a file named `model.onnx` in the current directory, 
 
 ### Inference with ONNX models
 
-Before performing inference, ensure that the ONNX Runtime is installed, that is onnxruntime or onnxruntime-gpu. In the experimental environment of this tutorial, onnxruntime-gpu is installed to invoke the GPU for calculation(or computation??不确定), but if there is no GPU on the machine, you can specify the CPU for calculation. See below for details.
+Before performing inference, ensure that the ONNX Runtime is installed, that is onnxruntime or onnxruntime-gpu. In the experimental environment of this tutorial, onnxruntime-gpu is installed to invoke the GPU for computation, but if there is no GPU on the machine, you can specify the CPU for calculation. See below for details.
 
 We use the following image as input to the model:
 <div align="center">
@@ -174,7 +174,7 @@ def preprocess_image(img, input_hw = (224, 224)):
 
 The next step is to use the ONNX model for inference, which consists of creating an InferenceSession object and calling `run` to perform inference.
 
-In onnxruntime(-gpu) 1.9 and above, the `providers` parameter needs to be explicitly specified when creating an InferenceSession object to select the hardware to use. For onnxruntime-gpu, the values that can be specified include `TensorrtExecutionProvider`, `CUDAExecutionProvider`, and `CPUExecutionProvider`. If there is no GPU on the running machine, you can specify the `providers` parameter as `['CPUExecutionProvider']` to use the CPU for computation？.
+In onnxruntime(-gpu) 1.9 and above, the `providers` parameter needs to be explicitly specified when creating an InferenceSession object to select the hardware to use. For onnxruntime-gpu, the values that can be specified include `TensorrtExecutionProvider`, `CUDAExecutionProvider`, and `CPUExecutionProvider`. If there is no GPU on the running machine, you can specify the `providers` parameter as `['CPUExecutionProvider']` to use the CPU for computation.
 
 The type of input data of an ONNX model is a dict. Its keys are `input names` when exporting the ONNX model, and the values are the actual input data of NumPy array type. You can get "input names" through the `get_inputs` method of the InferenceSession object, which returns a list of objects of `onnxruntime.NodeArg` type. For NodeArg object, you can use its `name` property to get a name of str type. In this tutorial, the input is only the image data, so you can get the "input names" corresponding to the input by calling `.get_inputs()[0].name` on the InferenceSession object. The value is `_ResNet34Graph_0-input_0/out`, which is used as the key to construct the dict of the ONNX model input. Of course, it can also be obtained dynamically at runtime without specifying it in advance.
 
