@@ -2,9 +2,96 @@
 
 In [Common Distributed Parallel Strategies](./01_introduction.md), we introduced the characteristics of data parallel.
 
-OneFlow provides [oneflow.nn.parallel.DistributedDataParallel](https://oneflow.readthedocs.io/en/master/nn.html#oneflow.nn.parallel.DistributedDataParallel) module and [launcher](https://oneflow.readthedocs.io/en/master/distributed.html#oneflow-distributed), which allows users to run data parallel training almost without modifying the script of a single node.
+OneFlow provides two ways to accomplish data parallel, and one of them is to use the original concept of Oneflow to run data parallel training by configurating global tensor. This is also the **recommanded way** to run data parallel training on Oneflow.
 
-A quick start of OneFlow's data parallelsim training:
+Besides, to facilitate the users who are transferring from PyTorch to OneFlow, OneFlow offers the interface consistent with PyTorch `torch.nn.parallel.DistributedDataParallel`,  [oneflow.nn.parallel.DistributedDataParallel](https://oneflow.readthedocs.io/en/master/nn.html#oneflow.nn.parallel.DistributedDataParallel) so that users can also conveniently extend single machine training to data parallel training. 
+
+## Run Data Parallel Training With SBP Configuration
+
+The following code runs data parallel training by configurating global tensor. 
+
+??? code
+    ```python
+    import oneflow as flow
+    import oneflow.nn as nn
+    import flowvision
+    import flowvision.transforms as transforms
+
+    BATCH_SIZE=64
+    EPOCH_NUM = 1
+
+    PLACEMENT = flow.placement("cuda", [0,1])
+    S0 = flow.sbp.split(0)
+    B = flow.sbp.broadcast
+
+    DEVICE = "cuda" if flow.cuda.is_available() else "cpu"
+    print("Using {} device".format(DEVICE))
+
+    training_data = flowvision.datasets.CIFAR10(
+        root="data",
+        train=True,
+        transform=transforms.ToTensor(),
+        download=True,
+    )
+
+    train_dataloader = flow.utils.data.DataLoader(
+        training_data, BATCH_SIZE, shuffle=True
+    )
+
+    model = flowvision.models.mobilenet_v2().to(DEVICE)
+    model.classifer = nn.Sequential(nn.Dropout(0.2), nn.Linear(model.last_channel, 10))
+    model = model.to_global(placement=PLACEMENT, sbp=B)
+
+    loss_fn = nn.CrossEntropyLoss().to(DEVICE)
+    optimizer = flow.optim.SGD(model.parameters(), lr=1e-3)
+
+    for t in range(EPOCH_NUM):
+        print(f"Epoch {t+1}\n-------------------------------")
+        size = len(train_dataloader.dataset)
+        for batch, (x, y) in enumerate(train_dataloader):
+            x = x.to_global(placement=PLACEMENT, sbp=S0)
+            y = y.to_global(placement=PLACEMENT, sbp=S0)
+
+            # Compute prediction error
+            pred = model(x)
+            loss = loss_fn(pred, y)
+
+            # Backpropagation
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
+
+            current = batch * BATCH_SIZE
+            if batch % 5 == 0:
+                print(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")
+    ```
+
+We can see that this script is almost identical to the training script for the single-machine and single-device configuration, with a few exceptions on some lines related to consitent tensor set-ups. These codes are:
+
+- Set placement to place the training one GPU 0 and 1: 
+
+```python
+    PLACEMENT = flow.placement("cuda", [0,1])
+```
+
+- Broadcast the model on clusters:
+
+```python
+    model = model.to_global(placement=PLACEMENT, sbp=B)
+```
+
+- Split the data on cluster with `split(0)`: 
+
+```python
+    x = x.to_global(placement=PLACEMENT, sbp=S0)
+    y = y.to_global(placement=PLACEMENT, sbp=S0)
+```
+
+This allows us to follow the instructions in [Common Distributed Parallel Strategies](./01_introduction.md)
+
+## Run Data Parallel Training With DistributedDataParallel
+
+The following codes provides a quick start for training data parallel with `oneflow.nn.parallel.DistributedDataParallel` :
 
 ```shell
 wget https://docs.oneflow.org/master/code/parallelism/ddp_train.py #Download
@@ -28,8 +115,6 @@ w:tensor([[2.0000],
         [3.0000]], device='cuda:0', dtype=oneflow.float32,
        grad_fn=<accumulate_grad>)
 ```
-
-## Codes
 
 Click "Code" below to expand the code of the above running script.
 
@@ -84,16 +169,16 @@ Click "Code" below to expand the code of the above running script.
 
 There are only two differences between the data parallelism training code and the stand-alone single-card script:
 
-- Use DistributedDataParallel to wrap the module object (`m = ddp(m)`)
+- Use `DistributedDataParallel` to wrap the module object (`m = ddp(m)`)
 - Use [get_rank](https://oneflow.readthedocs.io/en/master/oneflow.html#oneflow.env.get_rank) to get the current device number and distribute the data to the device.
 
 Then use `launcher` to run the script, leave everything else to OneFlow, which makes distributed training as simple as stand-alone single-card training:
 
-```pytohn
+```python
 python3 -m oneflow.distributed.launch --nproc_per_node 2 ./ddp_train.py
 ```
 
-## DistributedSampler
+### DistributedSampler
 
 The data used is manually distributed in this context to highlight `DistributedDataParallel`. However, in practical applications, you can directly use [DistributedSampler](https://oneflow.readthedocs.io/en/master/utils.html#oneflow.utils.data.distributed.DistributedSampler) with data parallel.
 
