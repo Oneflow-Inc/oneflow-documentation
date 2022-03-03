@@ -1,13 +1,13 @@
-# Onelow interacts with ONNX
+# Onelow with ONNX
 
-This document introduces the usage of OneFlow interacting with ONNX, including an introduction to ONNX, how to export OneFlow models to ONNX models, and how to use ONNX models for inference.
+This document introduces the usage of OneFlow interacting with ONNX, including how to export OneFlow models to ONNX, and how to use ONNX models for inference.
 
 
 ## Introduction to ONNX
 
 [ONNX](https://onnx.ai/index.html), known as Open Neural Network Exchange, is an open file format standard designed for machine learning algorithms to store trained algorithmic models. Many major deep learning frameworks (e.g., OneFlow, PyTorch, TensorFlow, MXNet) support exporting models to ONNX models, which allows different deep learning frameworks to store and interact with model data in a uniform format. In addition, ONNX has a corresponding Runtime - [ONNX Runtime](https://onnxruntime.ai/) - that facilitates model deployment and reasoning on multiple platforms (Linux, Windows, Mac OS, Android, iOS, etc.) and multiple hardware (CPU, GPU, etc.). 
 
-### ONNX-Related Libraries
+### Related Packages
 
 There are several ONNX-related libraries, and the features of several common libraries are described below. The onnxruntime-gpu involved in this tutorial can be installed via `pip install onnxruntime-gpu`.
 
@@ -15,25 +15,26 @@ There are several ONNX-related libraries, and the features of several common lib
 
 2. [onnxruntime & onnxruntime-gpu](https://github.com/microsoft/onnxruntime): ONNX runtime that is used to load the ONNX model for inference. onnxruntime and onnxruntime-gpu support CPU inference and GPU inference respectively.
 
-3. [onnx-simplifier](https://github.com/daquexian/onnx-simplifier): structure for simplifying ONNX models, e.g. eliminating operators with constant results
+3. [onnx-simplifier](https://github.com/daquexian/onnx-simplifier): for simplifying ONNX models, e.g. eliminating operators with constant results
    
-4. [onnxoptimizer](https://github.com/onnx/optimizer): it is used to optimize ONNX model through graph transformations
+4. [onnxoptimizer](https://github.com/onnx/optimizer): it is used to optimize ONNX model by graph transformations
 
 
 ## Export OneFlow Models to ONNX Models
 
-[oneflow-onnx](https://github.com/Oneflow-Inc/oneflow_convert) is a model conversion tool provided by OneFlow team to support exporting OneFlow static diagram models to ONNX models. At present oneflow-onnx supports more than 80 kinds of Oneflow OP exported as ONNX OP. For detalis, refer to [list of OP supported by OneFlow2ONNX](https://github.com/Oneflow-Inc/oneflow_convert/blob/main/docs/oneflow2onnx/op_list.md)。
+[oneflow-onnx](https://github.com/Oneflow-Inc/oneflow_convert) is a model conversion tool provided by OneFlow team to support exporting OneFlow static graph models to ONNX models. At present oneflow-onnx supports more than 80 kinds of OneFlow OPs exported as ONNX OPs. For detalis, refer to [list of OP supported by OneFlow2ONNX](https://github.com/Oneflow-Inc/oneflow_convert/blob/main/docs/oneflow2onnx/op_list.md)。
 
 ### Install oneflow-onnx
 
 oneflow-onnx is independent of OneFlow and needs to be installed separately via pip:
+
 ```bash
 pip install oneflow-onnx
 ```
 
 ### How to Use oneflow-onnx
 
-To export OneFlow static graph model as ONNX model, just call ` export_ onnx_ Model ` function.
+To export OneFlow static graph model as ONNX model, just call `export_ onnx_ Model` function.
 
 ```python
 from oneflow_onnx.oneflow2onnx.util import export_onnx_model
@@ -60,20 +61,20 @@ The meaning of each parameter is as follows:
 6. dynamic_batch_size: whether the exported ONNX model supports dynamic batch, default is False
 
 
-In addition, oneflow-onnx provides a function called `convert_to_onnx_and_check` to convert and check the converted ONNX model. The check refers to feeding the same input to the original OneFlow model and the converted ONNX model respectively, and then comparing the difference between each value in the two outputs to see if it is within a reasonable margin of error.
+In addition, oneflow-onnx provides a function called `convert_to_onnx_and_check` to convert and meanwhile check the converted ONNX model. The check process will pass the same input to the original OneFlow model and the converted ONNX model respectively, and then compare the difference between each value in the two outputs to see if they are same within a relative range.
 
 ```python
 from oneflow_onnx.oneflow2onnx.util import convert_to_onnx_and_check
 
 convert_to_onnx_and_check(...)
 ```
-The parameters of the `convert_to_onnx_and_check` are a superset of the parameters of the `export_onnx_model`, and you can be pass in `print_outlier=True` additionally to output any abnormal values found during the check process that exceed the reasonable error range. 
+The parameters of the `convert_to_onnx_and_check` are almost the same as those of `export_onnx_model`, besides  you can pass `print_outlier` parameter additionally. When `print_outlier=True`, it will output any abnormal values found during the check process that exceed the reasonable error range. 
 
 ### Considerations when Exporting Models
 
-- Before exporting the model, you need to set the model to eval mode because operations such as Dropout and Batch Normalization have different behaviors under the training and evaluation mode.
-- When building a static graph model, you need to specify an input. The value of this input can be random, but make sure it is the correct data type and shape.
-- The ONNX model accepts a fixed shape of input, and the varied size of the batch dimension, so by setting the `dynamic_batch_size` parameter to be `True` you can make the exported ONNX model support dynamic batch size.
+- Before exporting the model, it need be set to eval mode because operations such as Dropout and Batch Normalization have different behaviors under the training and evaluation mode.
+- When building a static graph model, you need to specify an input. The value of the input can be random, but make sure the data type and shape is correct.
+- The ONNX model accepts a fixed shape of input, and a varied size of the batch dimension, so by setting the `dynamic_batch_size` parameter to be `True` can make the exported ONNX model support dynamic batch size.
 - Oneflow-onnx must use a static graph model (Graph mode) as an parameter to export function. For dynamic graph models (Eager mode), the dynamic graph model needs to be constructed as a static graph model. Refer to the example below.
 
 
@@ -86,6 +87,7 @@ The following code uses [FlowVision](https://github.com/Oneflow-Inc/vision), a l
 ### Export as ONNX Model
 
 Import related dependencies:
+
 ```python
 import oneflow as flow
 from oneflow import nn
@@ -93,7 +95,7 @@ from flowvision.models import resnet34
 from oneflow_onnx.oneflow2onnx.util import convert_to_onnx_and_check
 ```
 
-To build a static graph model using a dynamic graph model. For details, refer to: [Static Graph Module nn.Graph](../basics/08_nn_graph.md)
+To build a static graph model using a dynamic graph model. For details, refer to: [Static Graph Interface: nn.Graph](../basics/08_nn_graph.md)
 
 ```python
 class ResNet34Graph(nn.Graph):
@@ -106,6 +108,7 @@ class ResNet34Graph(nn.Graph):
 ```
 
 Export OneFlow static graph models to ONNX models:
+
 ```python
 # Model parameter storage directory
 MODEL_PARAMS = 'checkpoints/resnet34'
@@ -128,7 +131,7 @@ convert_to_onnx_and_check(resnet34_graph,
                           print_outlier=True,
                           dynamic_batch_size=True)
 ```
-After running, you can find a file named `model.onnx` in the current directory, which is the exported ONNX model.
+After running,  a file named `model.onnx` is  in the current directory, which is the exported ONNX model.
 
 ### Inference with ONNX models
 
@@ -200,7 +203,7 @@ print(CLASS_NAMES[np.argmax(results[0])])
 
 The output of the `run` method of the InferenceSession object is a list of NumPy arrays, and each NumPy array corresponds to a set of outputs. Since there is only one set of inputs, the element with index 0 is the output, and the shape of it is `(1, 1000)`, which corresponds to the probability of 1000 categories (if n images are input as a batch, the shape of them will be `(n, 1000)`). After obtaining the index corresponding to the category with the highest probability via `np.argmax`, the index is mapped to the category name.
 
-Run the above code:
+Run the code and get the result:
 ```text
 (base) root@training-notebook-654c6f-654c6f-jupyter-master-0:/workspace# python infer.py 
 285: 'Egyptian cat',

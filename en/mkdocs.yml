@@ -128,7 +128,7 @@ nav:
       - Pipelining Parallelism: parallelism/06_pipeline.md
 
     - OneFlow Cookies:
-      - Onelow interacts with ONNX: cookies/oneflow2onnnx.md
+      - Onelow with ONNX: cookies/oneflow2onnnx.md
       - Model Deployment: cookies/serving.md
 
     - API:
