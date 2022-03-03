@@ -761,10 +761,10 @@
 <p>Users can start distributed training by the following commands:</p>
 <div class="highlight"><pre><span></span><code>python3 -m oneflow.distributed.launch <span class="o">[</span>Boot Option<span class="o">]</span> training_script.py
 </code></pre></div>
-<p>For example, to start the training of a single machine with two graphics cards:</p>
+<p>For example, to start the training on single-node double-GPUs:</p>
 <div class="highlight"><pre><span></span><code>python3 -m oneflow.distributed.launch --nproc_per_node <span class="m">2</span> ./script.py
 </code></pre></div>
-<p>For another example, start two machines, and each machine has two graphics cards for training.</p>
+<p>For another example, start two machines, and each machine has two graphics for training.</p>
 <p>Run on machine 0:</p>
 <div class="highlight"><pre><span></span><code>python3 -m oneflow.distributed.launch --nproc_per_node<span class="o">=</span><span class="m">2</span> <span class="se">\</span>
     --nnodes<span class="o">=</span><span class="m">2</span> <span class="se">\</span>
@@ -783,7 +783,7 @@
     --master_port<span class="o">=</span><span class="m">7788</span> <span class="se">\</span>
     script.py
 </code></pre></div>
-<h3 id="description-of-common-options">Description of Common Options<a class="headerlink" href="#description-of-common-options" title="Permanent link">&para;</a></h3>
+<h2 id="description-of-common-options">Description of Common Options<a class="headerlink" href="#description-of-common-options" title="Permanent link">&para;</a></h2>
 <p>We can view the description of the options of the <code>launch</code> module after running <code>python3 -m oneflow.distributed.launch -h</code>. The following are some common options:</p>
 <ul>
 <li><code>--nnodes</code>: number of nodes</li>
@@ -791,10 +791,10 @@
 <li><code>--nproc_per_node</code>: The number of processes per node to be started on each machine, which is recommended to be global with the number of GPUs</li>
 <li><code>--logdir</code>: The relative storage path of the child process log</li>
 </ul>
-<h3 id="the-relationship-between-launch-module-and-parallel-strategy">The Relationship between Launch Module and Parallel Strategy<a class="headerlink" href="#the-relationship-between-launch-module-and-parallel-strategy" title="Permanent link">&para;</a></h3>
-<p>The main function of <code>oneflow.distributed.launch</code> is to allow users to start distributed training more conveniently after the user completes the distributed program. It saves the trouble of configuring <a href="03_consistent_tensor.html#_5">environment variables</a> in the cluster.</p>
+<h2 id="the-relationship-between-launch-module-and-parallel-strategy">The Relationship between Launch Module and Parallel Strategy<a class="headerlink" href="#the-relationship-between-launch-module-and-parallel-strategy" title="Permanent link">&para;</a></h2>
+<p>The main function of <code>oneflow.distributed.launch</code> is to allow users to start distributed training more conveniently after them complete the distributed program. It saves the trouble of configuring <a href="03_consistent_tensor.html#_5">environment variables</a> in the cluster.</p>
 <p>But <code>oneflow.distributed.launch</code> <strong>does not determine</strong> <a href="01_introduction.html">Parallel Strategy</a>. The Parallel Strategy is determined by the setup of the distribution method of data and the model, and the placement of those on the physical devices.</p>
-<p>OneFlow provides <a href="02_sbp.html">Global View</a> and <a href="03_consistent_tensor.html">Global Tensor</a> to flexibly configure parallel strategies. And for data parallelism, OneFlow provides the <a href="05_ddp.html">DistributedDataParallel</a> module, which can change the stand-alone single-card script to the script of data parallel with  minimal code modification.</p>
+<p>OneFlow provides <a href="02_sbp.html">Global View</a> and <a href="03_consistent_tensor.html">Global Tensor</a> to flexibly configure parallel strategies. And for data parallelism, OneFlow provides the <a href="05_ddp.html">DistributedDataParallel</a> module, which can change the single-node single-GPU script to the script of data parallel with  minimal code modification.</p>
                 
               
               

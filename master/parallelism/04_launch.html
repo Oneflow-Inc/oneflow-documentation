@@ -807,7 +807,7 @@
     --master_port<span class="o">=</span><span class="m">7788</span> <span class="se">\</span>
     script.py
 </code></pre></div>
-<h3 id="_1">常见选项说明<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h3>
+<h2 id="_1">常见选项说明<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
 <p>通过 <code>python3 -m oneflow.distributed.launch -h</code> 可以查看 <code>launch</code> 模块的选项说明，以下是部分常见选项。</p>
 <ul>
 <li><code>--nnodes</code>：机器的数目(number of nodes)</li>
@@ -815,7 +815,7 @@
 <li><code>--nproc_per_node</code>：每台机器上要启动的进程数目(number of processes per node)，推荐与 GPU 数目一致</li>
 <li><code>--logdir</code>：子进程日志的相对存储路径</li>
 </ul>
-<h3 id="launch_1">launch 模块与并行策略的关系<a class="headerlink" href="#launch_1" title="Permanent link">&para;</a></h3>
+<h2 id="launch_1">launch 模块与并行策略的关系<a class="headerlink" href="#launch_1" title="Permanent link">&para;</a></h2>
 <p>注意 <code>oneflow.distributed.launch</code> 的主要作用，是待用户完成分布式程序后，让用户可以更方便地启动分布式训练。它省去了配置集群中<a href="03_consistent_tensor.html#_5">环境变量</a> 的繁琐。</p>
 <p>但是 <code>oneflow.distributed.launch</code> <strong>并不决定</strong> <a href="01_introduction.html">并行策略</a>，并行策略是由设置数据、模型的分发方式、在物理设备上的放置位置决定的。</p>
 <p>OneFlow 提供的 <a href="02_sbp.html">全局视角</a> 和 <a href="03_consistent_tensor.html">Global Tensor</a> 可以灵活地配置并行策略。并且针对数据并行，OneFlow 提供了 <a href="05_ddp.html">DistributedDataParallel</a> 模块，可以在极少修改代码的前提下，将单机单卡的脚本改为数据并行的脚本。</p>
