@@ -69,7 +69,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#common-distributed-parallel-stratiges" class="md-skip">
+        <a href="#common-distributed-parallel-strategy" class="md-skip">
           Skip to content
         </a>
       
@@ -544,29 +544,29 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#data-paralelism" class="md-nav__link">
-    Data Paralelism
+  <a href="#data-parallelism" class="md-nav__link">
+    Data Parallelism
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#model-paralelism" class="md-nav__link">
-    Model Paralelism
+  <a href="#model-parallelism" class="md-nav__link">
+    Model Parallelism
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#pipelining-paralelism" class="md-nav__link">
-    Pipelining Paralelism
+  <a href="#pipelining-parallelism" class="md-nav__link">
+    Pipelining Parallelism
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#hybrid-paralelism" class="md-nav__link">
-    Hybrid Paralelism
+  <a href="#hybrid-parallelism" class="md-nav__link">
+    Hybrid Parallelism
   </a>
   
 </li>
@@ -775,29 +775,29 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#data-paralelism" class="md-nav__link">
-    Data Paralelism
+  <a href="#data-parallelism" class="md-nav__link">
+    Data Parallelism
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#model-paralelism" class="md-nav__link">
-    Model Paralelism
+  <a href="#model-parallelism" class="md-nav__link">
+    Model Parallelism
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#pipelining-paralelism" class="md-nav__link">
-    Pipelining Paralelism
+  <a href="#pipelining-parallelism" class="md-nav__link">
+    Pipelining Parallelism
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#hybrid-paralelism" class="md-nav__link">
-    Hybrid Paralelism
+  <a href="#hybrid-parallelism" class="md-nav__link">
+    Hybrid Parallelism
   </a>
   
 </li>
@@ -824,7 +824,7 @@
                   </a>
                 
                 
-                <h1 id="common-distributed-parallel-stratiges">COMMON DISTRIBUTED PARALLEL STRATIGES<a class="headerlink" href="#common-distributed-parallel-stratiges" title="Permanent link">&para;</a></h1>
+                <h1 id="common-distributed-parallel-strategy">COMMON DISTRIBUTED PARALLEL STRATEGY<a class="headerlink" href="#common-distributed-parallel-strategy" title="Permanent link">&para;</a></h1>
 <h2 id="why-distributed-training-is-prevailing">Why Distributed Training is Prevailing<a class="headerlink" href="#why-distributed-training-is-prevailing" title="Permanent link">&para;</a></h2>
 <p>In recent years, deep learning has been widely used in various fields, including computer vision, language understanding, speech recognition, advertising recommendation and so on. A common feature in these different areas is the growing size of models, such as the GPT-3 model, which has 175 billion parameters. Even with 1,024 of 80 GB A100 cards, the full GPT-3 training time would take a month.</p>
 <p>The enlargement of model scale requires the development of hardware (computing power, memory). However, because of the existence of memory walls, the computational power and capacity of a single device, limited by the laws of physics, it is increasingly difficult to continuously improve the integration of chips and to keep up with the demands of model expansion.</p>
@@ -837,21 +837,21 @@
 <p><img alt="matmul" src="imgs/matmul_logical.png" /></p>
 <p>In the single machine single card training situaiton, the above matrix multiplication first calculates <span class="arithmatex">\(out\)</span>, passes <span class="arithmatex">\(out\)</span> to the next layer, and finally calculates <span class="arithmatex">\(loss\)</span>, and then in the backpropagation process, gets <span class="arithmatex">\(\frac{\partial loss}{\partial w}\)</span>, which then be used to update <span class="arithmatex">\(w\)</span>.</p>
 <p>In distributed training, there are "<strong>Data Parallelism</strong>" and "<strong>Model Parallelism</strong>" strategies depending on whether <span class="arithmatex">\(x\)</span> or <span class="arithmatex">\(w\)</span> is partitioned. In the next section, we will introduce common strategies for parallelism.</p>
-<h3 id="data-paralelism">Data Paralelism<a class="headerlink" href="#data-paralelism" title="Permanent link">&para;</a></h3>
+<h3 id="data-parallelism">Data Parallelism<a class="headerlink" href="#data-parallelism" title="Permanent link">&para;</a></h3>
 <p>Data parallelism slices <span class="arithmatex">\(x\)</span>, while the model parameter <span class="arithmatex">\(w\)</span> on each device is complete and consistent. As shown in the figure below, <span class="arithmatex">\(x\)</span> is split evenly into two devices by dimension 0, each with a full <span class="arithmatex">\(w\)</span>.</p>
 <p>In this way, the output on each device is only half the logical output, which shape is <span class="arithmatex">\(2\times8\)</span>. The output on both devices combind together to produce the logically complete output.</p>
 <p><img alt="Data Paralelism" src="imgs/matmul_data_paralelism.png" /></p>
 <p>Note that because the data is distributed to two devices, the backpropagation process will get different values for <span class="arithmatex">\(\frac{\partial loss}{\partial w}\)</span>, if the models are updated directly using the gradients on each device, it would cause the models on the two devices to be inconsistent, and the training would be meaningless(Which model should be used?).</p>
 <p>Therefore, in the process of backpropagation under data parallelism strategy, the gradients on each device should do <a href="https://docs.nvidia.com/deeplearning/nccl/user-guide/docs/usage/collectives.html#allreduce">AllReduce</a> before use, which ensures the model on each device is always consistent.</p>
 <p>When the dataset is large and the model is small, and the communication cost for the gradients synchronization is small in the backpropagation process, so it is more advantageous to choose data parallelism in this situation. For example, the common vision classification model, such as ResNet50, is more suitable to use data parallelism strategy.</p>
-<h3 id="model-paralelism">Model Paralelism<a class="headerlink" href="#model-paralelism" title="Permanent link">&para;</a></h3>
+<h3 id="model-parallelism">Model Parallelism<a class="headerlink" href="#model-parallelism" title="Permanent link">&para;</a></h3>
 <p>When the neural network is very large, the cost of gradients synchronization will be very high, moreover, the network may be too large to be stored in a single computing device, then the model parallelism strategy can be used.</p>
 <p>The so called model parallelism is that the data on each device is complete and consistent, while the model <span class="arithmatex">\(w\)</span> is split into different devices, each device only has a part of the model, all the parts of model on the computing device put together forms the complete model.</p>
 <p>As shown in the figure below, <span class="arithmatex">\(w\)</span> is split evenly into two devices by the first dimension, each with a full <span class="arithmatex">\(x\)</span>. The output on both devices also needs to be combind together to get the logical output.</p>
 <p><img alt="Model Paralelism" src="imgs/matmul_model_paralelism.png" /></p>
 <p>The benefit of model parallelism is that it eliminates the gradient AllReduce between multiple devices. However, since each device requires complete input data, the input is broadcasted among multiple devices with some communication cost. For example, the <span class="arithmatex">\(out~(4\times8)\)</span> shown above needs to be broadcast to both devices if it is the input of the next layer.</p>
 <p>Language models, such as BERT, often use model parallelism.</p>
-<h3 id="pipelining-paralelism">Pipelining Paralelism<a class="headerlink" href="#pipelining-paralelism" title="Permanent link">&para;</a></h3>
+<h3 id="pipelining-parallelism">Pipelining Parallelism<a class="headerlink" href="#pipelining-parallelism" title="Permanent link">&para;</a></h3>
 <p>When the neural network is too large to be stored on a single device, in addition to the above parallel strategies, we can also choose pipelining parallel strategy. Pipelining paralelism divides the network into stages and places it to different computing devices, each of which completes the training in a "relay" manner.</p>
 <p>The figure below shows how to run with pipelining parallelism with a logical four-layer network (<code>T1</code> to <code>T4</code>).</p>
 <p>The four-layer network is divided into two computing devices, so that the <code>T1</code> and <code>T2</code> are placed to <code>GPU0</code> and <code>T3</code> and <code>T4</code> are placed to <code>GPU1</code>.</p>
@@ -860,7 +860,7 @@
 <img src="./imgs/realy.png" width="50%" alt="Relay"/>
 </div>
 
-<h3 id="hybrid-paralelism">Hybrid Paralelism<a class="headerlink" href="#hybrid-paralelism" title="Permanent link">&para;</a></h3>
+<h3 id="hybrid-parallelism">Hybrid Parallelism<a class="headerlink" href="#hybrid-parallelism" title="Permanent link">&para;</a></h3>
 <p>You can also mix with a variety of parallelism strategies when training a network, take GPT-3 as an example, the parallelism strategy for training could be like this:</p>
 <p>This large GPT network is partitioned into 64 stages, with each stage running on 6 DGX-A100s. The workload among the 6 machines is trained with data parallelism, while the workload among GPUs inside each machine is trained with model parallelism. The 3072 A100s in the entire cluster are divided into a matrix of <span class="arithmatex">\(6\times8\times64\)</span>, and then train the model using data parallelism, model parallelism and pipeline parallelism simultaneously.</p>
 <p><img alt="gpt-3" src="imgs/gpt3-overview.png" /></p>

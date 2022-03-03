@@ -69,7 +69,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#consistent-view" class="md-skip">
+        <a href="#global-view" class="md-skip">
           Skip to content
         </a>
       
@@ -562,6 +562,26 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#automatic-derivation-of-sbp-signature" class="md-nav__link">
+    Automatic derivation of SBP Signature
+  </a>
+  
+    <nav class="md-nav" aria-label="Automatic derivation of SBP Signature">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#boxing-mechanism" class="md-nav__link">
+    Boxing mechanism
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#conclusion" class="md-nav__link">
     Conclusion
   </a>
@@ -761,6 +781,26 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#automatic-derivation-of-sbp-signature" class="md-nav__link">
+    Automatic derivation of SBP Signature
+  </a>
+  
+    <nav class="md-nav" aria-label="Automatic derivation of SBP Signature">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#boxing-mechanism" class="md-nav__link">
+    Boxing mechanism
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#conclusion" class="md-nav__link">
     Conclusion
   </a>
@@ -784,7 +824,7 @@
                   </a>
                 
                 
-                <h1 id="consistent-view">CONSISTENT VIEW<a class="headerlink" href="#consistent-view" title="Permanent link">&para;</a></h1>
+                <h1 id="global-view">GLOBAL VIEW<a class="headerlink" href="#global-view" title="Permanent link">&para;</a></h1>
 <p>The concept of <strong>global view</strong> in OneFlow is introduced to simplify distributed training. In short, the cluster is abstracted as a "Super Computing Device" under OneFlow global view.</p>
 <p>Instead of caring about the details of computing and communication in a cluster, users can program like on a single node, and OneFlow can train the model in a distributed way.</p>
 <p><img alt="global view" src="imgs/consistent-view.png" /></p>
@@ -865,10 +905,63 @@ B &amp;= concat&amp;(B_0 ,&amp; B_1) \\
 \]</div>
 <p>Because the shapes of <span class="arithmatex">\(A_0\)</span> and <span class="arithmatex">\(B_0\)</span> do not meet the requirements of matrix multiplication, it is impossible to compute the matrix multiplication on local physical devices. We can say that the combination of <span class="arithmatex">\(A\)</span> as <code>split(0)</code> and <span class="arithmatex">\(B\)</span> as <code>split(0)</code> is illegal.</p>
 <p>We defines <strong>a specific, valid SBP combination</strong> of the inputs and outputs of an operator, as shown above, as a <strong>SBP Signature</strong> of this operator.</p>
-<p>All operators in OneFlow are presetting all possible SBP signatures according to the operator's Operation Rules. The user only needs to set the <code>placement</code> and <code>SBP</code> attributes of the data, the selection process is transparent to the user.</p>
+<p>​</p>
+<h2 id="automatic-derivation-of-sbp-signature">Automatic derivation of SBP Signature<a class="headerlink" href="#automatic-derivation-of-sbp-signature" title="Permanent link">&para;</a></h2>
+<p>​
+With the concept of SBP Signature, we may ask several questions:
+​
+- Does the user need to know all SBP Signature of operators before they use Oneflow for distributed training?
+- Does the user set the input SBP for each layer of the network as an algorithm engineer?
+​
+For the previous question, the user certainly does not need to know all the SBP Signature of the operator. It is the responsibility of  <strong>operator author</strong> to list all possible SBP Signature of an operator. According to the algorithm of the operator, the operator author has already listed and preset all possible SBP Signatures of the operator when developing it.
+​
+We can also get the answer of the second question: because there is a preset SBP Signature, as long as a certain layer operator has an input SBP, OneFlow can deduce the SBP output by this layer of operator according to the SBP Signature. The output of the upstream operator is also the input of the downstream operator. In this way, the SBP input by the downstream operator is determined, and then its output can be determined according to the SBP Signature... 
+It continues to derive and propagate. So in general the user does not need to set the SBP input for each layer of the network. Explicit specification is only required when the layer is initially input, or when it is necessary to force the SBP of a specific layer.
+​
+The users may also have new questions:
+​
+- There are multiple valid SBP Signatures for an operator. Which one will Oneflow choose when it runs? What is it based on?
+​
+For this problem, you need to understand the <strong>SBP Signature automatic derivation</strong> mechanism in Oneflow. The automatic derivation of SBP Signature refers to: given all the valid SBP Signatures of operators, OneFlow has a set of algorithms that will score each valid SBP Signature based on the transmission cost, and select it with the least transmission cost. This maximizes the throughput efficiency of the system
+​</p>
+<h3 id="boxing-mechanism">Boxing mechanism<a class="headerlink" href="#boxing-mechanism" title="Permanent link">&para;</a></h3>
+<p>​
+Strictly the Boxing mechanism of OneFlow is actually transparent to users. When users use OneFlow for distributed training, they do not need to know it. 
+​
+But some thoughtful users will ask some questions after understanding the automatic derivation of SBP Signature:
+​
+- With the SBP Signature automatically selected by OneFlow if the output of the upper layer operator does not match the SBP attribute of the input of the lower layer operator , what should we do?
+​
+For example, in the following code, the output SBP of the upper operator <code>matmul</code> was originally <code>split(0)</code>, but the input of the lower operator <code>matmul</code> was converted to <code>broadcast</code>. At this time, the SBP of upper layer's output and of lower layer's input are inconsistent.
+​
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">oneflow</span> <span class="k">as</span> <span class="nn">flow</span>
+<span class="n">P0</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">placement</span><span class="p">(</span><span class="s2">&quot;cuda&quot;</span><span class="p">,</span> <span class="n">ranks</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="n">P1</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">placement</span><span class="p">(</span><span class="s2">&quot;cuda&quot;</span><span class="p">,</span> <span class="n">ranks</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="n">a0_sbp</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">sbp</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">b0_sbp</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">sbp</span><span class="o">.</span><span class="n">broadcast</span>
+<span class="n">y0_sbp</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">sbp</span><span class="o">.</span><span class="n">broadcast</span>
+<span class="n">b1_sbp</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">sbp</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">A0</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">placement</span><span class="o">=</span><span class="n">P0</span><span class="p">,</span> <span class="n">sbp</span><span class="o">=</span><span class="n">a0_sbp</span><span class="p">)</span>
+<span class="n">B0</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="n">placement</span><span class="o">=</span><span class="n">P0</span><span class="p">,</span> <span class="n">sbp</span><span class="o">=</span><span class="n">b0_sbp</span><span class="p">)</span>
+<span class="n">Y0</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">A0</span><span class="p">,</span> <span class="n">B0</span><span class="p">)</span>
+<span class="n">Y0</span><span class="o">.</span><span class="n">to_global</span><span class="p">(</span><span class="n">placement</span><span class="o">=</span><span class="n">P1</span><span class="p">,</span> <span class="n">sbp</span><span class="o">=</span><span class="n">y0_sbp</span><span class="p">)</span>
+<span class="n">B1</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="n">placement</span><span class="o">=</span><span class="n">P1</span><span class="p">,</span> <span class="n">sbp</span><span class="o">=</span><span class="n">b1_sbp</span><span class="p">)</span>
+<span class="n">Y2</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">Y0</span><span class="p">,</span> <span class="n">B1</span><span class="p">)</span>
+</code></pre></div>
+​
+In this case, Oneflow will detect the inconsistency and insert an operator between the upstream output and the downstream input to do the relevant conversion work. This type of operator that is automatically added for conversion is called <strong>Boxing operator</strong>。
+​
+The corresponding relationship between the logical diagram and thephysical execution diagram of the above code is as follows:
+​
+<img alt="" src="imgs/sbp_translation.png" />
+​</p>
 <h2 id="conclusion">Conclusion<a class="headerlink" href="#conclusion" title="Permanent link">&para;</a></h2>
-<p><code>placement</code>, <code>SBP</code>, and <code>SBP Signature</code> are the important guarantee of OneFlow distributed global view, which makes OneFlow distributed training as simple as on a single machine single card.</p>
-<p>In the next article <a href="./03_consistent_tensor">Global Tensor</a>, we’ll show you an example of programming under the global view.</p>
+<p>​
+<code>placement</code> , <code>SBP</code> and <code>SBP Signature</code> are the important guarantee of OneFlow distributed global view, which makes OneFlow distributed training as simple as on a single machine single card. 
+​
+Usually, the users only need to set <code>SBP</code> in the initial network layer, which can omit the trouble of handwritten communication operations in traditional distributed training. It is worth mentioning that, in addtion to the automatic derivation mechanism of SBP Signature introduced in this article, the OneFlow team is developing an automatic parallel method to find the global optimal solution, and it is under internal testing. After it goes online, the users can get a good distributed training effect without any SBP configuration. So stay tuned.
+​
+In the next article <a href="./03_consistent_tensor">Global Tensor</a>, we’ll show you an example of programming under the global view.</p>
                 
               
               
