@@ -46,6 +46,7 @@ export_onnx_model(graph,
                   onnx_model_path="/tmp", 
                   dynamic_batch_size=False)
 ```
+
 The meaning of each parameter is as follows:
 
 1. graph: the graph need to be converted ( [Graph](../basics/08_nn_graph.md) object )
