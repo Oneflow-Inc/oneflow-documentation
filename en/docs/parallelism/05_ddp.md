@@ -2,9 +2,9 @@
 
 In [Common Distributed Parallel Strategies](./01_introduction.md), we introduced the characteristics of data parallel.
 
-Oneflow provides two ways to accomplish data parallel, and one of them is to use the original concept of Oneflow to run data parallel training by configurating global tensor. This is also the **recommanded way** to run data parallel training on Oneflow.
+OneFlow provides two ways to accomplish data parallel, and one of them is to use the original concept of Oneflow to run data parallel training by configurating global tensor. This is also the **recommanded way** to run data parallel training on Oneflow.
 
-Besides, to facilitate the users who are transferring from Pytorch to Oneflow, Oneflow offers the interface global with Pytorch `torch.nn.parallel.DistributedDataParallel` , [oneflow.nn.parallel.DistributedDataParallel](https://oneflow.readthedocs.io/en/master/nn.html#oneflow.nn.parallel.DistributedDataParallel) so that users can also conveniently extend single machine training to data parallel training. 
+Besides, to facilitate the users who are transferring from PyTorch to OneFlow, OneFlow offers the interface consistent with PyTorch `torch.nn.parallel.DistributedDataParallel`,  [oneflow.nn.parallel.DistributedDataParallel](https://oneflow.readthedocs.io/en/master/nn.html#oneflow.nn.parallel.DistributedDataParallel) so that users can also conveniently extend single machine training to data parallel training. 
 
 ## Run Data Parallel Training With SBP Configuration
 
