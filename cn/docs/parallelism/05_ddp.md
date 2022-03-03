@@ -90,7 +90,6 @@
 
 这样，按照 [常见的分布式并行策略](./01_introduction.md) 中的介绍，我们就通过对数据进行 `split(0)` 切分，对模型进行广播，进行了分布式数据并行训练。
 
-
 ## 使用 DistributedDataParallel 做数据并行训练
 
 可以用以下命令快速体验 `oneflow.nn.parallel.DistributedDataParallel` 做数据并行：

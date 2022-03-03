@@ -40,7 +40,7 @@ python3 -m oneflow.distributed.launch \
     script.py
 ```
 
-### 常见选项说明
+## 常见选项说明
 
 通过 `python3 -m oneflow.distributed.launch -h` 可以查看 `launch` 模块的选项说明，以下是部分常见选项。
 
@@ -49,7 +49,7 @@ python3 -m oneflow.distributed.launch \
 - `--nproc_per_node`：每台机器上要启动的进程数目(number of processes per node)，推荐与 GPU 数目一致
 - `--logdir`：子进程日志的相对存储路径
 
-### launch 模块与并行策略的关系
+## launch 模块与并行策略的关系
 
 注意 `oneflow.distributed.launch` 的主要作用，是待用户完成分布式程序后，让用户可以更方便地启动分布式训练。它省去了配置集群中[环境变量](./03_consistent_tensor.md#_5) 的繁琐。
 
