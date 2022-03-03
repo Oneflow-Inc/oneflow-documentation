@@ -15,9 +15,9 @@ There are several ONNX-related libraries, and the features of several common lib
 
 2. [onnxruntime & onnxruntime-gpu](https://github.com/microsoft/onnxruntime): ONNX runtime that is used to load the ONNX model for inference. ?onnxruntime and onnxruntime-gpu support CPU inference and GPU inference respectively.
 
-3. [onnx-simplifier](https://github.com/daquexian/onnx-simplifier): Structure for simplifying ONNX models, e.g. eliminating operators with constant results
+3. [onnx-simplifier](https://github.com/daquexian/onnx-simplifier): structure for simplifying ONNX models, e.g. eliminating operators with constant results
    
-4. [onnxoptimizer](https://github.com/onnx/optimizer): It is used to optimize ONNX model through graph transformations
+4. [onnxoptimizer](https://github.com/onnx/optimizer): it is used to optimize ONNX model through graph transformations
 
 
 ## Export OneFlow Models to ONNX Models
@@ -47,17 +47,17 @@ export_onnx_model(graph,
 ```
 The meaning of each parameter is as follows:
 
-1. graph: The graph need to be converted ( [Graph](../basics/08_nn_graph.md) object )
+1. graph: the graph need to be converted ( [Graph](../basics/08_nn_graph.md) object )
 
-2. external_data: Whether to save the weights as external data of the ONNX model. When it is `True`, it is usually to avoid the 2GB file size limit of protobuf.
+2. external_data: whether to save the weights as external data of the ONNX model. When it is `True`, it is usually to avoid the 2GB file size limit of protobuf.
 
-3. opset: Specify the version of the conversion model ( int, default is 10 )
+3. opset: specify the version of the conversion model ( int, default is 10 )
 
-4. flow_weight_dir: Path to save OneFlow model weights
+4. flow_weight_dir: path to save OneFlow model weights
 
-5. onnx_model_path: Save path for exported ONNX models
+5. onnx_model_path: save path for exported ONNX models
 
-6. dynamic_batch_size: Whether the exported ONNX model supports dynamic batch, default is False
+6. dynamic_batch_size: whether the exported ONNX model supports dynamic batch, default is False
 
 
 In addition, oneflow-onnx provides a function called `convert_to_onnx_and_check` to convert and check the converted ONNX model. The check refers to feeding the same input to the original OneFlow model and the converted ONNX model respectively, and then comparing the difference between each value in the two outputs to see if it is within a reasonable margin of error.
