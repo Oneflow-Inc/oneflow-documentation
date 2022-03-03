@@ -135,7 +135,7 @@ We defines **a specific, valid SBP combination** of the inputs and outputs of an
 ​
 With the concept of SBP Signature, we may ask several questions:
 ​
-- Does the user need to know all SBP Signature of operators before they use Oneflow for distributed training ？
+- Does the user need to know all SBP Signature of operators before they use Oneflow for distributed training?
 - Does the user set the input SBP for each layer of the network as an algorithm engineer?
 ​
 For the previous question, the user certainly does not need to know all the SBP Signature of the operator. It is the responsibility of  **operator author** to list all possible SBP Signature of an operator. According to the algorithm of the operator, the operator author has already listed and preset all possible SBP Signatures of the operator when developing it.
