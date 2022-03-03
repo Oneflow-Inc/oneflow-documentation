@@ -49,11 +49,11 @@ export_onnx_model(graph,
 
 The meaning of each parameter is as follows:
 
-1. graph: the graph need to be converted ( [Graph](../basics/08_nn_graph.md) object )
+1. graph: the graph need to be converted ([Graph](../basics/08_nn_graph.md) object)
 
 2. external_data: whether to save the weights as external data of the ONNX model. When it is `True`, it is usually to avoid the 2GB file size limit of protobuf.
 
-3. opset: specify the version of the conversion model ( int, default is 10 )
+3. opset: specify the version of the conversion model (int, default is 10)
 
 4. flow_weight_dir: path to save OneFlow model weights
 
