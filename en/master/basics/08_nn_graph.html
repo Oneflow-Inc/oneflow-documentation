@@ -530,8 +530,8 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#save-and-load-model-parameters-of-graph" class="md-nav__link">
-    Save and Load Model Parameters of Graph
+  <a href="#save-and-load-graph-models" class="md-nav__link">
+    Save and Load Graph Models
   </a>
   
 </li>
@@ -831,8 +831,8 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#save-and-load-model-parameters-of-graph" class="md-nav__link">
-    Save and Load Model Parameters of Graph
+  <a href="#save-and-load-graph-models" class="md-nav__link">
+    Save and Load Graph Models
   </a>
   
 </li>
@@ -913,6 +913,7 @@
 
 <span class="n">model</span> <span class="o">=</span> <span class="n">flowvision</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">mobilenet_v2</span><span class="p">()</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">DEVICE</span><span class="p">)</span>
 <span class="n">model</span><span class="o">.</span><span class="n">classifer</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="mf">0.2</span><span class="p">),</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">last_channel</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+<span class="n">model</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
 
 <span class="n">loss_fn</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">CrossEntropyLoss</span><span class="p">()</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">DEVICE</span><span class="p">)</span>
 <span class="n">optimizer</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">)</span>
@@ -1041,11 +1042,12 @@ loss: 6.644351  [  960/50000]
 <span class="p">)</span>
 
 <span class="n">train_dataloader</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">(</span>
-    <span class="n">training_data</span><span class="p">,</span> <span class="n">BATCH_SIZE</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span>
+    <span class="n">training_data</span><span class="p">,</span> <span class="n">BATCH_SIZE</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">drop_last</span><span class="o">=</span><span class="kc">True</span>
 <span class="p">)</span>
 
 <span class="n">model</span> <span class="o">=</span> <span class="n">flowvision</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">mobilenet_v2</span><span class="p">()</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">DEVICE</span><span class="p">)</span>
 <span class="n">model</span><span class="o">.</span><span class="n">classifer</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="mf">0.2</span><span class="p">),</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">last_channel</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+<span class="n">model</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
 
 <span class="n">loss_fn</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">CrossEntropyLoss</span><span class="p">()</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">DEVICE</span><span class="p">)</span>
 <span class="n">optimizer</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">)</span>
@@ -1214,34 +1216,35 @@ loss: 6.644351  [  960/50000]
 </tbody>
 </table>
 <p>In addition to the methods described above, getting the parameters of the gradient during the training process, accessing to the learning rate and other functions are also under development and will come up soon.</p>
-<h3 id="save-and-load-model-parameters-of-graph">Save and Load Model Parameters of Graph<a class="headerlink" href="#save-and-load-model-parameters-of-graph" title="Permanent link">&para;</a></h3>
-<p>Graph reuses the network parameters of the Module, so it can reuse the <code>save</code> and <code>load</code> interfaces of Module. For more information, you can refer to <a href="07_model_load_save.html">Model saving and loading</a>.</p>
-<p>If you want to save the trained model parameters of the above <code>graph_mobile_net_v2</code>, you can actually save its Module (<code>model</code> obtained by <code>model = flowvision.models.mobilenet_v2().to(DEVICE)</code> before).</p>
-<div class="highlight"><pre><span></span><code><span class="n">flow</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span> <span class="s2">&quot;./graph_model&quot;</span><span class="p">)</span>
+<h3 id="save-and-load-graph-models">Save and Load Graph Models<a class="headerlink" href="#save-and-load-graph-models" title="Permanent link">&para;</a></h3>
+<p>When training Graph model, it is often necessary to save the parameters of the model that has been trained for a period of time and other states such as optimizer parameters, so as to facilitate the resume of training after interruption.</p>
+<p>Graph model objects have <code>state_dict</code> and <code>load_state_dict</code> interfaces that similar to Module. We can save and load graph models with <a href="https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.save#oneflow.save">save</a> and <a href="https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.load#oneflow.load">load</a>. This is similar to Eagar module introduced in <a href="07_model_load_save.html">Model Save and Load</a>. A little different from Eager mode is that when calling Graph's <code>state_dict</code> during training, in addition to the parameters of each layer of the internal Module, other states such as training iteration steps and optimizer parameters will also be obtained, so as to resume training later.</p>
+<p>For example, we hope to save the latest state after each epoch while training <code>graph_mobile_net_v2</code> above, we need to add the following code:</p>
+<p>Assume that we want to save into "GraphMobileNetV2" under current directory:</p>
+<div class="highlight"><pre><span></span><code><span class="n">CHECKPOINT_SAVE_DIR</span> <span class="o">=</span> <span class="s2">&quot;./GraphMobileNetV2&quot;</span>
 </code></pre></div>
+<p>Insert the following code at the completion of each epoch:
+<div class="highlight"><pre><span></span><code><span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">CHECKPOINT_SAVE_DIR</span><span class="p">)</span>  <span class="c1"># Clear previous state</span>
+<span class="n">flow</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">graph_mobile_net_v2</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span> <span class="n">CHECKPOINT_SAVE_DIR</span><span class="p">)</span>
+</code></pre></div></p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p><strong>Don't</strong> save in the following way. Because Graph will process members when it is initialized, and <code>graph_mobile_net_v2.model</code> is actually no longer a Module type:</p>
-<div class="highlight"><pre><span></span><code><span class="n">flow</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">graph_mobile_net_v2</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span> <span class="s2">&quot;./graph_model&quot;</span><span class="p">)</span>  <span class="c1"># it will report an error</span>
+<div class="highlight"><pre><span></span><code><span class="n">flow</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">graph_mobile_net_v2</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span> <span class="n">CHECKPOINT_SAVE_DIR</span><span class="p">)</span>  <span class="c1"># it will report an error</span>
 </code></pre></div>
 </div>
-<p>Loading the previously saved model is also the work of the Module:</p>
-<div class="highlight"><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="n">flowvision</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">mobilenet_v2</span><span class="p">()</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">DEVICE</span><span class="p">)</span>
-<span class="n">model</span><span class="o">.</span><span class="n">classifer</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="mf">0.2</span><span class="p">),</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">last_channel</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
-<span class="n">model</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;./graph_model&quot;</span><span class="p">))</span> <span class="c1"># Load the saved model</span>
-<span class="c1"># ...</span>
+<p>When we need to restore the previously saved state:</p>
+<div class="highlight"><pre><span></span><code><span class="n">state_dict</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">CHECKPOINT_SAVE_DIR</span><span class="p">)</span>
+<span class="n">graph_mobile_net_v2</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">state_dict</span><span class="p">)</span>
 </code></pre></div>
 <h3 id="graph-and-deployment">Graph and Deployment<a class="headerlink" href="#graph-and-deployment" title="Permanent link">&para;</a></h3>
-<p>nn.Graph supports saving computation graph and model parameters, which can easily support model deployment.</p>
+<p>nn.Graph supports saving model parameters and computation graph at the same time, which can easily support model deployment.</p>
 <p>If there is a need for model deployment, the <code>Graph</code> object should be exported to the format required for deployment through the <code>oneflow.save</code> interface:</p>
 <div class="highlight"><pre><span></span><code><span class="n">flow</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">graph_mobile_net_v2</span><span class="p">,</span> <span class="s2">&quot;./1/model&quot;</span><span class="p">)</span>
 </code></pre></div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Note the difference between the saving model parameters in this section and the above section. In the above section, saving model parameters will report an error because Graph's initialization processes model members. In this section, there is no problem in calling the <code>save</code> interface because the <code>save</code> interface supports saving Graph object directly, which saves both model parameters and model structures.</p>
-<div class="highlight"><pre><span></span><code><span class="n">flow</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">graph_mobile_net_v2</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span> <span class="s2">&quot;./graph_model&quot;</span><span class="p">)</span>  <span class="c1"># it will report an error</span>
-<span class="n">flow</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">graph_mobile_net_v2</span><span class="p">,</span> <span class="s2">&quot;./1/model&quot;</span><span class="p">)</span>
-</code></pre></div>
+<p>Note the difference from the previous section. <code>save</code> interface supports saving state_dict and  also Graph objects. When the Graph object is saved, the model parameters and computation graph will be saved at the same time to decouple from the model structure definition code.</p>
 </div>
 <p>In this way, both model parameters and computation graph required for deployment will be saved in the <code>./1/model</code> directory. For detailed deployment process, refer to <a href="../cookies/serving.html">Model Deployment</a>.</p>
 <p>You must export the model via a Graph object to meet the format requirement for deployment. If it is a model trained in Eager mode (i.e. <code>nn.Module</code> object), you need to use <code>Graph</code> to encapsulate the Module and then export it.</p>
@@ -1280,12 +1283,12 @@ loss: 6.644351  [  960/50000]
 <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">loss</span><span class="p">(</span><span class="n">y_pred</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">flow</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="n">y_pred</span><span class="o">-</span><span class="n">y</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
 
-<span class="n">x</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>  <span class="c1"># 输入</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>  <span class="c1"># the input</span>
 <span class="n">w</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">b</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">z</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span> <span class="o">+</span> <span class="n">b</span>
 
-<span class="n">y</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>  <span class="c1"># label</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>  <span class="c1"># the label</span>
 <span class="n">l</span> <span class="o">=</span> <span class="n">loss</span><span class="p">(</span><span class="n">z</span><span class="p">,</span><span class="n">y</span><span class="p">)</span>
 </code></pre></div>
 <p>The corresponding computation graph is:</p>
