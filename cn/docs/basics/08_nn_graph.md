@@ -38,6 +38,7 @@ OneFlow 默认以 Eager 模式运行。
 
     model = flowvision.models.mobilenet_v2().to(DEVICE)
     model.classifer = nn.Sequential(nn.Dropout(0.2), nn.Linear(model.last_channel, 10))
+    model.train()
 
     loss_fn = nn.CrossEntropyLoss().to(DEVICE)
     optimizer = flow.optim.SGD(model.parameters(), lr=1e-3)
@@ -191,11 +192,12 @@ y_pred = graph_mobile_net_v2(x)
     )
 
     train_dataloader = flow.utils.data.DataLoader(
-        training_data, BATCH_SIZE, shuffle=True
+        training_data, BATCH_SIZE, shuffle=True, drop_last=True
     )
 
     model = flowvision.models.mobilenet_v2().to(DEVICE)
     model.classifer = nn.Sequential(nn.Dropout(0.2), nn.Linear(model.last_channel, 10))
+    model.train()
 
     loss_fn = nn.CrossEntropyLoss().to(DEVICE)
     optimizer = flow.optim.SGD(model.parameters(), lr=1e-3)
@@ -359,35 +361,41 @@ OneFlow 在编译生成计算图的过程中会打印调试信息，比如，将
 
 除了以上介绍的方法外，训练过程中获取参数的梯度、获取 learning rate 等功能，也正在开发中，即将上线。
 
-### Graph 的保存与加载模型参数
+### Graph 模型的保存与加载
 
-Graph 复用了 Module 的网络参数，可以复用 Module 的 `save` 与 `load` 接口。可以参考 [模型的保存与加载](./07_model_load_save.md) 。
+在训练 Graph 模型时，常常需要将已经训练了一段时间的模型的参数以及其他诸如优化器参数等状态进行保存，方便中断后恢复训练。
 
-如以上的 `graph_mobile_net_v2`，若想保存它的训练后的模型参数，其实应该保存它其中的 Module（即之前 `model = flowvision.models.mobilenet_v2().to(DEVICE)` 得到的 `model`。
+Graph 模型对象具有和 Module 类似的 `state_dict` 和 `load_state_dict` 接口，配合 [save](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.save#oneflow.save) 和 [load](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.load#oneflow.load) 就可以实现保存与加载 Graph 模型。这与之前在 [模型的保存与加载](../basics/07_model_load_save.md) 中介绍的 Eager 模式下是类似的。和 Eager 略有不同的是，在训练过程中调用 Graph 的 `state_dict` 时，除了会得到内部 Module 各层的参数，也会得到训练迭代数、优化器参数等其他状态，以便之后恢复训练。
 
+例如，希望在以上训练 `graph_mobile_net_v2` 的过程中，每经过 1 个 epoch 将模型最新的状态保存一次，那么可以添加以下代码：
+
+假设我们想要保存在当前目录下的 "GraphMobileNetV2" 中：
 ```python
-flow.save(model.state_dict(), "./graph_model")
+CHECKPOINT_SAVE_DIR = "./GraphMobileNetV2"
+```
+在每个 epoch 训练完成处插入以下代码：
+```python
+shutil.rmtree(CHECKPOINT_SAVE_DIR)  # 清理上一次的状态
+flow.save(graph_mobile_net_v2.state_dict(), CHECKPOINT_SAVE_DIR)
 ```
 
 !!! Note
     **不能** 用以下方式保存。因为 Graph 在初始化时，会对成员做处理，所以 `graph_mobile_net_v2.model` 其实已经不再是 Module 类型：
 
     ```python
-    flow.save(graph_mobile_net_v2.model.state_dict(), "./graph_model")  # 会报错
+    flow.save(graph_mobile_net_v2.model.state_dict(), CHECKPOINT_SAVE_DIR)  # 会报错
     ```
 
-加载之前保存好的模型，也是 Module 的工作：
-
+当需要恢复之前保存的状态时：
 ```python
-model = flowvision.models.mobilenet_v2().to(DEVICE)
-model.classifer = nn.Sequential(nn.Dropout(0.2), nn.Linear(model.last_channel, 10))
-model.load_state_dict(flow.load("./graph_model")) # 加载保存好的模型
-# ...
+state_dict = flow.load(CHECKPOINT_SAVE_DIR)
+graph_mobile_net_v2.load_state_dict(state_dict)
 ```
+
 
 ### Graph 与部署
 
-nn.Graph 支持保存计算图和模型参数，可以很方便的支持模型部署。
+nn.Graph 支持同时保存模型参数和计算图，可以很方便的支持模型部署。
 
 如果有模型部署的需求，那么应该通过 `oneflow.save` 接口，将 `Graph` 对象导出为部署需要的格式：
 
@@ -396,12 +404,7 @@ flow.save(graph_mobile_net_v2, "./1/model")
 ```
 
 !!! Note
-    注意和上一节保存模型参数的区别。上一节中保存模型参数会报错，是因为 Graph 初始化对 model 成员进行了处理。这一节中调用 `save` 接口没有问题，`save` 接口直接支持保存 Graph 对象，既保存模型参数，又保存模型结构。
-
-    ```python
-    flow.save(graph_mobile_net_v2.model.state_dict(), "./graph_model")  # 会报错
-    flow.save(graph_mobile_net_v2, "./1/model")
-    ```
+    注意和上一节的区别。 `save` 接口既支持保存 state_dict，也支持保存 Graph 对象。当保存 Graph 对象时，模型参数和计算图将被同时保存，以与模型结构定义代码解耦。
 
 这样，`./1/model` 目录下会同时保存部署所需的模型参数和计算图。详细的部署流程可以参阅 [模型部署](../cookies/serving.md) 一文。
 
