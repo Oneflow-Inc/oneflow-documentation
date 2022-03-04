@@ -38,6 +38,7 @@ The following script uses data set CIFAR10 to train model `mobilenet_v2`.
 
     model = flowvision.models.mobilenet_v2().to(DEVICE)
     model.classifer = nn.Sequential(nn.Dropout(0.2), nn.Linear(model.last_channel, 10))
+    model.train()
 
     loss_fn = nn.CrossEntropyLoss().to(DEVICE)
     optimizer = flow.optim.SGD(model.parameters(), lr=1e-3)
@@ -191,11 +192,12 @@ The Graph can be used for training. Click on the "Code" below to see the detaile
     )
 
     train_dataloader = flow.utils.data.DataLoader(
-        training_data, BATCH_SIZE, shuffle=True
+        training_data, BATCH_SIZE, shuffle=True, drop_last=True
     )
 
     model = flowvision.models.mobilenet_v2().to(DEVICE)
     model.classifer = nn.Sequential(nn.Dropout(0.2), nn.Linear(model.last_channel, 10))
+    model.train()
 
     loss_fn = nn.CrossEntropyLoss().to(DEVICE)
     optimizer = flow.optim.SGD(model.parameters(), lr=1e-3)
@@ -359,35 +361,44 @@ In addition, in order for developers to have a clearer understanding of the type
 
 In addition to the methods described above, getting the parameters of the gradient during the training process, accessing to the learning rate and other functions are also under development and will come up soon.
 
-### Save and Load Model Parameters of Graph
+### Save and Load Graph Models
 
-Graph reuses the network parameters of the Module, so it can reuse the `save` and `load` interfaces of Module. For more information, you can refer to [Model saving and loading](./07_model_load_save.md).
+When training Graph model, it is often necessary to save the parameters of the model that has been trained for a period of time and other states such as optimizer parameters, so as to facilitate the resume of training after interruption.
 
-If you want to save the trained model parameters of the above `graph_mobile_net_v2`, you can actually save its Module (`model` obtained by `model = flowvision.models.mobilenet_v2().to(DEVICE)` before).
+Graph model objects have `state_dict` and `load_state_dict` interfaces that similar to Module. We can save and load graph models with [save](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.save#oneflow.save) and [load](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.load#oneflow.load). This is similar to Eagar module introduced in [Model Save and Load](../basics/07_model_load_save.md). A little different from Eager mode is that when calling Graph's `state_dict` during training, in addition to the parameters of each layer of the internal Module, other states such as training iteration steps and optimizer parameters will also be obtained, so as to resume training later.
+
+For example, we hope to save the latest state after each epoch while training `graph_mobile_net_v2` above, we need to add the following code:
+
+Assume that we want to save into "GraphMobileNetV2" under current directory:
 
 ```python
-flow.save(model.state_dict(), "./graph_model")
+CHECKPOINT_SAVE_DIR = "./GraphMobileNetV2"
 ```
+
+Insert the following code at the completion of each epoch:
+```python
+shutil.rmtree(CHECKPOINT_SAVE_DIR)  # Clear previous state
+flow.save(graph_mobile_net_v2.state_dict(), CHECKPOINT_SAVE_DIR)
+```
+
 
 !!! Note
 
     **Don't** save in the following way. Because Graph will process members when it is initialized, and `graph_mobile_net_v2.model` is actually no longer a Module type:
 
     ```python
-    flow.save(graph_mobile_net_v2.model.state_dict(), "./graph_model")  # it will report an error
+    flow.save(graph_mobile_net_v2.model.state_dict(), CHECKPOINT_SAVE_DIR)  # it will report an error
     ```
 
-Loading the previously saved model is also the work of the Module:
+When we need to restore the previously saved state:
 
 ```python
-model = flowvision.models.mobilenet_v2().to(DEVICE)
-model.classifer = nn.Sequential(nn.Dropout(0.2), nn.Linear(model.last_channel, 10))
-model.load_state_dict(flow.load("./graph_model")) # Load the saved model
-# ...
+state_dict = flow.load(CHECKPOINT_SAVE_DIR)
+graph_mobile_net_v2.load_state_dict(state_dict)
 ```
 ### Graph and Deployment
 
-nn.Graph supports saving computation graph and model parameters, which can easily support model deployment.
+nn.Graph supports saving model parameters and computation graph at the same time, which can easily support model deployment.
 
 If there is a need for model deployment, the `Graph` object should be exported to the format required for deployment through the `oneflow.save` interface:
 
@@ -396,12 +407,7 @@ flow.save(graph_mobile_net_v2, "./1/model")
 ```
 
 !!! Note
-    Note the difference between the saving model parameters in this section and the above section. In the above section, saving model parameters will report an error because Graph's initialization processes model members. In this section, there is no problem in calling the `save` interface because the `save` interface supports saving Graph object directly, which saves both model parameters and model structures.
-
-    ```python
-    flow.save(graph_mobile_net_v2.model.state_dict(), "./graph_model")  # it will report an error
-    flow.save(graph_mobile_net_v2, "./1/model")
-    ```
+    Note the difference from the previous section. `save ` interface supports saving state_dict and  also Graph objects. When the Graph object is saved, the model parameters and computation graph will be saved at the same time to decouple from the model structure definition code.
 
 In this way, both model parameters and computation graph required for deployment will be saved in the `./1/model` directory. For detailed deployment process, refer to [Model Deployment](../cookies/serving.md).
 
@@ -447,12 +453,12 @@ User-defined neural networks, are transformed by deep learning frameworks into c
 def loss(y_pred, y):
     return flow.sum(1/2*(y_pred-y)**2)
 
-x = flow.ones(1, 5)  # 输入
+x = flow.ones(1, 5)  # the input
 w = flow.randn(5, 3, requires_grad=True)
 b = flow.randn(1, 3, requires_grad=True)
 z = flow.matmul(x, w) + b
 
-y = flow.zeros(1, 3)  # label
+y = flow.zeros(1, 3)  # the label
 l = loss(z,y)
 ```
 
