@@ -70,7 +70,7 @@ from oneflow_onnx.oneflow2onnx.util import convert_to_onnx_and_check
 convert_to_onnx_and_check(...)
 ```
 
-The parameters of the `convert_to_onnx_and_check` are almost the same as those of `export_onnx_model`, besides  you can pass `print_outlier` parameter additionally. When `print_outlier=True`, it will output any abnormal values found during the check process that exceed the reasonable error range. 
+The parameters of the `convert_to_onnx_and_check` are almost the same as those of `export_onnx_model`, besides you can pass `print_outlier` parameter additionally. When `print_outlier=True`, it will output any abnormal values found during the check process that exceed the reasonable error range. 
 
 ### Considerations when Exporting Models
 
