@@ -76,4 +76,4 @@ $$ split(0) \times broadcast = split(0) $$
 
  也就是说，以下几个 2D SBP，构成矩阵乘法的 2D SBP Signature：
 
-$$ (broadcast, split(0)) \times (split(0), broadcast) =  (split(1), split(0)) $$
+$$ (broadcast, split(0)) \times (split(1), broadcast) =  (split(1), split(0)) $$
