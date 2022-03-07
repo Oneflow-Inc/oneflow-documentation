@@ -21,7 +21,7 @@ To interactively experience global tensor on a two-GPU machine, you can launch p
     python3
     ```
 
-Setting environment variables prepares the machines for distributed computing. Please refer to the [Extended Reading](#extented-reading) section at the end of this article for a detailed explanation and ways to launch distributed computing using provided tools.
+Setting environment variables prepares the machines for distributed computing. Please refer to the [Extended Reading](#extended-reading) section at the end of this article for a detailed explanation and ways to launch distributed computing using provided tools.
 
 ### Create Global Tensor Directly
 

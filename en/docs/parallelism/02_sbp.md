@@ -187,5 +187,5 @@ The corresponding relationship between the logical diagram and thephysical execu
 ​
 Usually, the users only need to set `SBP` in the initial network layer, which can omit the trouble of handwritten communication operations in traditional distributed training. It is worth mentioning that, in addtion to the automatic derivation mechanism of SBP Signature introduced in this article, the OneFlow team is developing an automatic parallel method to find the global optimal solution, and it is under internal testing. After it goes online, the users can get a good distributed training effect without any SBP configuration. So stay tuned.
 ​
-In the next article [Global Tensor](./03_consistent_tensor), we’ll show you an example of programming under the global view.
+In the next article [Global Tensor](./03_consistent_tensor.md), we’ll show you an example of programming under the global view.
 
