@@ -124,10 +124,10 @@ nav:
       - 常见的分布式并行策略: parallelism/01_introduction.md
       - 集群的全局视角: parallelism/02_sbp.md
       - Global Tensor: parallelism/03_consistent_tensor.md
-      - 2D SBP: parallelism/04_2d-sbp.md
-      - 用 launch 模块启动分布式训练: parallelism/04_launch.md
-      - 数据并行训练: parallelism/05_ddp.md
-      - 流水并行训练: parallelism/06_pipeline.md
+      - 2D SBP: parallelism/04_2d_sbp.md
+      - 用 launch 模块启动分布式训练: parallelism/05_launch.md
+      - 数据并行训练: parallelism/06_ddp.md
+      - 流水并行训练: parallelism/07_pipeline.md
 
     - OneFlow Cookies:
       - OneFlow 与 ONNX 交互: cookies/oneflow2onnnx.md

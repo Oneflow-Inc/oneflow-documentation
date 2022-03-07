@@ -123,10 +123,10 @@ nav:
       - Common Parallel Strategies: parallelism/01_introduction.md
       - Global View: parallelism/02_sbp.md
       - Global Tensor: parallelism/03_consistent_tensor.md
-      - 2D SBP: parallelism/04_2d-sbp.md
-      - Distributed Training Launcher: parallelism/04_launch.md
-      - Data Parallelism Training: parallelism/05_ddp.md
-      - Pipelining Parallelism: parallelism/06_pipeline.md
+      - 2D SBP: parallelism/04_2d_sbp.md
+      - Distributed Training Launcher: parallelism/05_launch.md
+      - Data Parallelism Training: parallelism/06_ddp.md
+      - Pipelining Parallelism: parallelism/07_pipeline.md
 
     - OneFlow Cookies:
       - Onelow with ONNX: cookies/oneflow2onnnx.md
