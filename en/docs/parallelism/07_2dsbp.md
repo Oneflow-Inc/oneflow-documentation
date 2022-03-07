@@ -4,7 +4,7 @@ After reading the [Global View](./02_sbp.md) and [Global Tensor](./03_consistent
 
 This article will introduce 2D SBP based on the reader's mastery of 1D SBP, which can more flexibly deal with more complex distributed training scenarios.
 
-## 2D devices matrix
+## 2D Devices Matrix
 We are already familiar with the placement configuration of 1D SBP. In the scenario of 1D SBP, configure the cluster through the [oneflow.placement](https://oneflow.readthedocs.io/en/master/placement.html#oneflow.placement) interface, such as using the 0~3 GPU graphics cards in the cluster:
 
 ```python
