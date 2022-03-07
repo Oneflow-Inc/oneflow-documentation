@@ -1,6 +1,6 @@
 # 2D SBP
 
-After reading the [global view](./02_sbp.md) and [Global Tensor](./03_consistent_tensor.md), I believe you have mastered the basic concepts of SBP and SBP Signature, and can get started with related programming tasks. In fact, the above information refers to **1D SBP**.
+After reading the [Global View](./02_sbp.md) and [Global Tensor](./03_consistent_tensor.md), It can be sure that you have mastered the basic concepts of SBP and SBP Signature, and can get started with related tasks. In fact, all of the above articles refers to **1D SBP**.
 
 This article will introduce 2D SBP based on the reader's mastery of 1D SBP, which can more flexibly deal with more complex distributed training scenarios.
 
