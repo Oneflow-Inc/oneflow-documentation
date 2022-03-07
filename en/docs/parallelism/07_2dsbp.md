@@ -19,7 +19,7 @@ The above `"cuda"` specifies the device type, and `ranks=[0, 1, 2, 3]` specifies
 
 When `ranks` is in the form of a one-dimensional list like `ranks=[0, 1, 2, 3]`, all devices in the cluster form a 1D device vector, which is where the 1D SBP name comes from.
 
-When `ranks` is in the form of a multi-dimensional array, the devices in the cluster are grouped into a multi-dimensional array of devices. `ranks=[[0, 1], [2, 3]]` means that the four computing devices in the cluster are divided into $2 \times 2$ device arrays.
+When `ranks` is in the form of a multi-dimensional array, the devices in the cluster are grouped into a multi-dimensional array of devices. `ranks=[[0, 1], [2, 3]]` means that the four computing devices in the cluster are divided into a $2 \times 2$ devices matrix.
 
 ## 2D SBP
 
