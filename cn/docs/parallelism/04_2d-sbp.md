@@ -70,7 +70,7 @@ $$ broadcast \times split(1) = split(1) $$
 
 $$ split(0) \times broadcast = split(0) $$
 
-现在，假定我们给 $x$ 设置了 2D SBP 为：$(broadcast, split(0))$， 给 $w$ 设置 2D SBP 为 $(split(0), broadcast)$，那么，在 2D SBP 的背景下， $x \times w = y$ 运算，得到 $y$ 的 SBP 属性为 $(split(1), split(0))$。
+现在，假定我们给 $x$ 设置了 2D SBP 为：$(broadcast, split(0))$， 给 $w$ 设置 2D SBP 为 $(split(1), broadcast)$，那么，在 2D SBP 的背景下， $x \times w = y$ 运算，得到 $y$ 的 SBP 属性为 $(split(1), split(0))$。
 
 也就是说，以下几个 2D SBP，构成矩阵乘法的 2D SBP Signature：
 
