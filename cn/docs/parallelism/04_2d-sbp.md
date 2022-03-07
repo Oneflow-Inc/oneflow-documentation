@@ -22,7 +22,6 @@ placement2 = flow.placement("cuda", ranks=[[0, 1], [2, 3]])
 
 当 `ranks` 是多维数组的形式时，集群中的设备被分组为一个多维的设备阵列。`ranks=[[0, 1], [2, 3]]` 表示集群中的四个计算设备被划分为了 $2 \times 2$ 的设备阵列。
 
-
 ## 2D SBP
 
 我们已经知道，构造 Global Tensor 时，需要同时指定 `placement` 与 `SBP`。当 `placement` 中的集群是 2 维的设备阵列时；SBP 也必需与之对应，是一个长度为 2 的 `tuple`，这个`tuple`中的第 0 个、第 1 个 元素，分别描述了 Global Tensor 张量在设备阵列第 0 维、第 1 维的分布。
@@ -71,9 +70,8 @@ $$ broadcast \times split(1) = split(1) $$
 
 $$ split(0) \times broadcast = split(0) $$
 
-现在，假定我们给 $x$ 设置了 2D SBP 为：$(broadcast, split(0))$， 给 $w$ 设置 2D SBP 为 $(split(0), broadcast)$，那么，在 2D SBP 的背景下， $x \times w = y$ 运算，得到 $y$ 的 SBP
- 属性为 $(split(1), split(0))$。
+现在，假定我们给 $x$ 设置了 2D SBP 为：$(broadcast, split(0))$， 给 $w$ 设置 2D SBP 为 $(split(0), broadcast)$，那么，在 2D SBP 的背景下， $x \times w = y$ 运算，得到 $y$ 的 SBP 属性为 $(split(1), split(0))$。
 
- 也就是说，以下几个 2D SBP，构成矩阵乘法的 2D SBP Signature：
+也就是说，以下几个 2D SBP，构成矩阵乘法的 2D SBP Signature：
 
 $$ (broadcast, split(0)) \times (split(1), broadcast) =  (split(1), split(0)) $$
