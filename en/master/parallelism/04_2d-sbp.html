@@ -11,14 +11,14 @@
       
       
       
-        <link rel="canonical" href="https://docs.oneflow.org/master/parallelism/04_launch.html">
+        <link rel="canonical" href="https://docs.oneflow.org/master/parallelism/04_2d-sbp.html">
       
       <link rel="icon" href="../assets/favicon.png">
       <meta name="generator" content="mkdocs-1.2.2, mkdocs-material-7.1.11">
     
     
       
-        <title>Distributed Training Launcher - OneFlow</title>
+        <title>2D SBP - OneFlow</title>
       
     
     
@@ -69,7 +69,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#distributed-training-launcher" class="md-skip">
+        <a href="#2d-sbp" class="md-skip">
           Skip to content
         </a>
       
@@ -104,7 +104,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Distributed Training Launcher
+              2D SBP
             
           </span>
         </div>
@@ -530,18 +530,6 @@
             
   
   
-  
-    <li class="md-nav__item">
-      <a href="04_2d-sbp.html" class="md-nav__link">
-        2D SBP
-      </a>
-    </li>
-  
-
-          
-            
-  
-  
     
   
   
@@ -554,12 +542,12 @@
       
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
-          Distributed Training Launcher
+          2D SBP
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <a href="04_launch.html" class="md-nav__link md-nav__link--active">
-        Distributed Training Launcher
+      <a href="04_2d-sbp.html" class="md-nav__link md-nav__link--active">
+        2D SBP
       </a>
       
         
@@ -577,15 +565,22 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#description-of-common-options" class="md-nav__link">
-    Description of Common Options
+  <a href="#2d-devices-array" class="md-nav__link">
+    2D Devices Array
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#the-relationship-between-launch-module-and-parallel-strategy" class="md-nav__link">
-    The Relationship between Launch Module and Parallel Strategy
+  <a href="#2d-sbp_1" class="md-nav__link">
+    2D SBP
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2d-sbp-signature" class="md-nav__link">
+    2D SBP Signature
   </a>
   
 </li>
@@ -594,6 +589,18 @@
   
 </nav>
       
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="04_launch.html" class="md-nav__link">
+        Distributed Training Launcher
+      </a>
     </li>
   
 
@@ -750,15 +757,22 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#description-of-common-options" class="md-nav__link">
-    Description of Common Options
+  <a href="#2d-devices-array" class="md-nav__link">
+    2D Devices Array
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#the-relationship-between-launch-module-and-parallel-strategy" class="md-nav__link">
-    The Relationship between Launch Module and Parallel Strategy
+  <a href="#2d-sbp_1" class="md-nav__link">
+    2D SBP
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2d-sbp-signature" class="md-nav__link">
+    2D SBP Signature
   </a>
   
 </li>
@@ -775,50 +789,61 @@
             <article class="md-content__inner md-typeset">
               
                 
-                  <a href="https://github.com/OneFlow-Inc/oneflow-documentation/blob/master/en/docs/parallelism/04_launch.md" title="Edit this page" class="md-content__button md-icon">
+                  <a href="https://github.com/OneFlow-Inc/oneflow-documentation/blob/master/en/docs/parallelism/04_2d-sbp.md" title="Edit this page" class="md-content__button md-icon">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
                   </a>
                 
                 
-                <h1 id="distributed-training-launcher">DISTRIBUTED TRAINING LAUNCHER<a class="headerlink" href="#distributed-training-launcher" title="Permanent link">&para;</a></h1>
-<p>OneFlow provides the <code>oneflow.distributed.launch</code> module to help users start distributed training more conveniently.</p>
-<p>Users can start distributed training by the following commands:</p>
-<div class="highlight"><pre><span></span><code>python3 -m oneflow.distributed.launch <span class="o">[</span>Boot Option<span class="o">]</span> training_script.py
+                <h1 id="2d-sbp">2D SBP<a class="headerlink" href="#2d-sbp" title="Permanent link">&para;</a></h1>
+<p>After reading the <a href="02_sbp.html">Global View</a> and <a href="03_consistent_tensor.html">Global Tensor</a>, you may have learned about the basic concepts of SBP and SBP Signature, and can get started with related tasks. In fact, both these two documents refers to <strong>1D SBP</strong>.</p>
+<p>Since you have known about 1D SBP, this document introduces 2D SBP, which can more flexibly deal with more complex distributed training scenarios.</p>
+<h2 id="2d-devices-array">2D Devices Array<a class="headerlink" href="#2d-devices-array" title="Permanent link">&para;</a></h2>
+<p>We are already familiar with the placement configuration of 1D SBP. In the scenario of 1D SBP, configure the cluster through the <a href="https://oneflow.readthedocs.io/en/master/placement.html#oneflow.placement">oneflow.placement</a> interface. For example, use the 0~3 GPU graphics in the cluster:</p>
+<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">placement1</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">placement</span><span class="p">(</span><span class="s2">&quot;cuda&quot;</span><span class="p">,</span> <span class="n">ranks</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
 </code></pre></div>
-<p>For example, to start the training on single-node double-GPUs:</p>
-<div class="highlight"><pre><span></span><code>python3 -m oneflow.distributed.launch --nproc_per_node <span class="m">2</span> ./script.py
+<p>The above <code>"cuda"</code> specifies the device type, and <code>ranks=[0, 1, 2, 3]</code> specifies the computing devices in the cluster. In fact, <code>ranks</code> can be not only a one-dimensional int list, but also a multi-dimensional int array:</p>
+<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">placement2</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">placement</span><span class="p">(</span><span class="s2">&quot;cuda&quot;</span><span class="p">,</span> <span class="n">ranks</span><span class="o">=</span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]])</span>
 </code></pre></div>
-<p>For another example, start two machines, and each machine has two graphics for training.</p>
-<p>Run on machine 0:</p>
-<div class="highlight"><pre><span></span><code>python3 -m oneflow.distributed.launch --nproc_per_node<span class="o">=</span><span class="m">2</span> <span class="se">\</span>
-    --nnodes<span class="o">=</span><span class="m">2</span> <span class="se">\</span>
-    --node_rank<span class="o">=</span><span class="m">0</span> <span class="se">\</span>
-    --nproc_per_node<span class="o">=</span><span class="m">2</span> <span class="se">\</span>
-    --master_addr<span class="o">=</span><span class="s2">&quot;192.168.1.1&quot;</span> <span class="se">\</span>
-    --master_port<span class="o">=</span><span class="m">7788</span> <span class="se">\</span>
-    script.py
+<p>When <code>ranks</code> is in the form of a one-dimensional list like <code>ranks=[0, 1, 2, 3]</code>, all devices in the cluster form a 1D device vector, which is where the 1D SBP name comes from.</p>
+<p>When <code>ranks</code> is in the form of a multi-dimensional array, the devices in the cluster are grouped into a multi-dimensional array of devices. <code>ranks=[[0, 1], [2, 3]]</code> means that the four computing devices in the cluster are divided into a <span class="arithmatex">\(2 \times 2\)</span> device array.</p>
+<h2 id="2d-sbp_1">2D SBP<a class="headerlink" href="#2d-sbp_1" title="Permanent link">&para;</a></h2>
+<p>When constructing a Global Tensor, we need to specify both <code>placement</code> and <code>SBP</code>. When the cluster in <code>placement</code> is a 2-dimensional device array, SBP must also correspond to it, being a <code>tuple</code> with a length of 2. The 0<sup>th</sup> and 1<sup>st</sup> elements in this <code>tuple</code> respectively describes the distribution of Global Tensor in the 0<sup>th</sup> and 1<sup>st</sup> dimensions of the device array.</p>
+<p>For example, The following code configures a <span class="arithmatex">\(2 \times 2\)</span> device array, and sets the 2D SBP to <code>(broadcast, split(0))</code>.</p>
+<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">a</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">Tensor</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">],[</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">]])</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">placement</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">placement</span><span class="p">(</span><span class="s2">&quot;cuda&quot;</span><span class="p">,</span> <span class="n">ranks</span><span class="o">=</span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]])</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">sbp</span> <span class="o">=</span> <span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">sbp</span><span class="o">.</span><span class="n">broadcast</span><span class="p">,</span> <span class="n">flow</span><span class="o">.</span><span class="n">sbp</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">a_to_global</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">to_global</span><span class="p">(</span><span class="n">placement</span><span class="o">=</span><span class="n">placement</span><span class="p">,</span> <span class="n">sbp</span><span class="o">=</span><span class="n">sbp</span><span class="p">)</span>
 </code></pre></div>
-<p>Run on machine 1:</p>
-<div class="highlight"><pre><span></span><code>python3 -m oneflow.distributed.launch --nproc_per_node<span class="o">=</span><span class="m">2</span> <span class="se">\</span>
-    --nnodes<span class="o">=</span><span class="m">2</span> <span class="se">\</span>
-    --node_rank<span class="o">=</span><span class="m">1</span> <span class="se">\</span>
-    --nproc_per_node<span class="o">=</span><span class="m">2</span> <span class="se">\</span>
-    --master_addr<span class="o">=</span><span class="s2">&quot;192.168.1.1&quot;</span> <span class="se">\</span>
-    --master_port<span class="o">=</span><span class="m">7788</span> <span class="se">\</span>
-    script.py
-</code></pre></div>
-<h2 id="description-of-common-options">Description of Common Options<a class="headerlink" href="#description-of-common-options" title="Permanent link">&para;</a></h2>
-<p>We can view the description of the options of the <code>launch</code> module after running <code>python3 -m oneflow.distributed.launch -h</code>. The following are some common options:</p>
+<p>It means that logically the data, over the entire device array, is <code>broadcast</code> in the 0<sup>th</sup> dimension ("viewed vertically"); <code>split(0)</code> in the 1<sup>st</sup> dimension ("viewed across").</p>
+<p>See the following figure:</p>
+<p><img alt="" src="imgs/2d-sbp.png" /></p>
+<p>In the above figure, the left side is the global data, and the right side is the data of each device on the device array. As you can see, from the perspective of the 0<sup>th</sup> dimension, they are all in <code>broadcast</code> relations:</p>
 <ul>
-<li><code>--nnodes</code>: number of nodes</li>
-<li><code>--node_rank</code>: the serial number of the machines, starting from 0</li>
-<li><code>--nproc_per_node</code>: The number of processes per node to be started on each machine, which is recommended to be global with the number of GPUs</li>
-<li><code>--logdir</code>: The relative storage path of the child process log</li>
+<li>The data in (group0, device0) and (group1, device0) are consistent, and they are in <code>broadcast</code> relations to each other</li>
+<li>The data in (group0, device1) and (group1, device1) are consistent, and they are in <code>broadcast</code> relations to each other</li>
 </ul>
-<h2 id="the-relationship-between-launch-module-and-parallel-strategy">The Relationship between Launch Module and Parallel Strategy<a class="headerlink" href="#the-relationship-between-launch-module-and-parallel-strategy" title="Permanent link">&para;</a></h2>
-<p>The main function of <code>oneflow.distributed.launch</code> is to allow users to start distributed training more conveniently after them complete the distributed program. It saves the trouble of configuring <a href="03_consistent_tensor.html#_5">environment variables</a> in the cluster.</p>
-<p>But <code>oneflow.distributed.launch</code> <strong>does not determine</strong> <a href="01_introduction.html">Parallel Strategy</a>. The Parallel Strategy is determined by the setup of the distribution method of data and the model, and the placement of those on the physical devices.</p>
-<p>OneFlow provides <a href="02_sbp.html">Global View</a> and <a href="03_consistent_tensor.html">Global Tensor</a> to flexibly configure parallel strategies. And for data parallelism, OneFlow provides the <a href="05_ddp.html">DistributedDataParallel</a> module, which can change the single-node single-GPU script to the script of data parallel with  minimal code modification.</p>
+<p>From the perspective of the 1<sup>st</sup> dimension, they are all in <code>split(0)</code> relations:</p>
+<ul>
+<li>(group0, device0) and (group0, device1) are in <code>split(0)</code> relations to each other</li>
+<li>(group1, device0) and (group1, device1) are in <code>split(0)</code> relations to each other</li>
+</ul>
+<p>It may be difficult to directly understand the correspondence between logical data and physical data in the final device array. When thinking about 2D SBP, you can imagine an intermediate state (gray part in the above figure) there. Take <code>(broadcast, split(0))</code> as an example:</p>
+<ul>
+<li>First, the original logical tensor is broadcast to 2 groups through <code>broadcast</code>, and the intermediate state is obtained</li>
+<li>On the basis of the intermediate state, <code>split(0)</code> is continued to be done on the groups to get the status of each physical tensor in the final device array</li>
+</ul>
+<h2 id="2d-sbp-signature">2D SBP Signature<a class="headerlink" href="#2d-sbp-signature" title="Permanent link">&para;</a></h2>
+<p>1D SBP has the concept of SBP signature, similarly, the operator also has 2D SBP signature. Based on mastering the concept of 1D SBP and its signature concept, 2D SBP signature is very simple and you only need to follow one principle:</p>
+<ul>
+<li>Independently derive in the respective dimensions</li>
+</ul>
+<p>Let's take matrix multiplication as an example. First, let's review the case of 1D SBP. Suppose that <span class="arithmatex">\(x \times w = y\)</span> can have the following SBP Signature:</p>
+<div class="arithmatex">\[ broadcast \times split(1) = split(1) \]</div>
+<p>and</p>
+<div class="arithmatex">\[ split(0) \times broadcast = split(0) \]</div>
+<p>Now, suppose we set the 2D SBP for <span class="arithmatex">\(x\)</span> to <span class="arithmatex">\((broadcast, split(0))\)</span> and set the 2D SBP for <span class="arithmatex">\(w\)</span> to <span class="arithmatex">\((split(1), broadcast)\)</span>, then in the context of the 2D SBP, operate <span class="arithmatex">\(x \times w = y\)</span> to obtain the SBP attribute for <span class="arithmatex">\(y\)</span> is <span class="arithmatex">\((split(1), split(0))\)</span>.</p>
+<p>That is to say, the following 2D SBPs constitute the 2D SBP Signature of matrix multiplication:</p>
+<div class="arithmatex">\[ (broadcast, split(0)) \times (split(1), broadcast) =  (split(1), split(0)) \]</div>
                 
               
               
@@ -843,7 +868,7 @@
     <nav class="md-footer__inner md-grid" aria-label="Footer">
       
         
-        <a href="04_2d-sbp.html" class="md-footer__link md-footer__link--prev" aria-label="Previous: 2D SBP" rel="prev">
+        <a href="03_consistent_tensor.html" class="md-footer__link md-footer__link--prev" aria-label="Previous: Global Tensor" rel="prev">
           <div class="md-footer__button md-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
           </div>
@@ -852,20 +877,20 @@
               <span class="md-footer__direction">
                 Previous
               </span>
-              2D SBP
+              Global Tensor
             </div>
           </div>
         </a>
       
       
         
-        <a href="05_ddp.html" class="md-footer__link md-footer__link--next" aria-label="Next: Data Parallelism Training" rel="next">
+        <a href="04_launch.html" class="md-footer__link md-footer__link--next" aria-label="Next: Distributed Training Launcher" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 Next
               </span>
-              Data Parallelism Training
+              Distributed Training Launcher
             </div>
           </div>
           <div class="md-footer__button md-icon">

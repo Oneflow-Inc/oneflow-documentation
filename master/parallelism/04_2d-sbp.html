@@ -841,8 +841,7 @@
 <div class="arithmatex">\[ broadcast \times split(1) = split(1) \]</div>
 <p>以及</p>
 <div class="arithmatex">\[ split(0) \times broadcast = split(0) \]</div>
-<p>现在，假定我们给 <span class="arithmatex">\(x\)</span> 设置了 2D SBP 为：<span class="arithmatex">\((broadcast, split(0))\)</span>， 给 <span class="arithmatex">\(w\)</span> 设置 2D SBP 为 <span class="arithmatex">\((split(0), broadcast)\)</span>，那么，在 2D SBP 的背景下， <span class="arithmatex">\(x \times w = y\)</span> 运算，得到 <span class="arithmatex">\(y\)</span> 的 SBP
- 属性为 <span class="arithmatex">\((split(1), split(0))\)</span>。</p>
+<p>现在，假定我们给 <span class="arithmatex">\(x\)</span> 设置了 2D SBP 为：<span class="arithmatex">\((broadcast, split(0))\)</span>， 给 <span class="arithmatex">\(w\)</span> 设置 2D SBP 为 <span class="arithmatex">\((split(1), broadcast)\)</span>，那么，在 2D SBP 的背景下， <span class="arithmatex">\(x \times w = y\)</span> 运算，得到 <span class="arithmatex">\(y\)</span> 的 SBP 属性为 <span class="arithmatex">\((split(1), split(0))\)</span>。</p>
 <p>也就是说，以下几个 2D SBP，构成矩阵乘法的 2D SBP Signature：</p>
 <div class="arithmatex">\[ (broadcast, split(0)) \times (split(1), broadcast) =  (split(1), split(0)) \]</div>
                 
