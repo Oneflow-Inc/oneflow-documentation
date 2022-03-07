@@ -89,7 +89,7 @@ The following code is a simple example that will run the network in [QUICKSTART]
         print(loss.to_local())
     ```
 
-When the code above is saved as a script (`pipeline.py`), it can be then launched by the [launch module](./04_launch.md):
+When the code above is saved as a script (`pipeline.py`), it can be then launched by the [launch module](./05_launch.md):
 
 
 ```shell

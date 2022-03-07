@@ -21,7 +21,7 @@ To interactively experience global tensor on a two-GPU machine, you can launch p
     python3
     ```
 
-Setting environment variables prepares the machines for distributed computing. Please refer to the [Extended Reading](#extented-reading) section at the end of this article for a detailed explanation and ways to launch distributed computing using provided tools.
+Setting environment variables prepares the machines for distributed computing. Please refer to the [Extended Reading](#extended-reading) section at the end of this article for a detailed explanation and ways to launch distributed computing using provided tools.
 
 ### Create Global Tensor Directly
 
@@ -210,7 +210,7 @@ The following code is an example of model parallelism of [common distributed str
 
 As in the examples shown above, developers can manually launch the distributed training by setting the environment variables. In this way, developers can clearly see the effects and outputs in an interactive Python environment which is friendly for debugging. 
 
-In production practice, developers can instead launch the distributed training with [oneflow.distributed.launch](./04_launch.md). This module automatically sets necessary environment variables based on command-line arguments.
+In production practice, developers can instead launch the distributed training with [oneflow.distributed.launch](./05_launch.md). This module automatically sets necessary environment variables based on command-line arguments.
 
 - `MASTER_ADDR`: The IP address of the 0th machine in the cluster
 - `MASTER_PORT`: The listening port of the 0th machine in a multi-machine case. Note that this port should not be occupied by another process
