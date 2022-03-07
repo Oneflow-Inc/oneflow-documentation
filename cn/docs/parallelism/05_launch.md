@@ -55,4 +55,4 @@ python3 -m oneflow.distributed.launch \
 
 但是 `oneflow.distributed.launch` **并不决定** [并行策略](./01_introduction.md)，并行策略是由设置数据、模型的分发方式、在物理设备上的放置位置决定的。
 
-OneFlow 提供的 [全局视角](./02_sbp.md) 和 [Global Tensor](./03_consistent_tensor.md) 可以灵活地配置并行策略。并且针对数据并行，OneFlow 提供了 [DistributedDataParallel](./06_ddp.md) 模块，可以在极少修改代码的前提下，将单机单卡的脚本改为数据并行的脚本。
+OneFlow 提供的 [全局视角](./02_sbp.md) 和 [Global Tensor](./03_consistent_tensor.md) 可以灵活地配置并行策略。并且针对数据并行，OneFlow 提供了 [DistributedDataParallel](./05_ddp.md) 模块，可以在极少修改代码的前提下，将单机单卡的脚本改为数据并行的脚本。
