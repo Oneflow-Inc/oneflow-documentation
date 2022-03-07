@@ -60,21 +60,20 @@ placement2 = flow.placement("cuda", ranks=[[0, 1], [2, 3]])
 
 ## 2D SBP Signature
 
-类似 1D SBP 有 SBP Signature 的概念，算子也有 2D SBP Signature，在掌握了 1D SBP 及其 Signature 概念的基础上，2D SBP Signature 非常简单，只需要遵循一条原则：
+Similarly 1D SBP has the concept of SBP signature, and the operator also has 2D SBP signature. Based on mastering the concept of 1D SBP and its signature, 2D SBP signature is very simple and only needs to follow one principle: 
 
-- 在各自的维度上独立推导即可
+- Independent inference in the respective dimensions is sufficient
 
-我们以矩阵乘法为例，先回顾 1D SBP 的情况，假定有 $x \times w = y$ 可以有以下的 SBP Signature：
+Let's take matrix multiplication as an example and review the case of 1D SBP. Suppose that $x \times w = y$ can have the following SBP Signature:
 
 $$ broadcast \times split(1) = split(1) $$
 
-以及
-
+and
 $$ split(0) \times broadcast = split(0) $$
 
-现在，假定我们给 $x$ 设置了 2D SBP 为：$(broadcast, split(0))$， 给 $w$ 设置 2D SBP 为 $(split(0), broadcast)$，那么，在 2D SBP 的背景下， $x \times w = y$ 运算，得到 $y$ 的 SBP
- 属性为 $(split(1), split(0))$。
+Now, suppose we set the 2D SBP for $x$ to $(broadcast, split(0))$ and set the 2D SBP for $w$ to $(split(0), broadcast)$, then in the context of the 2D SBP, $x \times w = y$ operates to obtain the SBP for $y$ 
+ The attribute is $(split(1), split(0))$。
 
- 也就是说，以下几个 2D SBP，构成矩阵乘法的 2D SBP Signature：
+ That is, the following 2D SBPs constitute the 2D SBP Signature of matrix multiplication:
 
 $$ (broadcast, split(0)) \times (split(1), broadcast) =  (split(1), split(0)) $$
