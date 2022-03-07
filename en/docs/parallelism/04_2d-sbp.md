@@ -70,7 +70,7 @@ and
 
 $$ split(0) \times broadcast = split(0) $$
 
-Now, suppose we set the 2D SBP for $x$ to $(broadcast, split(0))$ and set the 2D SBP for $w$ to $(split(0), broadcast)$, then in the context of the 2D SBP, operate $x \times w = y$ to obtain the SBP attribute for $y$ is $(split(1), split(0))$.
+Now, suppose we set the 2D SBP for $x$ to $(broadcast, split(0))$ and set the 2D SBP for $w$ to $(split(1), broadcast)$, then in the context of the 2D SBP, operate $x \times w = y$ to obtain the SBP attribute for $y$ is $(split(1), split(0))$.
 
 That is to say, the following 2D SBPs constitute the 2D SBP Signature of matrix multiplication:
 
