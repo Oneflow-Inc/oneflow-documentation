@@ -1,34 +1,31 @@
-# 待翻译文章
 # 2D SBP
 
-阅读 [集群的全局视角](./02_sbp.md) 和 [Global Tensor](./03_consistent_tensor.md) 之后，相信你已经掌握了 SBP 和 SBP Signature 的基本概念，并且能够上手相关的编程任务。实际上，以上资料中涉及都是 **1D SBP**。
+After reading the [global view](./02_sbp.md) and [Global Tensor](./03_consistent_tensor.md), I believe you have mastered the basic concepts of SBP and SBP Signature, and can get started with related programming tasks. In fact, the above information refers to **1D SBP**.
 
-本文将在读者掌握 1D SBP 的基础上，介绍 2D SBP，它能够更灵活地应对更复杂的分布式训练场景。
+This article will introduce 2D SBP based on the reader's mastery of 1D SBP, which can more flexibly deal with more complex distributed training scenarios.
 
-## 2D 设备阵列
-
-我们已经熟悉 1D SBP 的 placement 配置，在 1D SBP 的场景下，通过 [oneflow.placement](https://start.oneflow.org/oneflow-api-cn/placement.html#oneflow.placement) 接口配置集群，比如使用集群中的第 0~3 号 GPU 显卡：
+## 2D devices matrix
+We are already familiar with the placement configuration of 1D SBP. In the scenario of 1D SBP, configure the cluster through the [oneflow.placement](https://oneflow.readthedocs.io/en/master/placement.html#oneflow.placement) interface, such as using the 0~3 GPU graphics cards in the cluster:
 
 ```python
 >>> placement1 = flow.placement("cuda", ranks=[0, 1, 2, 3])
 ```
 
-以上的 `"cuda"` 指定了设备类型，`ranks=[0, 1, 2, 3]` 指定了集群中的计算设备。其实，`ranks` 不仅可以是一维的int list，还可以是多维的int数组：
+The above `"cuda"` specifies the device type, and `ranks=[0, 1, 2, 3]` specifies the computing devices in the cluster. In fact, `ranks` can be not only a one-dimensional int list, but also a multi-dimensional int array:
 
 ```python
-placement2 = flow.placement("cuda", ranks=[[0, 1], [2, 3]])
+>>> placement2 = flow.placement("cuda", ranks=[[0, 1], [2, 3]])
 ```
 
-当 `ranks` 是 `ranks=[0, 1, 2, 3]` 这种一维list的形式时，集群中的所有设备组成了一个 1D 设备向量，这也是 1D SBP 名称的由来。
+When `ranks` is in the form of a one-dimensional list like `ranks=[0, 1, 2, 3]`, all devices in the cluster form a 1D device vector, which is where the 1D SBP name comes from.
 
-当 `ranks` 是多维数组的形式时，集群中的设备被分组为一个多维的设备阵列。`ranks=[[0, 1], [2, 3]]` 表示集群中的四个计算设备被划分为了 $2 \times 2$ 的设备阵列。
-
+When `ranks` is in the form of a multi-dimensional array, the devices in the cluster are grouped into a multi-dimensional array of devices. `ranks=[[0, 1], [2, 3]]` means that the four computing devices in the cluster are divided into $2 \times 2$ device arrays.
 
 ## 2D SBP
 
-我们已经知道，构造 Global Tensor 时，需要同时指定 `placement` 与 `SBP`。当 `placement` 中的集群是 2 维的设备阵列时；SBP 也必需与之对应，是一个长度为 2 的 `tuple`，这个`tuple`中的第 0 个、第 1 个 元素，分别描述了 Global Tensor 张量在设备阵列第 0 维、第 1 维的分布。
+We already know that when constructing a Global Tensor, we need to specify both `placement` and `SBP`. When the cluster in `placement` is a 2-dimensional device array, SBP must also correspond to it, which is a `tuple` with a length of 2. The 0th and 1st elements in this tuple respectively describes the distribution of Global Tensor in the 0th and 1st dimensions of the device array.
 
-比如，以下代码，配置了 $2 \times 2$ 的设备阵列，并且设置 2D SBP 为 `(broadcast, split(0))`。
+For example, The following code configures a $2 \times 2$ device array, and sets the 2D SBP to `(broadcast, split(0))`.
 
 ```python
 >>> a = flow.Tensor([[1,2],[3,4]])
@@ -37,26 +34,26 @@ placement2 = flow.placement("cuda", ranks=[[0, 1], [2, 3]])
 >>> a_to_global = a.to_global(placement=placement, sbp=sbp)
 ```
 
-它意味着，逻辑上的数据，在整个设备阵列上，在第 0 维度（“竖着看”）做 `broadcast`；在第 1 维度（“横着看”）做 `split(0)`。
+It means that logically the data, over the entire device array, is `broadcast` in the 0th dimension ("viewed vertically"); `split(0)` in the 1st dimension ("viewed across").
 
-我们通过下图做阐述：
+We illustrate with the following figure:
 
 ![](./imgs/2d-sbp.png)
 
-此图的最左边是全局视角的数据，最右边是设备阵列上各个设备的数据。可以看到，从第 0 维的角度看，它们都是 `broadcast` 的关系：
+The left side of this figure is the data from the global perspective, and the right side is the data of each device on the device array. As you can see, from the perspective of the 0th dimension, they are all `broadcast` relations:
 
-- (group0, device0) 与 (group1, device0) 中数据一致，互为 `broadcast` 关系
-- (group0, device1) 与 (group1, device1) 中数据一致，互为 `broadcast` 关系
+- The data in (group0, device0) and (group1, device0) are consistent, and they are `broadcast` relationship to each other
+- The data in (group0, device1) and (group1, device1) are consistent, and they are `broadcast` relationship to each other
 
-而从第 1 维的角度看，它们都是 `split(0)` 的关系：
+And from the perspective of the 1st dimension, they are all `split(0)` relations:
 
-- (group0, device0) 与 (group0, device1) 互为 `split(0)` 关系
-- (group1, device0) 与 (group1, device1) 互为 `split(0)` 关系
+- (group0, device0) and (group0, device1) are `split(0)` relationship to each other
+- (group1, device0) and (group1, device1) are `split(0)` relationship to each other
 
-直接理解逻辑数据和最终的设备阵列中的物理数据对应关系可能有一定难度，大家在思考 2D SBP 时，可以假想一个中间状态（上图中灰色部分），以 `(broadcast, split(0))` 为例：
+It may be difficult to directly understand the correspondence between logical data and physical data in the final device array. When thinking about 2D SBP, you can imagine an intermediate state (gray part in the above figure), and take `(broadcast, split(0)) ` as an example:
 
-- 原始逻辑张量，先经过 `broadcast`，广播到 2 个 group 上，得到中间的状态
-- 在中间状态的基础上，继续在各自的 group 上，做 `split(0)`，得到最终设备阵列中各个物理张量的状态
+- First, the original logical tensor is broadcast to 2 groups through `broadcast`, and the intermediate state is obtained
+- On the basis of the intermediate state, continue to do `split(0)` on the respective group to get the state of each physical tensor in the final device array
 
 ## 2D SBP Signature
 
