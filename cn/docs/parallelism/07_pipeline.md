@@ -89,7 +89,7 @@
         print(loss.to_local())
     ```
 
-以上代码，保存为脚本（如 `pipeline.py`）后，使用 [launch 模块启动分布式训练](./04_launch.md)：
+以上代码，保存为脚本（如 `pipeline.py`）后，使用 [launch 模块启动分布式训练](./05_launch.md)：
 
 ```shell
 python3 -m oneflow.distributed.launch --nproc_per_node 2 ./pipeline.py
