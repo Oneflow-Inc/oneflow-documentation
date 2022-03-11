@@ -24,7 +24,7 @@ placement2 = flow.placement("cuda", ranks=[[0, 1], [2, 3]])
 
 ## 2D SBP
 
-我们已经知道，构造 Global Tensor 时，需要同时指定 `placement` 与 `SBP`。当 `placement` 中的集群是 2 维的设备阵列时；SBP 也必需与之对应，是一个长度为 2 的 `tuple`，这个`tuple`中的第 0 个、第 1 个 元素，分别描述了 Global Tensor 张量在设备阵列第 0 维、第 1 维的分布。
+我们已经知道，构造 Global Tensor 时，需要同时指定 `placement` 与 `SBP`。当 `placement` 中的集群是 2 维的设备阵列时；SBP 也必须与之对应，是一个长度为 2 的 `tuple`，这个`tuple`中的第 0 个、第 1 个 元素，分别描述了 Global Tensor 张量在设备阵列第 0 维、第 1 维的分布。
 
 比如，以下代码，配置了 $2 \times 2$ 的设备阵列，并且设置 2D SBP 为 `(broadcast, split(0))`。
 
@@ -75,3 +75,96 @@ $$ split(0) \times broadcast = split(0) $$
 也就是说，以下几个 2D SBP，构成矩阵乘法的 2D SBP Signature：
 
 $$ (broadcast, split(0)) \times (split(1), broadcast) =  (split(1), split(0)) $$
+
+
+## 2D SBP 使用示例
+在本节中，我们将在 CIFAR10 数据集上训练 MobileNetv2 模型，以演示如何使用 2D SBP 进行分布式训练。同上文中的例子，假设有一个 $2 \times 2$ 的设备阵列，鉴于读者可能目前并没有多个 GPU 设备，我们将使用 **CPU** 来模拟 $2 \times 2$ 设备阵列的情形，并采取 [常见的分布式并行策略](./01_introduction.md) 中所介绍的“数据并行”策略。
+
+??? code
+    ```python
+    import oneflow as flow
+    import oneflow.nn as nn
+    import flowvision
+    import flowvision.transforms as transforms
+
+    BATCH_SIZE=64
+    EPOCH_NUM = 1
+    DEVICE = "cpu"
+    print("Using {} device".format(DEVICE))
+
+    PLACEMENT = flow.placement(DEVICE, ranks=[[0, 1], [2, 3]])
+    BROADCAST = (flow.sbp.broadcast, flow.sbp.broadcast)
+    BS0 = (flow.sbp.broadcast, flow.sbp.split(0))
+
+    training_data = flowvision.datasets.CIFAR10(
+        root="data",
+        train=True,
+        transform=transforms.ToTensor(),
+        download=True,
+    )
+
+    train_dataloader = flow.utils.data.DataLoader(
+        training_data, BATCH_SIZE, shuffle=True
+    )
+
+    model = flowvision.models.mobilenet_v2().to(DEVICE)
+    model.classifer = nn.Sequential(nn.Dropout(0.2), nn.Linear(model.last_channel, 10))
+    model = model.to_global(placement=PLACEMENT, sbp=BROADCAST)
+
+    loss_fn = nn.CrossEntropyLoss().to(DEVICE)
+    optimizer = flow.optim.SGD(model.parameters(), lr=1e-3)
+
+    for t in range(EPOCH_NUM):
+        print(f"Epoch {t+1}\n-------------------------------")
+        size = len(train_dataloader.dataset)
+        for batch, (x, y) in enumerate(train_dataloader):
+            x = x.to_global(placement=PLACEMENT, sbp=BS0)
+            y = y.to_global(placement=PLACEMENT, sbp=BS0)
+
+            # Compute prediction error
+            pred = model(x)
+            loss = loss_fn(pred, y)
+
+            # Backpropagation
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
+
+            current = batch * BATCH_SIZE
+            if batch % 5 == 0:
+                print(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")
+    ```
+
+可以发现，上述流程与普通的单机单卡训练流程相差无几，主要区别在于以下几点：
+
+- 定义要使用到的 placement 和 sbp：
+
+```python
+    PLACEMENT = flow.placement(DEVICE, ranks=[[0, 1], [2, 3]])
+    BROADCAST = (flow.sbp.broadcast, flow.sbp.broadcast)
+    BS0 = (flow.sbp.broadcast, flow.sbp.split(0))
+```
+其中， `PLACEMENT` 的 `ranks` 参数是一个二维 list，代表将集群中的设备划分成 $2 \times 2$ 的设备阵列。如前文所述，SBP 需要与其对应，指定为长度为 2 的 tuple。
+
+
+- 将模型在集群上广播：
+
+```python
+    model = model.to_global(placement=PLACEMENT, sbp=BROADCAST)
+```
+
+- 将数据在集群上进行广播和切分：
+
+```python
+    x = x.to_global(placement=PLACEMENT, sbp=BS0)
+    y = y.to_global(placement=PLACEMENT, sbp=BS0)
+```
+这里对数据所进行的操作与上文中介绍的例子相同，只不过操作的不是一个 $2 \times 2$ 的张量，而是从 DataLoader 中获取的训练数据。
+
+
+通过 `oneflow.distributed.launch` 模块可以方便地启动分布式训练，在终端中执行下列命令 （假设上述代码已经保存至当前目录中的名为 "2d_sbp.py" 的文件中）：
+```bash
+python3 -m oneflow.distributed.launch --nproc_per_node=4 2d_sbp.py
+```
+在此，通过将参数 `nproc_per_node` 指定为 4 来创建四个进程，模拟共有 4 个 GPU 的情形。
+关于此模块的详细用法，请参见：[用 launch 模块启动分布式训练](./04_launch.md)。
