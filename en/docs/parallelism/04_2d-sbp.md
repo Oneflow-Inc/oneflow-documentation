@@ -75,3 +75,95 @@ Now, suppose we set the 2D SBP for $x$ to $(broadcast, split(0))$ and set the 2D
 That is to say, the following 2D SBPs constitute the 2D SBP Signature of matrix multiplication:
 
 $$ (broadcast, split(0)) \times (split(1), broadcast) =  (split(1), split(0)) $$
+
+
+## An Example of Using 2D SBP
+
+In this section, we are going to train MobileNetv2 model on CIFAR10 dataset, in order to demonstrate how to conduct distributed training using 2D SBP. Same as the example above, assume that there is a $2 \times 2$ device array. Given that readers may not have multiple GPU devices at present, we will use **CPU** to simulate the case of $2 \times 2$ device array. And adopt the "Data Parallelism" strategy introduced in [COMMON DISTRIBUTED PARALLEL STRATEGY](./01_introduction.md).
+
+??? code
+    ```python
+    import oneflow as flow
+    import oneflow.nn as nn
+    import flowvision
+    import flowvision.transforms as transforms
+
+    BATCH_SIZE=64
+    EPOCH_NUM = 1
+    DEVICE = "cpu"
+    print("Using {} device".format(DEVICE))
+
+    PLACEMENT = flow.placement(DEVICE, ranks=[[0, 1], [2, 3]])
+    BROADCAST = (flow.sbp.broadcast, flow.sbp.broadcast)
+    BS0 = (flow.sbp.broadcast, flow.sbp.split(0))
+
+    training_data = flowvision.datasets.CIFAR10(
+        root="data",
+        train=True,
+        transform=transforms.ToTensor(),
+        download=True,
+    )
+
+    train_dataloader = flow.utils.data.DataLoader(
+        training_data, BATCH_SIZE, shuffle=True
+    )
+
+    model = flowvision.models.mobilenet_v2().to(DEVICE)
+    model.classifer = nn.Sequential(nn.Dropout(0.2), nn.Linear(model.last_channel, 10))
+    model = model.to_global(placement=PLACEMENT, sbp=BROADCAST)
+
+    loss_fn = nn.CrossEntropyLoss().to(DEVICE)
+    optimizer = flow.optim.SGD(model.parameters(), lr=1e-3)
+
+    for t in range(EPOCH_NUM):
+        print(f"Epoch {t+1}\n-------------------------------")
+        size = len(train_dataloader.dataset)
+        for batch, (x, y) in enumerate(train_dataloader):
+            x = x.to_global(placement=PLACEMENT, sbp=BS0)
+            y = y.to_global(placement=PLACEMENT, sbp=BS0)
+
+            # Compute prediction error
+            pred = model(x)
+            loss = loss_fn(pred, y)
+
+            # Backpropagation
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
+
+            current = batch * BATCH_SIZE
+            if batch % 5 == 0:
+                print(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")
+    ```
+
+It can be found that the above process is almost the same as the ordinary single machine with single GPU training process. The main differences are as follows:
+
+- Define the placement and SBP that will be used:
+
+```python
+    PLACEMENT = flow.placement(DEVICE, ranks=[[0, 1], [2, 3]])
+    BROADCAST = (flow.sbp.broadcast, flow.sbp.broadcast)
+    BS0 = (flow.sbp.broadcast, flow.sbp.split(0))
+```
+The parameter `ranks` of `PLACEMENT` is a two-dimensional list, which represents that the devices in the cluster are divided into a device arrays of $2 \times 2$.  As mentioned earlier, the SBP needs to correspond to it and be specified as a tuple with a length of 2.
+
+- Broadcast the model on the cluster:
+
+```python
+    model = model.to_global(placement=PLACEMENT, sbp=BROADCAST)
+```
+
+- Broadcast and split data on the cluster:
+
+```python
+    x = x.to_global(placement=PLACEMENT, sbp=BS0)
+    y = y.to_global(placement=PLACEMENT, sbp=BS0)
+```
+The operation on the data here is the same as the example described above, except that the operation is not a $2 \times 2$ tensor, but the training data obtained from the DataLoader.
+
+We can easily start distributed training via `oneflow.distributed.launch` module. Execute the following command in the terminal (It is assumed that the above code has been saved to a file named "2d_sbp.py" in the current directory)
+
+```bash
+python3 -m oneflow.distributed.launch --nproc_per_node=4 2d_sbp.py
+```
+Here, the parameter `nproc_ per_ node` is assigned as 4 to create four processes, simulating a total of 4 GPUs. For detailed usage of this module, please read: [DISTRIBUTED TRAINING LAUNCHER](./04_launch.md).
