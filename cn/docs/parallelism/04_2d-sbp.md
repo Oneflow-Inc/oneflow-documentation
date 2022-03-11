@@ -167,5 +167,4 @@ $$ (broadcast, split(0)) \times (split(1), broadcast) =  (split(1), split(0)) $$
 ```bash
 python3 -m oneflow.distributed.launch --nproc_per_node=4 2d_sbp.py
 ```
-在此，通过将参数 `nproc_per_node` 指定为 4 来创建四个进程，模拟共有 4 个 GPU 的情形。
-关于此模块的详细用法，请参见：[用 launch 模块启动分布式训练](./04_launch.md)。
+在此，通过将参数 `nproc_per_node` 指定为 4 来创建四个进程，模拟共有 4 个 GPU 的情形。关于此模块的详细用法，请参见：[用 launch 模块启动分布式训练](./04_launch.md)。
