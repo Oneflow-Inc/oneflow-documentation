@@ -78,6 +78,7 @@ $$ (broadcast, split(0)) \times (split(1), broadcast) =  (split(1), split(0)) $$
 
 
 ## 2D SBP 使用示例
+
 在本节中，我们将在 CIFAR10 数据集上训练 MobileNetv2 模型，以演示如何使用 2D SBP 进行分布式训练。同上文中的例子，假设有一个 $2 \times 2$ 的设备阵列，鉴于读者可能目前并没有多个 GPU 设备，我们将使用 **CPU** 来模拟 $2 \times 2$ 设备阵列的情形，并采取 [常见的分布式并行策略](./01_introduction.md) 中所介绍的“数据并行”策略。
 
 ??? code
