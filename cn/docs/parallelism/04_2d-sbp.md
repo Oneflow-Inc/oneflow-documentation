@@ -137,8 +137,8 @@ python3 -m oneflow.distributed.launch --nproc_per_node=4 2d_sbp.py
     S0S1 = (flow.sbp.split(0), flow.sbp.split(1))
 
     model = nn.Sequential(nn.Linear(256, 128),
-                        nn.ReLU(),
-                        nn.Linear(128, 10))
+                          nn.ReLU(),
+                          nn.Linear(128, 10))
     model = model.to_global(placement=PLACEMENT, sbp=BROADCAST)
 
     x = flow.randn(2, 2, 256, placement=PLACEMENT, sbp=S0S1)
