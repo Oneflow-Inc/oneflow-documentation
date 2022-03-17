@@ -79,7 +79,7 @@ $$ (broadcast, split(0)) \times (split(1), broadcast) =  (split(1), split(0)) $$
 
 ## 2D SBP 使用示例
 
-在本节中，我们将通过一个简单的例子演示如何使用 2D SBP 进行分布式训练。同上文中的例子，假设有一个 $2 \times 2$ 的设备阵列，鉴于读者可能目前并没有多个 GPU 设备，我们将使用 **CPU** 来模拟 $2 \times 2$ 设备阵列的情形，并采取 [常见的分布式并行策略](./01_introduction.md) 中所介绍的“数据并行”策略，即对数据进行切分，而每个设备上的模型是完整的、一致的。
+在本节中，我们将通过一个简单的例子演示如何使用 2D SBP 进行分布式训练。同上文中的例子，假设有一个 $2 \times 2$ 的设备阵列，鉴于读者可能目前并没有多个 GPU 设备，我们将使用 **CPU** 来模拟 $2 \times 2$ 设备阵列的情形，对输入张量采用上文图中 `(broadcast, split(0))` 的并行策略。
 
 
 首先，导入依赖：
@@ -92,16 +92,16 @@ import oneflow.nn as nn
 ```python
 PLACEMENT = flow.placement("cpu", [[0, 1], [2, 3]])
 BROADCAST = (flow.sbp.broadcast, flow.sbp.broadcast)
-S0S1 = (flow.sbp.split(0), flow.sbp.split(1))
+BS0 = (flow.sbp.broadcast, flow.sbp.split(0))
 ```
-`PLACEMENT` 的 `ranks` 参数是一个二维 list，代表将集群中的设备划分成 $2 \times 2$ 的设备阵列。如前文所述，SBP 需要与其对应，指定为长度为 2 的 tuple。其中，`BROADCAST` 表示在设备阵列的第 0 维和第 1 维都进行广播，`S0S1` 表示在设备阵列的第 0 维做 `split(0)`，在第 1 维做 `split(1)`。
+`PLACEMENT` 的 `ranks` 参数是一个二维 list，代表将集群中的设备划分成 $2 \times 2$ 的设备阵列。如前文所述，SBP 需要与其对应，指定为长度为 2 的 tuple。其中，`BROADCAST` 表示在设备阵列的第 0 维和第 1 维都进行广播，`BS0` 的含义与前文的描述相同。
 
 
 假设我们有以下模型：
 ```python
-model = nn.Sequential(nn.Linear(256, 128),
+model = nn.Sequential(nn.Linear(8, 4),
                       nn.ReLU(),
-                      nn.Linear(128, 10))
+                      nn.Linear(4, 2))
 ```
 将模型在集群上广播：
 ```python
@@ -110,23 +110,40 @@ model = model.to_global(placement=PLACEMENT, sbp=BROADCAST)
 
 然后构造数据并进行前向推理：
 ```python
-x = flow.randn(2, 2, 256, placement=PLACEMENT, sbp=S0S1)
-pred = model(x)
+x = flow.randn(1, 2, 8)
+global_x = x.to_global(placement=PLACEMENT, sbp=BS0)
+pred = model(global_x)
 ```
-在这里，我们直接创建了一个形状为 `(2, 2, 256)` 的 global tensor。
+在这里，我们创建了一个形状为 `(1, 2, 8)` 的 local tensor，然后通过 [Tensor.to_global](https://oneflow.readthedocs.io/en/master/tensor.html#oneflow.Tensor.to_global) 方法获取对应的 global tensor，最后将其输入到模型中进行推理。
 
-通过 [to_local](https://oneflow.readthedocs.io/en/master/tensor.html#oneflow.Tensor.to_local) 方法可以获取当前物理设备上的 local tensor，然后输出其形状来验证数据是否被正确切分：
+通过 [Tensor.to_local](https://oneflow.readthedocs.io/en/master/tensor.html#oneflow.Tensor.to_local) 方法获取当前物理设备上的 local tensor 后，我们可以通过输出其形状和值来验证数据是否被正确处理：
 ```python
-print(x.to_local().shape)
+local_x = global_x.to_local()
+print(f'{local_x.device}, {local_x.shape}, \n{local_x}')
 ```
-输出结果为 `oneflow.Size([1, 1, 256])`，证明数据已被正确切分到各个设备上。
+输出结果为：
+```text
+cpu:2, oneflow.Size([1, 2, 8]), 
+tensor([[[ 0.6068,  0.1986, -0.6363, -0.5572, -0.2388,  1.1607, -0.7186,  1.2161],
+         [-0.1632, -1.5293, -0.6637, -1.0219,  0.1464,  1.1574, -0.0811, -1.6568]]], dtype=oneflow.float32)
+cpu:3, oneflow.Size([1, 2, 8]), 
+tensor([[[-0.7676,  0.4519, -0.8810,  0.5648,  1.5428,  0.5752,  0.2466, -0.7708],
+         [-1.2131,  1.4590,  0.2749,  0.8824, -0.8286,  0.9989,  0.5599, -0.5099]]], dtype=oneflow.float32)
+cpu:1, oneflow.Size([1, 2, 8]), 
+tensor([[[-0.7676,  0.4519, -0.8810,  0.5648,  1.5428,  0.5752,  0.2466, -0.7708],
+         [-1.2131,  1.4590,  0.2749,  0.8824, -0.8286,  0.9989,  0.5599, -0.5099]]], dtype=oneflow.float32)
+cpu:0, oneflow.Size([1, 2, 8]), 
+tensor([[[ 0.6068,  0.1986, -0.6363, -0.5572, -0.2388,  1.1607, -0.7186,  1.2161],
+         [-0.1632, -1.5293, -0.6637, -1.0219,  0.1464,  1.1574, -0.0811, -1.6568]]], dtype=oneflow.float32)
+```
+通过比较这些不同“设备”上 local tensor 可以看到，符合上文图中描述的状态，证明数据已被正确分布到各个设备上。
 
 
 需要注意的是，不能直接通过 `python xxx.py` 的方式执行上述代码，而需要通过 `oneflow.distributed.launch` 启动。此模块可以方便地启动分布式训练，在终端中执行下列命令 （假设上述代码已经保存至当前目录中的名为 "2d_sbp.py" 的文件中）：
 ```bash
 python3 -m oneflow.distributed.launch --nproc_per_node=4 2d_sbp.py
 ```
-在此，通过将参数 `nproc_per_node` 指定为 4 来创建四个进程，模拟共有 4 个 GPU 的情形。关于此模块的详细用法，请参见：[用 launch 模块启动分布式训练](./04_launch.md)。
+在此，通过将参数 `nproc_per_node` 指定为 4 来创建 4 个进程，模拟共有 4 个 GPU 的情形。关于此模块的详细用法，请参见：[用 launch 模块启动分布式训练](./04_launch.md)。
 
 
 完整代码如下：
@@ -134,15 +151,17 @@ python3 -m oneflow.distributed.launch --nproc_per_node=4 2d_sbp.py
     ```python
     PLACEMENT = flow.placement("cpu", [[0, 1], [2, 3]])
     BROADCAST = (flow.sbp.broadcast, flow.sbp.broadcast)
-    S0S1 = (flow.sbp.split(0), flow.sbp.split(1))
+    BS0 = (flow.sbp.broadcast, flow.sbp.split(0))
 
-    model = nn.Sequential(nn.Linear(256, 128),
+    model = nn.Sequential(nn.Linear(8, 4),
                           nn.ReLU(),
-                          nn.Linear(128, 10))
+                          nn.Linear(4, 2))
     model = model.to_global(placement=PLACEMENT, sbp=BROADCAST)
 
-    x = flow.randn(2, 2, 256, placement=PLACEMENT, sbp=S0S1)
-    pred = model(x)
+    x = flow.randn(1, 2, 8)
+    global_x = x.to_global(placement=PLACEMENT, sbp=BS0)
+    pred = model(global_x)
 
-    print(x.to_local().shape)
+    local_x = global_x.to_local()
+    print(f'{local_x.device}, {local_x.shape}, \n{local_x}')
     ```
