@@ -14,7 +14,7 @@ This document is divided into the following three sections:
 
 ## Quick Start 
 
-[OneFlow Serving: Neural Style Transfer](https://oneflow.cloud/#/project/public/code?id=7fc904d8dbe0069820da5d6d32a764fe) is available on OneFlow Cloud. By referring to the project description, you can deploy the project and see the running result with just one click.
+[OneFlow Serving: Neural Style Transfer](https://oneflow.cloud/drill/#/project/public/code?id=7fc904d8dbe0069820da5d6d32a764fe) is available on OneFlow Cloud. By referring to the project description, you can deploy the project and see the running result with just one click.
 
 ![](./imgs/oneflow-serving-demo.png)
 
@@ -205,7 +205,7 @@ pip3 install tritonclient[all]
 > Actually, clients can interact with Triton Server via [HTTP, gRPC or C API etc.](https://github.com/triton-inference-server/server/blob/main/docs/inference_protocols.md).
 
 
-The following code is the core part of image stylization, which can stylize the images passed from the command. You can view the complete code on [Cloud Platform](https://oneflow.cloud/#/project/public/code?id=2eec2f768cdfe5709dc4c01e389fd65c), or download [demo.zip](https://oneflow-public.oss-cn-beijing.aliyuncs.com/oneflow-documentation/serving/demo.zip).
+The following code is the core part of image stylization, which can stylize the images passed from the command. You can view the complete code on [Cloud Platform](https://oneflow.cloud/drill/#/project/public/code?id=7fc904d8dbe0069820da5d6d32a764fe), or download [demo.zip](https://oneflow-public.oss-cn-beijing.aliyuncs.com/oneflow-documentation/serving/demo.zip).
 
 ```python
 #...
