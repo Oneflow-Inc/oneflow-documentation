@@ -859,7 +859,7 @@
 <li>OneFlow 从训练到部署流程解析</li>
 </ul>
 <h2 id="oneflow">OneFlow 部署快速上手<a class="headerlink" href="#oneflow" title="Permanent link">&para;</a></h2>
-<p>OneFlow Cloud 上准备了一个 <a href="https://oneflow.cloud/#/project/public/code?id=7fc904d8dbe0069820da5d6d32a764fe">OneFlow Serving: Neural Style Transfer</a> 项目，参照项目说明用户可以一键部署项目，并且查看项目运行效果。</p>
+<p>OneFlow Cloud 上准备了一个 <a href="https://oneflow.cloud/drill/#/project/public/code?id=7fc904d8dbe0069820da5d6d32a764fe">OneFlow Serving: Neural Style Transfer</a> 项目，参照项目说明用户可以一键部署项目，并且查看项目运行效果。</p>
 <p><img alt="" src="imgs/oneflow-serving-demo.png" /></p>
 <p>分析项目代码可以发现，有以下几个关键处：</p>
 <ul>
@@ -998,7 +998,7 @@ output [
 <blockquote>
 <p>实际上，客户端可以通过 <a href="https://github.com/triton-inference-server/server/blob/main/docs/inference_protocols.md">HTTP、gRPC 或者 C API 等多种方式</a> 与 Triton Server 交互，具体内容可以参阅以上文档。</p>
 </blockquote>
-<p>以下代码，是图片进行风格化的核心部分，可以将命令行传递来的图片文件，进行风格化。完整代码可以在 <a href="https://oneflow.cloud/#/project/public/code?id=2eec2f768cdfe5709dc4c01e389fd65c">云平台</a> 上查看，或者下载 <a href="https://oneflow-public.oss-cn-beijing.aliyuncs.com/oneflow-documentation/serving/demo.zip">demo.zip</a></p>
+<p>以下代码，是图片进行风格化的核心部分，可以将命令行传递来的图片文件，进行风格化。完整代码可以在 <a href="https://oneflow.cloud/drill/#/project/public/code?id=7fc904d8dbe0069820da5d6d32a764fe">云平台</a> 上查看，或者下载 <a href="https://oneflow-public.oss-cn-beijing.aliyuncs.com/oneflow-documentation/serving/demo.zip">demo.zip</a></p>
 <div class="highlight"><pre><span></span><code><span class="c1">#...</span>
 <span class="kn">import</span> <span class="nn">tritonclient.http</span> <span class="k">as</span> <span class="nn">httpclient</span>
 
