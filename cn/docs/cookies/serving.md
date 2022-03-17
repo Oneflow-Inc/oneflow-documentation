@@ -14,7 +14,7 @@ OneFlow 用户训练好模型后，可以直接通过 Triton 部署模型，并�
 
 ## OneFlow 部署快速上手
 
-OneFlow Cloud 上准备了一个 [OneFlow Serving: Neural Style Transfer](https://oneflow.cloud/#/project/public/code?id=7fc904d8dbe0069820da5d6d32a764fe) 项目，参照项目说明用户可以一键部署项目，并且查看项目运行效果。
+OneFlow Cloud 上准备了一个 [OneFlow Serving: Neural Style Transfer](https://oneflow.cloud/drill/#/project/public/code?id=7fc904d8dbe0069820da5d6d32a764fe) 项目，参照项目说明用户可以一键部署项目，并且查看项目运行效果。
 
 ![](./imgs/oneflow-serving-demo.png)
 
@@ -205,7 +205,7 @@ pip3 install tritonclient[all]
 > 实际上，客户端可以通过 [HTTP、gRPC 或者 C API 等多种方式](https://github.com/triton-inference-server/server/blob/main/docs/inference_protocols.md) 与 Triton Server 交互，具体内容可以参阅以上文档。
 
 
-以下代码，是图片进行风格化的核心部分，可以将命令行传递来的图片文件，进行风格化。完整代码可以在 [云平台](https://oneflow.cloud/#/project/public/code?id=2eec2f768cdfe5709dc4c01e389fd65c) 上查看，或者下载 [demo.zip](https://oneflow-public.oss-cn-beijing.aliyuncs.com/oneflow-documentation/serving/demo.zip)
+以下代码，是图片进行风格化的核心部分，可以将命令行传递来的图片文件，进行风格化。完整代码可以在 [云平台](https://oneflow.cloud/drill/#/project/public/code?id=7fc904d8dbe0069820da5d6d32a764fe) 上查看，或者下载 [demo.zip](https://oneflow-public.oss-cn-beijing.aliyuncs.com/oneflow-documentation/serving/demo.zip)
 
 ```python
 #...
