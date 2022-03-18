@@ -2,7 +2,7 @@
 
 ## Activation Checkpointing 简介
 
-Activation Checkpointing 是陈天奇团队于 2016 年在论文 [Training Deep Nets with Sublinear Memory Cost](https://arxiv.org/abs/1604.06174) 中提出的一种亚线性内存优化技术，旨在减少深度学习模型训练过程中的中间激活 (activation) 带来的显存占用。Activation Checkpointing 的基本原理是**以时间换空间**，经过计算图分析后，前向过程中一些暂时用不到的中间激活特征将被删除以减少显存占用，后向过程中需要时再借助额外的前向计算恢复它们。
+Activation Checkpointing 是陈天奇团队于 2016 年在论文 [Training Deep Nets with Sublinear Memory Cost](https://arxiv.org/abs/1604.06174) 中提出的一种亚线性内存优化技术，旨在减少深度学习模型训练过程中的中间激活 (activation) 带来的显存占用。Activation Checkpointing 的基本原理是 **以时间换空间**，经过计算图分析后，前向过程中一些暂时用不到的中间激活特征将被删除以减少显存占用，后向过程中需要时再借助额外的前向计算恢复它们。
 
 ## Activation Checkpointing 使用示例
 
