@@ -132,6 +132,8 @@ nav:
     - OneFlow Cookies:
       - OneFlow 与 ONNX 交互: cookies/oneflow2onnnx.md
       - 模型部署: cookies/serving.md
+      - 自动混合精度训练: cookies/amp.md
+      - Activation Checkpointing: cookies/activation_checkpointing.md
 
     - API:
       - API: https://start.oneflow.org/oneflow-api-cn/
