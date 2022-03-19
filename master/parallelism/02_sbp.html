@@ -856,7 +856,7 @@
 <h2 id="placement">Placement<a class="headerlink" href="#placement" title="Permanent link">&para;</a></h2>
 <p>OneFlow 全局视角下的 Tensor 有 <code>placement</code> 属性，通过 <code>placement</code> 属性可以指定该 Tensor 存放在哪个物理设备上。</p>
 <p>OneFlow 会自动为集群中的计算设备编号。比如，如果集群中有 4 台主机，每台主机上有 8 张显卡，一共 32 张显卡，那么 OneFlow 会将这 32 张显卡自动编号为 0~31。</p>
-<p>如果想将 Tensor 放置在第 0 台机器的前 4 张显卡上，只需要配置：<code>placement("cuda", [0, 1, 2, 3]</code>。</p>
+<p>如果想将 Tensor 放置在第 0 台机器的前 4 张显卡上，只需要配置：<code>placement("cuda", [0, 1, 2, 3])</code>。</p>
 <p>如果想将 Tensor 放置在第 0 台机器的后 4 张显卡上，只需要配置：<code>placement("cuda", [4, 5, 6, 7])</code>。</p>
 <p><code>placement</code> 使得 OneFlow 很容易支持流水并行，我们将在本专题的其它文章中看到与 <code>placement</code> 有关的实际例子。</p>
 <h2 id="sbp">SBP<a class="headerlink" href="#sbp" title="Permanent link">&para;</a></h2>
