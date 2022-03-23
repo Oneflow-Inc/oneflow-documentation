@@ -14,7 +14,7 @@ OneFlow 全局视角下的 Tensor 有 `placement` 属性，通过 `placement` �
 
 OneFlow 会自动为集群中的计算设备编号。比如，如果集群中有 4 台主机，每台主机上有 8 张显卡，一共 32 张显卡，那么 OneFlow 会将这 32 张显卡自动编号为 0~31。
 
-如果想将 Tensor 放置在第 0 台机器的前 4 张显卡上，只需要配置：`placement("cuda", [0, 1, 2, 3]`。
+如果想将 Tensor 放置在第 0 台机器的前 4 张显卡上，只需要配置：`placement("cuda", [0, 1, 2, 3])`。
 
 如果想将 Tensor 放置在第 0 台机器的后 4 张显卡上，只需要配置：`placement("cuda", [4, 5, 6, 7])`。
 
