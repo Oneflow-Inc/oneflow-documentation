@@ -39,7 +39,7 @@ optimizer = flow.optim.SGD([{'params': model_part1.parameters()},
                            lr=1e-3)
 ```
 
-如果要开启 activation checkpointing，只需在 [Graph](../basics/08_nn_graph.md) 模型中的 Eager 模型成员 (即 nn.Module 对象) 上指定 `.config.activation_checkpointing = True`。一个 nn.Module 对应一个 activation checkpointing 段，开启后，该段在前向计算的所有 activation tensor 中，只有 nn.Module 输入的 activation tensor 被保留。对于其他的中间 activation tensor，如果在后向计算时要参与梯度计算，就会被重计算。对于 Graph 模型包含多个 Eager 模型成员的情况，当在多个连续的 nn.Module 上开启 activation checkpointing 后，就构成了连续的 activation checkpointing 段。在前向计算的多个 nn.Module 中，每个只保留了输入的 activation tensor。于是总体的显存开销就变小了。此 API 详见：[activation_checkpointing](https://oneflow.readthedocs.io/en/master/graph.html#oneflow.nn.graph.block_config.BlockConfig.activation_checkpointing)。
+如果要开启 activation checkpointing，只需在 [Graph](../basics/08_nn_graph.md) 模型中的 Eager 模型成员 (即 nn.Module 对象) 上指定 `.config.activation_checkpointing = True`。此 API 详见：[activation_checkpointing](https://oneflow.readthedocs.io/en/master/graph.html#oneflow.nn.graph.block_config.BlockConfig.activation_checkpointing)。
 ```python
 class CustomGraph(flow.nn.Graph):
     def __init__(self):
