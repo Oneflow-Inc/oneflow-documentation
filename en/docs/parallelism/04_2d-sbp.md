@@ -75,3 +75,91 @@ Now, suppose we set the 2D SBP for $x$ to $(broadcast, split(0))$ and set the 2D
 That is to say, the following 2D SBPs constitute the 2D SBP Signature of matrix multiplication:
 
 $$ (broadcast, split(0)) \times (split(1), broadcast) =  (split(1), split(0)) $$
+
+
+## An Example of Using 2D SBP
+
+In this section, we are going to use a simple example to demonstrate how to conduct distributed training using 2D SBP. Same as the example above, assume that there is a $2 \times 2$ device array. Given that readers may not have multiple GPU devices at present, we will use **CPU** to simulate the case of $2 \times 2$ device array. We adopt the parallelism strategy `(broadcast, split(0))` in the above figure to the input tensor. 
+
+First of all, import the dependencies:
+```python
+import oneflow as flow
+import oneflow.nn as nn
+```
+
+Then, define the placement and SBP that will be used:
+```python
+PLACEMENT = flow.placement("cpu", [[0, 1], [2, 3]])
+BROADCAST = (flow.sbp.broadcast, flow.sbp.broadcast)
+BS0 = (flow.sbp.broadcast, flow.sbp.split(0))
+```
+The parameter `ranks` of `PLACEMENT` is a two-dimensional list, which represents that the devices in the cluster are divided into a device array of $2 \times 2$.  As mentioned earlier, the SBP needs to correspond to it and be specified as a tuple with a length of 2. `BROADCAST` means broadcasting on both the 0th and 1st dimensions of the device array, and the meaning of `BS0` is the same as the description above.
+
+Assume that we have the following model:
+```python
+model = nn.Sequential(nn.Linear(8, 4),
+                      nn.ReLU(),
+                      nn.Linear(4, 2))
+```
+
+Broadcast the model on the cluster:
+```python
+model = model.to_global(placement=PLACEMENT, sbp=BROADCAST)
+```
+
+And construct the data and carry out forward inference:
+```python
+x = flow.randn(1, 2, 8)
+global_x = x.to_global(placement=PLACEMENT, sbp=BS0)
+pred = model(global_x)
+```
+Here, we create a local tensor with shape `(1, 2, 8)`, and obtain the corresponding global tensor through [Tensor.to_global](https://oneflow.readthedocs.io/en/master/tensor.html#oneflow.Tensor.to_global) method. Finally, input it to the model for inference.
+
+After obtaining the local tensor on current physical device through [Tensor.to_local](https://oneflow.readthedocs.io/en/master/tensor.html#oneflow.Tensor.to_local) method, we can output its shape and value to verify whether the data has been processed correctly:
+```python
+local_x = global_x.to_local()
+print(f'{local_x.device}, {local_x.shape}, \n{local_x}')
+```
+The output result is:
+```text
+cpu:2, oneflow.Size([1, 2, 8]), 
+tensor([[[ 0.6068,  0.1986, -0.6363, -0.5572, -0.2388,  1.1607, -0.7186,  1.2161],
+         [-0.1632, -1.5293, -0.6637, -1.0219,  0.1464,  1.1574, -0.0811, -1.6568]]], dtype=oneflow.float32)
+cpu:3, oneflow.Size([1, 2, 8]), 
+tensor([[[-0.7676,  0.4519, -0.8810,  0.5648,  1.5428,  0.5752,  0.2466, -0.7708],
+         [-1.2131,  1.4590,  0.2749,  0.8824, -0.8286,  0.9989,  0.5599, -0.5099]]], dtype=oneflow.float32)
+cpu:1, oneflow.Size([1, 2, 8]), 
+tensor([[[-0.7676,  0.4519, -0.8810,  0.5648,  1.5428,  0.5752,  0.2466, -0.7708],
+         [-1.2131,  1.4590,  0.2749,  0.8824, -0.8286,  0.9989,  0.5599, -0.5099]]], dtype=oneflow.float32)
+cpu:0, oneflow.Size([1, 2, 8]), 
+tensor([[[ 0.6068,  0.1986, -0.6363, -0.5572, -0.2388,  1.1607, -0.7186,  1.2161],
+         [-0.1632, -1.5293, -0.6637, -1.0219,  0.1464,  1.1574, -0.0811, -1.6568]]], dtype=oneflow.float32)
+```
+Through comparing these local tensors on different "devices", we can see that it conforms to the state described in the figure above, which proves that the data has been splitted correctly.
+
+
+It should be noted that we cannot directly use `python xxx.py` to run the above code, but need to launch through `oneflow.distributed.launch`. This module can easily start distributed training. Execute the following command in the terminal (It is assumed that the above code has been saved to a file named "2d_sbp.py" in the current directory)
+```bash
+python3 -m oneflow.distributed.launch --nproc_per_node=4 2d_sbp.py
+```
+Here, the parameter `nproc_per_node` is assigned as 4 to create 4 processes, simulating a total of 4 GPUs. For detailed usage of this module, please read: [DISTRIBUTED TRAINING LAUNCHER](./04_launch.md).
+
+The complete code is as follows:
+??? code
+    ```python
+    PLACEMENT = flow.placement("cpu", [[0, 1], [2, 3]])
+    BROADCAST = (flow.sbp.broadcast, flow.sbp.broadcast)
+    BS0 = (flow.sbp.broadcast, flow.sbp.split(0))
+
+    model = nn.Sequential(nn.Linear(8, 4),
+                          nn.ReLU(),
+                          nn.Linear(4, 2))
+    model = model.to_global(placement=PLACEMENT, sbp=BROADCAST)
+
+    x = flow.randn(1, 2, 8)
+    global_x = x.to_global(placement=PLACEMENT, sbp=BS0)
+    pred = model(global_x)
+
+    local_x = global_x.to_local()
+    print(f'{local_x.device}, {local_x.shape}, \n{local_x}')
+    ```
