@@ -585,6 +585,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#an-example-of-using-2d-sbp" class="md-nav__link">
+    An Example of Using 2D SBP
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -777,6 +784,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#an-example-of-using-2d-sbp" class="md-nav__link">
+    An Example of Using 2D SBP
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -844,6 +858,75 @@
 <p>Now, suppose we set the 2D SBP for <span class="arithmatex">\(x\)</span> to <span class="arithmatex">\((broadcast, split(0))\)</span> and set the 2D SBP for <span class="arithmatex">\(w\)</span> to <span class="arithmatex">\((split(1), broadcast)\)</span>, then in the context of the 2D SBP, operate <span class="arithmatex">\(x \times w = y\)</span> to obtain the SBP attribute for <span class="arithmatex">\(y\)</span> is <span class="arithmatex">\((split(1), split(0))\)</span>.</p>
 <p>That is to say, the following 2D SBPs constitute the 2D SBP Signature of matrix multiplication:</p>
 <div class="arithmatex">\[ (broadcast, split(0)) \times (split(1), broadcast) =  (split(1), split(0)) \]</div>
+<h2 id="an-example-of-using-2d-sbp">An Example of Using 2D SBP<a class="headerlink" href="#an-example-of-using-2d-sbp" title="Permanent link">&para;</a></h2>
+<p>In this section, we are going to use a simple example to demonstrate how to conduct distributed training using 2D SBP. Same as the example above, assume that there is a <span class="arithmatex">\(2 \times 2\)</span> device array. Given that readers may not have multiple GPU devices at present, we will use <strong>CPU</strong> to simulate the case of <span class="arithmatex">\(2 \times 2\)</span> device array. We adopt the parallelism strategy <code>(broadcast, split(0))</code> in the above figure to the input tensor. </p>
+<p>First of all, import the dependencies:
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">oneflow</span> <span class="k">as</span> <span class="nn">flow</span>
+<span class="kn">import</span> <span class="nn">oneflow.nn</span> <span class="k">as</span> <span class="nn">nn</span>
+</code></pre></div></p>
+<p>Then, define the placement and SBP that will be used:
+<div class="highlight"><pre><span></span><code><span class="n">PLACEMENT</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">placement</span><span class="p">(</span><span class="s2">&quot;cpu&quot;</span><span class="p">,</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]])</span>
+<span class="n">BROADCAST</span> <span class="o">=</span> <span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">sbp</span><span class="o">.</span><span class="n">broadcast</span><span class="p">,</span> <span class="n">flow</span><span class="o">.</span><span class="n">sbp</span><span class="o">.</span><span class="n">broadcast</span><span class="p">)</span>
+<span class="n">BS0</span> <span class="o">=</span> <span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">sbp</span><span class="o">.</span><span class="n">broadcast</span><span class="p">,</span> <span class="n">flow</span><span class="o">.</span><span class="n">sbp</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+</code></pre></div>
+The parameter <code>ranks</code> of <code>PLACEMENT</code> is a two-dimensional list, which represents that the devices in the cluster are divided into a device array of <span class="arithmatex">\(2 \times 2\)</span>.  As mentioned earlier, the SBP needs to correspond to it and be specified as a tuple with a length of 2. <code>BROADCAST</code> means broadcasting on both the 0<sup>th</sup> and 1<sup>st</sup> dimensions of the device array, and the meaning of <code>BS0</code> is the same as the description above.</p>
+<p>Assume that we have the following model:
+<div class="highlight"><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span>
+                      <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">(),</span>
+                      <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+</code></pre></div></p>
+<p>Broadcast the model on the cluster:
+<div class="highlight"><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">to_global</span><span class="p">(</span><span class="n">placement</span><span class="o">=</span><span class="n">PLACEMENT</span><span class="p">,</span> <span class="n">sbp</span><span class="o">=</span><span class="n">BROADCAST</span><span class="p">)</span>
+</code></pre></div></p>
+<p>And construct the data and carry out forward inference:
+<div class="highlight"><pre><span></span><code><span class="n">x</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span>
+<span class="n">global_x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">to_global</span><span class="p">(</span><span class="n">placement</span><span class="o">=</span><span class="n">PLACEMENT</span><span class="p">,</span> <span class="n">sbp</span><span class="o">=</span><span class="n">BS0</span><span class="p">)</span>
+<span class="n">pred</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">global_x</span><span class="p">)</span>
+</code></pre></div>
+Here, we create a local tensor with shape <code>(1, 2, 8)</code>, and obtain the corresponding global tensor through <a href="https://oneflow.readthedocs.io/en/master/tensor.html#oneflow.Tensor.to_global">Tensor.to_global</a> method. Finally, input it to the model for inference.</p>
+<p>After obtaining the local tensor on current physical device through <a href="https://oneflow.readthedocs.io/en/master/tensor.html#oneflow.Tensor.to_local">Tensor.to_local</a> method, we can output its shape and value to verify whether the data has been processed correctly:
+<div class="highlight"><pre><span></span><code><span class="n">local_x</span> <span class="o">=</span> <span class="n">global_x</span><span class="o">.</span><span class="n">to_local</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">local_x</span><span class="o">.</span><span class="n">device</span><span class="si">}</span><span class="s1">, </span><span class="si">{</span><span class="n">local_x</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s1">, </span><span class="se">\n</span><span class="si">{</span><span class="n">local_x</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+</code></pre></div>
+The output result is:
+<div class="highlight"><pre><span></span><code>cpu:2, oneflow.Size([1, 2, 8]), 
+tensor([[[ 0.6068,  0.1986, -0.6363, -0.5572, -0.2388,  1.1607, -0.7186,  1.2161],
+         [-0.1632, -1.5293, -0.6637, -1.0219,  0.1464,  1.1574, -0.0811, -1.6568]]], dtype=oneflow.float32)
+cpu:3, oneflow.Size([1, 2, 8]), 
+tensor([[[-0.7676,  0.4519, -0.8810,  0.5648,  1.5428,  0.5752,  0.2466, -0.7708],
+         [-1.2131,  1.4590,  0.2749,  0.8824, -0.8286,  0.9989,  0.5599, -0.5099]]], dtype=oneflow.float32)
+cpu:1, oneflow.Size([1, 2, 8]), 
+tensor([[[-0.7676,  0.4519, -0.8810,  0.5648,  1.5428,  0.5752,  0.2466, -0.7708],
+         [-1.2131,  1.4590,  0.2749,  0.8824, -0.8286,  0.9989,  0.5599, -0.5099]]], dtype=oneflow.float32)
+cpu:0, oneflow.Size([1, 2, 8]), 
+tensor([[[ 0.6068,  0.1986, -0.6363, -0.5572, -0.2388,  1.1607, -0.7186,  1.2161],
+         [-0.1632, -1.5293, -0.6637, -1.0219,  0.1464,  1.1574, -0.0811, -1.6568]]], dtype=oneflow.float32)
+</code></pre></div>
+Through comparing these local tensors on different "devices", we can see that it conforms to the state described in the figure above, which proves that the data has been splitted correctly.</p>
+<p>It should be noted that we cannot directly use <code>python xxx.py</code> to run the above code, but need to launch through <code>oneflow.distributed.launch</code>. This module can easily start distributed training. Execute the following command in the terminal (It is assumed that the above code has been saved to a file named "2d_sbp.py" in the current directory)
+<div class="highlight"><pre><span></span><code>python3 -m oneflow.distributed.launch --nproc_per_node<span class="o">=</span><span class="m">4</span> 2d_sbp.py
+</code></pre></div>
+Here, the parameter <code>nproc_per_node</code> is assigned as 4 to create 4 processes, simulating a total of 4 GPUs. For detailed usage of this module, please read: <a href="04_launch.html">DISTRIBUTED TRAINING LAUNCHER</a>.</p>
+<p>The complete code is as follows:</p>
+<details class="code">
+<summary>Code</summary>
+<div class="highlight"><pre><span></span><code><span class="n">PLACEMENT</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">placement</span><span class="p">(</span><span class="s2">&quot;cpu&quot;</span><span class="p">,</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]])</span>
+<span class="n">BROADCAST</span> <span class="o">=</span> <span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">sbp</span><span class="o">.</span><span class="n">broadcast</span><span class="p">,</span> <span class="n">flow</span><span class="o">.</span><span class="n">sbp</span><span class="o">.</span><span class="n">broadcast</span><span class="p">)</span>
+<span class="n">BS0</span> <span class="o">=</span> <span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">sbp</span><span class="o">.</span><span class="n">broadcast</span><span class="p">,</span> <span class="n">flow</span><span class="o">.</span><span class="n">sbp</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span>
+                      <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">(),</span>
+                      <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">to_global</span><span class="p">(</span><span class="n">placement</span><span class="o">=</span><span class="n">PLACEMENT</span><span class="p">,</span> <span class="n">sbp</span><span class="o">=</span><span class="n">BROADCAST</span><span class="p">)</span>
+
+<span class="n">x</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span>
+<span class="n">global_x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">to_global</span><span class="p">(</span><span class="n">placement</span><span class="o">=</span><span class="n">PLACEMENT</span><span class="p">,</span> <span class="n">sbp</span><span class="o">=</span><span class="n">BS0</span><span class="p">)</span>
+<span class="n">pred</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">global_x</span><span class="p">)</span>
+
+<span class="n">local_x</span> <span class="o">=</span> <span class="n">global_x</span><span class="o">.</span><span class="n">to_local</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">local_x</span><span class="o">.</span><span class="n">device</span><span class="si">}</span><span class="s1">, </span><span class="si">{</span><span class="n">local_x</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s1">, </span><span class="se">\n</span><span class="si">{</span><span class="n">local_x</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+</code></pre></div>
+</details>
                 
               
               
