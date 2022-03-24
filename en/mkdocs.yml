@@ -128,7 +128,7 @@ nav:
       - Data Parallelism Training: parallelism/05_ddp.md
       - Pipelining Parallelism: parallelism/06_pipeline.md
 
-    - OneFlow Cookies:
+    - Cookbook:
       - Onelow with ONNX: cookies/oneflow2onnnx.md
       - Model Deployment: cookies/serving.md
 
