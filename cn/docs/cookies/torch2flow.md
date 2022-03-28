@@ -1,4 +1,3 @@
-# 需求简介
 
 自然语言处理、图像等深度学习领域常使用预训练模型+微调机制来快速解决具体任务，优化器参数等实验信息往往也有存储需求。因此，在使用 OneFlow 进行模型训练时，不可避免地会遇到如何将 Pytorch 存储的预训练模型转为 OneFlow 模型的问题。
 
@@ -14,7 +13,7 @@
 import torch
 import torch.nn as nn
 
-save_file   = 'model.pth'
+save_file = 'model.pth'
 
 model_torch = nn.Sequential(
     nn.Linear(128, 2), 
