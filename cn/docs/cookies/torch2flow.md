@@ -1,14 +1,11 @@
+# 将 PyTorch 预训练模型转为 OneFlow 格式
 
-自然语言处理、图像等深度学习领域常使用预训练模型+微调机制来快速解决具体任务，优化器参数等实验信息往往也有存储需求。因此，在使用 OneFlow 进行模型训练时，不可避免地会遇到如何将 Pytorch 存储的预训练模型转为 OneFlow 模型的问题。
-
+当需要使用 PyTorch 的预训练模型时，可以利用 OneFlow 与 PyTorch 模型接口对齐的特点，将 PyTorch 预训练模型，转存为 OneFlow 模型。
 
 
 ## 转换示例
 
-
-将 Pytorch 存储的数据（无论是模型还是变量等等）转换成 OneFlow 的思路是 **使用 Numpy 作为二者的媒介**，具体如下示例所示。
-
-首先我们使用 Pytorch 定义一个简单模型，并将其保存为 `pth` 文件。
+我们将定义一个 PyTorch 模型并保存，然后展示如何将其转换成 OneFlow 模型。
 
 ```python
 import torch
@@ -24,7 +21,12 @@ model_torch = nn.Sequential(
 torch.save(model, save_file)
 ```
 
-接着，我们需要定义一个具有 **相同结构** 的 OneFlow 版本的模型。
+运行以上代码，将得到 PyTorch 模型文件 `model.pth` 。将它转为 OneFlow 版本的模型包括两个主要步骤：
+
+- 定义一个具有 **相同结构** 的 OneFlow 模型
+- 加载 PyTorch 存储的模型文件 `model.pth`，并将模型参数初始化到 OneFlow 版本的模型中
+
+代码如下所示：
 
 ```python
 import oneflow as flow
@@ -34,11 +36,7 @@ model_flow = nn.Sequential(
     nn.Linear(128, 2), 
     nn.Softmax()
 )
-```
 
-最后，我们加载 Pytorch 存储的模型文件 `model.pth`，并将其初始化到 OneFlow 版本的模型中。
-
-```python
 parameters = torch.load(save_file).state_dict()
 
 for key, value in parameters.items():
@@ -48,72 +46,14 @@ for key, value in parameters.items():
 model_flow.load_state_dict(parameters)
 ```
 
-我们可以通过如下代码检验模型是否加载成功。
+我们可以发现，通过 `.state_dict()` 获取到以 `key-value` 形式存储的模型参数后，我们通过 `.detach().cpu().numpy()` 即将梯度阻断后的参数值转换成 Numpy 类型，最后通过 `.load_state_dict(parameters)` 将模型参数传递到 OneFlow 模型中。
 
-```python
-import torch
-import torch.nn as nn
-
-save_file = 'model.pth'
-
-model_torch = nn.Sequential(
-    nn.Linear(128, 2), 
-    nn.Softmax()
-)
-
-torch.save(model_torch, save_file)
-
-x = torch.randn(4, 128)
-y = model_torch(x)
-print("torch init: \n", y)
-
-import oneflow as flow
-import oneflow.nn as nn
-
-model_flow = nn.Sequential(
-    nn.Linear(128, 2), 
-    nn.Softmax()
-)
-
-x = flow.tensor(x.numpy())
-y = model_flow(x)
-print("oneflow init: \n", y)
-
-parameters = torch.load(save_file).state_dict()
-for key, value in parameters.items():
-    val = value.detach().cpu().numpy()
-    parameters[key] = val
-
-model_flow.load_state_dict(parameters)
-y = model_flow(x)
-print("torch to oneflow: \n", y)
-```
-
-输出如下：
-
-```shell
-torch init: 
- tensor([[0.4520, 0.5480],
-        [0.6272, 0.3728],
-        [0.6275, 0.3725],
-        [0.5735, 0.4265]], grad_fn=<SoftmaxBackward0>)
-oneflow init: 
- tensor([[0.9034, 0.0966],
-        [0.8312, 0.1688],
-        [0.3003, 0.6997],
-        [0.7384, 0.2616]], dtype=oneflow.float32, grad_fn=<softmax_backward>)
-torch to oneflow: 
- tensor([[0.4520, 0.5480],
-        [0.6272, 0.3728],
-        [0.6275, 0.3725],
-        [0.5735, 0.4265]], dtype=oneflow.float32, grad_fn=<softmax_backward>)
-```
-
+通过上述简单示例，我们可以发现将 PyTorch 存储的数据（无论是模型还是变量等等）转换成 OneFlow 的思路是 **使用 Numpy 作为二者的媒介**，只要确保 PyTorch 和 OneFlow 定义的模型是一致的，那么无论多么复杂的模型都可以通过上述方式转换。
 
 
 ## 拓展
 
-torchvision 中有许多预训练的图像模型，那么如何将 torchvision 中的预训练模型转为 OneFlow 模型呢？以经典的  AlexNet 为例，转换代码如下所示：
+[flowvision](https://github.com/Oneflow-Inc/vision) 与 torchvision 相同，提供了许多预训练好的模型，同时 flowvision 各个模型能够做到与 torchvision 对齐。在这一部分，我们使用 flowvision，以经典的 AlexNet 为例，看看如何将 PyTorch 中 **复杂的预训练模型** 转换成 OneFlow 版本。转换代码如下所示：
 
 ```python
 import torchvision.models as models_torch
@@ -130,13 +70,10 @@ for key, value in parameters.items():
 alexnet_flow.load_state_dict(parameters)
 ```
 
-使用预训练模型进行预测：
+flowvision 也配备了预训练模型，设置 pretrained=True 即可：
 
 ```python
-import oneflow as flow
-
-x = flow.randn(1, 3, 63, 63)
-y = alexnet_flow(x)
+alexnet_flow = models_flow.alexnet(pretrained=True)
 ```
 
 关于 flowvision 的详细使用，欢迎访问 [flowvision documentation](https://flowvision.readthedocs.io/en/latest/index.html) 。
