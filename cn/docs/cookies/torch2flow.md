@@ -53,7 +53,7 @@ model_flow.load_state_dict(parameters)
 
 ## 拓展
 
-[flowvision](https://github.com/Oneflow-Inc/vision) 与 torchvision 相同，提供了许多预训练好的模型，同时 flowvision 各个模型能够做到与 torchvision 对齐。在这一部分，我们使用 flowvision，以经典的 AlexNet 为例，看看如何将 PyTorch 中 **复杂的预训练模型** 转换成 OneFlow 版本。转换代码如下所示：
+[flowvision](https://github.com/Oneflow-Inc/vision) 与 torchvision 相同，提供了许多预训练好的模型，同时 flowvision 各个模型能够做到与 torchvision 对齐。我们使用 flowvision，以经典的 AlexNet 为例，看看如何将 PyTorch 中 **复杂的预训练模型** 转换成 OneFlow 版本。转换代码如下所示：
 
 ```python
 import torchvision.models as models_torch
