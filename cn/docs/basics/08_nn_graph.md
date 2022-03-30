@@ -30,6 +30,8 @@ OneFlow 默认以 Eager 模式运行。
         train=True,
         transform=transforms.ToTensor(),
         download=True,
+        source_url="https://oneflow-public.oss-cn-beijing.aliyuncs.com/datasets/cifar/cifar-10-python.tar.gz",
+
     )
 
     train_dataloader = flow.utils.data.DataLoader(
@@ -94,12 +96,12 @@ class ModuleMyLinear(nn.Module):
     def forward(self, input):
         return flow.matmul(input, self.weight) + self.bias
 
-model = ModuleMyLinear(4, 3)
+linear_model = ModuleMyLinear(4, 3)
 
 class GraphMyLinear(nn.Graph):
   def __init__(self):
     super().__init__()
-    self.model = model
+    self.model = linear_model
 
   def build(self, input):
     return self.model(input)
@@ -135,7 +137,7 @@ tensor([[-0.3298, -3.7907,  0.1661]], dtype=oneflow.float32)
 class ModelGraph(flow.nn.Graph):
     def __init__(self):
         super().__init__()
-        self.model = model
+        self.model = linear_model
 
     def build(self, x, y):
         y_pred = self.model(x)
@@ -375,6 +377,7 @@ CHECKPOINT_SAVE_DIR = "./GraphMobileNetV2"
 ```
 在每个 epoch 训练完成处插入以下代码：
 ```python
+import shutil
 shutil.rmtree(CHECKPOINT_SAVE_DIR)  # 清理上一次的状态
 flow.save(graph_mobile_net_v2.state_dict(), CHECKPOINT_SAVE_DIR)
 ```
@@ -400,13 +403,19 @@ nn.Graph 支持同时保存模型参数和计算图，可以很方便的支持�
 如果有模型部署的需求，那么应该通过 `oneflow.save` 接口，将 `Graph` 对象导出为部署需要的格式：
 
 ```python
-flow.save(graph_mobile_net_v2, "./1/model")
+MODEL_SAVE_DIR="./mobile_net_v2_model"
+
+import os
+if not os.path.exists(MODEL_SAVE_DIR):
+    os.makedirs(MODEL_SAVE_DIR)
+
+flow.save(graph_mobile_net_v2, MODEL_SAVE_DIR)
 ```
 
 !!! Note
     注意和上一节的区别。 `save` 接口既支持保存 state_dict，也支持保存 Graph 对象。当保存 Graph 对象时，模型参数和计算图将被同时保存，以与模型结构定义代码解耦。
 
-这样，`./1/model` 目录下会同时保存部署所需的模型参数和计算图。详细的部署流程可以参阅 [模型部署](../cookies/serving.md) 一文。
+这样，`./mobile_net_v2_model` 目录下会同时保存部署所需的模型参数和计算图。详细的部署流程可以参阅 [模型部署](../cookies/serving.md) 一文。
 
 因为部署所需的格式，必需通过 Graph 对象导出。所以，如果是 Eager 模式下训练得到的模型（即 `nn.Module` 对象），需要用 `Graph` 将 Module 封装后再导出。
 
@@ -433,7 +442,12 @@ if __name__ == "__main__":
     model.eval()
     graph = MyGraph(model)
     out = graph(fake_image)
-    flow.save(graph, "1/model")
+    
+    MODEL_SAVE_DIR="./neural_style_transfer_model"
+    import os
+    if not os.path.exists(MODEL_SAVE_DIR):
+        os.makedirs(MODEL_SAVE_DIR)
+    flow.save(graph, MODEL_SAVE_DIR)
 ```
 
 以上代码几处的关键代码：
