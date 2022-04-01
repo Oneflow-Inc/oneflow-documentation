@@ -11,14 +11,14 @@
       
       
       
-        <link rel="canonical" href="https://docs.oneflow.org/master/parallelism/01_introduction.html">
+        <link rel="canonical" href="https://docs.oneflow.org/master/cookies/torch2flow.html">
       
       <link rel="icon" href="../assets/favicon.png">
       <meta name="generator" content="mkdocs-1.2.2, mkdocs-material-7.1.11">
     
     
       
-        <title>常见的分布式并行策略 - OneFlow</title>
+        <title>将 PyTorch 预训练模型转为 OneFlow 格式 - OneFlow</title>
       
     
     
@@ -69,7 +69,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#_1" class="md-skip">
+        <a href="#pytorch-oneflow" class="md-skip">
           跳转至
         </a>
       
@@ -104,7 +104,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              常见的分布式并行策略
+              将 PyTorch 预训练模型转为 OneFlow 格式
             
           </span>
         </div>
@@ -227,15 +227,13 @@
         
   
   
-    
-  
 
 
   
   
   
     <li class="md-tabs__item">
-      <a href="01_introduction.html" class="md-tabs__link md-tabs__link--active">
+      <a href="../parallelism/01_introduction.html" class="md-tabs__link">
         分布式训练
       </a>
     </li>
@@ -245,13 +243,15 @@
         
   
   
+    
+  
 
 
   
   
   
     <li class="md-tabs__item">
-      <a href="../cookies/oneflow2onnnx.html" class="md-tabs__link">
+      <a href="oneflow2onnnx.html" class="md-tabs__link md-tabs__link--active">
         实践指南
       </a>
     </li>
@@ -471,14 +471,12 @@
 
   
   
-    
-  
   
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" checked>
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" >
       
       <label class="md-nav__link" for="__nav_3">
         分布式训练
@@ -494,92 +492,11 @@
             
   
   
-    
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          常见的分布式并行策略
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="01_introduction.html" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../parallelism/01_introduction.html" class="md-nav__link">
         常见的分布式并行策略
       </a>
-      
-        
-<nav class="md-nav md-nav--secondary" aria-label="目录">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      目录
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#_2" class="md-nav__link">
-    为什么分布式训练越来越流行
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_3" class="md-nav__link">
-    常见的并行策略
-  </a>
-  
-    <nav class="md-nav" aria-label="常见的并行策略">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#_4" class="md-nav__link">
-    数据并行
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#_5" class="md-nav__link">
-    模型并行
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#_6" class="md-nav__link">
-    流水并行
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#_7" class="md-nav__link">
-    混合并行
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -589,7 +506,7 @@
   
   
     <li class="md-nav__item">
-      <a href="02_sbp.html" class="md-nav__link">
+      <a href="../parallelism/02_sbp.html" class="md-nav__link">
         集群的全局视角
       </a>
     </li>
@@ -601,7 +518,7 @@
   
   
     <li class="md-nav__item">
-      <a href="03_consistent_tensor.html" class="md-nav__link">
+      <a href="../parallelism/03_consistent_tensor.html" class="md-nav__link">
         Global Tensor
       </a>
     </li>
@@ -613,7 +530,7 @@
   
   
     <li class="md-nav__item">
-      <a href="04_2d-sbp.html" class="md-nav__link">
+      <a href="../parallelism/04_2d-sbp.html" class="md-nav__link">
         2D SBP
       </a>
     </li>
@@ -625,7 +542,7 @@
   
   
     <li class="md-nav__item">
-      <a href="04_launch.html" class="md-nav__link">
+      <a href="../parallelism/04_launch.html" class="md-nav__link">
         用 launch 模块启动分布式训练
       </a>
     </li>
@@ -637,7 +554,7 @@
   
   
     <li class="md-nav__item">
-      <a href="05_ddp.html" class="md-nav__link">
+      <a href="../parallelism/05_ddp.html" class="md-nav__link">
         数据并行训练
       </a>
     </li>
@@ -649,7 +566,7 @@
   
   
     <li class="md-nav__item">
-      <a href="06_pipeline.html" class="md-nav__link">
+      <a href="../parallelism/06_pipeline.html" class="md-nav__link">
         流水并行训练
       </a>
     </li>
@@ -668,12 +585,14 @@
 
   
   
+    
+  
   
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" checked>
       
       <label class="md-nav__link" for="__nav_4">
         实践指南
@@ -691,7 +610,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../cookies/oneflow2onnnx.html" class="md-nav__link">
+      <a href="oneflow2onnnx.html" class="md-nav__link">
         OneFlow 与 ONNX 交互
       </a>
     </li>
@@ -703,7 +622,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../cookies/serving.html" class="md-nav__link">
+      <a href="serving.html" class="md-nav__link">
         模型部署
       </a>
     </li>
@@ -713,11 +632,58 @@
             
   
   
+    
   
-    <li class="md-nav__item">
-      <a href="../cookies/torch2flow.html" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          将 PyTorch 预训练模型转为 OneFlow 格式
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="torch2flow.html" class="md-nav__link md-nav__link--active">
         将 PyTorch 预训练模型转为 OneFlow 格式
       </a>
+      
+        
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    转换示例
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    拓展
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -796,50 +762,16 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#_2" class="md-nav__link">
-    为什么分布式训练越来越流行
+  <a href="#_1" class="md-nav__link">
+    转换示例
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#_3" class="md-nav__link">
-    常见的并行策略
+  <a href="#_2" class="md-nav__link">
+    拓展
   </a>
-  
-    <nav class="md-nav" aria-label="常见的并行策略">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#_4" class="md-nav__link">
-    数据并行
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#_5" class="md-nav__link">
-    模型并行
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#_6" class="md-nav__link">
-    流水并行
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#_7" class="md-nav__link">
-    混合并行
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -855,53 +787,71 @@
             <article class="md-content__inner md-typeset">
               
                 
-                  <a href="https://github.com/OneFlow-Inc/oneflow-documentation/blob/master/cn/docs/parallelism/01_introduction.md" title="编辑此页" class="md-content__button md-icon">
+                  <a href="https://github.com/OneFlow-Inc/oneflow-documentation/blob/master/cn/docs/cookies/torch2flow.md" title="编辑此页" class="md-content__button md-icon">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
                   </a>
                 
                 
-                <h1 id="_1">常见的分布式并行策略<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
-<h2 id="_2">为什么分布式训练越来越流行<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
-<p>近年来，深度学习被广泛应用到各个领域，包括计算机视觉、语言理解、语音识别、广告推荐等。在这些不同的领域中，一个共同的特点就是模型规模越来越大，比如 GPT-3 模型的参数量达到1750亿。即使用1024张 80 GB 的 A100，那么完整训练 GPT-3 的时长都需要1个月。</p>
-<p>模型规模的扩大，对硬件（算力、内存）的发展提出要求。然而，因为 <a href="https://oneflow.org/a/share/jishuboke/75.html">内存墙</a> 的存在，单一设备的算力及容量，受限于物理定律，持续提高芯片的集成越来越困难，难以跟上模型扩大的需求。</p>
-<p>为了解决算力增速不足的问题，人们考虑用多节点集群进行分布式训练，以提升算力，分布式训练势在必行。</p>
-<h2 id="_3">常见的并行策略<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
-<p>简单的机器堆叠并不一定会带来算力的增长。因为神经网络的训练并不是单纯的“把原来一个设备做的事情，现在分给多个设备各自做”，它不仅需要多个设备进行计算，还涉及到设备之间的数据传输，只有协调好集群中的计算与通信，才能做高效的分布式训练。</p>
-<p>我们将以矩阵乘法的例子，解释数据并行、模型并行的区别。</p>
-<p>先了解以下逻辑上的矩阵乘法例子:</p>
-<p>假设神经网络中某一层是做矩阵乘法，其中的输入 <span class="arithmatex">\(x\)</span> 的形状为 <span class="arithmatex">\(4\times5\)</span>，模型参数 <span class="arithmatex">\(w\)</span> 的形状为 <span class="arithmatex">\(5\times8\)</span>，那么，矩阵乘法输出形状为 <span class="arithmatex">\(4\times8\)</span>。示意图如下：</p>
-<p><img alt="matmul" src="imgs/matmul_logical.png" /></p>
-<p>单机单卡的训练中，以上矩阵乘法，先计算得到 <span class="arithmatex">\(out\)</span>，并将 <span class="arithmatex">\(out\)</span> 传递给下一层，并最终计算得到 <span class="arithmatex">\(loss\)</span>，然后在反向传播过程中，得到 <span class="arithmatex">\(\frac{\partial loss}{\partial w}\)</span>，用于更新 <span class="arithmatex">\(w\)</span>。</p>
-<p>分布式训练中，依据是切分 <span class="arithmatex">\(x\)</span> 还是 <span class="arithmatex">\(w\)</span> 的不同，分为“数据并行”和“模型并行”策略。接下来，我们介绍常见的并行策略。</p>
-<h3 id="_4">数据并行<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h3>
-<p>所谓的数据并行，就是将数据 <span class="arithmatex">\(x\)</span> 进行切分，而每个设备上的模型 <span class="arithmatex">\(w\)</span> 是完整的、一致的。如下图所示，<span class="arithmatex">\(x\)</span> 被按照第0维度平均切分到2个设备上，两个设备上都有完整的 <span class="arithmatex">\(w\)</span>。</p>
-<p>这样，在两台设备上，分别得到的输出，都只是逻辑上输出的一半（形状为 <span class="arithmatex">\(2\times8\)</span>），将两个设备上的输出拼接到一起，才能得到逻辑上完整的输出。</p>
-<p><img alt="Data Paralelism" src="imgs/matmul_data_paralelism.png" /></p>
-<p>注意，因为数据被分发到了2个设备上，因此反向传播过程，各自设备上得到的 <span class="arithmatex">\(\frac{\partial loss}{\partial w}\)</span> 会不一样，如果直接使用各个设备上的梯度更新各自的模型，会造成2个设备上的 <strong>模型不一致</strong>，训练就失去了意义（到底用哪个模型好呢？）。</p>
-<p>因此，数据并行策略下，在反向传播过程中，需要对各个设备上的梯度进行 <a href="https://docs.nvidia.com/deeplearning/nccl/user-guide/docs/usage/collectives.html#allreduce">AllReduce</a>，以确保各个设备上的模型始终保持一致。</p>
-<p>当数据集较大，模型较小时，由于反向过程中为同步梯度产生的通信代价较小，此时选择数据并行一般比较有优势，常见的视觉分类模型，如 ResNet50，比较适合采用数据并行。</p>
-<h3 id="_5">模型并行<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h3>
-<p>当神经网络非常巨大，数据并行同步梯度的代价就会很大，甚至网络可能巨大到无法存放到单一计算设备中，这时候，可以采用模型并行策略解决问题。</p>
-<p>所谓的模型并行，就是每个设备上的数据是完整的、一致的，而模型 <span class="arithmatex">\(w\)</span> 被切分到了各个设备上，每个设备只拥有模型的一部分，所有计算设备上的模型拼在一起，才是完整的模型。</p>
-<p>如下图所示，<span class="arithmatex">\(w\)</span> 被按照第1维度平均切分到2个设备上，两个设备上都有完整的 <span class="arithmatex">\(x\)</span>。两个设备上的输出也需要通过拼接才能得到逻辑上的输出。</p>
-<p><img alt="Model Paralelism" src="imgs/matmul_model_paralelism.png" /></p>
-<p>模型并行的好处是，省去了多个设备之间的梯度 AllReduce；但是，由于每个设备都需要完整的数据输入，因此，数据会在多个设备之间进行广播，产生通信代价。比如，上图中的最终得到的 <span class="arithmatex">\(out~(4\times8)\)</span> ，如果它作为下一层网络的输入，那么它就需要被广播发送到两个设备上。</p>
-<p>语言模型，如 BERT，常采用模型并行。</p>
-<h3 id="_6">流水并行<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h3>
-<p>当神经网络过于巨大，无法在一个设备上存放时，除了上述的模型并行的策略外，还可以选择流水并行。
-流水并行指将网络切为多个阶段，并分发到不同的计算设备上，各个计算设备之间以“接力”的方式完成训练。</p>
-<p>如下图，展示了一个逻辑上的4层网络（<code>T1</code> 至 <code>T4</code>)是如何做流水并行的。</p>
-<p>4层网络被切分到2个计算设备上，其中 <code>GPU0</code> 上进行 <code>T1</code> 与 <code>T2</code> 的运算，<code>GPU1</code> 上进行 <code>T3</code> 与 <code>T4</code> 的计算。</p>
-<p><code>GPU0</code> 上完成前两层的计算后，它的输出被当作 <code>GPU1</code> 的输入，继续进行后两层的计算。</p>
-<div align="center">
-<img src="./imgs/realy.png" width="50%" alt="Relay"/>
-</div>
+                <h1 id="pytorch-oneflow">将 PyTorch 预训练模型转为 OneFlow 格式<a class="headerlink" href="#pytorch-oneflow" title="Permanent link">&para;</a></h1>
+<p>当需要使用 PyTorch 的预训练模型时，可以利用 OneFlow 与 PyTorch 模型接口对齐的特点，将 PyTorch 预训练模型，转存为 OneFlow 模型。</p>
+<h2 id="_1">转换示例<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<p>我们将定义一个 PyTorch 模型并保存，然后展示如何将其转换成 OneFlow 模型。</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
 
-<h3 id="_7">混合并行<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h3>
-<p>网络的训练中，也可以将多种并行策略混用，以 GPT-3 为例，以下是它训练时的设备并行方案：</p>
-<p>它首先被分为 64 个阶段，进行流水并行。每个阶段都运行在 6 台 DGX-A100 主机上。在6台主机之间，进行的是数据并行训练；每台主机有 8 张 GPU 显卡，同一台机器上的8张 GPU 显卡之间是进行模型并行训练。</p>
-<p><img alt="gpt-3" src="imgs/gpt3-overview.png" /></p>
-<p>并行策略的选择影响着训练效率，框架对并行训练的接口支持程度，决定了算法工程师的开发效率。OneFlow 针对分布式训练所做的系统级设计和创新，为用户轻松上手分布式训练做足了铺垫。我们将在本专题的其它文章中看到相关示例。</p>
+<span class="n">save_file</span> <span class="o">=</span> <span class="s1">&#39;model.pth&#39;</span>
+
+<span class="n">model_torch</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+    <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> 
+    <span class="n">nn</span><span class="o">.</span><span class="n">Softmax</span><span class="p">()</span>
+<span class="p">)</span>
+
+<span class="n">torch</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">save_file</span><span class="p">)</span>
+</code></pre></div>
+<p>运行以上代码，将得到 PyTorch 模型文件 <code>model.pth</code> 。将它转为 OneFlow 版本的模型包括两个主要步骤：</p>
+<ul>
+<li>定义一个具有 <strong>相同结构</strong> 的 OneFlow 模型</li>
+<li>加载 PyTorch 存储的模型文件 <code>model.pth</code>，并将模型参数初始化到 OneFlow 版本的模型中</li>
+</ul>
+<p>转换代码如下：</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">oneflow</span> <span class="k">as</span> <span class="nn">flow</span>
+<span class="kn">import</span> <span class="nn">oneflow.nn</span> <span class="k">as</span> <span class="nn">nn</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+
+<span class="n">model_flow</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+    <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> 
+    <span class="n">nn</span><span class="o">.</span><span class="n">Softmax</span><span class="p">()</span>
+<span class="p">)</span>
+
+<span class="n">parameters</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">save_file</span><span class="p">)</span><span class="o">.</span><span class="n">state_dict</span><span class="p">()</span>
+
+<span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">parameters</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="n">val</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
+
+<span class="n">model_flow</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">parameters</span><span class="p">)</span>
+</code></pre></div>
+<p>通过 <code>.state_dict()</code> 获取到以 <code>key-value</code> 形式存储的模型参数后， <code>.detach().cpu().numpy()</code> 将梯度阻断后的参数值转换成 Numpy 类型，最后 <code>.load_state_dict(parameters)</code> 将模型参数传递到 OneFlow 模型中。</p>
+<p>通过上述简单示例，我们可以发现将 PyTorch 存储的数据（无论是模型还是变量等等）转换成 OneFlow 的思路是 <strong>使用 Numpy 作为二者的媒介</strong>。只要确保 PyTorch 和 OneFlow 定义的模型是一致的，那么无论多么复杂的模型都可以通过上述方式转换。</p>
+<h2 id="_2">拓展<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<p><a href="https://github.com/Oneflow-Inc/vision">flowvision</a> 与 torchvision 相同，提供了许多预训练好的模型，同时 flowvision 各个模型能够做到与 torchvision 对齐。我们使用 flowvision，以经典的 AlexNet 为例，看看如何将 PyTorch 中 <strong>复杂的预训练模型</strong> 转换成 OneFlow 版本。转换代码如下所示：</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">torchvision.models</span> <span class="k">as</span> <span class="nn">models_torch</span>
+<span class="kn">import</span> <span class="nn">flowvision.models</span> <span class="k">as</span> <span class="nn">models_flow</span>
+
+<span class="n">alexnet_torch</span> <span class="o">=</span> <span class="n">models_torch</span><span class="o">.</span><span class="n">alexnet</span><span class="p">(</span><span class="n">pretrained</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">alexnet_flow</span> <span class="o">=</span> <span class="n">models_flow</span><span class="o">.</span><span class="n">alexnet</span><span class="p">()</span>
+
+<span class="n">parameters</span> <span class="o">=</span> <span class="n">alexnet_torch</span><span class="o">.</span><span class="n">state_dict</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">parameters</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="n">val</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
+
+<span class="n">alexnet_flow</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">parameters</span><span class="p">)</span>
+</code></pre></div>
+<p>flowvision 也配备了预训练模型，设置 <code>pretrained=True</code> 即可：</p>
+<div class="highlight"><pre><span></span><code><span class="n">alexnet_flow</span> <span class="o">=</span> <span class="n">models_flow</span><span class="o">.</span><span class="n">alexnet</span><span class="p">(</span><span class="n">pretrained</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</code></pre></div>
+<p>关于 flowvision 的详细使用，欢迎访问 <a href="https://flowvision.readthedocs.io/en/latest/index.html">flowvision documentation</a> 。</p>
                 
               
               
@@ -926,7 +876,7 @@
     <nav class="md-footer__inner md-grid" aria-label="Footer">
       
         
-        <a href="../basics/08_nn_graph.html" class="md-footer__link md-footer__link--prev" aria-label="上一页: 静态图模块 nn.Graph" rel="prev">
+        <a href="serving.html" class="md-footer__link md-footer__link--prev" aria-label="上一页: 模型部署" rel="prev">
           <div class="md-footer__button md-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
           </div>
@@ -935,26 +885,11 @@
               <span class="md-footer__direction">
                 上一页
               </span>
-              静态图模块 nn.Graph
+              模型部署
             </div>
           </div>
         </a>
       
-      
-        
-        <a href="02_sbp.html" class="md-footer__link md-footer__link--next" aria-label="下一页: 集群的全局视角" rel="next">
-          <div class="md-footer__title">
-            <div class="md-ellipsis">
-              <span class="md-footer__direction">
-                下一页
-              </span>
-              集群的全局视角
-            </div>
-          </div>
-          <div class="md-footer__button md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
-          </div>
-        </a>
       
     </nav>
   
