@@ -132,6 +132,7 @@ nav:
     - 实践指南:
       - OneFlow 与 ONNX 交互: cookies/oneflow2onnnx.md
       - 模型部署: cookies/serving.md
+      - 将 PyTorch 预训练模型转为 OneFlow 格式: cookies/torch2flow.md
 
     - API:
       - API: https://start.oneflow.org/oneflow-api-cn/
