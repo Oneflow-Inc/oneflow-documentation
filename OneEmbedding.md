@@ -15,11 +15,10 @@ OneEmbedding是一个大规模Embedding的oneflow方案，可以解决大规模�
 
 （1）灵活的分层存储，支持将 Embedding table 放置在 GPU显存、CPU内存 、或者 SSD 上面，使用高速设备作为低速设备的缓存，实现速度与容量的兼顾。
 
-（2）支持动态插入新特征ID。
+（2）支持动态插入新特征ID。---就是动态扩容，主要是SSD存储模式时可以引用，guoran说不用写
 
 ## QuickRun 使用MultiTableEmbedding存储多个Embedding Table
 ### 第一步：导入相应包，设置对应配置
-利用table_size_array定义词表大小。。。
 ```python
 import oneflow as flow
 import numpy as np
@@ -125,9 +124,57 @@ graph = TrainGraph()
 loss = graph(ids_tensor)
 print(loss)
 ```
-然后过渡到更细致更高级的功能。。。。
+然后过渡到更细致更高级的功能。。。。---什么是更细致更高级的功能？融合算子等？郭冉说不是
 
 ## 高阶 DLRM    
-### OneEmbedding在DLRM任务上的应用
+### OneEmbedding在DLRM任务上的应用QuickRun--guoran说直接引用脚本
+见https://github.com/Oneflow-Inc/models/tree/main/RecommenderSystems/dlrm
+### 定义OneEmbedding模块,传入构建多table的配置参数
+``` python
+class OneEmbedding(nn.Module):
+    def __init__(
+        self,
+        embedding_vec_size,
+        persistent_path,
+        table_size_array,
+        store_type,
+        cache_memory_budget_mb,
+    )
+    ...
+    ...
+        self.one_embedding = flow.one_embedding.MultiTableEmbedding(
+                "sparse_embedding",
+                embedding_dim=embedding_vec_size,
+                dtype=flow.float,
+                key_type=flow.int64,
+                tables=tables,
+                store_options=store_options,
+            )
+    def forward(self, ids):
+        return self.one_embedding.forward(ids)
+```
+### 在DLRM网络中定义OneEmbedding层
+```python
+class DLRMModule(nn.Module):
+    def __init__(
+        ...
+        ...
+    ):
+        ...
+        self.embedding = OneEmbedding(
+            embedding_vec_size,
+            persistent_path,
+            table_size_array,
+            one_embedding_store_type,
+            cache_memory_budget_mb,
+            )
+        ...
+        ...   
+    def forward(self, dense_fields, sparse_fields) -> flow.Tensor:
+        ...
+        embedding = self.embedding(sparse_fields)
+        features = self.interaction(dense_fields, embedding)
+        return self.top_mlp(features)
+```
 
-### 分布式扩展
+### 分布式扩展dongtaikuorong--guoran说不用写
