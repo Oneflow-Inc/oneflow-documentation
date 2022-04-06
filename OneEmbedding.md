@@ -109,9 +109,9 @@ capacity: Embedding词表总容量：
 
 size_factor： 词表存储大小和embedding_dim的比例
 
-    若优化器为SGD，当momentum参数为0时，size_factor设为1。当momentum参数大于0时，因此size_factor设为2；
+    若优化器为SGD，当momentum参数为0时，size_factor设为1。当momentum参数大于0时，size_factor设为2；
 
-    若优化器为Adam，则不仅需要保存模型，还需要保存m和v状态，因此size_factor设为3；
+    若优化器为Adam，size_factor设为3；
 
 physical_block_size：Embedding词表持久化存储中使用的physical block size，一般为 512，若底层硬件设备的磁盘扇区大小是4096，则需要设置为4096。
 
