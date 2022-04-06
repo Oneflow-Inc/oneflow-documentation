@@ -124,10 +124,19 @@ graph = TrainGraph()
 loss = graph(ids_tensor)
 print(loss)
 ```
+### 第六步 存储和加载Embedding Table
+存储Embedding Table
+```python
+embedding.save_snapshot('./my_snapshot')
+```
+加载Embedding Table
+```python
+embedding.load_snapshot('./my_snapshot')
+```
 然后过渡到更细致更高级的功能。。。。---什么是更细致更高级的功能？融合算子等？郭冉说不是
 
 ## 高阶 DLRM    
-### OneEmbedding在DLRM任务上的应用QuickRun--guoran说直接引用脚本
+### OneEmbedding在DLRM任务上的应用——QuickRun
 见https://github.com/Oneflow-Inc/models/tree/main/RecommenderSystems/dlrm
 ### 定义OneEmbedding模块,传入构建多table的配置参数
 ``` python
@@ -176,5 +185,3 @@ class DLRMModule(nn.Module):
         features = self.interaction(dense_fields, embedding)
         return self.top_mlp(features)
 ```
-
-### 分布式扩展dongtaikuorong--guoran说不用写
