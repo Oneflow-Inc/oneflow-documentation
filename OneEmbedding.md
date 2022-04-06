@@ -99,7 +99,19 @@ embedding.load_snapshot('./my_snapshot')
 ```
 
 ### 高级存储配置
-OneEmbedding提供了三种预置参数配置，分别是纯GPU存储配置，GPU CPU存储配置和GPU SSD存储配置，参数选项：
+OneEmbedding提供了三种预置参数配置，分别是纯GPU存储配置，GPU CPU存储配置和GPU SSD存储配置，接口定义为：
+```python
+# 纯GPU存储配置
+def make_device_mem_store_options(persistent_path, capacity, size_factor=1, physical_block_size=512)
+
+# GPU SSD存储配置
+def make_cached_ssd_store_options(cache_budget_mb, persistent_path, capacity, size_factor=1,   physical_block_size=512)
+
+# GPU CPU存储配置
+def make_cached_host_mem_store_options(cache_budget_mb, persistent_path, capacity, size_factor=1, physical_block_size=512)
+```
+
+参数选项：
 
 cache_budget_mb：每个GPU中作为词表高速缓存的显存大小，单位为MB；
 
@@ -110,7 +122,7 @@ capacity: Embedding词表总容量：
 size_factor： 词表存储大小和embedding_dim的比例
 
     若优化器为SGD，当momentum参数为0时，size_factor设为1。当momentum参数大于0时，size_factor设为2；
-
+    
     若优化器为Adam，size_factor设为3；
 
 physical_block_size：Embedding词表持久化存储中使用的physical block size，一般为 512，若底层硬件设备的磁盘扇区大小是4096，则需要设置为4096。
