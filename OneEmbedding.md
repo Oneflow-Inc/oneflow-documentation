@@ -1,8 +1,6 @@
 # OneEmbedding
 ## Embedding
 在推荐系统当中，常使用embedding方法，以下是在oneflow中进行embedding操作：
-<!-- 我们经常会遇到离散特征，如userid、itemid。对于离散特征，我们一般的做法是将其转换为one-hot，
-但对于itemid这种离散特征，转换成one-hot之后维度非常高，这种情况下，我们的通常做法就是将其转换为embedding。 -->
 ```python
 import numpy as np
 import oneflow as flow
@@ -49,36 +47,6 @@ store_options = flow.one_embedding.make_cached_ssd_store_options(
 			physical_block_size=512
 )
 ```
-
-OneEmbedding提供了三种预置参数配置，分别是纯GPU存储配置，GPU CPU存储配置和GPU SSD存储配置，参数选项：
-
-cache_budget_mb：每个GPU中作为词表高速缓存的显存大小，单位为MB；
-
-persistent_path: Embedding词表持久化存储的路径，支持配置一个路径或一个列表：
-
-    配置一个路径，代表分布式并行中各rank路径的根目录，会在该路径下创建num_rank个路径，名称格式为"rank_id-num_rank";
-
-    配置一个列表，列表中每项代表分布式并行中每个rank，要求列表长度和num_rank一致;
-
-    对于GPU SSD存储配置，训练过程中会对存储的词表进行频繁的数据读写，因此persistent_path 设置路径的文件随机读写速度对整体性能影响关键，因此最好使用高性能的SSD，如果用普通的磁盘，会对性能有很大影响;
-
-capacity: Embedding词表总容量：
-
-    对于纯GPU存储配置，词表全部存储在GPU显存上；
-
-    对于GPU CPU存储配置，词表全部存储在CPU内存上，均会提前分配内存，因此对于纯GPU存储配置和GPU CPU存储配置必须设置capacity；
-
-    对于GPU SSD存储配置，词表全部存储在SSD中，不需要提前分配内存，因此capacity是可选项，不是必须配置，但是如果配置了，有机会得到更好性能，因此如果事先知道规模，推荐配置capacity
-
-size_factor： 词表存储大小和embedding_dim的比例
-
-    若优化器为SGD，当momentum参数为0时，则只需要保存一份模型，size_factor设为1。当momentum参数大于0时，则不仅需要保存模型，还需要保存momentum状态，因此size_factor设为2；
-
-    若优化器为Adam，则不仅需要保存模型，还需要保存m和v状态，因此size_factor设为3；
-physical_block_size：Embedding词表持久化存储中使用的physical 
-block size，physical block size应为磁盘扇区大小，一般为 512，physical_block_size 默认值是512，一般不用配置，若底层硬件设备的磁盘扇区大小是4096，则需要设置为4096。
-
-
 ### 第四步：实例化Embedding
 使用MultiTableEmbedding实例化Embedding，其中name是Embedding词表的名称，embedding_dim是特征embedding的维度，dtype和key_type分别是embedding和特征id的数据类型
 ```python
@@ -124,64 +92,42 @@ graph = TrainGraph()
 loss = graph(ids_tensor)
 print(loss)
 ```
-### 第六步 存储和加载Embedding Table
-存储Embedding Table
+### 存储和加载Embedding Table
 ```python
 embedding.save_snapshot('./my_snapshot')
-```
-加载Embedding Table
-```python
 embedding.load_snapshot('./my_snapshot')
 ```
-然后过渡到更细致更高级的功能。。。。---什么是更细致更高级的功能？融合算子等？郭冉说不是
+
+### 高级存储配置
+OneEmbedding提供了三种预置参数配置，分别是纯GPU存储配置，GPU CPU存储配置和GPU SSD存储配置，参数选项：
+
+cache_budget_mb：每个GPU中作为词表高速缓存的显存大小，单位为MB；
+
+persistent_path: Embedding词表持久化存储的路径，支持配置一个路径或一个列表：
+
+    配置一个路径，代表分布式并行中各rank路径的根目录，会在该路径下创建num_rank个路径，名称格式为"rank_id-num_rank";
+
+    配置一个列表，列表中每项代表分布式并行中每个rank，要求列表长度和num_rank一致;
+
+    对于GPU SSD存储配置，训练过程中会对存储的词表进行频繁的数据读写，因此persistent_path 设置路径的文件随机读写速度对整体性能影响关键，因此最好使用高性能的SSD，如果用普通的磁盘，会对性能有很大影响;
+
+capacity: Embedding词表总容量：
+
+    对于纯GPU存储配置，词表全部存储在GPU显存上；
+
+    对于GPU CPU存储配置，词表全部存储在CPU内存上，均会提前分配内存，因此对于纯GPU存储配置和GPU CPU存储配置必须设置capacity；
+
+    对于GPU SSD存储配置，词表全部存储在SSD中，不需要提前分配内存，因此capacity是可选项，不是必须配置，但是如果配置了，有机会得到更好性能，因此如果事先知道规模，推荐配置capacity
+
+size_factor： 词表存储大小和embedding_dim的比例
+
+    若优化器为SGD，当momentum参数为0时，则只需要保存一份模型，size_factor设为1。当momentum参数大于0时，则不仅需要保存模型，还需要保存momentum状态，因此size_factor设为2；
+
+    若优化器为Adam，则不仅需要保存模型，还需要保存m和v状态，因此size_factor设为3；
+physical_block_size：Embedding词表持久化存储中使用的physical 
+block size，physical block size应为磁盘扇区大小，一般为 512，physical_block_size 默认值是512，一般不用配置，若底层硬件设备的磁盘扇区大小是4096，则需要设置为4096。
 
 ## 高阶 DLRM    
 ### OneEmbedding在DLRM任务上的应用——QuickRun
-见https://github.com/Oneflow-Inc/models/tree/main/RecommenderSystems/dlrm
-### 定义OneEmbedding模块,传入构建多table的配置参数
-``` python
-class OneEmbedding(nn.Module):
-    def __init__(
-        self,
-        embedding_vec_size,
-        persistent_path,
-        table_size_array,
-        store_type,
-        cache_memory_budget_mb,
-    )
-    ...
-    ...
-        self.one_embedding = flow.one_embedding.MultiTableEmbedding(
-                "sparse_embedding",
-                embedding_dim=embedding_vec_size,
-                dtype=flow.float,
-                key_type=flow.int64,
-                tables=tables,
-                store_options=store_options,
-            )
-    def forward(self, ids):
-        return self.one_embedding.forward(ids)
-```
-### 在DLRM网络中定义OneEmbedding层
-```python
-class DLRMModule(nn.Module):
-    def __init__(
-        ...
-        ...
-    ):
-        ...
-        self.embedding = OneEmbedding(
-            embedding_vec_size,
-            persistent_path,
-            table_size_array,
-            one_embedding_store_type,
-            cache_memory_budget_mb,
-            )
-        ...
-        ...   
-    def forward(self, dense_fields, sparse_fields) -> flow.Tensor:
-        ...
-        embedding = self.embedding(sparse_fields)
-        features = self.interaction(dense_fields, embedding)
-        return self.top_mlp(features)
-```
+oneflow模型仓库中准备了关于OneEmbedding在DLRM任务的实例，参考https://github.com/Oneflow-Inc/models/tree/main/RecommenderSystems/dlrm
+
