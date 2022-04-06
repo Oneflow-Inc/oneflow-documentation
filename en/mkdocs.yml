@@ -131,6 +131,7 @@ nav:
     - Cookbook:
       - Onelow with ONNX: cookies/oneflow2onnnx.md
       - Model Deployment: cookies/serving.md
+      - Converting Pre-trained Model from PyTorch to OneFlow: cookies/torch2flow.md
 
     - API:
       - API: https://oneflow.readthedocs.io/en/master/
