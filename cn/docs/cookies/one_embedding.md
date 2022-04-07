@@ -37,16 +37,17 @@ OneFlow 为了解决大规模深度推荐系统的问题，还提供了大规模
 ```python
 import oneflow as flow
 import oneflow.nn as nn
+import numpy as np
 
 tables = [
     flow.one_embedding.make_table_options(
-        flow.one_embedding.make_uniform_initializer(low=-0.1, height=0.1)
+        flow.one_embedding.make_uniform_initializer(low=-0.1, high=0.1)
     ),
     flow.one_embedding.make_table_options(
-        flow.one_embedding.make_uniform_initializer(low=-0.05, height=0.05)
+        flow.one_embedding.make_uniform_initializer(low=-0.05, high=0.05)
     ),
     flow.one_embedding.make_table_options(
-        flow.one_embedding.make_uniform_initializer(low=-0.15, height=0.15)
+        flow.one_embedding.make_uniform_initializer(low=-0.15, high=0.15)
     ),
 ]
 ```
