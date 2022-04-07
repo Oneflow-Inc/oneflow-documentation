@@ -144,21 +144,61 @@ print(loss)
 
 ### 存储和加载
 
-使用 `MultiTableEmbedding.save_snapshot` 方法可以保存词表：
 
-```python
-embedding.save_snapshot('./my_snapshot')
-```
 
-如果想从已保存的快照中加载词表，则应该调用 `MultiTableEmbedding.load_snapshot`。
 
-更详细的信息请参阅 [MultiTableEmbedding.save_snapshot]() 及 [MultiTableEmbedding.load_snapshot]()。
 
-## 动态插入新的特征 ID
+## OneEmbedding 特点说明
 
-需要重点说明，OneEmbedding 支持动态插入新的特征 ID，只要存储介质的容量足够，特征 ID 的数目是没有上限的。具体体现在，进行查询时，特征 ID 可以超越创建词表时的范围。
+### 特征 ID 动态扩容
 
-这也是为什么在使用 `make_table_options` 时，只需要指定初始化方式，不需要指定特征 ID 的总数目（词表行数）。
+OneEmbedding 支持动态插入新的特征 ID，只要存储介质的容量足够，特征 ID 的数目是没有上限的。这也是为什么在使用 `make_table_options` 时，只需要指定初始化方式，不需要指定特征 ID 的总数目（词表行数）。
+
+### 特征 ID 与多表查询
+
+**特征ID 不能重复**
+
+制作数据集的 OneEmbedding 用户需要格外注意：使用 `MultiTableEmbedding` 同时创建多个表时，**多个表中的特征 ID 不能重复** 。
+
+**多表查询**
+
+如果使用 `MultiTableEmbedding` 只配置了一个表，则查询方式与普通的 Embedding 查询方式没有区别，直接调用，并传递特征 ID 即可，如 `embedding_lookup(ids)`。
+
+如果使用 `MultiTableEmbedding` 配置了多个表，则对于某个特征 ID，需要指明在哪个表中查询，有两种方式指明：
+
+方法一：传递一个形状为 `(batch_size, 表格数目)` 的 `ids` 用于查询，则这个 `ids` 的列，依次对应一个表格。
+
+比如：`ids = np.array([[488, 333, 220], [18, 568, 508]], dtype=np.int64)`，表示在第 0 个表中查询 `[[488], [18]]`，第 1 个表中查询 `[[333], [568]]`，第 2 个表中查询 `[[220], [508]]` 对应的特征向量。
+
+方法二：传递 `ids` 参数的同时，再传递一个 `table_ids` 参数，它的形状与 `ids` 完全相同，在 `table_ids` 中指定表的序号。
+
+比如：`ids = np.random.array([488, 333, 220, 18, 568, 508], dtype=np.int64)`，`table_ids = np.random.array([0, 1, 2, 0, 1, 2])`，然后调用： `embedding_lookup(ids, table_ids)`，则表示在第 0 个表中查询 `488, 18`，第 1 个表中查询 `333, 568`，第 2 个表中查询 `220, 508` 对应的特征向量。
+
+更详细的说明，可以参阅 [MultiTableEmbedding.forward]()
+
+### 如何选择合适的存储配置
+
+OneEmbedding 提供了三种存储选项配置：
+
+- 纯 GPU 存储
+- 存储在 CPU 内存中，并使用 GPU 显存作为高速缓存
+- 存储在 SSD 中，并使用 GPU 显存作为告诉缓存
+
+用户可以根据实际情况选择最优的方案，一般选择的依据是：
+
+- 当词表大小小于 GPU 显存时，将全部词表放在 GPU 显存上是最快的，此时推荐选择纯 GPU 存储配置。
+- 当词表大于 GPU 显存，但是小于 CPU 内存时，推荐词表存储在 CPU 内存中，并使用 GPU 显存作为高速缓存。
+- 当词表大小既大于 GPU 显存，也大于系统内存时，如果有高速的 SSD，可以选择将词表存储在SSD中，并使用 GPU 显存作为高速缓存。在此情况下，训练过程中会对存储的词表进行频繁的数据读写，因此 `persistent_path` 所设置路径下的文件随机读写速度对整体性能影响很大。强烈推荐使用高性能的 SSD，如果使用普通磁盘，会对性能有很大负面影响。
+
+### 分布式训练
+
+OneEmbedding 同 OneFlow 的其它模块类似，都原生支持分布式扩展。用户可以参考 [#dlrm](扩展阅读：DLRM) 中的 README， 启动 DLRM 分布式训练。还可以参考 [Global Tensor](../parallelism/03_consistent_tensor.md) 了解必要的前置知识。
+
+使用 OneEmbedding 模块进行分布式扩展，要注意：
+
+- 目前 OneEmbedding 只支持放置在全部设备上，并行度需和 world size 一致。比如，在 4 卡并行训练时，词表的并行度必须为 4，暂不支持网络使用 4 卡训练但词表并行度为 2 的场景。
+- `store_options` 配置中参数 `persistent_path` 指定存储的路径。在并行场景中，它既可以是一个表示路径的字符串，也可以是一个 `list`。若配置为一个代表路径的字符串，它代表分布式并行中各 rank 下的根目录。OneFlow 会在这个根路径下，依据各个 rank 的编号创建存储路径，名称格式为 `rank_id-num_rank`。若`persistent_path` 是一个 `list`，则会依据列表中的每项，为 rank 单独配置。
+- 在并行场景中，`store_options` 配置中的 `capacity` 代表词表总容量，而不是每个 rank 的容量。`cache_budget_mb` 代表每个 GPU 设备的显存。
 
 ## 扩展阅读：DLRM    
 
