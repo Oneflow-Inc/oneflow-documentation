@@ -1,6 +1,6 @@
 # 大规模 Embedding 方案： OneEmbedding
 
-Embedding 方法已经成为推荐系统的基本操作，也扩散到了推荐系统外的许多领域。各个框架都提供了进行 embedding 的基础算子，比如，可以使用 OneFlow 中的 `flow.nn.Embedding`：
+Embedding 已经成为推荐系统的基本操作，也扩散到了推荐系统外的许多领域。各个框架都提供了进行 embedding 的基础算子，比如，可以使用 OneFlow 中的 `flow.nn.Embedding`：
 
 ```python
 import numpy as np
