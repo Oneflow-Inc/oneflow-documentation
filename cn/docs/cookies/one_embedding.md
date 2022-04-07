@@ -152,6 +152,13 @@ embedding.save_snapshot('./my_snapshot')
 
 更详细的信息请参阅 [MultiTableEmbedding.save_snapshot]() 及 [MultiTableEmbedding.load_snapshot]()。
 
+## 动态插入新的特征 ID
+
+需要重点说明，OneEmbedding 支持动态插入新的特征 ID，只要存储介质的容量足够，特征 ID 的数目是没有上限的。具体体现在，进行查询时，特征 ID 可以超越创建词表时的范围。
+
+如以上代码中，创建词表时的大小为 `39940739` （`vocab_size = sum(table_size_array)`），但在训练时，`embedding = self.embedding_lookup(ids)` 中 `ids` 即使超过 `39940739` 也是合法的。
+
+
 ## 扩展阅读：DLRM    
 
 本文展示了如何快速上手 OneEmbedding。
