@@ -32,28 +32,26 @@ OneFlow 为了解决大规模深度推荐系统的问题，还提供了大规模
 
 ### 使用 `make_table_options` 配置词表
 
-以下代码，导入相关包，并使用 `make_table_options` 配置词表。OneEmbedding 支持同时创建多个词表，以下代码配置了三个词表，特征长度为 `128`，各个表的大小（行）分别为：`39884407`、`39043`、`17289`。
+以下代码，导入相关包，并使用 `make_table_options` 配置词表。OneEmbedding 支持同时创建多个词表，以下代码配置了三个词表。
 
 ```python
 import oneflow as flow
-import numpy as np
 import oneflow.nn as nn
-
-table_size_array = [39884407, 39043, 17289]
-vocab_size = sum(table_size_array)
-num_tables = len(table_size_array)
-embedding_size = 128    
-scales = np.sqrt(1 / np.array(table_size_array))
 
 tables = [
     flow.one_embedding.make_table_options(
-        flow.one_embedding.make_uniform_initializer(low=-scale, height=scale)
-    )
-    for scale in scales
+        flow.one_embedding.make_uniform_initializer(low=-0.1, height=0.1)
+    ),
+    flow.one_embedding.make_table_options(
+        flow.one_embedding.make_uniform_initializer(low=-0.05, height=0.05)
+    ),
+    flow.one_embedding.make_table_options(
+        flow.one_embedding.make_uniform_initializer(low=-0.15, height=0.15)
+    ),
 ]
 ```
 
-`make_table_options` 配置词表时需要指定初始化的方式，以上代码采用 `uniform` 方式初始化词表。配置词表的结果保存在 `tables` 变量中。
+配置词表时需要指定初始化的方式，以上词表均采用 `uniform` 方式初始化。配置词表的结果保存在 `tables` 变量中。
 
 点击 [make_table_options]() 及 [make_uniform_initializer]() 可以查看有关它们的更详细说明。
 
@@ -65,7 +63,7 @@ tables = [
 store_options = flow.one_embedding.make_cached_ssd_store_options(
     cache_budget_mb=8142,
     persistent_path="/your_path_to_ssd", 
-    capacity=vocab_size,
+    capacity=40000000,
     size_factor=1,   			
     physical_block_size=512
 )
@@ -80,6 +78,7 @@ store_options = flow.one_embedding.make_cached_ssd_store_options(
 以上配置完成后，使用 `MultiTableEmbedding` 可以得到实例化的 Embedding 层。
 
 ```python
+embedding_size = 128
 embedding = flow.one_embedding.MultiTableEmbedding(
     name="my_embedding",
     embedding_dim=embedding_size,
@@ -103,6 +102,7 @@ embedding.to("cuda")
 在以下的例子中，我们构建了一个简单的 Graph 类，它包括了 `embedding` 和 `mlp` 两层。
 
 ```python
+num_tables = 3
 mlp = flow.nn.FusedMLP(
     in_features=embedding_size * num_tables,
     hidden_features=[512, 256, 128],
@@ -158,8 +158,7 @@ embedding.save_snapshot('./my_snapshot')
 
 需要重点说明，OneEmbedding 支持动态插入新的特征 ID，只要存储介质的容量足够，特征 ID 的数目是没有上限的。具体体现在，进行查询时，特征 ID 可以超越创建词表时的范围。
 
-如以上代码中，创建词表时的大小为 `39940739` （`vocab_size = sum(table_size_array)`），但在训练时，`embedding = self.embedding_lookup(ids)` 中 `ids` 即使超过 `39940739` 也是合法的。
-
+这也是为什么在使用 `make_table_options` 时，只需要指定初始化方式，不需要指定特征 ID 的总数目（词表行数）。
 
 ## 扩展阅读：DLRM    
 
