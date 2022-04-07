@@ -65,7 +65,7 @@ store_options = flow.one_embedding.make_cached_ssd_store_options(
     persistent_path="/your_path_to_ssd", 
     capacity=vocab_size,
     size_factor=1,   			
-	physical_block_size=512
+    physical_block_size=512
 )
 ```
 
