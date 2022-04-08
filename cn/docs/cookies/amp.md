@@ -61,7 +61,7 @@ for _ in range(100):
 
 **Gradient Scaling (梯度缩放)** 是一种用于解决 FP16 易导致数值溢出问题的方法，其基本原理是在反向传播的过程中使用一个 scale factor 对损失和梯度进行缩放，以改变其数值的量级，从而尽可能缓解数值溢出问题。
 
-OneFlow 提供了 GradScaler 来在 AMP 模式下使用 Gradient Scaling，只需要在 nn.Graph 模型的 `__init__` 方法中实例化一个 GradScaler 对象，然后通过 [set_grad_scaler](https://oneflow.readthedocs.io/en/master/graph.html#oneflow.nn.Graph.set_grad_scaler) 接口进行指定即可，nn.Graph 将会自动管理 Gradient Scaling 的整个过程。以上文中的 `CustomGraph` 为例，我们需要在其 `__init__` 方法中添加：
+OneFlow 提供了 `GradScaler` 来在 AMP 模式下使用 Gradient Scaling，只需要在 nn.Graph 模型的 `__init__` 方法中实例化一个`GradScaler` 对象，然后通过 [set_grad_scaler](https://oneflow.readthedocs.io/en/master/graph.html#oneflow.nn.Graph.set_grad_scaler) 接口进行指定即可，nn.Graph 将会自动管理 Gradient Scaling 的整个过程。以上文中的 `CustomGraph` 为例，我们需要在其 `__init__` 方法中添加：
 
 ```python
 grad_scaler = flow.amp.GradScaler(
