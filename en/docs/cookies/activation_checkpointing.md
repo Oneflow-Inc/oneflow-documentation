@@ -77,7 +77,7 @@ for _ in range(100):
 
 In order to verify the actual effect of Activation Checkpointing, we can conduct comparative experiments on the model [BERT](https://arxiv.org/abs/1810.04805). We can directly use the BERT model provided by [libai](https://github.com/Oneflow-Inc/libai). To turn on Activation Checkpointing, we just need to set `train.activation_checkpoint.enabled` to `True` in the configuration file.
 
-First, get data ready according to [Prepare the Data and the Vocab](https://libai.readthedocs.io/en/latest/tutorials/get_started/quick_run.html#prepare-the-data-and-the-vocab). For simplicity, we use a single card for training (the GPU used in the experimental environment is NVIDIA GeForce RTX 3090, and the memory size is 24268 MB):
+First, get data ready according to [Prepare the Data and the Vocab](https://libai.readthedocs.io/en/latest/tutorials/get_started/quick_run.html#prepare-the-data-and-the-vocab). For simplicity, we use a single device for training (the GPU used in the experimental environment is NVIDIA GeForce RTX 3090, and the memory size is 24268 MB):
 
 ```bash
 time python tools/train_net.py --config-file configs/bert_large_pretrain.py
