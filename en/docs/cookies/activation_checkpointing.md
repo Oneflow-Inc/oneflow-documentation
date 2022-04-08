@@ -73,7 +73,7 @@ for _ in range(100):
     # Other codes...
 ```
 
-##  Comparative Experiment on BERT model
+##  Comparative Experiment on BERT Model
 
 In order to verify the actual effect of Activation Checkpointing, we can conduct comparative experiments on the model [Bert](https://arxiv.org/abs/1810.04805). We can directly use the Bert model provided by [libai](https://github.com/Oneflow-Inc/libai). To turn on Activation Checkpointing, we just need to set `train.activation_checkpoint.enabled` to `True` in the configuration file.
 
