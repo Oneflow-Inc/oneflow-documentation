@@ -4,14 +4,6 @@
 
 Activation Checkpointing is a sub-linear memory optimization technique proposed in 2016, by Chen Tianqi's team in their paper [Training Deep Nets with Sublinear Memory Cost](https://arxiv.org/abs/1604.06174), aiming to reduce the memory usage during training. The basic principle of Activation Checkpointing is **exchange time for space**: After the analysis of the computational graph, some intermediate activation features that are not used temporarily in the forward process will be deleted to reduce the memory usage, and they will be restored with additional forward computation when needed in the backward process.
 
-Taking a Transformer network as an example, the changes brought by Activation Checkpointing to the computational graph are shown in the following figure:
-
-![Activation Checkpointing](https://oneflow-static.oss-cn-beijing.aliyuncs.com/Activation%20Checkpointing.jpg)
-
-1. The upper part is the logical subgraph under normal conditions. T1 and T2 are the forward calculation part of Transformer Layer. The intermediate activation features obtained after each op calculation in the subgraph will continue to occupy memory. When the calculation is reversed to (T1_grad, T2_grad), these intermediate activations will be directly used for reverse calculation.
-
-2. The lower part is the logical subgraph after Activation Checkpointing is turned on. It can be seen that the part enclosed by the dotted line is added in the middle, that is, the fake subgraph used for recalculation. Due to the existence of the fake subgraph, the normal forward subgraph does not need to save the intermediate activation when forwarding. When the reverse calculation needs to be used, the forward recalculation is temporarily performed according to the fake subgraph.​
-
 OneFlow's static graph module `nn.Graph` already supports Activation Checkpointing. This article will introduce how to turn on it during training.
 
 ## Example of us Activation Checkpointing
