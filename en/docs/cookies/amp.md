@@ -2,9 +2,9 @@
 
 ## Introduction to AMP 
 
-When we train deep learning models, we typically use 32-bit single-precision floating point (FP32), while **AMP (Automatic Mixed Precision)** is a technique that allows both FP32 and FP16 to be used when training models. This can make the memory usage less and the calculation faster when training the model. But because the numerical range of FP16 is smaller than that of FP32, it is more prone to numerical overflow problems, and there may be some errors. But lots of practice has proved that many deep learning models can be trained with this technique without loss of accuracy.
+When we train deep learning models, we typically use 32-bit single-precision floating point (FP32), while **AMP (Automatic Mixed Precision)** is a technique that allows both FP32 and FP16 to be used when training models. This can make the memory usage less and the computation faster when training the model. But because the numerical range of FP16 is smaller than that of FP32, it is more prone to numerical overflow problems, and there may be some errors. But lots of practice has proved that many deep learning models can be trained with this technique without loss of accuracy.
 
-##  Example of use AMP
+##  Example of using AMP
 
 First, we define a simple model, loss function and optimizer in exactly the same way as before.
 
@@ -61,7 +61,7 @@ for _ in range(100):
 
 **Gradient Scaling** is a method for solving the problem that FP16 is prone to numerical overflow. The basic principle is to use a scale factor to scale the loss and gradient in the process of backpropagation to change the magnitude of its value, thereby mitigate numerical overflow problems as much as possible.
 
-OneFlow provides GradScaler to use Gradient Scaling in AMP mode. You only need to instantiate a GradScaler object in the `__init__` method of the nn.Graph model, and then specify it through the interface [set_grad_scaler](https://oneflow.readthedocs.io/en/master/graph.html#oneflow.nn.Graph.set_grad_scaler). nn.Graph will automatically manage the whole process of Gradient Scaling. Taking the `CustomGraph` above as an example, you need to add the following code to its `__init__` method:
+OneFlow provides `GradScaler` to use Gradient Scaling in AMP mode. You only need to instantiate a `GradScaler` object in the `__init__` method of the nn.Graph model, and then specify it through the interface [set_grad_scaler](https://oneflow.readthedocs.io/en/master/graph.html#oneflow.nn.Graph.set_grad_scaler). nn.Graph will automatically manage the whole process of Gradient Scaling. Taking the `CustomGraph` above as an example, you need to add the following code to its `__init__` method:
 
 ```python
 grad_scaler = flow.amp.GradScaler(
