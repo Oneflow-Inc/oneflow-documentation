@@ -129,8 +129,10 @@ nav:
       - Pipelining Parallelism: parallelism/06_pipeline.md
 
     - Cookbook:
-      - Onelow with ONNX: cookies/oneflow2onnnx.md
+      - OneFlow with ONNX: cookies/oneflow2onnnx.md
       - Model Deployment: cookies/serving.md
+      - Automatic Mixed Precision Training: cookies/amp.md
+      - Activation Checkpointing: cookies/activation_checkpointing.md
       - Converting Pre-trained Model from PyTorch to OneFlow: cookies/torch2flow.md
 
     - API:
