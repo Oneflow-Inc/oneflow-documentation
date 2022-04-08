@@ -143,11 +143,6 @@ print(loss)
 
 关于 Graph 的使用，可以参阅 [静态图模块 nn.Graph](../basics/08_nn_graph.md) 获取更详细信息。
 
-### 存储和加载
-
-
-
-
 
 ## OneEmbedding 特点说明
 
