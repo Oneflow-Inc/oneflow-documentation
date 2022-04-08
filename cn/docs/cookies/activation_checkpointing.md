@@ -73,9 +73,9 @@ for _ in range(100):
     # 其他代码...
 ```
 
-## 在 Bert 模型上的对比实验
+## 在 BERT 模型上的对比实验
 
-为了验证 Activation Checkpointing 的实际效果，我们可以在 [Bert](https://arxiv.org/abs/1810.04805) 模型上进行对比实验。可以直接使用 [libai](https://github.com/Oneflow-Inc/libai) 库提供的 Bert 模型，只需通过在配置文件中将 `train.activation_checkpoint.enabled` 设置为 `True` 就可以开启 Activation Checkpointing。
+为了验证 Activation Checkpointing 的实际效果，我们可以在 [BERT](https://arxiv.org/abs/1810.04805) 模型上进行对比实验。可以直接使用 [libai](https://github.com/Oneflow-Inc/libai) 库提供的 BERT 模型，只需通过在配置文件中将 `train.activation_checkpoint.enabled` 设置为 `True` 就可以开启 Activation Checkpointing。
 
 首先，按照 [Prepare the Data and the Vocab](https://libai.readthedocs.io/en/latest/tutorials/get_started/quick_run.html#prepare-the-data-and-the-vocab) 准备好数据。为简单起见，我们使用单卡训练（实验环境使用的 GPU 为 NVIDIA GeForce RTX 3090，显存大小为 24268 MB）：
 
