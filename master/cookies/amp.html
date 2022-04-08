@@ -1,24 +1,24 @@
 
 <!doctype html>
-<html lang="en" class="no-js">
+<html lang="zh" class="no-js">
   <head>
     
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="OneFlow: a efficient distributed deep learning framework.">
+        <meta name="description" content="OneFlow -- 极致性能的分布式机器学习框架">
       
       
       
       
-        <link rel="canonical" href="https://docs.oneflow.org/master/parallelism/04_launch.html">
+        <link rel="canonical" href="https://docs.oneflow.org/master/cookies/amp.html">
       
       <link rel="icon" href="../assets/favicon.png">
       <meta name="generator" content="mkdocs-1.2.2, mkdocs-material-7.1.11">
     
     
       
-        <title>Distributed Training Launcher - OneFlow</title>
+        <title>自动混合精度训练 - OneFlow</title>
       
     
     
@@ -69,8 +69,8 @@
     <div data-md-component="skip">
       
         
-        <a href="#distributed-training-launcher" class="md-skip">
-          Skip to content
+        <a href="#_1" class="md-skip">
+          跳转至
         </a>
       
     </div>
@@ -104,7 +104,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Distributed Training Launcher
+              自动混合精度训练
             
           </span>
         </div>
@@ -122,14 +122,14 @@
             <ul class="md-select__list">
               
                 <li class="md-select__item">
-                  <a href="https://docs.oneflow.org" hreflang="zh" class="md-select__link">
-                    中文
+                  <a href="https://docs.oneflow.org/en" hreflang="en" class="md-select__link">
+                    English
                   </a>
                 </li>
                 
                 <li class="md-select__item">
-                  <a href="https://docs.oneflow.org/en" hreflang="en" class="md-select__link">
-                    English
+                  <a href="https://docs.oneflow.org" hreflang="zh" class="md-select__link">
+                    中文
                   </a>
                 </li>
                 
@@ -147,7 +147,7 @@
   <label class="md-search__overlay" for="__search"></label>
   <div class="md-search__inner" role="search">
     <form class="md-search__form" name="search">
-      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active" required>
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active" required>
       <label class="md-search__icon md-icon" for="__search">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
@@ -160,7 +160,7 @@
       <div class="md-search__scrollwrap" data-md-scrollfix>
         <div class="md-search-result" data-md-component="search-result">
           <div class="md-search-result__meta">
-            Initializing search
+            正在初始化搜索引擎
           </div>
           <ol class="md-search-result__list"></ol>
         </div>
@@ -172,7 +172,7 @@
     
       <div class="md-header__source">
         
-<a href="https://github.com/OneFlow-Inc/oneflow" title="Go to repository" class="md-source"
+<a href="https://github.com/OneFlow-Inc/oneflow" title="前往 GitHub 仓库" class="md-source"
   data-md-component="source">
   <div class="md-source__icon md-icon">
     
@@ -203,7 +203,7 @@
 
   <li class="md-tabs__item">
     <a href="../index.html" class="md-tabs__link">
-      Home
+      首页
     </a>
   </li>
 
@@ -218,7 +218,23 @@
   
     <li class="md-tabs__item">
       <a href="../basics/01_quickstart.html" class="md-tabs__link">
-        Basics
+        基础专题
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../parallelism/01_introduction.html" class="md-tabs__link">
+        分布式训练
       </a>
     </li>
   
@@ -235,8 +251,8 @@
   
   
     <li class="md-tabs__item">
-      <a href="01_introduction.html" class="md-tabs__link md-tabs__link--active">
-        Distributed Training
+      <a href="oneflow2onnnx.html" class="md-tabs__link md-tabs__link--active">
+        实践指南
       </a>
     </li>
   
@@ -251,23 +267,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../cookies/oneflow2onnnx.html" class="md-tabs__link">
-        Cookbook
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-
-
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="https://oneflow.readthedocs.io/en/master/" class="md-tabs__link">
+      <a href="https://start.oneflow.org/oneflow-api-cn/" class="md-tabs__link">
         API
       </a>
     </li>
@@ -310,7 +310,7 @@
   
     <div class="md-nav__source">
       
-<a href="https://github.com/OneFlow-Inc/oneflow" title="Go to repository" class="md-source"
+<a href="https://github.com/OneFlow-Inc/oneflow" title="前往 GitHub 仓库" class="md-source"
   data-md-component="source">
   <div class="md-source__icon md-icon">
     
@@ -333,7 +333,7 @@
   
     <li class="md-nav__item">
       <a href="../index.html" class="md-nav__link">
-        Home
+        首页
       </a>
     </li>
   
@@ -353,13 +353,13 @@
         <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" >
       
       <label class="md-nav__link" for="__nav_2">
-        Basics
+        基础专题
         <span class="md-nav__icon md-icon"></span>
       </label>
-      <nav class="md-nav" aria-label="Basics" data-md-level="1">
+      <nav class="md-nav" aria-label="基础专题" data-md-level="1">
         <label class="md-nav__title" for="__nav_2">
           <span class="md-nav__icon md-icon"></span>
-          Basics
+          基础专题
         </label>
         <ul class="md-nav__list" data-md-scrollfix>
           
@@ -369,7 +369,7 @@
   
     <li class="md-nav__item">
       <a href="../basics/01_quickstart.html" class="md-nav__link">
-        Quickstart
+        快速上手
       </a>
     </li>
   
@@ -393,7 +393,7 @@
   
     <li class="md-nav__item">
       <a href="../basics/03_dataset_dataloader.html" class="md-nav__link">
-        Datesets & Dataloaders
+        Dataset 与 DataLoader
       </a>
     </li>
   
@@ -405,7 +405,7 @@
   
     <li class="md-nav__item">
       <a href="../basics/04_build_network.html" class="md-nav__link">
-        Build Neural Network
+        搭建神经网络
       </a>
     </li>
   
@@ -429,7 +429,7 @@
   
     <li class="md-nav__item">
       <a href="../basics/06_optimization.html" class="md-nav__link">
-        Backpropagation and Optimizer
+        反向传播与 optimizer
       </a>
     </li>
   
@@ -441,7 +441,7 @@
   
     <li class="md-nav__item">
       <a href="../basics/07_model_load_save.html" class="md-nav__link">
-        Model saving and loading
+        模型的加载与保存
       </a>
     </li>
   
@@ -453,7 +453,121 @@
   
     <li class="md-nav__item">
       <a href="../basics/08_nn_graph.html" class="md-nav__link">
-        Static Graph Interface
+        静态图模块 nn.Graph
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" >
+      
+      <label class="md-nav__link" for="__nav_3">
+        分布式训练
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="分布式训练" data-md-level="1">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          分布式训练
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parallelism/01_introduction.html" class="md-nav__link">
+        常见的分布式并行策略
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parallelism/02_sbp.html" class="md-nav__link">
+        集群的全局视角
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parallelism/03_consistent_tensor.html" class="md-nav__link">
+        Global Tensor
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parallelism/04_2d-sbp.html" class="md-nav__link">
+        2D SBP
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parallelism/04_launch.html" class="md-nav__link">
+        用 launch 模块启动分布式训练
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parallelism/05_ddp.html" class="md-nav__link">
+        数据并行训练
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parallelism/06_pipeline.html" class="md-nav__link">
+        流水并行训练
       </a>
     </li>
   
@@ -478,16 +592,16 @@
     <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" checked>
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" checked>
       
-      <label class="md-nav__link" for="__nav_3">
-        Distributed Training
+      <label class="md-nav__link" for="__nav_4">
+        实践指南
         <span class="md-nav__icon md-icon"></span>
       </label>
-      <nav class="md-nav" aria-label="Distributed Training" data-md-level="1">
-        <label class="md-nav__title" for="__nav_3">
+      <nav class="md-nav" aria-label="实践指南" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
           <span class="md-nav__icon md-icon"></span>
-          Distributed Training
+          实践指南
         </label>
         <ul class="md-nav__list" data-md-scrollfix>
           
@@ -496,8 +610,8 @@
   
   
     <li class="md-nav__item">
-      <a href="01_introduction.html" class="md-nav__link">
-        Common Parallel Strategies
+      <a href="oneflow2onnnx.html" class="md-nav__link">
+        OneFlow 与 ONNX 交互
       </a>
     </li>
   
@@ -508,32 +622,8 @@
   
   
     <li class="md-nav__item">
-      <a href="02_sbp.html" class="md-nav__link">
-        Global View
-      </a>
-    </li>
-  
-
-          
-            
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="03_consistent_tensor.html" class="md-nav__link">
-        Global Tensor
-      </a>
-    </li>
-  
-
-          
-            
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="04_2d-sbp.html" class="md-nav__link">
-        2D SBP
+      <a href="serving.html" class="md-nav__link">
+        模型部署
       </a>
     </li>
   
@@ -554,16 +644,16 @@
       
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
-          Distributed Training Launcher
+          自动混合精度训练
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <a href="04_launch.html" class="md-nav__link md-nav__link--active">
-        Distributed Training Launcher
+      <a href="amp.html" class="md-nav__link md-nav__link--active">
+        自动混合精度训练
       </a>
       
         
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+<nav class="md-nav md-nav--secondary" aria-label="目录">
   
   
   
@@ -572,20 +662,27 @@
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
-      Table of contents
+      目录
     </label>
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#description-of-common-options" class="md-nav__link">
-    Description of Common Options
+  <a href="#amp" class="md-nav__link">
+    AMP 简介
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#the-relationship-between-launch-module-and-parallel-strategy" class="md-nav__link">
-    The Relationship between Launch Module and Parallel Strategy
+  <a href="#amp_1" class="md-nav__link">
+    AMP 使用示例
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#gradient-scaling" class="md-nav__link">
+    Gradient Scaling
   </a>
   
 </li>
@@ -603,97 +700,7 @@
   
   
     <li class="md-nav__item">
-      <a href="05_ddp.html" class="md-nav__link">
-        Data Parallelism Training
-      </a>
-    </li>
-  
-
-          
-            
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="06_pipeline.html" class="md-nav__link">
-        Pipelining Parallelism
-      </a>
-    </li>
-  
-
-          
-        </ul>
-      </nav>
-    </li>
-  
-
-    
-      
-      
-      
-
-  
-  
-  
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-      
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" >
-      
-      <label class="md-nav__link" for="__nav_4">
-        Cookbook
-        <span class="md-nav__icon md-icon"></span>
-      </label>
-      <nav class="md-nav" aria-label="Cookbook" data-md-level="1">
-        <label class="md-nav__title" for="__nav_4">
-          <span class="md-nav__icon md-icon"></span>
-          Cookbook
-        </label>
-        <ul class="md-nav__list" data-md-scrollfix>
-          
-            
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../cookies/oneflow2onnnx.html" class="md-nav__link">
-        OneFlow with ONNX
-      </a>
-    </li>
-  
-
-          
-            
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../cookies/serving.html" class="md-nav__link">
-        Model Deployment
-      </a>
-    </li>
-  
-
-          
-            
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../cookies/amp.html" class="md-nav__link">
-        Automatic Mixed Precision Training
-      </a>
-    </li>
-  
-
-          
-            
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../cookies/activation_checkpointing.html" class="md-nav__link">
+      <a href="activation_checkpointing.html" class="md-nav__link">
         Activation Checkpointing
       </a>
     </li>
@@ -705,8 +712,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../cookies/torch2flow.html" class="md-nav__link">
-        Converting Pre-trained Model from PyTorch to OneFlow
+      <a href="torch2flow.html" class="md-nav__link">
+        将 PyTorch 预训练模型转为 OneFlow 格式
       </a>
     </li>
   
@@ -747,7 +754,7 @@
   
   
     <li class="md-nav__item">
-      <a href="https://oneflow.readthedocs.io/en/master/" class="md-nav__link">
+      <a href="https://start.oneflow.org/oneflow-api-cn/" class="md-nav__link">
         API
       </a>
     </li>
@@ -772,7 +779,7 @@
                 <div class="md-sidebar__scrollwrap">
                   <div class="md-sidebar__inner">
                     
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+<nav class="md-nav md-nav--secondary" aria-label="目录">
   
   
   
@@ -781,20 +788,27 @@
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
-      Table of contents
+      目录
     </label>
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#description-of-common-options" class="md-nav__link">
-    Description of Common Options
+  <a href="#amp" class="md-nav__link">
+    AMP 简介
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#the-relationship-between-launch-module-and-parallel-strategy" class="md-nav__link">
-    The Relationship between Launch Module and Parallel Strategy
+  <a href="#amp_1" class="md-nav__link">
+    AMP 使用示例
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#gradient-scaling" class="md-nav__link">
+    Gradient Scaling
   </a>
   
 </li>
@@ -811,50 +825,78 @@
             <article class="md-content__inner md-typeset">
               
                 
-                  <a href="https://github.com/OneFlow-Inc/oneflow-documentation/blob/master/en/docs/parallelism/04_launch.md" title="Edit this page" class="md-content__button md-icon">
+                  <a href="https://github.com/OneFlow-Inc/oneflow-documentation/blob/master/cn/docs/cookies/amp.md" title="编辑此页" class="md-content__button md-icon">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
                   </a>
                 
                 
-                <h1 id="distributed-training-launcher">DISTRIBUTED TRAINING LAUNCHER<a class="headerlink" href="#distributed-training-launcher" title="Permanent link">&para;</a></h1>
-<p>OneFlow provides the <code>oneflow.distributed.launch</code> module to help users start distributed training more conveniently.</p>
-<p>Users can start distributed training by the following commands:</p>
-<div class="highlight"><pre><span></span><code>python3 -m oneflow.distributed.launch <span class="o">[</span>Boot Option<span class="o">]</span> training_script.py
+                <h1 id="_1">自动混合精度训练<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
+<h2 id="amp">AMP 简介<a class="headerlink" href="#amp" title="Permanent link">&para;</a></h2>
+<p>当我们在训练深度学习模型时，通常情况下使用的是 32 位单精度浮点数 (FP32)，而 <strong>自动混合精度 (Automatic Mixed Precision, AMP)</strong> 是一种允许在训练模型时同时使用 FP32 和 FP16 的技术。这样可以使得训练模型时的内存占用更少、计算更快，但由于 FP16 的数值范围比 FP32 小，因此更容易出现数值溢出的问题，同时可能存在一定误差。但大量实践证明，很多深度学习模型可以用这种技术来训练，并且没有精度损失。</p>
+<h2 id="amp_1">AMP 使用示例<a class="headerlink" href="#amp_1" title="Permanent link">&para;</a></h2>
+<p>首先，我们定义一个简单的模型、损失函数及优化器，和以往的用法完全相同。</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">oneflow</span> <span class="k">as</span> <span class="nn">flow</span>
+<span class="kn">import</span> <span class="nn">oneflow.nn</span> <span class="k">as</span> <span class="nn">nn</span>
+
+<span class="n">DEVICE</span> <span class="o">=</span> <span class="s2">&quot;cuda&quot;</span> <span class="k">if</span> <span class="n">flow</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">()</span> <span class="k">else</span> <span class="s2">&quot;cpu&quot;</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Using </span><span class="si">{}</span><span class="s2"> device&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">DEVICE</span><span class="p">))</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+    <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">256</span><span class="p">,</span> <span class="mi">128</span><span class="p">),</span> 
+    <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">(),</span>
+    <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<span class="p">)</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">DEVICE</span><span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
+
+<span class="n">loss_fn</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">CrossEntropyLoss</span><span class="p">()</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">DEVICE</span><span class="p">)</span>
+<span class="n">optimizer</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">)</span>
 </code></pre></div>
-<p>For example, to start the training on single-node double-GPUs:</p>
-<div class="highlight"><pre><span></span><code>python3 -m oneflow.distributed.launch --nproc_per_node <span class="m">2</span> ./script.py
+<p>如果要开启 AMP 模式，只需在 <a href="../basics/08_nn_graph.html">nn.Graph</a> 模型中添加 <code>self.config.enable_amp(True)</code>，此 API 详见： <a href="https://oneflow.readthedocs.io/en/master/graph.html#oneflow.nn.graph.graph_config.GraphConfig.enable_amp">enable_amp</a>。</p>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">CustomGraph</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Graph</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">loss_fn</span> <span class="o">=</span> <span class="n">loss_fn</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_optimizer</span><span class="p">(</span><span class="n">optimizer</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">enable_amp</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>    <span class="c1"># 开启 AMP 模式</span>
+
+    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="n">y_pred</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">loss_fn</span><span class="p">(</span><span class="n">y_pred</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+        <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">y_pred</span>
 </code></pre></div>
-<p>For another example, start two machines, and each machine has two graphics for training.</p>
-<p>Run on machine 0:</p>
-<div class="highlight"><pre><span></span><code>python3 -m oneflow.distributed.launch --nproc_per_node<span class="o">=</span><span class="m">2</span> <span class="se">\</span>
-    --nnodes<span class="o">=</span><span class="m">2</span> <span class="se">\</span>
-    --node_rank<span class="o">=</span><span class="m">0</span> <span class="se">\</span>
-    --nproc_per_node<span class="o">=</span><span class="m">2</span> <span class="se">\</span>
-    --master_addr<span class="o">=</span><span class="s2">&quot;192.168.1.1&quot;</span> <span class="se">\</span>
-    --master_port<span class="o">=</span><span class="m">7788</span> <span class="se">\</span>
-    script.py
+<p>然后，像以往那样开始训练等操作即可。</p>
+<div class="highlight"><pre><span></span><code><span class="n">graph_model</span> <span class="o">=</span> <span class="n">CustomGraph</span><span class="p">()</span>
+
+<span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="mi">256</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">DEVICE</span><span class="p">)</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">flow</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">DEVICE</span><span class="p">)</span>
+
+    <span class="n">graph_model</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 </code></pre></div>
-<p>Run on machine 1:</p>
-<div class="highlight"><pre><span></span><code>python3 -m oneflow.distributed.launch --nproc_per_node<span class="o">=</span><span class="m">2</span> <span class="se">\</span>
-    --nnodes<span class="o">=</span><span class="m">2</span> <span class="se">\</span>
-    --node_rank<span class="o">=</span><span class="m">1</span> <span class="se">\</span>
-    --nproc_per_node<span class="o">=</span><span class="m">2</span> <span class="se">\</span>
-    --master_addr<span class="o">=</span><span class="s2">&quot;192.168.1.1&quot;</span> <span class="se">\</span>
-    --master_port<span class="o">=</span><span class="m">7788</span> <span class="se">\</span>
-    script.py
+<h2 id="gradient-scaling">Gradient Scaling<a class="headerlink" href="#gradient-scaling" title="Permanent link">&para;</a></h2>
+<p><strong>Gradient Scaling (梯度缩放)</strong> 是一种用于解决 FP16 易导致数值溢出问题的方法，其基本原理是在反向传播的过程中使用一个 scale factor 对损失和梯度进行缩放，以改变其数值的量级，从而尽可能缓解数值溢出问题。</p>
+<p>OneFlow 提供了 <code>GradScaler</code> 来在 AMP 模式下使用 Gradient Scaling，只需要在 nn.Graph 模型的 <code>__init__</code> 方法中实例化一个<code>GradScaler</code> 对象，然后通过 <a href="https://oneflow.readthedocs.io/en/master/graph.html#oneflow.nn.Graph.set_grad_scaler">set_grad_scaler</a> 接口进行指定即可，nn.Graph 将会自动管理 Gradient Scaling 的整个过程。以上文中的 <code>CustomGraph</code> 为例，我们需要在其 <code>__init__</code> 方法中添加：</p>
+<div class="highlight"><pre><span></span><code><span class="n">grad_scaler</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">amp</span><span class="o">.</span><span class="n">GradScaler</span><span class="p">(</span>
+    <span class="n">init_scale</span><span class="o">=</span><span class="mi">3000</span><span class="p">,</span>
+    <span class="n">growth_factor</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
+    <span class="n">backoff_factor</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+    <span class="n">growth_interval</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">set_grad_scaler</span><span class="p">(</span><span class="n">grad_scaler</span><span class="p">)</span>
 </code></pre></div>
-<h2 id="description-of-common-options">Description of Common Options<a class="headerlink" href="#description-of-common-options" title="Permanent link">&para;</a></h2>
-<p>We can view the description of the options of the <code>launch</code> module after running <code>python3 -m oneflow.distributed.launch -h</code>. The following are some common options:</p>
-<ul>
-<li><code>--nnodes</code>: number of nodes</li>
-<li><code>--node_rank</code>: the serial number of the machines, starting from 0</li>
-<li><code>--nproc_per_node</code>: The number of processes per node to be started on each machine, which is recommended to be global with the number of GPUs</li>
-<li><code>--logdir</code>: The relative storage path of the child process log</li>
-</ul>
-<h2 id="the-relationship-between-launch-module-and-parallel-strategy">The Relationship between Launch Module and Parallel Strategy<a class="headerlink" href="#the-relationship-between-launch-module-and-parallel-strategy" title="Permanent link">&para;</a></h2>
-<p>The main function of <code>oneflow.distributed.launch</code> is to allow users to start distributed training more conveniently after them complete the distributed program. It saves the trouble of configuring <a href="03_consistent_tensor.html#_5">environment variables</a> in the cluster.</p>
-<p>But <code>oneflow.distributed.launch</code> <strong>does not determine</strong> <a href="01_introduction.html">Parallel Strategy</a>. The Parallel Strategy is determined by the setup of the distribution method of data and the model, and the placement of those on the physical devices.</p>
-<p>OneFlow provides <a href="02_sbp.html">Global View</a> and <a href="03_consistent_tensor.html">Global Tensor</a> to flexibly configure parallel strategies. And for data parallelism, OneFlow provides the <a href="05_ddp.html">DistributedDataParallel</a> module, which can change the single-node single-GPU script to the script of data parallel with  minimal code modification.</p>
+<p>scale factor 的计算过程以及 GradScaler 的参数的含义如下：</p>
+<p>scale factor 的大小在迭代更新中动态估计（初始值由 <code>init_scale</code> 指定），为了尽可能减少数值下溢 (underflow)，scale factor 应该更大；但如果太大，FP16 又容易发生数值上溢 (overflow)，导致出现 inf 或 NaN。动态估计的过程就是在不出现 inf 或 NaN 的情况下，尽可能增大 scale factor。在每次迭代中，都会检查是否有 inf 或 NaN 的梯度出现：</p>
+<ol>
+<li>
+<p>如果有：此次权重更新将被忽略，并且 scale factor 将会减小（乘上 <code>backoff_factor</code>）</p>
+</li>
+<li>
+<p>如果没有：权重正常更新，当连续多次迭代中（由 <code>growth_interval</code> 指定）没有出现 inf 或 NaN，则 scale factor 将会增大（乘上 <code>growth_factor</code>）</p>
+</li>
+</ol>
                 
               
               
@@ -879,29 +921,29 @@
     <nav class="md-footer__inner md-grid" aria-label="Footer">
       
         
-        <a href="04_2d-sbp.html" class="md-footer__link md-footer__link--prev" aria-label="Previous: 2D SBP" rel="prev">
+        <a href="serving.html" class="md-footer__link md-footer__link--prev" aria-label="上一页: 模型部署" rel="prev">
           <div class="md-footer__button md-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
           </div>
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
-                Previous
+                上一页
               </span>
-              2D SBP
+              模型部署
             </div>
           </div>
         </a>
       
       
         
-        <a href="05_ddp.html" class="md-footer__link md-footer__link--next" aria-label="Next: Data Parallelism Training" rel="next">
+        <a href="activation_checkpointing.html" class="md-footer__link md-footer__link--next" aria-label="下一页: Activation Checkpointing" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
-                Next
+                下一页
               </span>
-              Data Parallelism Training
+              Activation Checkpointing
             </div>
           </div>
           <div class="md-footer__button md-icon">
@@ -934,7 +976,7 @@
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.top"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.477d984a.min.js", "version": {"provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.top"], "translations": {"clipboard.copy": "\u590d\u5236", "clipboard.copied": "\u5df2\u590d\u5236", "search.config.lang": "ja", "search.config.pipeline": "trimmer, stemmer", "search.config.separator": "[\\uff0c\\u3002]+", "search.placeholder": "\u641c\u7d22", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.477d984a.min.js", "version": {"provider": "mike"}}</script>
     
     
       <script src="../assets/javascripts/bundle.ddd52ceb.min.js"></script>
