@@ -6,7 +6,7 @@ Activation Checkpointing is a sub-linear memory optimization technique proposed 
 
 OneFlow's static graph module `nn.Graph` already supports Activation Checkpointing. This article will introduce how to turn on it during training.
 
-## Example of us Activation Checkpointing
+## Example of using Activation Checkpointing
 
 First, we define a simple model consist of loss function and optimizer in exactly the same way as before.
 
@@ -48,7 +48,7 @@ class CustomGraph(flow.nn.Graph):
         super().__init__()
         self.model_part1 = model_part1
         self.model_part2 = model_part2
-        # 在连续的两个 nn.Module 上开启 activation checkpointing
+        # Turn on activation checkpointing on two consecutive nn.Module
         self.model_part1.config.activation_checkpointing = True
         self.model_part2.config.activation_checkpointing = True
         self.loss_fn = loss_fn
@@ -70,10 +70,10 @@ for _ in range(100):
     x = flow.randn(128, 256).to(DEVICE)
     y = flow.ones(128, 1, dtype=flow.int64).to(DEVICE)
     graph_model(x, y)
-    # 其他代码...
+    # Other codes...
 ```
 
-##  Comparative experiment on Bert model
+##  Comparative Experiment on BERT model
 
 In order to verify the actual effect of Activation Checkpointing, we can conduct comparative experiments on the model [Bert](https://arxiv.org/abs/1810.04805). We can directly use the Bert model provided by [libai](https://github.com/Oneflow-Inc/libai). To turn on Activation Checkpointing, we just need to set `train.activation_checkpoint.enabled` to `True` in the configuration file.
 
