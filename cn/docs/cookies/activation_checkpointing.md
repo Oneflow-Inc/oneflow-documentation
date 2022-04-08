@@ -2,7 +2,17 @@
 
 ## Activation Checkpointing 简介
 
-Activation Checkpointing 是陈天奇团队于 2016 年在论文 [Training Deep Nets with Sublinear Memory Cost](https://arxiv.org/abs/1604.06174) 中提出的一种亚线性内存优化技术，旨在减少训练过程中的显存占用。Activation Checkpointing 的基本原理是 **以时间换空间** ：经过计算图分析后，前向过程中一些暂时用不到的中间激活特征将被删除以减少显存占用，后向过程中需要时再借助额外的前向计算恢复它们。
+Activation Checkpointing 是陈天奇团队于 2016 年在论文 [Training Deep Nets with Sublinear Memory Cost](https://arxiv.org/abs/1604.06174) 中提出的一种亚线性内存优化技术，旨在减少训练过程中的中间激活(activation)带来的显存占用。Activation Checkpointing 的基本原理是 **以时间换空间** ：经过计算图分析后，前向过程中一些暂时用不到的中间激活特征将被删除以减少显存占用，后向过程中需要时再借助额外的前向计算恢复它们。
+
+以一个 Transformer 网络为例，Activation Checkpointing 给计算图带来的变化如下图所示：
+
+<div align="center">
+<img src="./imgs/Activation Checkpointing.jpg" alt="Activation Checkpointing"  width=60%>
+</div>
+
+1. 上半部分为正常情况下的逻辑子图。T1、T2为 Transformer Layer 的前向计算部分、子图中每个 op 计算完成后得到的中间激活特征将持续占用内存，当计算进行到反向时（T1_grad、T2_grad），直接利用这些中间激活进行反向计算；
+
+2. 下半部分为开启 Activation Checkpointing 后的逻辑子图，可以看到中间增加了虚线框住的部分，即用于重计算的 fake 子图，由于 fake 子图的存在，正常 forward 子图在进行前向时，就无须保存中间激活了，当反向计算需要用到时，再根据 fake 子图临时进行前向的重计算。 ​
 
 OneFlow 的静态图模块 `nn.Graph` 已经支持 Activation Checkpointing，本文将介绍如何在训练中开启它。
 
@@ -72,3 +82,24 @@ for _ in range(100):
     graph_model(x, y)
     # 其他代码...
 ```
+
+## 在 Bert 模型上的对比实验
+
+为了验证 Activation Checkpointing 的实际效果，我们可以在 [Bert](https://arxiv.org/abs/1810.04805) 模型上进行对比实验。可以直接使用 [libai](https://github.com/Oneflow-Inc/libai) 库提供的 Bert 模型，只需通过在配置文件中将 `train.activation_checkpoint.enabled` 设置为 `True` 就可以开启 Activation Checkpointing。
+
+首先，按照 [Prepare the Data and the Vocab](https://libai.readthedocs.io/en/latest/tutorials/get_started/quick_run.html#prepare-the-data-and-the-vocab) 准备好数据。为简单起见，我们使用单卡训练（实验环境使用的 GPU 为 NVIDIA GeForce RTX 3090，显存大小为 24268 MB）：
+
+```bash
+time python tools/train_net.py --config-file configs/bert_large_pretrain.py
+```
+
+在命令最开头加上 `time` 命令来计量训练过程所耗费的时间。
+
+实验结果如下：
+
+| 是否开启 Activation Checkpointing | 平均显存占用  | 训练完成所用时间  |
+|:-----------------------------:|:-------:|:---------:|
+| 否                             | 9141 MB | 25 分 16 秒 |
+| 是                             | 5978 MB | 33 分 36 秒 |
+
+从上表可以看出，Activation Checkpointing 显著减少了训练时的显存占用。同时，训练所用时间由于需要额外的前向计算而有所增加。总体来说，当缺乏显存时，Activation Checkpointing 不失为一种很有效的解决办法。
