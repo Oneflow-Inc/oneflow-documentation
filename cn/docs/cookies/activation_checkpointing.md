@@ -4,16 +4,6 @@
 
 Activation Checkpointing 是陈天奇团队于 2016 年在论文 [Training Deep Nets with Sublinear Memory Cost](https://arxiv.org/abs/1604.06174) 中提出的一种亚线性内存优化技术，旨在减少训练过程中的中间激活(activation)带来的显存占用。Activation Checkpointing 的基本原理是 **以时间换空间** ：经过计算图分析后，前向过程中一些暂时用不到的中间激活特征将被删除以减少显存占用，后向过程中需要时再借助额外的前向计算恢复它们。
 
-以一个 Transformer 网络为例，Activation Checkpointing 给计算图带来的变化如下图所示：
-
-<div align="center">
-<img src="./imgs/Activation Checkpointing.jpg" alt="Activation Checkpointing"  width=60%>
-</div>
-
-1. 上半部分为正常情况下的逻辑子图。T1、T2为 Transformer Layer 的前向计算部分、子图中每个 op 计算完成后得到的中间激活特征将持续占用内存，当计算进行到反向时（T1_grad、T2_grad），直接利用这些中间激活进行反向计算；
-
-2. 下半部分为开启 Activation Checkpointing 后的逻辑子图，可以看到中间增加了虚线框住的部分，即用于重计算的 fake 子图，由于 fake 子图的存在，正常 forward 子图在进行前向时，就无须保存中间激活了，当反向计算需要用到时，再根据 fake 子图临时进行前向的重计算。 ​
-
 OneFlow 的静态图模块 `nn.Graph` 已经支持 Activation Checkpointing，本文将介绍如何在训练中开启它。
 
 ## Activation Checkpointing 使用示例
