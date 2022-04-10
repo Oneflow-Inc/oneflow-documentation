@@ -1,6 +1,6 @@
 # Large-Scale Embedding Solution: OneEmbedding
 
-Embedding has become the foundamental opeartion in recommender systems, and it has also spread to many fields outside recommender systems. Each framework provides basic operators for Embedding, for example, you can use `flow.nn.Embedding` in OneFlow:
+Embedding is an important component of recommender system, and it has also spread to many fields outside recommender systems. Each framework provides basic operators for Embedding, for example, `flow.nn.Embedding` in OneFlow:
 
 ```python
 import numpy as np
@@ -12,7 +12,7 @@ y = embedding(indices)
 
 OneEmbedding is the large-scale Embedding solution that OneFlow provides to solve the problem of large-scale deep recommender systems. OneEmbedding has the following advantages compared to ordionary opeartors:
 
-1. With Flexible hierarchical storage, OneEmbedding can place the Embedding table on GPU memory, CPU memory, or SSD, and use high-speed devices as caches for low-speed devices to achieve both speed and capacity.
+1. With Flexible hierarchical storage, OneEmbedding can place the Embedding table on GPU memory, CPU memory or SSD, and allow high-speed devices to be used as caches for low-speed devices to achieve both speed and capacity.
 
 2. OneEmbedding supports dynamic expansion.
 
@@ -162,23 +162,31 @@ For example, `ids = np.array([[488, 333, 220], [18, 568, 508]], dtype=np.int64)`
 
 Method 2:When passing the `ids` parameter, pass a `table_ids` parameter, which has the exact same shape as `ids`, and specifies the ordinal number of the table in `table_ids`.
 
-For example, `ids = np.array([488, 333, 220, 18, 568, 508], dtype=np.int64)`，`table_ids = np.array([0, 1, 2, 0, 1, 2])`, and then call  `embedding_lookup(ids, table_ids)`. This means to query `488, 18` in the zeroth table, `333, 568` in the first table, and the corresponding feature vector of `220, 508` in the second table.
-
+For example:
+```python
+ids = np.array([488, 333, 220, 18, 568, 508], dtype=np.int64)
+# table_ids has the exact same shape as `ids`
+table_ids = np.array([0, 1, 2, 0, 1, 2])
+# This means to query `488, 18` in the zeroth table, `333, 568` in the first table, and the corresponding feature vector of `220, 508` in the second table.
+embedding_lookup(ids, table_ids)
+```
 For more details, please refer to  [MultiTableEmbedding.forward]().
 
 ### How to Choose the Proper Storage Configuration 
 
-OneEmbedding provides three storage options configurations:
+OneEmbedding provides three storage options configurations,they are pure GPU storage, use CPU memory to store and GPU memory as cache and use SSD to store and GPU memory as cache.
 
 - Pure GPU storage
+
+    When the size of Embedding table is smaller than the GPU memory, it is the fastest to place all the Embedding table on the GPU memory. In this case, it is recommended to select the pure GPU storage configuration.
+    
 - Use CPU memory to store and GPU memory as cache
+
+    When the size of Embedding table is larger than the GPU memory, but smaller than the CPU memory, it is recommended to store the Embedding table in the CPU memory and use the GPU memory as cache. 
+    
 - Use SSD to store and GPU memory as cache
 
-Users can choose the optimal solution according to the actual situation. The general selection basis is as follows:
-
-- When the size of Embedding table is smaller than the GPU memory, it is the fastest to place all the Embedding table on the GPU memory. In this case, it is recommended to select the pure GPU storage configuration.
-- When the size of Embedding table is larger than the GPU memory, but smaller than the CPU memory, it is recommended to store the Embedding table in the CPU memory and use the GPU memory as cache. 
-- When the size of Embedding table is larger than both the GPU memory and the system memory, if you have a high-speed SSD, you can choose to store the Embedding table in the SSD and use the GPU memory as a cache. In this case, frequent data reading and writing will be performed on the stored vocabulary during the training process, so the random reading and writing speed of files under the path set by `persistent_path` has a great impact on the overall performance. It is strongly recommended to use a high-performance SSD. If you use a normal disk, it will have a great negative impact on the overall performance.
+    When the size of Embedding table is larger than both the GPU memory and the system memory, if you have a high-speed SSD, you can choose to store the Embedding table in the SSD and use the GPU memory as a cache. In this case, frequent data reading and writing will be performed on the stored vocabulary during the training process, so the random reading and writing speed of files under the path set by `persistent_path` has a great impact on the overall performance. It is strongly recommended to use a high-performance SSD. If you use a normal disk, it will have a great negative impact on the overall performance.
 
 ### Distributed Training
 
