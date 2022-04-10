@@ -158,7 +158,12 @@ If you use `MultiTableEmbedding` to configure more than one tables, then you nee
 
 Method 1: Pass an `ids` of shape `(batch_size, 表格数目)`  for query, then the column of this `ids` corresponds to a table in turn.
 
-For example, `ids = np.array([[488, 333, 220], [18, 568, 508]], dtype=np.int64)` means to query `[[488], [18]]` in the zeroth table, `[[333], [568]]` in the first table, and the corresponding feature vector of `[[220], [508]]` in the second table.
+For example:
+```python
+ids = np.array([[488, 333, 220], [18, 568, 508]], dtype=np.int64)
+# This means to query `[[488], [18]]` in the zeroth table, `[[333], [568]]` in the first table, and the corresponding feature vector of `[[220], [508]]` in the second table.
+embedding_lookup(ids)
+```
 
 Method 2:When passing the `ids` parameter, pass a `table_ids` parameter, which has the exact same shape as `ids`, and specifies the ordinal number of the table in `table_ids`.
 
