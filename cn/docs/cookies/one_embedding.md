@@ -154,7 +154,7 @@ OneEmbedding 支持动态插入新的特征 ID，只要存储介质的容量足�
 
 **特征ID 不能重复**
 
-制作数据集的 OneEmbedding 用户需要格外注意：使用 `MultiTableEmbedding` 同时创建多个表时，**多个表中的特征 ID 不能重复** 。
+制作数据集的 OneEmbedding 用户需要格外注意：使用 `MultiTableEmbedding` 同时创建多个表时，多个Embedding Table仅初始化参数不同，其他参数一致，此时，**多个表中的特征 ID 不能重复** 。
 
 **多表查询**
 
@@ -162,7 +162,7 @@ OneEmbedding 支持动态插入新的特征 ID，只要存储介质的容量足�
 
 如果使用 `MultiTableEmbedding` 配置了多个表，则对于某个特征 ID，需要指明在哪个表中查询，有两种方式指明：
 
-方法一：传递一个形状为 `(batch_size, 表格数目)` 的 `ids` 用于查询，则这个 `ids` 的列，依次对应一个表格。
+方法一：传递一个形状为 `(batch_size, 词表数目)` 的 `ids` 用于查询，则这个 `ids` 的列，依次对应一个词表。
 
 比如：
 ```python
