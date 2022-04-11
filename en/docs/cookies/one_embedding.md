@@ -148,7 +148,7 @@ OneEmbedding supports dynamic insertion of new feature ID. As long as the storag
 
 **Feature ID cannot be repeated**
 
-OneEmbedding users who make datasets need to pay special attention: When using `MultiTableEmbedding` to create multiple tables at the same time, **feature IDs in multiple tables cannot be repeated**.
+OneEmbedding users who make datasets need to pay special attention: When using `MultiTableEmbedding` to create multiple tables at the same time,multiple Embedding Tables only have different initialization parameters, and other parameters are the same,at this time, **feature IDs in multiple tables cannot be repeated**.
 
 **Multi-table query**
 
@@ -156,7 +156,7 @@ The query method is no different from the normal Embedding query method if you o
 
 If you use `MultiTableEmbedding` to configure more than one tables, then you need to specify in which to query for a feature ID with the following two methods:
 
-Method 1: Pass an `ids` of shape `(batch_size, 表格数目)`  for query, then the column of this `ids` corresponds to a table in turn.
+Method 1: Pass an `ids` of shape `(batch_size, number of Embedding table)`  for query, then the column of this `ids` corresponds to a Embedding table in turn.
 
 For example:
 ```python
