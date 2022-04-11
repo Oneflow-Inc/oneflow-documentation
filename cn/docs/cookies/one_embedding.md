@@ -54,7 +54,7 @@ tables = [
 
 配置词表时需要指定初始化的方式，以上词表均采用 `uniform` 方式初始化。配置词表的结果保存在 `tables` 变量中。
 
-点击 [make_table_options]() 及 [make_uniform_initializer]() 可以查看有关它们的更详细说明。
+点击 [make_table_options](https://oneflow.readthedocs.io/en/master/one_embedding.html#oneflow.one_embedding.make_table_options) 及 [make_uniform_initializer](https://oneflow.readthedocs.io/en/master/one_embedding.html#oneflow.one_embedding.make_uniform_initializer) 可以查看有关它们的更详细说明。
 
 ### 配置词表的存储属性
 
@@ -70,9 +70,9 @@ store_options = flow.one_embedding.make_cached_ssd_store_options(
 )
 ```
 
-这里通过调用 `make_cached_ssd_store_options`，选择将词表存储在 SSD 中，并且使用 GPU 作为高速缓存。具体参数的意义可以参阅 [make_cached_ssd_store_options API 文档]()。
+这里通过调用 `make_cached_ssd_store_options`，选择将词表存储在 SSD 中，并且使用 GPU 作为高速缓存。具体参数的意义可以参阅 [make_cached_ssd_store_options API 文档](https://oneflow.readthedocs.io/en/master/one_embedding.html#oneflow.one_embedding.make_cached_ssd_store_options)。
 
-此外，还可以选择使用纯 GPU 存储；或者使用 CPU 内存存储词表、但用 GPU 做高速缓存。具体可以分别参阅 [make_cached_ssd_store_options]() 及 [make_cached_host_mem_store_option]()。
+此外，还可以选择使用纯 GPU 存储；或者使用 CPU 内存存储词表、但用 GPU 做高速缓存。具体可以分别参阅 [make_device_mem_store_options](https://oneflow.readthedocs.io/en/master/one_embedding.html#oneflow.one_embedding.make_device_mem_store_options) 及 [make_cached_host_mem_store_options](https://oneflow.readthedocs.io/en/master/one_embedding.html#oneflow.one_embedding.make_cached_host_mem_store_options)。
 
 ### 实例化 Embedding
 
@@ -94,7 +94,7 @@ embedding.to("cuda")
 
 其中，`tables` 是之前通过 `make_table_options` 配置的词表属性，`store_options` 是之前配置的存储属性，`embedding_dim` 是特征维度，`dtype` 是特征向量的数据类型，`key_type` 是特征 ID 的数据类型。
 
-更详细的信息，可以参阅 [one_embedding.MultiTableEmbedding]()
+更详细的信息，可以参阅 [one_embedding.MultiTableEmbedding](https://oneflow.readthedocs.io/en/master/one_embedding.html#oneflow.one_embedding.MultiTableEmbedding)
 
 ### 使用 Graph 训练
 
@@ -182,7 +182,7 @@ table_ids = np.array([0, 1, 2, 0, 1, 2])
 embedding_lookup(ids, table_ids)
 ```
 
-更详细的说明，可以参阅 [MultiTableEmbedding.forward]()
+更详细的说明，可以参阅 [MultiTableEmbedding.forward](https://oneflow.readthedocs.io/en/master/one_embedding.html#oneflow.one_embedding.MultiTableEmbedding.forward)
 
 ### 如何选择合适的存储配置
 
