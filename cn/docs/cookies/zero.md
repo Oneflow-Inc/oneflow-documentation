@@ -1,8 +1,5 @@
 # Zero Redundancy Optimizer (ZeRO)
 
-!!! warning
-    此教程中涉及的 ZeRO 相关的 API 未来可能会发生变动。
-
 ## ZeRO 简介
 
 **Zero Redundancy Optimizer (ZeRO)** 是论文 [ZeRO: Memory Optimization Towards Training A Trillion Parameter Models](https://arxiv.org/pdf/1910.02054.pdf) 提出的一种用于减少数据并行策略下的显存占用的方法。
@@ -23,10 +20,8 @@ ZeRO-DP 可以分为三个阶段，通过对 OPG 状态进行分区而不是直�
 三个阶段的显存消耗的分布情况可以参见下图（来自 ZeRO 原论文 Figure 1）：
 
 <div align="center">
-<img src="./imgs/Three%20Stages%20of%20ZeRO-DP%20Optimizations.jpg" alt="Three Stages of ZeRO-DP Optimizations" width="75%">
+<img src="./imgs/Three_Stages_of_ZeRO-DP_Optimizations.jpg" alt="Three Stages of ZeRO-DP Optimizations" width="75%">
 </div>
-
-ZeRO-R 则通过 activation checkpointing、设定恒定大小的缓冲区和动态内存碎片整理机制来优化残余状态的显存消耗。
 
 ## ZeRO 使用示例
 
@@ -35,6 +30,10 @@ ZeRO-R 则通过 activation checkpointing、设定恒定大小的缓冲区和动
 import oneflow as flow
 from oneflow import nn
 ```
+
+### 定义数据并行训练流程
+
+我们定义一个数据并行策略下的训练流程，与 [通过设置 SBP 做数据并行训练](../parallelism/05_ddp.md#通过设置-sbp-做数据并行训练) 中所介绍的是类似的。
 
 定义之后要使用到 placement、SBP 等：
 ```python
@@ -92,13 +91,19 @@ for _ in range(100):
 
 然后通过 [launch 模块](../parallelism/04_launch.md) 启动训练即可。
 
-**在 nn.Graph 中开启 ZeRO 的方法如下**：
+### 在 nn.Graph 中开启 ZeRO
 
 **阶段 1**：通过 [config.set_zero_redundancy_optimizer_mode](https://oneflow.readthedocs.io/en/master/graph.html#oneflow.nn.graph.graph_config.GraphConfig.set_zero_redundancy_optimizer_mode) 接口可以开启阶段 1。即在上面的 nn.Graph 模型中添加：
 
 ```python
 self.config.set_zero_redundancy_optimizer_mode("distributed_split")
 ```
+
+!!! Note
+    当使用模型连续进行训练和和预测时：训练执行一次后，ZeRO 会自动把模型的 SBP 参数从 Broadcast 改变为 Split；在执行预测时，将会使用 Split 自动推理，无需配置 ZeRO。
+
+!!! Warning
+    此 API 未来可能会发生变动。
 
 **阶段 2**：在阶段 1 的基础上，增加 `flow.boxing.nccl.enable_use_compute_stream(True)` 可以开启阶段 2。即在上面的 nn.Graph 模型中添加：
 
@@ -115,5 +120,5 @@ flow.boxing.nccl.enable_use_compute_stream(True)
 flow.boxing.nccl.disable_group_boxing_by_dst_parallel(True)
 ```
 
-!!! note
-   虽然开启第三阶段可以最大限度地减少显存消耗，但这会增加通信成本，在实践中一般使用第二阶段。
+!!! Note
+    虽然开启第三阶段可以最大限度地减少显存消耗，但这会增加通信成本，在实践中一般使用第二阶段。
