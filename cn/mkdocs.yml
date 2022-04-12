@@ -135,6 +135,7 @@ nav:
       - 自动混合精度训练: cookies/amp.md
       - Activation Checkpointing: cookies/activation_checkpointing.md
       - 将 PyTorch 预训练模型转为 OneFlow 格式: cookies/torch2flow.md
+      - 大规模 Embedding 方案： OneEmbedding: cookies/one_embedding.md
 
     - API:
       - API: https://start.oneflow.org/oneflow-api-cn/
