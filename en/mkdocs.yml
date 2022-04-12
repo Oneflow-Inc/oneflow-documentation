@@ -134,6 +134,7 @@ nav:
       - Automatic Mixed Precision Training: cookies/amp.md
       - Activation Checkpointing: cookies/activation_checkpointing.md
       - Converting Pre-trained Model from PyTorch to OneFlow: cookies/torch2flow.md
+      - Large-Scale Embedding Solution OneEmbedding: cookies/one_embedding.md
 
     - API:
       - API: https://oneflow.readthedocs.io/en/master/
