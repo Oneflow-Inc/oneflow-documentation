@@ -32,7 +32,7 @@ OneFlow 为了解决大规模深度推荐系统的问题，还提供了大规模
 
 ### 使用 `make_table_options` 配置词表
 
-以下代码，导入相关包，并使用 `make_table_options` 配置词表。 OneEmbedding 支持同时创建多个词表，以下代码配置了三个词表。
+以下代码，导入相关包，并使用 `make_table_options` 配置词表。OneEmbedding 支持同时创建多个词表，以下代码配置了三个词表。
 
 ```python
 import oneflow as flow
