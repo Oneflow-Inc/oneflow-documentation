@@ -89,7 +89,7 @@ embedding.to("cuda")
 
 Among them, `tables` is the Embedding table attribute previously configured by `make_table_options`, `store_options` is the previously configured storage attribute, `embedding_dim` is the feature dimension, `dtype` is the data type of the feature vector, `key_type` is the data type of feature ID.
 
-For more detailes, please refer to [one_embedding.MultiTableEmbedding](https://oneflow.readthedocs.io/en/master/one_embedding.html#oneflow.one_embedding.MultiTableEmbedding).
+If two OneEmbeddings are created at the same time, different name and persistent path parameters need to be set during instantiation.For more detailes, please refer to [one_embedding.MultiTableEmbedding](https://oneflow.readthedocs.io/en/master/one_embedding.html#oneflow.one_embedding.MultiTableEmbedding).
 
 ### Construct Graph for Training
 
