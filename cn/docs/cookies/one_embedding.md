@@ -10,7 +10,7 @@ embedding = flow.nn.Embedding(10, 3)
 y = embedding(indices)
 ```
 
-OneFlow 为了解决大规模深度推荐系统的问题，还提供了大规模 Embedding 的方案: OneEmbedding 。
+OneFlow 为了解决大规模深度推荐系统的问题，还提供了大规模 Embedding 的方案：OneEmbedding。
 
 与普通的算子相比，OneEmbedding 有以下特点：
 
