@@ -14,7 +14,7 @@ OneFlow 为了解决大规模深度推荐系统的问题，还提供了大规模
 
 与普通的算子相比，OneEmbedding 有以下特点：
 
-1. 灵活的分层存储，支持将 Embedding table 放置在 GPU显存、CPU内存或者 SSD 上面，允许使用高速设备作为低速设备的缓存，实现速度与容量的兼顾。
+1. 灵活的分层存储，支持将 Embedding table 放置在 GPU 显存、 CPU 内存或者 SSD 上面，允许使用高速设备作为低速设备的缓存，实现速度与容量的兼顾。
 
 2. 支持动态扩容。
 
@@ -94,7 +94,7 @@ embedding.to("cuda")
 
 其中，`tables` 是之前通过 `make_table_options` 配置的词表属性，`store_options` 是之前配置的存储属性，`embedding_dim` 是特征维度，`dtype` 是特征向量的数据类型，`key_type` 是特征 ID 的数据类型。
 
-如果同时创建了两个OneEmbedding，在实例化时需要设置不同的name和persistent path参数。更详细的信息，可以参阅 [one_embedding.MultiTableEmbedding](https://oneflow.readthedocs.io/en/master/one_embedding.html#oneflow.one_embedding.MultiTableEmbedding)
+如果同时创建了两个 OneEmbedding，在实例化时需要设置不同的 name 和 persistent path 参数。 更详细的信息，可以参阅 [one_embedding.MultiTableEmbedding](https://oneflow.readthedocs.io/en/master/one_embedding.html#oneflow.one_embedding.MultiTableEmbedding)
 
 ### 使用 Graph 训练
 
@@ -152,9 +152,9 @@ OneEmbedding 支持动态插入新的特征 ID，只要存储介质的容量足�
 
 ### 特征 ID 与多表查询
 
-**特征ID 不能重复**
+**特征 ID 不能重复**
 
-制作数据集的 OneEmbedding 用户需要格外注意：使用 `MultiTableEmbedding` 同时创建多个表时，多个Embedding Table仅初始化参数不同，其他参数一致，此时，**多个表中的特征 ID 不能重复** 。
+制作数据集的 OneEmbedding 用户需要格外注意：使用 `MultiTableEmbedding` 同时创建多个表时，多个 Embedding Table 仅初始化参数不同，其他参数一致，此时，**多个表中的特征 ID 不能重复** 。
 
 **多表查询**
 
@@ -186,7 +186,7 @@ embedding_lookup(ids, table_ids)
 
 ### 如何选择合适的存储配置
 
-OneEmbedding 提供了三种存储选项配置，分别是纯GPU存储， 存储在CPU内存中并使用GPU显存作为高速缓存和存储在SSD中，并使用GPU显存作为高速缓存。
+OneEmbedding 提供了三种存储选项配置，分别是纯 GPU 存储， 存储在 CPU 内存中并使用 GPU 显存作为高速缓存和存储在 SSD 中，并使用 GPU 显存作为高速缓存。
 
 - 纯 GPU 存储
 
@@ -198,7 +198,7 @@ OneEmbedding 提供了三种存储选项配置，分别是纯GPU存储， 存储
     
 - 存储在 SSD 中，并使用 GPU 显存作为高速缓存
 
-    当词表大小既大于 GPU 显存，也大于系统内存时，如果有高速的 SSD，可以选择将词表存储在SSD中，并使用 GPU 显存作为高速缓存。在此情况下，训练过程中会对存储的词表进行频繁的数据读写，因此 `persistent_path` 所设置路径下的文件随机读写速度对整体性能影响很大。强烈推荐使用高性能的 SSD，如果使用普通磁盘，会对性能有很大负面影响。
+    当词表大小既大于 GPU 显存，也大于系统内存时，如果有高速的 SSD，可以选择将词表存储在 SSD 中，并使用 GPU 显存作为高速缓存。在此情况下，训练过程中会对存储的词表进行频繁的数据读写，因此 `persistent_path` 所设置路径下的文件随机读写速度对整体性能影响很大。强烈推荐使用高性能的 SSD，如果使用普通磁盘，会对性能有很大负面影响。
 
 
 ### 分布式训练
@@ -214,5 +214,4 @@ OneEmbedding 同 OneFlow 的其它模块类似，都原生支持分布式扩展�
 ## 扩展阅读：DLRM    
 
 本文展示了如何快速上手 OneEmbedding。
-
 OneFlow 模型仓库中准备了关于 OneEmbedding 在 DLRM 任务的实际例子，可供参考：https://github.com/Oneflow-Inc/models/tree/main/RecommenderSystems/dlrm
