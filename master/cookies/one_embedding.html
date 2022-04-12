@@ -990,7 +990,7 @@
 <p>与普通的算子相比，OneEmbedding 有以下特点：</p>
 <ol>
 <li>
-<p>灵活的分层存储，支持将 Embedding table 放置在 GPU显存、CPU内存或者 SSD 上面，允许使用高速设备作为低速设备的缓存，实现速度与容量的兼顾。</p>
+<p>灵活的分层存储，支持将 Embedding table 放置在 GPU 显存、 CPU 内存或者 SSD 上面，允许使用高速设备作为低速设备的缓存，实现速度与容量的兼顾。</p>
 </li>
 <li>
 <p>支持动态扩容。</p>
@@ -1051,7 +1051,7 @@
 <span class="n">embedding</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;cuda&quot;</span><span class="p">)</span>
 </code></pre></div>
 <p>其中，<code>tables</code> 是之前通过 <code>make_table_options</code> 配置的词表属性，<code>store_options</code> 是之前配置的存储属性，<code>embedding_dim</code> 是特征维度，<code>dtype</code> 是特征向量的数据类型，<code>key_type</code> 是特征 ID 的数据类型。</p>
-<p>如果同时创建了两个OneEmbedding，在实例化时需要设置不同的name和persistent path参数。更详细的信息，可以参阅 <a href="https://oneflow.readthedocs.io/en/master/one_embedding.html#oneflow.one_embedding.MultiTableEmbedding">one_embedding.MultiTableEmbedding</a></p>
+<p>如果同时创建了两个 OneEmbedding，在实例化时需要设置不同的 name 和 persistent path 参数。 更详细的信息，可以参阅 <a href="https://oneflow.readthedocs.io/en/master/one_embedding.html#oneflow.one_embedding.MultiTableEmbedding">one_embedding.MultiTableEmbedding</a></p>
 <h3 id="graph">使用 Graph 训练<a class="headerlink" href="#graph" title="Permanent link">&para;</a></h3>
 <p>目前 OneEmbedding 仅支持在 Graph 模式下使用。</p>
 <p>在以下的例子中，我们构建了一个简单的 Graph 类，它包括了 <code>embedding</code> 和 <code>mlp</code> 两层。</p>
@@ -1094,8 +1094,8 @@
 <h3 id="id">特征 ID 动态扩容<a class="headerlink" href="#id" title="Permanent link">&para;</a></h3>
 <p>OneEmbedding 支持动态插入新的特征 ID，只要存储介质的容量足够，特征 ID 的数目是没有上限的。这也是为什么在使用 <code>make_table_options</code> 时，只需要指定初始化方式，不需要指定特征 ID 的总数目（词表行数）。</p>
 <h3 id="id_1">特征 ID 与多表查询<a class="headerlink" href="#id_1" title="Permanent link">&para;</a></h3>
-<p><strong>特征ID 不能重复</strong></p>
-<p>制作数据集的 OneEmbedding 用户需要格外注意：使用 <code>MultiTableEmbedding</code> 同时创建多个表时，多个Embedding Table仅初始化参数不同，其他参数一致，此时，<strong>多个表中的特征 ID 不能重复</strong> 。</p>
+<p><strong>特征 ID 不能重复</strong></p>
+<p>制作数据集的 OneEmbedding 用户需要格外注意：使用 <code>MultiTableEmbedding</code> 同时创建多个表时，多个 Embedding Table 仅初始化参数不同，其他参数一致，此时，<strong>多个表中的特征 ID 不能重复</strong> 。</p>
 <p><strong>多表查询</strong></p>
 <p>如果使用 <code>MultiTableEmbedding</code> 只配置了一个表，则查询方式与普通的 Embedding 查询方式没有区别，直接调用，并传递特征 ID 即可，如 <code>embedding_lookup(ids)</code>。</p>
 <p>如果使用 <code>MultiTableEmbedding</code> 配置了多个表，则对于某个特征 ID，需要指明在哪个表中查询，有两种方式指明：</p>
@@ -1115,7 +1115,7 @@
 </code></pre></div></p>
 <p>更详细的说明，可以参阅 <a href="https://oneflow.readthedocs.io/en/master/one_embedding.html#oneflow.one_embedding.MultiTableEmbedding.forward">MultiTableEmbedding.forward</a></p>
 <h3 id="_2">如何选择合适的存储配置<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h3>
-<p>OneEmbedding 提供了三种存储选项配置，分别是纯GPU存储， 存储在CPU内存中并使用GPU显存作为高速缓存和存储在SSD中，并使用GPU显存作为高速缓存。</p>
+<p>OneEmbedding 提供了三种存储选项配置，分别是纯 GPU 存储， 存储在 CPU 内存中并使用 GPU 显存作为高速缓存和存储在 SSD 中，并使用 GPU 显存作为高速缓存。</p>
 <ul>
 <li>
 <p>纯 GPU 存储</p>
@@ -1127,7 +1127,7 @@
 </li>
 <li>
 <p>存储在 SSD 中，并使用 GPU 显存作为高速缓存</p>
-<p>当词表大小既大于 GPU 显存，也大于系统内存时，如果有高速的 SSD，可以选择将词表存储在SSD中，并使用 GPU 显存作为高速缓存。在此情况下，训练过程中会对存储的词表进行频繁的数据读写，因此 <code>persistent_path</code> 所设置路径下的文件随机读写速度对整体性能影响很大。强烈推荐使用高性能的 SSD，如果使用普通磁盘，会对性能有很大负面影响。</p>
+<p>当词表大小既大于 GPU 显存，也大于系统内存时，如果有高速的 SSD，可以选择将词表存储在 SSD 中，并使用 GPU 显存作为高速缓存。在此情况下，训练过程中会对存储的词表进行频繁的数据读写，因此 <code>persistent_path</code> 所设置路径下的文件随机读写速度对整体性能影响很大。强烈推荐使用高性能的 SSD，如果使用普通磁盘，会对性能有很大负面影响。</p>
 </li>
 </ul>
 <h3 id="_3">分布式训练<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>
@@ -1139,8 +1139,8 @@
 <li>在并行场景中，<code>store_options</code> 配置中的 <code>capacity</code> 代表词表总容量，而不是每个 rank 的容量。<code>cache_budget_mb</code> 代表每个 GPU 设备的显存。</li>
 </ul>
 <h2 id="dlrm">扩展阅读：DLRM<a class="headerlink" href="#dlrm" title="Permanent link">&para;</a></h2>
-<p>本文展示了如何快速上手 OneEmbedding。</p>
-<p>OneFlow 模型仓库中准备了关于 OneEmbedding 在 DLRM 任务的实际例子，可供参考：<a href="https://github.com/Oneflow-Inc/models/tree/main/RecommenderSystems/dlrm">https://github.com/Oneflow-Inc/models/tree/main/RecommenderSystems/dlrm</a></p>
+<p>本文展示了如何快速上手 OneEmbedding。
+OneFlow 模型仓库中准备了关于 OneEmbedding 在 DLRM 任务的实际例子，可供参考：<a href="https://github.com/Oneflow-Inc/models/tree/main/RecommenderSystems/dlrm">https://github.com/Oneflow-Inc/models/tree/main/RecommenderSystems/dlrm</a></p>
                 
               
               
