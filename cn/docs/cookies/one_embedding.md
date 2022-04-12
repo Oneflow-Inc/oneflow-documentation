@@ -213,5 +213,5 @@ OneEmbedding 同 OneFlow 的其它模块类似，都原生支持分布式扩展�
 
 ## 扩展阅读：DLRM    
 
-本文展示了如何快速上手 OneEmbedding 。
+本文展示了如何快速上手 OneEmbedding。
 OneFlow 模型仓库中准备了关于 OneEmbedding 在 DLRM 任务的实际例子，可供参考：https://github.com/Oneflow-Inc/models/tree/main/RecommenderSystems/dlrm
