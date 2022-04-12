@@ -94,7 +94,7 @@ embedding.to("cuda")
 
 其中，`tables` 是之前通过 `make_table_options` 配置的词表属性，`store_options` 是之前配置的存储属性，`embedding_dim` 是特征维度，`dtype` 是特征向量的数据类型，`key_type` 是特征 ID 的数据类型。
 
-更详细的信息，可以参阅 [one_embedding.MultiTableEmbedding](https://oneflow.readthedocs.io/en/master/one_embedding.html#oneflow.one_embedding.MultiTableEmbedding)
+如果同时创建了两个OneEmbedding，在实例化时需要设置不同的name和persistent path参数。更详细的信息，可以参阅 [one_embedding.MultiTableEmbedding](https://oneflow.readthedocs.io/en/master/one_embedding.html#oneflow.one_embedding.MultiTableEmbedding)
 
 ### 使用 Graph 训练
 
