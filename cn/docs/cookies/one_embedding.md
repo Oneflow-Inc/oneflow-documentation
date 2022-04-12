@@ -131,7 +131,7 @@ class TrainGraph(flow.nn.Graph):
         return loss
 ```
 
-然后就可以实例化 Graph ，开始训练了。
+然后就可以实例化 Graph，开始训练了。
 
 ```python
 ids = np.random.randint(0, 1000, (100, num_tables), dtype=np.int64)
