@@ -10,11 +10,11 @@ embedding = flow.nn.Embedding(10, 3)
 y = embedding(indices)
 ```
 
-OneFlow 为了解决大规模深度推荐系统的问题，还提供了大规模 Embedding 的方案：OneEmbedding。
+OneFlow 为了解决大规模深度推荐系统的问题，还提供了大规模 Embedding 的方案: OneEmbedding 。
 
 与普通的算子相比，OneEmbedding 有以下特点：
 
-1. 灵活的分层存储，支持将 Embedding table 放置在 GPU显存、CPU内存或者 SSD 上面，允许使用高速设备作为低速设备的缓存，实现速度与容量的兼顾。
+1. 灵活的分层存储，支持将 Embedding table 放置在 GPU 显存、 CPU 内存或者 SSD 上面，允许使用高速设备作为低速设备的缓存，实现速度与容量的兼顾。
 
 2. 支持动态扩容。
 
@@ -32,7 +32,7 @@ OneFlow 为了解决大规模深度推荐系统的问题，还提供了大规模
 
 ### 使用 `make_table_options` 配置词表
 
-以下代码，导入相关包，并使用 `make_table_options` 配置词表。OneEmbedding 支持同时创建多个词表，以下代码配置了三个词表。
+以下代码，导入相关包，并使用 `make_table_options` 配置词表。 OneEmbedding 支持同时创建多个词表，以下代码配置了三个词表。
 
 ```python
 import oneflow as flow
@@ -94,7 +94,7 @@ embedding.to("cuda")
 
 其中，`tables` 是之前通过 `make_table_options` 配置的词表属性，`store_options` 是之前配置的存储属性，`embedding_dim` 是特征维度，`dtype` 是特征向量的数据类型，`key_type` 是特征 ID 的数据类型。
 
-如果同时创建了两个OneEmbedding，在实例化时需要设置不同的name和persistent path参数。更详细的信息，可以参阅 [one_embedding.MultiTableEmbedding](https://oneflow.readthedocs.io/en/master/one_embedding.html#oneflow.one_embedding.MultiTableEmbedding)
+如果同时创建了两个 OneEmbedding ，在实例化时需要设置不同的 name 和 persistent path 参数。 更详细的信息，可以参阅 [one_embedding.MultiTableEmbedding](https://oneflow.readthedocs.io/en/master/one_embedding.html#oneflow.one_embedding.MultiTableEmbedding)
 
 ### 使用 Graph 训练
 
@@ -131,7 +131,7 @@ class TrainGraph(flow.nn.Graph):
         return loss
 ```
 
-然后就可以实例化 Graph，开始训练了。
+然后就可以实例化 Graph ，开始训练了。
 
 ```python
 ids = np.random.randint(0, 1000, (100, num_tables), dtype=np.int64)
@@ -148,13 +148,13 @@ print(loss)
 
 ### 特征 ID 动态扩容
 
-OneEmbedding 支持动态插入新的特征 ID，只要存储介质的容量足够，特征 ID 的数目是没有上限的。这也是为什么在使用 `make_table_options` 时，只需要指定初始化方式，不需要指定特征 ID 的总数目（词表行数）。
+OneEmbedding 支持动态插入新的特征 ID ，只要存储介质的容量足够，特征 ID 的数目是没有上限的。这也是为什么在使用 `make_table_options` 时，只需要指定初始化方式，不需要指定特征 ID 的总数目（词表行数）。
 
 ### 特征 ID 与多表查询
 
-**特征ID 不能重复**
+**特征 ID 不能重复**
 
-制作数据集的 OneEmbedding 用户需要格外注意：使用 `MultiTableEmbedding` 同时创建多个表时，多个Embedding Table仅初始化参数不同，其他参数一致，此时，**多个表中的特征 ID 不能重复** 。
+制作数据集的 OneEmbedding 用户需要格外注意：使用 `MultiTableEmbedding` 同时创建多个表时，多个 Embedding Table 仅初始化参数不同，其他参数一致，此时，**多个表中的特征 ID 不能重复** 。
 
 **多表查询**
 
@@ -186,7 +186,7 @@ embedding_lookup(ids, table_ids)
 
 ### 如何选择合适的存储配置
 
-OneEmbedding 提供了三种存储选项配置，分别是纯GPU存储， 存储在CPU内存中并使用GPU显存作为高速缓存和存储在SSD中，并使用GPU显存作为高速缓存。
+OneEmbedding 提供了三种存储选项配置，分别是纯 GPU 存储， 存储在 CPU 内存中并使用 GPU 显存作为高速缓存和存储在 SSD 中，并使用 GPU 显存作为高速缓存。
 
 - 纯 GPU 存储
 
@@ -198,21 +198,20 @@ OneEmbedding 提供了三种存储选项配置，分别是纯GPU存储， 存储
     
 - 存储在 SSD 中，并使用 GPU 显存作为高速缓存
 
-    当词表大小既大于 GPU 显存，也大于系统内存时，如果有高速的 SSD，可以选择将词表存储在SSD中，并使用 GPU 显存作为高速缓存。在此情况下，训练过程中会对存储的词表进行频繁的数据读写，因此 `persistent_path` 所设置路径下的文件随机读写速度对整体性能影响很大。强烈推荐使用高性能的 SSD，如果使用普通磁盘，会对性能有很大负面影响。
+    当词表大小既大于 GPU 显存，也大于系统内存时，如果有高速的 SSD ，可以选择将词表存储在 SSD 中，并使用 GPU 显存作为高速缓存。在此情况下，训练过程中会对存储的词表进行频繁的数据读写，因此 `persistent_path` 所设置路径下的文件随机读写速度对整体性能影响很大。强烈推荐使用高性能的 SSD ，如果使用普通磁盘，会对性能有很大负面影响。
 
 
 ### 分布式训练
 
-OneEmbedding 同 OneFlow 的其它模块类似，都原生支持分布式扩展。用户可以参考 [#dlrm](扩展阅读：DLRM) 中的 README， 启动 DLRM 分布式训练。还可以参考 [Global Tensor](../parallelism/03_consistent_tensor.md) 了解必要的前置知识。
+OneEmbedding 同 OneFlow 的其它模块类似，都原生支持分布式扩展。用户可以参考 [#dlrm](扩展阅读：DLRM) 中的 README ， 启动 DLRM 分布式训练。还可以参考 [Global Tensor](../parallelism/03_consistent_tensor.md) 了解必要的前置知识。
 
 使用 OneEmbedding 模块进行分布式扩展，要注意：
 
-- 目前 OneEmbedding 只支持放置在全部设备上，并行度需和 world size 一致。比如，在 4 卡并行训练时，词表的并行度必须为 4，暂不支持网络使用 4 卡训练但词表并行度为 2 的场景。
+- 目前 OneEmbedding 只支持放置在全部设备上，并行度需和 world size 一致。比如，在 4 卡并行训练时，词表的并行度必须为 4 ，暂不支持网络使用 4 卡训练但词表并行度为 2 的场景。
 - `store_options` 配置中参数 `persistent_path` 指定存储的路径。在并行场景中，它既可以是一个表示路径的字符串，也可以是一个 `list`。若配置为一个代表路径的字符串，它代表分布式并行中各 rank 下的根目录。OneFlow 会在这个根路径下，依据各个 rank 的编号创建存储路径，名称格式为 `rank_id-num_rank`。若`persistent_path` 是一个 `list`，则会依据列表中的每项，为 rank 单独配置。
 - 在并行场景中，`store_options` 配置中的 `capacity` 代表词表总容量，而不是每个 rank 的容量。`cache_budget_mb` 代表每个 GPU 设备的显存。
 
 ## 扩展阅读：DLRM    
 
-本文展示了如何快速上手 OneEmbedding。
-
+本文展示了如何快速上手 OneEmbedding 。
 OneFlow 模型仓库中准备了关于 OneEmbedding 在 DLRM 任务的实际例子，可供参考：https://github.com/Oneflow-Inc/models/tree/main/RecommenderSystems/dlrm
