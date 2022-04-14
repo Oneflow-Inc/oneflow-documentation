@@ -1,10 +1,15 @@
+import enum
 import os
 import re
 import glob
 import copy
+from signal import raise_signal
 import traceback
 from configparser import ConfigParser
 from os.path import join
+from io import StringIO
+import contextlib
+import sys
 
 try:
     import markdown as markdown_enabled
@@ -19,6 +24,34 @@ def github_codeblocks(filepath, safe):
     codeblocks = []
     codeblock_re = r'^```.*'
     codeblock_open_re = r'^```(`*)(py|python){0}$'.format('' if safe else '?')
+
+    with open(filepath, 'r', encoding="utf-8") as f:
+        block = []
+        python = True
+        in_codeblock = False
+
+        for line in f.readlines():
+            codeblock_delimiter = re.match(codeblock_re, line)
+
+            if in_codeblock:
+                if codeblock_delimiter:
+                    if python:
+                        codeblocks.append(''.join(block))
+                    block = []
+                    python = True
+                    in_codeblock = False
+                else:
+                    block.append(line)
+            elif codeblock_delimiter:
+                in_codeblock = True
+                if not re.match(codeblock_open_re, line):
+                    python = False
+    return codeblocks
+
+def get_textblocks(filepath, safe):
+    codeblocks = []
+    codeblock_re = r'^```.*'
+    codeblock_open_re = r'^```(`*)(text){0}$'.format('' if safe else '?')
 
     with open(filepath, 'r', encoding="utf-8") as f:
         block = []
@@ -88,14 +121,13 @@ def main():
     config = ConfigParser()
 
     current_path = os.path.dirname(os.path.abspath(__file__))
-    config_name = 'docs.yml'
+    config_name = 'docs.config'
     config_file = join(current_path, config_name)
 
     config.read(config_file)
     section_list = config.sections() # 捕获所有 section
 
     path = os.path.abspath(os.path.join(os.getcwd(), "..")) # ../oneflow-documentation/
-    print(path)
     file_list = []
 
     for root, dirs, files in os.walk(path): #遍历仓库中所有的 md 文件，以列表形式写入 file_list
@@ -126,6 +158,7 @@ def main():
         run_list = []
         test_list = []
         runAll = False
+        testAll = False
 
         if 'run' in config.options(section): # 读取 configs
             
@@ -134,16 +167,36 @@ def main():
             else:
                 run_list = config.get(section, 'run').replace(
                     ' ', '').split(",")
-                for i in run_list:
-                    print(i)
 
         if 'test' in config.options(section):
-            test_list = config.get(section, 'test').replace(
+            
+            if config.get(section, 'test').strip() == 'all' or config.get(section, 'test').strip() == 'All':
+                testAll = True
+            else:
+                test_list = config.get(section, 'test').replace(
                     ' ', '').split(",")
 
+        test_list = list(map(int, test_list))
+        run_list = list(map(int, run_list))
+
+
+
+        
 
          # 读取文件
         codeblocks = collect_codeblocks(filepath, safe)
+        textblocks = get_textblocks(filepath,safe)
+
+        # 检测是否为负数
+
+        for i in test_list:
+            if i < 0:
+                i+=len(textblocks)
+        
+        for i in run_list:
+            if i < 0:
+                i+=len(codeblocks)
+            
 
         if codeblocks:
             singleblock = ''
@@ -153,39 +206,37 @@ def main():
                     singleblock += blockitem
                     if not runAll:
                         run_list.remove(i)
-                if str(i) in test_list:
-                    if str(i) not in run_list and not runAll:
-                        raise ValueError("All the test block should be included in run block in {}.".format(filepath))
-                    else:
-                        try:
-                            print("testing block {} of file {}".format(i,filepath))
-                        except Exception as e:
-                            print("Test failed for block {} in file {}".format(i,filepath))
-                        else:
-                            print("test passed")
-                        test_list.remove(str(i))
-            print(test_list)
-            # if run_list != []: raise ValueError("The run config for {} has indexes that does not exist.".format(filepath))
-            # if test_list != [] : raise ValueError("The test config for {} has indexes that does not exist.".format(filepath))
+
+            if run_list != []: raise ValueError("The RUN args for {} has indexes that does not exist.".format(filepath))
             
-            try:
-                print("Running " + filepath)
-                exec(singleblock, globals())
-            except Exception as e:
-                traceback.print_exc()
-            else:
-                print("ok")
-    
-
-
-
-
-
-
-
-
-
-
+            
+            
+            @contextlib.contextmanager
+            def stdoutIO(stdout=None):
+                old = sys.stdout
+                if stdout is None:
+                    stdout = StringIO()
+                sys.stdout = stdout
+                yield stdout
+                sys.stdout = old
+            print("Running " + filepath)
+            with stdoutIO() as s:
+                try:
+                    
+                    exec(singleblock, globals())
+                except Exception as e:
+                    traceback.print_exc()
+            print(s.getvalue())
+            for i, blockitem in enumerate(textblocks):
+                if i in test_list or testAll:
+                    if i not in run_list and not runAll:
+                        raise ValueError("The TEST args contains indexes that does not exist in RUN args.")
+                    if blockitem not in s.getvalue():
+                        raise ValueError("The text block:\n {} does not match the code output.".format(blockitem))
+                    test_list.remove(i)
+            if test_list != [] : raise ValueError("The TEST config for {} has indexes that does not exist.".format(filepath))
+            
+            print("ok")
 
 
 if __name__ == "__main__":
