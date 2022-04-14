@@ -88,7 +88,7 @@ def main():
     config = ConfigParser()
 
     current_path = os.path.dirname(os.path.abspath(__file__))
-    config_name = 'docs.config'
+    config_name = 'docs.yml'
     config_file = join(current_path, config_name)
 
     config.read(config_file)
