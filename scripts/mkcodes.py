@@ -5,11 +5,11 @@ import glob
 import copy
 from signal import raise_signal
 import traceback
-from configparser import ConfigParser
 from os.path import join
 from io import StringIO
 import contextlib
 import sys
+import yaml
 
 try:
     import markdown as markdown_enabled
@@ -118,125 +118,124 @@ def main():
     collect_codeblocks = github_codeblocks
     safe = True
 
-    config = ConfigParser()
 
     current_path = os.path.dirname(os.path.abspath(__file__))
-    config_name = 'docs.config'
+    config_name = 'docs.yml'
     config_file = join(current_path, config_name)
 
-    config.read(config_file)
-    section_list = config.sections() # 捕获所有 section
 
-    path = os.path.abspath(os.path.join(os.getcwd(), "..")) # ../oneflow-documentation/
-    file_list = []
+    with open(config_file) as f:
+        config = yaml.load(f,Loader=yaml.Loader) # 加载
 
-    for root, dirs, files in os.walk(path): #遍历仓库中所有的 md 文件，以列表形式写入 file_list
-        for file in files:
-            if os.path.splitext(file)[1] == '.md':
-                # print(join(root, file))
-                file_list.append(join(root, file))
+        path = os.path.abspath(os.path.join(os.getcwd(), "..")) # ../oneflow-documentation/
+        file_list = []
 
-    '''file_list_check = copy.deepcopy(file_list) # 深拷贝一份 file_list 用于下一步检测
+        for root, dirs, files in os.walk(path): #遍历仓库中所有的 md 文件，以列表形式写入 file_list
+            for file in files:
+                if os.path.splitext(file)[1] == '.md':
+                    # print(join(root, file))
+                    file_list.append(join(root, file))
 
-    for section in section_list: # 遍历一遍，看看有无遗漏的 md 文件
-        filepath = join(path, section)
-            
-        if os.path.exists(filepath) and filepath in file_list_check:
-            print(filepath+" exists.")
-            file_list_check.remove(filepath)
-        else:
-            raise ValueError(
-                'The file path {} does not exist.'.format(filepath))
-    
+        '''file_list_check = copy.deepcopy(file_list) # 深拷贝一份 file_list 用于下一步检测
 
-    if file_list_check != []:
-        raise ValueError('The following files are not recorded in {}. \n {}'.format(config_name, file_list_check))
-    '''
-
-    for section in section_list: # 正式开始操作
-        filepath = join(path, section)
-        run_list = []
-        test_list = []
-        runAll = False
-        testAll = False
-
-        if 'run' in config.options(section): # 读取 configs
-            
-            if config.get(section, 'run').strip() == 'all' or config.get(section, 'run').strip() == 'All':
-                runAll = True
+        for section in config: # 遍历一遍，看看有无遗漏的 md 文件
+            filepath = join(path, section)
+                
+            if os.path.exists(filepath) and filepath in file_list_check:
+                print(filepath+" exists.")
+                file_list_check.remove(filepath)
             else:
-                run_list = config.get(section, 'run').replace(
-                    ' ', '').split(",")
-
-        if 'test' in config.options(section):
-            
-            if config.get(section, 'test').strip() == 'all' or config.get(section, 'test').strip() == 'All':
-                testAll = True
-            else:
-                test_list = config.get(section, 'test').replace(
-                    ' ', '').split(",")
-
-        test_list = list(map(int, test_list))
-        run_list = list(map(int, run_list))
-
-
-
+                raise ValueError(
+                    'The file path {} does not exist.'.format(filepath))
         
 
-         # 读取文件
-        codeblocks = collect_codeblocks(filepath, safe)
-        textblocks = get_textblocks(filepath,safe)
+        if file_list_check != []:
+            raise ValueError('The following files are not recorded in {}. \n {}'.format(config_name, file_list_check))
+        '''
 
-        # 检测是否为负数
+        for key, args in config.items(): # 正式开始操作
+            filepath = join(path, key)
+            run_list = []
+            test_list = []
+            runAll = False
+            testAll = False
 
-        for i in test_list:
-            if i < 0:
-                i+=len(textblocks)
-        
-        for i in run_list:
-            if i < 0:
-                i+=len(codeblocks)
+            if args:
+                if 'RUN' in args:
+                    if isinstance(args['RUN'], str):
+                        if args['RUN'].strip() == 'all' or args['RUN'].strip() == 'All' or args['RUN'].strip() == 'ALL':
+                            runAll = True
+                    else:
+                        run_list = args['RUN']
+                if 'TEST' in args:
+                    if isinstance(args['TEST'], str):
+                        if args['TEST'].strip() == 'all' or args['TEST'].strip() == 'All' or args['TEST'].strip() == 'ALL':
+                            testAll = True
+                    else:
+                        test_list = args['TEST']
+
+
+            test_list = list(map(int, test_list))
+            run_list = list(map(int, run_list))
+
+
+
             
 
-        if codeblocks:
-            singleblock = ''
+            # 读取文件
+            codeblocks = collect_codeblocks(filepath, safe)
+            textblocks = get_textblocks(filepath,safe)
 
-            for i, blockitem in enumerate(codeblocks):
-                if i in run_list or runAll:
-                    singleblock += blockitem
-                    if not runAll:
-                        run_list.remove(i)
+            # 检测是否为负数
 
-            if run_list != []: raise ValueError("The RUN args for {} has indexes that does not exist.".format(filepath))
+            for i in test_list:
+                if i < 0:
+                    i+=len(textblocks)
             
-            
-            
-            @contextlib.contextmanager
-            def stdoutIO(stdout=None):
-                old = sys.stdout
-                if stdout is None:
-                    stdout = StringIO()
-                sys.stdout = stdout
-                yield stdout
-                sys.stdout = old
-            print("Running " + filepath)
-            with stdoutIO() as s:
-                try:
-                    
-                    exec(singleblock, globals())
-                except Exception as e:
-                    traceback.print_exc()
-            print(s.getvalue())
-            for i, blockitem in enumerate(textblocks):
-                if i in test_list or testAll:
-                    if i not in run_list and not runAll:
-                        raise ValueError("The TEST args contains indexes that does not exist in RUN args.")
-                    if blockitem not in s.getvalue():
-                        raise ValueError("The text block:\n {} does not match the code output.".format(blockitem))
-                    test_list.remove(i)
-            if test_list != [] : raise ValueError("The TEST config for {} has indexes that does not exist.".format(filepath))
-            
-            print("ok")
+            for i in run_list:
+                if i < 0:
+                    i+=len(codeblocks)
+                
+
+            if codeblocks:
+                singleblock = ''
+
+                for i, blockitem in enumerate(codeblocks):
+                    if i in run_list or runAll:
+                        singleblock += blockitem
+                        if not runAll:
+                            run_list.remove(i)
+
+                if run_list != []: raise ValueError("The RUN args for {} has indexes that does not exist.".format(filepath))
+                
+                
+                
+                @contextlib.contextmanager
+                def stdoutIO(stdout=None):
+                    old = sys.stdout
+                    if stdout is None:
+                        stdout = StringIO()
+                    sys.stdout = stdout
+                    yield stdout
+                    sys.stdout = old
+                print("Running " + filepath)
+                with stdoutIO() as s:
+                    try:
+                        
+                        exec(singleblock, globals())
+                    except Exception as e:
+                        traceback.print_exc()
+                print(s.getvalue())
+                for i, blockitem in enumerate(textblocks):
+                    if i in test_list or testAll:
+                        if i not in run_list and not runAll:
+                            raise ValueError("The TEST args contains indexes that does not exist in RUN args.")
+                        if blockitem not in s.getvalue():
+                            raise ValueError("The text block:\n {} does not match the code output.".format(blockitem))
+                        test_list.remove(i)
+                if test_list != [] : raise ValueError("The TEST config for {} has indexes that does not exist.".format(filepath))
+                
+                print("ok")
 
 
 if __name__ == "__main__":
