@@ -170,7 +170,8 @@ b1_sbp = flow.sbp.split(1)
 A0 = flow.randn(4, 5, placement=P0, sbp=a0_sbp)
 B0 = flow.randn(5, 8, placement=P0, sbp=b0_sbp)
 Y0 = flow.matmul(A0, B0)
-Y0.to_global(placement=P1, sbp=y0_sbp)
+
+Y0 = Y0.to_global(placement=P1, sbp=y0_sbp)
 B1 = flow.randn(8, 6, placement=P1, sbp=b1_sbp)
 Y2 = flow.matmul(Y0, B1)
 ```
