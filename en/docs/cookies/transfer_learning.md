@@ -10,9 +10,9 @@ As we all know, supervised learning is a fairly common training method for deep 
 
 For example, in the common image classification task in the field of computer vision, the general image classification model can be divided into two parts: feature extractor (or called backbone network) and classifier (or called output layer). Feature extractors are generally multi-layer networks such as Convolutional Neural Networks, and classifiers are generally single-layer networks such as fully connected layers. Since the categories of different classification tasks are generally different, classifiers are usually not reusable, while feature extractors are usually reusable. Although objects in the source dataset may be very different, or even have no connection at all with the target dataset, models pretrained on large-scale data may have the ability to extract more general image features (such as edges, shapes, and textures), which can help effectively identify objects in the target dataset.
 
-Suppose we already have a pretraining model, which can be used in roughly three ways.
+Suppose we already have a pretrained model, which can be used in roughly three ways.
 
-1. **Initialize the feature extractor with the parameters of the pretraining model, then train the entire model.** For deep learning models, the method of parameter initialization is very important to maintain numerical stability. Improper initialization methods may lead to the problem of gradient explosion or gradient disappearance during training. If a pretraining model is used for initialization, the rationality of the initial values of the model parameters can be guaranteed to a large extent, allowing the model to get a head start.
+1. **Initialize the feature extractor with the parameters of the pretrained model, then train the entire model.** For deep learning models, the method of parameter initialization is very important to maintain numerical stability. Improper initialization methods may lead to the problem of gradient explosion or gradient disappearance during training. If a pretrained model is used for initialization, the rationality of the initial values of the model parameters can be guaranteed to a large extent, allowing the model to get a head start.
 
 2. **Train the entire model, but use a smaller learning rate for the feature extractor and a larger learning rate for the classifier.** The pretrained feature extractor has been fully trained, so only a small learning rate is required; while the parameters of the classifier are usually initialized randomly, and it needs to be learned from scratch, so a large learning rate is required.
 
@@ -23,7 +23,7 @@ Suppose we already have a pretraining model, which can be used in roughly three 
 
 In this section, ResNet-18 is used as the feature extractor for image classification task on [CIFAR-10 Dataset](http://www.cs.toronto.edu/~kriz/cifar.html)
 
-Pretraining models for ResNet-18 (trained on ImageNet dataset), and CIFAR-10 dataset are both conveniently available through [FlowVision](https://github.com/Oneflow-Inc/vision).
+Pretrained models for ResNet-18 (trained on ImageNet dataset), and CIFAR-10 dataset are both conveniently available through [FlowVision](https://github.com/Oneflow-Inc/vision).
 
 First import the required dependencies:
 
