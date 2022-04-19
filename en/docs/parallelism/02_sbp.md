@@ -40,7 +40,7 @@ The figures below show some examples of SBP, including `split(0)`, `split(1)`, `
 When you create a Global Tensor, you can specify the SBP of the Tensor. The example will be seen in the next article: [Global Tensor](./03_consistent_tensor.md).
 
 
-## SPB Signature
+## SBP Signature
 
 SBP describes the mapping relationship between the data under the global view and the data on the local physical devices. When doing distributed training, OneFlow distributes the data to the local physical devices, computes the results according to the SBP attributes of the data.
 
