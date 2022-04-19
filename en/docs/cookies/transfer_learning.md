@@ -1,6 +1,6 @@
 # Transfer Learning in Computer Vision
 
-In this tutorial, we will introduce the fundamentals of transfer learning and show an example of the use of transfer learning in the field of computer vision.
+This tutorial introduces the fundamentals of transfer learning and shows an example of the use of transfer learning in the field of computer vision.
 
 ## Introduction of Fundamentals
 
@@ -12,7 +12,7 @@ For example, in the common image classification task in the field of computer vi
 
 Suppose we already have a pretraining model, which can be used in roughly three ways.
 
-1. **Initialize the feature extractor with the parameters of the pretraining model, then train the entire model.** For deep learning models, the method of parameter initialization is very important to maintain numerical stability. Improper initialization methods may lead to the problem of gradient explosion or gradient disappearance during training. If a pretraining model is used for initialization, the rationality of the initial values of the model parameters can be guaranteed to a large extent, allowing the model to "win at the starting line".
+1. **Initialize the feature extractor with the parameters of the pretraining model, then train the entire model.** For deep learning models, the method of parameter initialization is very important to maintain numerical stability. Improper initialization methods may lead to the problem of gradient explosion or gradient disappearance during training. If a pretraining model is used for initialization, the rationality of the initial values of the model parameters can be guaranteed to a large extent, allowing the model to get a head start.
 
 2. **Train the entire model, but use a smaller learning rate for the feature extractor and a larger learning rate for the classifier.** The pretrained feature extractor has been fully trained, so only a small learning rate is required; while the parameters of the classifier are usually initialized randomly, and it needs to be learned from scratch, so a large learning rate is required.
 
@@ -21,7 +21,7 @@ Suppose we already have a pretraining model, which can be used in roughly three 
 
 ## The Example of Transfer Learning
 
-In this section, we will use ResNet-18 as feature extractor for image classification task on [CIFAR-10 Dataset](http://www.cs.toronto.edu/~kriz/cifar.html)
+In this section, ResNet-18 is used as the feature extractor for image classification task on [CIFAR-10 Dataset](http://www.cs.toronto.edu/~kriz/cifar.html)
 
 Pretraining models for ResNet-18 (trained on ImageNet dataset), and CIFAR-10 dataset are both conveniently available through [FlowVision](https://github.com/Oneflow-Inc/vision).
 
@@ -116,7 +116,7 @@ def evaluate(model, data_loader):
 
     print('Accuracy: ', num_corrects.item() / dataset_size)
 ```
-We can implement the three methods mentioned above by passing in the corresponding parameters need optimized to the optimizer.
+The three methods mentioned above can be implemented by passing in the corresponding parameters that need to be optimized to the optimizer.
 
 Method 1: Train the entire model
 
