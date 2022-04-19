@@ -76,6 +76,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://docs.oneflow.org/master/cookies/transfer_learning.html</loc>
+         <lastmod>2022-04-19</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://docs.oneflow.org/master/parallelism/01_introduction.html</loc>
          <lastmod>2022-04-19</lastmod>
          <changefreq>daily</changefreq>
