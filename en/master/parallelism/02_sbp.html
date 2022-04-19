@@ -555,8 +555,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#spb-signature" class="md-nav__link">
-    SPB Signature
+  <a href="#sbp-signature" class="md-nav__link">
+    SBP Signature
   </a>
   
 </li>
@@ -846,8 +846,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#spb-signature" class="md-nav__link">
-    SPB Signature
+  <a href="#sbp-signature" class="md-nav__link">
+    SBP Signature
   </a>
   
 </li>
@@ -918,7 +918,7 @@
 <p>The figures below show some examples of SBP, including <code>split(0)</code>, <code>split(1)</code>, <code>broadcast</code> and <code>partial sum</code>.</p>
 <p><img alt="SBP Example" src="imgs/sbp-example.png" /></p>
 <p>When you create a Global Tensor, you can specify the SBP of the Tensor. The example will be seen in the next article: <a href="03_consistent_tensor.html">Global Tensor</a>.</p>
-<h2 id="spb-signature">SPB Signature<a class="headerlink" href="#spb-signature" title="Permanent link">&para;</a></h2>
+<h2 id="sbp-signature">SBP Signature<a class="headerlink" href="#sbp-signature" title="Permanent link">&para;</a></h2>
 <p>SBP describes the mapping relationship between the data under the global view and the data on the local physical devices. When doing distributed training, OneFlow distributes the data to the local physical devices, computes the results according to the SBP attributes of the data.</p>
 <p>For an isolated Tensor, we can set its SBP attributes at will. However, for an operator with input and output data, we can not arbitrarily set the SBP attributes of its input and output. This is because arbitrarily setting the SBP attributes of an operator’s input and output may not conform to the algorithm of the operator under global view.</p>
 <p>Let us discuss this problem with the example of matrix multiplication. Look at how the input and output SBP of matrix multiplication are combined to be legal and illegal in a distributed system with tow devices.</p>
