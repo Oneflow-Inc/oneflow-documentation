@@ -131,7 +131,7 @@ tensor([[-0.3298, -3.7907,  0.1661]], dtype=oneflow.float32)
 
 注意，Graph 与 Module 类似，对象本身是可调用的，并且 **不推荐** 显式调用 `build` 方法。Graph 可以直接复用已经定义好的 Module。因此，用户可以直接参考 [搭建神经网络](./04_build_network.md) 中的内容搭建好神经网络，然后在 Graph 的 `__init__` 中将 Module 设置为 Graph 的成员即可。
 
-比如，直接使用以上 Eager 模式示例的 `model`，作为网络结构：
+比如，直接使用之前定义好的 `linear_model`，作为网络结构：
 
 ```python
 class ModelGraph(flow.nn.Graph):
