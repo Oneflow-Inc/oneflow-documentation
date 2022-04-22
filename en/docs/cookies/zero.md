@@ -21,7 +21,7 @@ ZeRO-DP can be divided into three stages, eliminating memory redundancy by parti
 The distribution of the memory consumption of the three stages can be seen in the following figure (from the original ZeRO paper Figure 1):
 
 <div align="center">
-<img src="https://oneflow-static.oss-cn-beijing.aliyuncs.com/Three_Stages_of_ZeRO-DP_Optimizations.jpg" 
+<img src="./imgs/Three_Stages_of_ZeRO-DP_Optimizations.jpg" 
 alt="Three Stages of ZeRO-DP Optimizations" width="75%">
 </div>
 
