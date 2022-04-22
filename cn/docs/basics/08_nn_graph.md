@@ -31,7 +31,6 @@ OneFlow 默认以 Eager 模式运行。
         transform=transforms.ToTensor(),
         download=True,
         source_url="https://oneflow-public.oss-cn-beijing.aliyuncs.com/datasets/cifar/cifar-10-python.tar.gz",
-
     )
 
     train_dataloader = flow.utils.data.DataLoader(
