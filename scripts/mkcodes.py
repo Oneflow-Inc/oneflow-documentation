@@ -3,7 +3,7 @@ import os
 import re
 import glob
 import copy
-from signal import raise_signal
+# from signal import raise_signal
 import traceback
 from os.path import join
 from io import StringIO
