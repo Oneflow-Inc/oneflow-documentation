@@ -18,4 +18,5 @@ wheelhouse*
 .cache
 /tmp
 scripts/data
+scripts/model
 data

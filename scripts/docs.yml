@@ -1,18 +1,27 @@
-en/docs/basics/02_tensor.md:
-  RUN: all 
-
-en/docs/basics/03_dataset_dataloader.md:
+en/docs/basics/01_quickstart.md:
   RUN: all
 
+# en/docs/basics/02_tensor.md:
+#   RUN: all 
+
+# en/docs/basics/03_dataset_dataloader.md:
+#   RUN: all
+
 # en/docs/basics/04_build_network.md:
+#   RUN: all
 
 # en/docs/basics/05_autograd.md:
+#   # 第 4、9 个代码块是错误示例，所以此处不运行
+#   RUN: [0, 1, 2, 4, 5, 6, 7, 9, 10]
 
 # en/docs/basics/06_optimization.md:
+#   RUN: all
 
 # en/docs/basics/07_model_load_save.md:
+#   RUN: all
 
 # en/docs/basics/08_nn_graph.md:
+#   RUN: all
 
 # en/docs/cookies/activation_checkpointing.md:
 
