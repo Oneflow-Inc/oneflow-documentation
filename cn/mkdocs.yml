@@ -137,6 +137,7 @@ nav:
       - 将 PyTorch 预训练模型转为 OneFlow 格式: cookies/torch2flow.md
       - 计算机视觉迁移学习: cookies/transfer_learning.md
       - 大规模 Embedding 方案： OneEmbedding: cookies/one_embedding.md
+      - Zero Redundancy Optimizer (ZeRO): cookies/zero.md
 
 
     - API:
