@@ -11,14 +11,14 @@
       
       
       
-        <link rel="canonical" href="https://docs.oneflow.org/master/cookies/activation_checkpointing.html">
+        <link rel="canonical" href="https://docs.oneflow.org/master/cookies/zero.html">
       
       <link rel="icon" href="../assets/favicon.png">
       <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-7.1.11">
     
     
       
-        <title>Activation Checkpointing - OneFlow</title>
+        <title>Zero Redundancy Optimizer (ZeRO) - OneFlow</title>
       
     
     
@@ -69,7 +69,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#activation-checkpointing" class="md-skip">
+        <a href="#zero-redundancy-optimizer-zero" class="md-skip">
           跳转至
         </a>
       
@@ -104,7 +104,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Activation Checkpointing
+              Zero Redundancy Optimizer (ZeRO)
             
           </span>
         </div>
@@ -644,65 +644,11 @@
             
   
   
-    
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          Activation Checkpointing
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="activation_checkpointing.html" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="activation_checkpointing.html" class="md-nav__link">
         Activation Checkpointing
       </a>
-      
-        
-<nav class="md-nav md-nav--secondary" aria-label="目录">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      目录
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#activation-checkpointing_1" class="md-nav__link">
-    Activation Checkpointing 简介
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#activation-checkpointing_2" class="md-nav__link">
-    Activation Checkpointing 使用示例
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#bert" class="md-nav__link">
-    在 BERT 模型上的对比实验
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -746,11 +692,78 @@
             
   
   
+    
   
-    <li class="md-nav__item">
-      <a href="zero.html" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Zero Redundancy Optimizer (ZeRO)
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="zero.html" class="md-nav__link md-nav__link--active">
         Zero Redundancy Optimizer (ZeRO)
       </a>
+      
+        
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#zero" class="md-nav__link">
+    ZeRO 简介
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#zero_1" class="md-nav__link">
+    ZeRO 使用示例
+  </a>
+  
+    <nav class="md-nav" aria-label="ZeRO 使用示例">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    定义数据并行训练流程
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nngraph-zero" class="md-nav__link">
+    在 nn.Graph 中开启 ZeRO
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -829,23 +842,36 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#activation-checkpointing_1" class="md-nav__link">
-    Activation Checkpointing 简介
+  <a href="#zero" class="md-nav__link">
+    ZeRO 简介
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#activation-checkpointing_2" class="md-nav__link">
-    Activation Checkpointing 使用示例
+  <a href="#zero_1" class="md-nav__link">
+    ZeRO 使用示例
+  </a>
+  
+    <nav class="md-nav" aria-label="ZeRO 使用示例">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    定义数据并行训练流程
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#bert" class="md-nav__link">
-    在 BERT 模型上的对比实验
+        
+          <li class="md-nav__item">
+  <a href="#nngraph-zero" class="md-nav__link">
+    在 nn.Graph 中开启 ZeRO
   </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -861,101 +887,108 @@
             <article class="md-content__inner md-typeset">
               
                 
-                  <a href="https://github.com/OneFlow-Inc/oneflow-documentation/blob/master/cn/docs/cookies/activation_checkpointing.md" title="编辑此页" class="md-content__button md-icon">
+                  <a href="https://github.com/OneFlow-Inc/oneflow-documentation/blob/master/cn/docs/cookies/zero.md" title="编辑此页" class="md-content__button md-icon">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
                   </a>
                 
                 
-                <h1 id="activation-checkpointing">Activation Checkpointing<a class="headerlink" href="#activation-checkpointing" title="Permanent link">&para;</a></h1>
-<h2 id="activation-checkpointing_1">Activation Checkpointing 简介<a class="headerlink" href="#activation-checkpointing_1" title="Permanent link">&para;</a></h2>
-<p>Activation Checkpointing 是陈天奇团队于 2016 年在论文 <a href="https://arxiv.org/abs/1604.06174">Training Deep Nets with Sublinear Memory Cost</a> 中提出的一种亚线性内存优化技术，旨在减少训练过程中的中间激活(activation)带来的显存占用。Activation Checkpointing 的基本原理是 <strong>以时间换空间</strong> ：经过计算图分析后，前向过程中一些暂时用不到的中间激活特征将被删除以减少显存占用，后向过程中需要时再借助额外的前向计算恢复它们。</p>
-<p>OneFlow 的静态图模块 <code>nn.Graph</code> 已经支持 Activation Checkpointing，本文将介绍如何在训练中开启它。</p>
-<h2 id="activation-checkpointing_2">Activation Checkpointing 使用示例<a class="headerlink" href="#activation-checkpointing_2" title="Permanent link">&para;</a></h2>
-<p>首先，我们定义一个简单的模型（由两部分组成）、损失函数及优化器，和以往的用法完全相同。</p>
+                <h1 id="zero-redundancy-optimizer-zero">Zero Redundancy Optimizer (ZeRO)<a class="headerlink" href="#zero-redundancy-optimizer-zero" title="Permanent link">&para;</a></h1>
+<h2 id="zero">ZeRO 简介<a class="headerlink" href="#zero" title="Permanent link">&para;</a></h2>
+<p><strong>Zero Redundancy Optimizer (ZeRO)</strong> 是论文 <a href="https://arxiv.org/pdf/1910.02054.pdf">ZeRO: Memory Optimization Towards Training A Trillion Parameter Models</a> 提出的一种用于减少数据并行策略下的显存占用的方法。</p>
+<p>在普通的数据并行策略中，每个 GPU 都独立地维护一组完整的模型参数，计算与通信效率较高，但内存效率较差。这个问题在训练大型模型时尤为突出。ZeRO 由 ZeRO-DP 和 ZeRO-R 两部分组成，可以有效地减少显存消耗量，这意味着在同样的显存下，可以训练更大的模型，也意味着对于以往只能通过模型并行策略才能训练的大模型也有可能使用数据并行。</p>
+<p>训练深度学习模型时的显存消耗可以分为两大部分：</p>
+<ol>
+<li><strong>模型状态(model states)</strong>。对于大型模型来说，大部分显存消耗都是被模型状态占用的，主要包括三部分：优化器的状态(Optimizer States)、梯度(Gradients)、参数(Parameters)。三者简称为 <strong>OPG</strong>。</li>
+<li><strong>残余状态(residual states)</strong>。包括激活函数、临时缓冲区和不可用的内存碎片。</li>
+</ol>
+<p>ZeRO-DP 可以分为三个阶段，通过对 OPG 状态进行分区而不是直接复制来消除内存冗余，每个 GPU 仅保存部分 OGP。具体来说，ZeRO-DP 有三个主要的优化阶段，分别对应 O、P 和 G。三个阶段逐级递加：</p>
+<ol>
+<li>优化器状态分区（P<sub>os</sub>）：显存消耗减少 4 倍，通信量与数据并行相同，此阶段也被称为 ZeRO-OS。</li>
+<li>添加梯度分区优化（P<sub>os+g</sub>）：显存消耗减少 8 倍，通信量与数据并行相同。</li>
+<li>添加参数分区优化（P<sub>os+g+p</sub>）：模型占用的显存被平均分配到每个 GPU 中，显存消耗量与数据并行的并行度成线性反比关系，但通信量会有些许增加。</li>
+</ol>
+<p>三个阶段的显存消耗的分布情况可以参见下图（来自 ZeRO 原论文 Figure 1）：</p>
+<div align="center">
+<img src="./imgs/Three_Stages_of_ZeRO-DP_Optimizations.jpg" alt="Three Stages of ZeRO-DP Optimizations" width="75%">
+</div>
+
+<h2 id="zero_1">ZeRO 使用示例<a class="headerlink" href="#zero_1" title="Permanent link">&para;</a></h2>
+<p>首先导入 OneFlow：
 <div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">oneflow</span> <span class="k">as</span> <span class="nn">flow</span>
-<span class="kn">import</span> <span class="nn">oneflow.nn</span> <span class="k">as</span> <span class="nn">nn</span>
-
-<span class="n">DEVICE</span> <span class="o">=</span> <span class="s2">&quot;cuda&quot;</span> <span class="k">if</span> <span class="n">flow</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">()</span> <span class="k">else</span> <span class="s2">&quot;cpu&quot;</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Using </span><span class="si">{}</span><span class="s2"> device&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">DEVICE</span><span class="p">))</span>
-
-<span class="n">model_part1</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
-    <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">256</span><span class="p">,</span> <span class="mi">128</span><span class="p">),</span> 
-    <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">(),</span>
-    <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="mi">64</span><span class="p">),</span>
-    <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">()</span>
-<span class="p">)</span>
-<span class="n">model_part1</span> <span class="o">=</span> <span class="n">model_part1</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">DEVICE</span><span class="p">)</span>
-<span class="n">model_part1</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
-
-<span class="n">model_part2</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
-    <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="mi">32</span><span class="p">),</span> 
-    <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">(),</span>
-    <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
-<span class="p">)</span>
-<span class="n">model_part2</span> <span class="o">=</span> <span class="n">model_part2</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">DEVICE</span><span class="p">)</span>
-<span class="n">model_part2</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
+<span class="kn">from</span> <span class="nn">oneflow</span> <span class="kn">import</span> <span class="n">nn</span>
+</code></pre></div></p>
+<h3 id="_1">定义数据并行训练流程<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h3>
+<p>我们定义一个数据并行策略下的训练流程，与 <a href="../parallelism/05_ddp.html#通过设置-sbp-做数据并行训练">通过设置 SBP 做数据并行训练</a> 中所介绍的是类似的。</p>
+<p>定义之后要使用到 placement、SBP 等：
+<div class="highlight"><pre><span></span><code><span class="n">P</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">placement</span><span class="p">(</span><span class="s2">&quot;cuda&quot;</span><span class="p">,</span> <span class="n">ranks</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="n">B</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">sbp</span><span class="o">.</span><span class="n">broadcast</span>
+<span class="n">S0</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">sbp</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">DEVICE</span> <span class="o">=</span> <span class="s2">&quot;cuda&quot;</span>
+</code></pre></div></p>
+<p>为了便于演示，我们定义一个简单的模型，然后广播到集群上：
+<div class="highlight"><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">256</span><span class="p">,</span> <span class="mi">128</span><span class="p">),</span>
+                      <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">(),</span>
+                      <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">DEVICE</span><span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">to_global</span><span class="p">(</span><span class="n">placement</span><span class="o">=</span><span class="n">P</span><span class="p">,</span> <span class="n">sbp</span><span class="o">=</span><span class="n">B</span><span class="p">)</span>
 
 <span class="n">loss_fn</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">CrossEntropyLoss</span><span class="p">()</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">DEVICE</span><span class="p">)</span>
-<span class="n">optimizer</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="p">([{</span><span class="s1">&#39;params&#39;</span><span class="p">:</span> <span class="n">model_part1</span><span class="o">.</span><span class="n">parameters</span><span class="p">()},</span>
-                            <span class="p">{</span><span class="s1">&#39;params&#39;</span><span class="p">:</span> <span class="n">model_part2</span><span class="o">.</span><span class="n">parameters</span><span class="p">()}],</span>
-                           <span class="n">lr</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">)</span>
-</code></pre></div>
-<p>如果要开启 activation checkpointing，只需在 <a href="../basics/08_nn_graph.html">nn.Graph</a> 模型中的 Eager 模型成员 (即 nn.Module 对象) 上指定 <code>.config.activation_checkpointing = True</code>。此 API 详见：<a href="https://oneflow.readthedocs.io/en/master/graph.html#oneflow.nn.graph.block_config.BlockConfig.activation_checkpointing">activation_checkpointing</a>。对于每个打开 "activation checkpointing" 的 nn.Module，其输入 activation 将会被保留，而其它中间 activation 在反向传播过程中被使用时会被重新计算。</p>
+<span class="n">optimizer</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">)</span>
+</code></pre></div></p>
+<p>ZeRO 是在 <a href="../basics/08_nn_graph.html">nn.Graph</a> 中设置的，因此需要将动态图模型转换为 nn.Graph：</p>
 <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">CustomGraph</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Graph</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">model_part1</span> <span class="o">=</span> <span class="n">model_part1</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">model_part2</span> <span class="o">=</span> <span class="n">model_part2</span>
-        <span class="c1"># 在连续的两个 nn.Module 上开启 activation checkpointing</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">model_part1</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">activation_checkpointing</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">model_part2</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">activation_checkpointing</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">loss_fn</span> <span class="o">=</span> <span class="n">loss_fn</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_optimizer</span><span class="p">(</span><span class="n">optimizer</span><span class="p">)</span>
 
+        <span class="c1"># TODO: 设置 ZeRO</span>
+
     <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
-        <span class="n">y_pred</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_part2</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_part1</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
-        <span class="n">loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">loss_fn</span><span class="p">(</span><span class="n">y_pred</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+        <span class="n">preds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">loss_fn</span><span class="p">(</span><span class="n">preds</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
         <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">loss</span>
+        <span class="k">return</span> <span class="n">preds</span>
 </code></pre></div>
-<p>然后，像以往那样开始训练等操作即可。</p>
+<p>定义训练流程：</p>
 <div class="highlight"><pre><span></span><code><span class="n">graph_model</span> <span class="o">=</span> <span class="n">CustomGraph</span><span class="p">()</span>
 
 <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
     <span class="n">x</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="mi">256</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">DEVICE</span><span class="p">)</span>
     <span class="n">y</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">flow</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">DEVICE</span><span class="p">)</span>
-    <span class="n">graph_model</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-    <span class="c1"># 其他代码...</span>
+    <span class="n">global_x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">to_global</span><span class="p">(</span><span class="n">placement</span><span class="o">=</span><span class="n">P</span><span class="p">,</span> <span class="n">sbp</span><span class="o">=</span><span class="n">S0</span><span class="p">)</span>
+    <span class="n">global_y</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">to_global</span><span class="p">(</span><span class="n">placement</span><span class="o">=</span><span class="n">P</span><span class="p">,</span> <span class="n">sbp</span><span class="o">=</span><span class="n">S0</span><span class="p">)</span>
+
+    <span class="n">graph_model</span><span class="p">(</span><span class="n">global_x</span><span class="p">,</span> <span class="n">global_y</span><span class="p">)</span>
 </code></pre></div>
-<h2 id="bert">在 BERT 模型上的对比实验<a class="headerlink" href="#bert" title="Permanent link">&para;</a></h2>
-<p>为了验证 Activation Checkpointing 的实际效果，我们可以在 <a href="https://arxiv.org/abs/1810.04805">BERT</a> 模型上进行对比实验。可以直接使用 <a href="https://github.com/Oneflow-Inc/libai">libai</a> 库提供的 BERT 模型，只需通过在配置文件中将 <code>train.activation_checkpoint.enabled</code> 设置为 <code>True</code> 就可以开启 Activation Checkpointing。</p>
-<p>首先，按照 <a href="https://libai.readthedocs.io/en/latest/tutorials/get_started/quick_run.html#prepare-the-data-and-the-vocab">Prepare the Data and the Vocab</a> 准备好数据。为简单起见，我们使用单卡训练（实验环境使用的 GPU 为 NVIDIA GeForce RTX 3090，显存大小为 24268 MB）：</p>
-<div class="highlight"><pre><span></span><code><span class="nb">time</span> python tools/train_net.py --config-file configs/bert_large_pretrain.py
+<p>然后通过 <a href="../parallelism/04_launch.html">launch 模块</a> 启动训练即可。</p>
+<h3 id="nngraph-zero">在 nn.Graph 中开启 ZeRO<a class="headerlink" href="#nngraph-zero" title="Permanent link">&para;</a></h3>
+<p><strong>阶段 1</strong>：通过 <a href="https://oneflow.readthedocs.io/en/master/graph.html#oneflow.nn.graph.graph_config.GraphConfig.set_zero_redundancy_optimizer_mode">config.set_zero_redundancy_optimizer_mode</a> 接口可以开启阶段 1。即在上面的 nn.Graph 模型中添加：</p>
+<div class="highlight"><pre><span></span><code><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">set_zero_redundancy_optimizer_mode</span><span class="p">(</span><span class="s2">&quot;distributed_split&quot;</span><span class="p">)</span>
 </code></pre></div>
-<p>在命令最开头加上 <code>time</code> 命令来计量训练过程所耗费的时间。</p>
-<p>实验结果如下：</p>
-<table>
-<thead>
-<tr>
-<th align="center">是否开启 Activation Checkpointing</th>
-<th align="center">平均显存占用</th>
-<th align="center">训练完成所用时间</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td align="center">否</td>
-<td align="center">9141 MB</td>
-<td align="center">25 分 16 秒</td>
-</tr>
-<tr>
-<td align="center">是</td>
-<td align="center">5978 MB</td>
-<td align="center">33 分 36 秒</td>
-</tr>
-</tbody>
-</table>
-<p>从上表可以看出，Activation Checkpointing 显著减少了训练时的显存占用。同时，训练所用时间由于需要额外的前向计算而有所增加。总体来说，当缺乏显存时，Activation Checkpointing 不失为一种很有效的解决办法。</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>当使用模型连续进行训练和和预测时：训练执行一次后，ZeRO 会自动把模型的 SBP 参数从 Broadcast 改变为 Split；在执行预测时，将会使用 Split 自动推理，无需配置 ZeRO。</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>此 API 未来可能会发生变动。</p>
+</div>
+<p><strong>阶段 2</strong>：在阶段 1 的基础上，增加 <code>flow.boxing.nccl.enable_use_compute_stream(True)</code> 可以开启阶段 2。即在上面的 nn.Graph 模型中添加：</p>
+<div class="highlight"><pre><span></span><code><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">set_zero_redundancy_optimizer_mode</span><span class="p">(</span><span class="s2">&quot;distributed_split&quot;</span><span class="p">)</span>
+<span class="n">flow</span><span class="o">.</span><span class="n">boxing</span><span class="o">.</span><span class="n">nccl</span><span class="o">.</span><span class="n">enable_use_compute_stream</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+</code></pre></div>
+<p><strong>阶段 3</strong>：在阶段 2 的基础上，增加 <code>flow.boxing.nccl.disable_group_boxing_by_dst_parallel(True)</code> 可以开启阶段 3。即在上面的 nn.Graph 模型中添加：</p>
+<div class="highlight"><pre><span></span><code><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">set_zero_redundancy_optimizer_mode</span><span class="p">(</span><span class="s2">&quot;distributed_split&quot;</span><span class="p">)</span>
+<span class="n">flow</span><span class="o">.</span><span class="n">boxing</span><span class="o">.</span><span class="n">nccl</span><span class="o">.</span><span class="n">enable_use_compute_stream</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">flow</span><span class="o">.</span><span class="n">boxing</span><span class="o">.</span><span class="n">nccl</span><span class="o">.</span><span class="n">disable_group_boxing_by_dst_parallel</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>虽然开启第三阶段可以最大限度地减少显存消耗，但这会增加通信成本，在实践中一般使用第二阶段。</p>
+</div>
                 
               
               
@@ -980,7 +1013,7 @@
     <nav class="md-footer__inner md-grid" aria-label="Footer">
       
         
-        <a href="amp.html" class="md-footer__link md-footer__link--prev" aria-label="上一页: 自动混合精度训练" rel="prev">
+        <a href="one_embedding.html" class="md-footer__link md-footer__link--prev" aria-label="上一页: 大规模 Embedding 方案： OneEmbedding" rel="prev">
           <div class="md-footer__button md-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
           </div>
@@ -989,26 +1022,11 @@
               <span class="md-footer__direction">
                 上一页
               </span>
-              自动混合精度训练
+              大规模 Embedding 方案： OneEmbedding
             </div>
           </div>
         </a>
       
-      
-        
-        <a href="torch2flow.html" class="md-footer__link md-footer__link--next" aria-label="下一页: 将 PyTorch 预训练模型转为 OneFlow 格式" rel="next">
-          <div class="md-footer__title">
-            <div class="md-ellipsis">
-              <span class="md-footer__direction">
-                下一页
-              </span>
-              将 PyTorch 预训练模型转为 OneFlow 格式
-            </div>
-          </div>
-          <div class="md-footer__button md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
-          </div>
-        </a>
       
     </nav>
   
