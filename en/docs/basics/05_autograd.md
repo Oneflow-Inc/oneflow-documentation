@@ -76,7 +76,7 @@ we get $\frac{\partial n_3}{\partial n_1}$ and $\frac{\partial n_3}{\partial n_2
 
 Output:
 
-```
+```text
 tensor(-8.7423e-08, dtype=oneflow.float32)
 tensor(2., dtype=oneflow.float32)
 ```

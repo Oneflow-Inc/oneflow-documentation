@@ -17,3 +17,5 @@ wheelhouse*
 .clangd
 .cache
 /tmp
+scripts/data
+data
