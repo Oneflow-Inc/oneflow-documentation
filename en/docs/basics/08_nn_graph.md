@@ -30,6 +30,7 @@ The following script uses data set CIFAR10 to train model `mobilenet_v2`.
         train=True,
         transform=transforms.ToTensor(),
         download=True,
+        source_url="https://oneflow-public.oss-cn-beijing.aliyuncs.com/datasets/cifar/cifar-10-python.tar.gz",
     )
 
     train_dataloader = flow.utils.data.DataLoader(
@@ -94,12 +95,12 @@ class ModuleMyLinear(nn.Module):
     def forward(self, input):
         return flow.matmul(input, self.weight) + self.bias
 
-model = ModuleMyLinear(4, 3)
+linear_model = ModuleMyLinear(4, 3)
 
 class GraphMyLinear(nn.Graph):
   def __init__(self):
     super().__init__()
-    self.model = model
+    self.model = linear_model
 
   def build(self, input):
     return self.model(input)
@@ -129,13 +130,13 @@ tensor([[-0.3298, -3.7907,  0.1661]], dtype=oneflow.float32)
 
 Note that Graph is similar to Module in that the object itself is callable and it is **not recommended** to explicitly call the `build` method. Graph can directly reuse a defined Module. Users can refer the content in [Build Network](./04_build_network.md) to build a neural network. Then, set Module as a member of Graph in `__init__`  of Graph.
 
-For example, use the `model` above as the network structure:
+For example, use the `linear_model` above as the network structure:
 
 ```python
 class ModelGraph(flow.nn.Graph):
     def __init__(self):
         super().__init__()
-        self.model = model
+        self.model = linear_model
 
     def build(self, x, y):
         y_pred = self.model(x)
@@ -377,6 +378,7 @@ CHECKPOINT_SAVE_DIR = "./GraphMobileNetV2"
 
 Insert the following code at the completion of each epoch:
 ```python
+import shutil
 shutil.rmtree(CHECKPOINT_SAVE_DIR)  # Clear previous state
 flow.save(graph_mobile_net_v2.state_dict(), CHECKPOINT_SAVE_DIR)
 ```
@@ -403,13 +405,17 @@ nn.Graph supports saving model parameters and computation graph at the same time
 If there is a need for model deployment, the `Graph` object should be exported to the format required for deployment through the `oneflow.save` interface:
 
 ```python
-flow.save(graph_mobile_net_v2, "./1/model")
+MODEL_SAVE_DIR="./mobile_net_v2_model"
+import os
+if not os.path.exists(MODEL_SAVE_DIR):
+    os.makedirs(MODEL_SAVE_DIR)
+flow.save(graph_mobile_net_v2, MODEL_SAVE_DIR)
 ```
 
 !!! Note
     Note the difference from the previous section. `save ` interface supports saving state_dict and  also Graph objects. When the Graph object is saved, the model parameters and computation graph will be saved at the same time to decouple from the model structure definition code.
 
-In this way, both model parameters and computation graph required for deployment will be saved in the `./1/model` directory. For detailed deployment process, refer to [Model Deployment](../cookies/serving.md).
+In this way, both model parameters and computation graph required for deployment will be saved in the `./mobile_net_v2_model` directory. For detailed deployment process, refer to [Model Deployment](../cookies/serving.md).
 
 You must export the model via a Graph object to meet the format requirement for deployment. If it is a model trained in Eager mode (i.e. `nn.Module` object), you need to use `Graph` to encapsulate the Module and then export it.
 
@@ -436,7 +442,12 @@ if __name__ == "__main__":
     model.eval()
     graph = MyGraph(model)
     out = graph(fake_image)
-    flow.save(graph, "1/model")
+    
+    MODEL_SAVE_DIR="./neural_style_transfer_model"
+    import os
+    if not os.path.exists(MODEL_SAVE_DIR):
+        os.makedirs(MODEL_SAVE_DIR)
+    flow.save(graph, MODEL_SAVE_DIR)
 ```
 
 The above code:
