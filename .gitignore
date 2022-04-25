@@ -17,7 +17,11 @@ wheelhouse*
 .clangd
 .cache
 /tmp
+
+# 在 scripts 目录下执行脚本产生的临时文件
 scripts/data
 scripts/model
-data
-8.py
+scripts/log
+scripts/mobile_net_v2_model
+scripts/neural_style_transfer_model
+scripts/*.txt

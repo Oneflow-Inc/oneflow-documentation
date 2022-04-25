@@ -1,5 +1,7 @@
-en/docs/basics/01_quickstart.md:
-  RUN: all
+# 在文件中搜索 ```python，即可遍历所有代码块
+
+# en/docs/basics/01_quickstart.md:
+#   RUN: all
 
 # en/docs/basics/02_tensor.md:
 #   RUN: all 
@@ -20,8 +22,10 @@ en/docs/basics/01_quickstart.md:
 # en/docs/basics/07_model_load_save.md:
 #   RUN: all
 
-# en/docs/basics/08_nn_graph.md:
-#   RUN: all
+cn/docs/basics/08_nn_graph.md:
+  RUN: [0, 1, 2, 3, 4, 5, 7, 8, 9, 14, 15, 16] 
+  # 第 7 个代码块是伪代码；第 11、12、14 个代码块是演示；第 13 个代码块是错误示例
+  # 需要注意的是：目前 mkcodes.py 只能提取出顶格的代码块，而不能提取整个代码块有缩进的情况，比如由 `??? code` 下的代码块。对于此情况，需要将整个代码块选中，按住 Shift+Tab 取消缩进。
 
 # en/docs/cookies/activation_checkpointing.md:
 
