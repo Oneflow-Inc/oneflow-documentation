@@ -1001,6 +1001,7 @@
     <span class="n">train</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">transform</span><span class="o">=</span><span class="n">transforms</span><span class="o">.</span><span class="n">ToTensor</span><span class="p">(),</span>
     <span class="n">download</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">source_url</span><span class="o">=</span><span class="s2">&quot;https://oneflow-public.oss-cn-beijing.aliyuncs.com/datasets/cifar/cifar-10-python.tar.gz&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="n">train_dataloader</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">(</span>
@@ -1058,12 +1059,12 @@ loss: 6.644351  [  960/50000]
     <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">flow</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">weight</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">bias</span>
 
-<span class="n">model</span> <span class="o">=</span> <span class="n">ModuleMyLinear</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="n">linear_model</span> <span class="o">=</span> <span class="n">ModuleMyLinear</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
 
 <span class="k">class</span> <span class="nc">GraphMyLinear</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Graph</span><span class="p">):</span>
   <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">linear_model</span>
 
   <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">):</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
@@ -1085,11 +1086,11 @@ loss: 6.644351  [  960/50000]
 <div class="highlight"><pre><span></span><code>tensor([[-0.3298, -3.7907,  0.1661]], dtype=oneflow.float32)
 </code></pre></div>
 <p>Note that Graph is similar to Module in that the object itself is callable and it is <strong>not recommended</strong> to explicitly call the <code>build</code> method. Graph can directly reuse a defined Module. Users can refer the content in <a href="04_build_network.html">Build Network</a> to build a neural network. Then, set Module as a member of Graph in <code>__init__</code>  of Graph.</p>
-<p>For example, use the <code>model</code> above as the network structure:</p>
+<p>For example, use the <code>linear_model</code> above as the network structure:</p>
 <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">ModelGraph</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Graph</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">linear_model</span>
 
     <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
         <span class="n">y_pred</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
@@ -1320,7 +1321,8 @@ loss: 6.644351  [  960/50000]
 <div class="highlight"><pre><span></span><code><span class="n">CHECKPOINT_SAVE_DIR</span> <span class="o">=</span> <span class="s2">&quot;./GraphMobileNetV2&quot;</span>
 </code></pre></div>
 <p>Insert the following code at the completion of each epoch:
-<div class="highlight"><pre><span></span><code><span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">CHECKPOINT_SAVE_DIR</span><span class="p">)</span>  <span class="c1"># Clear previous state</span>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">shutil</span>
+<span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">CHECKPOINT_SAVE_DIR</span><span class="p">)</span>  <span class="c1"># Clear previous state</span>
 <span class="n">flow</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">graph_mobile_net_v2</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span> <span class="n">CHECKPOINT_SAVE_DIR</span><span class="p">)</span>
 </code></pre></div></p>
 <div class="admonition note">
@@ -1336,13 +1338,17 @@ loss: 6.644351  [  960/50000]
 <h3 id="graph-and-deployment">Graph and Deployment<a class="headerlink" href="#graph-and-deployment" title="Permanent link">&para;</a></h3>
 <p>nn.Graph supports saving model parameters and computation graph at the same time, which can easily support model deployment.</p>
 <p>If there is a need for model deployment, the <code>Graph</code> object should be exported to the format required for deployment through the <code>oneflow.save</code> interface:</p>
-<div class="highlight"><pre><span></span><code><span class="n">flow</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">graph_mobile_net_v2</span><span class="p">,</span> <span class="s2">&quot;./1/model&quot;</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><span class="n">MODEL_SAVE_DIR</span><span class="o">=</span><span class="s2">&quot;./mobile_net_v2_model&quot;</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">MODEL_SAVE_DIR</span><span class="p">):</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">MODEL_SAVE_DIR</span><span class="p">)</span>
+<span class="n">flow</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">graph_mobile_net_v2</span><span class="p">,</span> <span class="n">MODEL_SAVE_DIR</span><span class="p">)</span>
 </code></pre></div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Note the difference from the previous section. <code>save</code> interface supports saving state_dict and  also Graph objects. When the Graph object is saved, the model parameters and computation graph will be saved at the same time to decouple from the model structure definition code.</p>
 </div>
-<p>In this way, both model parameters and computation graph required for deployment will be saved in the <code>./1/model</code> directory. For detailed deployment process, refer to <a href="../cookies/serving.html">Model Deployment</a>.</p>
+<p>In this way, both model parameters and computation graph required for deployment will be saved in the <code>./mobile_net_v2_model</code> directory. For detailed deployment process, refer to <a href="../cookies/serving.html">Model Deployment</a>.</p>
 <p>You must export the model via a Graph object to meet the format requirement for deployment. If it is a model trained in Eager mode (i.e. <code>nn.Module</code> object), you need to use <code>Graph</code> to encapsulate the Module and then export it.</p>
 <p>Next, we take the <code>neural_style_transfer</code> as an example in the flowvision repository to show how to encapsulate and export the <code>nn.Module</code> model.</p>
 <div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">oneflow</span> <span class="k">as</span> <span class="nn">flow</span>
@@ -1365,7 +1371,12 @@ loss: 6.644351  [  960/50000]
     <span class="n">model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
     <span class="n">graph</span> <span class="o">=</span> <span class="n">MyGraph</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
     <span class="n">out</span> <span class="o">=</span> <span class="n">graph</span><span class="p">(</span><span class="n">fake_image</span><span class="p">)</span>
-    <span class="n">flow</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="s2">&quot;1/model&quot;</span><span class="p">)</span>
+
+    <span class="n">MODEL_SAVE_DIR</span><span class="o">=</span><span class="s2">&quot;./neural_style_transfer_model&quot;</span>
+    <span class="kn">import</span> <span class="nn">os</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">MODEL_SAVE_DIR</span><span class="p">):</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">MODEL_SAVE_DIR</span><span class="p">)</span>
+    <span class="n">flow</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">MODEL_SAVE_DIR</span><span class="p">)</span>
 </code></pre></div>
 <p>The above code:</p>
 <ul>
