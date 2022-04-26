@@ -72,17 +72,11 @@
 === "Terminal 0"
     ```python
     x.to_local()
-    tensor([[ 2.9186e-01, -3.9442e-01,  4.7072e-04, -3.2216e-01,  1.7788e-01],
-            [-4.5284e-01,  1.2361e-01, -3.5962e-01,  2.6651e-01,  1.2951e+00]],
-        device='cuda:0', dtype=oneflow.float32)
     ```
 
 === "Terminal 1"
     ```python
     x.to_local()
-    tensor([[-0.4363,  0.9985, -2.5387,  0.3003,  0.3803],
-            [ 0.0556, -0.8077,  1.1191, -2.1278,  0.1468]], device='cuda:1',
-        dtype=oneflow.float32)
     ```
 
 ### 由 local tensor 转换得到 global tensor
@@ -96,8 +90,6 @@
 
 === "Terminal 0"
     ```python
-    import oneflow as flow
-
     x = flow.randn(2,5)
     placement = flow.placement("cuda", [0,1])
     sbp = flow.sbp.split(0)
@@ -107,8 +99,6 @@
 
 === "Terminal 1"
     ```python
-    import oneflow as flow
-
     x = flow.randn(2,5)
     placement = flow.placement("cuda", [0,1])
     sbp = flow.sbp.split(0)
@@ -125,8 +115,6 @@
 
 === "Terminal 0"
     ```python
-    import oneflow as flow
-
     placement = flow.placement("cuda", [0,1])
     x = flow.randn(4,5,placement=placement, sbp=flow.sbp.split(0))
     w = flow.randn(5,8,placement=placement, sbp=flow.sbp.broadcast)
@@ -137,8 +125,6 @@
 
 === "Terminal 1"
     ```python
-    import oneflow as flow
-
     placement = flow.placement("cuda", [0,1])
     x = flow.randn(4,5,placement=placement, sbp=flow.sbp.split(0))
     w = flow.randn(5,8,placement=placement, sbp=flow.sbp.broadcast)
@@ -169,8 +155,6 @@
 
 === "Terminal 0"
     ```python
-    import oneflow as flow
-
     placement = flow.placement("cuda", [0,1])
     x = flow.randn(4,5,placement=placement, sbp=flow.sbp.broadcast)
     w = flow.randn(5,8,placement=placement, sbp=flow.sbp.split(1))
@@ -181,8 +165,6 @@
 
 === "Terminal 1"
     ```python
-    import oneflow as flow
-
     placement = flow.placement("cuda", [0,1])
     x = flow.randn(4,5,placement=placement, sbp=flow.sbp.broadcast)
     w = flow.randn(5,8,placement=placement, sbp=flow.sbp.split(1))

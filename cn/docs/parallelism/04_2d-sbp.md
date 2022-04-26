@@ -9,7 +9,7 @@
 我们已经熟悉 1D SBP 的 placement 配置，在 1D SBP 的场景下，通过 [oneflow.placement](https://start.oneflow.org/oneflow-api-cn/placement.html#oneflow.placement) 接口配置集群，比如使用集群中的第 0~3 号 GPU 显卡：
 
 ```python
->>> placement1 = flow.placement("cuda", ranks=[0, 1, 2, 3])
+placement1 = flow.placement("cuda", ranks=[0, 1, 2, 3])
 ```
 
 以上的 `"cuda"` 指定了设备类型，`ranks=[0, 1, 2, 3]` 指定了集群中的计算设备。其实，`ranks` 不仅可以是一维的int list，还可以是多维的int数组：
@@ -29,10 +29,10 @@ placement2 = flow.placement("cuda", ranks=[[0, 1], [2, 3]])
 比如，以下代码，配置了 $2 \times 2$ 的设备阵列，并且设置 2D SBP 为 `(broadcast, split(0))`。
 
 ```python
->>> a = flow.Tensor([[1,2],[3,4]])
->>> placement = flow.placement("cuda", ranks=[[0, 1], [2, 3]])
->>> sbp = (flow.sbp.broadcast, flow.sbp.split(0))
->>> a_to_global = a.to_global(placement=placement, sbp=sbp)
+a = flow.Tensor([[1,2],[3,4]])
+placement = flow.placement("cuda", ranks=[[0, 1], [2, 3]])
+sbp = (flow.sbp.broadcast, flow.sbp.split(0))
+a_to_global = a.to_global(placement=placement, sbp=sbp)
 ```
 
 它意味着，逻辑上的数据，在整个设备阵列上，在第 0 维度（“竖着看”）做 `broadcast`；在第 1 维度（“横着看”）做 `split(0)`。
@@ -58,9 +58,9 @@ placement2 = flow.placement("cuda", ranks=[[0, 1], [2, 3]])
 
 ## 2D SBP Signature
 
-类似 1D SBP 有 SBP Signature 的概念，算子也有 2D SBP Signature，在掌握了 1D SBP 及其 Signature 概念的基础上，2D SBP Signature 非常简单，只需要遵循一条原则：
+类似 1D SBP 有 SBP Signature 的概念，算子也有 2D SBP Signature，在掌握了 1D SBP 及其 Signature 概念的基础上，2D SBP Signature 非常简单，只需要遵循一条原则即可：
 
-- 在各自的维度上独立推导即可
+- 在各自的维度上独立推导
 
 我们以矩阵乘法为例，先回顾 1D SBP 的情况，假定有 $x \times w = y$ 可以有以下的 SBP Signature：
 

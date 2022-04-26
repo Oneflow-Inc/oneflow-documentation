@@ -9,13 +9,13 @@ Since you have known about 1D SBP, this document introduces 2D SBP, which can mo
 We are already familiar with the placement configuration of 1D SBP. In the scenario of 1D SBP, configure the cluster through the [oneflow.placement](https://oneflow.readthedocs.io/en/master/placement.html#oneflow.placement) interface. For example, use the 0~3 GPU graphics in the cluster:
 
 ```python
->>> placement1 = flow.placement("cuda", ranks=[0, 1, 2, 3])
+placement1 = flow.placement("cuda", ranks=[0, 1, 2, 3])
 ```
 
 The above `"cuda"` specifies the device type, and `ranks=[0, 1, 2, 3]` specifies the computing devices in the cluster. In fact, `ranks` can be not only a one-dimensional int list, but also a multi-dimensional int array:
 
 ```python
->>> placement2 = flow.placement("cuda", ranks=[[0, 1], [2, 3]])
+placement2 = flow.placement("cuda", ranks=[[0, 1], [2, 3]])
 ```
 
 When `ranks` is in the form of a one-dimensional list like `ranks=[0, 1, 2, 3]`, all devices in the cluster form a 1D device vector, which is where the 1D SBP name comes from.
@@ -29,10 +29,10 @@ When constructing a Global Tensor, we need to specify both `placement` and `SBP`
 For example, The following code configures a $2 \times 2$ device array, and sets the 2D SBP to `(broadcast, split(0))`.
 
 ```python
->>> a = flow.Tensor([[1,2],[3,4]])
->>> placement = flow.placement("cuda", ranks=[[0, 1], [2, 3]])
->>> sbp = (flow.sbp.broadcast, flow.sbp.split(0))
->>> a_to_global = a.to_global(placement=placement, sbp=sbp)
+a = flow.Tensor([[1,2],[3,4]])
+placement = flow.placement("cuda", ranks=[[0, 1], [2, 3]])
+sbp = (flow.sbp.broadcast, flow.sbp.split(0))
+a_to_global = a.to_global(placement=placement, sbp=sbp)
 ```
 
 It means that logically the data, over the entire device array, is `broadcast` in the 0th dimension ("viewed vertically"); `split(0)` in the 1st dimension ("viewed across").
