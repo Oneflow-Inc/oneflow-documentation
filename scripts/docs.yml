@@ -40,6 +40,9 @@ cn/docs/basics/08_nn_graph.md:
 
 # en/docs/cookies/torch2flow.md:
 
+# en/docs/cookies/zero.md:
+# 该文件中的代码块不是串行执行的，最后三个代码块需要嵌入到之前的代码块中，因此要测试代码运行情况可以使用 cooklab/zero/run 脚本。
+
 # en/docs/parallelism/01_introduction.md:
 
 # en/docs/parallelism/02_sbp.md:

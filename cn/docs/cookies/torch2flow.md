@@ -18,7 +18,7 @@ model_torch = nn.Sequential(
     nn.Softmax()
 )
 
-torch.save(model, save_file)
+torch.save(model_torch, save_file)
 ```
 
 运行以上代码，将得到 PyTorch 模型文件 `model.pth` 。将它转为 OneFlow 版本的模型包括两个主要步骤：

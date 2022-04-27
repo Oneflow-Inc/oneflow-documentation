@@ -33,9 +33,9 @@ from oneflow import nn
 
 ### 定义数据并行训练流程
 
-我们定义一个数据并行策略下的训练流程，与 [通过设置 SBP 做数据并行训练](../parallelism/05_ddp.md#通过设置-sbp-做数据并行训练) 中所介绍的是类似的。
+我们定义一个数据并行策略下的训练流程的方法与 [通过设置 SBP 做数据并行训练](../parallelism/05_ddp.md#通过设置-sbp-做数据并行训练) 中所介绍的是类似的。
 
-定义之后要使用到 placement、SBP 等：
+定义之后要使用到的 placement、SBP 等：
 ```python
 P = flow.placement("cuda", ranks=[0, 1])
 B = flow.sbp.broadcast
