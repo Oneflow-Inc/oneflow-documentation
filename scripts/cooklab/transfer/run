@@ -1,3 +1,0 @@
-#!/bin/bash
-rm -rf log/ data/
-python3 tsf.py
