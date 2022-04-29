@@ -27,32 +27,3 @@ cn/docs/basics/08_nn_graph.md:
   RUN: [0, 1, 2, 3, 4, 5, 7, 8, 9, 14, 15, 16] 
   # 第 7 个代码块是伪代码；第 11、12、14 个代码块是演示；第 13 个代码块是错误示例
   # 需要注意的是：目前 mkcodes.py 只能提取出顶格的代码块，而不能提取整个代码块有缩进的情况，比如由 `??? code` 下的代码块。对于此情况，需要将整个代码块选中，按住 Shift+Tab 取消缩进。
-
-# en/docs/cookies/activation_checkpointing.md:
-
-# en/docs/cookies/amp.md:
-
-# en/docs/cookies/one_embedding.md:
-
-# en/docs/cookies/oneflow2onnnx.md:
-
-# en/docs/cookies/serving.md:
-
-# en/docs/cookies/torch2flow.md:
-
-# en/docs/cookies/zero.md:
-# 该文件中的代码块不是串行执行的，最后三个代码块需要嵌入到之前的代码块中，因此要测试代码运行情况可以使用 cooklab/zero/run 脚本。
-
-# en/docs/parallelism/01_introduction.md:
-
-# en/docs/parallelism/02_sbp.md:
-
-# en/docs/parallelism/03_consistent_tensor.md:
-
-# en/docs/parallelism/04_2d-sbp.md:
-
-# en/docs/parallelism/04_launch.md:
-
-# en/docs/parallelism/05_ddp.md:
-
-# en/docs/parallelism/06_pipeline.md:
