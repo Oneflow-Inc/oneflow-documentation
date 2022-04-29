@@ -81,6 +81,10 @@ model = resnet18(pretrained=True)
 model.fc = nn.Linear(model.fc.in_features, 10)
 ```
 
+然后将模型加载到计算设备：
+```python
+model = model.to(DEVICE)
+```
 
 ### 训练模型
 
