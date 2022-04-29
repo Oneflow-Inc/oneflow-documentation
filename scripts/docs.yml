@@ -24,10 +24,12 @@ en/docs/basics/04_build_network.md:
 
 cn/docs/basics/05_autograd.md:
   # 第 4、9 个代码块是错误示例，所以此处不运行
+  # 需要使用 0.7.0 进行测试，此后版本中 Tensor 对象没有 zero_ 属性，而第 6 个代码块使用了 zero_
   RUN: [0, 1, 2, 4, 5, 6, 7, 9, 10]
 
 en/docs/basics/05_autograd.md:
   # 第 4、9 个代码块是错误示例，所以此处不运行
+  # 需要使用 0.7.0 进行测试，此后版本中 Tensor 对象没有 zero_ 属性，而第 6 个代码块使用了 zero_
   RUN: [0, 1, 2, 4, 5, 6, 7, 9, 10]
 
 cn/docs/basics/06_optimization.md:
