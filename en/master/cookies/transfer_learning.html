@@ -982,6 +982,9 @@
 Here, we get the ResNet-18 model loaded with pretrained weights by setting the <code>pretrained</code> parameter to <code>True</code>. If we output <code>model.fc</code>, we will get "Linear(in_features=512, out_features=1000, bias=True)". We can see that this classifier has 1000 output neurons, corresponding to 1000 categories of ImageNet. The CIFAR-10 dataset has 10 classes, so we need to replace this fully connected layer classifier:</p>
 <div class="highlight"><pre><span></span><code><span class="n">model</span><span class="o">.</span><span class="n">fc</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">fc</span><span class="o">.</span><span class="n">in_features</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
 </code></pre></div>
+<p>And load the model to the computing device:
+<div class="highlight"><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">DEVICE</span><span class="p">)</span>
+</code></pre></div></p>
 <h3 id="train-the-model">Train the Model<a class="headerlink" href="#train-the-model" title="Permanent link">&para;</a></h3>
 <p>Define the training function:
 <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">train_model</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">train_data_loader</span><span class="p">,</span> <span class="n">test_data_loader</span><span class="p">,</span> <span class="n">loss_func</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">):</span>

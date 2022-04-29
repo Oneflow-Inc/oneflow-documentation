@@ -982,6 +982,9 @@
 在这里，我们通过将 <code>pretrained</code> 参数设置为 <code>True</code> 来获取加载了预训练权重的 ResNet-18 模型。如果输出 <code>model.fc</code>，将会得到 "Linear(in_features=512, out_features=1000, bias=True)"，可以看出此分类器有 1000 个输出神经元，对应于 ImageNet 的 1000 个类别。CIFAR-10 数据集是 10 个类别，因此我们需要替换掉这个全连接层分类器：</p>
 <div class="highlight"><pre><span></span><code><span class="n">model</span><span class="o">.</span><span class="n">fc</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">fc</span><span class="o">.</span><span class="n">in_features</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
 </code></pre></div>
+<p>然后将模型加载到计算设备：
+<div class="highlight"><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">DEVICE</span><span class="p">)</span>
+</code></pre></div></p>
 <h3 id="_6">训练模型<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h3>
 <p>定义训练函数：
 <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">train_model</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">train_data_loader</span><span class="p">,</span> <span class="n">test_data_loader</span><span class="p">,</span> <span class="n">loss_func</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">):</span>
