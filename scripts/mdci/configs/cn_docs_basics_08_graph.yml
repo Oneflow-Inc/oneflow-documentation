@@ -1,4 +1,4 @@
-file_path: en/docs/basics/02_tensor.md
+file_path: cn/docs/basics/08_graph.md
 
 run:
-  - [0, 1, 2, 3, 4, 5, 7, 8, 9, 14, 15, 16]
+    - [0]
