@@ -17,12 +17,11 @@ else:
 def run_block_item(block_dict:OrderedDict, file_path=None):
     for index in block_dict:
         try:
-            print("!!!!", block_dict[index])
             exec(block_dict[index])
         except:
-            print("Error raised on markdown test of file: {0}".format(file_path))
-            print("Codeblock index:", index)
-            print("Codeblock:\r\n"+block_dict[index])
+            print("Error raised on markdown test of file: {0}, codeblock index: {1}".format(file_path, index))
+            print("Code:")
+            print(bytes(block_dict[index], encoding="utf-8"))
             raise RuntimeError("markdown test fails")
 
 def run_markdown_codes(file_path, index):

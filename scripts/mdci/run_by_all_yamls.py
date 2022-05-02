@@ -1,6 +1,11 @@
 import yaml
 import subprocess
 import os
+import argparse
+
+parser = argparse.ArgumentParser(description='read config yaml files and run realted code')
+parser.add_argument('--yaml', type=str, default=None, help='the path of yaml file. eg: ./sample.yaml')
+args = parser.parse_args()
 
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../"))
 CONFIG_DIR = os.path.join(BASE_DIR, "scripts/mdci/configs")
@@ -21,7 +26,7 @@ def run_yaml_markdown_codes(yaml_path, config):
         pass # do nothing if remove more than once
     for index in config["run"]:
         cmd = r"python3 run_markdown_codes.py --markdown_file {0} --index {1}".format(
-            file_path, index
+            file_path, str(index).replace(" ", "")
         )
         cmd_list = cmd.split(" ", 5)
         subprocess_ret = subprocess.run(cmd_list)
@@ -55,6 +60,9 @@ def main():
         run_yaml_markdown_codes(yaml_file, read_config(yaml_file))
 
 if __name__ == "__main__":
-    main()
-    print("MARKDOWN FILES NOT TEST:")
-    print("\n".join(ALL_MARKDOWN_FILES))
+    if args.yaml:
+        run_yaml_markdown_codes(args.yaml, read_config(args.yaml))
+    else:
+        main()
+        print("MARKDOWN FILES NOT TEST:")
+        print("\n".join(ALL_MARKDOWN_FILES))
