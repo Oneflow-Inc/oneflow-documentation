@@ -80,6 +80,10 @@ Here, we get the ResNet-18 model loaded with pretrained weights by setting the `
 model.fc = nn.Linear(model.fc.in_features, 10)
 ```
 
+And load the model to the computing device:
+```python
+model = model.to(DEVICE)
+```
 
 ### Train the Model
 
