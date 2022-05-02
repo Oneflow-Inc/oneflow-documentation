@@ -3,7 +3,6 @@ import os
 import re
 import glob
 import copy
-from signal import raise_signal
 import traceback
 from os.path import join
 from io import StringIO
@@ -22,10 +21,10 @@ else:
 
 def github_codeblocks(filepath, safe):
     codeblocks = []
-    codeblock_re = r'^```.*'
-    codeblock_open_re = r'^```(`*)(py|python){0}$'.format('' if safe else '?')
+    codeblock_re = r"^```.*"
+    codeblock_open_re = r"^```(`*)(py|python){0}$".format("" if safe else "?")
 
-    with open(filepath, 'r', encoding="utf-8") as f:
+    with open(filepath, "r", encoding="utf-8") as f:
         block = []
         python = True
         in_codeblock = False
@@ -36,7 +35,7 @@ def github_codeblocks(filepath, safe):
             if in_codeblock:
                 if codeblock_delimiter:
                     if python:
-                        codeblocks.append(''.join(block))
+                        codeblocks.append("".join(block))
                     block = []
                     python = True
                     in_codeblock = False
@@ -48,12 +47,13 @@ def github_codeblocks(filepath, safe):
                     python = False
     return codeblocks
 
+
 def get_textblocks(filepath, safe):
     codeblocks = []
-    codeblock_re = r'^```.*'
-    codeblock_open_re = r'^```(`*)(text){0}$'.format('' if safe else '?')
+    codeblock_re = r"^```.*"
+    codeblock_open_re = r"^```(`*)(text){0}$".format("" if safe else "?")
 
-    with open(filepath, 'r', encoding="utf-8") as f:
+    with open(filepath, "r", encoding="utf-8") as f:
         block = []
         python = True
         in_codeblock = False
@@ -64,7 +64,7 @@ def get_textblocks(filepath, safe):
             if in_codeblock:
                 if codeblock_delimiter:
                     if python:
-                        codeblocks.append(''.join(block))
+                        codeblocks.append("".join(block))
                     block = []
                     python = True
                     in_codeblock = False
@@ -78,14 +78,14 @@ def get_textblocks(filepath, safe):
 
 
 def is_markdown(f):
-    markdown_extensions = ['.markdown', '.mdown', '.mkdn', '.mkd', '.md']
+    markdown_extensions = [".markdown", ".mdown", ".mkdn", ".mkd", ".md"]
     return os.path.splitext(f)[1] in markdown_extensions
 
 
 def get_nested_files(directory, depth):
-    for i in glob.iglob(directory + '/*'):
+    for i in glob.iglob(directory + "/*"):
         if os.path.isdir(i):
-            yield from get_nested_files(i, depth+1)
+            yield from get_nested_files(i, depth + 1)
         elif is_markdown(i):
             yield (i, depth)
 
@@ -113,30 +113,29 @@ def makedirs(directory):
             else:
                 break
 
-
 def main():
     collect_codeblocks = github_codeblocks
     safe = True
 
-
     current_path = os.path.dirname(os.path.abspath(__file__))
-    config_name = 'docs.yml'
+    config_name = "docs.yml"
     config_file = join(current_path, config_name)
 
-
     with open(config_file) as f:
-        config = yaml.load(f,Loader=yaml.Loader) # 加载
+        config = yaml.load(f, Loader=yaml.Loader)  # 加载
 
-        path = os.path.abspath(os.path.join(os.getcwd(), "..")) # ../oneflow-documentation/
+        path = os.path.abspath(
+            os.path.join(os.getcwd(), "..")
+        )  # ../oneflow-documentation/
         file_list = []
 
-        for root, dirs, files in os.walk(path): #遍历仓库中所有的 md 文件，以列表形式写入 file_list
+        for root, dirs, files in os.walk(path):  # 遍历仓库中所有的 md 文件，以列表形式写入 file_list
             for file in files:
-                if os.path.splitext(file)[1] == '.md':
+                if os.path.splitext(file)[1] == ".md":
                     # print(join(root, file))
                     file_list.append(join(root, file))
 
-        '''file_list_check = copy.deepcopy(file_list) # 深拷贝一份 file_list 用于下一步检测
+        """file_list_check = copy.deepcopy(file_list) # 深拷贝一份 file_list 用于下一步检测
 
         for section in config: # 遍历一遍，看看有无遗漏的 md 文件
             filepath = join(path, section)
@@ -151,9 +150,9 @@ def main():
 
         if file_list_check != []:
             raise ValueError('The following files are not recorded in {}. \n {}'.format(config_name, file_list_check))
-        '''
+        """
 
-        for key, args in config.items(): # 正式开始操作
+        for key, args in config.items():  # 正式开始操作
             filepath = join(path, key)
             run_list = []
             test_list = []
@@ -161,44 +160,46 @@ def main():
             testAll = False
 
             if args:
-                if 'RUN' in args:
-                    if isinstance(args['RUN'], str):
-                        if args['RUN'].strip() == 'all' or args['RUN'].strip() == 'All' or args['RUN'].strip() == 'ALL':
+                if "RUN" in args:
+                    if isinstance(args["RUN"], str):
+                        if (
+                            args["RUN"].strip() == "all"
+                            or args["RUN"].strip() == "All"
+                            or args["RUN"].strip() == "ALL"
+                        ):
                             runAll = True
                     else:
-                        run_list = args['RUN']
-                if 'TEST' in args:
-                    if isinstance(args['TEST'], str):
-                        if args['TEST'].strip() == 'all' or args['TEST'].strip() == 'All' or args['TEST'].strip() == 'ALL':
+                        run_list = args["RUN"]
+                if "TEST" in args:
+                    if isinstance(args["TEST"], str):
+                        if (
+                            args["TEST"].strip() == "all"
+                            or args["TEST"].strip() == "All"
+                            or args["TEST"].strip() == "ALL"
+                        ):
                             testAll = True
                     else:
-                        test_list = args['TEST']
-
+                        test_list = args["TEST"]
 
             test_list = list(map(int, test_list))
             run_list = list(map(int, run_list))
 
-
-
-            
-
             # 读取文件
             codeblocks = collect_codeblocks(filepath, safe)
-            textblocks = get_textblocks(filepath,safe)
+            textblocks = get_textblocks(filepath, safe)
 
             # 检测是否为负数
 
             for i in test_list:
                 if i < 0:
-                    i+=len(textblocks)
-            
+                    i += len(textblocks)
+
             for i in run_list:
                 if i < 0:
-                    i+=len(codeblocks)
-                
+                    i += len(codeblocks)
 
             if codeblocks:
-                singleblock = ''
+                singleblock = ""
 
                 for i, blockitem in enumerate(codeblocks):
                     if i in run_list or runAll:
@@ -206,10 +207,13 @@ def main():
                         if not runAll:
                             run_list.remove(i)
 
-                if run_list != []: raise ValueError("The RUN args for {} has indexes that does not exist.".format(filepath))
-                
-                
-                
+                if run_list != []:
+                    raise ValueError(
+                        "The RUN args for {} has indexes that does not exist.".format(
+                            filepath
+                        )
+                    )
+
                 @contextlib.contextmanager
                 def stdoutIO(stdout=None):
                     old = sys.stdout
@@ -218,10 +222,11 @@ def main():
                     sys.stdout = stdout
                     yield stdout
                     sys.stdout = old
+
                 print("Running " + filepath)
                 with stdoutIO() as s:
                     try:
-                        
+
                         exec(singleblock, globals())
                     except Exception as e:
                         traceback.print_exc()
@@ -229,15 +234,25 @@ def main():
                 for i, blockitem in enumerate(textblocks):
                     if i in test_list or testAll:
                         if i not in run_list and not runAll:
-                            raise ValueError("The TEST args contains indexes that does not exist in RUN args.")
+                            raise ValueError(
+                                "The TEST args contains indexes that does not exist in RUN args."
+                            )
                         if blockitem not in s.getvalue():
-                            raise ValueError("The text block:\n {} does not match the code output.".format(blockitem))
+                            raise ValueError(
+                                "The text block:\n {} does not match the code output.".format(
+                                    blockitem
+                                )
+                            )
                         test_list.remove(i)
-                if test_list != [] : raise ValueError("The TEST config for {} has indexes that does not exist.".format(filepath))
-                
+                if test_list != []:
+                    raise ValueError(
+                        "The TEST config for {} has indexes that does not exist.".format(
+                            filepath
+                        )
+                    )
+
                 print("ok")
 
 
 if __name__ == "__main__":
     main()
-    
