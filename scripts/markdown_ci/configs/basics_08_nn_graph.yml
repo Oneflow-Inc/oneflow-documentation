@@ -11,4 +11,4 @@
 # 12
 # state_dict = flow.load(CHECKPOINT_SAVE_DIR)
 # graph_mobile_net_v2.load_state_dict(state_dict)
-# Because :nn.Graph's state dict can only be loaded before the first call of a graph.
+# Because: nn.Graph's state dict can only be loaded before the first call of a graph.
