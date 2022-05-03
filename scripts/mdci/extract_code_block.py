@@ -66,7 +66,7 @@ def pickup_blocks(all_blocks, index):
         raise RuntimeError("index can be list only or literal string - 'all'")
 
 def print_all_blocks(file):
-    all_blocks = get_all_python_blocks(args.markdown)
+    all_blocks = get_all_python_blocks(file)
     for i in range(0, len(all_blocks)):
         print("=============CODE {0}=============".format(i))
         print(all_blocks[i])

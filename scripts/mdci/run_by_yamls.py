@@ -3,19 +3,10 @@ import subprocess
 import os
 import argparse
 
-parser = argparse.ArgumentParser(
-    description="read config yaml files and run realted code"
-)
-parser.add_argument(
-    "--yaml", type=str, default=None, help="the path of yaml file. eg: ./sample.yaml"
-)
-args = parser.parse_args()
-
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../"))
 CONFIG_DIR = os.path.join(BASE_DIR, "scripts/mdci/configs")
 CN_DOCS = os.path.join(BASE_DIR, "cn/docs")
 EN_DOCS = os.path.join(BASE_DIR, "en/docs")
-
 
 def read_config(yaml_file):
     with open(yaml_file) as f:
@@ -23,17 +14,19 @@ def read_config(yaml_file):
         return config
 
 
-def run_yaml_markdown_codes(yaml_path, config):
+def run_yaml_markdown_codes(yaml_path, config, all_markdown_files):
     file_path = os.path.join(BASE_DIR, config["file_path"])
-    try:
-        ALL_MARKDOWN_FILES.remove(file_path)
-    except:
-        pass  # do nothing if remove more than once
+    if all_markdown_files:
+        try:
+            all_markdown_files.remove(file_path)
+        except:
+            pass  # do nothing if remove more than once
     for index in config["run"]:
         cmd = r"python3 run_markdown_codes.py --markdown_file {0} --index {1}".format(
             file_path, str(index).replace(" ", "")
         )
         cmd_list = cmd.split(" ", 5)
+        print("====RUN====:", cmd)
         subprocess_ret = subprocess.run(cmd_list)
         if subprocess_ret.returncode != 0:
             print("ERROR!!! YAML {0} fails when run: {1}".format(yaml_path, cmd_list))
@@ -61,19 +54,29 @@ def get_all_markdown_files():
     return md_files_list
 
 
-ALL_MARKDOWN_FILES = get_all_markdown_files()
-
-
-def main():
+def run_all_yamls(all_markdown_files):
     print(get_all_yaml_files())
     for yaml_file in get_all_yaml_files():
-        run_yaml_markdown_codes(yaml_file, read_config(yaml_file))
+        run_configs_in_yaml(yaml_file, all_markdown_files)
+    print("MARKDOWN FILES NOT TEST:")
+    print("\n".join(all_markdown_files))
 
+def run_configs_in_yaml(yaml_file, all_markdown_files=None):
+    for config in read_config(yaml_file):
+        run_yaml_markdown_codes(yaml_file, config, all_markdown_files)
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+        description="read config yaml files and run realted code"
+    )
+    parser.add_argument(
+        "--yaml", type=str, default=None, help="the path of yaml file. eg: ./sample.yaml"
+    )
+    args = parser.parse_args()
+
     if args.yaml:
-        run_yaml_markdown_codes(args.yaml, read_config(args.yaml))
+        run_configs_in_yaml(args.yaml)
     else:
-        main()
-        print("MARKDOWN FILES NOT TEST:")
-        print("\n".join(ALL_MARKDOWN_FILES))
+        markdown_files = get_all_markdown_files()
+        run_all_yamls(markdown_files)
+

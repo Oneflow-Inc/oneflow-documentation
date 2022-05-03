@@ -1,0 +1,7 @@
+- file_path: cn/docs/basics/02_tensor.md
+  run:
+    - all
+
+- file_path: en/docs/basics/02_tensor.md
+  run:
+    - all

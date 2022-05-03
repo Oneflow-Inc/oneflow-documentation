@@ -1,0 +1,14 @@
+- file_path: cn/docs/basics/08_nn_graph.md
+  run:
+    - [0, 1, 2, 3, 4, 5, 7, 8, 9, 10, 11, 13, 14, 15]
+
+- file_path: en/docs/basics/08_nn_graph.md
+  run:
+    - [0, 1, 2, 3, 4, 5, 7, 8, 9, 10, 11, 13, 14, 15]
+
+# REMOVED CODE BLOCKS:
+
+# 12
+# state_dict = flow.load(CHECKPOINT_SAVE_DIR)
+# graph_mobile_net_v2.load_state_dict(state_dict)
+# Because :nn.Graph's state dict can only be loaded before the first call of a graph.

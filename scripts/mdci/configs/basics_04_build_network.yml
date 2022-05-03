@@ -1,0 +1,7 @@
+- file_path: cn/docs/basics/04_build_network.md
+  run:
+    - all
+
+- file_path: en/docs/basics/04_build_network.md
+  run:
+    - all
