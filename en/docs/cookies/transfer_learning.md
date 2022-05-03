@@ -49,9 +49,6 @@ DEVICE = 'cuda' if flow.cuda.is_available() else 'cpu'
 Define Dataset and DataLoader:
 
 ```python
-train_dataset = CIFAR10(root='./data', train=True, transform=train_transform, download=True)
-test_dataset = CIFAR10(root='./data', train=False, transform=test_transform, download=True)
-
 train_transform = transforms.Compose([
     transforms.RandomHorizontalFlip(),
     transforms.RandomVerticalFlip(),
@@ -64,6 +61,9 @@ test_transform = transforms.Compose([
     transforms.ToTensor(),
     transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
 ])
+
+train_dataset = CIFAR10(root='./data', train=True, transform=train_transform, download=True)
+test_dataset = CIFAR10(root='./data', train=False, transform=test_transform, download=True)
 
 train_data_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True, num_workers=4)
 test_data_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE, shuffle=False, num_workers=4)
