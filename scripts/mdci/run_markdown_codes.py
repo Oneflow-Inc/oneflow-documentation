@@ -2,25 +2,6 @@ from collections import OrderedDict
 import argparse
 from extract_code_block import *
 
-parser = argparse.ArgumentParser(description="Run python code in markdown files")
-parser.add_argument(
-    "--markdown_file", type=str, help="the path of markdown file. eg: ./sample.md"
-)
-parser.add_argument(
-    "--index",
-    type=str,
-    default="all",
-    help='the index set of code blocks. eg: [0, 1, 2]. Default for "all"',
-)
-
-args = parser.parse_args()
-file_path = args.markdown_file
-if args.index != "all":
-    index = eval(args.index)
-else:
-    index = args.index
-
-
 def run_block_item(block_dict: OrderedDict, file_path=None):
     for index in block_dict:
         try:
@@ -43,4 +24,21 @@ def run_markdown_codes(file_path, index):
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Run python code in markdown files")
+    parser.add_argument(
+        "--markdown_file", type=str, help="the path of markdown file. eg: ./sample.md"
+    )
+    parser.add_argument(
+        "--index",
+        type=str,
+        default="all",
+        help='the index set of code blocks. eg: [0, 1, 2]. Default for "all"',
+    )
+
+    args = parser.parse_args()
+    file_path = args.markdown_file
+    if args.index != "all":
+        index = eval(args.index)
+    else:
+        index = args.index
     run_markdown_codes(file_path, index)

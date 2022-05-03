@@ -65,6 +65,7 @@ ALL_MARKDOWN_FILES = get_all_markdown_files()
 
 
 def main():
+    print(get_all_yaml_files())
     for yaml_file in get_all_yaml_files():
         run_yaml_markdown_codes(yaml_file, read_config(yaml_file))
 
