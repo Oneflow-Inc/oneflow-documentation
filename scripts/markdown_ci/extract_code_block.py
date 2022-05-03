@@ -6,6 +6,7 @@ import sys
 
 __all__ = ["get_all_python_blocks", "get_all_text_blocks", "pickup_blocks"]
 
+
 def get_markdown_blocks(filepath, pattern, strict=True):
     codeblocks = []
     codeblock_re = r"^```.*"
@@ -65,6 +66,7 @@ def pickup_blocks(all_blocks, index):
     else:
         raise RuntimeError("index can be list only or literal string - 'all'")
 
+
 def print_all_blocks(file):
     all_blocks = get_all_python_blocks(file)
     for i in range(0, len(all_blocks)):
@@ -72,13 +74,19 @@ def print_all_blocks(file):
         print(all_blocks[i])
         print("")
 
+
 def main():
     parser = argparse.ArgumentParser(
         description="read config yaml files and run realted code"
     )
-    parser.add_argument("--markdown", type=str, default=None, help="the input markdown file")
     parser.add_argument(
-        "--output", type=str, default=None, help="if not None, output will be written to the path"
+        "--markdown", type=str, default=None, help="the input markdown file"
+    )
+    parser.add_argument(
+        "--output",
+        type=str,
+        default=None,
+        help="if not None, output will be written to the path",
     )
     args = parser.parse_args()
     saved_std_output = None
@@ -93,6 +101,7 @@ def main():
             print_all_blocks(args.markdown)
     else:
         print_all_blocks(args.markdown)
+
 
 if __name__ == "__main__":
     main()
