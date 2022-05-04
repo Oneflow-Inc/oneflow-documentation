@@ -5,8 +5,9 @@
 - [配置 YAML 文件](#配置-YAML-文件)
 - [读取 YAML 中的设置并运行](#读取-YAML-中的设置并运行)
 - [读取所有 YAML 中的设置并运行](#读取所有-YAML-中的设置并运行)
-- [测试时修改 markdown 中的代码](#测试时修改-markdown-中的代码)
-- [run_by_yamls.py 选项说明](#run_by_yamls.py-选项说明)
+- [测试前修正 markdown 中的代码](#测试前修正-markdown-中的代码)
+- [run_by_yamls.py 选项说明](#run_by_yamlspy-选项说明)
+- [如何查看错误信息](#如何查看错误信息)
 
 ## 配置 YAML 文件
 
