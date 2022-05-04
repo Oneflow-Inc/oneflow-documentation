@@ -1,24 +1,37 @@
 from collections import OrderedDict
 import argparse
+import sys
 from extract_code_block import *
 
 
+def get_hooker():
+    hooker = """def hook(index, code):\n"""
+    for line in sys.stdin:
+        hooker = hooker + "  " + line
+    exec(hooker, globals(), globals())
+
+
 def run_block_item(block_dict: OrderedDict, file_path=None):
+    exec_error_msg = """    markdown file: {0}
+    codeblock index: {1}
+    Code:{2}"""
     for index in block_dict:
         try:
-            exec(block_dict[index], globals(), globals())
+            code = hook(index, block_dict[index])
+            exec(code, globals(), globals())
         except:
+            print("    ****EXEC ERROR****")
             print(
-                "Error raised on markdown test of file: {0}, codeblock index: {1}".format(
-                    file_path, index
+                exec_error_msg.format(
+                    file_path, index, bytes(block_dict[index], encoding="utf-8")
                 )
             )
-            print("Code:")
-            print(bytes(block_dict[index], encoding="utf-8"))
+            print("")
             raise RuntimeError("markdown test fails")
 
 
 def run_markdown_codes(file_path, index):
+    get_hooker()
     codes = get_all_python_blocks(file_path)
     picked_codes = pickup_blocks(codes, index)
     run_block_item(picked_codes, file_path)

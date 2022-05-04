@@ -2,6 +2,7 @@ import yaml
 import subprocess
 import os
 import argparse
+from extract_code_block import print_all_blocks
 
 __all__ = []
 
@@ -19,20 +20,29 @@ def read_config(yaml_file):
 
 def run_yaml_markdown_codes(yaml_path, config, all_markdown_files):
     file_path = os.path.join(BASE_DIR, config["file_path"])
+    if "hook" in config:
+        hook_body = config["hook"]
+    else:
+        hook_body = "return code"
+
     if all_markdown_files:
         try:
             all_markdown_files.remove(file_path)
         except:
             pass  # do nothing if remove more than once
+
     for index in config["run"]:
         cmd = r"python3 run_markdown_codes.py --markdown_file {0} --index {1}".format(
             file_path, str(index).replace(" ", "")
         )
         cmd_list = cmd.split(" ", 5)
         print("====RUN CODE IN MARKDOWN====:", cmd)
-        subprocess_ret = subprocess.run(cmd_list)
+        subprocess_ret = subprocess.run(
+            cmd_list, input=bytes(hook_body, encoding="utf-8"), check=True
+        )
         if subprocess_ret.returncode != 0:
-            print("ERROR!!! YAML {0} fails when run: {1}".format(yaml_path, cmd_list))
+            print("YAML ERROR:  {0} fails when run: {1}".format(yaml_path, cmd_list))
+            exit(1)
 
 
 def get_all_yaml_files():
@@ -71,9 +81,18 @@ def run_configs_in_yaml(yaml_file, all_markdown_files=None):
         run_yaml_markdown_codes(yaml_file, config, all_markdown_files)
 
 
-if __name__ == "__main__":
+def main():
     parser = argparse.ArgumentParser(
         description="read config yaml files and run realted code"
+    )
+    parser.add_argument(
+        "--markdown", type=str, default=None, help="the input markdown file"
+    )
+    parser.add_argument(
+        "--output",
+        type=str,
+        default=None,
+        help="if not None, output will be written to the path",
     )
     parser.add_argument(
         "--yaml",
@@ -89,6 +108,17 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
+    if args.markdown:
+        if args.output:
+            with open(args.output, "w") as f:
+                saved_std_output = sys.stdout
+                sys.stdout = f
+                print_all_blocks(args.markdown)
+                sys.stdout = saved_std_output
+        else:
+            print_all_blocks(args.markdown)
+        return
+
     if args.configs:
         CONFIG_DIR = args.configs
 
@@ -97,3 +127,7 @@ if __name__ == "__main__":
     else:
         markdown_files = get_all_markdown_files()
         run_all_yamls(markdown_files)
+
+
+if __name__ == "__main__":
+    main()
