@@ -88,13 +88,20 @@ The following code uses [FlowVision](https://github.com/Oneflow-Inc/vision), a l
 
 ### Export as ONNX Model
 
-Import related dependencies:
+Import related dependencies and the saved resnet34 model will be used later:
 
 ```python
 import oneflow as flow
 from oneflow import nn
 from flowvision.models import resnet34
 from oneflow_onnx.oneflow2onnx.util import convert_to_onnx_and_check
+
+# Model parameter storage directory
+MODEL_PARAMS = 'checkpoints/resnet34'
+
+# Load & save pretrained model
+model = resnet34(pretrained=True)
+flow.save(model.state_dict(), MODEL_PARAMS)
 ```
 
 To build a static graph model using a dynamic graph model. For details, refer to: [Static Graph Interface: nn.Graph](../basics/08_nn_graph.md)
@@ -112,9 +119,6 @@ class ResNet34Graph(nn.Graph):
 Export OneFlow static graph models to ONNX models:
 
 ```python
-# Model parameter storage directory
-MODEL_PARAMS = 'checkpoints/resnet34'
-
 params = flow.load(MODEL_PARAMS)
 model = resnet34()
 model.load_state_dict(params)
