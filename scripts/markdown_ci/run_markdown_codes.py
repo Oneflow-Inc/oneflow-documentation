@@ -4,17 +4,20 @@ from extract_code_block import *
 
 
 def run_block_item(block_dict: OrderedDict, file_path=None):
+    exec_error_msg = """    markdown file: {0}
+    codeblock index: {1}
+    Code:{2}"""
     for index in block_dict:
         try:
             exec(block_dict[index], globals(), globals())
         except:
+            print("    ****EXEC ERROR****")
             print(
-                "Error raised on markdown test of file: {0}, codeblock index: {1}".format(
-                    file_path, index
+                exec_error_msg.format(
+                    file_path, index, bytes(block_dict[index], encoding="utf-8")
                 )
             )
-            print("Code:")
-            print(bytes(block_dict[index], encoding="utf-8"))
+            print("")
             raise RuntimeError("markdown test fails")
 
 
