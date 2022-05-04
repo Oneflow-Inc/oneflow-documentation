@@ -1,0 +1,7 @@
+- file_path: cn/docs/cookies/one_embedding.md
+  run: 
+    - [0, 1, 2, 3, 4, 5]
+
+- file_path: en/docs/cookies/one_embedding.md
+  run: 
+    - [0, 1, 2, 3, 4, 5]
