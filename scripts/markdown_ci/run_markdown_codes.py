@@ -1,6 +1,14 @@
 from collections import OrderedDict
 import argparse
+import sys
 from extract_code_block import *
+
+
+def get_hooker():
+    hooker = """def hook(index, code):\n"""
+    for line in sys.stdin:
+        hooker = hooker + "  " + line
+    exec(hooker, globals(), globals())
 
 
 def run_block_item(block_dict: OrderedDict, file_path=None):
@@ -9,7 +17,8 @@ def run_block_item(block_dict: OrderedDict, file_path=None):
     Code:{2}"""
     for index in block_dict:
         try:
-            exec(block_dict[index], globals(), globals())
+            code = hook(index, block_dict[index])
+            exec(code, globals(), globals())
         except:
             print("    ****EXEC ERROR****")
             print(
@@ -22,6 +31,7 @@ def run_block_item(block_dict: OrderedDict, file_path=None):
 
 
 def run_markdown_codes(file_path, index):
+    get_hooker()
     codes = get_all_python_blocks(file_path)
     picked_codes = pickup_blocks(codes, index)
     run_block_item(picked_codes, file_path)

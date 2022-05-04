@@ -1,7 +1,21 @@
 - file_path: cn/docs/basics/01_quickstart.md
   run:
     - all
+  hook: | # hook(index, codetext)
+      if index == 6:
+        code = code.replace('print(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")',
+        'print(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]");break')
+      if index == 8:
+        code = code.replace("epochs = 5", "epochs = 1")
+      return code
 
 - file_path: en/docs/basics/01_quickstart.md
   run:
     - all
+  hook: | # hook(index, codetext)
+      if index == 6:
+        code = code.replace('print(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")',
+        'print(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]");break')
+      if index == 8:
+        code = code.replace("epochs = 5", "epochs = 1")
+      return code

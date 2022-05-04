@@ -20,18 +20,26 @@ def read_config(yaml_file):
 
 def run_yaml_markdown_codes(yaml_path, config, all_markdown_files):
     file_path = os.path.join(BASE_DIR, config["file_path"])
+    if "hook" in config:
+        hook_body = config["hook"]
+    else:
+        hook_body = "pass"
+
     if all_markdown_files:
         try:
             all_markdown_files.remove(file_path)
         except:
             pass  # do nothing if remove more than once
+
     for index in config["run"]:
         cmd = r"python3 run_markdown_codes.py --markdown_file {0} --index {1}".format(
             file_path, str(index).replace(" ", "")
         )
         cmd_list = cmd.split(" ", 5)
         print("====RUN CODE IN MARKDOWN====:", cmd)
-        subprocess_ret = subprocess.run(cmd_list)
+        subprocess_ret = subprocess.run(
+            cmd_list, input=bytes(hook_body, encoding="utf-8"), check=True
+        )
         if subprocess_ret.returncode != 0:
             print("YAML ERROR:  {0} fails when run: {1}".format(yaml_path, cmd_list))
             exit(1)
