@@ -23,7 +23,7 @@ def run_yaml_markdown_codes(yaml_path, config, all_markdown_files):
     if "hook" in config:
         hook_body = config["hook"]
     else:
-        hook_body = "pass"
+        hook_body = "return code"
 
     if all_markdown_files:
         try:
