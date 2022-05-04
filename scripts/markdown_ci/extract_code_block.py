@@ -76,31 +76,7 @@ def print_all_blocks(file):
 
 
 def main():
-    parser = argparse.ArgumentParser(
-        description="read config yaml files and run realted code"
-    )
-    parser.add_argument(
-        "--markdown", type=str, default=None, help="the input markdown file"
-    )
-    parser.add_argument(
-        "--output",
-        type=str,
-        default=None,
-        help="if not None, output will be written to the path",
-    )
-    args = parser.parse_args()
-    saved_std_output = None
-    if not args.markdown:
-        print("the input markdown file should be set by --markdown")
-        return
-
-    if args.output:
-        with open(args.output, "w") as f:
-            saved_std_output = sys.stdout
-            sys.stdout = f
-            print_all_blocks(args.markdown)
-    else:
-        print_all_blocks(args.markdown)
+    pass
 
 
 if __name__ == "__main__":
