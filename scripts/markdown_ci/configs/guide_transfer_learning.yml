@@ -3,12 +3,26 @@
     - [0, 1, 2, 3, 4, 5, 6, 7, 8, 11]
     - [0, 1, 2, 3, 4, 5, 6, 7, 9, 11]
     - [0, 1, 2, 3, 4, 5, 6, 7, 10, 11]
+  hook: | # hook(index, code)
+    if index == 1:
+      code = code.replace("NUM_EPOCHS = 3", "NUM_EPOCHS = 1")
+    if index == 6:
+      code = code.replace("print(f'loss: {loss:>7f}  [epoch: {epoch} {batch * BATCH_SIZE:>5d}/{dataset_size:>5d}]')",
+      "print(f'loss: {loss:>7f}  [epoch: {epoch} {batch * BATCH_SIZE:>5d}/{dataset_size:>5d}]');break")
+    return code
 
 - file_path: en/docs/cookies/transfer_learning.md
   run: 
     - [0, 1, 2, 3, 4, 5, 6, 7, 8, 11]
     - [0, 1, 2, 3, 4, 5, 6, 7, 9, 11]
     - [0, 1, 2, 3, 4, 5, 6, 7, 10, 11]
+  hook: | # hook(index, code)
+    if index == 1:
+      code = code.replace("NUM_EPOCHS = 3", "NUM_EPOCHS = 1")
+    if index == 6:
+      code = code.replace("print(f'loss: {loss:>7f}  [epoch: {epoch} {batch * BATCH_SIZE:>5d}/{dataset_size:>5d}]')",
+      "print(f'loss: {loss:>7f}  [epoch: {epoch} {batch * BATCH_SIZE:>5d}/{dataset_size:>5d}]');break")
+    return code
 
 # WHY 3 CASES FOR ONE ARTICLE
 # the code blocks 8, 9, 10 are three ways for transfer learning
