@@ -983,9 +983,7 @@
 <h2 id="eager-mode-in-oneflow">Eager Mode in OneFlow<a class="headerlink" href="#eager-mode-in-oneflow" title="Permanent link">&para;</a></h2>
 <p>OneFlow runs in Eager Mode by default.</p>
 <p>The following script uses data set CIFAR10 to train model <code>mobilenet_v2</code>.</p>
-<details class="code">
-<summary>Code</summary>
-<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">oneflow</span> <span class="k">as</span> <span class="nn">flow</span>
+<details class="code"><summary>Code</summary><div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">oneflow</span> <span class="k">as</span> <span class="nn">flow</span>
 <span class="kn">import</span> <span class="nn">oneflow.nn</span> <span class="k">as</span> <span class="nn">nn</span>
 <span class="kn">import</span> <span class="nn">flowvision</span>
 <span class="kn">import</span> <span class="nn">flowvision.transforms</span> <span class="k">as</span> <span class="nn">transforms</span>
@@ -1118,9 +1116,7 @@ loss: 6.644351  [  960/50000]
 </code></pre></div>
 <h3 id="training-in-graph-mode">Training in Graph Mode<a class="headerlink" href="#training-in-graph-mode" title="Permanent link">&para;</a></h3>
 <p>The Graph can be used for training. Click on the "Code" below to see the detailed code.</p>
-<details class="code">
-<summary>Code</summary>
-<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">oneflow</span> <span class="k">as</span> <span class="nn">flow</span>
+<details class="code"><summary>Code</summary><div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">oneflow</span> <span class="k">as</span> <span class="nn">flow</span>
 <span class="kn">import</span> <span class="nn">oneflow.nn</span> <span class="k">as</span> <span class="nn">nn</span>
 <span class="kn">import</span> <span class="nn">flowvision</span>
 <span class="kn">import</span> <span class="nn">flowvision.transforms</span> <span class="k">as</span> <span class="nn">transforms</span>
@@ -1322,13 +1318,13 @@ loss: 6.644351  [  960/50000]
 </code></pre></div>
 <p>Insert the following code at the completion of each epoch:
 <div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">shutil</span>
-<span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">CHECKPOINT_SAVE_DIR</span><span class="p">)</span>  <span class="c1"># Clear previous state</span>
+<span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">CHECKPOINT_SAVE_DIR</span><span class="p">,</span> <span class="n">ignore_errors</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># Clear previous state</span>
 <span class="n">flow</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">graph_mobile_net_v2</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span> <span class="n">CHECKPOINT_SAVE_DIR</span><span class="p">)</span>
 </code></pre></div></p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p><strong>Don't</strong> save in the following way. Because Graph will process members when it is initialized, and <code>graph_mobile_net_v2.model</code> is actually no longer a Module type:</p>
-<div class="highlight"><pre><span></span><code><span class="n">flow</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">graph_mobile_net_v2</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span> <span class="n">CHECKPOINT_SAVE_DIR</span><span class="p">)</span>  <span class="c1"># it will report an error</span>
+<div class="highlight"><pre><span></span><code>flow.save(graph_mobile_net_v2.model.state_dict(), CHECKPOINT_SAVE_DIR)  # it will report an error
 </code></pre></div>
 </div>
 <p>When we need to restore the previously saved state:</p>

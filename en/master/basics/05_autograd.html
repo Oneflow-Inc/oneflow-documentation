@@ -1028,13 +1028,13 @@ tensor(2., dtype=oneflow.float32)
 tensor(40., dtype=oneflow.float32)
 </code></pre></div>
 <p>The above output shows that OneFlow will <strong>accumulate</strong> the gradient calculated by <code>backward()</code> multiple times.
-By calling the <code>zeros_()</code>, we can clear the gradient:</p>
+By calling the <code>zero_()</code>, we can clear the gradient:</p>
 <div class="highlight"><pre><span></span><code><span class="n">n1</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="mf">10.</span><span class="p">,</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">n2</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="n">n1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
 
 <span class="n">n2</span><span class="o">.</span><span class="n">backward</span><span class="p">(</span><span class="n">retain_graph</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">n1</span><span class="o">.</span><span class="n">grad</span><span class="p">)</span>
-<span class="n">n1</span><span class="o">.</span><span class="n">grad</span><span class="o">.</span><span class="n">zeros_</span><span class="p">()</span>
+<span class="n">n1</span><span class="o">.</span><span class="n">grad</span><span class="o">.</span><span class="n">zero_</span><span class="p">()</span>
 <span class="n">n2</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">n1</span><span class="o">.</span><span class="n">grad</span><span class="p">)</span>
 </code></pre></div>

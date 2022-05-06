@@ -1028,13 +1028,13 @@ tensor(2., dtype=oneflow.float32)
 tensor(40., dtype=oneflow.float32)
 </code></pre></div>
 <p>以上输出可知，OneFlow 会 <strong>累加</strong> 多次 <code>backward()</code> 计算得到的梯度。
-如果想清空梯度，可以调用 <code>zeros_</code> 方法：</p>
+如果想清空梯度，可以调用 <code>zero_</code> 方法：</p>
 <div class="highlight"><pre><span></span><code><span class="n">n1</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="mf">10.</span><span class="p">,</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">n2</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="n">n1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
 
 <span class="n">n2</span><span class="o">.</span><span class="n">backward</span><span class="p">(</span><span class="n">retain_graph</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">n1</span><span class="o">.</span><span class="n">grad</span><span class="p">)</span>
-<span class="n">n1</span><span class="o">.</span><span class="n">grad</span><span class="o">.</span><span class="n">zeros_</span><span class="p">()</span>
+<span class="n">n1</span><span class="o">.</span><span class="n">grad</span><span class="o">.</span><span class="n">zero_</span><span class="p">()</span>
 <span class="n">n2</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">n1</span><span class="o">.</span><span class="n">grad</span><span class="p">)</span>
 </code></pre></div>

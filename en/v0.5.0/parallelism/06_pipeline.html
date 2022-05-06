@@ -1016,9 +1016,7 @@
 <p>We have introduced the characteristics of pipelining parallelism in <a href="01_introduction.html">COMMON DISTRIBUTED PARALLEL STRATEGIES</a>.</p>
 <p>From OneFlow's <a href="03_consistent_tensor.html">consistent view</a>, pipelining can be achieved by simply setting the placement attribute of Tensor.</p>
 <p>The following code is a simple example that will run the network in <a href="../basics/01_quickstart.html">QUICKSTART</a> with pipelining parallelism. <code>nn.Flatten</code>, <code>nn.Linear(28*28, 512)</code> and <code>nn.ReLU()</code> run on GPU0, and the rest layers of the network run on GPU1.</p>
-<details class="code">
-<summary>Code</summary>
-<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">oneflow</span> <span class="k">as</span> <span class="nn">flow</span>
+<details class="code"><summary>Code</summary><div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">oneflow</span> <span class="k">as</span> <span class="nn">flow</span>
 </code></pre></div>
 <p>BATCH_SIZE = 16
 BROADCAST = [flow.sbp.broadcast]

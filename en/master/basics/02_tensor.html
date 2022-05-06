@@ -1029,13 +1029,13 @@ cpu:0
 </code></pre></div>
 <p>The output shows the shape, the data type, and the device (on CPU No. 0, CPUs were numbered because OneFlow naturally supports distribution, see <a href="../parallelism/03_consistent_tensor.html">Global Tensor</a>).</p>
 <p>The shape of the tensor can be changed by the <a href="https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.reshape#oneflow.reshape">reshape</a> method, and the data type and device of the tensor can be changed by the <a href="https://oneflow.readthedocs.io/en/master/tensor.html?highlight=Tensor.to#oneflow.Tensor.to">to</a> method:</p>
-<div class="highlight"><pre><span></span><code>x10 = x9.reshape(2, 2)
-x11 = x10.to(dtype=flow.int32, device=flow.device(&quot;cuda&quot;))
-print(x10.shape)
-print(x11.dtype, x11.device)
+<div class="highlight"><pre><span></span><code><span class="n">x10</span> <span class="o">=</span> <span class="n">x9</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">x11</span> <span class="o">=</span> <span class="n">x10</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">flow</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">flow</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s2">&quot;cuda&quot;</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">x10</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">x11</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">x11</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
 </code></pre></div>
 <p>Out:</p>
-<div class="highlight"><pre><span></span><code>flow.Size([2, 2])
+<div class="highlight"><pre><span></span><code>oneflow.Size([2, 2])
 oneflow.int32 cuda:0
 </code></pre></div>
 <h2 id="operations-on-tensors">Operations on Tensors<a class="headerlink" href="#operations-on-tensors" title="Permanent link">&para;</a></h2>
