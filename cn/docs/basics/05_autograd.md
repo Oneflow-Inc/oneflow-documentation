@@ -116,7 +116,7 @@ tensor(40., dtype=oneflow.float32)
 ```
 
 以上输出可知，OneFlow 会 **累加** 多次 `backward()` 计算得到的梯度。
-如果想清空梯度，可以调用 `zeros_` 方法：
+如果想清空梯度，可以调用 `zero_` 方法：
 
 ```python
 n1 = flow.tensor(10., requires_grad=True)
@@ -124,7 +124,7 @@ n2 = flow.pow(n1, 2)
 
 n2.backward(retain_graph=True)
 print(n1.grad)
-n1.grad.zeros_()
+n1.grad.zero_()
 n2.backward()
 print(n1.grad)
 ```

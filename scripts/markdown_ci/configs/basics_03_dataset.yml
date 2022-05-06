@@ -1,0 +1,12 @@
+- file_path: cn/docs/basics/03_dataset_dataloader.md
+  run:
+    - [0, 1, 2, 3, 4, 5]
+
+- file_path: en/docs/basics/03_dataset_dataloader.md
+  run:
+    - [0, 1, 2, 3, 4, 5]
+
+# REMOVED CODE BLOCKS 06, A HUGE LOOP:
+# for x, label in train_dataloader:
+#     print(x.shape, label.shape)
+#     # training...

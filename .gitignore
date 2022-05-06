@@ -17,3 +17,11 @@ wheelhouse*
 .clangd
 .cache
 /tmp
+
+meta
+out
+pickled_data
+*model/
+*.onnx
+*.pth
+data/
