@@ -185,7 +185,7 @@ OneFlow Serving 提供了 Docker 镜像，使用 Docker 启动模型服务。按
 
 ```
 docker run --rm --runtime=nvidia --network=host -v$(pwd)/model_repository:/models \
-  oneflowinc/oneflow-serving:0.0.1 /opt/tritonserver/bin/tritonserver --model-store /models
+  oneflowinc/oneflow-serving /opt/tritonserver/bin/tritonserver --model-store /models
 ```
 
 使用下面的命令，可以检查模型服务是否启动。看到 http 200 状态码，那么模型服务已经启动。
