@@ -38,7 +38,7 @@
 通过 `run_by_yamls.py` 的 `--markdown` 选项，可以查看一个 markdown 文件中的所有 Python 代码块及其序号。
 
 ```shell
-python3 run_by_yamls.py --markdown ../cn/docs/basics/04_build_network.md
+python3 run_by_yamls.py --markdown ../../cn/docs/basics/04_build_network.md
 ```
 
 以上命令输出：
