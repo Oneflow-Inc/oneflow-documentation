@@ -379,7 +379,7 @@ CHECKPOINT_SAVE_DIR = "./GraphMobileNetV2"
 Insert the following code at the completion of each epoch:
 ```python
 import shutil
-shutil.rmtree(CHECKPOINT_SAVE_DIR)  # Clear previous state
+shutil.rmtree(CHECKPOINT_SAVE_DIR, ignore_errors=True)  # Clear previous state
 flow.save(graph_mobile_net_v2.state_dict(), CHECKPOINT_SAVE_DIR)
 ```
 
@@ -388,7 +388,7 @@ flow.save(graph_mobile_net_v2.state_dict(), CHECKPOINT_SAVE_DIR)
 
     **Don't** save in the following way. Because Graph will process members when it is initialized, and `graph_mobile_net_v2.model` is actually no longer a Module type:
 
-    ```python
+    ```text
     flow.save(graph_mobile_net_v2.model.state_dict(), CHECKPOINT_SAVE_DIR)  # it will report an error
     ```
 

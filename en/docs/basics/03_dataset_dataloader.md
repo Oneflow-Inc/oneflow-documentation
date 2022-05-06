@@ -165,7 +165,7 @@ print(f"shape of x:{x.shape}, shape of label: {label.shape}")
 
 Output：
 ```text
-shape of x:flow.Size([64, 1, 28, 28]), shape of label: flow.Size([64])
+shape of x:oneflow.Size([64, 1, 28, 28]), shape of label: oneflow.Size([64])
 ```
 
 ```python

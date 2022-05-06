@@ -377,14 +377,14 @@ CHECKPOINT_SAVE_DIR = "./GraphMobileNetV2"
 在每个 epoch 训练完成处插入以下代码：
 ```python
 import shutil
-shutil.rmtree(CHECKPOINT_SAVE_DIR)  # 清理上一次的状态
+shutil.rmtree(CHECKPOINT_SAVE_DIR, ignore_errors=True)  # 清理上一次的状态
 flow.save(graph_mobile_net_v2.state_dict(), CHECKPOINT_SAVE_DIR)
 ```
 
 !!! Note
     **不能** 用以下方式保存。因为 Graph 在初始化时，会对成员做处理，所以 `graph_mobile_net_v2.model` 其实已经不再是 Module 类型：
 
-    ```python
+    ```text
     flow.save(graph_mobile_net_v2.model.state_dict(), CHECKPOINT_SAVE_DIR)  # 会报错
     ```
 

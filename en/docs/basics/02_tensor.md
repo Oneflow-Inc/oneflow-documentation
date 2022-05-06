@@ -148,7 +148,7 @@ The output shows the shape, the data type, and the device (on CPU No. 0, CPUs we
 
 The shape of the tensor can be changed by the [reshape](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.reshape#oneflow.reshape) method, and the data type and device of the tensor can be changed by the [to](https://oneflow.readthedocs.io/en/master/tensor.html?highlight=Tensor.to#oneflow.Tensor.to) method:
 
-```
+```python
 x10 = x9.reshape(2, 2)
 x11 = x10.to(dtype=flow.int32, device=flow.device("cuda"))
 print(x10.shape)
@@ -158,7 +158,7 @@ print(x11.dtype, x11.device)
 Out:
 
 ```text
-flow.Size([2, 2])
+oneflow.Size([2, 2])
 oneflow.int32 cuda:0
 ```
 
