@@ -1058,7 +1058,7 @@ output [
 <h3 id="start-service">Start Service<a class="headerlink" href="#start-service" title="Permanent link">&para;</a></h3>
 <p>OneFlow Serving provides Docker images with which you can start model service. After organizing the files according to the above layout, you can map the path to the container and start the service.</p>
 <div class="highlight"><pre><span></span><code>docker run --rm --runtime=nvidia --network=host -v$(pwd)/model_repository:/models \
-  oneflowinc/oneflow-serving:0.0.1 /opt/tritonserver/bin/tritonserver --model-store /models
+  oneflowinc/oneflow-serving /opt/tritonserver/bin/tritonserver --model-store /models
 </code></pre></div>
 <p>Run the command below to check whether the model service is starting. When you see the http 200 status code, the service has started.</p>
 <div class="highlight"><pre><span></span><code>curl -v localhost:8000/v2/health/ready
