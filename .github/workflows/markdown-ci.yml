@@ -56,13 +56,12 @@ jobs:
             --name ${TEST_CONTAINER_NAME} \
             ${{ env.TEST_IMG_TAG }} \
             sleep 3600
-      - name: Install doc test requirements
+      - name: Install run markdown files code requirements
         timeout-minutes: 45
         run: |
           docker exec ${TEST_CONTAINER_NAME} python3 -m pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
           docker exec ${{ env.TEST_CONTAINER_NAME }} python3 -m pip install -f https://staging.oneflow.info/branch/master/cu102 --pre oneflow
           docker exec ${{ env.TEST_CONTAINER_NAME }} python3 -m pip install -r requirements.txt --user
-          docker exec ${{ env.TEST_CONTAINER_NAME }} export PATH=$HOME/.local/bin:$PATH
       - name: MarkdwonTest
         timeout-minutes: 45
         run: |
