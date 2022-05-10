@@ -5,3 +5,6 @@ mike==1.0.1
 Jinja2==3.0.2
 Markdown==3.3.4
 PyYAML==6.0
+flowvision==0.1.0
+matplotlib==3.5.2
+
