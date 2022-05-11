@@ -40,10 +40,6 @@ def run_yaml_markdown_codes(yaml_path, config, all_markdown_files):
         subprocess_ret = subprocess.run(
             cmd_list, input=bytes(hook_body, encoding="utf-8"), check=True
         )
-        if subprocess_ret.returncode != 0:
-            print("YAML ERROR:  {0} fails when run: {1}".format(yaml_path, cmd_list))
-            exit(1)
-
 
 def get_all_yaml_files():
     yaml_files_list = []

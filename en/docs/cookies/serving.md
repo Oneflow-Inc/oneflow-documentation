@@ -185,7 +185,7 @@ OneFlow Serving provides Docker images with which you can start model service. A
 
 ```
 docker run --rm --runtime=nvidia --network=host -v$(pwd)/model_repository:/models \
-  oneflowinc/oneflow-serving:0.0.1 /opt/tritonserver/bin/tritonserver --model-store /models
+  oneflowinc/oneflow-serving /opt/tritonserver/bin/tritonserver --model-store /models
 ```
 
 Run the command below to check whether the model service is starting. When you see the http 200 status code, the service has started.

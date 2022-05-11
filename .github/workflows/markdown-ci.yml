@@ -1,0 +1,74 @@
+# This is a basic workflow to help you get started with Actions
+
+name: RunMarkdownFile
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the master branch
+  pull_request:
+    branches: [master]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: [self-hosted, linux, provision]
+    env:
+      TEST_CONTAINER_NAME: "pr-${{ github.event.pull_request.number }}-run-id-${{ github.run_id }}-${{ matrix.entry }}-test"
+      TEST_IMG_TAG: registry.cn-beijing.aliyuncs.com/oneflow/test-with-pytorch-1.9.0:e7a497b41d8b7f1bce055b1f23d027f93b1557ae
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      - name: Fix permissions
+        run: |
+          set -x
+          docker run --rm -v $PWD:/p -w /p busybox rm -rf *
+          docker run --rm -v $PWD:/p -w /p busybox rm -rf .git
+      - name: Remove container
+        timeout-minutes: 45
+        run: |
+          docker rm -f ${{ env.TEST_CONTAINER_NAME }} || true
+      - name: Cancel Previous Runs
+        continue-on-error: true
+        uses: styfle/cancel-workflow-action@0.9.1
+        with:
+          access_token: ${{ github.token }}
+          all_but_latest: true
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+        with:
+          submodules: false
+      # Runs a set of commands using the runners shell
+      - name: Start container
+        timeout-minutes: 45
+        run: |
+          docker pull ${{ env.TEST_IMG_TAG }}
+          docker run -d --rm --privileged --network host --shm-size=8g \
+            --cap-add=SYS_PTRACE --security-opt seccomp=unconfined \
+            --runtime=nvidia \
+            -v $HOME/test-container-cache/dot-local:/root/.local \
+            -v $HOME/test-container-cache/dot-cache:/root/.cache \
+            -v $PWD:$PWD \
+            -w $PWD \
+            --name ${TEST_CONTAINER_NAME} \
+            ${{ env.TEST_IMG_TAG }} \
+            sleep 3600
+      - name: Install run markdown files code requirements
+        timeout-minutes: 45
+        run: |
+          docker exec ${TEST_CONTAINER_NAME} python3 -m pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
+          docker exec ${{ env.TEST_CONTAINER_NAME }} python3 -m pip install -f https://staging.oneflow.info/branch/master/cu102 --pre oneflow
+          docker exec ${{ env.TEST_CONTAINER_NAME }} python3 -m pip install -r requirements.txt --user
+      - name: MarkdwonTest
+        timeout-minutes: 45
+        run: |
+          docker exec -w $PWD ${{ env.TEST_CONTAINER_NAME }} sh scripts/run-markdown-ci.sh
+      - name: Remove container
+        timeout-minutes: 45
+        if: ${{ always() }}
+        run: |
+          docker rm -f ${TEST_CONTAINER_NAME} || true
+          docker run --rm -v $PWD:/p -w /p busybox chown -R $(id -u):$(id -g) . || true
