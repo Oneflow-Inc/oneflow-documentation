@@ -885,7 +885,9 @@
 <p>此外，为了方便从 PyTorch 迁移到 OneFlow 的用户，OneFlow 提供了与 <code>torch.nn.parallel.DistributedDataParallel</code> 对齐一致的接口 <a href="https://oneflow.readthedocs.io/en/master/nn.html#oneflow.nn.parallel.DistributedDataParallel">oneflow.nn.parallel.DistributedDataParallel</a>，它也能让用户方便地从单机训练脚本，扩展为数据并行训练。</p>
 <h2 id="sbp">通过设置 SBP 做数据并行训练<a class="headerlink" href="#sbp" title="Permanent link">&para;</a></h2>
 <p>以下代码，是通过配置设置 global 张量，完成数据并行训练。点击以下 “Code” 查看详细代码。</p>
-<details class="code"><summary>Code</summary><div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">oneflow</span> <span class="k">as</span> <span class="nn">flow</span>
+<details class="code">
+<summary>Code</summary>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">oneflow</span> <span class="k">as</span> <span class="nn">flow</span>
 <span class="kn">import</span> <span class="nn">oneflow.nn</span> <span class="k">as</span> <span class="nn">nn</span>
 <span class="kn">import</span> <span class="nn">flowvision</span>
 <span class="kn">import</span> <span class="nn">flowvision.transforms</span> <span class="k">as</span> <span class="nn">transforms</span>
@@ -978,7 +980,9 @@ w:tensor([[2.0000],
        grad_fn=&lt;accumulate_grad&gt;)
 </code></pre></div>
 <p>点击以下 “Code” 可以展开以上运行脚本的代码。</p>
-<details class="code"><summary>Code</summary><div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">oneflow</span> <span class="k">as</span> <span class="nn">flow</span>
+<details class="code">
+<summary>Code</summary>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">oneflow</span> <span class="k">as</span> <span class="nn">flow</span>
 <span class="kn">from</span> <span class="nn">oneflow.nn.parallel</span> <span class="kn">import</span> <span class="n">DistributedDataParallel</span> <span class="k">as</span> <span class="n">ddp</span>
 
 <span class="n">train_x</span> <span class="o">=</span> <span class="p">[</span>

@@ -896,7 +896,9 @@
 <p>在 <a href="01_introduction.html">常见的分布式并行策略</a> 一文中介绍了流水并行的特点。</p>
 <p>在 OneFlow 的 <a href="03_consistent_tensor.html">全局视角</a> 下，通过简单的设置 Tensor 的 <code>placement</code> 属性，就可以实现流水并行。</p>
 <p>以下代码是简单的示范，它将 <a href="../basics/01_quickstart.html">快速上手</a> 中的网络，以流水并行的方式运行。前几层的 Module <code>nn.Flatten</code>、<code>nn.Linear(28*28, 512)</code>、<code>nn.ReLU()</code> 在 GPU0 上运行；剩余的网络部分在 GPU1 上运行。</p>
-<details class="code"><summary>Code</summary><div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">oneflow</span> <span class="k">as</span> <span class="nn">flow</span>
+<details class="code">
+<summary>Code</summary>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">oneflow</span> <span class="k">as</span> <span class="nn">flow</span>
 
 <span class="n">BATCH_SIZE</span> <span class="o">=</span> <span class="mi">16</span>
 <span class="n">BROADCAST</span> <span class="o">=</span> <span class="p">[</span><span class="n">flow</span><span class="o">.</span><span class="n">sbp</span><span class="o">.</span><span class="n">broadcast</span><span class="p">]</span>

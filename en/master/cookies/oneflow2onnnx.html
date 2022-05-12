@@ -1061,11 +1061,18 @@
 <p>In this section, the process of exporting a OneFlow model to an ONNX model and performing inference is introduced, using the common ResNet-34 model as an example.</p>
 <p>The following code uses <a href="https://github.com/Oneflow-Inc/vision">FlowVision</a>, a library built on OneFlow for computer vision tasks, which contains many models, data enhancement methods, data transformation operations, datasets, and so on. Here we directly use the ResNet-34 model provided by the FlowVision library and use its weight trained on the ImageNet dataset. </p>
 <h3 id="export-as-onnx-model">Export as ONNX Model<a class="headerlink" href="#export-as-onnx-model" title="Permanent link">&para;</a></h3>
-<p>Import related dependencies:</p>
+<p>Import related dependencies and the saved resnet34 model will be used later:</p>
 <div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">oneflow</span> <span class="k">as</span> <span class="nn">flow</span>
 <span class="kn">from</span> <span class="nn">oneflow</span> <span class="kn">import</span> <span class="n">nn</span>
 <span class="kn">from</span> <span class="nn">flowvision.models</span> <span class="kn">import</span> <span class="n">resnet34</span>
 <span class="kn">from</span> <span class="nn">oneflow_onnx.oneflow2onnx.util</span> <span class="kn">import</span> <span class="n">convert_to_onnx_and_check</span>
+
+<span class="c1"># Model parameter storage directory</span>
+<span class="n">MODEL_PARAMS</span> <span class="o">=</span> <span class="s1">&#39;checkpoints/resnet34&#39;</span>
+
+<span class="c1"># Load &amp; save pretrained model</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">resnet34</span><span class="p">(</span><span class="n">pretrained</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">flow</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span> <span class="n">MODEL_PARAMS</span><span class="p">)</span>
 </code></pre></div>
 <p>To build a static graph model using a dynamic graph model. For details, refer to: <a href="../basics/08_nn_graph.html">Static Graph Interface: nn.Graph</a></p>
 <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">ResNet34Graph</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Graph</span><span class="p">):</span>
@@ -1077,10 +1084,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 </code></pre></div>
 <p>Export OneFlow static graph models to ONNX models:</p>
-<div class="highlight"><pre><span></span><code><span class="c1"># Model parameter storage directory</span>
-<span class="n">MODEL_PARAMS</span> <span class="o">=</span> <span class="s1">&#39;checkpoints/resnet34&#39;</span>
-
-<span class="n">params</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">MODEL_PARAMS</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><span class="n">params</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">MODEL_PARAMS</span><span class="p">)</span>
 <span class="n">model</span> <span class="o">=</span> <span class="n">resnet34</span><span class="p">()</span>
 <span class="n">model</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
 

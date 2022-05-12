@@ -1061,11 +1061,18 @@
 <p>在本节中，将以常见的 ResNet-34 模型为例，介绍将 OneFlow 模型导出为 ONNX 模型并进行推理的流程。</p>
 <p>下面的代码中使用到了 <a href="https://github.com/Oneflow-Inc/vision">FlowVision</a>，它是基于 OneFlow 搭建的、专用于计算机视觉任务的工具库，包含诸多模型、数据增强方法、数据变换操作、数据集等。我们在此直接使用 FlowVision 库提供的 ResNet-34 模型，并使用 FlowVision 提供的在 ImageNet 数据集上训练得到的 ResNet-34 权重。</p>
 <h3 id="onnx_2">导出为 ONNX 模型<a class="headerlink" href="#onnx_2" title="Permanent link">&para;</a></h3>
-<p>导入相关依赖：
+<p>导入相关依赖，为方便演示，直接使用 <code>resnet34</code> 的预训练模型：
 <div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">oneflow</span> <span class="k">as</span> <span class="nn">flow</span>
 <span class="kn">from</span> <span class="nn">oneflow</span> <span class="kn">import</span> <span class="n">nn</span>
 <span class="kn">from</span> <span class="nn">flowvision.models</span> <span class="kn">import</span> <span class="n">resnet34</span>
 <span class="kn">from</span> <span class="nn">oneflow_onnx.oneflow2onnx.util</span> <span class="kn">import</span> <span class="n">convert_to_onnx_and_check</span>
+
+<span class="c1"># 模型参数存储目录</span>
+<span class="n">MODEL_PARAMS</span> <span class="o">=</span> <span class="s1">&#39;checkpoints/resnet34&#39;</span>
+
+<span class="c1"># 下载预训练模型并保存</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">resnet34</span><span class="p">(</span><span class="n">pretrained</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">flow</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span> <span class="n">MODEL_PARAMS</span><span class="p">)</span>
 </code></pre></div></p>
 <p>使用动态图模型构建静态图模型，详情请参见：<a href="../basics/08_nn_graph.html">静态图模块 nn.Graph</a></p>
 <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">ResNet34Graph</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Graph</span><span class="p">):</span>
@@ -1077,10 +1084,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 </code></pre></div>
 <p>将 OneFlow 静态图模型导出为 ONNX 模型：
-<div class="highlight"><pre><span></span><code><span class="c1"># 模型参数存储目录</span>
-<span class="n">MODEL_PARAMS</span> <span class="o">=</span> <span class="s1">&#39;checkpoints/resnet34&#39;</span>
-
-<span class="n">params</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">MODEL_PARAMS</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><span class="n">params</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">MODEL_PARAMS</span><span class="p">)</span>
 <span class="n">model</span> <span class="o">=</span> <span class="n">resnet34</span><span class="p">()</span>
 <span class="n">model</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
 
