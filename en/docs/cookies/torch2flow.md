@@ -16,7 +16,7 @@ model_torch = nn.Sequential(
     nn.Linear(128, 2), 
     nn.Softmax()
 )
-torch.save(model, save_file)
+torch.save(model_torch, save_file)
 ```
 
 After running the above code, we get a `model.pth` file of PyTorch model. Then, the following two steps enable us to covert a PyTorch model to a OneFlow model：

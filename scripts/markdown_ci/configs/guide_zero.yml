@@ -1,0 +1,7 @@
+- file_path: cn/docs/cookies/zero.md
+  run: 
+    - [0, 1]
+
+- file_path: en/docs/cookies/zero.md
+  run: 
+    - [0, 1]

@@ -41,7 +41,6 @@ def run_yaml_markdown_codes(yaml_path, config, all_markdown_files):
             cmd_list, input=bytes(hook_body, encoding="utf-8"), check=True
         )
 
-
 def get_all_yaml_files():
     yaml_files_list = []
     for root, dirs, files in os.walk(CONFIG_DIR):

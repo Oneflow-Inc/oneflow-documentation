@@ -1,0 +1,46 @@
+- file_path: cn/docs/cookies/oneflow2onnnx.md
+  run: 
+    - [2, 3, 4, 5, 6]
+
+- file_path: en/docs/cookies/oneflow2onnnx.md
+  run: 
+    - [2, 3, 4, 5, 6]
+
+#REMOVED BLOCKS
+
+# BLOCK 0, 1: pseduo code
+# =============CODE 0=============
+# from oneflow_onnx.oneflow2onnx.util import export_onnx_model
+
+# export_onnx_model(graph,
+#                   external_data=False, 
+#                   opset=None, 
+#                   flow_weight_dir=None, 
+#                   onnx_model_path="/tmp", 
+#                   dynamic_batch_size=False)
+
+
+# =============CODE 1=============
+# from oneflow_onnx.oneflow2onnx.util import convert_to_onnx_and_check
+
+# convert_to_onnx_and_check(...)
+
+# BLOCK 7: some extra files are needed
+# =============CODE 7=============
+# # 从文件中读取 ImageNet 数据集的类别名称
+# with open('ImageNet-Class-Names.txt') as f:
+#     CLASS_NAMES = f.readlines()
+
+# # 读取图像文件并使用 `preprocess_image` 函数进行预处理
+# img = cv2.imread('cat.jpg', cv2.IMREAD_COLOR)
+# img = preprocess_image(img)
+
+# # 创建一个 InferenceSession 对象
+# ort_sess = InferenceSession('model.onnx', providers=['TensorrtExecutionProvider',
+#                                                      'CUDAExecutionProvider',
+#                                                      'CPUExecutionProvider'])
+# # 调用 InferenceSession 对象的 `run` 方法进行推理
+# results = ort_sess.run(None, {"_ResNet34Graph_0-input_0/out": img})
+
+# # 输出推理结果
+# print(CLASS_NAMES[np.argmax(results[0])])

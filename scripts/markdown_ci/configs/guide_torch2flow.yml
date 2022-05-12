@@ -1,0 +1,7 @@
+- file_path: cn/docs/cookies/torch2flow.md
+  run: 
+    - all
+
+- file_path: en/docs/cookies/torch2flow.md
+  run: 
+    - all

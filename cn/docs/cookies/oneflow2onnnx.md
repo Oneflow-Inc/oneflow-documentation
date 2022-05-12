@@ -85,12 +85,19 @@ convert_to_onnx_and_check(...)
 
 ### 导出为 ONNX 模型
 
-导入相关依赖：
+导入相关依赖，为方便演示，直接使用 `resnet34` 的预训练模型：
 ```python
 import oneflow as flow
 from oneflow import nn
 from flowvision.models import resnet34
 from oneflow_onnx.oneflow2onnx.util import convert_to_onnx_and_check
+
+# 模型参数存储目录
+MODEL_PARAMS = 'checkpoints/resnet34'
+
+# 下载预训练模型并保存
+model = resnet34(pretrained=True)
+flow.save(model.state_dict(), MODEL_PARAMS)
 ```
 
 使用动态图模型构建静态图模型，详情请参见：[静态图模块 nn.Graph](../basics/08_nn_graph.md)
@@ -107,9 +114,6 @@ class ResNet34Graph(nn.Graph):
 
 将 OneFlow 静态图模型导出为 ONNX 模型：
 ```python
-# 模型参数存储目录
-MODEL_PARAMS = 'checkpoints/resnet34'
-
 params = flow.load(MODEL_PARAMS)
 model = resnet34()
 model.load_state_dict(params)

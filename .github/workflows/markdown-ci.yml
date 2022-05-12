@@ -7,14 +7,16 @@ on:
   # Triggers the workflow on push or pull request events but only for the master branch
   pull_request:
     branches: [master]
+    types: [opened, labeled, unlabeled, synchronize]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  build:
+  # This workflow contains a single job called "run_markdown_file"
+  run_markdown_file:
+    if: (contains(github.event.pull_request.labels.*.name, 'ci'))
     # The type of runner that the job will run on
     runs-on: [self-hosted, linux, provision]
     env:
@@ -56,12 +58,14 @@ jobs:
             --name ${TEST_CONTAINER_NAME} \
             ${{ env.TEST_IMG_TAG }} \
             sleep 3600
+          docker cp $HOME/test-container-cache/dot-cache/data ${TEST_CONTAINER_NAME}:$PWD/scripts/markdown_ci/
       - name: Install run markdown files code requirements
         timeout-minutes: 45
         run: |
           docker exec ${TEST_CONTAINER_NAME} python3 -m pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
           docker exec ${{ env.TEST_CONTAINER_NAME }} python3 -m pip install -f https://staging.oneflow.info/branch/master/cu102 --pre oneflow
           docker exec ${{ env.TEST_CONTAINER_NAME }} python3 -m pip install -r requirements.txt --user
+          docker exec ${{ env.TEST_CONTAINER_NAME }} python3 -m pip install -r scripts/ci-requirements.txt --user
       - name: MarkdwonTest
         timeout-minutes: 45
         run: |
