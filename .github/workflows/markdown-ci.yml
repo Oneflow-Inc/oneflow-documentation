@@ -53,12 +53,13 @@ jobs:
             --runtime=nvidia \
             -v $HOME/test-container-cache/dot-local:/root/.local \
             -v $HOME/test-container-cache/dot-cache:/root/.cache \
+            -v $HOME/test-container-cache/dot-oneflow:/root/.oneflow \
+            -v $HOME/test-container-cache/dot-cache/data:$PWD/scripts/markdown_ci/data \
             -v $PWD:$PWD \
             -w $PWD \
             --name ${TEST_CONTAINER_NAME} \
             ${{ env.TEST_IMG_TAG }} \
             sleep 3600
-          docker cp $HOME/test-container-cache/dot-cache/data ${TEST_CONTAINER_NAME}:$PWD/scripts/markdown_ci/
       - name: Install run markdown files code requirements
         timeout-minutes: 45
         run: |
