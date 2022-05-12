@@ -53,6 +53,7 @@ jobs:
             --runtime=nvidia \
             -v $HOME/test-container-cache/dot-local:/root/.local \
             -v $HOME/test-container-cache/dot-cache:/root/.cache \
+            -v $HOME/test-container-cache/dot-oneflow:/root/.oneflow \
             -v $PWD:$PWD \
             -w $PWD \
             --name ${TEST_CONTAINER_NAME} \
