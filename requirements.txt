@@ -3,9 +3,3 @@ mkdocs-material==7.1.11
 mkdocs-material-extensions==1.0.1
 mike==1.0.1
 Jinja2==3.0.2
-Markdown==3.3.4
-PyYAML==6.0
-flowvision==0.1.0
-matplotlib==3.5.2
-oneflow-onnx==0.5.4
-onnx==1.9.0

@@ -62,6 +62,7 @@ jobs:
           docker exec ${TEST_CONTAINER_NAME} python3 -m pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
           docker exec ${{ env.TEST_CONTAINER_NAME }} python3 -m pip install -f https://staging.oneflow.info/branch/master/cu102 --pre oneflow
           docker exec ${{ env.TEST_CONTAINER_NAME }} python3 -m pip install -r requirements.txt --user
+          docker exec ${{ env.TEST_CONTAINER_NAME }} python3 -m pip install -r scripts/ci-requirements.txt --user
       - name: MarkdwonTest
         timeout-minutes: 45
         run: |
