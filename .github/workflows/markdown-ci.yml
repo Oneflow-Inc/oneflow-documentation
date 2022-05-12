@@ -16,7 +16,7 @@ on:
 jobs:
   # This workflow contains a single job called "run_markdown_file"
   run_markdown_file:
-    if: (contains(github.event.pull_request.labels.*.name, 'ci')
+    if: (contains(github.event.pull_request.labels.*.name, 'ci'))
     # The type of runner that the job will run on
     runs-on: [self-hosted, linux, provision]
     env:
