@@ -15,7 +15,7 @@ on:
 jobs:
   # This workflow contains a single job called "run_markdown_file"
   run_markdown_file:
-    if: github.event.pull_request.draft == false && github.base_ref == 'master' && contains(github.event.pull_request.requested_reviewers.*.login, 'oneflow-ci-bot')
+    if: (contains(github.event.pull_request.labels.*.name, 'ci')
     # The type of runner that the job will run on
     runs-on: [self-hosted, linux, provision]
     env:
