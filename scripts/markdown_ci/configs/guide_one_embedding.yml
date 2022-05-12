@@ -1,7 +1,15 @@
 - file_path: cn/docs/cookies/one_embedding.md
   run: 
     - [0, 1, 2, 3, 4, 5]
+  hook: | # hook(index, code)
+      if index == 2:
+        code = code.replace("capacity=40000000", "capacity=4000")
+      return code
 
 - file_path: en/docs/cookies/one_embedding.md
   run: 
     - [0, 1, 2, 3, 4, 5]
+  hook: | # hook(index, code)
+      if index == 2:
+        code = code.replace("capacity=40000000", "capacity=4000")
+      return code
