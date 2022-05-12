@@ -58,6 +58,7 @@ jobs:
             --name ${TEST_CONTAINER_NAME} \
             ${{ env.TEST_IMG_TAG }} \
             sleep 3600
+          docker cp $HOME/test-container-cache/dot-cache/data ${TEST_CONTAINER_NAME}:$PWD/scripts/markdown_ci/
       - name: Install run markdown files code requirements
         timeout-minutes: 45
         run: |
