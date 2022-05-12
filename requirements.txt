@@ -8,3 +8,4 @@ PyYAML==6.0
 flowvision==0.1.0
 matplotlib==3.5.2
 oneflow-onnx==0.5.4
+onnx==1.9.0
