@@ -1,4 +1,4 @@
-# CONSISTENT TENSOR
+# GLOBAL TENSOR
 
 ## The Mapping Between Global View and Physical View
 
