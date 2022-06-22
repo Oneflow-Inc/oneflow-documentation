@@ -1142,12 +1142,12 @@ python3
 </div>
 <p>可以观察到，<code>flow.matmul</code> 根据输入 <code>x</code> 与 <code>w</code> 的 SBP 分别为 <code>split(0)</code>、<code>broadcast</code>。OneFlow 自动推导出输出 <code>y</code> 的 SBP 应该为 <code>split(0)</code>，完成计算，得到 <code>shape=(4,8)</code> 的矩阵。输出：</p>
 <div class="tabbed-set" data-tabs="7:2"><input checked="checked" id="__tabbed_7_1" name="__tabbed_7" type="radio" /><label for="__tabbed_7_1">Terminal 0</label><div class="tabbed-content">
-<div class="highlight"><pre><span></span><code>(oneflow.sbp.split(axis=0),)
+<div class="highlight"><pre><span></span><code>(oneflow.sbp.split(dim=0),)
 oneflow.Size([4, 8])
 </code></pre></div>
 </div>
 <input id="__tabbed_7_2" name="__tabbed_7" type="radio" /><label for="__tabbed_7_2">Terminal 1</label><div class="tabbed-content">
-<div class="highlight"><pre><span></span><code>(oneflow.sbp.split(axis=0),)
+<div class="highlight"><pre><span></span><code>(oneflow.sbp.split(dim=0),)
 oneflow.Size([4, 8])
 </code></pre></div>
 </div>
