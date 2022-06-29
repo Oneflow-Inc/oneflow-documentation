@@ -34,7 +34,7 @@ SBP 是 OneFlow 发明的概念，描述了“超级计算设备”全局视角�
 
 ![SBP Example](./imgs/sbp-example.png)
 
-在创建 Global Tensor 时，可以指定 Tensor 的 SBP，实际的代码例子将在下一篇文章 [Global Tensor](./03_consistent_tensor.md) 中看到。
+在创建 Global Tensor 时，可以指定 Tensor 的 SBP，实际的代码例子将在下一篇文章 [Global Tensor](./03_global_tensor.md) 中看到。
 
 ## SBP Signature
 
@@ -178,4 +178,4 @@ Y2 = flow.matmul(Y0, B1)
 
 通常情况下，用户只需要在起始网络层设置 `SBP`，由此可以省略传统分布式训练中手写通信操作的麻烦。更值得一提的是，除了本文介绍的 SBP Signature 自动推导机制外，OneFlow 团队正在研发一种寻求全局最优解的自动并行方法，正在内测，等它上线后，用户可以不做任何 SBP 配置就得到很好的分布式训练效果，敬请期待。
 
-在下一篇 [Global Tensor](./03_consistent_tensor) 中，我们将看到全局视角的编程例子。
+在下一篇 [Global Tensor](./03_global_tensor) 中，我们将看到全局视角的编程例子。

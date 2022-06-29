@@ -51,8 +51,8 @@ We can view the description of the options of the `launch` module after running 
 
 ## The Relationship between Launch Module and Parallel Strategy
 
-The main function of `oneflow.distributed.launch` is to allow users to start distributed training more conveniently after them complete the distributed program. It saves the trouble of configuring [environment variables](./03_consistent_tensor.md#_5) in the cluster.
+The main function of `oneflow.distributed.launch` is to allow users to start distributed training more conveniently after them complete the distributed program. It saves the trouble of configuring [environment variables](./03_global_tensor.md#_5) in the cluster.
 
 But `oneflow.distributed.launch` **does not determine** [Parallel Strategy](./01_introduction.md). The Parallel Strategy is determined by the setup of the distribution method of data and the model, and the placement of those on the physical devices.
 
-OneFlow provides [Global View](./02_sbp.md) and [Global Tensor](./03_consistent_tensor.md) to flexibly configure parallel strategies. And for data parallelism, OneFlow provides the [DistributedDataParallel](./05_ddp.md) module, which can change the single-node single-GPU script to the script of data parallel with  minimal code modification.
+OneFlow provides [Global View](./02_sbp.md) and [Global Tensor](./03_global_tensor.md) to flexibly configure parallel strategies. And for data parallelism, OneFlow provides the [DistributedDataParallel](./05_ddp.md) module, which can change the single-node single-GPU script to the script of data parallel with  minimal code modification.

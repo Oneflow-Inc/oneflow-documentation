@@ -2,7 +2,7 @@
 
 在 [常见的分布式并行策略](./01_introduction.md) 一文中介绍了流水并行的特点。
 
-在 OneFlow 的 [全局视角](./03_consistent_tensor.md) 下，通过简单的设置 Tensor 的 `placement` 属性，就可以实现流水并行。
+在 OneFlow 的 [全局视角](./03_global_tensor.md) 下，通过简单的设置 Tensor 的 `placement` 属性，就可以实现流水并行。
 
 以下代码是简单的示范，它将 [快速上手](../basics/01_quickstart.md) 中的网络，以流水并行的方式运行。前几层的 Module `nn.Flatten`、`nn.Linear(28*28, 512)`、`nn.ReLU()` 在 GPU0 上运行；剩余的网络部分在 GPU1 上运行。
 

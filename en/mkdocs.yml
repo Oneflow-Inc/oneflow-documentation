@@ -122,7 +122,7 @@ nav:
     - Distributed Training:
       - Common Parallel Strategies: parallelism/01_introduction.md
       - Global View: parallelism/02_sbp.md
-      - Global Tensor: parallelism/03_consistent_tensor.md
+      - Global Tensor: parallelism/03_global_tensor.md
       - 2D SBP: parallelism/04_2d-sbp.md
       - Distributed Training Launcher: parallelism/04_launch.md
       - Data Parallelism Training: parallelism/05_ddp.md

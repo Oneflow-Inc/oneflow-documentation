@@ -2,7 +2,7 @@
 
 We have introduced the characteristics of pipelining parallelism in [COMMON DISTRIBUTED PARALLEL STRATEGIES](./01_introduction.md).
 
-From OneFlow's [global view](./03_consistent_tensor.md), pipelining can be achieved by simply setting the placement attribute of Tensor.
+From OneFlow's [global view](./03_global_tensor.md), pipelining can be achieved by simply setting the placement attribute of Tensor.
 
 The following code is a simple example that will run the network in [QUICKSTART](../basics/01_quickstart.md) with pipelining parallelism. `nn.Flatten`, `nn.Linear(28*28, 512)` and `nn.ReLU()` run on GPU0, and the rest layers of the network run on GPU1.
 

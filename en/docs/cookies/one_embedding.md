@@ -195,7 +195,7 @@ OneEmbedding provides three storage options configurations,they are pure GPU sto
 
 ### Distributed Training
 
-Similar to other modules of OneFlow, OneEmbedding supports distributed expansion natively. Users can refer to the README in [#dlrm](扩展阅读：DLRM) to start DLRM distributed training. You can also refer to [Global Tensor](../parallelism/03_consistent_tensor.md) for necessary prerequisites.
+Similar to other modules of OneFlow, OneEmbedding supports distributed expansion natively. Users can refer to the README in [#dlrm](扩展阅读：DLRM) to start DLRM distributed training. You can also refer to [Global Tensor](../parallelism/03_global_tensor.md) for necessary prerequisites.
 
 When using the OneEmbedding module for distributed expansion, please be careful:
 

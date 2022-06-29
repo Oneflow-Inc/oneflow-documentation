@@ -37,7 +37,7 @@ The figures below show some examples of SBP, including `split(0)`, `split(1)`, `
 
 ![SBP Example](./imgs/sbp-example.png)
 
-When you create a Global Tensor, you can specify the SBP of the Tensor. The example will be seen in the next article: [Global Tensor](./03_consistent_tensor.md).
+When you create a Global Tensor, you can specify the SBP of the Tensor. The example will be seen in the next article: [Global Tensor](./03_global_tensor.md).
 
 
 ## SBP Signature
@@ -188,5 +188,5 @@ The corresponding relationship between the logical diagram and thephysical execu
 ​
 Usually, the users only need to set `SBP` in the initial network layer, which can omit the trouble of handwritten communication operations in traditional distributed training. It is worth mentioning that, in addtion to the automatic derivation mechanism of SBP Signature introduced in this article, the OneFlow team is developing an automatic parallel method to find the global optimal solution, and it is under internal testing. After it goes online, the users can get a good distributed training effect without any SBP configuration. So stay tuned.
 ​
-In the next article [Global Tensor](./03_consistent_tensor.md), we’ll show you an example of programming under the global view.
+In the next article [Global Tensor](./03_global_tensor.md), we’ll show you an example of programming under the global view.
 

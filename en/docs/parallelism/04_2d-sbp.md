@@ -1,6 +1,6 @@
 # 2D SBP
 
-After reading the [Global View](./02_sbp.md) and [Global Tensor](./03_consistent_tensor.md), you may have learned about the basic concepts of SBP and SBP Signature, and can get started with related tasks. In fact, both these two documents refers to **1D SBP**.
+After reading the [Global View](./02_sbp.md) and [Global Tensor](./03_global_tensor.md), you may have learned about the basic concepts of SBP and SBP Signature, and can get started with related tasks. In fact, both these two documents refers to **1D SBP**.
 
 Since you have known about 1D SBP, this document introduces 2D SBP, which can more flexibly deal with more complex distributed training scenarios.
 
