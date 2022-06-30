@@ -18,7 +18,7 @@ Global Tensor 是为了方便多机多设备分布式执行的 Tensor，是实�
 import oneflow as flow
 
 # Place a global tensor on cuda device of rank(process) 0 and 1
-placement = flow.placement("cuda", [0,1]) 
+placement = flow.placement(type="cuda", ranks=[0,1]) 
 # Each rank's local data is a part data as a result of spliting global data on dim 0
 sbp = flow.sbp.split(dim=0)
 # Create a global tensor by randn
@@ -49,7 +49,7 @@ print("Global data of global tensor:\n ",x.numpy())
 
 以上详细解释及借助工具启动分布式，请参考文末的 [扩展阅读](#_5)
 
-最后，在两个 Terminal 下个个启动一下`test_randn_global.py`观察 global tensor 的创建结果：
+最后，在两个 Terminal 下分别启动一下`test_randn_global.py`，观察 global tensor 的创建结果：
 ```
 python3 test_randn_global.py
 ```
@@ -79,18 +79,19 @@ Global data of global tensor:
 
 ## 扩展阅读
 
-### 多机训练时的环境变量
+### OneFlow 多机多卡启动 和 依赖的环境变量
+OneFlow Global Tensor 执行采用多客户端模式(Multi-Client)，即每个设备对应一个进程。n 机 m 卡 的环境，就对应 n * m 个进程。每个进程都有一个进程 rank 编号，global tensor 中的 placement 参数中的 ranks 对应的就是这个 rank 编号。进程 rank 编号隐式的也是设备编号，rank 编号加上设备类型就能标识一个设备，比如flow.placement(type="cuda", ranks=[k]) 就会对应上 k / m 号机器的编号为 k % m 的 cuda 设备。
 
-本文的例子，通过设置环境变量配置分布式训练，仅仅是为了在交互式 Python 环境下方便查看实验效果。
-如果不是学习、试验目的，而是生产需求，可以直接通过 [oneflow.distributed.launch](./04_launch.md) 启动分布式训练，该模块内部根据命令行参数自动设置了必要的环境变量。
+因为采用多客户端模式，所以需要给每个设备对应启动一个进程。在 OneFlow 中，把一个同样的脚本程序，启动多次就好了，唯一需要注意的是，每个脚本程序的进程启动需要不同的环境变量，以区分进程编号和建立通信连接。
 
-- `MASTER_ADDR`：多机训练的第0号机器的 IP
-- `MASTER_PORT`：多机训练的第0号机器的监听端口，不与已经占用的端口冲突即可
+使用环境变量启动参数虽然参数繁琐，但是适用性广，可以采用任意的方式来启动进程，只要提供好 OneFlow 分布式执行提供的环境变量就好。另外为了方便使用，OneFlow 也提供了一个分布式启动多进程且自动构建环境变量的工具 [oneflow.distributed.launch](./04_launch.md)。这里主要说明采用环境变量的启动方式：
+- `MASTER_ADDR`：多机训练的第0号机器的 IP；
+- `MASTER_PORT`：多机训练的第0号机器的监听端口，不与已经占用的端口冲突即可；
 - `WORLD_SIZE`：整个集群中计算设备的数目，因为目前还不支持各个机器上显卡数目不一致，因此 `WORLD_SIZE` 的数目实际上是 $机器数目 \times 每台机器上的显卡数目$。如我们这个例子中，是单机2卡的情况，因此 `WORLD_SIZE=2`
 
-`RANK` 和 `LOCAL_RANK` 都是对计算设备的编号，不同的是 `RANK` 是“全局视角”的编号，`LOCAL_RANK` 某个特定机器上的“局部视角”的编号。当是单机训练（单机单卡或单机多卡）时，两者是没有区别的。以上的例子中，有两个显卡，分别是0号和1号。
+`RANK` 和 `LOCAL_RANK` 都是对计算设备的编号，不同的是 `RANK` 是集群内所有机器下的进程编号，`LOCAL_RANK` 某个机器内的进程编号。当是单机训练（单机单卡或单机多卡）时，两者相等。以上的例子中，有两个显卡，分别是0号和1号。
 
-当是多机训练时，每台机器上的 `LOCAL_RANK` 的上限，就是每台机器上的计算设备的数目；`RANK` 的上限，就是所有机器上所有计算设备的总和，它们的编号均从0开始。（因为编号从0开始，所以不包含上限）
+当是多机训练时，每台机器上的 `LOCAL_RANK` 的上限，就是每台机器上的计算设备的数目；`RANK` 的上限，就是所有机器上所有计算设备的总和，它们的编号均从0开始。（因为编号从0开始，所以不包含上限）。
 
 以两台机器、每台机器上有两张显卡为例，可以整理出每张显卡的 `LOCAL_RANK` 与 `RANK` 对应情况：
 
@@ -101,7 +102,7 @@ Global data of global tensor:
 | 机器1的第0张显卡 | 2          | 0    |
 | 机器1的第1张显卡 | 3          | 1    |
 
-### Boxing（自动转换 SBP）
+### Boxing 和 自动SBP推理【这里需要完善】
 
 我们已经通过以上代码的例子，知道一个算子会根据输入 tensor 的 SBP 属性以及算子内置的 SBP Signature，自动设置输出 tensor 的 SBP。
 
@@ -114,8 +115,8 @@ Global data of global tensor:
 
 因为第一层的输出的 SBP（`split(1)`），并不是第二层输入所期待的（`broadcast`），这时候，OneFlow 会自动在上一层的输出和下一层的输出之间，插入 Boxing 操作，利用集合通信进行必要的数据转换。
 
-从 `split(1)` 转换为 `broadcast`，相当于做了一次 `AllGather` 操作。如下图所示。
+从 `split(1)` 转换为 `broadcast`，需要做了一次 `AllGather` 的集合通信操作。如下图所示。
 
 ![s2b](./imgs/boxing_s2b.png)
 
-因为有 Boxing 机制的存在，使得用户只用关心少数关键地方（如 source 算子）的 SBP 设置，剩下的全部都可以交给 OneFlow 框架。
+因为有 Boxing 机制的存在，使得用户只用关心少数关键地方（如 source 算子）的 SBP 设置，剩下的通信操作可以靠自动推理完成。
