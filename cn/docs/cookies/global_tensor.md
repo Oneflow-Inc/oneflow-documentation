@@ -76,6 +76,73 @@ Global data of global tensor:
  [-0.8570119  -0.91476554 -0.06646168  0.50022084 -0.4387695 ]]
 ```
 可以发现两个 rank 的 local tensor 在维度 0 拼接后，就是完整的 Global Tesnor的值。
+### 由 local tensor 转换得到 global tensor
+
+可以先创建 local tensor，再利用 [Tensor.to_global](https://oneflow.readthedocs.io/en/master/tensor.html#oneflow.Tensor.to_global) 方法，将 local tensor 转为 global tensor。
+
+下面的例子中，在2台设备上分别创建了 `shape=(2,5)` 的2个 local tensor。
+注意经过 `to_global` 方法后，得到的 global tensor 的 `shape` 为 `(4,5)`。
+
+这是因为选择的 `sbp=flow.sbp.split(0)`，2个形状为 `(2,5)` 的 local tensor，需要在第0维拼接，得到 `(4,5)` 的 global tensor。
+
+=== "Terminal 0"
+    ```python
+    import oneflow as flow
+
+    x = flow.randn(2,5)
+    placement = flow.placement("cuda", [0,1])
+    sbp = flow.sbp.split(0)
+    x_global = x.to_global(placement=placement, sbp=sbp)
+    x_global.shape
+    ```
+
+=== "Terminal 1"
+    ```python
+    import oneflow as flow
+
+    x = flow.randn(2,5)
+    placement = flow.placement("cuda", [0,1])
+    sbp = flow.sbp.split(0)
+    x_global = x.to_global(placement=placement, sbp=sbp)
+    x_global.shape
+    ```
+
+### 由 global tensor 转成 另外一个 global tensor
+
+
+### global tensor 参与计算
+
+### 由 global tensor 得到 local tensor
+
+通过 [to_local](https://oneflow.readthedocs.io/en/master/tensor.html#oneflow.Tensor.to_local) 方法可以查看物理设备上的 local tensor：
+
+=== "Terminal 0"
+    ```python
+    x.to_local()
+    tensor([[ 2.9186e-01, -3.9442e-01,  4.7072e-04, -3.2216e-01,  1.7788e-01],
+            [-4.5284e-01,  1.2361e-01, -3.5962e-01,  2.6651e-01,  1.2951e+00]],
+        device='cuda:0', dtype=oneflow.float32)
+    ```
+
+=== "Terminal 1"
+    ```python
+    x.to_local()
+    tensor([[-0.4363,  0.9985, -2.5387,  0.3003,  0.3803],
+            [ 0.0556, -0.8077,  1.1191, -2.1278,  0.1468]], device='cuda:1',
+        dtype=oneflow.float32)
+    ```
+### global tensor 的 numpy 方法
+
+
+## Global Tensor 在分布式深度学习计算中的经典应用
+### 数据并行
+
+### 模型并行
+
+### 流水并行和3D并行
+这里简单讲解，后面做专题讲解
+
+## Global Tensor 的加载和保存
 
 ## 扩展阅读
 
