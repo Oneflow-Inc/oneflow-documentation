@@ -150,22 +150,17 @@ print(x_global_b.to_local())
 
 通过指定期望的数据分布，就自动完成通信操作的推理和执行。让算法开发者可以 `thinking in data distribution` 而不是 `thinking in data communication operation`，从而极大提高分布式程序的开发效率。
 
+
+这里补充介绍一下 global tensor 的 `numpy()` 方法，对于任意的 global tensor 如 `x_global，x_global.numpy` 等价于 `x_global.to_global(spb=flow.sbp.broadcast).to_local().numpy()`，即内部隐含了一次原 global tensor 到 sbp 为 flow.sbp.broadcast() 的操作，加一次 to_local 操作，最后对这个 local tensor 调用 numpy() 方法。所以 x_global.numpy() 得到的是一个完整的数据。
+```python
+
+print(x_global.numpy())
+```
+
 ### global tensor 参与计算
-
-
-### global tensor 的 numpy 方法
-
-
-## Global Tensor 在分布式深度学习计算中的经典应用
-### 数据并行
-
-### 模型并行
-
-### 流水并行和3D并行
-这里简单讲解，后面做专题讲解
-
-## Global Tensor 的加载和保存
-
+前面了解了global tensor的概念、创建、和 local tensor 的转换、和 global tensor 的转换，这部分介绍 global tensor 如何参与实际计算。这里以 global tensor 参与乘法计算为例，构造如下程序：
+```python
+```
 ## 扩展阅读
 
 ### OneFlow 多机多卡启动 和 依赖的环境变量
