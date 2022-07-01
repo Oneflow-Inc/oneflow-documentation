@@ -14,7 +14,7 @@ Global Tensor 是为了方便多机多设备分布式执行的 Tensor，是实�
 ## 创建 Global Tensor
 
 现在尝试在2张 GPU 显卡的主机上创建一个 global tensor。以 `randn` 算子为例，创建一个 Python 文件`test_randn_global.py`，加入以下内容：
-```
+```python
 import oneflow as flow
 
 # Place a global tensor on cuda device of rank(process) 0 and 1
@@ -80,45 +80,35 @@ Global data of global tensor:
 
 可以先创建 local tensor，再利用 [Tensor.to_global](https://oneflow.readthedocs.io/en/master/tensor.html#oneflow.Tensor.to_global) 方法，将 local tensor 转为 global tensor。
 
-下面的例子中，在2台设备上分别创建了 `shape=(2,5)` 的2个 local tensor。
-注意经过 `to_global` 方法后，得到的 global tensor 的 `shape` 为 `(4,5)`。
+创建如下程序，采用上文同样的方式启动：
 
-这是因为选择的 `sbp=flow.sbp.split(0)`，2个形状为 `(2,5)` 的 local tensor，需要在第0维拼接，得到 `(4,5)` 的 global tensor。
+```python
+import oneflow as flow
 
-=== "Terminal 0"
-    ```python
-    import oneflow as flow
+x = flow.randn(2,5).cuda()
+print(x.is_local) # True
+print(x.is_global) # False
+placement = flow.placement(type="cuda", ranks=[0,1])
+sbp = flow.sbp.split(0)
+x_global = x.to_global(placement=placement, sbp=sbp)
+print(x_global.shape) # (4, 5)
+print(x.is_local) # False
+print(x_global.is_global) # True
+```
 
-    x = flow.randn(2,5)
-    placement = flow.placement("cuda", [0,1])
-    sbp = flow.sbp.split(0)
-    x_global = x.to_global(placement=placement, sbp=sbp)
-    x_global.shape
-    ```
+该程序在2台设备上分别创建了 `shape=(2,5)` 的2个 gup 内存上的 local tensor, 即 x。
 
-=== "Terminal 1"
-    ```python
-    import oneflow as flow
+然后定义 placement 为 rank 0 和 1 上的 cuda 设备，sbp 为 tensor 第 0 维的切分，原本 local tensor 经过 `to_global` 变换后，就变成一个 global tensor 名为 x_global.
 
-    x = flow.randn(2,5)
-    placement = flow.placement("cuda", [0,1])
-    sbp = flow.sbp.split(0)
-    x_global = x.to_global(placement=placement, sbp=sbp)
-    x_global.shape
-    ```
+可以观察到 x_global 的 shape 变为了 `(4, 5)`，这里显示的 shape 是 global tensor 的 shape。local tensor 的 `to_global` 方法提供了 tensor 类型的转换，含义是原本的 local tensor 是要转换成的总量（global tensor） 在本 rank 的分量(local tensor)。分量和总量的关系是在 placement 上 按 sbp 转换而来的，比如这里原 x 和 x_global 的关系是在 0 和 1 gpu 上，按 x_global tensor 的第 0 维 split 而来的 x。因此 `to_global` 可以从 x 的 shape 推理出 x_global 的 shape：把原 local tensor 的 shape 在第 0 维拼接。这里说的 global tensor 的 shape，准确的讲是 global shape。
 
-### 由 global tensor 转成 另外一个 global tensor
-
-
-### global tensor 参与计算
-
+global tensor 除了shape，还有数据部分。一个 global tensor 的内部，在每个 rank 上都内含了一个 local tensor 作为其本地分量，这个 local tensor 就是 global tensor 在每个 rank 的物理数据。这也是我们期待的，物理上每个 rank 只需要保存一个分量的数据。
 ### 由 global tensor 得到 local tensor
-
-通过 [to_local](https://oneflow.readthedocs.io/en/master/tensor.html#oneflow.Tensor.to_local) 方法可以查看物理设备上的 local tensor：
+如果想得到 global tensor 的本地分量，可以通过 [to_local](https://oneflow.readthedocs.io/en/master/tensor.html#oneflow.Tensor.to_local) 方法得到这个对应的 local tensor。接上面的程序，增加 `print(x.to_local())`，在不同的 rank 分别得到一个 shape 为 `(2, 5)` 的本地分量 tensor。
 
 === "Terminal 0"
     ```python
-    x.to_local()
+    prrint(x.to_local())
     tensor([[ 2.9186e-01, -3.9442e-01,  4.7072e-04, -3.2216e-01,  1.7788e-01],
             [-4.5284e-01,  1.2361e-01, -3.5962e-01,  2.6651e-01,  1.2951e+00]],
         device='cuda:0', dtype=oneflow.float32)
@@ -126,11 +116,43 @@ Global data of global tensor:
 
 === "Terminal 1"
     ```python
-    x.to_local()
+    print(x.to_local())
     tensor([[-0.4363,  0.9985, -2.5387,  0.3003,  0.3803],
             [ 0.0556, -0.8077,  1.1191, -2.1278,  0.1468]], device='cuda:1',
         dtype=oneflow.float32)
     ```
+`to_local()` 没有任何参数，是因为 global tensor 已经通过 placement 和 sbp 指定好了它的本地分量的信息。
+### 由 global tensor 转成 另外一个 global tensor
+通常做分布式计算都需要在正常的计算逻辑之间插入通信操作，在 OneFlow 只需要做 global tensor 的转换。因为 global tensor 中的 sbp 参数指定了数据的分布情况：
+- s，即 split(dim)， 表示在 dim 维度切分的分布关系；
+- b，即 broadcast，表示广播的数据分布关系；
+- p，即 partial_sum，表示 element-wise 的部分累加分布关系；
+详情参考[SBP](https://docs.oneflow.org/master/parallelism/02_sbp.html#sbp).
+
+因为 global tensor 中含有数据分布的信息，如果需要变成另外一种数据分布，只需要创建另外一个 global tensor就好了。创建另外一个 global tensor 的过程，其中需要的通信会被自动推理和执行，从而避免了手写通信操作。自动推理并执行通信背后依赖的是 OneFlow 的 [Boxing](https://docs.oneflow.org/master/parallelism/03_consistent_tensor#boxing-sbp)，一种自动做数据 re-distribution 的机制。
+
+下面看一个例子，该例子可以把一个按 split 分布的 global tensor 转换为一个按 broadcast 分布的 global tensor：
+```python
+import oneflow as flow
+
+x = flow.randn(2,5).cuda()
+placement = flow.placement(type="cuda", ranks=[0,1])
+sbp = flow.sbp.split(0)
+x_global = x.to_global(placement=placement, sbp=sbp)
+print(x_global.shape) # (4, 5)
+print(x_global.to_local())
+sbp_b = flow.sbp.broadcast()
+x_global_b = x_global.to_global(placement=placement, sbp=sbp_b)
+print(x_global_b.shape) # (4, 5)
+print(x_global_b.to_local())
+```
+可以看到，`x_global` 到 `x_global_b` 的变化就是 sbp 从 `flow.sbp.split(0)` 变成了 `flow.sbp.broadcast()`。他们的 global shape 都是 `(4, 5)`，但是本地分量从一个分片变成了一个完整的数据，这个变化可以从对 `to_local()` 的打印结果观察到：这里的 `to_global` 变换完成了物理数据的归并。通常来讲，需要用户手写一个 `all-gather` 集合通信来完成同样的操作，而在 OneFlow Global Tensor 中，这个通信操作的推理和执行被自动完成了，用户只需要指定期望的 global tensor 的数据分布就好。
+
+通过指定期望的数据分布，就自动完成通信操作的推理和执行。让算法开发者可以 `thinking in data distribution` 而不是 `thinking in data communication operation`，从而极大提高分布式程序的开发效率。
+
+### global tensor 参与计算
+
+
 ### global tensor 的 numpy 方法
 
 
@@ -168,22 +190,3 @@ OneFlow Global Tensor 执行采用多客户端模式(Multi-Client)，即每个�
 | 机器0的第1张显卡 | 1          | 1    |
 | 机器1的第0张显卡 | 2          | 0    |
 | 机器1的第1张显卡 | 3          | 1    |
-
-### Boxing 和 自动SBP推理【这里需要完善】
-
-我们已经通过以上代码的例子，知道一个算子会根据输入 tensor 的 SBP 属性以及算子内置的 SBP Signature，自动设置输出 tensor 的 SBP。
-
-但是，细心的用户可能会进一步思考，如果上游算子输出 tensor 的 SBP，与下游算子输入的需要不一致时，怎么办呢？
-
-比如，假设在模型并行中，有2层矩阵乘法，在第一层和和第二层都做模型并行。
-
-![multi-layer-matmul](./imgs/multi-matmul.png)
-
-
-因为第一层的输出的 SBP（`split(1)`），并不是第二层输入所期待的（`broadcast`），这时候，OneFlow 会自动在上一层的输出和下一层的输出之间，插入 Boxing 操作，利用集合通信进行必要的数据转换。
-
-从 `split(1)` 转换为 `broadcast`，需要做了一次 `AllGather` 的集合通信操作。如下图所示。
-
-![s2b](./imgs/boxing_s2b.png)
-
-因为有 Boxing 机制的存在，使得用户只用关心少数关键地方（如 source 算子）的 SBP 设置，剩下的通信操作可以靠自动推理完成。
