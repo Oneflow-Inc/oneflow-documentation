@@ -141,12 +141,12 @@ sbp = flow.sbp.split(0)
 x_global = x.to_global(placement=placement, sbp=sbp)
 print(x_global.shape) # (4, 5)
 print(x_global.to_local())
-sbp_b = flow.sbp.broadcast()
+sbp_b = flow.sbp.broadcast
 x_global_b = x_global.to_global(placement=placement, sbp=sbp_b)
 print(x_global_b.shape) # (4, 5)
 print(x_global_b.to_local())
 ```
-可以看到，`x_global` 到 `x_global_b` 的变化就是 sbp 从 `flow.sbp.split(0)` 变成了 `flow.sbp.broadcast()`。他们的 global shape 都是 `(4, 5)`，但是本地分量从一个分片变成了一个完整的数据，这个变化可以从对 `to_local()` 的打印结果观察到：这里的 `to_global` 变换完成了物理数据的归并。通常来讲，需要用户手写一个 `all-gather` 集合通信来完成同样的操作，而在 OneFlow Global Tensor 中，这个通信操作的推理和执行被自动完成了，用户只需要指定期望的 global tensor 的数据分布就好。
+可以看到，`x_global` 到 `x_global_b` 的变化就是 sbp 从 `flow.sbp.split(0)` 变成了 `flow.sbp.broadcast`。他们的 global shape 都是 `(4, 5)`，但是本地分量从一个分片变成了一个完整的数据，这个变化可以从对 `to_local()` 的打印结果观察到：这里的 `to_global` 变换完成了物理数据的归并。通常来讲，需要用户手写一个 `all-gather` 集合通信来完成同样的操作，而在 OneFlow Global Tensor 中，这个通信操作的推理和执行被自动完成了，用户只需要指定期望的 global tensor 的数据分布就好。
 
 通过指定期望的数据分布，就自动完成通信操作的推理和执行。让算法开发者可以 `thinking in data distribution` 而不是 `thinking in data communication operation`，从而极大提高分布式程序的开发效率。
 
@@ -160,7 +160,28 @@ print(x_global.numpy())
 ### global tensor 参与计算
 前面了解了global tensor的概念、创建、和 local tensor 的转换、和 global tensor 的转换，这部分介绍 global tensor 如何参与实际计算。这里以 global tensor 参与乘法计算为例，构造如下程序：
 ```python
+import oneflow as flow
+
+placement = flow.placement(type="cuda", ranks=[0,1])
+x = flow.randn(4, 5, placement=placement, sbp=flow.sbp.split(dim=0))
+w = flow.randn(5, 8, placement=placement, sbp=flow.sbp.broadcast)
+y = flow.matmul(x, w)
+print(y.is_global) # True
+print(y.shape) # (4, 8)
+print(y.sbp) # (flow.sbp.split(dim=0))
+print(y.to_local().numpy())
 ```
+上面的程序先创建了两个 global tensor，分别是 `x` 和 `w`，然后他们参与 `flow.matmul` 计算得到 y。
+
+OneFlow 中的大部分算子都支持对 global tensor 的计算，所以可以看到 `flow.matmul` 在接口上并无特殊之处。可以认为 OneFlow 中的算子都是多态的，在输入 local tensor 时，采用的是普通的单卡执行模式，而输入 global tensor 时，采用的是特殊的 global view（多机多设备分布式）执行模式。这个特性对于把单卡代码改成分布式代码提供了极大便利：只需要把输入部分的 tensor 转换成 global tensor 就可以完成分布式程序改造的主要工作。
+
+上面的程序中的 `flow.matmul` 的输出 `y` 也是一个 global tensor。这个算子可以顺利执行，有个前置条件是输入的 `x` 和 `w` 的 placement 相同，这个约束和单设备执行时要求设备相同类似。中间计算时，`flow.matmul` 算子会自动做输出的 `y` 的 placement 和 sbp 的推理：
+- placement，输出和输入的 placement 相同；
+- spb，输出的 sbp 的推理规则，因算子类型而异，类似每个算子输出的数据的 shape 也因算子而异，这个推理规则是 OneFlow 内置的；
+
+在这里，flow.sbp.split(0) 和 flow.sbp.broadcast 相乘的输出数据会被推理成 flow.sbp.split(0)。`x` 在每个 rank 上是一个分片数据，`w` 是一个完整的数据，做完乘法得到的 `y` 是一个分片的数据。看到这里，了解常见并行方式的朋友应该可以发现：这里实现了一个数据并行的前向计算，`x`是切片的数据，`w`是完整的参数数据。
+
+到此，本文从用Global Tensor的创建开始，完成了一个数据并行的算子计算。更多并行方式和SBP的推理逻辑，在后面内容继续展开。
 ## 扩展阅读
 
 ### OneFlow 多机多卡启动 和 依赖的环境变量
