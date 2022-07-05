@@ -138,7 +138,7 @@ nav:
       - 计算机视觉迁移学习: cookies/transfer_learning.md
       - 大规模 Embedding 方案： OneEmbedding: cookies/one_embedding.md
       - Zero Redundancy Optimizer (ZeRO): cookies/zero.md
-
+      - 使用 Global Tensor 进行多机多设备编程: cookies/global_tensor.md
 
     - API:
       - API: https://start.oneflow.org/oneflow-api-cn/
