@@ -200,9 +200,9 @@ OneFlow 中的大部分算子都支持计算 Global Tensor，所以 `flow.matmul
 
 ### OneFlow 多机多卡启动 和 依赖的环境变量
 
-OneFlow 的 Global Tensor 执行采用的是**多客户端模式 (Multi-Client)**，每个设备对应一个进程。n 机 m 卡 的环境，就对应 n * m 个进程。每个进程都有一个进程 rank 编号，Global Tensor 中的 placement 参数中的 ranks 对应的就是这个 rank 编号。
+OneFlow 的 Global Tensor 执行采用的是**多客户端模式 (Multi-Client)**，每个设备对应一个进程。`n 机 m 卡` 的环境，就对应 `n * m` 个进程。每个进程都有一个进程 rank 编号，Global Tensor 中的 placement 参数中的 ranks 对应的就是这个 rank 编号。
 
-以 `2 机 2 卡` 为例，则第 0 号机器中两张卡分别对应编号 0 和 1，第 1 号机器中两张卡分别对应编号 2 和 3。此时 `flow.placement(type="cuda", ranks=[2])` 即可唯一标识第 1 号机器中的第一张卡。
+以 `2 机 2 卡` 为例， 0 号机器中两张卡分别对应编号 0 和 1，第 1 号机器中两张卡分别对应编号 2 和 3。此时 `flow.placement(type="cuda", ranks=[2])` 可以唯一标识第 1 号机器中的第 0 卡。
 
 一般地，对于 `n 机 m 卡` 的环境，`flow.placement(type="cuda", ranks=[k])` 唯一标识第 `k / n` 号机器的第 `k % m` 张卡。
 
@@ -212,7 +212,7 @@ OneFlow 的 Global Tensor 执行采用的是**多客户端模式 (Multi-Client)*
 
 - `MASTER_ADDR`：多机训练的第 0 号机器的 IP
 - `MASTER_PORT`：多机训练的第 0 号机器的监听端口，不与已经占用的端口冲突即可
-- `WORLD_SIZE`：整个集群中计算设备的数目，因为目前还不支持各个机器上显卡数目不一致，因此 `WORLD_SIZE` 的数目实际上是 $机器数目 \times 每台机器上的显卡数目$。[创建 Global Tensor](#创建-global-tensor) 的示例是单机2卡的情况，因此 `WORLD_SIZE=2`
+- `WORLD_SIZE`：整个集群中计算设备的数目，因为目前还不支持各个机器上显卡数目不一致，因此 `WORLD_SIZE` 的数目实际上是 $机器数目 \times 每台机器上的显卡数目$。[创建 Global Tensor](#创建-global-tensor) 中的示例是单机 2 卡的情况，因此 `WORLD_SIZE=2`
 - `RANK`：集群内所有机器下的进程编号
 - `LOCAL_RANK`：单个机器内的进程编号
 
