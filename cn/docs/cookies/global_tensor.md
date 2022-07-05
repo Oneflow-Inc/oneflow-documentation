@@ -157,52 +157,77 @@ print(x_global_b.to_local())
 print(x_global.numpy())
 ```
 
-### global tensor 参与计算
-前面了解了global tensor的概念、创建、和 local tensor 的转换、和 global tensor 的转换，这部分介绍 global tensor 如何参与实际计算。这里以 global tensor 参与乘法计算为例，构造如下程序：
+### Global Tensor 参与计算
+
+上文了解了 Global Tensor 的基本概念、如何创建 Global Tensor、Global 与 Local Tensor 的转换以及 Global Tensor 之间的转换。
+
+这一节将介绍 Global Tensor 如何参与实际计算。这里以 Global Tensor 参与矩阵乘法计算为例，构造如下程序：
+
 ```python
 import oneflow as flow
 
-placement = flow.placement(type="cuda", ranks=[0,1])
+placement = flow.placement(type="cuda", ranks=[0, 1])
 x = flow.randn(4, 5, placement=placement, sbp=flow.sbp.split(dim=0))
 w = flow.randn(5, 8, placement=placement, sbp=flow.sbp.broadcast)
 y = flow.matmul(x, w)
-print(y.is_global) # True
-print(y.shape) # (4, 8)
-print(y.sbp) # (flow.sbp.split(dim=0))
+print(y.is_global)  # True
+print(y.shape)  # (4, 8)
+print(y.sbp)  # (flow.sbp.split(dim=0))
 print(y.to_local().numpy())
 ```
-上面的程序先创建了两个 global tensor，分别是 `x` 和 `w`，然后他们参与 `flow.matmul` 计算得到 y。
 
-OneFlow 中的大部分算子都支持对 global tensor 的计算，所以可以看到 `flow.matmul` 在接口上并无特殊之处。可以认为 OneFlow 中的算子都是多态的，在输入 local tensor 时，采用的是普通的单卡执行模式，而输入 global tensor 时，采用的是特殊的 global view（多机多设备分布式）执行模式。这个特性对于把单卡代码改成分布式代码提供了极大便利：只需要把输入部分的 tensor 转换成 global tensor 就可以完成分布式程序改造的主要工作。
+以上程序创建了两个 Global Tensor，分别是 `x` 和 `w`，它们参与 `flow.matmul` 计算得到 `y`。
 
-上面的程序中的 `flow.matmul` 的输出 `y` 也是一个 global tensor。这个算子可以顺利执行，有个前置条件是输入的 `x` 和 `w` 的 placement 相同，这个约束和单设备执行时要求设备相同类似。中间计算时，`flow.matmul` 算子会自动做输出的 `y` 的 placement 和 sbp 的推理：
-- placement，输出和输入的 placement 相同；
-- spb，输出的 sbp 的推理规则，因算子类型而异，类似每个算子输出的数据的 shape 也因算子而异，这个推理规则是 OneFlow 内置的；
+OneFlow 中的大部分算子都支持计算 Global Tensor，所以 `flow.matmul` 在接口上并无特殊之处。可以认为 OneFlow 中的算子都是多态的。即，会自动根据输入，决定自己的行为：
 
-在这里，flow.sbp.split(0) 和 flow.sbp.broadcast 相乘的输出数据会被推理成 flow.sbp.split(0)。`x` 在每个 rank 上是一个分片数据，`w` 是一个完整的数据，做完乘法得到的 `y` 是一个分片的数据。看到这里，了解常见并行方式的朋友应该可以发现：这里实现了一个数据并行的前向计算，`x`是切片的数据，`w`是完整的参数数据。
+- 如果算子的输入是 Local Tensor，那么算子会按照普通的单卡执行模式进行计算
+- 如果算子的输入是 Global Tensor，那么算子会采用 Global View（多机多设备分布式）模式进行计算
 
-到此，本文从用Global Tensor的创建开始，完成了一个数据并行的算子计算。更多并行方式和SBP的推理逻辑，在后面内容继续展开。
+当用户需要将单卡代码改为分布式代码时，OneFlow 的这个特性为用户提供了极大的便利：只需要把输入的 Tensor 转换成 Global Tensor 。
+
+类似于单卡执行时要求输入数据所在设备相同，以上程序中， `flow.matmul` 这一算子可以顺利执行的前置条件是：输入的 `x` 和 `w` 的 placement 相同。
+
+程序中矩阵相乘的结果 `y` 同样是一个 Global Tensor 。`flow.matmul` 对输入 `x` 和 `w` 做中间计算时，会自动进行输出 `y` 的 placement 和 SBP 的推理，规则如下：
+
+- placement: 输出和输入的 placement 相同
+- SBP: 输出的 SBP 的推理规则，因算子类型而异，这个推理规则是 OneFlow 内置的，详情可见: [SBP Signature](../parallelism/02_sbp.md#sbp-signature)
+
+此处，`flow.sbp.split(0)` 和 `flow.sbp.broadcast` 相乘的输出数据会被推理成 `flow.sbp.split(0)`。`x` 在每个 rank 上是一个分片数据，`w` 是一个完整的数据，二者矩阵乘法得到的 `y` 是一个分片的数据。看到这里，了解常见并行方式的朋友应该可以发现：这里实现了一个数据并行的前向计算，`x` 是切片的数据，`w` 是完整的参数数据。
+
+至此，本文从 Global Tensor 的创建开始，最终完成了一个基于 Global Tensor 的数据并行计算流程。更多并行方式和 SBP 的推理逻辑，将在后续内容继续展开。
+
 ## 扩展阅读
 
 ### OneFlow 多机多卡启动 和 依赖的环境变量
-OneFlow Global Tensor 执行采用多客户端模式(Multi-Client)，即每个设备对应一个进程。n 机 m 卡 的环境，就对应 n * m 个进程。每个进程都有一个进程 rank 编号，global tensor 中的 placement 参数中的 ranks 对应的就是这个 rank 编号。进程 rank 编号隐式的也是设备编号，rank 编号加上设备类型就能标识一个设备，比如flow.placement(type="cuda", ranks=[k]) 就会对应上 k / m 号机器的编号为 k % m 的 cuda 设备。
 
-因为采用多客户端模式，所以需要给每个设备对应启动一个进程。在 OneFlow 中，把一个同样的脚本程序，启动多次就好了，唯一需要注意的是，每个脚本程序的进程启动需要不同的环境变量，以区分进程编号和建立通信连接。
+OneFlow 的 Global Tensor 执行采用的是**多客户端模式 (Multi-Client)**，每个设备对应一个进程。n 机 m 卡 的环境，就对应 n * m 个进程。每个进程都有一个进程 rank 编号，Global Tensor 中的 placement 参数中的 ranks 对应的就是这个 rank 编号。
 
-使用环境变量启动参数虽然参数繁琐，但是适用性广，可以采用任意的方式来启动进程，只要提供好 OneFlow 分布式执行提供的环境变量就好。另外为了方便使用，OneFlow 也提供了一个分布式启动多进程且自动构建环境变量的工具 [oneflow.distributed.launch](./04_launch.md)。这里主要说明采用环境变量的启动方式：
-- `MASTER_ADDR`：多机训练的第0号机器的 IP；
-- `MASTER_PORT`：多机训练的第0号机器的监听端口，不与已经占用的端口冲突即可；
-- `WORLD_SIZE`：整个集群中计算设备的数目，因为目前还不支持各个机器上显卡数目不一致，因此 `WORLD_SIZE` 的数目实际上是 $机器数目 \times 每台机器上的显卡数目$。如我们这个例子中，是单机2卡的情况，因此 `WORLD_SIZE=2`
+以 `2 机 2 卡` 为例，则第 0 号机器中两张卡分别对应编号 0 和 1，第 1 号机器中两张卡分别对应编号 2 和 3。此时 `flow.placement(type="cuda", ranks=[2])` 即可唯一标识第 1 号机器中的第一张卡。
 
-`RANK` 和 `LOCAL_RANK` 都是对计算设备的编号，不同的是 `RANK` 是集群内所有机器下的进程编号，`LOCAL_RANK` 某个机器内的进程编号。当是单机训练（单机单卡或单机多卡）时，两者相等。以上的例子中，有两个显卡，分别是0号和1号。
+一般地，对于 `n 机 m 卡` 的环境，`flow.placement(type="cuda", ranks=[k])` 唯一标识第 `k / n` 号机器的第 `k % m` 张卡。
 
-当是多机训练时，每台机器上的 `LOCAL_RANK` 的上限，就是每台机器上的计算设备的数目；`RANK` 的上限，就是所有机器上所有计算设备的总和，它们的编号均从0开始。（因为编号从0开始，所以不包含上限）。
+因为采用多客户端模式，所以需要对应每个设备都启动一个进程。在 OneFlow 中，所有进程都只需要启动相同的脚本程序，不同进程之间通过不同的环境变量配置区分进程编号和建立通信连接。
 
-以两台机器、每台机器上有两张显卡为例，可以整理出每张显卡的 `LOCAL_RANK` 与 `RANK` 对应情况：
+环境变量说明：
 
-|                  | RANK | LOCAL_RANK |
-| ---------------- | ---------- | ---- |
-| 机器0的第0张显卡 | 0          | 0    |
-| 机器0的第1张显卡 | 1          | 1    |
-| 机器1的第0张显卡 | 2          | 0    |
-| 机器1的第1张显卡 | 3          | 1    |
+- `MASTER_ADDR`：多机训练的第 0 号机器的 IP
+- `MASTER_PORT`：多机训练的第 0 号机器的监听端口，不与已经占用的端口冲突即可
+- `WORLD_SIZE`：整个集群中计算设备的数目，因为目前还不支持各个机器上显卡数目不一致，因此 `WORLD_SIZE` 的数目实际上是 $机器数目 \times 每台机器上的显卡数目$。[创建 Global Tensor](#创建-global-tensor) 的示例是单机2卡的情况，因此 `WORLD_SIZE=2`
+- `RANK`：集群内所有机器下的进程编号
+- `LOCAL_RANK`：单个机器内的进程编号
+
+`RANK` 和 `LOCAL_RANK` 的区别：
+
+- 当是单机训练（单机单卡或单机多卡）时，两者相等；
+- 当是多机训练时，每台机器上的 `LOCAL_RANK` 的上限，就是每台机器上的计算设备的数目；`RANK` 的上限，就是所有机器上所有计算设备的总和，它们的编号均从0开始。（因为编号从0开始，所以不包含上限）。
+
+以 `2 机 2 卡` 为例，每张显卡的 `LOCAL_RANK` 与 `RANK` 对应情况如下：
+
+|                      | RANK | LOCAL_RANK |
+| -------------------- | ---- | ---------- |
+| 机器 0 的第 0 张显卡 | 0    | 0          |
+| 机器 0 的第 1 张显卡 | 1    | 1          |
+| 机器 1 的第 0 张显卡 | 2    | 0          |
+| 机器 1 的第 1 张显卡 | 3    | 1          |
+
+使用环境变量启动参数虽然参数繁琐，但是适用性广，可以采用任意的方式来启动进程，只要提供好 OneFlow 分布式执行提供的环境变量就好。另外为了方便使用，OneFlow 也提供了一个分布式启动多进程且自动构建环境变量的工具 [oneflow.distributed.launch](../parallelism/04_launch.md)。
