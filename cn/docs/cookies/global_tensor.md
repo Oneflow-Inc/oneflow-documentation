@@ -1,4 +1,4 @@
-# 使用 Global Tensor 进行多机多设备编程
+# 使用 Global Tensor 进行多机多设备编程: 基础的操作
 By [YaoChi](https://github.com/doombeaker), [Xu Xiaoyu](https://github.com/strint)
 
 Global Tensor 是为了方便多机多设备分布式执行的 Tensor，是实现全局视角（Global View）编程的接口。
