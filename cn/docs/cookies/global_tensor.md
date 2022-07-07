@@ -104,12 +104,14 @@ print(x_global.is_global) # True
 
 该程序在 2 个 GPU 设备上分别创建了 `shape=(2,5)` 的  Local Tensor，即 x。
 
-然后定义 placement 为 rank 0 和 1 上的 cuda 设备，SBP 为 tensor 第 0 维的切分，原本 Local Tensor 经过 `to_global` 变换后，就变成一个名为 `x_global` 的 Global Tensor。
+然后定义 placement 为 rank 0 和 1 上的 cuda 设备，SBP 为 tensor 第 0 维的切分，原本 Local Tensor 经过 `to_global` 变换后，就得到一个名为 `x_global` 的 Global Tensor。
 
-可以观察到 `x_global` 的 shape 变为了 `(4, 5)`，这里显示的 shape 是 Global Tensor 的 shape。Local Tensor 的 `to_global` 方法提供了 tensor 类型的转换，原本的 Local Tensor 是要转换成的总量（Global Tensor） 在本 rank 的分量（Local Tensor）。分量和总量的关系是在 placement 上按 SBP 转换而来的，比如这里 `x` 和 `x_global` 的关系是在 0 和 1 号 GPU 上，按 `x_global` 的第 0 维 split 而得到 `x`。因此 `to_global` 可以从 x 的 shape 推理出 x_global 的 shape：把原 Local Tensor 的 shape 在第 0 维拼接。这里说的 Global Tensor 的 shape，准确地讲是 global shape。
+可以观察到 `x_global` 的 shape 变为了 `(4, 5)`，这表示的是 Global Tensor 的 shape（global shape）。Global Tensor 与 Local Tensor 之间为总量与分量的关系，Local Tensor 是总量在本 rank 的分量，具体关系是在 placement 上由 SBP 确定。比如这里 `x` 和 `x_global` 的关系是在 0 和 1 号 GPU 上，`x_global` 按第 0 维 split 而得到 `x`。因此 `to_global` 可以从 x 推理出 x_global：把两个 GPU 上的 Local Tensor 在第 0 维拼接。
 
 Global Tensor 除了 shape，还有数据部分。对于一个 Global Tensor 的内部，在每个 rank 上都内含了一个 Local Tensor 作为其本地分量，这个 Local Tensor 就是 Global Tensor 在每个 rank 的物理数据。这也是我们期待的，物理上每个 rank 只需要保存一个分量的数据。
+
 ### 由 Global Tensor 得到 Local Tensor
+
 如果想得到 Global Tensor 的本地分量，可以通过 [to_local](https://oneflow.readthedocs.io/en/master/tensor.html#oneflow.Tensor.to_local) 方法得到这个对应的 Local Tensor。接上面的程序，增加 `print(x_global.to_local())`，在不同的 rank 分别得到一个 shape 为 `(2, 5)` 的本地分量 tensor。
 
 === "Terminal 0"
@@ -133,11 +135,12 @@ Global Tensor 除了 shape，还有数据部分。对于一个 Global Tensor 的
 ### 由 Global Tensor 转成 另外一个 Global Tensor
 
 进行分布式计算通常都需要在正常的计算逻辑之间插入通信操作，而使用 OneFlow 时只需要做 Global Tensor 的转换。因为 Global Tensor 中的 `sbp` 参数指定了数据的分布情况：
-- s，即 split(dim)， 表示在 dim 维度切分的分布关系；
 
-- b，即 broadcast，表示广播的数据分布关系；
+- S，即 split(dim)， 表示在 dim 维度切分的分布关系；
 
-- p，即 partial_sum，表示 element-wise 的部分累加分布关系；
+- B，即 broadcast，表示广播的数据分布关系；
+
+- P，即 partial_sum，表示 element-wise 的部分累加分布关系；
 
 详情参考 [SBP](https://docs.oneflow.org/master/parallelism/02_sbp.html#sbp)。
 
