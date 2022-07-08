@@ -25,7 +25,7 @@ Global Tensor 在每个进程上都存在，在所有进程上被某算子执行
 
 OneFlow 的算子大部分兼容 Local Tensor 和 Global Tensor 的执行。Local Tensor 可以便捷地转化为 Global Tensor。如此，单机单卡执行的代码可以平滑地转换成多机多卡执行的代码。
 
-使用 Global Tensor，可以非常便捷地进行多机多卡的模型开发，相比使用原始通信算子，可以成倍提高超大模型的开发效率。
+使用 Global Tensor，可以非常便捷地进行多机多卡的模型开发，相比使用原始通信算子，可以成倍提高并行执行模型的开发效率。
 
 ## 创建 Global Tensor
 
