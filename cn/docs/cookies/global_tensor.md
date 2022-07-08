@@ -1,14 +1,29 @@
-# 使用 Global Tensor 进行多机多设备编程
+# 使用 Global Tensor 进行多机多设备编程：基础操作
 
 By [YaoChi](https://github.com/doombeaker), [Xu Xiaoyu](https://github.com/strint), [Zuo Yihao](https://github.com/Alive1024), [Guoliang Cheng](https://github.com/lmyybh)
 
-Global Tensor 是为了方便多机多设备分布式执行的 Tensor，是实现全局视角（Global View）编程的接口。
+Global Tensor 是多机多设备执行的 Tensor，是实现全局视角（Global View）编程的接口。
 
-在大部分编程语言中，Global 的含义是进程内的全局可见，比如[全局变量（Global Variable）](https://en.wikipedia.org/wiki/Global_variable)。但是 Global Tensor 中的 “Global” 的含义是进程间全局可见，所以 Global Tensor 更为准确的的说法是 Global (on all processes) Tensor，即所有进程可见的 Tensor。使用 Global Tensor 时，在每个进程（也叫 Rank）有一个对应设备（如 GPU），在所有进程被算子执行时，算子就会自动完成对该 Tensor 的多机多设备分布式执行。
+当前的并行程序，大都采用单程序多数据（SPMD）的方式来编程。并行执行同样的程序，但是处理不同数据，以此实现数据的并行处理。以 PyTorch DistributedDataParallel（DDP） 为例，每个进程执行同样的神经网络计算逻辑，但是每个进程加载数据集的不同分片。
 
-当前常用的 Tensor，只在单个进程内可见，存在于一个设备设备上。为了区分，会把这种 Tensor 叫做 Local Tensor。Local 是相对 Global 而言的，所以 Local Tensor 可以认为是 Local (on one process) Tensor。
+单程序多数据（SPMD）编程的缺陷是多数据的通信麻烦。在深度学习的场景下，SPMD编程需要在原计算代码中插入通信操作，比如数据并行时对梯度汇总（AllReduce 操作），模型并行时需要 AllGather/ReduceScatter 操作。如果并行模式复杂，或者需要试验新并行模式，插入通信操作就变得难以开发和维护。
 
-在 OneFlow 中，对于同一个算子，大部分都同时支持输入 Local Tensor 和 Global Tensor。输入 Local Tensor 时，进行的是单进程单设备执行；但是输入 Global Tensor 时，就进行的是多进程多设备执行。Local Tensor 可以便捷地转化为 Global Tensor。如此，单机单卡执行的代码可以平滑地转换成多机多卡执行的代码。
+全局视角（Global View）编程提供了单程序单数据（SPSD）的编程视角。和 SPMD 不同的是，数据也是单一的了。数据也是同一个，实是很自然的，当我们把一个单进程程序扩展成并行执行时，一个单进程数据被扩展成多进程数据，但是多个进程上的这些数据其实可以被看做是同一个逻辑数据，这个逻辑数据在 OneFlow 中叫 Global Tensor。
+
+使用 Global Tensor，就可以采用比较自然的 Global View 视角，把多机多设备看做一机一设备来编程，实现 SPSD 编程。
+
+
+## Global Tensor
+
+在编程语言中，Global 的含义通常是进程内的全局可见，比如[全局变量（Global Variable）](https://en.wikipedia.org/wiki/Global_variable)。
+
+但是 Global Tensor 中的 “Global” 的含义是进程间全局可见，所以 Global Tensor 更为准确的的说法是 Global (on all processes) Tensor，即所有进程可见的 Tensor。
+
+Global Tensor 在每个进程上都存在，在所有进程上被某算子执行时，就自动完成了对该 Tensor 的多机多设备执行。
+
+当前常用的 Tensor，只在单个进程内可见，存在于一个设备上，OneFlow 中把这种 Tensor 叫做 Local Tensor。Local 是相对 Global 而言的，所以 Local Tensor 可以认为是 Local (on one process) Tensor。
+
+OneFlow 的算子大部分兼容 Local Tensor 和 Global Tensor 的执行。Local Tensor 可以便捷地转化为 Global Tensor。如此，单机单卡执行的代码可以平滑地转换成多机多卡执行的代码。
 
 使用 Global Tensor，可以非常便捷地进行多机多卡的模型开发，相比使用原始通信算子，可以成倍提高超大模型的开发效率。
 
