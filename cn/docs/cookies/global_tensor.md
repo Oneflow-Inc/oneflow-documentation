@@ -51,6 +51,7 @@ print("Global data of global tensor:\n ", x.numpy())
 ```
 
 在上述代码中有一些新出现的概念：
+
 - `placement` 表示 Global Tensor 分布的物理设备，参数 `type` 指定了物理设备的类型，这里使用` “cuda”` 表示 GPU 设备，参数 `ranks` 指定了设备 ID。对于没有 2 张 GPU 的读者，在这里可以将 `type` 指定为 `"cpu"`，这样可以使用 CPU 模拟多个设备，下文的代码同样适用；
 - `sbp` 表示 Global Tensor 分布的方式，代码中的 `sbp = flow.sbp.split(dim=0)` 表示把 Global Tensor 在维度 0 均匀切分；
 - `to_local()` 可以从 Global Tensor 中获取其在当前 rank 的 Local Tensor，因为 Global Tensor 在每个 rank 都内含了一个 Local Tensor 作为实际存在的本地分量。
@@ -253,8 +254,9 @@ OneFlow 中的大部分算子都支持计算 Global Tensor，所以 `flow.matmul
 
 ### 结语
 上文介绍了：
-- Global View 特殊的 SPSD 编程视角；
-- Global Tensor 的跨 Rank 执行特点；
+
+- Global View 提供的 SPSD 编程视角；
+- Global Tensor 的跨进程可见的执行特点；
 - Global Tensor 和 Local Tensor 的互转；
 - 通过 Global Tensor 的全局数据分布类型转换来实现分布式通信；
 - OneFlow 算子的多态特性支持 Global Tensor 的执行；
