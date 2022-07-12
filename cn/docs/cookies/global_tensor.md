@@ -101,7 +101,7 @@ Global data of global tensor:
 ```
 可以发现两个 rank 的 Local Tensor 在维度 0 拼接后，就是完整的 Global Tensor 的值。
 
-### 由 Local Tensor 转换得到 Global Tensor
+### 由 Local Tensor 得到 Global Tensor
 
 可以先创建 Local Tensor，再利用 [Tensor.to_global](https://oneflow.readthedocs.io/en/master/tensor.html#oneflow.Tensor.to_global) 方法，将 Local Tensor 转为 Global Tensor。
 
@@ -157,7 +157,7 @@ Global Tensor 除了 shape，还有数据部分。一个 Global Tensor 的内部
 
 `to_local()` 没有任何参数，是因为 Global Tensor 已经通过 placement 和 SBP 指定好了它的本地分量的信息。
 
-### 由 Global Tensor 转成 另外一个 Global Tensor
+### 由 Global Tensor 转成另一个 Global Tensor
 
 进行分布式计算通常都需要在正常的计算逻辑之间插入通信操作，而使用 OneFlow 时只需要做 Global Tensor 的数据分布类型转换。
 
