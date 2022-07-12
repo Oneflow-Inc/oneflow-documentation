@@ -279,7 +279,7 @@ OneFlow 的 Global Tensor 执行采用的是 **多客户端模式 (Multi-Client)
 
 - `MASTER_ADDR`：多机训练的第 0 号机器的 IP；
 - `MASTER_PORT`：多机训练的第 0 号机器的监听端口，不与已经占用的端口冲突即可；
-- `WORLD_SIZE`：整个集群中计算设备的数目，因为目前还不支持各个机器上显卡数目不一致，因此 `WORLD_SIZE` 的数目实际上是 $机器数目 \times 每台机器上的显卡数目$。[创建 Global Tensor](#创建-Global-Tensor) 中的示例是单机 2 卡的情况，因此 `WORLD_SIZE=2`；
+- `WORLD_SIZE`：整个集群中计算设备的数目，因为目前还不支持各个机器上显卡数目不一致，因此 `WORLD_SIZE` 的数目实际上是 $机器数目 \times 每台机器上的显卡数目$。[创建 Global Tensor](#global-tensor_2) 中的示例是单机 2 卡的情况，因此 `WORLD_SIZE=2`；
 - `RANK`：集群内所有机器下的进程编号；
 - `LOCAL_RANK`：单个机器内的进程编号；
 
