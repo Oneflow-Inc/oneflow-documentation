@@ -72,7 +72,7 @@ print("Global data of global tensor:\n ", x.numpy())
     export MASTER_ADDR=127.0.0.1 MASTER_PORT=17789 WORLD_SIZE=2 RANK=1 LOCAL_RANK=1
     ```
 
-以上详细解释及借助工具启动分布式，请参考文末的 [扩展阅读](#_5)。
+以上详细解释及借助工具启动分布式，请参考文末的 [扩展阅读](#扩展阅读)。
 
 最后，在两个 Terminal 下分别启动一下`test_randn_global.py`，观察 Global Tensor 的创建结果：
 ```
