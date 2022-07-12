@@ -166,7 +166,7 @@ Global Tensor 相比普通的 Local Tensor，从类型上讲，最大的区别�
 
 全局数据分布类型中的 Placement 指定了数据分布的设备集合:
 
-- 参数 `type` 指定了物理设备的类型，` cuda”` 表示 GPU 设备内存, `cpu` 表示 CPU 设备内存；
+- 参数 `type` 指定了物理设备的类型，`cuda` 表示 GPU 设备内存, `cpu` 表示 CPU 设备内存；
 - 参数 `ranks` 指定了进程 ID 集合，因为隐含了一个 Rank 对应一个物理设备，所以 `ranks` 就是设备 ID 集合; 实际上 `ranks` 是一个由 rank id 组成 nd-array，支持高维设备排布。 
 
 详情参考 [oneflow.placement](https://oneflow.readthedocs.io/en/master/tensor_attributes.html?highlight=placement#oneflow.placement).
@@ -178,7 +178,7 @@ Global Tensor 相比普通的 Local Tensor，从类型上讲，最大的区别�
 
 - B，即 broadcast，局部和全局是广播关系，表示做了广播的数据分布关系；
 
-- P，即 partial_sum，局部和全局是部分关系，表示 做了 element-wise 累加的数据分布关系；
+- P，即 partial_sum，局部和全局是部分关系，表示做了 element-wise 累加的数据分布关系；
 
 详情参考 [oneflow.sbp.sbp](https://oneflow.readthedocs.io/en/master/tensor_attributes.html?highlight=placement#oneflow.sbp.sbp).
 
@@ -186,7 +186,7 @@ Global Tensor 相比普通的 Local Tensor，从类型上讲，最大的区别�
 
 全局数据分布类型转换类似常规编程语言中的（显式）类型转换。类型转换时，只需指定要变换到的类型，里面隐含的操作会被系统自动完成。比如 double 类型到 int 类型的转换，去掉小数点部分的操作就是系统自动完成的。
 
-同样，只需指定 Global Tensor 要转换的新全局数据分布类型，里面隐含的通信操作会被 OneFlow 自动完成。全局数据分布类型转换的接口是[Tensor.to_global](https://oneflow.readthedocs.io/en/master/tensor.html#oneflow.Tensor.to_global)，`to_global` 有 `placement` 和 `sbp` 两个参数，这两个参数即期望转换成的新全局数据分布类型。 
+同样，只需指定 Global Tensor 要转换的新全局数据分布类型，里面隐含的通信操作会被 OneFlow 自动完成。全局数据分布类型转换的接口是 [Tensor.to_global](https://oneflow.readthedocs.io/en/master/tensor.html#oneflow.Tensor.to_global)，`to_global` 有 `placement` 和 `sbp` 两个参数，这两个参数即期望转换成的新全局数据分布类型。 
 
 全局数据分布类型转换中隐含的主要操作是自动推理并执行通信，背后的实现机制是 OneFlow 的 [Boxing](https://docs.oneflow.org/master/parallelism/03_consistent_tensor#boxing-sbp)，一种自动做数据 re-distribution 的机制。
 
@@ -209,7 +209,7 @@ print(x_global_b.to_local())
 
 可以看到，`x_global` 到 `x_global_b` 的全局数据分布类型变化就是 sbp 从 `flow.sbp.split(0)` 变成了 `flow.sbp.broadcast`。他们的 global shape 都是 `(4, 5)`，但是本地分量从一个分片变成了一个完整的数据，这个变化可以从对 `to_local()` 的打印结果观察到。
 
-这里的 `to_global` 变换完成了对 local tensor 的归并。通常来讲，SPMD 编程模式要求用户手写一个 `all-gather` 集合通信来完成。而在 OneFlow Global View中，只需做一下全局数据分布类型变换。
+这里的 `to_global` 变换完成了对 local tensor 的归并。通常来讲，SPMD 编程模式要求用户手写一个 `all-gather` 集合通信来完成。而在 OneFlow Global View 中，只需做一下全局数据分布类型变换。
 
 通过 Global Tensor 的类型变换，就自动完成通信操作的推理和执行。让算法开发者可以 `思考数据的分布`(`Thinking in data distribution`)，而不是 `思考如何通信`(`Thinking in data communication operation`)，实现了所想即所得，从而提高分布式程序的开发效率。
 
@@ -269,7 +269,7 @@ OneFlow 中的大部分算子都支持计算 Global Tensor，所以 `flow.matmul
 
 ### OneFlow 多机多卡启动 和 依赖的环境变量
 
-OneFlow 的 Global Tensor 执行采用的是**多客户端模式 (Multi-Client)**，每个设备对应一个进程。`n 机 m 卡` 的环境，就对应 `n * m` 个进程。每个进程都有一个进程 rank 编号，Global Tensor 中的 placement 参数中的 ranks 对应的就是这个 rank 编号。
+OneFlow 的 Global Tensor 执行采用的是 **多客户端模式 (Multi-Client)**，每个设备对应一个进程。`n 机 m 卡` 的环境，就对应 `n * m` 个进程。每个进程都有一个进程 rank 编号，Global Tensor 中的 placement 参数中的 ranks 对应的就是这个 rank 编号。
 
 以 `2 机 2 卡` 为例， 0 号机器中两张卡分别对应编号 0 和 1，第 1 号机器中两张卡分别对应编号 2 和 3。此时 `flow.placement(type="cuda", ranks=[2])` 可以唯一标识第 1 号机器中的第 0 卡。
 
