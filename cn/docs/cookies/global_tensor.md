@@ -72,7 +72,7 @@ print("Global data of global tensor:\n ", x.numpy())
     export MASTER_ADDR=127.0.0.1 MASTER_PORT=17789 WORLD_SIZE=2 RANK=1 LOCAL_RANK=1
     ```
 
-以上环境变量的详细解释及使用工具做分布式启动，请参考文末的 [扩展阅读](#_5)。
+以上环境变量的详细解释及借助工具做分布式启动，请参考文末的 [扩展阅读](#_2)。
 
 最后，在两个 Terminal 下分别启动一下`test_randn_global.py`，观察 Global Tensor 的创建结果：
 ```
@@ -273,15 +273,15 @@ OneFlow 的 Global Tensor 执行采用的是 **多客户端模式 (Multi-Client)
 
 一般地，对于 `n 机 m 卡` 的环境，`flow.placement(type="cuda", ranks=[k])` 唯一标识第 `k / n` 号机器的第 `k % m` 张卡。
 
-因为采用多客户端模式，所以需要对应每个设备都启动一个进程。在 OneFlow 中，所有进程都只需要启动相同的脚本程序，不同进程之间通过不同的环境变量配置区分进程编号和建立通信连接。
+因为采用多客户端模式，所以需要对应每个设备都启动一个进程。在 OneFlow 中，所有进程都只需要启动相同的脚本程序。不同进程之间通过不同的环境变量来区分进程编号和建立通信连接。
 
 环境变量说明：
 
-- `MASTER_ADDR`：多机训练的第 0 号机器的 IP
-- `MASTER_PORT`：多机训练的第 0 号机器的监听端口，不与已经占用的端口冲突即可
-- `WORLD_SIZE`：整个集群中计算设备的数目，因为目前还不支持各个机器上显卡数目不一致，因此 `WORLD_SIZE` 的数目实际上是 $机器数目 \times 每台机器上的显卡数目$。[创建 Global Tensor](#创建-global-tensor) 中的示例是单机 2 卡的情况，因此 `WORLD_SIZE=2`
-- `RANK`：集群内所有机器下的进程编号
-- `LOCAL_RANK`：单个机器内的进程编号
+- `MASTER_ADDR`：多机训练的第 0 号机器的 IP；
+- `MASTER_PORT`：多机训练的第 0 号机器的监听端口，不与已经占用的端口冲突即可；
+- `WORLD_SIZE`：整个集群中计算设备的数目，因为目前还不支持各个机器上显卡数目不一致，因此 `WORLD_SIZE` 的数目实际上是 $机器数目 \times 每台机器上的显卡数目$。[创建 Global Tensor](#创建-Global-Tensor) 中的示例是单机 2 卡的情况，因此 `WORLD_SIZE=2`；
+- `RANK`：集群内所有机器下的进程编号；
+- `LOCAL_RANK`：单个机器内的进程编号；
 
 `RANK` 和 `LOCAL_RANK` 的区别：
 
@@ -297,4 +297,6 @@ OneFlow 的 Global Tensor 执行采用的是 **多客户端模式 (Multi-Client)
 | 机器 1 的第 0 张显卡 | 2    | 0          |
 | 机器 1 的第 1 张显卡 | 3    | 1          |
 
-使用环境变量启动参数虽然参数繁琐，但是适用性广，可以采用任意的方式来启动进程，只要提供好 OneFlow 分布式执行提供的环境变量就好。另外为了方便使用，OneFlow 也提供了一个分布式启动多进程且自动构建环境变量的工具 [oneflow.distributed.launch](../parallelism/04_launch.md)。
+使用环境变量启动虽然繁琐，但是适用性广，可以采用任意的方式来启动进程。
+
+另外为了方便使用，OneFlow 也提供了一个分布式启动多进程且自动构建环境变量的工具 [oneflow.distributed.launch](../parallelism/04_launch.md)。
