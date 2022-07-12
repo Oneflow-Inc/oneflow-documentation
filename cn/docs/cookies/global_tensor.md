@@ -211,7 +211,7 @@ print(x_global_b.to_local())
 
 这里的 `to_global` 变换完成了对 local tensor 的归并。通常来讲，SPMD 编程模式要求用户手写一个 `all-gather` 集合通信来完成。而在 OneFlow Global View 中，只需做一下类型转换。
 
-通过 Global Tensor 的类型转换，就自动完成通信操作的推理和执行。让算法开发者可以 `思考数据的分布`(`Thinking in data distribution`)，而不是 `思考如何通信`(`Thinking in data communication operation`)，实现了所想即所得，从而提高分布式程序的开发效率。
+通过 Global Tensor 的类型转换，就自动完成通信操作的推理和执行。让算法开发者可以 **思考数据的分布(Thinking in data distribution)**，而不是 **思考如何通信(Thinking in data communication operation)**，实现了所想即所得，从而提高分布式程序的开发效率。
 
 这里补充介绍一下 Global Tensor 的 `numpy()` 方法。对于任意的 Global Tensor 如 `x_global`，`x_global.numpy()` 等价于 `x_global.to_global(spb=flow.sbp.broadcast).to_local().numpy()`，即内部隐含了一次将原 Global Tensor 转成 SBP 为 flow.sbp.broadcast() 的 Global Tensor，然后进行一次 to_local 操作，最后对这个 Local Tensor 调用 `numpy()` 方法。所以 `x_global.numpy()` 得到的是一个完整的数据。
 
