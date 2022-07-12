@@ -72,7 +72,7 @@ print("Global data of global tensor:\n ", x.numpy())
     export MASTER_ADDR=127.0.0.1 MASTER_PORT=17789 WORLD_SIZE=2 RANK=1 LOCAL_RANK=1
     ```
 
-以上详细解释及借助工具启动分布式，请参考文末的 [扩展阅读](#_5)。
+以上环境变量的详细解释及使用工具做分布式启动，请参考文末的 [扩展阅读](#_5)。
 
 最后，在两个 Terminal 下分别启动一下`test_randn_global.py`，观察 Global Tensor 的创建结果：
 ```
@@ -128,11 +128,11 @@ print(x_global.is_global) # True
 
 可以观察到 `x_global` 的 shape 变为了 `(4, 5)`，这是 Global Tensor 的 shape（global shape）。
 
-Global Tensor 与 Local Tensor 之间为总量与分量的关系。Local Tensor 是总量在本 rank 的分量，分量和总量的具体关系由 Placement 和 SBP 确定。比如这里 `x` 和 `x_global` 的关系是在 0 和 1 号 GPU 上，`x_global` 在第 0 维 split 而得到 `x`。
+Global Tensor 与 Local Tensor 之间为总量与分量的关系。Local Tensor 是总量在本 rank 的分量。分量和总量的具体关系由 Placement 和 SBP 确定，比如这里的关系是在 0 和 1 号 GPU 上，`x_global` 在第 0 维 split 而得到 `x`。
 
 `to_global` 方法根据如上关系可以从 x shape 推理出 x_global shape ：把两个 GPU 上的 Local Tensor x 在第 0 维拼接后得到 x_global。
 
-Global Tensor 除了 shape，还有数据部分。一个 Global Tensor 的内部，在每个 rank 上都内含了一个 Local Tensor 作为其本地分量。 这个 Local Tensor 就是 Global Tensor 在每个 rank 的物理数据。这也是我们期待的，物理上每个 rank 只需要保存一部分数据。
+Global Tensor 除了 shape，还有数据部分。一个 Global Tensor 的内部，在每个 rank 上都内含了一个 Local Tensor 作为其本地分量。 这个 Local Tensor 就是 Global Tensor 在每个 rank 的物理数据。这符合期待的，每个 rank 只需保存一部分物理数据。
 
 ## 由 Global Tensor 得到 Local Tensor
 
@@ -156,13 +156,13 @@ Global Tensor 除了 shape，还有数据部分。一个 Global Tensor 的内部
        		 dtype=oneflow.float32)
     ```
 
-`to_local()` 没有任何参数，是因为 Global Tensor 已经通过 placement 和 SBP 指定好了它的本地分量的信息。
+`to_local()` 没有任何参数，因为 Global Tensor 已经通过 placement 和 SBP 确定好了它的本地分量，所以直接取本地分量对应的 Local Tensor 就好。
 
 ## 由 Global Tensor 转成另一个 Global Tensor
 
 进行分布式计算通常都需要在正常的计算逻辑之间插入通信操作，而使用 OneFlow 时只需要做 Global Tensor 的数据分布类型转换。
 
-Global Tensor 相比普通的 Local Tensor，从类型上讲，最大的区别是带有全局数据分布类型（Global Data Distribution Type）。全局数据分布类型指定了 Global Tensor 在每个进程（Rank）的数据分布情况。由 Placement 和 SBP 组成。
+Global Tensor 相比普通的 Local Tensor，从类型上讲，最大的区别是带有全局数据分布类型（Global Data Distribution Type）。全局数据分布类型指定了 Global Tensor 在每个进程（Rank）的数据分布情况，由 Placement 和 SBP 组成。
 
 全局数据分布类型中的 Placement 指定了数据分布的设备集合:
 
@@ -184,11 +184,11 @@ Global Tensor 相比普通的 Local Tensor，从类型上讲，最大的区别�
 
 数据重分布（Re-distribution)是并行计算中经常要处理的，即变换数据分布，比如把分片数据聚合到一起。在 MPI 编程范式（SPMD）下, 数据重分布需要写显式的通信操作，如 AllReduce、AllGather、ReduceScatter。在 OneFlow 的 Global View 编程范式（SPSD) 下，数据重分布可以通过 Global Tensor 的全局数据分布类型转换完成。
 
-全局数据分布类型转换类似常规编程语言中的（显式）类型转换。类型转换时，只需指定要变换到的类型，里面隐含的操作会被系统自动完成。比如 double 类型到 int 类型的转换，去掉小数点部分的操作就是系统自动完成的。
+全局数据分布类型的转换类似常规编程语言中的（显式）类型转换。类型转换时，只需指定要变换到的类型，里面隐含的操作会被系统自动完成。比如 double 类型到 int 类型的转换，去掉小数点部分的操作就是系统自动完成的。
 
 同样，只需指定 Global Tensor 要转换的新全局数据分布类型，里面隐含的通信操作会被 OneFlow 自动完成。全局数据分布类型转换的接口是 [Tensor.to_global](https://oneflow.readthedocs.io/en/master/tensor.html#oneflow.Tensor.to_global)，`to_global` 有 `placement` 和 `sbp` 两个参数，这两个参数即期望转换成的新全局数据分布类型。 
 
-全局数据分布类型转换中隐含的主要操作是自动推理并执行通信，背后的实现机制是 OneFlow 的 [Boxing](https://docs.oneflow.org/master/parallelism/03_consistent_tensor#boxing-sbp)，一种自动做数据 Re-distribution 的机制。
+全局数据分布类型转换中隐含的主要操作是通信的推理和执行，背后的实现机制是 OneFlow 的 [Boxing](https://docs.oneflow.org/master/parallelism/03_consistent_tensor#boxing-sbp)，一种自动做数据 Re-distribution 的机制。
 
 下面看一个例子，该例子可以把一个按 split 分布的 Global Tensor 转换为一个按 broadcast 分布的 Global Tensor：
 
@@ -209,17 +209,15 @@ print(x_global_b.to_local())
 
 可以看到，`x_global` 到 `x_global_b` 的全局数据分布类型变化就是 sbp 从 `flow.sbp.split(0)` 变成了 `flow.sbp.broadcast`。他们的 global shape 都是 `(4, 5)`，但是本地分量从一个分片变成了一个完整的数据，这个变化可以从对 `to_local()` 的打印结果观察到。
 
-这里的 `to_global` 变换完成了对 local tensor 的归并。通常来讲，SPMD 编程模式要求用户手写一个 `all-gather` 集合通信来完成。而在 OneFlow Global View 中，只需做一下全局数据分布类型变换。
+这里的 `to_global` 变换完成了对 local tensor 的归并。通常来讲，SPMD 编程模式要求用户手写一个 `all-gather` 集合通信来完成。而在 OneFlow Global View 中，只需做一下类型转换。
 
-通过 Global Tensor 的类型变换，就自动完成通信操作的推理和执行。让算法开发者可以 `思考数据的分布`(`Thinking in data distribution`)，而不是 `思考如何通信`(`Thinking in data communication operation`)，实现了所想即所得，从而提高分布式程序的开发效率。
+通过 Global Tensor 的类型转换，就自动完成通信操作的推理和执行。让算法开发者可以 `思考数据的分布`(`Thinking in data distribution`)，而不是 `思考如何通信`(`Thinking in data communication operation`)，实现了所想即所得，从而提高分布式程序的开发效率。
 
 这里补充介绍一下 Global Tensor 的 `numpy()` 方法。对于任意的 Global Tensor 如 `x_global`，`x_global.numpy()` 等价于 `x_global.to_global(spb=flow.sbp.broadcast).to_local().numpy()`，即内部隐含了一次将原 Global Tensor 转成 SBP 为 flow.sbp.broadcast() 的 Global Tensor，然后进行一次 to_local 操作，最后对这个 Local Tensor 调用 `numpy()` 方法。所以 `x_global.numpy()` 得到的是一个完整的数据。
 
 ## Global Tensor 参与计算
 
-上文了解了 Global Tensor 的基本概念、如何创建 Global Tensor、Global 与 Local Tensor 的转换以及 Global Tensor 之间的转换。
-
-这一节将介绍 Global Tensor 如何参与实际计算。这里以 Global Tensor 参与矩阵乘法计算为例，构造如下程序：
+这一节介绍 Global Tensor 如何参与实际计算。以 Global Tensor 参与矩阵乘法计算为例，构造如下程序：
 
 ```python
 import oneflow as flow
@@ -234,23 +232,23 @@ print(y.sbp)  # (flow.sbp.split(dim=0))
 print(y.to_local().numpy())
 ```
 
-以上程序创建了两个 Global Tensor，分别是 `x` 和 `w`，它们参与 `flow.matmul` 计算得到 `y`。
+以上程序创建了两个 Global Tensor，分别是 `x` 和 `w`，它们参与 `oneflow.matmul` 计算得到 `y`。
 
-OneFlow 中的大部分算子都支持计算 Global Tensor，所以 `flow.matmul` 在接口上并无特殊之处。可以认为 OneFlow 中的算子都是多态的。即，会自动根据输入，决定自己的行为：
+OneFlow 中的大部分算子都支持计算 Global Tensor。`flow.matmul` 执行 Global Tensor时，在接口上并无特殊之处。可以认为 OneFlow 中的算子都是多态的。即根据输入，决定自己的行为：
 
-- 如果算子的输入是 Local Tensor，那么算子会按照普通的单卡执行模式进行计算；
-- 如果算子的输入是 Global Tensor，那么算子会采用 Global View（多机多设备分布式）模式进行计算；
+- 如果算子的输入是 Local Tensor，那么算子会按照普通的单机单设备执行模式进行计算；
+- 如果算子的输入是 Global Tensor，那么算子会采用 Global View（多机多设备）模式进行计算；
 
-当用户需要将单卡代码改为分布式代码时，算子支持多态执行这个特性为用户提供了极大的便利：只需要把输入的 (Local) Tensor 转换成 Global Tensor 。
+当用户需要将单卡代码改为分布式代码时，算子支持多态执行为用户提供了极大的便利：只需要把输入的 (Local) Tensor 转换成 Global Tensor 。
 
-类似于单卡执行时要求输入数据所在设备相同，以上程序中， `flow.matmul` 这一算子可以顺利执行的前置条件是：输入的 `x` 和 `w` 的 placement 相同。
+类似于单设备执行时要求输入数据所在设备相同，以上程序中， `flow.matmul` 这一算子可以顺利执行的前置条件是：输入的 `x` 和 `w` 的 placement 相同。
 
-程序中矩阵相乘的结果 `y` 同样是一个 Global Tensor 。`flow.matmul` 对输入 `x` 和 `w` 做中间计算时，会自动进行输出的 placement 和 SBP 的推理，规则如下：
+程序中矩阵相乘的结果 `y` 同样是一个 Global Tensor 。`flow.matmul` 对输入 `x` 和 `w` 做计算时，会自动进行输出数据的 placement 和 SBP 的推理，规则如下：
 
 - Placement: 输出和输入的 placement 相同；
 - SBP: 输出的 SBP 的推理规则，因算子类型而异，这个推理规则是 OneFlow 内置的，详情可见: [SBP Signature](../parallelism/02_sbp.md#sbp-signature)
 
-此处，`flow.sbp.split(0)` 和 `flow.sbp.broadcast` 相乘的输出数据会被推理成 `flow.sbp.split(0)`。`x` 在每个 rank 上是一个分片数据，`w` 是一个完整的数据，二者矩阵乘法得到的 `y` 是一个分片的数据。看到这里，了解常见并行方式的朋友可以发现：这里实现了一个数据并行的前向计算，`x` 是切片的数据，`w` 是完整的参数。
+此处，`flow.sbp.split(0)` 和 `flow.sbp.broadcast` 相乘的输出数据会被推理成 `flow.sbp.split(0)`。`x` 在每个 rank 上是一个分片数据，`w` 是一个完整的数据，二者矩阵乘法得到的 `y` 是一个分片的数据。看到这里，了解常见并行执行方式的朋友可以发现：这里实现了一个数据并行的前向计算，`x` 是切片的数据，`w` 是完整的参数。
 
 ## 结语
 上文介绍了：
@@ -259,7 +257,7 @@ OneFlow 中的大部分算子都支持计算 Global Tensor，所以 `flow.matmul
 - Global Tensor 的跨进程可见的执行特点；
 - Global Tensor 和 Local Tensor 的互转；
 - 通过 Global Tensor 的全局数据分布类型转换来实现分布式通信；
-- OneFlow 算子的多态特性支持 Global Tensor 的执行；
+- OneFlow 算子的多态特性支持了 Global Tensor 的执行；
 
 至此，本文从 Global Tensor 的创建开始，最终完成了一个基于 Global Tensor 的数据并行计算流程。
 
