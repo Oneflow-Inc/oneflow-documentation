@@ -102,7 +102,7 @@ Global data of global tensor:
 ```
 可以发现两个 rank 的 Local Tensor 在维度 0 拼接后，就是完整的 Global Tensor 的值。
 
-### 由 Local Tensor 得到 Global Tensor
+## 由 Local Tensor 得到 Global Tensor
 
 可以先创建 Local Tensor，再利用 [Tensor.to_global](https://oneflow.readthedocs.io/en/master/tensor.html#oneflow.Tensor.to_global) 方法，将 Local Tensor 转为 Global Tensor。
 
@@ -134,7 +134,7 @@ Global Tensor 与 Local Tensor 之间为总量与分量的关系。Local Tensor 
 
 Global Tensor 除了 shape，还有数据部分。一个 Global Tensor 的内部，在每个 rank 上都内含了一个 Local Tensor 作为其本地分量。 这个 Local Tensor 就是 Global Tensor 在每个 rank 的物理数据。这也是我们期待的，物理上每个 rank 只需要保存一部分数据。
 
-### 由 Global Tensor 得到 Local Tensor
+## 由 Global Tensor 得到 Local Tensor
 
 如果想得到 Global Tensor 的本地分量，可以通过 [to_local](https://oneflow.readthedocs.io/en/master/tensor.html#oneflow.Tensor.to_local) 方法得到。
 
@@ -158,7 +158,7 @@ Global Tensor 除了 shape，还有数据部分。一个 Global Tensor 的内部
 
 `to_local()` 没有任何参数，是因为 Global Tensor 已经通过 placement 和 SBP 指定好了它的本地分量的信息。
 
-### 由 Global Tensor 转成另一个 Global Tensor
+## 由 Global Tensor 转成另一个 Global Tensor
 
 进行分布式计算通常都需要在正常的计算逻辑之间插入通信操作，而使用 OneFlow 时只需要做 Global Tensor 的数据分布类型转换。
 
@@ -215,7 +215,7 @@ print(x_global_b.to_local())
 
 这里补充介绍一下 Global Tensor 的 `numpy()` 方法。对于任意的 Global Tensor 如 `x_global`，`x_global.numpy()` 等价于 `x_global.to_global(spb=flow.sbp.broadcast).to_local().numpy()`，即内部隐含了一次将原 Global Tensor 转成 SBP 为 flow.sbp.broadcast() 的 Global Tensor，然后进行一次 to_local 操作，最后对这个 Local Tensor 调用 `numpy()` 方法。所以 `x_global.numpy()` 得到的是一个完整的数据。
 
-### Global Tensor 参与计算
+## Global Tensor 参与计算
 
 上文了解了 Global Tensor 的基本概念、如何创建 Global Tensor、Global 与 Local Tensor 的转换以及 Global Tensor 之间的转换。
 
@@ -252,7 +252,7 @@ OneFlow 中的大部分算子都支持计算 Global Tensor，所以 `flow.matmul
 
 此处，`flow.sbp.split(0)` 和 `flow.sbp.broadcast` 相乘的输出数据会被推理成 `flow.sbp.split(0)`。`x` 在每个 rank 上是一个分片数据，`w` 是一个完整的数据，二者矩阵乘法得到的 `y` 是一个分片的数据。看到这里，了解常见并行方式的朋友可以发现：这里实现了一个数据并行的前向计算，`x` 是切片的数据，`w` 是完整的参数。
 
-### 结语
+## 结语
 上文介绍了：
 
 - Global View 提供的 SPSD 编程视角；
