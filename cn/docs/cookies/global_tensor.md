@@ -130,7 +130,7 @@ print(x_global.is_global) # True
 
 Global Tensor 与 Local Tensor 之间为总量与分量的关系。Local Tensor 是总量在本 rank 的分量。分量和总量的具体关系由 Placement 和 SBP 确定，比如这里的关系是在 0 和 1 号 GPU 上，`x_global` 在第 0 维 split 而得到 `x`。
 
-`to_global` 方法根据如上关系可以从 x shape 推理出 x_global shape ：把两个 GPU 上的 Local Tensor x 在第 0 维拼接后得到 x_global。
+`to_global` 方法根据如上关系可以从 `x.shape` 推理出 `x_global.shape` ：把两个 GPU 上的 Local Tensor `x` 在第 0 维拼接后得到 `x_global`。
 
 Global Tensor 除了 shape，还有数据部分。一个 Global Tensor 的内部，在每个 rank 上都内含了一个 Local Tensor 作为其本地分量。 这个 Local Tensor 就是 Global Tensor 在每个 rank 的物理数据。这符合期待的，每个 rank 只需保存一部分物理数据。
 
