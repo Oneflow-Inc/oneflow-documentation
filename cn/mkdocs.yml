@@ -47,6 +47,10 @@ theme:
 # Plugins
 plugins:
   - search
+  - redirects:
+      redirect_maps:
+          'parallelism/03_global_tensor.md': 'parallelism/03_consistent_tensor.md'
+
 extra:
   version:
     provider: mike
@@ -141,4 +145,4 @@ nav:
       - Zero Redundancy Optimizer (ZeRO): cookies/zero.md
 
     - API:
-      - API: https://start.oneflow.org/oneflow-api-cn/
+      - API: https://oneflow.readthedocs.io/en/master/
