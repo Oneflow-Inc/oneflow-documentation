@@ -166,8 +166,8 @@ Global Tensor 相比普通的 Local Tensor，从类型上讲，最大的区别�
 
 全局数据分布类型中的 Placement 指定了数据分布的设备集合:
 
-- 参数 `type` 指定了物理设备的类型，` cuda”` 表示 GPU 设备内存, `cpu` 表示 CPU 设备内存；
-- 参数 `ranks` 指定了进程 ID 集合，因为隐含了一个 Rank 对应一个物理设备，所以 `ranks` 就是设备 ID 集合; 实际上 `ranks` 是一个由 rank id 组成 nd-array，支持高维设备排布。 
+- 参数 `type` 指定了物理设备的类型，` cuda` 表示 GPU 设备内存, `cpu` 表示 CPU 设备内存；
+- 参数 `ranks` 指定了进程 ID 集合，因为隐含了一个 Rank 对应一个物理设备，所以 `ranks` 就是设备 ID 集合; 实际上 `ranks` 是一个由 `rank id` 组成的 ndarray，支持高维设备排布。 
 
 详情参考 [oneflow.placement](https://oneflow.readthedocs.io/en/master/tensor_attributes.html?highlight=placement#oneflow.placement).
 
@@ -188,7 +188,7 @@ Global Tensor 相比普通的 Local Tensor，从类型上讲，最大的区别�
 
 同样，只需指定 Global Tensor 要转换的新全局数据分布类型，里面隐含的通信操作会被 OneFlow 自动完成。全局数据分布类型转换的接口是[Tensor.to_global](https://oneflow.readthedocs.io/en/master/tensor.html#oneflow.Tensor.to_global)，`to_global` 有 `placement` 和 `sbp` 两个参数，这两个参数即期望转换成的新全局数据分布类型。 
 
-全局数据分布类型转换中隐含的主要操作是自动推理并执行通信，背后的实现机制是 OneFlow 的 [Boxing](https://docs.oneflow.org/master/parallelism/03_consistent_tensor#boxing-sbp)，一种自动做数据 re-distribution 的机制。
+全局数据分布类型转换中隐含的主要操作是自动推理并执行通信，背后的实现机制是 OneFlow 的 [Boxing](https://docs.oneflow.org/master/parallelism/03_consistent_tensor#boxing-sbp)，一种自动做数据 Re-distribution 的机制。
 
 下面看一个例子，该例子可以把一个按 split 分布的 Global Tensor 转换为一个按 broadcast 分布的 Global Tensor：
 
