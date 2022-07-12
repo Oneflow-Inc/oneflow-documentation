@@ -169,7 +169,7 @@ Global Tensor 相比普通的 Local Tensor，从类型上讲，最大的区别�
 - 参数 `type` 指定了物理设备的类型，`cuda` 表示 GPU 设备内存, `cpu` 表示 CPU 设备内存；
 - 参数 `ranks` 指定了进程 ID 集合，因为隐含了一个 Rank 对应一个物理设备，所以 `ranks` 就是设备 ID 集合; 实际上 `ranks` 是一个由 rank id 组成 nd-array，支持高维设备排布。 
 
-详情参考 [oneflow.placement](https://oneflow.readthedocs.io/en/master/tensor_attributes.html?highlight=placement#oneflow.placement).
+详情参考 [oneflow.placement](https://oneflow.readthedocs.io/en/master/tensor_attributes.html?highlight=placement#oneflow.placement)。
 
 
 全局数据分布类型中的 SBP 指定了全局数据和局部数据的关系:
