@@ -14,7 +14,7 @@ Global Tensor 是多机多设备执行的 Tensor，是实现全局视角（Globa
 
 编程时，Global Tensor 让用户可以用 SPSD 的接口来编程，即按照单机单设备的逻辑视角来写程序。然后 OneFlow 框架内部会自动的转换成物理的 SPMD/MPMD 方式来做并行/分布式执行。
 
-使用 Global Tensor，就可以采用比较自然的 Global View 视角，把多机多设备看做一机一设备来编程，实现 SPSD 编程。
+使用 Global Tensor，就可以采用比较自然的 Global View 视角，把多机多设备看做一个设备来编程，实现 SPSD 编程。
 
 
 ## Global Tensor
