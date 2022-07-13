@@ -136,25 +136,34 @@ Global Tensor 除了 shape，还有数据部分。一个 Global Tensor 的内部
 
 ## 由 Global Tensor 得到 Local Tensor
 
-如果想得到 Global Tensor 的本地分量，可以通过 [to_local](https://oneflow.readthedocs.io/en/master/tensor.html#oneflow.Tensor.to_local) 方法得到。
+如果想得到 Global Tensor 的本地分量，可以通过 [to_local](https://oneflow.readthedocs.io/en/master/tensor.html#oneflow.Tensor.to_local) 方法得到。例如：
 
-接上面的程序，增加 `print(x_global.to_local())`，在不同的 rank 分别得到一个 shape 为 `(2, 5)` 的本地分量 tensor。
+```python
+import oneflow as flow
 
-=== "Terminal 0"
+placement = flow.placement(type="cuda", ranks=[0, 1])
+sbp = flow.sbp.split(0)
+x = flow.randn(4, 5, placement=placement, sbp=sbp)
+print(x.to_local())
+```
 
-    ```python
-    tensor([[-0.2730,  1.8042,  0.0721, -0.5024, -1.2583],
-        		[-0.3379,  0.9371,  0.7981, -0.5447, -0.5629]],
-       		 dtype=oneflow.float32)
-    ```
+当执行 `x.to_local()` 时，两个不同的 rank 将分别得到一个 shape 为 `(2, 5)` 的本地分量 tensor。
 
-=== "Terminal 1"
+在 Terminal 0 即 rank 0 可以看到：
 
-    ```python
-    tensor([[ 0.6829,  0.4849,  2.1611,  1.4059,  0.0934],
-    		    [-0.0301, -0.6942, -0.8094, -1.3050, -0.1778]],
-       		 dtype=oneflow.float32)
-    ```
+```
+tensor([[-0.2730,  1.8042,  0.0721, -0.5024, -1.2583],
+    		[-0.3379,  0.9371,  0.7981, -0.5447, -0.5629]],
+   		  dtype=oneflow.float32)
+```
+
+在 Terminal 1 即 rank 1 可以看到：
+
+```
+tensor([[ 0.6829,  0.4849,  2.1611,  1.4059,  0.0934],
+				[-0.0301, -0.6942, -0.8094, -1.3050, -0.1778]],
+				dtype=oneflow.float32)
+```
 
 `to_local()` 没有任何参数，因为 Global Tensor 已经通过 placement 和 SBP 确定好了它的本地分量，所以直接取本地分量对应的 Local Tensor 就好。
 
