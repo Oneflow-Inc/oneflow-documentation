@@ -260,6 +260,7 @@ OneFlow 中的大部分算子都支持计算 Global Tensor。`flow.matmul` 执�
 此处，`flow.sbp.split(0)` 和 `flow.sbp.broadcast` 相乘的输出数据会被推理成 `flow.sbp.split(0)`。`x` 在每个 rank 上是一个分片数据，`w` 是一个完整的数据，二者矩阵乘法得到的 `y` 是一个分片的数据。看到这里，了解常见并行执行方式的朋友可以发现：这里实现了一个数据并行的前向计算，`x` 是切片的数据，`w` 是完整的参数。
 
 ## 结语
+
 上文介绍了：
 
 - Global View 提供的 SPSD 编程视角；
