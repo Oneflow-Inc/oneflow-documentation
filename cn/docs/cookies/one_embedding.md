@@ -211,6 +211,17 @@ OneEmbedding 同 OneFlow 的其它模块类似，都原生支持分布式扩展�
 - `store_options` 配置中参数 `persistent_path` 指定存储的路径。在并行场景中，它既可以是一个表示路径的字符串，也可以是一个 `list`。若配置为一个代表路径的字符串，它代表分布式并行中各 rank 下的根目录。OneFlow 会在这个根路径下，依据各个 rank 的编号创建存储路径，名称格式为 `rank_id-num_rank`。若`persistent_path` 是一个 `list`，则会依据列表中的每项，为 rank 单独配置。
 - 在并行场景中，`store_options` 配置中的 `capacity` 代表词表总容量，而不是每个 rank 的容量。`cache_budget_mb` 代表每个 GPU 设备的显存。
 
+### 基础概念
+这一章介绍几个概念在OneEmbedding语境中的含义。
+#### EmbeddingTable与MultiTableEmbedding
+在OneEmbedding中嵌入表（EmbeddingTable）既可以是一个从索引映射到稠密向量的查找表，也可以是一个键值对（key value pair）查找表。在一些场景中，可能会用到多个嵌入表，比如在推荐系统中，每一个特征都对应一张嵌入表。如果在模型中使用多张嵌入表，查表的性能一般比较低，OneEmbedding推荐把多张表合成一张表使用的做法，只需要保证多张表的id或者key不重复即可，这里被称为多表嵌入（MultiTableEmbedding）。
+用户在使用MultiTableEmbedding的时候，可能与普通的EmbeddingTable有不同，比如：
+- 制作数据集的时候要注意不同表的id或者key不能重复；
+- 不同表所期待的初始化方式可能不同。
+
+#### 分层存储
+
+前面已经提到，OneEmbedding支持灵活的分层存储，支持将 Embedding table 放置在 GPU 显存、 CPU 内存或者 SSD 上面，允许使用高速设备作为低速设备的缓存，实现速度与容量的兼顾。
 ## 扩展阅读：DLRM    
 
 本文展示了如何快速上手 OneEmbedding。
