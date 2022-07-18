@@ -211,23 +211,13 @@ OneEmbedding 同 OneFlow 的其它模块类似，都原生支持分布式扩展�
 - `store_options` 配置中参数 `persistent_path` 指定存储的路径。在并行场景中，它既可以是一个表示路径的字符串，也可以是一个 `list`。若配置为一个代表路径的字符串，它代表分布式并行中各 rank 下的根目录。OneFlow 会在这个根路径下，依据各个 rank 的编号创建存储路径，名称格式为 `rank_id-num_rank`。若`persistent_path` 是一个 `list`，则会依据列表中的每项，为 rank 单独配置。
 - 在并行场景中，`store_options` 配置中的 `capacity` 代表词表总容量，而不是每个 rank 的容量。`cache_budget_mb` 代表每个 GPU 设备的显存。
 
-### 基础概念
-这一章介绍几个概念在OneEmbedding语境中的含义。
-#### EmbeddingTable与MultiTableEmbedding
+### EmbeddingTable与MultiTableEmbedding
 在OneEmbedding中嵌入表（EmbeddingTable）既可以是一个从索引映射到稠密向量的查找表，也可以是一个键值对（key value pair）查找表。在一些场景中，可能会用到多个嵌入表，比如在推荐系统中，每一个特征都对应一张嵌入表。如果在模型中使用多张嵌入表，查表的性能一般比较低，OneEmbedding推荐把多张表合成一张表使用的做法，只需要保证多张表的id或者key不重复即可，这里被称为多表嵌入（MultiTableEmbedding）。
 用户在使用MultiTableEmbedding的时候，可能与普通的EmbeddingTable有不同，比如：
 - 制作数据集的时候要注意不同表的id或者key不能重复；
 - 不同表所期待的初始化方式可能不同。
 
-#### 分层存储
-
-#### 分层存储
-随着嵌入表规模的扩大，在一些情况下嵌入表已经大到无法被设备内存、或者主机内存完整装入，OneEmbedding支持灵活的分层存储，支持将 Embedding table 放置在 GPU 显存、 CPU 内存或者 SSD 上面，允许使用高速设备作为低速设备的缓存，实现速度与容量的兼顾。目前OneEmbedding开放了三种分层存储模式：
-- `device_mem`：如果嵌入表还能够被设备内存完整装入，而且设备上还有足够的内存供网络模型的其他部分使用，这就是一种最高效的模式，可以使用`oneflow.one_embedding.make_device_mem_store_options`进行配置。
-- `cached_host_mem`：如果嵌入表无法被完整的装入设备内存，但主机内存足够大，OneEmbedding支持将主机内存作为主要的存储介质，设备内存作为一级缓存动态的存储高频部分的词表，使用`oneflow.one_embedding.make_cached_host_mem_store_options`进行配置。这种模式的性能接近略低于`device_mem`模式。
-- `cached_ssd`：如果主机内存也不够大，OneEmbedding支持将高速SSD作为主要的存储介质，设备内存作为一级缓存动态的存储高频部分的词表，使用`oneflow.one_embedding.make_cached_ssd_store_options`进行配置。这里强调使用高速SSD，是从性能上考虑。
-
-#### 持久化存储
+### 持久化存储
 训练好的嵌入表需要被持久化的保存下来，在配置分层存储时，会被要求配置持久化存储目录（persistent_path)，OneEmbedding将模型数据保存到这个目录中，不过保存方式和其他variable有不同。
 
 我们先从一般的模型保存开始说起，模型的保存一般是保存的state_dict，如下面的操作从module中提取state_dict并保存到指定目录`saved_snapshot`：
