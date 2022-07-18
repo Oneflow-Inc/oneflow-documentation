@@ -221,7 +221,62 @@ OneEmbedding 同 OneFlow 的其它模块类似，都原生支持分布式扩展�
 
 #### 分层存储
 
-前面已经提到，OneEmbedding支持灵活的分层存储，支持将 Embedding table 放置在 GPU 显存、 CPU 内存或者 SSD 上面，允许使用高速设备作为低速设备的缓存，实现速度与容量的兼顾。
+#### 分层存储
+随着嵌入表规模的扩大，在一些情况下嵌入表已经大到无法被设备内存、或者主机内存完整装入，OneEmbedding支持灵活的分层存储，支持将 Embedding table 放置在 GPU 显存、 CPU 内存或者 SSD 上面，允许使用高速设备作为低速设备的缓存，实现速度与容量的兼顾。目前OneEmbedding开放了三种分层存储模式：
+- `device_mem`：如果嵌入表还能够被设备内存完整装入，而且设备上还有足够的内存供网络模型的其他部分使用，这就是一种最高效的模式，可以使用`oneflow.one_embedding.make_device_mem_store_options`进行配置。
+- `cached_host_mem`：如果嵌入表无法被完整的装入设备内存，但主机内存足够大，OneEmbedding支持将主机内存作为主要的存储介质，设备内存作为一级缓存动态的存储高频部分的词表，使用`oneflow.one_embedding.make_cached_host_mem_store_options`进行配置。这种模式的性能接近略低于`device_mem`模式。
+- `cached_ssd`：如果主机内存也不够大，OneEmbedding支持将高速SSD作为主要的存储介质，设备内存作为一级缓存动态的存储高频部分的词表，使用`oneflow.one_embedding.make_cached_ssd_store_options`进行配置。这里强调使用高速SSD，是从性能上考虑。
+
+#### 持久化存储
+训练好的嵌入表需要被持久化的保存下来，在配置分层存储时，会被要求配置持久化存储目录（persistent_path)，OneEmbedding将模型数据保存到这个目录中，不过保存方式和其他variable有不同。
+
+我们先从一般的模型保存开始说起，模型的保存一般是保存的state_dict，如下面的操作从module中提取state_dict并保存到指定目录`saved_snapshot`：
+
+```python
+flow.save(module.state_dict(), "saved_snapshot", global_dst_rank=0)
+```
+
+假设module中含有OneEmbedding，让我们看看里面存了啥？
+
+```python
+>>> import oneflow as flow
+loaded library: /lib/x86_64-linux-gnu/libibverbs.so.1
+>>> state_dict = flow.load("saved_snapshot")
+>>> state_dict.keys()
+odict_keys(['bottom_mlp.linear_layers.weight_0', 'bottom_mlp.linear_layers.bias_0', 'bottom_mlp.linear_layers.weight_1', 'bottom_mlp.linear_layers.bias_1', 'bottom_mlp.linear_layers.weight_2', 'bottom_mlp.linear_layers.bias_2', 'embedding.one_embedding.OneEmbedding', 'top_mlp.linear_layers.weight_0', 'top_mlp.linear_layers.bias_0', 'top_mlp.linear_layers.weight_1', 'top_mlp.linear_layers.bias_1', 'top_mlp.linear_layers.weight_2', 'top_mlp.linear_layers.bias_2', 'top_mlp.linear_layers.weight_3', 'top_mlp.linear_layers.bias_3', 'top_mlp.linear_layers.weight_4', 'top_mlp.linear_layers.bias_4'])
+>>> state_dict['embedding.one_embedding.OneEmbedding']
+'2022-04-15-22-53-04-270525'
+```
+
+其中`embedding.one_embedding.OneEmbedding`就是OneEmbedding的模型，但是里面存的是一个字符串'2022-04-15-22-53-04-270525'，我们去persistent_path看看：
+
+```bash
+$ tree -d persistent_path
+persistent_path
+├── 0-4
+│   ├── keys
+│   ├── snapshots
+│   │   └── 2022-04-15-22-53-04-270525
+│   └── values
+├── 1-4
+│   ├── keys
+│   ├── snapshots
+│   │   └── 2022-04-15-22-53-04-270525
+│   └── values
+├── 2-4
+│   ├── keys
+│   ├── snapshots
+│   │   └── 2022-04-15-22-53-04-270525
+│   └── values
+└── 3-4
+    ├── keys
+    ├── snapshots
+    │   └── 2022-04-15-22-53-04-270525
+    └── values
+```
+
+发现里面有四个子目录，`0-4` `1-4` `2-4` `3-4`，这是为4个GPU设备分别准备的4个目录，这四个目录的`snapshots`中都有一个`2022-04-15-22-53-04-270525`目录。这就是持久化保存的目录内容。
+
 ## 扩展阅读：DLRM    
 
 本文展示了如何快速上手 OneEmbedding。
