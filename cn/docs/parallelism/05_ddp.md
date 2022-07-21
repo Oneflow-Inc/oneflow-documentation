@@ -5,7 +5,7 @@
 
 一种是使用 OneFlow 的原生的 SBP 概念，通过设置 global 张量，进行数据并行训练，这也是用 OneFlow 做数据并行训练的 **推荐方式** 。
 
-此外，为了方便从 PyTorch 迁移到 OneFlow 的用户，OneFlow 提供了与 `torch.nn.parallel.DistributedDataParallel` 对齐一致的接口 [oneflow.nn.parallel.DistributedDataParallel](https://oneflow.readthedocs.io/en/master/nn.html#oneflow.nn.parallel.DistributedDataParallel)，它也能让用户方便地从单机训练脚本，扩展为数据并行训练。
+此外，为了方便从 PyTorch 迁移到 OneFlow 的用户，OneFlow 提供了与 `torch.nn.parallel.DistributedDataParallel` 对齐一致的接口 [oneflow.nn.parallel.DistributedDataParallel](https://oneflow.readthedocs.io/en/master/distributed.html#distributeddataparallel)，它也能让用户方便地从单机训练脚本，扩展为数据并行训练。
 
 ## 通过设置 SBP 做数据并行训练
 
