@@ -1286,41 +1286,41 @@ loss: 6.644351  [  960/50000]
 <table>
 <thead>
 <tr>
-<th align="center">Name</th>
-<th align="center">Info</th>
-<th align="center">Example</th>
+<th style="text-align: center;">Name</th>
+<th style="text-align: center;">Info</th>
+<th style="text-align: center;">Example</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td align="center">GRAPH</td>
-<td align="center">用户所定义的 Graph 信息，依次是类型：名字：构造方法。</td>
-<td align="center"><code>(GRAPH:GraphMobileNetV2_0:GraphMobileNetV2)</code></td>
+<td style="text-align: center;">GRAPH</td>
+<td style="text-align: center;">用户所定义的 Graph 信息，依次是类型：名字：构造方法。</td>
+<td style="text-align: center;"><code>(GRAPH:GraphMobileNetV2_0:GraphMobileNetV2)</code></td>
 </tr>
 <tr>
-<td align="center">CONFIG</td>
-<td align="center">Graph 的配置信息。如是否处于训练模式，<code>training=True</code> 表示 Graph 处于训练模式，如果在 Graph 的预测模式，则对应 <code>training=False</code>。</td>
-<td align="center"><code>(CONFIG:config:GraphConfig(training=True, )</code></td>
+<td style="text-align: center;">CONFIG</td>
+<td style="text-align: center;">Graph 的配置信息。如是否处于训练模式，<code>training=True</code> 表示 Graph 处于训练模式，如果在 Graph 的预测模式，则对应 <code>training=False</code>。</td>
+<td style="text-align: center;"><code>(CONFIG:config:GraphConfig(training=True, )</code></td>
 </tr>
 <tr>
-<td align="center">MODULE</td>
-<td align="center">对应 <code>nn.Module</code> ，MODULE 可以在 Graph 标签下层，同时，多个 MODULE 之间也存在层级关系。</td>
-<td align="center"><code>(MODULE:model:MobileNetV2())</code>，其中，<code>MobileNetV2</code> 为用户复用 Eager 模式下的 Module 类名。</td>
+<td style="text-align: center;">MODULE</td>
+<td style="text-align: center;">对应 <code>nn.Module</code> ，MODULE 可以在 Graph 标签下层，同时，多个 MODULE 之间也存在层级关系。</td>
+<td style="text-align: center;"><code>(MODULE:model:MobileNetV2())</code>，其中，<code>MobileNetV2</code> 为用户复用 Eager 模式下的 Module 类名。</td>
 </tr>
 <tr>
-<td align="center">PARAMETER</td>
-<td align="center">给出了更清晰的 weight 和 bias 信息。此外，在构图时，tensor 的数据内容不太重要，所以只展示了 tensor 的元信息，这些信息对构建网络更为重要。</td>
-<td align="center"><code>(PARAMETER:model.features.0.1.weight:tensor(..., device='cuda:0', size=(32,), dtype=oneflow.float32, requires_grad=True))</code></td>
+<td style="text-align: center;">PARAMETER</td>
+<td style="text-align: center;">给出了更清晰的 weight 和 bias 信息。此外，在构图时，tensor 的数据内容不太重要，所以只展示了 tensor 的元信息，这些信息对构建网络更为重要。</td>
+<td style="text-align: center;"><code>(PARAMETER:model.features.0.1.weight:tensor(..., device='cuda:0', size=(32,), dtype=oneflow.float32, requires_grad=True))</code></td>
 </tr>
 <tr>
-<td align="center">BUFFER</td>
-<td align="center">在训练时产生的统计特性等内容，如 running_mean 和   running_var。</td>
-<td align="center"><code>(BUFFER:model.features.0.1.running_mean:tensor(..., device='cuda:0', size=(32,), dtype=oneflow.float32))</code></td>
+<td style="text-align: center;">BUFFER</td>
+<td style="text-align: center;">在训练时产生的统计特性等内容，如 running_mean 和   running_var。</td>
+<td style="text-align: center;"><code>(BUFFER:model.features.0.1.running_mean:tensor(..., device='cuda:0', size=(32,), dtype=oneflow.float32))</code></td>
 </tr>
 <tr>
-<td align="center">INPUT &amp; OUPTUT</td>
-<td align="center">表示输入输出的张量信息。</td>
-<td align="center"><code>(INPUT:_model_input.0.0_2:tensor(..., device='cuda:0', is_lazy='True', size=(16, 3, 32, 32), dtype=oneflow.float32))</code></td>
+<td style="text-align: center;">INPUT &amp; OUPTUT</td>
+<td style="text-align: center;">表示输入输出的张量信息。</td>
+<td style="text-align: center;"><code>(INPUT:_model_input.0.0_2:tensor(..., device='cuda:0', is_lazy='True', size=(16, 3, 32, 32), dtype=oneflow.float32))</code></td>
 </tr>
 </tbody>
 </table>

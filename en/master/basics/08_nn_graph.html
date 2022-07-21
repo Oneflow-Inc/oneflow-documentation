@@ -1274,41 +1274,41 @@ loss: 6.644351  [  960/50000]
 <table>
 <thead>
 <tr>
-<th align="center">Name</th>
-<th align="center">Info</th>
-<th align="center">Example</th>
+<th style="text-align: center;">Name</th>
+<th style="text-align: center;">Info</th>
+<th style="text-align: center;">Example</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td align="center">GRAPH</td>
-<td align="center">User-defined Graph information, followed by type: name: construction method.</td>
-<td align="center"><code>(GRAPH:GraphMobileNetV2_0:GraphMobileNetV2)</code></td>
+<td style="text-align: center;">GRAPH</td>
+<td style="text-align: center;">User-defined Graph information, followed by type: name: construction method.</td>
+<td style="text-align: center;"><code>(GRAPH:GraphMobileNetV2_0:GraphMobileNetV2)</code></td>
 </tr>
 <tr>
-<td align="center">CONFIG</td>
-<td align="center">Graph configuration information. <code>training=True</code> indicates that the Graph is in training mode, and if in the evaluation mode, it corresponds to <code>training=False</code>.</td>
-<td align="center"><code>(CONFIG:config:GraphConfig(training=True, )</code></td>
+<td style="text-align: center;">CONFIG</td>
+<td style="text-align: center;">Graph configuration information. <code>training=True</code> indicates that the Graph is in training mode, and if in the evaluation mode, it corresponds to <code>training=False</code>.</td>
+<td style="text-align: center;"><code>(CONFIG:config:GraphConfig(training=True, )</code></td>
 </tr>
 <tr>
-<td align="center">MODULE</td>
-<td align="center">Corresponding to <code>nn.Module</code> , MODULE can be under the Graph tag, and there is also a hierarchical relationship between multiple modules.</td>
-<td align="center"><code>(MODULE:model:MobileNetV2())</code>, and  <code>MobileNetV2</code> reuses the Module class name in Eager mode for users.</td>
+<td style="text-align: center;">MODULE</td>
+<td style="text-align: center;">Corresponding to <code>nn.Module</code> , MODULE can be under the Graph tag, and there is also a hierarchical relationship between multiple modules.</td>
+<td style="text-align: center;"><code>(MODULE:model:MobileNetV2())</code>, and  <code>MobileNetV2</code> reuses the Module class name in Eager mode for users.</td>
 </tr>
 <tr>
-<td align="center">PARAMETER</td>
-<td align="center">Shows the clearer information of weight and bias. In addition, when building the graph, the data content of the tensor is less important, so it is more important for building network to only display the meta information of the tensor.</td>
-<td align="center"><code>(PARAMETER:model.features.0.1.weight:tensor(..., device='cuda:0', size=(32,), dtype=oneflow.float32, requires_grad=True))</code></td>
+<td style="text-align: center;">PARAMETER</td>
+<td style="text-align: center;">Shows the clearer information of weight and bias. In addition, when building the graph, the data content of the tensor is less important, so it is more important for building network to only display the meta information of the tensor.</td>
+<td style="text-align: center;"><code>(PARAMETER:model.features.0.1.weight:tensor(..., device='cuda:0', size=(32,), dtype=oneflow.float32, requires_grad=True))</code></td>
 </tr>
 <tr>
-<td align="center">BUFFER</td>
-<td align="center">Statistical characteristics and other content generated during training, such as running_mean and running_var.</td>
-<td align="center"><code>(BUFFER:model.features.0.1.running_mean:tensor(..., device='cuda:0', size=(32,), dtype=oneflow.float32))</code></td>
+<td style="text-align: center;">BUFFER</td>
+<td style="text-align: center;">Statistical characteristics and other content generated during training, such as running_mean and running_var.</td>
+<td style="text-align: center;"><code>(BUFFER:model.features.0.1.running_mean:tensor(..., device='cuda:0', size=(32,), dtype=oneflow.float32))</code></td>
 </tr>
 <tr>
-<td align="center">INPUT &amp; OUPTUT</td>
-<td align="center">Tensor information representing input and output.</td>
-<td align="center"><code>(INPUT:_model_input.0.0_2:tensor(..., device='cuda:0', is_lazy='True', size=(16, 3, 32, 32), dtype=oneflow.float32))</code></td>
+<td style="text-align: center;">INPUT &amp; OUPTUT</td>
+<td style="text-align: center;">Tensor information representing input and output.</td>
+<td style="text-align: center;"><code>(INPUT:_model_input.0.0_2:tensor(..., device='cuda:0', is_lazy='True', size=(16, 3, 32, 32), dtype=oneflow.float32))</code></td>
 </tr>
 </tbody>
 </table>
