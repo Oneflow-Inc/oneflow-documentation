@@ -47,6 +47,10 @@ theme:
 # Plugins
 plugins:
   - search
+  - redirects:
+      redirect_maps:
+          'parallelism/03_global_tensor.md': 'parallelism/03_consistent_tensor.md'
+
 extra:
   version:
     provider: mike
