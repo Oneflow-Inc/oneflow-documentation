@@ -305,15 +305,11 @@ So, this article will come to a close, and it fisrtly introduces how to create a
 
 More about parallelism ways and SBP's inference logic will be discussed in our later articles. 
 
-## 扩展阅读
-
 ## Further Reading
 
-### OneFlow 多机多卡启动 和 依赖的环境变量
+### OneFlow's multi-machine multi-GPU launching and its required environment variables
 
-### OneFlow’s multi-machine multi-GPU launching and its required environment variables
-
-OneFlow’s Global Tensors are executed under ** Multi-Client mode**, which means each device corresponds to one process. For example, `n Machine m GPU` has `n * m` processes. Besides, each process has its own rank ID, which corresponds to the ranks of the Global Tensor's `placement` parameter.
+OneFlow's Global Tensors are executed under ** Multi-Client mode**, which means each device corresponds to one process. For example, `n Machine m GPU` has `n * m` processes. Besides, each process has its own rank ID, which corresponds to the ranks of the Global Tensor's `placement` parameter.
 
 Take `2 Machines 2 GPUs` for example, Machine 0 corresponds to GPU 0 and GPU 1, and Machine 1 corresponds to GPU 2 and GPU 3. So, `flow.placement(type="cuda", ranks=[2])` can only identify the GPU 0 on Machine 1.
 
