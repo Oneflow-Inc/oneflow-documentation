@@ -2,15 +2,15 @@
 
 # Using Global Tensor to Program on Multi-Device Multi-GPU: Basic Operations
 
-By [YaoChi](https://github.com/doombeaker), [Xu Xiaoyu](https://github.com/strint), [Zuo Yihao](https://github.com/Alive1024), [Guoliang Cheng](https://github.com/lmyybh)
+By [YaoChi](https://github.com/doombeaker), [Xu Xiaoyu](https://github.com/strint), [Zuo Yihao](https://github.com/Alive1024), [Guoliang Cheng](https://github.com/lmyybh), [Shen Jiali](https://github.com/Carly-Shen)
 
 Global Tensor 是多机多设备执行的 Tensor，是实现全局视角（Global View）编程的接口。
 
-Global tensor can be executed on multi-device multi-GPU, and it’s an interface to realize the global view programming.
+Global tensor can be executed on multi-device multi-GPU, and it’s an interface to implement the global view programming.
 
 当前的并行程序，大都采用单程序多数据（SPMD）的方式来编程。并行执行同样的程序，但是处理不同数据，以此实现数据的并行处理。以 PyTorch DistributedDataParallel（DDP） 为例，每个进程执行同样的神经网络计算逻辑，但是每个进程加载数据集的不同分片。
 
-Today, most parallel programs adopt the SPMD (Single program, multiple data) programming method, which means the devices will execute the same program but process different parts of the data to realize data parallelism. Take PyTorch’s DDP (Distributed Data Parallel) for example. Each process executes the same neural network computing logic, but the difference is that they load different slices of one data set.
+Today, most parallel programs adopt the SPMD (Single program, multiple data) programming method, which means the devices will execute the same program but process different parts of the data to realize data parallelism. Take PyTorch’s DDP (Distributed Data Parallel) for example, each process executes the same neural network computing logic, but the difference is that they load different slices of one dataset.
 
 单程序多数据（SPMD）编程的缺陷是多数据的通信麻烦。在深度学习的场景下，SPMD 编程需要在原计算代码中插入通信操作，比如数据并行时对梯度汇总（AllReduce 操作），模型并行时需要 AllGather/ReduceScatter 操作。如果并行模式复杂，或者需要试验新并行模式，插入通信操作就变得难以开发和维护。
 
@@ -22,22 +22,22 @@ Global view programming permits users to program from the SPSD view. Different f
 
 数据是同一个逻辑数据，其实很自然。当我们把一个单进程程序扩展到并行执行时，一个单进程数据被扩展成多进程数据，多个进程上的这些数据都对应原单进程程序中的同一个逻辑数据。这个逻辑数据在 OneFlow 中叫 Global Tensor。
 
-When we extend a single-process program to a parallelly executed one, the single-process data will also be extended to the multi-process data, so it's natural that the data on different processes corresponds to the same logic data on the originally single-process program. And the logic data is called global tensor in OneFlow.
+When we extend a single-process program to a parallelly executed one, the single-process data will also be extended to the multi-process data, so it's natural that the data on different processes corresponds to the same logic data on the originally single-process program. And the logic data is called Global Tensor in OneFlow.
 
 编程时，Global Tensor 让用户可以用 SPSD 的接口来编程，即按照单机单设备的逻辑视角来写程序。然后 OneFlow 框架内部会自动的转换成物理的 SPMD/MPMD 方式来做并行/分布式执行。
 
-Global tensor supports users to utilize the SPSD interface to program, which means users can program on a single device and OneFlow framework will automatically convert to physical SPMD/MPMD mode and execute the program in a parallel/distributed way.
+Global Tensor supports users to utilize the SPSD interface to program, which means users can program on a single device and OneFlow framework will automatically convert to physical SPMD/MPMD mode and execute the program in a parallel/distributed way.
 
 使用 Global Tensor，就可以采用比较自然的 Global View 视角，把多机多设备看做一个设备来编程，实现 SPSD 编程。
 
-With global tensor, a more naturally global view programming method is available, and users can regard the multi-devices as a single device to realize SPSD programming.
+With Global Tensor, a more naturally global view programming method is available, and users can regard the multi-devices as a single device to realize SPSD programming.
 
 
 ## Global Tensor
 
 在编程语言中，Global 的含义通常是进程内的全局可见，比如[全局变量（Global Variable）](https://en.wikipedia.org/wiki/Global_variable)。
 
-In the programming language, "Global" usually refers to in-process global visibility, such as [Global Variable](https://en.wikipedia.org/wiki/Global_variable).
+In programming languages, "Global" usually refers to in-process global visibility, such as [Global Variable](https://en.wikipedia.org/wiki/Global_variable).
 
 但是 Global Tensor 中的 “Global” 的含义是进程间全局可见，所以 Global Tensor 更为准确的的说法是 Global (on all processes) Tensor，即所有进程可见的 Tensor。
 
@@ -45,11 +45,11 @@ Instead, the "Global" of the "Global Tensor" means inter-process global visibili
 
 Global Tensor 在每个进程上都存在，在所有进程上被某算子执行时，就自动完成了对该 Tensor 的多机多设备执行。
 
-Global tensor exists on all processes. When the tensor is executed by an operator on all processes, it will be automatically executed on multi-device multi-GPU.
+Global Tensor exists on all processes. When the tensor is executed by an operator on all processes, it will be automatically executed on multi-device multi-GPU.
 
 当前常用的 Tensor，只在单个进程内可见，存在于一个设备上，OneFlow 中把这种 Tensor 叫做 Local Tensor。Local 是相对 Global 而言的，所以 Local Tensor 可以认为是 Local (on one process) Tensor。
 
-At present, the commonly-used tensor is only visible on one process and also exists on a single device. OneFlow calls it the local tensor, which means it’s a tensor that can be seen on only one process.
+At present, the commonly-used tensor is only visible on one process and also exists on a single device. OneFlow calls it the Local Tensor, which means it’s a tensor that can be seen on only one process. Local is relative to Global, so Local Tensor can be considered as Local (on one process) Tensor.
 
 OneFlow 的算子大部分兼容 Local Tensor 和 Global Tensor 的执行。Local Tensor 可以便捷地转化为 Global Tensor。如此，单机单卡执行的代码可以平滑地转换成多机多卡执行的代码。
 
@@ -61,7 +61,7 @@ Global tensor allows users to easily develop models on multi-device multi-GPU. C
 
 ## 创建 Global Tensor
 
-## Creating global tensor
+## Creating Global Tensor
 
 现在尝试在有 2 张 GPU 的主机上创建一个 Global Tensor。以 `randn` 算子为例，创建一个 Python 文件 `test_randn_global.py`，加入以下内容：
 
@@ -83,7 +83,7 @@ print("Global data of global tensor:\n ", x.numpy())
 
 在上述代码中有一些新出现的概念：
 
-Here are some explanations for some new concepts in the codes above:
+Here are some explanations for some new concepts in the code above:
 
 - `placement` 表示 Global Tensor 分布的物理设备，参数 `type` 指定了物理设备的类型，这里使用` “cuda”` 表示 GPU 设备，参数 `ranks` 指定了设备 ID。对于没有 2 张 GPU 的读者，在这里可以将 `type` 指定为 `"cpu"`，这样可以使用 CPU 模拟多个设备，下文的代码同样适用；
 - `sbp` 表示 Global Tensor 分布的方式，代码中的 `sbp = flow.sbp.split(dim=0)` 表示把 Global Tensor 在维度 0 均匀切分；
@@ -97,7 +97,7 @@ Here are some explanations for some new concepts in the codes above:
 
 然后配置下多进程启动依赖的环境变量。这里是两卡执行，对应两个进程启动，所以需要打开两个 Terminal，分别配置如下环境变量：
 
-Next, configure the environment variables required by multi-process launching. Here, the machine owns 2 GPUs, which correspond to 2 process launchings. So, we should turn on 2 terminals and relatively configure the following environment variables:
+Next, configure the environment variables required by multi-process launching. Here, the machine owns 2 GPUs, which correspond to 2 process launchings. So, we should turn on 2 terminals and respectively configure the following environment variables:
 
 !!! Note
 
@@ -158,7 +158,7 @@ Global data of global tensor:
 ```
 可以发现两个 rank 的 Local Tensor 在维度 0 拼接后，就是完整的 Global Tensor 的值。
 
-It’s clear that if we concatenate the local tensors in rank 1 and rank 2 in dimension 0, we can get the complete value of the global tensor.
+It’s clear that if we concatenate the local tensors in rank 1 and rank 2 on dimension 0, we can get the complete value of the global tensor.
 
 ## 由 Local Tensor 得到 Global Tensor
 
@@ -187,7 +187,7 @@ print(x_global.is_global) # True
 
 该程序在 2 个 GPU 设备上分别创建了 `shape=(2,5)` 的  Local Tensor，即 x。
 
-This program separately creates a local tensors with the shape of (2,5) on 2 GPUs, and the newly-created tensors are called x.
+This program separately creates a local tensor with the shape of (2,5) on 2 GPUs, and the newly-created tensors are called x.
 
 然后定义 placement 为 rank 0 和 1 上的 cuda 设备，SBP 为 tensor 第 0 维的切分，原本 Local Tensor 经过 `to_global` 变换后，就得到一个名为 `x_global` 的 Global Tensor。
 
@@ -203,7 +203,7 @@ The relationship between the global tensor and the local tensor is the total and
 
 `to_global` 方法根据如上关系可以从 `x.shape` 推理出 `x_global.shape` ：把两个 GPU 上的 Local Tensor `x` 在第 0 维拼接后得到 `x_global`。
 
-Based on the above relationship, the `to_global` method can refer `x_global.shape` according to `x.shape`: it concatenates the local tensor `x` on 2 GPUs along dimension 0 to obtain `x_global`.
+Based on the above relationship, the `to_global` method can infer `x_global.shape` according to `x.shape`: it concatenates the local tensor `x` on 2 GPUs along dimension 0 to obtain `x_global`.
 
 Global Tensor 除了 shape，还有数据部分。一个 Global Tensor 的内部，在每个 rank 上都内含了一个 Local Tensor 作为其本地分量。 这个 Local Tensor 就是 Global Tensor 在每个 rank 的物理数据。这符合期待的，每个 rank 只需保存一部分物理数据。
 
@@ -302,11 +302,11 @@ For more details, please refer to [oneflow.sbp.sbp](https://oneflow.readthedocs.
 
 数据重分布（Re-distribution)是并行计算中经常要处理的，即变换数据分布，比如把分片数据聚合到一起。在 MPI 编程范式（SPMD）下, 数据重分布需要写显式的通信操作，如 AllReduce、AllGather、ReduceScatter。在 OneFlow 的 Global View 编程范式（SPSD) 下，数据重分布可以通过 Global Tensor 的全局数据分布类型转换完成。
 
-Data re-distribution is commonly seen in parallel computing, i.e., changing the distributed way of data, such as gathering all data slices. In the MPI programming paradigm (SPMD), data re-distribution requires writing explicit communication operations like AllReduce, AllGather, and ReduceScatter. But in OneFlow’s global view programming paradigm (SPSD), data re-distribution is available by utilizing Global Tensor’s global data distribution type conversion.
+Data re-distribution is commonly seen in parallel computing, i.e., changing the distributed way of data, such as gathering all data slices. In the MPI programming paradigm (SPMD), data re-distribution requires writing explicit communication operations like AllReduce, AllGather, and ReduceScatter. But in OneFlow’s global view programming paradigm (SPSD), data re-distribution can be achieved by utilizing Global Tensor’s global data distribution type conversion.
 
 全局数据分布类型的转换类似常规编程语言中的（显式）类型转换。类型转换时，只需指定要变换到的类型，里面隐含的操作会被系统自动完成。比如 double 类型到 int 类型的转换，去掉小数点部分的操作就是系统自动完成的。
 
-The conversion of the global data distribution type is similar to (explicit) type conversion in the general programming language. Users only need to specify the targeted type when they convert types, and some implicit operations can be executed automatically. For example, when converting the type from double to int, the system will remove the decimal point automatically.
+The conversion of the global data distribution type is similar to (explicit) type conversion in general programming languages. Users only need to specify the targeted type when they convert types, and some implicit operations can be executed automatically. For example, when converting the type from double to int, the system will remove the decimal point automatically.
 
 同样，只需指定 Global Tensor 要转换的新全局数据分布类型，里面隐含的通信操作会被 OneFlow 自动完成。全局数据分布类型转换的接口是 [Tensor.to_global](https://oneflow.readthedocs.io/en/master/tensor.html#oneflow.Tensor.to_global)，`to_global` 有 `placement` 和 `sbp` 两个参数，这两个参数即期望转换成的新全局数据分布类型。 
 
@@ -314,7 +314,7 @@ Similarly, it’s only required to specify the new global data distribution type
 
 全局数据分布类型转换中隐含的主要操作是通信的推理和执行，背后的实现机制是 OneFlow 的 [Boxing](https://docs.oneflow.org/master/parallelism/03_consistent_tensor#boxing-sbp)，一种自动做数据 Re-distribution 的机制。
 
-The main implicit operations in converting the global data distribution type are to infer and execute the communications, and these operations are realized by OneFlow’s [Boxing](https://docs.oneflow.org/master/parallelism/03_consistent_tensor#boxing-sbp), which is a mechanism to re-distribute data automatically.
+The main implicit operations in converting the global data distribution type are to infer and execute the communications, and these operations are realized by OneFlow’s [Boxing](https://docs.oneflow.org/en/master/parallelism/03_consistent_tensor.html#boxingautomatic-conversion-of-sbp), which is a mechanism to re-distribute data automatically.
 
 下面看一个例子，该例子可以把一个按 split 分布的 Global Tensor 转换为一个按 broadcast 分布的 Global Tensor：
 
@@ -376,7 +376,7 @@ In the program above, we have created 2 global tensors-`x` and `w`, and they par
 
 OneFlow 中的大部分算子都支持计算 Global Tensor。`flow.matmul` 执行 Global Tensor时，在接口上并无特殊之处。可以认为 OneFlow 中的算子都是多态的。即根据输入，决定自己的行为：
 
-Most of OneFlow’s operators support computing the global tensor. When `flow.matmul` executes the global tensor, there is nothing special about its interface. Arguably, most of OneFlow’s operators are dynamic, so they can decide how to compute according to the input:
+Most of OneFlow’s operators support computing the global tensor. When `flow.matmul` executes the global tensor, there is nothing special about its interface. Arguably, most of OneFlow’s operators are polymorphic, so they can decide how to compute according to the input:
 
 - 如果算子的输入是 Local Tensor，那么算子会按照普通的单机单设备执行模式进行计算；
 - 如果算子的输入是 Global Tensor，那么算子会采用 Global View（多机多设备）模式进行计算；
@@ -386,7 +386,7 @@ Most of OneFlow’s operators support computing the global tensor. When `flow.ma
 
 当用户需要将单卡代码改为分布式代码时，算子支持多态执行为用户提供了极大的便利：只需要把输入的 (Local) Tensor 转换成 Global Tensor 。
 
-The operators supporting polymorphic execution is very convenient for users to change the single-GPU code into distributed code: they only need to convert the (local) tensor they input to a global tensor.
+The operators supporting polymorphic execution are very convenient for users to change the single-GPU code into distributed code: they only need to convert the (Local) Tensor they accept to a Global Tensor.
 
 类似于单设备执行时要求输入数据所在设备相同，以上程序中， `flow.matmul` 这一算子可以顺利执行的前置条件是：输入的 `x` 和 `w` 的 placement 相同。
 
@@ -404,7 +404,7 @@ The result of matrix multiplication-`y` is also a global tensor. When `flow.matm
 
 此处，`flow.sbp.split(0)` 和 `flow.sbp.broadcast` 相乘的输出数据会被推理成 `flow.sbp.split(0)`。`x` 在每个 rank 上是一个分片数据，`w` 是一个完整的数据，二者矩阵乘法得到的 `y` 是一个分片的数据。看到这里，了解常见并行执行方式的朋友可以发现：这里实现了一个数据并行的前向计算，`x` 是切片的数据，`w` 是完整的参数。
 
-Here, the multiplied result of `flow.sbp.split(0)` and `flow.sbp.broadcast` will be referred as `flow.sbp.split(0)`. `x` is a data slice in each rank, `w` is complete data, and `y` is a data slice. Anyone familiar with common parallel execution approaches will find that a forward computation with data parallelism is conducted here. `x` is a data slice, and `w` is complete data.
+Here, the multiplied result of `flow.sbp.split(0)` and `flow.sbp.broadcast` will be referred as `flow.sbp.split(0)`. `x` is a data slice in each rank, `w` is complete data, and `y` is a data slice. Anyone familiar with common parallel execution approaches will find that a forward computation with data parallelism is conducted here. `x` is a data slice, and `w` the complete parameters.
 
 ## 结语
 
@@ -456,7 +456,7 @@ Generally, in the `n Machine m GPU` environment, `flow.placement(type="cuda", ra
 
 因为采用多客户端模式，所以需要对应每个设备都启动一个进程。在 OneFlow 中，所有进程都只需要启动相同的脚本程序。不同进程之间通过不同的环境变量来区分进程编号和建立通信连接。
 
-Because the tensor adopts the Multi-Client mode, we need to launch different processes corresponding to each device. In OneFlow, all processes need to launch the same scripts, and different processes distinguish process ID and establish communications according to different environment variables.
+Because the Multi-Client mode is adopted , we need to launch different processes corresponding to each device. In OneFlow, all processes need to launch the same scripts, and different processes distinguish process ID and establish communications according to different environment variables.
 
 环境变量说明：
 
@@ -468,9 +468,9 @@ Notes of environment variables:
 - `RANK`：集群内所有机器下的进程编号；
 - `LOCAL_RANK`：单个机器内的进程编号；
 
-- `MASTER_ADDR`：the IP of Machine 0 that is trained on multiple machines;
-- `MASTER_PORT`：the monitor port of Machine 0 that is trained on multiple machines, and this port shouldn’t conflict with the occupied ports;
-- `WORLD_SIZE`: the number of computing device in the whole cluster. Because it’s still not feasible to configure different number of GPUs on each device, the `WORLD_SIZE` equals the machine numbers multiplies the GPU numbers on each machine. In the previous case, we [create the global tensor](#global-tensor_2) in single machine 2 GPUs environment, so the `WORLD_SIZE=2`;
+- `MASTER_ADDR`：the IP of Machine 0 under multiple-machine training;
+- `MASTER_PORT`：the listening port of Machine 0 under multiple-machine training, and this port shouldn’t conflict with the occupied ports;
+- `WORLD_SIZE`: the number of computing devices in the whole cluster. Because it’s still not feasible to configure different number of GPUs on each device, the `WORLD_SIZE` equals the machine numbers multiplies the GPU numbers on each machine. In the previous case, we [create the global tensor](#global-tensor_2) in single machine 2 GPUs environment, so the `WORLD_SIZE=2`;
 - `RANK`：the process ID of all devices in the whole cluster;
 - `LOCAL_RANK`：the process ID of single device;
 
@@ -506,7 +506,7 @@ Take `2 Machines 2 GPUs` for example, the corresponding relationship between `LO
 
 使用环境变量启动虽然繁琐，但是适用性广，可以采用任意的方式来启动进程。
 
-Although it is complicated to utilize environment variables launching, this approach is widely applicable because users can adopt random ways to launch the process.
+Although it is complicated to utilize environment variables launching, this approach is widely applicable because users can adopt random ways to launch the processes.
 
 另外为了方便使用，OneFlow 也提供了一个分布式启动多进程且自动构建环境变量的工具 [oneflow.distributed.launch](../parallelism/04_launch.md)。
 
