@@ -65,8 +65,8 @@
         def __init__(self):
             super().__init__()
             self.module_pipeline = module_pipeline
-            self.module_pipeline.m_stage0.config.stage_id = 0
-            self.module_pipeline.m_stage1.config.stage_id = 1
+            self.module_pipeline.m_stage0.config.set_stage(stage_id=0, placement=P0)
+            self.module_pipeline.m_stage1.config.set_stage(stage_id=1, placement=P1)
             self.loss_fn = flow.nn.CrossEntropyLoss()
             self.config.set_gradient_accumulation_steps(2)
             self.add_optimizer(sgd)
@@ -144,12 +144,12 @@ P1 = flow.placement("cuda", ranks=[1])
 
 ### Stage ID 及 梯度累积设置
 
-通过设置 Module 的 `config.stage_id` 属性，设置 Stage ID，Stage ID 从 0 开始编号，依次加1。
-调用 `self.config.set_gradient_accumulation_steps` 方法，设置梯度累积的步长。
+通过 Module Config 上的 [config.set_stage](https://oneflow.readthedocs.io/en/master/generated/oneflow.nn.graph.block_config.BlockConfig.set_stage.html) 方法，设置流水线 Stage ID 和 Stage 对应的 Placement，Stage ID 从 0 开始编号，依次加1。
+调用 [config.set_gradient_accumulation_steps](https://oneflow.readthedocs.io/en/master/generated/oneflow.nn.graph.graph_config.GraphConfig.set_gradient_accumulation_steps.html#oneflow.nn.graph.graph_config.GraphConfig.set_gradient_accumulation_steps) 方法，设置梯度累积的步长。
 OneFlow 通过这两项配置，获取实现流水并行中的 micro batch 技术所需的信息。
 
 ```python
-    self.module_pipeline.m_stage0.config.stage_id = 0
-    self.module_pipeline.m_stage1.config.stage_id = 1
+    self.module_pipeline.m_stage0.config.set_stage(stage_id=0, placement=P0)
+    self.module_pipeline.m_stage1.config.set_stage(stage_id=1, placement=P1)
     self.config.set_gradient_accumulation_steps(2)
 ```
