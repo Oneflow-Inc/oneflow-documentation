@@ -87,11 +87,11 @@
 
         let TAGS_API_URL = 'https://api.github.com/repos/Oneflow-Inc/oneflow/tags'
         let xmlhttp = new XMLHttpRequest();
-        let latest_version_hardcode = "0.6.0" // using latest version in hard-code way if request fails
+        let latest_version_hardcode = "0.8.0" // using latest version in hard-code way if request fails
         xmlhttp.onreadystatechange = function () {
             if (xmlhttp.readyState == 4) {// 4 = "loaded"
                 if (xmlhttp.status == 200) {// 200 = "OK"
-                    localStorage.latest_version = eval(xmlhttp.responseText)[0].name.replace("v", "") // eg: v0.6.0 => 0.6.0
+                    localStorage.latest_version = eval(xmlhttp.responseText)[0].name.replace("v", "").replace("0.8.1", "0.8.0") // eg: v0.x.0 => 0.x.0
                     init_selector(get_commands(localStorage.latest_version))
                 }
                 else {
