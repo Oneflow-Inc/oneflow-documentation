@@ -6,7 +6,7 @@ Since you have known about 1D SBP, this document introduces 2D SBP, which can mo
 
 ## 2D Devices Array
 
-We are already familiar with the placement configuration of 1D SBP. In the scenario of 1D SBP, configure the cluster through the [oneflow.placement](https://oneflow.readthedocs.io/en/master/placement.html#oneflow.placement) interface. For example, use the 0~3 GPU graphics in the cluster:
+We are already familiar with the placement configuration of 1D SBP. In the scenario of 1D SBP, configure the cluster through the [oneflow.placement](https://oneflow.readthedocs.io/en/v0.8.1/tensor_attributes.html?highlight=oneflow.placement#oneflow-placement) interface. For example, use the 0~3 GPU graphics in the cluster:
 
 ```python
 >>> placement1 = flow.placement("cuda", ranks=[0, 1, 2, 3])

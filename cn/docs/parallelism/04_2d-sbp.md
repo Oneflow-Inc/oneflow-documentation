@@ -6,7 +6,7 @@
 
 ## 2D 设备阵列
 
-我们已经熟悉 1D SBP 的 placement 配置，在 1D SBP 的场景下，通过 [oneflow.placement](https://start.oneflow.org/oneflow-api-cn/placement.html#oneflow.placement) 接口配置集群，比如使用集群中的第 0~3 号 GPU 显卡：
+我们已经熟悉 1D SBP 的 placement 配置，在 1D SBP 的场景下，通过 [oneflow.placement](https://oneflow.readthedocs.io/en/v0.8.1/tensor_attributes.html?highlight=oneflow.placement#oneflow-placement) 接口配置集群，比如使用集群中的第 0~3 号 GPU 显卡：
 
 ```python
 >>> placement1 = flow.placement("cuda", ranks=[0, 1, 2, 3])

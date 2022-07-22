@@ -58,7 +58,7 @@ Extracting data/FashionMNIST/raw/train-images-idx3-ubyte.gz to data/FashionMNIST
 
 The data will be downloaded and extracted to`./data` directory.
 
-The [oneflow.utils.data.DataLoader](https://oneflow.readthedocs.io/en/master/utils.html#oneflow.utils.data.DataLoader) wraps an iterable around the `dataset`.
+The [oneflow.utils.data.DataLoader](https://oneflow.readthedocs.io/en/v0.8.1/utils.data.html?highlight=oneflow.utils.data.DataLoader#oneflow.utils.data.DataLoader) wraps an iterable around the `dataset`.
 
 ```python
 train_dataloader = flow.utils.data.DataLoader(

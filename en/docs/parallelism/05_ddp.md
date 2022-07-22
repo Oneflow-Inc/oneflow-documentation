@@ -180,6 +180,6 @@ python3 -m oneflow.distributed.launch --nproc_per_node 2 ./ddp_train.py
 
 ### DistributedSampler
 
-The data used is manually distributed in this context to highlight `DistributedDataParallel`. However, in practical applications, you can directly use [DistributedSampler](https://oneflow.readthedocs.io/en/master/utils.html#oneflow.utils.data.distributed.DistributedSampler) with data parallel.
+The data used is manually distributed in this context to highlight `DistributedDataParallel`. However, in practical applications, you can directly use [DistributedSampler](https://oneflow.readthedocs.io/en/v0.8.1/utils.data.html?highlight=DistributedSampler#oneflow.utils.data.distributed.DistributedSampler) with data parallel.
 
 `DistributedSampler` will instantiate the Dataloader in each process, and each Dataloader instance will load a part of the complete data to automatically complete the data distribution.

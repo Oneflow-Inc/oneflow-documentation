@@ -164,7 +164,7 @@ oneflow.int32 cuda:0
 
 ## Operations on Tensors
 
-A large number of operators are provided in OneFlow, most of which are in the namespaces of [oneflow](https://oneflow.readthedocs.io/en/master/oneflow.html), [oneflow.nn](https://oneflow.readthedocs.io/en/master/nn.html), and [oneflow.nn.functional](https://oneflow.readthedocs.io/en/master/functional.html).
+A large number of operators are provided in OneFlow, most of which are in the namespaces of [oneflow](https://oneflow.readthedocs.io/en/master/oneflow.html), [oneflow.nn](https://oneflow.readthedocs.io/en/master/nn.html), and [oneflow.nn.functional](https://oneflow.readthedocs.io/en/v0.8.1/nn.functional.html).
 
 Tensors in OneFlow are as easy to use as the NumPy arrays. For example, slicing in NumPy style is supported:
 

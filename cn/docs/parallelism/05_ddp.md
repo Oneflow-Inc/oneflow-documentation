@@ -181,6 +181,6 @@ python3 -m oneflow.distributed.launch --nproc_per_node 2 ./ddp_train.py
 
 ### DistributedSampler
 
-本文为了简化问题，突出 `DistributedDataParallel`，因此使用的数据是手工分发的。在实际应用中，可以直接使用 [DistributedSampler](https://oneflow.readthedocs.io/en/master/utils.html#oneflow.utils.data.distributed.DistributedSampler) 配合数据并行使用。
+本文为了简化问题，突出 `DistributedDataParallel`，因此使用的数据是手工分发的。在实际应用中，可以直接使用 [DistributedSampler](https://oneflow.readthedocs.io/en/v0.8.1/utils.data.html?highlight=DistributedSampler#oneflow.utils.data.distributed.DistributedSampler) 配合数据并行使用。
 
 `DistributedSampler` 会在每个进程中实例化 Dataloader，每个 Dataloader 实例会加载完整数据的一部分，自动完成数据的分发。

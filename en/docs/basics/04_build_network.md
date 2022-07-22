@@ -1,6 +1,6 @@
 # BUILD NEURAL NETWORK
 
-The layers of a neural network can be built by API in namespace [oneflow.nn](https://oneflow.readthedocs.io/en/master/nn.html), It provides common Module (such as [oneflow.nn.Conv2d](https://oneflow.readthedocs.io/en/master/nn.html?highlight=oneflow.nn.Conv2D#oneflow.nn.Conv2d), [oneflow.nn.ReLU](https://oneflow.readthedocs.io/en/master/nn.html?highlight=oneflow.nn.ReLU#oneflow.nn.ReLU)). All Module classes inherit from [oneflow.nn.Module](https://oneflow.readthedocs.io/en/master/module.html#oneflow.nn.Module), and many simple Module can form more complex Module. In this way, users can easily build and manage complex neural networks.
+The layers of a neural network can be built by API in namespace [oneflow.nn](https://oneflow.readthedocs.io/en/master/nn.html), It provides common Module (such as [oneflow.nn.Conv2d](https://oneflow.readthedocs.io/en/master/nn.html?highlight=oneflow.nn.Conv2D#oneflow.nn.Conv2d), [oneflow.nn.ReLU](https://oneflow.readthedocs.io/en/master/nn.html?highlight=oneflow.nn.ReLU#oneflow.nn.ReLU)). All Module classes inherit from [oneflow.nn.Module](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.nn.Module.html?highlight=oneflow.nn.Module#oneflow.nn.Module), and many simple Module can form more complex Module. In this way, users can easily build and manage complex neural networks.
 
 ```python
 import oneflow as flow
@@ -75,7 +75,7 @@ The above process of data input, network calculation and the output of reasoning
 
 ## `flow.nn.functional`
 
-In addition to `oneflow.nn`, [oneflow.nn.functional](https://oneflow.readthedocs.io/en/master/functional.html) namespace also provides many API. It overlaps with `oneflow.nn` to some extent. For example, [nn.functional.relu](https://oneflow.readthedocs.io/en/master/functional.html?highlight=relu#oneflow.nn.functional.relu) and [nn.ReLU](https://oneflow.readthedocs.io/en/master/nn.html?highlight=relu#oneflow.nn.ReLU) both can be used for activation in neural network.
+In addition to `oneflow.nn`, [oneflow.nn.functional](https://oneflow.readthedocs.io/en/v0.8.1/nn.functional.html) namespace also provides many API. It overlaps with `oneflow.nn` to some extent. For example, [nn.functional.relu](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.nn.functional.relu.html) and [nn.ReLU](https://oneflow.readthedocs.io/en/master/nn.html?highlight=relu#oneflow.nn.ReLU) both can be used for activation in neural network.
 
 The main differences between them are:
 

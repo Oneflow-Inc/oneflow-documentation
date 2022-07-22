@@ -58,7 +58,7 @@ Extracting data/FashionMNIST/raw/train-images-idx3-ubyte.gz to data/FashionMNIST
 
 数据集下载并解压到 `./data` 目录下。
 
-利用 [oneflow.utils.data.DataLoader](https://oneflow.readthedocs.io/en/master/utils.html#oneflow.utils.data.DataLoader) 可以将 `dataset` 封装为迭代器，方便后续训练。
+利用 [oneflow.utils.data.DataLoader](https://oneflow.readthedocs.io/en/v0.8.1/utils.data.html?highlight=oneflow.utils.data.DataLoader#oneflow.utils.data.DataLoader) 可以将 `dataset` 封装为迭代器，方便后续训练。
 
 ```python
 train_dataloader = flow.utils.data.DataLoader(

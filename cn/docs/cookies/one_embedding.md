@@ -203,7 +203,7 @@ OneEmbedding 提供了三种存储选项配置，分别是纯 GPU 存储， 存�
 
 ### 分布式训练
 
-OneEmbedding 同 OneFlow 的其它模块类似，都原生支持分布式扩展。用户可以参考 [#dlrm](扩展阅读：DLRM) 中的 README， 启动 DLRM 分布式训练。还可以参考 [Global Tensor](../parallelism/03_consistent_tensor.md) 了解必要的前置知识。
+OneEmbedding 同 OneFlow 的其它模块类似，都原生支持分布式扩展。用户可以参考 [#dlrm](https://github.com/Oneflow-Inc/models/tree/main/RecommenderSystems/dlrm) 中的 README， 启动 DLRM 分布式训练。还可以参考 [Global Tensor](../parallelism/03_consistent_tensor.md) 了解必要的前置知识。
 
 使用 OneEmbedding 模块进行分布式扩展，要注意：
 
