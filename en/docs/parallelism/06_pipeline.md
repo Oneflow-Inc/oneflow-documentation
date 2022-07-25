@@ -65,8 +65,8 @@ The following code is a simple example that will run the network in [QUICKSTART]
         def __init__(self):
             super().__init__()
             self.module_pipeline = module_pipeline
-            self.module_pipeline.m_stage0.config.stage_id = 0
-            self.module_pipeline.m_stage1.config.stage_id = 1
+            self.module_pipeline.m_stage0.config.set_stage(0, P0)
+            self.module_pipeline.m_stage1.config.set_stage(1, P1)
             self.loss_fn = flow.nn.CrossEntropyLoss()
             self.config.set_gradient_accumulation_steps(2)
             self.add_optimizer(sgd)
@@ -150,7 +150,7 @@ In practice, each computing device can load data locally, and then convert the L
 
 ### Stage ID and Settings for Gradient Accumulation
 
-We can set Stage ID by setting the `config.stage_id` attribute of Module. The Stage ID is numbered starting from 0 and increasing by 1.
+We can set Stage ID and Placement in pipeline parallelism by [config.set_stage](https://oneflow.readthedocs.io/en/master/generated/oneflow.nn.graph.block_config.BlockConfig.set_stage.html#oneflow.nn.graph.block_config.BlockConfig.set_stage) method. The Stage ID is numbered starting from 0 and increasing by 1.
 
 Call `self.config.set_gradient_accumulation_steps` method to set the step size of gradient accumulation.
 
@@ -158,7 +158,7 @@ The information needed to implement micro-batch in pipelining parallelism can be
 
 
 ```python
-    self.module_pipeline.m_stage0.config.stage_id = 0
-    self.module_pipeline.m_stage1.config.stage_id = 1
+    self.module_pipeline.m_stage0.config.set_stage(0, P0)
+    self.module_pipeline.m_stage1.config.set_stage(1, P1)
     self.config.set_gradient_accumulation_steps(2)
 ```
