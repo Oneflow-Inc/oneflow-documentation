@@ -115,7 +115,7 @@ It’s clear that if we concatenate the Local Tensors in rank 1 and rank 2 on di
 
 ## Converting Local Tensor to Global Tensor
 
-We can firstly create a Local Tensor and then utilize the [Tensor.to_global](https://oneflow.readthedocs.io/en/master/tensor.html#oneflow.Tensor.to_global) method to convert the Local Tensor to a Global Tensor.
+We can firstly create a Local Tensor and then utilize the [Tensor.to_global](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.Tensor.to_global.html) method to convert the Local Tensor to a Global Tensor.
 
 
 Create the following program and launch it in the similar way mentioned above:
@@ -152,7 +152,7 @@ Except for shape, the Global Tensor also contains some data. The Global Tensor h
 
 
 
-You can utilize the [to_local](https://oneflow.readthedocs.io/en/master/tensor.html#oneflow.Tensor.to_local) method to obtain the local component of the Global Tensor, just like the following:
+You can utilize the [to_local](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.Tensor.to_local.html) method to obtain the local component of the Global Tensor, just like the following:
 
 ```python
 import oneflow as flow
@@ -203,7 +203,7 @@ The function of placement in global data distribution type is to specify the dev
 - The parameter `type` specifies the physical device type. `cuda represents the GPU device memory, and `cpu` refers to the CPU device memory.
 - The parameter `ranks` specifies the process ID set. Because each rank corresponds to one physical device, `ranks` can also be seen as the device ID set. Actually, `ranks` is an nd-array composed of rank ID, which supports high-dimensional device arrangement.
 
-For more details, please refer to [oneflow.placement](https://oneflow.readthedocs.io/en/master/tensor_attributes.html?highlight=placement#oneflow.placement).
+For more details, please refer to [oneflow.placement](https://oneflow.readthedocs.io/en/v0.8.1/tensor_attributes.html#oneflow.placement).
 
 
 
@@ -215,7 +215,7 @@ The function of SBP in the global data distribution type is to specify the relat
 
 - P, i.e., partial_sum, notes that the relationship between global data and local data is partial, indicating the value of the global data is the element-wise sum of the local data distributed in each rank.
 
-For more details, please refer to [oneflow.sbp.sbp](https://oneflow.readthedocs.io/en/master/tensor_attributes.html?highlight=placement#oneflow.sbp.sbp).
+For more details, please refer to [oneflow.sbp.sbp](https://oneflow.readthedocs.io/en/v0.8.1/tensor_attributes.html#oneflow.sbp.sbp).
 
 
 Data re-distribution is commonly seen in parallel computing, i.e., changing the distributed way of data, such as gathering all data slices. In the MPI programming paradigm (SPMD), data re-distribution requires writing explicit communication operations like AllReduce, AllGather, and ReduceScatter. But in OneFlow’s Global View programming paradigm (SPSD), data re-distribution can be achieved by utilizing Global Tensor’s global data distribution type conversion.
@@ -223,9 +223,9 @@ Data re-distribution is commonly seen in parallel computing, i.e., changing the 
 
 The conversion of the global data distribution type is similar to (explicit) type conversion in general programming languages. Users only need to specify the targeted type when they convert types, and some implicit operations can be executed automatically. For example, when converting the type from double to int, the system will remove the decimal point automatically.
 
-Similarly, it’s only required to specify the new global data distribution type that the Global Tensor will be converted into, and OneFlow will complete implicit communication operations automatically. And the interface to convert the global data distribution type is [Tensor.to_global](https://oneflow.readthedocs.io/en/master/tensor.html#oneflow.Tensor.to_global). The `to_global` method contains two parameters- `placement` and `sbp`, which decide the newly-converted global data distribution type.
+Similarly, it’s only required to specify the new global data distribution type that the Global Tensor will be converted into, and OneFlow will complete implicit communication operations automatically. And the interface to convert the global data distribution type is [Tensor.to_global](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.Tensor.to_global.html). The `to_global` method contains two parameters- `placement` and `sbp`, which decide the newly-converted global data distribution type.
 
-The main implicit operations in converting the global data distribution type are to infer and execute the communications, and these operations are implemented by OneFlow’s [Boxing](https://docs.oneflow.org/en/master/parallelism/03_consistent_tensor.html#boxingautomatic-conversion-of-sbp), which is a mechanism to re-distribute data automatically.
+The main implicit operations in converting the global data distribution type are to infer and execute the communications, and these operations are implemented by OneFlow’s [Boxing](../parallelism/03_consistent_tensor#boxing-sbp), which is a mechanism to re-distribute data automatically.
 
 
 The following is a case to convert a split-distributed Global Tensor to a broadcast-distributed one:

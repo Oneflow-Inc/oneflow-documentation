@@ -320,7 +320,7 @@ print(graph_mobile_net_v2)
     ...
 ```
 
-**第二种** 方式是调用 Graph 对象的 [debug](https://start.oneflow.org/oneflow-api-cn/graph.html#oneflow.nn.Graph.debug) 方法，就开启了 Graph 的调试模式。
+**第二种** 方式是调用 Graph 对象的 [debug](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.nn.Graph.debug.html) 方法，就开启了 Graph 的调试模式。
 
 ```python
 graph_mobile_net_v2.debug(v_level=1) # v_level 参数默认值为 0
