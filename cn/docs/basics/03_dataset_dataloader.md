@@ -104,7 +104,7 @@ plt.show()
 
 ## 自定义 Dataset
 
-通过继承 [oneflow.utils.data.Dataset](https://oneflow.readthedocs.io/en/v0.8.1/utils.data.html?highlight=utils.data.Dataset#oneflow.utils.data.Dataset) 可以实现自定义 `Dataset`，自定义 `Dataset` 同样可以配合下一节介绍的 `Dataloader` 使用，简化数据处理的流程。
+通过继承 [oneflow.utils.data.Dataset](https://oneflow.readthedocs.io/en/v0.8.1/utils.data.html#oneflow.utils.data.Dataset) 可以实现自定义 `Dataset`，自定义 `Dataset` 同样可以配合下一节介绍的 `Dataloader` 使用，简化数据处理的流程。
 
 以下的例子展示了如何实现一个自定义 `Dataset`，它的关键步骤是：
 

@@ -128,7 +128,7 @@ NeuralNetwork(
 
 ## 训练模型
 
-为了训练模型，我们需要损失函数 `loss_fn` 和优化器 `optimizer`，损失函数用于评价神经网络预测的结果与 label 的差距；`optimizer` 调整网络的参数，使得网络预测的结果越来越接近 label（标准答案），这里选用 [oneflow.optim.SGD](https://oneflow.readthedocs.io/en/master/optim.html?highlight=optim.SGD#oneflow.optim.SGD)。这一过程被称为反向传播。
+为了训练模型，我们需要损失函数 `loss_fn` 和优化器 `optimizer`，损失函数用于评价神经网络预测的结果与 label 的差距；`optimizer` 调整网络的参数，使得网络预测的结果越来越接近 label（标准答案），这里选用 [oneflow.optim.SGD](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.optim.SGD.html)。这一过程被称为反向传播。
 
 ```python
 loss_fn = nn.CrossEntropyLoss().to(DEVICE)
@@ -223,7 +223,7 @@ loss: 1.835239  [12800/60000]
 
 ## 保存与加载模型
 
-调用 [oneflow.save](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.save#oneflow.save) 可以保存模型。保存的模型可以通过 [oneflow.load](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.load#oneflow.load) 加载，用于预测等工作。
+调用 [oneflow.save](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.save.html) 可以保存模型。保存的模型可以通过 [oneflow.load](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.load.html) 加载，用于预测等工作。
 
 ```python
 flow.save(model.state_dict(), "./model")

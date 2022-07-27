@@ -2,7 +2,7 @@
 
 So far, we have learned how to use OneFlow to [Dataset and DataLoader](./03_dataset_dataloader.md), [Build Models](./04_build_network.md),[Autograd](./05_autograd.md), and combine them so that we can train models by using backpropagation algorithms.
 
-In [oneflow.optim](https://oneflow.readthedocs.io/en/master/optim.html), there are various `optimizer`s that simplify the code of back propagation.
+In [oneflow.optim](https://oneflow.readthedocs.io/en/v0.8.1/optim.html), there are various `optimizer`s that simplify the code of back propagation.
 
 This article will first introduce the basic concepts of back propagation and then show you how to use the `oneflow.optim` class.
 
@@ -123,7 +123,7 @@ model = MyLrModule(0.01, 500)
 
 ### Loss function
 
-Then, select the loss function. OneFlow comes with a variety of loss functions. We choose [MSELoss](https://oneflow.readthedocs.io/en/master/nn.html?highlight=mseloss#oneflow.nn.MSELoss) here：
+Then, select the loss function. OneFlow comes with a variety of loss functions. We choose [MSELoss](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.nn.MSELoss.html) here：
 
 ```python
 loss = flow.nn.MSELoss(reduction="sum")
@@ -131,7 +131,7 @@ loss = flow.nn.MSELoss(reduction="sum")
 
 ### Construct Optimizer
 
-The logic of back propagation is wrapped in optimizer. We choose [SGD](https://oneflow.readthedocs.io/en/master/optim.html?highlight=sgd#oneflow.optim.SGD) here, You can choose other optimization algorithms as needed, such as [Adam](https://oneflow.readthedocs.io/en/master/optim.html?highlight=adam#oneflow.optim.Adam) and[AdamW](https://oneflow.readthedocs.io/en/master/optim.html?highlight=adamw#oneflow.optim.AdamW) .
+The logic of back propagation is wrapped in optimizer. We choose [SGD](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.optim.SGD.html) here, You can choose other optimization algorithms as needed, such as [Adam](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.optim.Adam.html) and[AdamW](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.optim.AdamW.html) .
 
 ```python
 optimizer = flow.optim.SGD(model.parameters(), model.lr)

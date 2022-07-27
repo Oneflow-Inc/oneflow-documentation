@@ -4,7 +4,7 @@ At present, there are two ways to run models in deep learning framework, **Dynam
 
 There are pros and cons to both approaches, and OneFlow offers support for both, with the Eager Mode by default. If you are reading the tutorials for this basic topic in order, then all the code you have encountered so far is in Eager Mode.
 
-In general, dynamic graphs are easier to use and static graphs have better performance. OneFlow offers [nn.Graph](https://oneflow.readthedocs.io/en/master/graph.html), so that users can use the eager-like programming style to build static graphs and train the models.
+In general, dynamic graphs are easier to use and static graphs have better performance. OneFlow offers [nn.Graph](https://oneflow.readthedocs.io/en/v0.8.1/graph.html), so that users can use the eager-like programming style to build static graphs and train the models.
 
 ## Eager Mode in OneFlow
 
@@ -80,7 +80,7 @@ loss: 6.644351  [  960/50000]
 
 ### Customize a Graph
 
-OneFlow provide the base class [nn.Graph](https://oneflow.readthedocs.io/en/master/graph.html), which can be inherited to create a customized Graph class.
+OneFlow provide the base class [nn.Graph](https://oneflow.readthedocs.io/en/v0.8.1/graph.html), which can be inherited to create a customized Graph class.
 
 ```python
 import oneflow as flow
@@ -320,7 +320,7 @@ If you use `print` **after** the Graph object is called, in addition to the stru
     ...
 ```
 
-**The second** way is that by calling the [debug](https://oneflow.readthedocs.io/en/master/graph.html#oneflow.nn.Graph.debug) method of Graph objects, Graph’s debug mode is turned on.
+**The second** way is that by calling the [debug](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.nn.Graph.debug.html) method of Graph objects, Graph’s debug mode is turned on.
 
 ```python
 graph_mobile_net_v2.debug(v_level=1) # The defalut of v_level is 0.
@@ -366,7 +366,7 @@ In addition to the methods described above, getting the parameters of the gradie
 
 When training Graph model, it is often necessary to save the parameters of the model that has been trained for a period of time and other states such as optimizer parameters, so as to facilitate the resume of training after interruption.
 
-Graph model objects have `state_dict` and `load_state_dict` interfaces that similar to Module. We can save and load graph models with [save](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.save#oneflow.save) and [load](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.load#oneflow.load). This is similar to Eagar module introduced in [Model Save and Load](../basics/07_model_load_save.md). A little different from Eager mode is that when calling Graph's `state_dict` during training, in addition to the parameters of each layer of the internal Module, other states such as training iteration steps and optimizer parameters will also be obtained, so as to resume training later.
+Graph model objects have `state_dict` and `load_state_dict` interfaces that similar to Module. We can save and load graph models with [save](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.save.html) and [load](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.load.html). This is similar to Eagar module introduced in [Model Save and Load](../basics/07_model_load_save.md). A little different from Eager mode is that when calling Graph's `state_dict` during training, in addition to the parameters of each layer of the internal Module, other states such as training iteration steps and optimizer parameters will also be obtained, so as to resume training later.
 
 For example, we hope to save the latest state after each epoch while training `graph_mobile_net_v2` above, we need to add the following code:
 

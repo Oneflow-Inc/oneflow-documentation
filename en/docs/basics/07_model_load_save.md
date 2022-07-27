@@ -5,7 +5,7 @@ There are two common uses for loading and saving models:
 - Save the model that has been trained to continue training next time.
 - Save the trained model for direct prediction in the future.
 
-We will introduce how to use [save](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.save#oneflow.save) and [load](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.load#oneflow.load) to save and load models as follows.
+We will introduce how to use [save](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.save.html) and [load](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.load.html) to save and load models as follows.
 
 Also, we will show how to load a pre-trained model for inference.
 
@@ -51,7 +51,7 @@ OrderedDict([('weight',
 
 ## Saving Models
 
-We can use [oneflow.save](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.save#oneflow.save) to save models.
+We can use [oneflow.save](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.save.html) to save models.
 
 ```python
 flow.save(m.state_dict(), "./model")
@@ -61,7 +61,7 @@ The first parameter is the Module parameters, and the second is the saved path. 
 
 ## Loading Models
 
-Using [oneflow.load](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.load#oneflow.load) to load parameters from disk  to memory with the specified path, and get the dictionary of the parameters.
+Using [oneflow.load](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.load.html) to load parameters from disk  to memory with the specified path, and get the dictionary of the parameters.
 
 ```python
 params = flow.load("./model")

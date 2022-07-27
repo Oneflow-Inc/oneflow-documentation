@@ -128,7 +128,7 @@ NeuralNetwork(
 
 ## Training Models
 
-To train a model, we need a loss function (`loss_fn`) and an optimizer (`optimizer`). The loss function is used to evaluate the difference between the prediction of the neural network and the real label. The optimizer adjusts the parameters of the neural network to make the prediction closer to the real label (expected answer). Here, we use [oneflow.optim.SGD](https://oneflow.readthedocs.io/en/master/optim.html?highlight=optim.SGD#oneflow.optim.SGD) to be our optimizer. This process is called back propagation.
+To train a model, we need a loss function (`loss_fn`) and an optimizer (`optimizer`). The loss function is used to evaluate the difference between the prediction of the neural network and the real label. The optimizer adjusts the parameters of the neural network to make the prediction closer to the real label (expected answer). Here, we use [oneflow.optim.SGD](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.optim.SGD.html) to be our optimizer. This process is called back propagation.
 
 ```python
 loss_fn = nn.CrossEntropyLoss().to(DEVICE)
@@ -223,7 +223,7 @@ loss: 1.835239  [12800/60000]
 
 ## Saving and Loading Models
 
-Use [oneflow.save](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.save#oneflow.save) to save the model. The saved model can be then loaded by [oneflow.load](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.load#oneflow.load) to make predictions.
+Use [oneflow.save](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.save.html) to save the model. The saved model can be then loaded by [oneflow.load](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.load.html) to make predictions.
 
 ```python
 flow.save(model.state_dict(), "./model")

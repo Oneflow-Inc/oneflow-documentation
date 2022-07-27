@@ -5,7 +5,7 @@
 - 将已经训练一段时间的模型保存，方便下次继续训练
 - 将训练好的模型保存，方便后续直接用于预测
 
-在本文中，我们将介绍，如何使用 [save](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.save#oneflow.save) 和 [load](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.load#oneflow.load) API 保存模型、加载模型。
+在本文中，我们将介绍，如何使用 [save](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.save.html) 和 [load](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.load.html) API 保存模型、加载模型。
 
 同时也会展示，如何加载预训练模型，完成预测任务。
 
@@ -51,7 +51,7 @@ OrderedDict([('weight',
 
 ## 模型保存
 
-我们可以使用 [oneflow.save](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.save#oneflow.save)方法保存模型。
+我们可以使用 [oneflow.save](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.save.html)方法保存模型。
 
 ```python
 flow.save(m.state_dict(), "./model")
@@ -61,7 +61,7 @@ flow.save(m.state_dict(), "./model")
 
 ## 模型加载
 
-使用 [oneflow.load](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.load#oneflow.load) 可以将参数从指定的磁盘路径加载参数到内存，得到存有参数的字典。
+使用 [oneflow.load](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.load.html) 可以将参数从指定的磁盘路径加载参数到内存，得到存有参数的字典。
 
 ```python
 params = flow.load("./model")

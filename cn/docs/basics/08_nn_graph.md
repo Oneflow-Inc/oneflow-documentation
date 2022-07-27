@@ -4,7 +4,7 @@
 
 这两种方式各有优缺点，OneFlow 对两种方式均提供了支持，默认情况下是 Eager 模式。如果你是按顺序阅读本基础专题的教程，那么，到目前为止所接触的所有代码都是 Eager 模式的代码。
 
-一般而言，动态图更易用，静态图性能更具优势。OneFlow 提供的 [nn.Graph](https://oneflow.readthedocs.io/en/master/graph.html) 模块，让用户可以用类似 Eager 的编程习惯，构建静态图并训练模型。
+一般而言，动态图更易用，静态图性能更具优势。OneFlow 提供的 [nn.Graph](https://oneflow.readthedocs.io/en/v0.8.1/graph.html) 模块，让用户可以用类似 Eager 的编程习惯，构建静态图并训练模型。
 
 ## OneFlow 的 Eager 模式
 
@@ -80,7 +80,7 @@ loss: 6.644351  [  960/50000]
 
 ### 自定义一个 Graph
 
-OneFlow 提供了 [nn.Graph](https://oneflow.readthedocs.io/en/master/graph.html) 基类。用户可以通过继承它，自定义 Graph 类。
+OneFlow 提供了 [nn.Graph](https://oneflow.readthedocs.io/en/v0.8.1/graph.html) 基类。用户可以通过继承它，自定义 Graph 类。
 
 ```python
 import oneflow as flow
@@ -366,7 +366,7 @@ OneFlow 在编译生成计算图的过程中会打印调试信息，比如，将
 
 在训练 Graph 模型时，常常需要将已经训练了一段时间的模型的参数以及其他诸如优化器参数等状态进行保存，方便中断后恢复训练。
 
-Graph 模型对象具有和 Module 类似的 `state_dict` 和 `load_state_dict` 接口，配合 [save](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.save#oneflow.save) 和 [load](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.load#oneflow.load) 就可以实现保存与加载 Graph 模型。这与之前在 [模型的保存与加载](../basics/07_model_load_save.md) 中介绍的 Eager 模式下是类似的。和 Eager 略有不同的是，在训练过程中调用 Graph 的 `state_dict` 时，除了会得到内部 Module 各层的参数，也会得到训练迭代数、优化器参数等其他状态，以便之后恢复训练。
+Graph 模型对象具有和 Module 类似的 `state_dict` 和 `load_state_dict` 接口，配合 [save](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.save.html) 和 [load](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.load.html) 就可以实现保存与加载 Graph 模型。这与之前在 [模型的保存与加载](../basics/07_model_load_save.md) 中介绍的 Eager 模式下是类似的。和 Eager 略有不同的是，在训练过程中调用 Graph 的 `state_dict` 时，除了会得到内部 Module 各层的参数，也会得到训练迭代数、优化器参数等其他状态，以便之后恢复训练。
 
 例如，希望在以上训练 `graph_mobile_net_v2` 的过程中，每经过 1 个 epoch 将模型最新的状态保存一次，那么可以添加以下代码：
 

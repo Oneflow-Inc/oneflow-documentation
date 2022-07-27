@@ -2,7 +2,7 @@
 
 到目前为止，我们已经掌握如何使用 OneFlow [加载数据](./03_dataset_dataloader.md)、[搭建模型](./04_build_network.md)、[自动计算模型参数的梯度](./05_autograd.md)，将它们组合在一起，我们就可以利用反向传播算法训练模型。
 
-在 [oneflow.optim](https://oneflow.readthedocs.io/en/master/optim.html) 中，有各类 `optimizer`，它们可以简化实现反向传播的代码。
+在 [oneflow.optim](https://oneflow.readthedocs.io/en/v0.8.1/optim.html) 中，有各类 `optimizer`，它们可以简化实现反向传播的代码。
 
 本文将先介绍反向传播的基本概念，再介绍如何使用 `oneflow.optim` 类。
 
@@ -123,7 +123,7 @@ model = MyLrModule(0.01, 500)
 
 ### loss 函数
 
-然后，选择好 loss 函数，OneFlow 自带了多种 loss 函数，我们在这里选择 [MSELoss](https://oneflow.readthedocs.io/en/master/nn.html?highlight=mseloss#oneflow.nn.MSELoss)：
+然后，选择好 loss 函数，OneFlow 自带了多种 loss 函数，我们在这里选择 [MSELoss](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.nn.MSELoss.html)：
 
 ```python
 loss = flow.nn.MSELoss(reduction="sum")
@@ -131,7 +131,7 @@ loss = flow.nn.MSELoss(reduction="sum")
 
 ### 构造 optimizer
 
-反向传播的逻辑，都被封装在 optimizer 中。我们在此选择 [SGD](https://oneflow.readthedocs.io/en/master/optim.html?highlight=sgd#oneflow.optim.SGD)，你可以根据需要选择其它的优化算法，如 [Adam](https://oneflow.readthedocs.io/en/master/optim.html?highlight=adam#oneflow.optim.Adam)、[AdamW](https://oneflow.readthedocs.io/en/master/optim.html?highlight=adamw#oneflow.optim.AdamW) 等。
+反向传播的逻辑，都被封装在 optimizer 中。我们在此选择 [SGD](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.optim.SGD.html)，你可以根据需要选择其它的优化算法，如 [Adam](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.optim.Adam.html)、[AdamW](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.optim.AdamW.html) 等。
 
 ```python
 optimizer = flow.optim.SGD(model.parameters(), model.lr)
