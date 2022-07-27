@@ -991,7 +991,7 @@
                 <h1 id="static-graph-interface-nngraph">STATIC GRAPH INTERFACE: NN.GRAPH<a class="headerlink" href="#static-graph-interface-nngraph" title="Permanent link">&para;</a></h1>
 <p>At present, there are two ways to run models in deep learning framework, <strong>Dynamic Graph</strong> and <strong>Static Graph</strong>, which are also called <strong>Eager Mode</strong> and <strong>Graph Mode</strong> in OneFlow.</p>
 <p>There are pros and cons to both approaches, and OneFlow offers support for both, with the Eager Mode by default. If you are reading the tutorials for this basic topic in order, then all the code you have encountered so far is in Eager Mode.</p>
-<p>In general, dynamic graphs are easier to use and static graphs have better performance. OneFlow offers <a href="https://oneflow.readthedocs.io/en/master/graph.html">nn.Graph</a>, so that users can use the eager-like programming style to build static graphs and train the models.</p>
+<p>In general, dynamic graphs are easier to use and static graphs have better performance. OneFlow offers <a href="https://oneflow.readthedocs.io/en/v0.8.1/graph.html">nn.Graph</a>, so that users can use the eager-like programming style to build static graphs and train the models.</p>
 <h2 id="eager-mode-in-oneflow">Eager Mode in OneFlow<a class="headerlink" href="#eager-mode-in-oneflow" title="Permanent link">&para;</a></h2>
 <p>OneFlow runs in Eager Mode by default.</p>
 <p>The following script uses data set CIFAR10 to train model <code>mobilenet_v2</code>.</p>
@@ -1058,7 +1058,7 @@ loss: 6.644351  [  960/50000]
 </code></pre></div>
 <h2 id="graph-mode-in-oneflow">Graph Mode in OneFlow<a class="headerlink" href="#graph-mode-in-oneflow" title="Permanent link">&para;</a></h2>
 <h3 id="customize-a-graph">Customize a Graph<a class="headerlink" href="#customize-a-graph" title="Permanent link">&para;</a></h3>
-<p>OneFlow provide the base class <a href="https://oneflow.readthedocs.io/en/master/graph.html">nn.Graph</a>, which can be inherited to create a customized Graph class.</p>
+<p>OneFlow provide the base class <a href="https://oneflow.readthedocs.io/en/v0.8.1/graph.html">nn.Graph</a>, which can be inherited to create a customized Graph class.</p>
 <div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">oneflow</span> <span class="k">as</span> <span class="nn">flow</span>
 <span class="kn">import</span> <span class="nn">oneflow.nn</span> <span class="k">as</span> <span class="nn">nn</span>
 
@@ -1263,7 +1263,7 @@ loss: 6.644351  [  960/50000]
         )
     ...
 </code></pre></div>
-<p><strong>The second</strong> way is that by calling the <a href="https://oneflow.readthedocs.io/en/master/graph.html#oneflow.nn.Graph.debug">debug</a> method of Graph objects, Graph’s debug mode is turned on.</p>
+<p><strong>The second</strong> way is that by calling the <a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.nn.Graph.debug.html">debug</a> method of Graph objects, Graph’s debug mode is turned on.</p>
 <div class="highlight"><pre><span></span><code><span class="n">graph_mobile_net_v2</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">v_level</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="c1"># The defalut of v_level is 0.</span>
 </code></pre></div>
 <p>which can also be written in a simplified way:</p>
@@ -1327,7 +1327,7 @@ loss: 6.644351  [  960/50000]
 <p>In addition to the methods described above, getting the parameters of the gradient during the training process, accessing to the learning rate and other functions are also under development and will come up soon.</p>
 <h3 id="save-and-load-graph-models">Save and Load Graph Models<a class="headerlink" href="#save-and-load-graph-models" title="Permanent link">&para;</a></h3>
 <p>When training Graph model, it is often necessary to save the parameters of the model that has been trained for a period of time and other states such as optimizer parameters, so as to facilitate the resume of training after interruption.</p>
-<p>Graph model objects have <code>state_dict</code> and <code>load_state_dict</code> interfaces that similar to Module. We can save and load graph models with <a href="https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.save#oneflow.save">save</a> and <a href="https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.load#oneflow.load">load</a>. This is similar to Eagar module introduced in <a href="07_model_load_save.html">Model Save and Load</a>. A little different from Eager mode is that when calling Graph's <code>state_dict</code> during training, in addition to the parameters of each layer of the internal Module, other states such as training iteration steps and optimizer parameters will also be obtained, so as to resume training later.</p>
+<p>Graph model objects have <code>state_dict</code> and <code>load_state_dict</code> interfaces that similar to Module. We can save and load graph models with <a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.save.html">save</a> and <a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.load.html">load</a>. This is similar to Eagar module introduced in <a href="07_model_load_save.html">Model Save and Load</a>. A little different from Eager mode is that when calling Graph's <code>state_dict</code> during training, in addition to the parameters of each layer of the internal Module, other states such as training iteration steps and optimizer parameters will also be obtained, so as to resume training later.</p>
 <p>For example, we hope to save the latest state after each epoch while training <code>graph_mobile_net_v2</code> above, we need to add the following code:</p>
 <p>Assume that we want to save into "GraphMobileNetV2" under current directory:</p>
 <div class="highlight"><pre><span></span><code><span class="n">CHECKPOINT_SAVE_DIR</span> <span class="o">=</span> <span class="s2">&quot;./GraphMobileNetV2&quot;</span>

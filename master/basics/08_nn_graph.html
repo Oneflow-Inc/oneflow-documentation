@@ -991,7 +991,7 @@
                 <h1 id="nngraph">静态图模块 nn.Graph<a class="headerlink" href="#nngraph" title="Permanent link">&para;</a></h1>
 <p>目前，深度学习框架中模型的运行方式主要有两种，即 <strong>动态图</strong> 与 <strong>静态图</strong>，在 OneFlow 中，也被习惯称为 <strong>Eager 模式</strong> 和 <strong>Graph 模式</strong> 。</p>
 <p>这两种方式各有优缺点，OneFlow 对两种方式均提供了支持，默认情况下是 Eager 模式。如果你是按顺序阅读本基础专题的教程，那么，到目前为止所接触的所有代码都是 Eager 模式的代码。</p>
-<p>一般而言，动态图更易用，静态图性能更具优势。OneFlow 提供的 <a href="https://oneflow.readthedocs.io/en/master/graph.html">nn.Graph</a> 模块，让用户可以用类似 Eager 的编程习惯，构建静态图并训练模型。</p>
+<p>一般而言，动态图更易用，静态图性能更具优势。OneFlow 提供的 <a href="https://oneflow.readthedocs.io/en/v0.8.1/graph.html">nn.Graph</a> 模块，让用户可以用类似 Eager 的编程习惯，构建静态图并训练模型。</p>
 <h2 id="oneflow-eager">OneFlow 的 Eager 模式<a class="headerlink" href="#oneflow-eager" title="Permanent link">&para;</a></h2>
 <p>OneFlow 默认以 Eager 模式运行。</p>
 <p>以下脚本，使用 CIFAR10 数据集训练 <code>mobilenet_v2</code> 模型。</p>
@@ -1058,7 +1058,7 @@ loss: 6.644351  [  960/50000]
 </code></pre></div>
 <h2 id="oneflow-graph">OneFlow 的 Graph 模式<a class="headerlink" href="#oneflow-graph" title="Permanent link">&para;</a></h2>
 <h3 id="graph">自定义一个 Graph<a class="headerlink" href="#graph" title="Permanent link">&para;</a></h3>
-<p>OneFlow 提供了 <a href="https://oneflow.readthedocs.io/en/master/graph.html">nn.Graph</a> 基类。用户可以通过继承它，自定义 Graph 类。</p>
+<p>OneFlow 提供了 <a href="https://oneflow.readthedocs.io/en/v0.8.1/graph.html">nn.Graph</a> 基类。用户可以通过继承它，自定义 Graph 类。</p>
 <div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">oneflow</span> <span class="k">as</span> <span class="nn">flow</span>
 <span class="kn">import</span> <span class="nn">oneflow.nn</span> <span class="k">as</span> <span class="nn">nn</span>
 
@@ -1263,7 +1263,7 @@ loss: 6.644351  [  960/50000]
         )
     ...
 </code></pre></div>
-<p><strong>第二种</strong> 方式是调用 Graph 对象的 <a href="https://start.oneflow.org/oneflow-api-cn/graph.html#oneflow.nn.Graph.debug">debug</a> 方法，就开启了 Graph 的调试模式。</p>
+<p><strong>第二种</strong> 方式是调用 Graph 对象的 <a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.nn.Graph.debug.html">debug</a> 方法，就开启了 Graph 的调试模式。</p>
 <div class="highlight"><pre><span></span><code><span class="n">graph_mobile_net_v2</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">v_level</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="c1"># v_level 参数默认值为 0</span>
 </code></pre></div>
 <p>可以简写为：</p>
@@ -1327,7 +1327,7 @@ loss: 6.644351  [  960/50000]
 <p>除了以上介绍的方法外，训练过程中获取参数的梯度、获取 learning rate 等功能，也正在开发中，即将上线。</p>
 <h3 id="graph_4">Graph 模型的保存与加载<a class="headerlink" href="#graph_4" title="Permanent link">&para;</a></h3>
 <p>在训练 Graph 模型时，常常需要将已经训练了一段时间的模型的参数以及其他诸如优化器参数等状态进行保存，方便中断后恢复训练。</p>
-<p>Graph 模型对象具有和 Module 类似的 <code>state_dict</code> 和 <code>load_state_dict</code> 接口，配合 <a href="https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.save#oneflow.save">save</a> 和 <a href="https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.load#oneflow.load">load</a> 就可以实现保存与加载 Graph 模型。这与之前在 <a href="07_model_load_save.html">模型的保存与加载</a> 中介绍的 Eager 模式下是类似的。和 Eager 略有不同的是，在训练过程中调用 Graph 的 <code>state_dict</code> 时，除了会得到内部 Module 各层的参数，也会得到训练迭代数、优化器参数等其他状态，以便之后恢复训练。</p>
+<p>Graph 模型对象具有和 Module 类似的 <code>state_dict</code> 和 <code>load_state_dict</code> 接口，配合 <a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.save.html">save</a> 和 <a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.load.html">load</a> 就可以实现保存与加载 Graph 模型。这与之前在 <a href="07_model_load_save.html">模型的保存与加载</a> 中介绍的 Eager 模式下是类似的。和 Eager 略有不同的是，在训练过程中调用 Graph 的 <code>state_dict</code> 时，除了会得到内部 Module 各层的参数，也会得到训练迭代数、优化器参数等其他状态，以便之后恢复训练。</p>
 <p>例如，希望在以上训练 <code>graph_mobile_net_v2</code> 的过程中，每经过 1 个 epoch 将模型最新的状态保存一次，那么可以添加以下代码：</p>
 <p>假设我们想要保存在当前目录下的 "GraphMobileNetV2" 中：
 <div class="highlight"><pre><span></span><code><span class="n">CHECKPOINT_SAVE_DIR</span> <span class="o">=</span> <span class="s2">&quot;./GraphMobileNetV2&quot;</span>

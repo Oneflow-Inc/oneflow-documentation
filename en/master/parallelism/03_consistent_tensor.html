@@ -1083,7 +1083,7 @@ python3
 </div>
 </div>
 <h3 id="get-local-tensor-from-global-tensor">Get Local Tensor from Global Tensor<a class="headerlink" href="#get-local-tensor-from-global-tensor" title="Permanent link">&para;</a></h3>
-<p>Call <a href="https://oneflow.readthedocs.io/en/master/tensor.html#oneflow.Tensor.to_local">to_local()</a> to check the local tensor on a device.</p>
+<p>Call <a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.Tensor.to_local.html">to_local</a> to check the local tensor on a device.</p>
 <div class="tabbed-set" data-tabs="4:2"><input checked="checked" id="__tabbed_4_1" name="__tabbed_4" type="radio" /><label for="__tabbed_4_1">Terminal 0</label><div class="tabbed-content">
 <div class="highlight"><pre><span></span><code><span class="n">x</span><span class="o">.</span><span class="n">to_local</span><span class="p">()</span>
 <span class="n">tensor</span><span class="p">([[</span> <span class="mf">2.9186e-01</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.9442e-01</span><span class="p">,</span>  <span class="mf">4.7072e-04</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.2216e-01</span><span class="p">,</span>  <span class="mf">1.7788e-01</span><span class="p">],</span>
@@ -1100,7 +1100,7 @@ python3
 </div>
 </div>
 <h3 id="convert-local-tensor-to-global-tensor">Convert Local Tensor to Global Tensor<a class="headerlink" href="#convert-local-tensor-to-global-tensor" title="Permanent link">&para;</a></h3>
-<p>Developers can create local tensor first, then convert it to global tensor with <a href="https://oneflow.readthedocs.io/en/master/tensor.html#oneflow.Tensor.to_global">Tensor.to_global</a>.</p>
+<p>Developers can create local tensor first, then convert it to global tensor with <a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.Tensor.to_global.html">Tensor.to_global</a>.</p>
 <p>Two local tensors with the shape of <code>(2,5)</code> are created separately on two devices. While after the <code>to_global</code> method, the global tensor with a shape of <code>(4,5)</code> is obtained.</p>
 <p>The reason for this transformation lies in that by setting the sbp with <code>sbp=flow.sbp.split(0)</code>, the two local tensors with the shape of <code>(2, 5)</code> are concatenated on the 0<sup>th</sup> dimension.</p>
 <div class="tabbed-set" data-tabs="5:2"><input checked="checked" id="__tabbed_5_1" name="__tabbed_5" type="radio" /><label for="__tabbed_5_1">Terminal 0</label><div class="tabbed-content">

@@ -948,7 +948,7 @@ Extracting data/FashionMNIST/raw/train-images-idx3-ubyte.gz to data/FashionMNIST
 ...
 </code></pre></div>
 <p>The data will be downloaded and extracted to<code>./data</code> directory.</p>
-<p>The <a href="https://oneflow.readthedocs.io/en/master/utils.html#oneflow.utils.data.DataLoader">oneflow.utils.data.DataLoader</a> wraps an iterable around the <code>dataset</code>.</p>
+<p>The <a href="https://oneflow.readthedocs.io/en/v0.8.1/utils.data.html?highlight=oneflow.utils.data.DataLoader#oneflow.utils.data.DataLoader">oneflow.utils.data.DataLoader</a> wraps an iterable around the <code>dataset</code>.</p>
 <div class="highlight"><pre><span></span><code><span class="n">train_dataloader</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">(</span>
     <span class="n">training_data</span><span class="p">,</span> <span class="n">BATCH_SIZE</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span>
 <span class="p">)</span>
@@ -1006,7 +1006,7 @@ y.shape: flow.Size([64])
 <p><a class="md-button md-button--primary" href="04_build_network.html"><img alt="🔗" class="twemoji" src="https://twemoji.maxcdn.com/v/latest/svg/1f517.svg" title=":link:" /> Build Network</a></p>
 </blockquote>
 <h2 id="training-models">Training Models<a class="headerlink" href="#training-models" title="Permanent link">&para;</a></h2>
-<p>To train a model, we need a loss function (<code>loss_fn</code>) and an optimizer (<code>optimizer</code>). The loss function is used to evaluate the difference between the prediction of the neural network and the real label. The optimizer adjusts the parameters of the neural network to make the prediction closer to the real label (expected answer). Here, we use <a href="https://oneflow.readthedocs.io/en/master/optim.html?highlight=optim.SGD#oneflow.optim.SGD">oneflow.optim.SGD</a> to be our optimizer. This process is called back propagation.</p>
+<p>To train a model, we need a loss function (<code>loss_fn</code>) and an optimizer (<code>optimizer</code>). The loss function is used to evaluate the difference between the prediction of the neural network and the real label. The optimizer adjusts the parameters of the neural network to make the prediction closer to the real label (expected answer). Here, we use <a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.optim.SGD.html">oneflow.optim.SGD</a> to be our optimizer. This process is called back propagation.</p>
 <div class="highlight"><pre><span></span><code><span class="n">loss_fn</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">CrossEntropyLoss</span><span class="p">()</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">DEVICE</span><span class="p">)</span>
 <span class="n">optimizer</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">)</span>
 </code></pre></div>
@@ -1086,7 +1086,7 @@ loss: 1.835239  [12800/60000]
 <a class="md-button md-button--primary" href="06_optimization.html"><img alt="🔗" class="twemoji" src="https://twemoji.maxcdn.com/v/latest/svg/1f517.svg" title=":link:" /> Backpropagation and Optimizer</a></p>
 </blockquote>
 <h2 id="saving-and-loading-models">Saving and Loading Models<a class="headerlink" href="#saving-and-loading-models" title="Permanent link">&para;</a></h2>
-<p>Use <a href="https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.save#oneflow.save">oneflow.save</a> to save the model. The saved model can be then loaded by <a href="https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.load#oneflow.load">oneflow.load</a> to make predictions.</p>
+<p>Use <a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.save.html">oneflow.save</a> to save the model. The saved model can be then loaded by <a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.load.html">oneflow.load</a> to make predictions.</p>
 <div class="highlight"><pre><span></span><code><span class="n">flow</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span> <span class="s2">&quot;./model&quot;</span><span class="p">)</span>
 </code></pre></div>
 <blockquote>

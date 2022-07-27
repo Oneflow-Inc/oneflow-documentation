@@ -879,7 +879,7 @@
                 
                 
                 <h1 id="_1">搭建神经网络<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
-<p>​神经网络的各层，可以使用 <a href="https://oneflow.readthedocs.io/en/master/nn.html">oneflow.nn</a> 名称空间下的 API 搭建，它提供了构建神经网络所需的常见 Module（如 <a href="https://oneflow.readthedocs.io/en/master/nn.html?highlight=oneflow.nn.Conv2D#oneflow.nn.Conv2d">oneflow.nn.Conv2d</a>，<a href="https://oneflow.readthedocs.io/en/master/nn.html?highlight=oneflow.nn.ReLU#oneflow.nn.ReLU">oneflow.nn.ReLU</a> 等等）。 用于搭建网络的所有 Module 类都继承自 <a href="https://oneflow.readthedocs.io/en/master/module.html#oneflow.nn.Module">oneflow.nn.Module</a>，多个简单的 Module 可以组合在一起构成更复杂的 Module，用这种方式，用户可以轻松地搭建和管理复杂的神经网络。</p>
+<p>​神经网络的各层，可以使用 <a href="https://oneflow.readthedocs.io/en/v0.8.1/nn.html">oneflow.nn</a> 名称空间下的 API 搭建，它提供了构建神经网络所需的常见 Module（如 <a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.nn.Conv2d.html">oneflow.nn.Conv2d</a>，<a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.nn.ReLU.html">oneflow.nn.ReLU</a> 等等）。 用于搭建网络的所有 Module 类都继承自 <a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.nn.Module.html">oneflow.nn.Module</a>，多个简单的 Module 可以组合在一起构成更复杂的 Module，用这种方式，用户可以轻松地搭建和管理复杂的神经网络。</p>
 <div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">oneflow</span> <span class="k">as</span> <span class="nn">flow</span>
 <span class="kn">import</span> <span class="nn">oneflow.nn</span> <span class="k">as</span> <span class="nn">nn</span>
 </code></pre></div>
@@ -936,7 +936,7 @@
 <p>以上从数据输入、到网络计算，最终推理输出的流程，如下图所示：</p>
 <p><img alt="todo" src="imgs/neural-network-layers.png" /></p>
 <h2 id="flownnfunctional"><code>flow.nn.functional</code><a class="headerlink" href="#flownnfunctional" title="Permanent link">&para;</a></h2>
-<p>除了 <code>oneflow.nn</code> 外，<a href="https://oneflow.readthedocs.io/en/master/functional.html">oneflow.nn.functional</a> 名称空间下也提供了不少 API。它与 <code>oneflow.nn</code> 在功能上有一定的重叠。比如 <a href="https://oneflow.readthedocs.io/en/master/functional.html?highlight=relu#oneflow.nn.functional.relu">nn.functional.relu</a> 与 <a href="https://oneflow.readthedocs.io/en/master/nn.html?highlight=relu#oneflow.nn.ReLU">nn.ReLU</a> 都可用于神经网络做 activation 操作。</p>
+<p>除了 <code>oneflow.nn</code> 外，<a href="https://oneflow.readthedocs.io/en/v0.8.1/nn.functional.html">oneflow.nn.functional</a> 名称空间下也提供了不少 API。它与 <code>oneflow.nn</code> 在功能上有一定的重叠。比如 <a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.nn.functional.relu.html">nn.functional.relu</a> 与 <a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.nn.ReLU.html">nn.ReLU</a> 都可用于神经网络做 activation 操作。</p>
 <p>两者的区别主要有：</p>
 <ul>
 <li><code>nn</code> 下的 API 是类，需要先构造实例化对象，再调用；<code>nn.functional</code> 下的 API 是作为函数直接调用</li>
@@ -981,7 +981,7 @@
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Predicted class: </span><span class="si">{</span><span class="n">y_pred</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </code></pre></div>
 <h2 id="module_1">Module 容器<a class="headerlink" href="#module_1" title="Permanent link">&para;</a></h2>
-<p>比较以上 <code>NeuralNetwork</code> 与 <code>FunctionalNeuralNetwork</code> 实现的异同，可以发现 <a href="https://oneflow.readthedocs.io/en/master/nn.html?highlight=nn.Sequential#oneflow.nn.Sequential">nn.Sequential</a> 对于简化代码起到了重要作用。</p>
+<p>比较以上 <code>NeuralNetwork</code> 与 <code>FunctionalNeuralNetwork</code> 实现的异同，可以发现 <a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.nn.Sequential.html">nn.Sequential</a> 对于简化代码起到了重要作用。</p>
 <p><code>nn.Sequential</code> 是一种特殊容器，只要是继承自 <code>nn.Module</code> 的类都可以放置放置到其中。</p>
 <p>它的特殊之处在于：当 Sequential 进行前向传播时，Sequential 会自动地将容器中包含的各层“串联”起来。具体来说，会按照各层加入 Sequential 的顺序，自动地将上一层的输出，作为下一层的输入传递，直到得到整个 Module 的最后一层的输出。</p>
 <p>以下是不使用 Sequential 构建网络的例子（不推荐）：</p>

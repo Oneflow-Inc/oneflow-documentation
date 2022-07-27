@@ -879,7 +879,7 @@
                 
                 
                 <h1 id="build-neural-network">BUILD NEURAL NETWORK<a class="headerlink" href="#build-neural-network" title="Permanent link">&para;</a></h1>
-<p>The layers of a neural network can be built by API in namespace <a href="https://oneflow.readthedocs.io/en/master/nn.html">oneflow.nn</a>, It provides common Module (such as <a href="https://oneflow.readthedocs.io/en/master/nn.html?highlight=oneflow.nn.Conv2D#oneflow.nn.Conv2d">oneflow.nn.Conv2d</a>, <a href="https://oneflow.readthedocs.io/en/master/nn.html?highlight=oneflow.nn.ReLU#oneflow.nn.ReLU">oneflow.nn.ReLU</a>). All Module classes inherit from <a href="https://oneflow.readthedocs.io/en/master/module.html#oneflow.nn.Module">oneflow.nn.Module</a>, and many simple Module can form more complex Module. In this way, users can easily build and manage complex neural networks.</p>
+<p>The layers of a neural network can be built by API in namespace <a href="https://oneflow.readthedocs.io/en/v0.8.1/nn.html">oneflow.nn</a>, It provides common Module (such as <a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.nn.Conv2d.html">oneflow.nn.Conv2d</a>, <a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.nn.ReLU.html">oneflow.nn.ReLU</a>). All Module classes inherit from <a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.nn.Module.html">oneflow.nn.Module</a>, and many simple Module can form more complex Module. In this way, users can easily build and manage complex neural networks.</p>
 <div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">oneflow</span> <span class="k">as</span> <span class="nn">flow</span>
 <span class="kn">import</span> <span class="nn">oneflow.nn</span> <span class="k">as</span> <span class="nn">nn</span>
 </code></pre></div>
@@ -936,7 +936,7 @@
 <p>The above process of data input, network calculation and the output of reasoning is shown in the figure below.</p>
 <p><img alt="todo" src="imgs/neural-network-layers.png" /></p>
 <h2 id="flownnfunctional"><code>flow.nn.functional</code><a class="headerlink" href="#flownnfunctional" title="Permanent link">&para;</a></h2>
-<p>In addition to <code>oneflow.nn</code>, <a href="https://oneflow.readthedocs.io/en/master/functional.html">oneflow.nn.functional</a> namespace also provides many API. It overlaps with <code>oneflow.nn</code> to some extent. For example, <a href="https://oneflow.readthedocs.io/en/master/functional.html?highlight=relu#oneflow.nn.functional.relu">nn.functional.relu</a> and <a href="https://oneflow.readthedocs.io/en/master/nn.html?highlight=relu#oneflow.nn.ReLU">nn.ReLU</a> both can be used for activation in neural network.</p>
+<p>In addition to <code>oneflow.nn</code>, <a href="https://oneflow.readthedocs.io/en/v0.8.1/nn.functional.html">oneflow.nn.functional</a> namespace also provides many API. It overlaps with <code>oneflow.nn</code> to some extent. For example, <a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.nn.functional.relu.html">nn.functional.relu</a> and <a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.nn.ReLU.html">nn.ReLU</a> both can be used for activation in neural network.</p>
 <p>The main differences between them are:</p>
 <ul>
 <li>The API under <code>nn</code> is a class. It needs to be instantiated before being called; The API under <code>nn.functional</code> is a function. It is called directly.</li>
@@ -982,7 +982,7 @@
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Predicted class: </span><span class="si">{</span><span class="n">y_pred</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </code></pre></div>
 <h2 id="module-container">Module container<a class="headerlink" href="#module-container" title="Permanent link">&para;</a></h2>
-<p>Comparing the similarities and differences between the <code>NeuralNetwork</code> and <code>FunctionalNeuralNetwork</code>,we can find that <a href="https://oneflow.readthedocs.io/en/master/nn.html?highlight=nn.Sequential#oneflow.nn.Sequential">nn.Sequential</a> plays an important role in simplifying the code.</p>
+<p>Comparing the similarities and differences between the <code>NeuralNetwork</code> and <code>FunctionalNeuralNetwork</code>,we can find that <a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.nn.Sequential.html">nn.Sequential</a> plays an important role in simplifying the code.</p>
 <p><code>nn.Sequential</code> is a special container. Any class inherited from <code>nn.Module</code> can be placed in it.</p>
 <p>Its specialty is that when Sequential propagates forward, Sequential automatically "concatenates" the layers contained in the container. Specifically, the output of the previous layer will be automatically transferred as the input of the next layer according to the sequence of Sequential added to each layer until the output of the last layer of the whole Moudle is obtained.</p>
 <p>The following is an example of building a network without Sequential (not recommended):</p>

@@ -765,6 +765,33 @@
     Enable ZeRO in nn.Graph
   </a>
   
+    <nav class="md-nav" aria-label="Enable ZeRO in nn.Graph">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#enable-stage-1-of-zero" class="md-nav__link">
+    Enable Stage 1 of ZeRO
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#enable-stage-2-of-zero" class="md-nav__link">
+    Enable Stage 2 of ZeRO
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#enable-stage-3-of-zero" class="md-nav__link">
+    Enable Stage 3 of ZeRO
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
       </ul>
@@ -880,6 +907,33 @@
     Enable ZeRO in nn.Graph
   </a>
   
+    <nav class="md-nav" aria-label="Enable ZeRO in nn.Graph">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#enable-stage-1-of-zero" class="md-nav__link">
+    Enable Stage 1 of ZeRO
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#enable-stage-2-of-zero" class="md-nav__link">
+    Enable Stage 2 of ZeRO
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#enable-stage-3-of-zero" class="md-nav__link">
+    Enable Stage 3 of ZeRO
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
       </ul>
@@ -917,11 +971,11 @@
 <p><strong>Residual States</strong>. It includes activation functions, temporary buffers, and unusable memory fragments.</p>
 </li>
 </ol>
-<p>ZeRO-DP can be divided into three stages, eliminating memory redundancy by partitioning the OPG state rather than copying it directly, and each GPU only saves part of the OGP. Specifically, ZeRO-DP has three main optimization stages, corresponding to O, P, and G respectively. The three stages increase step by step:</p>
+<p>ZeRO-DP can be divided into three stages, eliminating memory redundancy by partitioning the OPG state rather than copying it directly, and each GPU only saves part of the OPG. Specifically, ZeRO-DP has three main optimization stages, corresponding to O, P, and G respectively. The three stages increase step by step:</p>
 <ol>
-<li>Optimizer states partition（P<sub>os</sub>）: This state is also known as ZeRO-OS because of 4x less memory consumption and the same amount of traffic as data parallelism.</li>
-<li>Add gradients partition optimizer (P<sub>os+g</sub>): At this stage, the memory consumption is reduced by 8 times, and the traffic is the same as the data parallelism.</li>
-<li>Add parameter partition optimizer (P<sub>os+g+p</sub>): At this stage, the memory occupied by the model is evenly distributed among each GPU. Memory consumption is linearly inversely proportional to the degree of data parallelism, but there will be a slight increase in traffic.</li>
+<li>Optimizer states partition（P<sub>os</sub>）: This state is 4x less memory consumption and the same amount of traffic as data parallel.</li>
+<li>Add gradients partition optimizer (P<sub>os+g</sub>): At this stage, the memory consumption is reduced by 8 times, and the traffic is the same as the data parallel.</li>
+<li>Add parameter partition optimizer (P<sub>os+g+p</sub>): At this stage, the memory occupied by the model is evenly distributed among each GPU. Memory consumption is linearly inversely proportional to the degree of data parallel, but there will be a slight increase in traffic.</li>
 </ol>
 <p>The distribution of the memory consumption of the three stages can be seen in the following figure (from the original ZeRO paper Figure 1):</p>
 <div align="center">
@@ -936,6 +990,10 @@ alt="Three Stages of ZeRO-DP Optimizations" width="75%">
 </code></pre></div></p>
 <h3 id="definine-the-training-process-of-data-parallelism">Definine the Training Process of Data Parallelism<a class="headerlink" href="#definine-the-training-process-of-data-parallelism" title="Permanent link">&para;</a></h3>
 <p>We define a training process under a data parallellelism strategy, similar to that described in <a href="../parallelism/05_ddp.html#通过设置-sbp-做数据并行训练">Conduct data parallel training by setting SBP</a>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>ZeRO can be applied for all the cases where data parallel groups exist. For example, in 2D/3D parallel, ZeRO can be turned on as long as there is a data parallel group.</p>
+</div>
 <p>After the definition, we will use placement, SBP, etc:
 <div class="highlight"><pre><span></span><code><span class="n">P</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">placement</span><span class="p">(</span><span class="s2">&quot;cuda&quot;</span><span class="p">,</span> <span class="n">ranks</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
 <span class="n">B</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">sbp</span><span class="o">.</span><span class="n">broadcast</span>
@@ -953,7 +1011,7 @@ alt="Three Stages of ZeRO-DP Optimizations" width="75%">
 <span class="n">loss_fn</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">CrossEntropyLoss</span><span class="p">()</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">DEVICE</span><span class="p">)</span>
 <span class="n">optimizer</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">)</span>
 </code></pre></div></p>
-<p>ZeRO is set in <a href="../basics/08_nn_graph.html">nn.Graph</a>, so the dynamic graph model needs to be converted to nn.Graph:</p>
+<p>ZeRO is set in the graph compiler of <a href="../basics/08_nn_graph.html">nn.Graph</a>, so the dynamic graph model needs to be converted to nn.Graph:</p>
 <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">CustomGraph</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Graph</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
@@ -982,30 +1040,48 @@ alt="Three Stages of ZeRO-DP Optimizations" width="75%">
 </code></pre></div>
 <p>Then start training through <a href="../parallelism/04_launch.html">launch Module</a> </p>
 <h3 id="enable-zero-in-nngraph">Enable ZeRO in nn.Graph<a class="headerlink" href="#enable-zero-in-nngraph" title="Permanent link">&para;</a></h3>
-<p><strong>Stage 1</strong>: Stage 1 can be enabled through the interface <a href="https://oneflow.readthedocs.io/en/master/graph.html#oneflow.nn.graph.graph_config.GraphConfig.set_zero_redundancy_optimizer_mode">config.set_zero_redundancy_optimizer_mode</a> . i.e. add the following code in the nn.Graph model above:</p>
-<div class="highlight"><pre><span></span><code><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">set_zero_redundancy_optimizer_mode</span><span class="p">(</span><span class="s2">&quot;distributed_split&quot;</span><span class="p">)</span>
+<p>ZeRO can be enabled through the interface <a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.nn.graph.graph_config.GraphConfig.enable_zero.html#oneflow.nn.graph.graph_config.GraphConfig.enable_zero">config.set_zero_redundancy_optimizer_mode</a> .</p>
+<h4 id="enable-stage-1-of-zero">Enable Stage 1 of ZeRO<a class="headerlink" href="#enable-stage-1-of-zero" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">CustomGraph</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Graph</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="o">...</span>
+        <span class="c1"># Enable stage 1 of ZeRO</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">enable_zero</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">stage</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="o">...</span>
 </code></pre></div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>When using the model for continuous training and prediction: After the training is performed once, ZeRO will automatically change the SBP parameter of the model from Broadcast to Split; when performing prediction, Split will be used for automatic inference without configuring ZeRO.</p>
 </div>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>This API is subject to change in the future.</p>
-</div>
-<p><strong>Stage 2</strong>: On the basis of stage 1, adding <code>flow.boxing.nccl.enable_use_compute_stream(True)</code> can enable stage 2. i.e. add the following code in the nn.Graph model above:</p>
-<div class="highlight"><pre><span></span><code><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">set_zero_redundancy_optimizer_mode</span><span class="p">(</span><span class="s2">&quot;distributed_split&quot;</span><span class="p">)</span>
-<span class="n">flow</span><span class="o">.</span><span class="n">boxing</span><span class="o">.</span><span class="n">nccl</span><span class="o">.</span><span class="n">enable_use_compute_stream</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+<h4 id="enable-stage-2-of-zero">Enable Stage 2 of ZeRO<a class="headerlink" href="#enable-stage-2-of-zero" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">CustomGraph</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Graph</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="o">...</span>
+        <span class="c1"># Enable stage 2 of ZeRO</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">enable_zero</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">stage</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="o">...</span>
 </code></pre></div>
-<p><strong>Stage 3</strong>:On the basis of stage 2, adding <code>flow.boxing.nccl.disable_group_boxing_by_dst_parallel(True)</code> can enable stage 3. i.e. add the following code in the nn.Graph model above:</p>
-<div class="highlight"><pre><span></span><code><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">set_zero_redundancy_optimizer_mode</span><span class="p">(</span><span class="s2">&quot;distributed_split&quot;</span><span class="p">)</span>
-<span class="n">flow</span><span class="o">.</span><span class="n">boxing</span><span class="o">.</span><span class="n">nccl</span><span class="o">.</span><span class="n">enable_use_compute_stream</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">flow</span><span class="o">.</span><span class="n">boxing</span><span class="o">.</span><span class="n">nccl</span><span class="o">.</span><span class="n">disable_group_boxing_by_dst_parallel</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+<p>Generally speaking, the optimization of stage 2 has large optimization of memory and small speed impact, so it is recommended to use stage 2 optimization. It can be enabled in a simpler way:</p>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">CustomGraph</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Graph</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="o">...</span>
+        <span class="c1"># Enable stage 2 of ZeRO</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">enable_zero</span><span class="p">()</span>
+        <span class="o">...</span>
 </code></pre></div>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Although enabling the third stage can minimize the memory consumption, it will increase the communication cost, and the second stage is generally used in practice.</p>
-</div>
+<h4 id="enable-stage-3-of-zero">Enable Stage 3 of ZeRO<a class="headerlink" href="#enable-stage-3-of-zero" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">CustomGraph</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Graph</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="o">...</span>
+        <span class="c1"># Enable stage 3 of ZeRO</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">enable_zero</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">stage</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+        <span class="o">...</span>
+</code></pre></div>
+<p>Although enabling the third stage can minimize the memory consumption, it will increase the communication cost which will bring lower speed.</p>
                 
               
               

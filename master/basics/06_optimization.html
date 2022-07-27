@@ -934,7 +934,7 @@
                 
                 <h1 id="optimizer">反向传播与 optimizer<a class="headerlink" href="#optimizer" title="Permanent link">&para;</a></h1>
 <p>到目前为止，我们已经掌握如何使用 OneFlow <a href="03_dataset_dataloader.html">加载数据</a>、<a href="04_build_network.html">搭建模型</a>、<a href="05_autograd.html">自动计算模型参数的梯度</a>，将它们组合在一起，我们就可以利用反向传播算法训练模型。</p>
-<p>在 <a href="https://oneflow.readthedocs.io/en/master/optim.html">oneflow.optim</a> 中，有各类 <code>optimizer</code>，它们可以简化实现反向传播的代码。</p>
+<p>在 <a href="https://oneflow.readthedocs.io/en/v0.8.1/optim.html">oneflow.optim</a> 中，有各类 <code>optimizer</code>，它们可以简化实现反向传播的代码。</p>
 <p>本文将先介绍反向传播的基本概念，再介绍如何使用 <code>oneflow.optim</code> 类。</p>
 <h2 id="numpy">numpy 手工实现反向传播<a class="headerlink" href="#numpy" title="Permanent link">&para;</a></h2>
 <p>为了读者更方便理解反向传播与自动求导的关系，在这里提供了一份仅用 numpy 实现的简单模型的训练过程：</p>
@@ -1031,11 +1031,11 @@ w:[[2.000001 ]
 <span class="n">model</span> <span class="o">=</span> <span class="n">MyLrModule</span><span class="p">(</span><span class="mf">0.01</span><span class="p">,</span> <span class="mi">500</span><span class="p">)</span>
 </code></pre></div>
 <h3 id="loss">loss 函数<a class="headerlink" href="#loss" title="Permanent link">&para;</a></h3>
-<p>然后，选择好 loss 函数，OneFlow 自带了多种 loss 函数，我们在这里选择 <a href="https://oneflow.readthedocs.io/en/master/nn.html?highlight=mseloss#oneflow.nn.MSELoss">MSELoss</a>：</p>
+<p>然后，选择好 loss 函数，OneFlow 自带了多种 loss 函数，我们在这里选择 <a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.nn.MSELoss.html">MSELoss</a>：</p>
 <div class="highlight"><pre><span></span><code><span class="n">loss</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">MSELoss</span><span class="p">(</span><span class="n">reduction</span><span class="o">=</span><span class="s2">&quot;sum&quot;</span><span class="p">)</span>
 </code></pre></div>
 <h3 id="optimizer_1">构造 optimizer<a class="headerlink" href="#optimizer_1" title="Permanent link">&para;</a></h3>
-<p>反向传播的逻辑，都被封装在 optimizer 中。我们在此选择 <a href="https://oneflow.readthedocs.io/en/master/optim.html?highlight=sgd#oneflow.optim.SGD">SGD</a>，你可以根据需要选择其它的优化算法，如 <a href="https://oneflow.readthedocs.io/en/master/optim.html?highlight=adam#oneflow.optim.Adam">Adam</a>、<a href="https://oneflow.readthedocs.io/en/master/optim.html?highlight=adamw#oneflow.optim.AdamW">AdamW</a> 等。</p>
+<p>反向传播的逻辑，都被封装在 optimizer 中。我们在此选择 <a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.optim.SGD.html">SGD</a>，你可以根据需要选择其它的优化算法，如 <a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.optim.Adam.html">Adam</a>、<a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.optim.AdamW.html">AdamW</a> 等。</p>
 <div class="highlight"><pre><span></span><code><span class="n">optimizer</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">model</span><span class="o">.</span><span class="n">lr</span><span class="p">)</span>
 </code></pre></div>
 <p>构造 <code>optimizer</code>时，将模型参数及 learning rate 传递给 <code>SGD</code>。之后调用 <code>optimizer.step()</code>，在其内部就会自动完成对模型参数求梯度、并按照 SGD 算法更新模型参数。</p>

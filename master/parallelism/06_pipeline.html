@@ -624,7 +624,7 @@
         
           <li class="md-nav__item">
   <a href="#stage-id" class="md-nav__link">
-    Stage ID 及 梯度累积设置
+    Stage ID 及梯度累积设置
   </a>
   
 </li>
@@ -877,7 +877,7 @@
         
           <li class="md-nav__item">
   <a href="#stage-id" class="md-nav__link">
-    Stage ID 及 梯度累积设置
+    Stage ID 及梯度累积设置
   </a>
   
 </li>
@@ -967,8 +967,8 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">module_pipeline</span> <span class="o">=</span> <span class="n">module_pipeline</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">module_pipeline</span><span class="o">.</span><span class="n">m_stage0</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">stage_id</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">module_pipeline</span><span class="o">.</span><span class="n">m_stage1</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">stage_id</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">module_pipeline</span><span class="o">.</span><span class="n">m_stage0</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">set_stage</span><span class="p">(</span><span class="n">stage_id</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">placement</span><span class="o">=</span><span class="n">P0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">module_pipeline</span><span class="o">.</span><span class="n">m_stage1</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">set_stage</span><span class="p">(</span><span class="n">stage_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">placement</span><span class="o">=</span><span class="n">P1</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">loss_fn</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">CrossEntropyLoss</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">set_gradient_accumulation_steps</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_optimizer</span><span class="p">(</span><span class="n">sgd</span><span class="p">)</span>
@@ -1002,7 +1002,7 @@
 <span class="n">P1</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">placement</span><span class="p">(</span><span class="s2">&quot;cuda&quot;</span><span class="p">,</span> <span class="n">ranks</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 </code></pre></div>
 <p><code>P0</code>、<code>P1</code> 分别代表集群的第 0 个 GPU 和第 1 个 GPU。</p>
-<p>通过调用 <a href="https://oneflow.readthedocs.io/en/master/module.html?highlight=to_global#oneflow.nn.Module.to_global">nn.Module.to_global</a> 或 <a href="https://oneflow.readthedocs.io/en/master/tensor.html?highlight=to_global#oneflow.Tensor.to_global">Tensor.to_global</a> 就可以将模型或张量分配到指定的计算设备上运行，将一个网络拆分为多个流水阶段（stage）。</p>
+<p>通过调用 <a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.nn.Module.html">nn.Module.to_global</a> 或 <a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.Tensor.to_global.html">Tensor.to_global</a> 就可以将模型或张量分配到指定的计算设备上运行，将一个网络拆分为多个流水阶段（stage）。</p>
 <p>在此我们定义了一个 <code>PipelineModule</code> 专门设置各阶段的流水。</p>
 <div class="highlight"><pre><span></span><code>    <span class="k">class</span> <span class="nc">PipelineModule</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
         <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1025,12 +1025,12 @@
 <p>当使用 <code>launch</code> 模块启动训练时，因为命令行参数为 <code>--nproc_per_node 2</code>，<code>launch</code> 会启动 2 个进程。两个进程均为执行脚本中的代码。</p>
 <p>其中 <code>x = flow.randn(BATCH_SIZE, 1, 28, 28)</code> 返回的是 Local Tensor（只在本进程中有效的本地数据），当运行 <code>x = x.to_global(P0, BROADCAST)</code> 时，OneFlow 会自动将所有进程中的 Local Tensor 整合为 Global Tensor。</p>
 <p>在实际训练中，各个计算设备也可以加载属于各自的本地数据，然后通过 <code>to_global</code> 实现 Local Tensor 到 Global Tensor 的转化。</p>
-<h3 id="stage-id">Stage ID 及 梯度累积设置<a class="headerlink" href="#stage-id" title="Permanent link">&para;</a></h3>
-<p>通过设置 Module 的 <code>config.stage_id</code> 属性，设置 Stage ID，Stage ID 从 0 开始编号，依次加1。
-调用 <code>self.config.set_gradient_accumulation_steps</code> 方法，设置梯度累积的步长。
+<h3 id="stage-id">Stage ID 及梯度累积设置<a class="headerlink" href="#stage-id" title="Permanent link">&para;</a></h3>
+<p>通过 Module Config 上的 <a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.nn.graph.block_config.BlockConfig.set_stage.html">config.set_stage</a> 方法，设置流水线 Stage ID 和 Stage 对应的 Placement，Stage ID 从 0 开始编号，依次加 1。
+调用 <a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.nn.graph.graph_config.GraphConfig.set_gradient_accumulation_steps.html#oneflow.nn.graph.graph_config.GraphConfig.set_gradient_accumulation_steps">config.set_gradient_accumulation_steps</a> 方法，设置梯度累积的步长。
 OneFlow 通过这两项配置，获取实现流水并行中的 micro batch 技术所需的信息。</p>
-<div class="highlight"><pre><span></span><code>    <span class="bp">self</span><span class="o">.</span><span class="n">module_pipeline</span><span class="o">.</span><span class="n">m_stage0</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">stage_id</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">module_pipeline</span><span class="o">.</span><span class="n">m_stage1</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">stage_id</span> <span class="o">=</span> <span class="mi">1</span>
+<div class="highlight"><pre><span></span><code>    <span class="bp">self</span><span class="o">.</span><span class="n">module_pipeline</span><span class="o">.</span><span class="n">m_stage0</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">set_stage</span><span class="p">(</span><span class="n">stage_id</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">placement</span><span class="o">=</span><span class="n">P0</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">module_pipeline</span><span class="o">.</span><span class="n">m_stage1</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">set_stage</span><span class="p">(</span><span class="n">stage_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">placement</span><span class="o">=</span><span class="n">P1</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">set_gradient_accumulation_steps</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
 </code></pre></div>
                 

@@ -1083,7 +1083,7 @@ python3
 </div>
 </div>
 <h3 id="global-tensor-local-tensor">由 global tensor 得到 local tensor<a class="headerlink" href="#global-tensor-local-tensor" title="Permanent link">&para;</a></h3>
-<p>通过 <a href="https://oneflow.readthedocs.io/en/master/tensor.html#oneflow.Tensor.to_local">to_local</a> 方法可以查看物理设备上的 local tensor：</p>
+<p>通过 <a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.Tensor.to_local.html">to_local</a> 方法可以查看物理设备上的 local tensor：</p>
 <div class="tabbed-set" data-tabs="4:2"><input checked="checked" id="__tabbed_4_1" name="__tabbed_4" type="radio" /><label for="__tabbed_4_1">Terminal 0</label><div class="tabbed-content">
 <div class="highlight"><pre><span></span><code><span class="n">x</span><span class="o">.</span><span class="n">to_local</span><span class="p">()</span>
 <span class="n">tensor</span><span class="p">([[</span> <span class="mf">2.9186e-01</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.9442e-01</span><span class="p">,</span>  <span class="mf">4.7072e-04</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.2216e-01</span><span class="p">,</span>  <span class="mf">1.7788e-01</span><span class="p">],</span>
@@ -1100,7 +1100,7 @@ python3
 </div>
 </div>
 <h3 id="local-tensor-global-tensor">由 local tensor 转换得到 global tensor<a class="headerlink" href="#local-tensor-global-tensor" title="Permanent link">&para;</a></h3>
-<p>可以先创建 local tensor，再利用 <a href="https://oneflow.readthedocs.io/en/master/tensor.html#oneflow.Tensor.to_global">Tensor.to_global</a> 方法，将 local tensor 转为 global tensor。</p>
+<p>可以先创建 local tensor，再利用 <a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.Tensor.to_global.html">Tensor.to_global</a> 方法，将 local tensor 转为 global tensor。</p>
 <p>下面的例子中，在2台设备上分别创建了 <code>shape=(2,5)</code> 的2个 local tensor。
 注意经过 <code>to_global</code> 方法后，得到的 global tensor 的 <code>shape</code> 为 <code>(4,5)</code>。</p>
 <p>这是因为选择的 <code>sbp=flow.sbp.split(0)</code>，2个形状为 <code>(2,5)</code> 的 local tensor，需要在第0维拼接，得到 <code>(4,5)</code> 的 global tensor。</p>

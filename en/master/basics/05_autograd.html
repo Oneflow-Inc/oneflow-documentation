@@ -1056,7 +1056,7 @@ tensor(20., dtype=oneflow.float32)
 </code></pre></div>
 <h3 id="disabled-gradient-calculation">Disabled Gradient Calculation<a class="headerlink" href="#disabled-gradient-calculation" title="Permanent link">&para;</a></h3>
 <p>By default, OneFlow will trace and calculate gradients of Tensors with <code>requires_grad = Ture</code>.
-However, in some cases, we don't need OneFlow to keep tracing gradients such as just wanting the forward pass for inference. Then we can use <a href="https://oneflow.readthedocs.io/en/master/oneflow.html#oneflow.no_grad">oneflow.no_grad()</a> or <a href="https://oneflow.readthedocs.io/en/master/tensor.html#oneflow.Tensor.detach">oneflow.Tensor.detach()</a> to set.</p>
+However, in some cases, we don't need OneFlow to keep tracing gradients such as just wanting the forward pass for inference. Then we can use <a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.no_grad.html">oneflow.no_grad</a> or <a href="https://oneflow.readthedocs.io/en/master/generated/oneflow.Tensor.detach.html#oneflow.Tensor.detach">oneflow.Tensor.detach</a> to set.</p>
 <div class="highlight"><pre><span></span><code><span class="n">z</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span><span class="o">+</span><span class="n">b</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">requires_grad</span><span class="p">)</span>
 

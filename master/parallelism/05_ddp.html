@@ -894,7 +894,7 @@
 <p>在 <a href="01_introduction.html">常见的分布式并行策略</a> 一文中介绍了数据并行的特点。
 在 OneFlow 中，提供了两种做数据并行的方式。</p>
 <p>一种是使用 OneFlow 的原生的 SBP 概念，通过设置 global 张量，进行数据并行训练，这也是用 OneFlow 做数据并行训练的 <strong>推荐方式</strong> 。</p>
-<p>此外，为了方便从 PyTorch 迁移到 OneFlow 的用户，OneFlow 提供了与 <code>torch.nn.parallel.DistributedDataParallel</code> 对齐一致的接口 <a href="https://oneflow.readthedocs.io/en/master/distributed.html#distributeddataparallel">oneflow.nn.parallel.DistributedDataParallel</a>，它也能让用户方便地从单机训练脚本，扩展为数据并行训练。</p>
+<p>此外，为了方便从 PyTorch 迁移到 OneFlow 的用户，OneFlow 提供了与 <code>torch.nn.parallel.DistributedDataParallel</code> 对齐一致的接口 <a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.nn.parallel.DistributedDataParallel.html">oneflow.nn.parallel.DistributedDataParallel</a>，它也能让用户方便地从单机训练脚本，扩展为数据并行训练。</p>
 <h2 id="sbp">通过设置 SBP 做数据并行训练<a class="headerlink" href="#sbp" title="Permanent link">&para;</a></h2>
 <p>以下代码，是通过配置设置 global 张量，完成数据并行训练。点击以下 “Code” 查看详细代码。</p>
 <details class="code">
@@ -1044,13 +1044,13 @@ w:tensor([[2.0000],
 <p>可以发现，它与单机单卡脚本的不同只有2个：</p>
 <ul>
 <li>使用 <code>DistributedDataParallel</code> 处理一下 module 对象（<code>m = ddp(m)</code>)</li>
-<li>使用 <a href="https://oneflow.readthedocs.io/en/master/oneflow.html#oneflow.env.get_rank">get_rank</a> 获取当前设备编号，并针对设备分发数据</li>
+<li>使用 <a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.env.get_rank.html">get_rank</a> 获取当前设备编号，并针对设备分发数据</li>
 </ul>
 <p>然后使用 <code>launcher</code> 启动脚本，把剩下的一切都交给 OneFlow，让分布式训练，像单机单卡训练一样简单：</p>
 <div class="highlight"><pre><span></span><code>python3 -m oneflow.distributed.launch --nproc_per_node 2 ./ddp_train.py
 </code></pre></div>
 <h3 id="distributedsampler">DistributedSampler<a class="headerlink" href="#distributedsampler" title="Permanent link">&para;</a></h3>
-<p>本文为了简化问题，突出 <code>DistributedDataParallel</code>，因此使用的数据是手工分发的。在实际应用中，可以直接使用 <a href="https://oneflow.readthedocs.io/en/master/utils.html#oneflow.utils.data.distributed.DistributedSampler">DistributedSampler</a> 配合数据并行使用。</p>
+<p>本文为了简化问题，突出 <code>DistributedDataParallel</code>，因此使用的数据是手工分发的。在实际应用中，可以直接使用 <a href="https://oneflow.readthedocs.io/en/v0.8.1/utils.data.html?highlight=DistributedSampler#oneflow.utils.data.distributed.DistributedSampler">DistributedSampler</a> 配合数据并行使用。</p>
 <p><code>DistributedSampler</code> 会在每个进程中实例化 Dataloader，每个 Dataloader 实例会加载完整数据的一部分，自动完成数据的分发。</p>
                 
               

@@ -934,7 +934,7 @@
                 
                 <h1 id="backpropagation-and-optimizer">BACKPROPAGATION AND OPTIMIZER<a class="headerlink" href="#backpropagation-and-optimizer" title="Permanent link">&para;</a></h1>
 <p>So far, we have learned how to use OneFlow to <a href="03_dataset_dataloader.html">Dataset and DataLoader</a>, <a href="04_build_network.html">Build Models</a>,<a href="05_autograd.html">Autograd</a>, and combine them so that we can train models by using backpropagation algorithms.</p>
-<p>In <a href="https://oneflow.readthedocs.io/en/master/optim.html">oneflow.optim</a>, there are various <code>optimizer</code>s that simplify the code of back propagation.</p>
+<p>In <a href="https://oneflow.readthedocs.io/en/v0.8.1/optim.html">oneflow.optim</a>, there are various <code>optimizer</code>s that simplify the code of back propagation.</p>
 <p>This article will first introduce the basic concepts of back propagation and then show you how to use the <code>oneflow.optim</code> class.</p>
 <h2 id="backpropagation-by-numpy-code">Backpropagation by Numpy Code<a class="headerlink" href="#backpropagation-by-numpy-code" title="Permanent link">&para;</a></h2>
 <p>In order to make it easier for readers to understand the relationship between backpropagation and autograd, a training process of a simple model implemented with numpy is provided here:</p>
@@ -1031,11 +1031,11 @@ w:[[2.000001 ]
 <span class="n">model</span> <span class="o">=</span> <span class="n">MyLrModule</span><span class="p">(</span><span class="mf">0.01</span><span class="p">,</span> <span class="mi">500</span><span class="p">)</span>
 </code></pre></div>
 <h3 id="loss-function">Loss function<a class="headerlink" href="#loss-function" title="Permanent link">&para;</a></h3>
-<p>Then, select the loss function. OneFlow comes with a variety of loss functions. We choose <a href="https://oneflow.readthedocs.io/en/master/nn.html?highlight=mseloss#oneflow.nn.MSELoss">MSELoss</a> here：</p>
+<p>Then, select the loss function. OneFlow comes with a variety of loss functions. We choose <a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.nn.MSELoss.html">MSELoss</a> here：</p>
 <div class="highlight"><pre><span></span><code><span class="n">loss</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">MSELoss</span><span class="p">(</span><span class="n">reduction</span><span class="o">=</span><span class="s2">&quot;sum&quot;</span><span class="p">)</span>
 </code></pre></div>
 <h3 id="construct-optimizer">Construct Optimizer<a class="headerlink" href="#construct-optimizer" title="Permanent link">&para;</a></h3>
-<p>The logic of back propagation is wrapped in optimizer. We choose <a href="https://oneflow.readthedocs.io/en/master/optim.html?highlight=sgd#oneflow.optim.SGD">SGD</a> here, You can choose other optimization algorithms as needed, such as <a href="https://oneflow.readthedocs.io/en/master/optim.html?highlight=adam#oneflow.optim.Adam">Adam</a> and<a href="https://oneflow.readthedocs.io/en/master/optim.html?highlight=adamw#oneflow.optim.AdamW">AdamW</a> .</p>
+<p>The logic of back propagation is wrapped in optimizer. We choose <a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.optim.SGD.html">SGD</a> here, You can choose other optimization algorithms as needed, such as <a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.optim.Adam.html">Adam</a> and<a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.optim.AdamW.html">AdamW</a> .</p>
 <div class="highlight"><pre><span></span><code><span class="n">optimizer</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">model</span><span class="o">.</span><span class="n">lr</span><span class="p">)</span>
 </code></pre></div>
 <p>When the <code>optimizer</code> is constructed, the model parameters and learning rate are given to <code>SGD</code>. Then the <code>optimizer.step()</code> is called, and it automatically completes the gradient of the model parameters and updates the model parameters according to the SGD algorithm.</p>

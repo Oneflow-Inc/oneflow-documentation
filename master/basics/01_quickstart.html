@@ -948,7 +948,7 @@ Extracting data/FashionMNIST/raw/train-images-idx3-ubyte.gz to data/FashionMNIST
 ...
 </code></pre></div>
 <p>数据集下载并解压到 <code>./data</code> 目录下。</p>
-<p>利用 <a href="https://oneflow.readthedocs.io/en/master/utils.html#oneflow.utils.data.DataLoader">oneflow.utils.data.DataLoader</a> 可以将 <code>dataset</code> 封装为迭代器，方便后续训练。</p>
+<p>利用 <a href="https://oneflow.readthedocs.io/en/v0.8.1/utils.data.html?highlight=oneflow.utils.data.DataLoader#oneflow.utils.data.DataLoader">oneflow.utils.data.DataLoader</a> 可以将 <code>dataset</code> 封装为迭代器，方便后续训练。</p>
 <div class="highlight"><pre><span></span><code><span class="n">train_dataloader</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">(</span>
     <span class="n">training_data</span><span class="p">,</span> <span class="n">BATCH_SIZE</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span>
 <span class="p">)</span>
@@ -1006,7 +1006,7 @@ y.shape: flow.Size([64])
 <p><a class="md-button md-button--primary" href="04_build_network.html"><img alt="🔗" class="twemoji" src="https://twemoji.maxcdn.com/v/latest/svg/1f517.svg" title=":link:" /> 搭建神经网络</a></p>
 </blockquote>
 <h2 id="_4">训练模型<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
-<p>为了训练模型，我们需要损失函数 <code>loss_fn</code> 和优化器 <code>optimizer</code>，损失函数用于评价神经网络预测的结果与 label 的差距；<code>optimizer</code> 调整网络的参数，使得网络预测的结果越来越接近 label（标准答案），这里选用 <a href="https://oneflow.readthedocs.io/en/master/optim.html?highlight=optim.SGD#oneflow.optim.SGD">oneflow.optim.SGD</a>。这一过程被称为反向传播。</p>
+<p>为了训练模型，我们需要损失函数 <code>loss_fn</code> 和优化器 <code>optimizer</code>，损失函数用于评价神经网络预测的结果与 label 的差距；<code>optimizer</code> 调整网络的参数，使得网络预测的结果越来越接近 label（标准答案），这里选用 <a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.optim.SGD.html">oneflow.optim.SGD</a>。这一过程被称为反向传播。</p>
 <div class="highlight"><pre><span></span><code><span class="n">loss_fn</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">CrossEntropyLoss</span><span class="p">()</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">DEVICE</span><span class="p">)</span>
 <span class="n">optimizer</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">)</span>
 </code></pre></div>
@@ -1086,7 +1086,7 @@ loss: 1.835239  [12800/60000]
 <a class="md-button md-button--primary" href="06_optimization.html"><img alt="🔗" class="twemoji" src="https://twemoji.maxcdn.com/v/latest/svg/1f517.svg" title=":link:" /> 反向传播与 optimizer</a></p>
 </blockquote>
 <h2 id="_5">保存与加载模型<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h2>
-<p>调用 <a href="https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.save#oneflow.save">oneflow.save</a> 可以保存模型。保存的模型可以通过 <a href="https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.load#oneflow.load">oneflow.load</a> 加载，用于预测等工作。</p>
+<p>调用 <a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.save.html">oneflow.save</a> 可以保存模型。保存的模型可以通过 <a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.load.html">oneflow.load</a> 加载，用于预测等工作。</p>
 <div class="highlight"><pre><span></span><code><span class="n">flow</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span> <span class="s2">&quot;./model&quot;</span><span class="p">)</span>
 </code></pre></div>
 <blockquote>

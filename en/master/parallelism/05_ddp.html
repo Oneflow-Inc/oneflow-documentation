@@ -893,7 +893,7 @@
                 <h1 id="data-parallelism-training">DATA PARALLELISM TRAINING<a class="headerlink" href="#data-parallelism-training" title="Permanent link">&para;</a></h1>
 <p>In <a href="01_introduction.html">Common Distributed Parallel Strategies</a>, we introduced the characteristics of data parallel.</p>
 <p>OneFlow provides two ways to accomplish data parallel, and one of them is to use the original concept of Oneflow to run data parallel training by configurating global tensor. This is also the <strong>recommanded way</strong> to run data parallel training on Oneflow.</p>
-<p>Besides, to facilitate the users who are transferring from PyTorch to OneFlow, OneFlow offers the interface consistent with PyTorch <code>torch.nn.parallel.DistributedDataParallel</code>,  <a href="https://oneflow.readthedocs.io/en/master/nn.html#oneflow.nn.parallel.DistributedDataParallel">oneflow.nn.parallel.DistributedDataParallel</a> so that users can also conveniently extend single machine training to data parallel training. </p>
+<p>Besides, to facilitate the users who are transferring from PyTorch to OneFlow, OneFlow offers the interface consistent with PyTorch <code>torch.nn.parallel.DistributedDataParallel</code>,  <a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.nn.parallel.DistributedDataParallel.html">oneflow.nn.parallel.DistributedDataParallel</a> so that users can also conveniently extend single machine training to data parallel training. </p>
 <h2 id="run-data-parallel-training-with-sbp-configuration">Run Data Parallel Training With SBP Configuration<a class="headerlink" href="#run-data-parallel-training-with-sbp-configuration" title="Permanent link">&para;</a></h2>
 <p>The following code runs data parallel training by configurating global tensor. </p>
 <details class="code">
@@ -1043,13 +1043,13 @@ w:tensor([[2.0000],
 <p>There are only two differences between the data parallelism training code and the stand-alone single-card script:</p>
 <ul>
 <li>Use <code>DistributedDataParallel</code> to wrap the module object (<code>m = ddp(m)</code>)</li>
-<li>Use <a href="https://oneflow.readthedocs.io/en/master/oneflow.html#oneflow.env.get_rank">get_rank</a> to get the current device number and distribute the data to the device.</li>
+<li>Use <a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.env.get_rank.html">get_rank</a> to get the current device number and distribute the data to the device.</li>
 </ul>
 <p>Then use <code>launcher</code> to run the script, leave everything else to OneFlow, which makes distributed training as simple as stand-alone single-card training:</p>
 <div class="highlight"><pre><span></span><code><span class="n">python3</span> <span class="o">-</span><span class="n">m</span> <span class="n">oneflow</span><span class="o">.</span><span class="n">distributed</span><span class="o">.</span><span class="n">launch</span> <span class="o">--</span><span class="n">nproc_per_node</span> <span class="mi">2</span> <span class="o">./</span><span class="n">ddp_train</span><span class="o">.</span><span class="n">py</span>
 </code></pre></div>
 <h3 id="distributedsampler">DistributedSampler<a class="headerlink" href="#distributedsampler" title="Permanent link">&para;</a></h3>
-<p>The data used is manually distributed in this context to highlight <code>DistributedDataParallel</code>. However, in practical applications, you can directly use <a href="https://oneflow.readthedocs.io/en/master/utils.html#oneflow.utils.data.distributed.DistributedSampler">DistributedSampler</a> with data parallel.</p>
+<p>The data used is manually distributed in this context to highlight <code>DistributedDataParallel</code>. However, in practical applications, you can directly use <a href="https://oneflow.readthedocs.io/en/v0.8.1/utils.data.html?highlight=DistributedSampler#oneflow.utils.data.distributed.DistributedSampler">DistributedSampler</a> with data parallel.</p>
 <p><code>DistributedSampler</code> will instantiate the Dataloader in each process, and each Dataloader instance will load a part of the complete data to automatically complete the data distribution.</p>
                 
               

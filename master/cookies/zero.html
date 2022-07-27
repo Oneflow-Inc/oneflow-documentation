@@ -765,6 +765,33 @@
     在 nn.Graph 中开启 ZeRO
   </a>
   
+    <nav class="md-nav" aria-label="在 nn.Graph 中开启 ZeRO">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    开启阶段1优化
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    开启阶段 2 优化
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    开启阶段 3 优化
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
       </ul>
@@ -880,6 +907,33 @@
     在 nn.Graph 中开启 ZeRO
   </a>
   
+    <nav class="md-nav" aria-label="在 nn.Graph 中开启 ZeRO">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    开启阶段1优化
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    开启阶段 2 优化
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    开启阶段 3 优化
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
       </ul>
@@ -913,12 +967,12 @@
 <li><strong>模型状态(model states)</strong>。对于大型模型来说，大部分显存消耗都是被模型状态占用的，主要包括三部分：优化器的状态(Optimizer States)、梯度(Gradients)、参数(Parameters)。三者简称为 <strong>OPG</strong>。</li>
 <li><strong>残余状态(residual states)</strong>。包括激活函数、临时缓冲区和不可用的内存碎片。</li>
 </ol>
-<p>ZeRO-DP 可以分为三个阶段，通过对 OPG 状态进行分区而不是直接复制来消除内存冗余，每个 GPU 仅保存部分 OGP。具体来说，ZeRO-DP 有三个主要的优化阶段，分别对应 O、P 和 G。三个阶段逐级递加：</p>
-<ol>
-<li>优化器状态分区（P<sub>os</sub>）：显存消耗减少 4 倍，通信量与数据并行相同，此阶段也被称为 ZeRO-OS。</li>
-<li>添加梯度分区优化（P<sub>os+g</sub>）：显存消耗减少 8 倍，通信量与数据并行相同。</li>
-<li>添加参数分区优化（P<sub>os+g+p</sub>）：模型占用的显存被平均分配到每个 GPU 中，显存消耗量与数据并行的并行度成线性反比关系，但通信量会有些许增加。</li>
-</ol>
+<p>ZeRO-DP 可以分为三个阶段，通过对 OPG 状态进行分区而不是直接复制来消除内存冗余，每个 GPU 仅保存部分 OPG。具体来说，ZeRO-DP 有三个主要的优化阶段，分别对应 O、P 和 G。三个阶段逐级递加：</p>
+<ul>
+<li>阶段1，优化器状态分区（P<sub>os</sub>）：显存消耗减少 4 倍，通信量与数据并行相同。</li>
+<li>阶段2，添加梯度分区优化（P<sub>os+g</sub>）：显存消耗减少 8 倍，通信量与数据并行相同。</li>
+<li>阶段3，添加参数分区优化（P<sub>os+g+p</sub>）：模型占用的显存被平均分配到每个 GPU 中，显存消耗量与数据并行的并行度成线性反比关系，但通信量会有些许增加。</li>
+</ul>
 <p>三个阶段的显存消耗的分布情况可以参见下图（来自 ZeRO 原论文 Figure 1）：</p>
 <div align="center">
 <img src="./imgs/Three_Stages_of_ZeRO-DP_Optimizations.jpg" alt="Three Stages of ZeRO-DP Optimizations" width="75%">
@@ -931,6 +985,10 @@
 </code></pre></div></p>
 <h3 id="_1">定义数据并行训练流程<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h3>
 <p>我们定义一个数据并行策略下的训练流程，与 <a href="../parallelism/05_ddp.html#通过设置-sbp-做数据并行训练">通过设置 SBP 做数据并行训练</a> 中所介绍的是类似的。</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>只要存在数据并行组，都可以使用ZeRO来做内存优化。比如2D/3D并行中，只要存在数据并行组，都可以打开ZeRO。</p>
+</div>
 <p>定义之后要使用到 placement、SBP 等：
 <div class="highlight"><pre><span></span><code><span class="n">P</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">placement</span><span class="p">(</span><span class="s2">&quot;cuda&quot;</span><span class="p">,</span> <span class="n">ranks</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
 <span class="n">B</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">sbp</span><span class="o">.</span><span class="n">broadcast</span>
@@ -948,7 +1006,7 @@
 <span class="n">loss_fn</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">CrossEntropyLoss</span><span class="p">()</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">DEVICE</span><span class="p">)</span>
 <span class="n">optimizer</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">)</span>
 </code></pre></div></p>
-<p>ZeRO 是在 <a href="../basics/08_nn_graph.html">nn.Graph</a> 中设置的，因此需要将动态图模型转换为 nn.Graph：</p>
+<p>ZeRO 是在 <a href="../basics/08_nn_graph.html">nn.Graph</a> 的图编译器中实现的，因此需要将动态图模型转换为 nn.Graph：</p>
 <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">CustomGraph</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Graph</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
@@ -977,30 +1035,48 @@
 </code></pre></div>
 <p>然后通过 <a href="../parallelism/04_launch.html">launch 模块</a> 启动训练即可。</p>
 <h3 id="nngraph-zero">在 nn.Graph 中开启 ZeRO<a class="headerlink" href="#nngraph-zero" title="Permanent link">&para;</a></h3>
-<p><strong>阶段 1</strong>：通过 <a href="https://oneflow.readthedocs.io/en/master/graph.html#oneflow.nn.graph.graph_config.GraphConfig.set_zero_redundancy_optimizer_mode">config.set_zero_redundancy_optimizer_mode</a> 接口可以开启阶段 1。即在上面的 nn.Graph 模型中添加：</p>
-<div class="highlight"><pre><span></span><code><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">set_zero_redundancy_optimizer_mode</span><span class="p">(</span><span class="s2">&quot;distributed_split&quot;</span><span class="p">)</span>
+<p>通过 <a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.nn.graph.graph_config.GraphConfig.enable_zero.html#oneflow.nn.graph.graph_config.GraphConfig.enable_zero">config.enable_zero</a> 接口可以开启ZeRO优化。</p>
+<h4 id="1">开启阶段1优化<a class="headerlink" href="#1" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">CustomGraph</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Graph</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="o">...</span>
+        <span class="c1"># 设置 ZeRO 开启 stage 1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">enable_zero</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">stage</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="o">...</span>
 </code></pre></div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>当使用模型连续进行训练和和预测时：训练执行一次后，ZeRO 会自动把模型的 SBP 参数从 Broadcast 改变为 Split；在执行预测时，将会使用 Split 自动推理，无需配置 ZeRO。</p>
 </div>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>此 API 未来可能会发生变动。</p>
-</div>
-<p><strong>阶段 2</strong>：在阶段 1 的基础上，增加 <code>flow.boxing.nccl.enable_use_compute_stream(True)</code> 可以开启阶段 2。即在上面的 nn.Graph 模型中添加：</p>
-<div class="highlight"><pre><span></span><code><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">set_zero_redundancy_optimizer_mode</span><span class="p">(</span><span class="s2">&quot;distributed_split&quot;</span><span class="p">)</span>
-<span class="n">flow</span><span class="o">.</span><span class="n">boxing</span><span class="o">.</span><span class="n">nccl</span><span class="o">.</span><span class="n">enable_use_compute_stream</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+<h4 id="2">开启阶段 2 优化<a class="headerlink" href="#2" title="Permanent link">&para;</a></h4>
+<p><div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">CustomGraph</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Graph</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="o">...</span>
+        <span class="c1"># 设置 ZeRO 开启 stage 2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">enable_zero</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">stage</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="o">...</span>
 </code></pre></div>
-<p><strong>阶段 3</strong>：在阶段 2 的基础上，增加 <code>flow.boxing.nccl.disable_group_boxing_by_dst_parallel(True)</code> 可以开启阶段 3。即在上面的 nn.Graph 模型中添加：</p>
-<div class="highlight"><pre><span></span><code><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">set_zero_redundancy_optimizer_mode</span><span class="p">(</span><span class="s2">&quot;distributed_split&quot;</span><span class="p">)</span>
-<span class="n">flow</span><span class="o">.</span><span class="n">boxing</span><span class="o">.</span><span class="n">nccl</span><span class="o">.</span><span class="n">enable_use_compute_stream</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">flow</span><span class="o">.</span><span class="n">boxing</span><span class="o">.</span><span class="n">nccl</span><span class="o">.</span><span class="n">disable_group_boxing_by_dst_parallel</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+一般阶段 2 的优化的显存优化大、速度影响小，所以推荐使用阶段 2 优化。可以简单的开始阶段 2 优化：
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">CustomGraph</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Graph</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="o">...</span>
+        <span class="c1"># 设置 ZeRO 开启 stage 2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">enable_zero</span><span class="p">()</span>
+        <span class="o">...</span>
+</code></pre></div></p>
+<h4 id="3">开启阶段 3 优化<a class="headerlink" href="#3" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">CustomGraph</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Graph</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="o">...</span>
+        <span class="c1"># 设置 ZeRO 开启 stage 3</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">enable_zero</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">stage</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+        <span class="o">...</span>
 </code></pre></div>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>虽然开启第三阶段可以最大限度地减少显存消耗，但这会增加通信成本，在实践中一般使用第二阶段。</p>
-</div>
+<p>虽然开启第三阶段可以最大限度地减少显存消耗，但这会增加通信成本，执行速度会降低。</p>
                 
               
               

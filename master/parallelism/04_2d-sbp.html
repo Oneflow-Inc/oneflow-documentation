@@ -896,7 +896,7 @@
 <p>阅读 <a href="02_sbp.html">集群的全局视角</a> 和 <a href="03_consistent_tensor.html">Global Tensor</a> 之后，相信你已经掌握了 SBP 和 SBP Signature 的基本概念，并且能够上手相关的编程任务。实际上，以上资料中涉及都是 <strong>1D SBP</strong>。</p>
 <p>本文将在读者掌握 1D SBP 的基础上，介绍 2D SBP，它能够更灵活地应对更复杂的分布式训练场景。</p>
 <h2 id="2d">2D 设备阵列<a class="headerlink" href="#2d" title="Permanent link">&para;</a></h2>
-<p>我们已经熟悉 1D SBP 的 placement 配置，在 1D SBP 的场景下，通过 <a href="https://start.oneflow.org/oneflow-api-cn/placement.html#oneflow.placement">oneflow.placement</a> 接口配置集群，比如使用集群中的第 0~3 号 GPU 显卡：</p>
+<p>我们已经熟悉 1D SBP 的 placement 配置，在 1D SBP 的场景下，通过 <a href="https://oneflow.readthedocs.io/en/v0.8.1/tensor_attributes.html?highlight=oneflow.placement#oneflow-placement">oneflow.placement</a> 接口配置集群，比如使用集群中的第 0~3 号 GPU 显卡：</p>
 <div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">placement1</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">placement</span><span class="p">(</span><span class="s2">&quot;cuda&quot;</span><span class="p">,</span> <span class="n">ranks</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
 </code></pre></div>
 <p>以上的 <code>"cuda"</code> 指定了设备类型，<code>ranks=[0, 1, 2, 3]</code> 指定了集群中的计算设备。其实，<code>ranks</code> 不仅可以是一维的int list，还可以是多维的int数组：</p>
@@ -967,8 +967,8 @@
 <span class="n">global_x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">to_global</span><span class="p">(</span><span class="n">placement</span><span class="o">=</span><span class="n">PLACEMENT</span><span class="p">,</span> <span class="n">sbp</span><span class="o">=</span><span class="n">BS0</span><span class="p">)</span>
 <span class="n">pred</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">global_x</span><span class="p">)</span>
 </code></pre></div>
-在这里，我们创建了一个形状为 <code>(1, 2, 8)</code> 的 local tensor，然后通过 <a href="https://oneflow.readthedocs.io/en/master/tensor.html#oneflow.Tensor.to_global">Tensor.to_global</a> 方法获取对应的 global tensor，最后将其输入到模型中进行推理。</p>
-<p>通过 <a href="https://oneflow.readthedocs.io/en/master/tensor.html#oneflow.Tensor.to_local">Tensor.to_local</a> 方法获取当前物理设备上的 local tensor 后，我们可以通过输出其形状和值来验证数据是否被正确处理：
+在这里，我们创建了一个形状为 <code>(1, 2, 8)</code> 的 local tensor，然后通过 <a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.Tensor.to_global.html">Tensor.to_global</a> 方法获取对应的 global tensor，最后将其输入到模型中进行推理。</p>
+<p>通过 <a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.Tensor.to_local.html">Tensor.to_local</a> 方法获取当前物理设备上的 local tensor 后，我们可以通过输出其形状和值来验证数据是否被正确处理：
 <div class="highlight"><pre><span></span><code><span class="n">local_x</span> <span class="o">=</span> <span class="n">global_x</span><span class="o">.</span><span class="n">to_local</span><span class="p">()</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">local_x</span><span class="o">.</span><span class="n">device</span><span class="si">}</span><span class="s1">, </span><span class="si">{</span><span class="n">local_x</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s1">, </span><span class="se">\n</span><span class="si">{</span><span class="n">local_x</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 </code></pre></div>

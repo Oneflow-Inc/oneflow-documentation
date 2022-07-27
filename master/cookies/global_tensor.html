@@ -1051,7 +1051,7 @@ Global data of global tensor:
 </code></pre></div>
 可以发现两个 rank 的 Local Tensor 在维度 0 拼接后，就是完整的 Global Tensor 的值。</p>
 <h2 id="local-tensor-global-tensor">由 Local Tensor 得到 Global Tensor<a class="headerlink" href="#local-tensor-global-tensor" title="Permanent link">&para;</a></h2>
-<p>可以先创建 Local Tensor，再利用 <a href="https://oneflow.readthedocs.io/en/master/tensor.html#oneflow.Tensor.to_global">Tensor.to_global</a> 方法，将 Local Tensor 转为 Global Tensor。</p>
+<p>可以先创建 Local Tensor，再利用 <a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.Tensor.to_global.html">Tensor.to_global</a> 方法，将 Local Tensor 转为 Global Tensor。</p>
 <p>创建如下程序，采用上文同样的方式启动：</p>
 <div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">oneflow</span> <span class="k">as</span> <span class="nn">flow</span>
 
@@ -1072,7 +1072,7 @@ Global data of global tensor:
 <p><code>to_global</code> 方法根据如上关系可以从 <code>x.shape</code> 推理出 <code>x_global.shape</code> ：把两个 GPU 上的 Local Tensor <code>x</code> 在第 0 维拼接后得到 <code>x_global</code>。</p>
 <p>Global Tensor 除了 shape，还有数据部分。一个 Global Tensor 的内部，在每个 rank 上都内含了一个 Local Tensor 作为其本地分量。 这个 Local Tensor 就是 Global Tensor 在每个 rank 的物理数据。这符合期待的，每个 rank 只需保存一部分物理数据。</p>
 <h2 id="global-tensor-local-tensor">由 Global Tensor 得到 Local Tensor<a class="headerlink" href="#global-tensor-local-tensor" title="Permanent link">&para;</a></h2>
-<p>如果想得到 Global Tensor 的本地分量，可以通过 <a href="https://oneflow.readthedocs.io/en/master/tensor.html#oneflow.Tensor.to_local">to_local</a> 方法得到。例如：</p>
+<p>如果想得到 Global Tensor 的本地分量，可以通过 <a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.Tensor.to_local.html">to_local</a> 方法得到。例如：</p>
 <div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">oneflow</span> <span class="k">as</span> <span class="nn">flow</span>
 
 <span class="n">placement</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">placement</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;cuda&quot;</span><span class="p">,</span> <span class="n">ranks</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
@@ -1100,7 +1100,7 @@ Global data of global tensor:
 <li>参数 <code>type</code> 指定了物理设备的类型，<code>cuda</code> 表示 GPU 设备内存, <code>cpu</code> 表示 CPU 设备内存；</li>
 <li>参数 <code>ranks</code> 指定了进程 ID 集合，因为隐含了一个 Rank 对应一个物理设备，所以 <code>ranks</code> 就是设备 ID 集合; 实际上 <code>ranks</code> 是一个由 rank id 组成 nd-array，支持高维设备排布。 </li>
 </ul>
-<p>详情参考 <a href="https://oneflow.readthedocs.io/en/master/tensor_attributes.html?highlight=placement#oneflow.placement">oneflow.placement</a>。</p>
+<p>详情参考 <a href="https://oneflow.readthedocs.io/en/v0.8.1/tensor_attributes.html#oneflow.placement">oneflow.placement</a>。</p>
 <p>全局数据分布类型中的 SBP 指定了全局数据和局部数据的关系:</p>
 <ul>
 <li>
@@ -1113,11 +1113,11 @@ Global data of global tensor:
 <p>P，即 partial_sum，局部和全局是部分关系，表示做了 element-wise 累加的数据分布关系；</p>
 </li>
 </ul>
-<p>详情参考 <a href="https://oneflow.readthedocs.io/en/master/tensor_attributes.html?highlight=placement#oneflow.sbp.sbp">oneflow.sbp.sbp</a>。</p>
+<p>详情参考 <a href="https://oneflow.readthedocs.io/en/v0.8.1/tensor_attributes.html#oneflow.sbp.sbp">oneflow.sbp.sbp</a>。</p>
 <p>数据重分布（Re-distribution)是并行计算中经常要处理的，即变换数据分布，比如把分片数据聚合到一起。在 MPI 编程范式（SPMD）下, 数据重分布需要写显式的通信操作，如 AllReduce、AllGather、ReduceScatter。在 OneFlow 的 Global View 编程范式（SPSD) 下，数据重分布可以通过 Global Tensor 的全局数据分布类型转换完成。</p>
 <p>全局数据分布类型的转换类似常规编程语言中的（显式）类型转换。类型转换时，只需指定要变换到的类型，里面隐含的操作会被系统自动完成。比如 double 类型到 int 类型的转换，去掉小数点部分的操作就是系统自动完成的。</p>
-<p>同样，只需指定 Global Tensor 要转换的新全局数据分布类型，里面隐含的通信操作会被 OneFlow 自动完成。全局数据分布类型转换的接口是 <a href="https://oneflow.readthedocs.io/en/master/tensor.html#oneflow.Tensor.to_global">Tensor.to_global</a>，<code>to_global</code> 有 <code>placement</code> 和 <code>sbp</code> 两个参数，这两个参数即期望转换成的新全局数据分布类型。 </p>
-<p>全局数据分布类型转换中隐含的主要操作是通信的推理和执行，背后的实现机制是 OneFlow 的 <a href="https://docs.oneflow.org/master/parallelism/03_consistent_tensor#boxing-sbp">Boxing</a>，一种自动做数据 Re-distribution 的机制。</p>
+<p>同样，只需指定 Global Tensor 要转换的新全局数据分布类型，里面隐含的通信操作会被 OneFlow 自动完成。全局数据分布类型转换的接口是 <a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.Tensor.to_global.html">Tensor.to_global</a>，<code>to_global</code> 有 <code>placement</code> 和 <code>sbp</code> 两个参数，这两个参数即期望转换成的新全局数据分布类型。</p>
+<p>全局数据分布类型转换中隐含的主要操作是通信的推理和执行，背后的实现机制是 OneFlow 的 <a href="../parallelism/03_consistent_tensor#boxing-sbp">Boxing</a>，一种自动做数据 Re-distribution 的机制。</p>
 <p>下面看一个例子，该例子可以把一个按 split 分布的 Global Tensor 转换为一个按 broadcast 分布的 Global Tensor：</p>
 <div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">oneflow</span> <span class="k">as</span> <span class="nn">flow</span>
 

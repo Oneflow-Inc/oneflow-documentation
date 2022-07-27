@@ -1056,7 +1056,7 @@ tensor(20., dtype=oneflow.float32)
 </code></pre></div>
 <h3 id="tensor">不记录某个 Tensor 的梯度<a class="headerlink" href="#tensor" title="Permanent link">&para;</a></h3>
 <p>默认情况下，OneFlow 会 tracing <code>requires_grad</code> 为 <code>True</code> 的 Tensor，自动求梯度。
-不过有些情况可能并不需要 OneFlow 这样做，比如只是想试一试前向推理。那么可以使用 <a href="https://oneflow.readthedocs.io/en/master/oneflow.html#oneflow.no_grad">oneflow.no_grad</a> 或 <a href="https://oneflow.readthedocs.io/en/master/tensor.html#oneflow.Tensor.detach">oneflow.Tensor.detach</a> 方法设置。</p>
+不过有些情况可能并不需要 OneFlow 这样做，比如只是想试一试前向推理。那么可以使用 <a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.no_grad.html">oneflow.no_grad</a> 或 <a href="https://oneflow.readthedocs.io/en/master/generated/oneflow.Tensor.detach.html#oneflow.Tensor.detach">oneflow.Tensor.detach</a> 方法设置。</p>
 <div class="highlight"><pre><span></span><code><span class="n">z</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span><span class="o">+</span><span class="n">b</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">requires_grad</span><span class="p">)</span>
 
