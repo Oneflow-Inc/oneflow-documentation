@@ -96,7 +96,7 @@ for _ in range(100):
 
 ### 在 nn.Graph 中开启 ZeRO
 
-通过 [config.enable_zero](https://oneflow.readthedocs.io/en/master/generated/oneflow.nn.graph.graph_config.GraphConfig.enable_zero.html#oneflow.nn.graph.graph_config.GraphConfig.enable_zero) 接口可以开启ZeRO优化。
+通过 [config.enable_zero](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.nn.graph.graph_config.GraphConfig.enable_zero.html#oneflow.nn.graph.graph_config.GraphConfig.enable_zero) 接口可以开启ZeRO优化。
 
 #### 开启阶段1优化
 ```python
