@@ -139,7 +139,7 @@ tensor(20., dtype=oneflow.float32)
 ### 不记录某个 Tensor 的梯度
 
 默认情况下，OneFlow 会 tracing `requires_grad` 为 `True` 的 Tensor，自动求梯度。
-不过有些情况可能并不需要 OneFlow 这样做，比如只是想试一试前向推理。那么可以使用 [oneflow.no_grad](https://oneflow.readthedocs.io/en/master/oneflow.html#oneflow.no_grad) 或 [oneflow.Tensor.detach](https://oneflow.readthedocs.io/en/master/tensor.html#oneflow.Tensor.detach) 方法设置。
+不过有些情况可能并不需要 OneFlow 这样做，比如只是想试一试前向推理。那么可以使用 [oneflow.no_grad](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.no_grad.html) 或 [oneflow.Tensor.detach](https://oneflow.readthedocs.io/en/master/generated/oneflow.Tensor.detach.html#oneflow.Tensor.detach) 方法设置。
 
 ```python
 z = flow.matmul(x, w)+b

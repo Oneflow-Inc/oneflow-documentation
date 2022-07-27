@@ -67,7 +67,7 @@
 
 ### 由 global tensor 得到 local tensor
 
-通过 [to_local](https://oneflow.readthedocs.io/en/master/tensor.html#oneflow.Tensor.to_local) 方法可以查看物理设备上的 local tensor：
+通过 [to_local](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.Tensor.to_local.html) 方法可以查看物理设备上的 local tensor：
 
 === "Terminal 0"
     ```python
@@ -87,7 +87,7 @@
 
 ### 由 local tensor 转换得到 global tensor
 
-可以先创建 local tensor，再利用 [Tensor.to_global](https://oneflow.readthedocs.io/en/master/tensor.html#oneflow.Tensor.to_global) 方法，将 local tensor 转为 global tensor。
+可以先创建 local tensor，再利用 [Tensor.to_global](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.Tensor.to_global.html) 方法，将 local tensor 转为 global tensor。
 
 下面的例子中，在2台设备上分别创建了 `shape=(2,5)` 的2个 local tensor。
 注意经过 `to_global` 方法后，得到的 global tensor 的 `shape` 为 `(4,5)`。

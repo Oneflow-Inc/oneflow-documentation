@@ -49,7 +49,7 @@ tables = [
 
 When configuring the Embedding table, you need to specify the initialization method. The above Embedding tables are initialized in the `uniform` method. The result of configuring the Embedding table is stored in the `tables` variable
 
-Click [make_table_options](https://oneflow.readthedocs.io/en/master/one_embedding.html#oneflow.one_embedding.make_table_options) and [make_uniform_initializer](https://oneflow.readthedocs.io/en/master/one_embedding.html#oneflow.one_embedding.make_uniform_initializer) to check more detailed information.
+Click [make_table_options](https://oneflow.readthedocs.io/en/v0.8.1/one_embedding.html#oneflow.one_embedding.make_table_options) and [make_uniform_initializer](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.one_embedding.make_uniform_initializer.html#oneflow.one_embedding.make_uniform_initializer) to check more detailed information.
 
 ### Configure the Storage Attribute of the Embedding Table
 
@@ -65,9 +65,9 @@ store_options = flow.one_embedding.make_cached_ssd_store_options(
 )
 ```
 
-By calling `make_cached_ssd_store_options` here, you can store Embedding table on SSD and use GPU as cache. For the meaning of specific parameters, please refer to [make_cached_ssd_store_options API 文档](https://oneflow.readthedocs.io/en/master/one_embedding.html#oneflow.one_embedding.make_cached_ssd_store_options).
+By calling `make_cached_ssd_store_options` here, you can store Embedding table on SSD and use GPU as cache. For the meaning of specific parameters, please refer to [make_cached_ssd_store_options API 文档](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.one_embedding.make_cached_ssd_store_options.html).
 
-In addition, you can use pure GPU as storage; or use CPU memory to store Embedding table, but use GPU as cache. For more details, please refer to [make_device_mem_store_options](https://oneflow.readthedocs.io/en/master/one_embedding.html#oneflow.one_embedding.make_device_mem_store_options) and [make_cached_host_mem_store_option](https://oneflow.readthedocs.io/en/master/one_embedding.html#oneflow.one_embedding.make_cached_host_mem_store_options).
+In addition, you can use pure GPU as storage; or use CPU memory to store Embedding table, but use GPU as cache. For more details, please refer to [make_device_mem_store_options](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.one_embedding.make_device_mem_store_options.html) and [make_cached_host_mem_store_option](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.one_embedding.make_cached_host_mem_store_options.html).
 
 ### Instantiate Embedding
 
@@ -89,7 +89,7 @@ embedding.to("cuda")
 
 Among them, `tables` is the Embedding table attribute previously configured by `make_table_options`, `store_options` is the previously configured storage attribute, `embedding_dim` is the feature dimension, `dtype` is the data type of the feature vector, `key_type` is the data type of feature ID.
 
-If two OneEmbeddings are created at the same time, different name and persistent path parameters are needed to be set during instantiation. For more detailes, please refer to [one_embedding.MultiTableEmbedding](https://oneflow.readthedocs.io/en/master/one_embedding.html#oneflow.one_embedding.MultiTableEmbedding).
+If two OneEmbeddings are created at the same time, different name and persistent path parameters are needed to be set during instantiation. For more detailes, please refer to [one_embedding.MultiTableEmbedding](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.one_embedding.MultiTableEmbedding.forward.html).
 
 ### Construct Graph for Training
 
@@ -175,7 +175,7 @@ table_ids = np.array([0, 1, 2, 0, 1, 2])
 # This means to query `488, 18` in the zeroth table, `333, 568` in the first table, and the corresponding feature vector of `220, 508` in the second table.
 embedding_lookup(ids, table_ids)
 ```
-For more details, please refer to  [MultiTableEmbedding.forward](https://oneflow.readthedocs.io/en/master/one_embedding.html#oneflow.one_embedding.MultiTableEmbedding.forward).
+For more details, please refer to  [MultiTableEmbedding.forward](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.one_embedding.MultiTableEmbedding.forward.html).
 
 ### How to Choose the Proper Storage Configuration 
 
@@ -195,7 +195,7 @@ OneEmbedding provides three storage options configurations,they are pure GPU sto
 
 ### Distributed Training
 
-Similar to other modules of OneFlow, OneEmbedding supports distributed expansion natively. Users can refer to the README in [#dlrm](扩展阅读：DLRM) to start DLRM distributed training. You can also refer to [Global Tensor](../parallelism/03_consistent_tensor.md) for necessary prerequisites.
+Similar to other modules of OneFlow, OneEmbedding supports distributed expansion natively. Users can refer to the README in [#dlrm](https://github.com/Oneflow-Inc/models/tree/main/RecommenderSystems/dlrm) to start DLRM distributed training. You can also refer to [Global Tensor](../parallelism/03_consistent_tensor.md) for necessary prerequisites.
 
 When using the OneEmbedding module for distributed expansion, please be careful:
 

@@ -66,7 +66,7 @@ Output:
 
 ### Get Local Tensor from Global Tensor
 
-Call [to_local()](https://oneflow.readthedocs.io/en/master/tensor.html#oneflow.Tensor.to_local) to check the local tensor on a device.
+Call [to_local](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.Tensor.to_local.html) to check the local tensor on a device.
 
 === "Terminal 0"
     ```python
@@ -86,7 +86,7 @@ Call [to_local()](https://oneflow.readthedocs.io/en/master/tensor.html#oneflow.T
 
 ### Convert Local Tensor to Global Tensor
 
-Developers can create local tensor first, then convert it to global tensor with [Tensor.to_global](https://oneflow.readthedocs.io/en/master/tensor.html#oneflow.Tensor.to_global).
+Developers can create local tensor first, then convert it to global tensor with [Tensor.to_global](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.Tensor.to_global.html).
 
 Two local tensors with the shape of `(2,5)` are created separately on two devices. While after the `to_global` method, the global tensor with a shape of `(4,5)` is obtained.
 

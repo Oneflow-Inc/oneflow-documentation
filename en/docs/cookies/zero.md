@@ -12,11 +12,11 @@ The memory consumption when training a deep learning model can be divided into t
 
 2. **Residual States**. It includes activation functions, temporary buffers, and unusable memory fragments.
 
-ZeRO-DP can be divided into three stages, eliminating memory redundancy by partitioning the OPG state rather than copying it directly, and each GPU only saves part of the OGP. Specifically, ZeRO-DP has three main optimization stages, corresponding to O, P, and G respectively. The three stages increase step by step:
+ZeRO-DP can be divided into three stages, eliminating memory redundancy by partitioning the OPG state rather than copying it directly, and each GPU only saves part of the OPG. Specifically, ZeRO-DP has three main optimization stages, corresponding to O, P, and G respectively. The three stages increase step by step:
 
-1. Optimizer states partition（P<sub>os</sub>）: This state is also known as ZeRO-OS because of 4x less memory consumption and the same amount of traffic as data parallelism.
-1. Add gradients partition optimizer (P<sub>os+g</sub>): At this stage, the memory consumption is reduced by 8 times, and the traffic is the same as the data parallelism.
-2. Add parameter partition optimizer (P<sub>os+g+p</sub>): At this stage, the memory occupied by the model is evenly distributed among each GPU. Memory consumption is linearly inversely proportional to the degree of data parallelism, but there will be a slight increase in traffic.
+1. Optimizer states partition（P<sub>os</sub>）: This state is 4x less memory consumption and the same amount of traffic as data parallel.
+2. Add gradients partition optimizer (P<sub>os+g</sub>): At this stage, the memory consumption is reduced by 8 times, and the traffic is the same as the data parallel.
+3. Add parameter partition optimizer (P<sub>os+g+p</sub>): At this stage, the memory occupied by the model is evenly distributed among each GPU. Memory consumption is linearly inversely proportional to the degree of data parallel, but there will be a slight increase in traffic.
 
 The distribution of the memory consumption of the three stages can be seen in the following figure (from the original ZeRO paper Figure 1):
 
@@ -36,6 +36,9 @@ from oneflow import nn
 ### Definine the Training Process of Data Parallelism
 
 We define a training process under a data parallellelism strategy, similar to that described in [Conduct data parallel training by setting SBP](../parallelism/05_ddp.md#通过设置-sbp-做数据并行训练).
+
+!!! Note
+    ZeRO can be applied for all the cases where data parallel groups exist. For example, in 2D/3D parallel, ZeRO can be turned on as long as there is a data parallel group.
 
 After the definition, we will use placement, SBP, etc:
 ```python
@@ -58,7 +61,7 @@ loss_fn = nn.CrossEntropyLoss().to(DEVICE)
 optimizer = flow.optim.SGD(model.parameters(), lr=1e-3)
 ```
 
-ZeRO is set in [nn.Graph](../basics/08_nn_graph.md), so the dynamic graph model needs to be converted to nn.Graph:
+ZeRO is set in the graph compiler of [nn.Graph](../basics/08_nn_graph.md), so the dynamic graph model needs to be converted to nn.Graph:
 
 ```python
 class CustomGraph(flow.nn.Graph):
@@ -95,32 +98,57 @@ Then start training through [launch Module](../parallelism/04_launch.md)
 
 ### Enable ZeRO in nn.Graph
 
-**Stage 1**: Stage 1 can be enabled through the interface [config.set_zero_redundancy_optimizer_mode](https://oneflow.readthedocs.io/en/master/graph.html#oneflow.nn.graph.graph_config.GraphConfig.set_zero_redundancy_optimizer_mode) . i.e. add the following code in the nn.Graph model above:
+ZeRO can be enabled through the interface [config.set_zero_redundancy_optimizer_mode](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.nn.graph.graph_config.GraphConfig.enable_zero.html#oneflow.nn.graph.graph_config.GraphConfig.enable_zero) .
+
+#### Enable Stage 1 of ZeRO
 
 ```python
-self.config.set_zero_redundancy_optimizer_mode("distributed_split")
+class CustomGraph(flow.nn.Graph):
+    def __init__(self):
+        super().__init__()
+        ...
+        # Enable stage 1 of ZeRO
+        self.config.enable_zero(True, stage=1)
+        ...
 ```
 
 !!! Note
     When using the model for continuous training and prediction: After the training is performed once, ZeRO will automatically change the SBP parameter of the model from Broadcast to Split; when performing prediction, Split will be used for automatic inference without configuring ZeRO.
 
-!!! Warning
-    This API is subject to change in the future.
-
-**Stage 2**: On the basis of stage 1, adding `flow.boxing.nccl.enable_use_compute_stream(True)` can enable stage 2. i.e. add the following code in the nn.Graph model above:
+#### Enable Stage 2 of ZeRO
 
 ```python
-self.config.set_zero_redundancy_optimizer_mode("distributed_split")
-flow.boxing.nccl.enable_use_compute_stream(True)
+class CustomGraph(flow.nn.Graph):
+    def __init__(self):
+        super().__init__()
+        ...
+        # Enable stage 2 of ZeRO
+        self.config.enable_zero(True, stage=2)
+        ...
 ```
 
-**Stage 3**:On the basis of stage 2, adding `flow.boxing.nccl.disable_group_boxing_by_dst_parallel(True)` can enable stage 3. i.e. add the following code in the nn.Graph model above:
+Generally speaking, the optimization of stage 2 has large optimization of memory and small speed impact, so it is recommended to use stage 2 optimization. It can be enabled in a simpler way:
 
 ```python
-self.config.set_zero_redundancy_optimizer_mode("distributed_split")
-flow.boxing.nccl.enable_use_compute_stream(True)
-flow.boxing.nccl.disable_group_boxing_by_dst_parallel(True)
+class CustomGraph(flow.nn.Graph):
+    def __init__(self):
+        super().__init__()
+        ...
+        # Enable stage 2 of ZeRO
+        self.config.enable_zero()
+        ...
 ```
 
-!!! Note
-    Although enabling the third stage can minimize the memory consumption, it will increase the communication cost, and the second stage is generally used in practice.
+#### Enable Stage 3 of ZeRO
+
+```python
+class CustomGraph(flow.nn.Graph):
+    def __init__(self):
+        super().__init__()
+        ...
+        # Enable stage 3 of ZeRO
+        self.config.enable_zero(True, stage=3)
+        ...
+```
+
+Although enabling the third stage can minimize the memory consumption, it will increase the communication cost which will bring lower speed.

@@ -104,7 +104,7 @@ plt.show()
 
 ## Creating a Custom Dataset for Your Files
 
-A custom dataset can be defined by inheriting [oneflow.utils.data.Dataset](https://oneflow.readthedocs.io/en/master/utils.html?highlight=oneflow.utils.data.Dataset#oneflow.utils.data.Dataset). Custom `Dataset` can be used with `Dataloader` introduced in the next section to simplify data processing.
+A custom dataset can be defined by inheriting [oneflow.utils.data.Dataset](https://oneflow.readthedocs.io/en/v0.8.1/utils.data.html#oneflow.utils.data.Dataset). Custom `Dataset` can be used with `Dataloader` introduced in the next section to simplify data processing.
 
 Here is an example of how to create a custom `Dataset`, the key steps are:
 

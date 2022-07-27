@@ -61,7 +61,7 @@ tensor([[0.6213, 0.6142, 0.1592],
 
 ### By an operator
 
-There are also many operators available in OneFlow that can be used to create tensors. For example, [ones](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.ones#oneflow.ones), [zeros](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.zeros#oneflow.zeros) and [eye](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.eye#oneflow.eye), which create the all-ones tensor, zero tensor, and identity tensor, respectively.
+There are also many operators available in OneFlow that can be used to create tensors. For example, [ones](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.ones.html), [zeros](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.zeros.html) and [eye](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.eye.html), which create the all-ones tensor, zero tensor, and identity tensor, respectively.
 
 ```python
 x5 = flow.ones(2, 3)
@@ -84,7 +84,7 @@ tensor([[1., 0., 0.],
         [0., 0., 1.]], dtype=oneflow.float32)
 ```
 
-The [randn](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.randn#oneflow.randn) method creates a random tensor:
+The [randn](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.randn.html) method creates a random tensor:
 
 ```python
 x8 = flow.randn(2,3)
@@ -92,7 +92,7 @@ x8 = flow.randn(2,3)
 
 ## Difference Between `Tensor` and `tensor`
 
-There are two interfaces ([oneflow.Tensor](https://oneflow.readthedocs.io/en/master/tensor.html?highlight=oneflow.Tensor#oneflow.Tensor) and [oneflow.tensor](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.Tensor#oneflow.tensor)) in OneFlow, both of which can be used to create tensors. What’s the difference between them?
+There are two interfaces ([oneflow.Tensor](https://oneflow.readthedocs.io/en/v0.8.1/tensor.html) and [oneflow.tensor](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.tensor.html)) in OneFlow, both of which can be used to create tensors. What’s the difference between them?
 
 Briefly speaking, the data type of `oneflow.Tensor` is limited to `float32` by default, while the data type of `oneflow.tensor` can be changed when the data is created. The following code illustrates the difference:
 
@@ -146,7 +146,7 @@ cpu:0
 
 The output shows the shape, the data type, and the device (on CPU No. 0, CPUs were numbered because OneFlow naturally supports distribution, see [Global Tensor](../parallelism/03_consistent_tensor.md)).
 
-The shape of the tensor can be changed by the [reshape](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.reshape#oneflow.reshape) method, and the data type and device of the tensor can be changed by the [to](https://oneflow.readthedocs.io/en/master/tensor.html?highlight=Tensor.to#oneflow.Tensor.to) method:
+The shape of the tensor can be changed by the [reshape](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.reshape.html) method, and the data type and device of the tensor can be changed by the [Tensor.to](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.Tensor.to.html) method:
 
 ```python
 x10 = x9.reshape(2, 2)
@@ -164,7 +164,7 @@ oneflow.int32 cuda:0
 
 ## Operations on Tensors
 
-A large number of operators are provided in OneFlow, most of which are in the namespaces of [oneflow](https://oneflow.readthedocs.io/en/master/oneflow.html), [oneflow.nn](https://oneflow.readthedocs.io/en/master/nn.html), and [oneflow.nn.functional](https://oneflow.readthedocs.io/en/master/functional.html).
+A large number of operators are provided in OneFlow, most of which are in the namespaces of [oneflow](https://oneflow.readthedocs.io/en/v0.8.1/oneflow.html), [oneflow.Tensor](https://oneflow.readthedocs.io/en/v0.8.1/tensor.html), [oneflow.nn](https://oneflow.readthedocs.io/en/master/nn.html), and [oneflow.nn.functional](https://oneflow.readthedocs.io/en/v0.8.1/nn.functional.html).
 
 Tensors in OneFlow are as easy to use as the NumPy arrays. For example, slicing in NumPy style is supported:
 
@@ -189,4 +189,4 @@ tensor([[1., 0., 1., 1.],
         [1., 0., 1., 1.]], dtype=oneflow.float32)
 ```
 
-In addition, there are many other operations in OneFlow, such as [add](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.add#oneflow.add), [sub](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.sub#oneflow.sub), [mul](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.mul#oneflow.mul), [div](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.div#oneflow.div) for arithmetic operations; [scatter](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.scatter#oneflow.scatter), [gather](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.gather#oneflow.gather), [gather_nd](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.gather_nd#oneflow.gather_nd) for positional operations; and activation functions ([relu](https://oneflow.readthedocs.io/en/master/functional.html?highlight=oneflow.relu#oneflow.nn.functional.relu)), convolution functions ([conv2d](https://oneflow.readthedocs.io/en/master/functional.html?highlight=oneflow.conv2d#oneflow.nn.functional.conv2d)), etc. Click on their links to see detailed API description and find out more about other operators.
+In addition, there are many other operations in OneFlow, such as [add](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.add.html), [sub](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.sub.html), [mul](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.mul.html), [div](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.div.html) for arithmetic operations; [scatter](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.scatter.html), [gather](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.gather.html) for positional operations; and activation functions ([relu](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.nn.functional.relu.html)), convolution functions ([conv2d](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.nn.functional.conv2d.html)), etc. Click on their links to see detailed API description and find out more about other operators.

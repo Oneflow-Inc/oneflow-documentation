@@ -57,7 +57,7 @@ tensor([[0.6213, 0.6142, 0.1592],
 
 ### 通过算子创建
 
-OneFlow 中还提供了一些算子，可以通过它们创建 Tensor。比如 [ones](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.ones#oneflow.ones)、 [zeros](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.zeros#oneflow.zeros),、[eye](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.eye#oneflow.eye)，它们分别创建全为1的张量、全为0的张量和单位张量。
+OneFlow 中还提供了一些算子，可以通过它们创建 Tensor。比如 [ones](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.ones.html)、 [zeros](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.zeros.html)、[eye](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.eye.html)，它们分别创建全为1的张量、全为0的张量和单位张量。
 
 ```python
 x5 = flow.ones(2, 3)
@@ -78,7 +78,7 @@ tensor([[1., 0., 0.],
         [0., 0., 1.]], dtype=oneflow.float32)
 ```
 
-[randn](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.randn#oneflow.randn) 方法可以创建随机化的张量：
+[randn](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.randn.html) 方法可以创建随机化的张量：
 
 ```python
 x8 = flow.randn(2,3)
@@ -86,7 +86,7 @@ x8 = flow.randn(2,3)
 
 ## `Tensor` 与 `tensor` 的区别
 
-细心的用户会发现，OneFlow 中有 [oneflow.Tensor](https://oneflow.readthedocs.io/en/master/tensor.html?highlight=oneflow.Tensor#oneflow.Tensor) 和 [oneflow.tensor](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.Tensor#oneflow.tensor) 两个接口，它们都能用来创建张量。那么它们有什么区别呢？
+细心的用户会发现，OneFlow 中有 [oneflow.Tensor](https://oneflow.readthedocs.io/en/v0.8.1/tensor.html) 和 [oneflow.tensor](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.tensor.html) 两个接口，它们都能用来创建张量。那么它们有什么区别呢？
 
 简单而言，大写的 `Tensor` 数据类型默认限定为 `float32`，而小写的 `tensor` 的数据类型可以随着创建时的数据改变。以下代码展示了两者这方面的区别：
 
@@ -136,7 +136,7 @@ oneflow.float32
 cpu:0
 ```
 
-可以通过 [reshape](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.reshape#oneflow.reshape) 方法改变 Tensor 的形状，用 [to](https://oneflow.readthedocs.io/en/master/tensor.html?highlight=Tensor.to#oneflow.Tensor.to) 方法改变 Tensor 的数据类型和所处设备：
+可以通过 [reshape](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.reshape.html) 方法改变 Tensor 的形状，用 [Tensor.to](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.Tensor.to.html) 方法改变 Tensor 的数据类型和所处设备：
 
 ```
 x10 = x9.reshape(2, 2)
@@ -152,7 +152,7 @@ oneflow.int32 cuda:0
 
 ## 操作 Tensor 的常见算子
 
-OneFlow 中提供了大量的算子，对 Tensor 进行操作，它们大多在 [oneflow](https://oneflow.readthedocs.io/en/master/oneflow.html)、[oneflow.Tensor](https://oneflow.readthedocs.io/en/master/tensor.html)、[oneflow.nn](https://oneflow.readthedocs.io/en/master/nn.html)、[oneflow.nn.functional](https://oneflow.readthedocs.io/en/master/functional.html)这几个名称空间下。
+OneFlow 中提供了大量的算子，对 Tensor 进行操作，它们大多在 [oneflow](https://oneflow.readthedocs.io/en/v0.8.1/oneflow.html)、[oneflow.Tensor](https://oneflow.readthedocs.io/en/v0.8.1/tensor.html)、[oneflow.nn](https://oneflow.readthedocs.io/en/v0.8.1/nn.html)、[oneflow.nn.functional](https://oneflow.readthedocs.io/en/v0.8.1/nn.functional.html)这几个名称空间下。
 
 OneFlow 中的 Tensor，与 Numpy 数组一样易用。比如，支持与 Numpy 类似的切片操作：
 
@@ -175,4 +175,4 @@ tensor([[1., 0., 1., 1.],
         [1., 0., 1., 1.]], dtype=oneflow.float32)
 ```
 
-此外，OneFlow 中还有很多其它操作，如算数相关操作的 [add](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.add#oneflow.add)、[sub](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.sub#oneflow.sub)、[mul](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.mul#oneflow.mul)、[div](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.div#oneflow.div)等；位置相关操作的 [scatter](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.scatter#oneflow.scatter)、[gather](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.gather#oneflow.gather)、[gather_nd](https://oneflow.readthedocs.io/en/master/oneflow.html?highlight=oneflow.gather_nd#oneflow.gather_nd)等；以及激活函数、卷积等（[relu](https://oneflow.readthedocs.io/en/master/functional.html?highlight=oneflow.relu#oneflow.nn.functional.relu)、[conv2d](https://oneflow.readthedocs.io/en/master/functional.html?highlight=oneflow.conv2d#oneflow.nn.functional.conv2d)），点击它们的链接可以查看更详细的 API 说明，并找到更多的其它算子。
+此外，OneFlow 中还有很多其它操作，如算数相关操作的 [add](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.add.html)、[sub](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.sub.html)、[mul](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.mul.html)、[div](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.div.html)等；位置相关操作的 [scatter](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.scatter.html)、[gather](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.gather.html) 等；以及激活函数、卷积等（[relu](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.nn.functional.relu.html)、[conv2d](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.nn.functional.conv2d.html)），点击它们的链接可以查看更详细的 API 说明，并找到更多的其它算子。

@@ -4,7 +4,7 @@ In [Common Distributed Parallel Strategies](./01_introduction.md), we introduced
 
 OneFlow provides two ways to accomplish data parallel, and one of them is to use the original concept of Oneflow to run data parallel training by configurating global tensor. This is also the **recommanded way** to run data parallel training on Oneflow.
 
-Besides, to facilitate the users who are transferring from PyTorch to OneFlow, OneFlow offers the interface consistent with PyTorch `torch.nn.parallel.DistributedDataParallel`,  [oneflow.nn.parallel.DistributedDataParallel](https://oneflow.readthedocs.io/en/master/nn.html#oneflow.nn.parallel.DistributedDataParallel) so that users can also conveniently extend single machine training to data parallel training. 
+Besides, to facilitate the users who are transferring from PyTorch to OneFlow, OneFlow offers the interface consistent with PyTorch `torch.nn.parallel.DistributedDataParallel`,  [oneflow.nn.parallel.DistributedDataParallel](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.nn.parallel.DistributedDataParallel.html) so that users can also conveniently extend single machine training to data parallel training. 
 
 ## Run Data Parallel Training With SBP Configuration
 
@@ -170,7 +170,7 @@ Click "Code" below to expand the code of the above running script.
 There are only two differences between the data parallelism training code and the stand-alone single-card script:
 
 - Use `DistributedDataParallel` to wrap the module object (`m = ddp(m)`)
-- Use [get_rank](https://oneflow.readthedocs.io/en/master/oneflow.html#oneflow.env.get_rank) to get the current device number and distribute the data to the device.
+- Use [get_rank](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.env.get_rank.html) to get the current device number and distribute the data to the device.
 
 Then use `launcher` to run the script, leave everything else to OneFlow, which makes distributed training as simple as stand-alone single-card training:
 
@@ -180,6 +180,6 @@ python3 -m oneflow.distributed.launch --nproc_per_node 2 ./ddp_train.py
 
 ### DistributedSampler
 
-The data used is manually distributed in this context to highlight `DistributedDataParallel`. However, in practical applications, you can directly use [DistributedSampler](https://oneflow.readthedocs.io/en/master/utils.html#oneflow.utils.data.distributed.DistributedSampler) with data parallel.
+The data used is manually distributed in this context to highlight `DistributedDataParallel`. However, in practical applications, you can directly use [DistributedSampler](https://oneflow.readthedocs.io/en/v0.8.1/utils.data.html?highlight=DistributedSampler#oneflow.utils.data.distributed.DistributedSampler) with data parallel.
 
 `DistributedSampler` will instantiate the Dataloader in each process, and each Dataloader instance will load a part of the complete data to automatically complete the data distribution.

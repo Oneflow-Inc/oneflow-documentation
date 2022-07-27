@@ -65,8 +65,8 @@
         def __init__(self):
             super().__init__()
             self.module_pipeline = module_pipeline
-            self.module_pipeline.m_stage0.config.stage_id = 0
-            self.module_pipeline.m_stage1.config.stage_id = 1
+            self.module_pipeline.m_stage0.config.set_stage(stage_id=0, placement=P0)
+            self.module_pipeline.m_stage1.config.set_stage(stage_id=1, placement=P1)
             self.loss_fn = flow.nn.CrossEntropyLoss()
             self.config.set_gradient_accumulation_steps(2)
             self.add_optimizer(sgd)
@@ -108,7 +108,7 @@ P1 = flow.placement("cuda", ranks=[1])
 
 `P0`、`P1` 分别代表集群的第 0 个 GPU 和第 1 个 GPU。
 
-通过调用 [nn.Module.to_global](https://oneflow.readthedocs.io/en/master/module.html?highlight=to_global#oneflow.nn.Module.to_global) 或 [Tensor.to_global](https://oneflow.readthedocs.io/en/master/tensor.html?highlight=to_global#oneflow.Tensor.to_global) 就可以将模型或张量分配到指定的计算设备上运行，将一个网络拆分为多个流水阶段（stage）。
+通过调用 [nn.Module.to_global](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.nn.Module.html) 或 [Tensor.to_global](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.Tensor.to_global.html) 就可以将模型或张量分配到指定的计算设备上运行，将一个网络拆分为多个流水阶段（stage）。
 
 在此我们定义了一个 `PipelineModule` 专门设置各阶段的流水。
 
@@ -142,14 +142,14 @@ P1 = flow.placement("cuda", ranks=[1])
 
 在实际训练中，各个计算设备也可以加载属于各自的本地数据，然后通过 `to_global` 实现 Local Tensor 到 Global Tensor 的转化。
 
-### Stage ID 及 梯度累积设置
+### Stage ID 及梯度累积设置
 
-通过设置 Module 的 `config.stage_id` 属性，设置 Stage ID，Stage ID 从 0 开始编号，依次加1。
-调用 `self.config.set_gradient_accumulation_steps` 方法，设置梯度累积的步长。
+通过 Module Config 上的 [config.set_stage](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.nn.graph.block_config.BlockConfig.set_stage.html) 方法，设置流水线 Stage ID 和 Stage 对应的 Placement，Stage ID 从 0 开始编号，依次加 1。
+调用 [config.set_gradient_accumulation_steps](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.nn.graph.graph_config.GraphConfig.set_gradient_accumulation_steps.html#oneflow.nn.graph.graph_config.GraphConfig.set_gradient_accumulation_steps) 方法，设置梯度累积的步长。
 OneFlow 通过这两项配置，获取实现流水并行中的 micro batch 技术所需的信息。
 
 ```python
-    self.module_pipeline.m_stage0.config.stage_id = 0
-    self.module_pipeline.m_stage1.config.stage_id = 1
+    self.module_pipeline.m_stage0.config.set_stage(stage_id=0, placement=P0)
+    self.module_pipeline.m_stage1.config.set_stage(stage_id=1, placement=P1)
     self.config.set_gradient_accumulation_steps(2)
 ```

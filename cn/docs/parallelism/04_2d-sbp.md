@@ -6,7 +6,7 @@
 
 ## 2D 设备阵列
 
-我们已经熟悉 1D SBP 的 placement 配置，在 1D SBP 的场景下，通过 [oneflow.placement](https://start.oneflow.org/oneflow-api-cn/placement.html#oneflow.placement) 接口配置集群，比如使用集群中的第 0~3 号 GPU 显卡：
+我们已经熟悉 1D SBP 的 placement 配置，在 1D SBP 的场景下，通过 [oneflow.placement](https://oneflow.readthedocs.io/en/v0.8.1/tensor_attributes.html?highlight=oneflow.placement#oneflow-placement) 接口配置集群，比如使用集群中的第 0~3 号 GPU 显卡：
 
 ```python
 >>> placement1 = flow.placement("cuda", ranks=[0, 1, 2, 3])
@@ -114,9 +114,9 @@ x = flow.randn(1, 2, 8)
 global_x = x.to_global(placement=PLACEMENT, sbp=BS0)
 pred = model(global_x)
 ```
-在这里，我们创建了一个形状为 `(1, 2, 8)` 的 local tensor，然后通过 [Tensor.to_global](https://oneflow.readthedocs.io/en/master/tensor.html#oneflow.Tensor.to_global) 方法获取对应的 global tensor，最后将其输入到模型中进行推理。
+在这里，我们创建了一个形状为 `(1, 2, 8)` 的 local tensor，然后通过 [Tensor.to_global](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.Tensor.to_global.html) 方法获取对应的 global tensor，最后将其输入到模型中进行推理。
 
-通过 [Tensor.to_local](https://oneflow.readthedocs.io/en/master/tensor.html#oneflow.Tensor.to_local) 方法获取当前物理设备上的 local tensor 后，我们可以通过输出其形状和值来验证数据是否被正确处理：
+通过 [Tensor.to_local](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.Tensor.to_local.html) 方法获取当前物理设备上的 local tensor 后，我们可以通过输出其形状和值来验证数据是否被正确处理：
 ```python
 local_x = global_x.to_local()
 print(f'{local_x.device}, {local_x.shape}, \n{local_x}')

@@ -1,6 +1,6 @@
 # 搭建神经网络
 
-​神经网络的各层，可以使用 [oneflow.nn](https://oneflow.readthedocs.io/en/master/nn.html) 名称空间下的 API 搭建，它提供了构建神经网络所需的常见 Module（如 [oneflow.nn.Conv2d](https://oneflow.readthedocs.io/en/master/nn.html?highlight=oneflow.nn.Conv2D#oneflow.nn.Conv2d)，[oneflow.nn.ReLU](https://oneflow.readthedocs.io/en/master/nn.html?highlight=oneflow.nn.ReLU#oneflow.nn.ReLU) 等等）。 用于搭建网络的所有 Module 类都继承自 [oneflow.nn.Module](https://oneflow.readthedocs.io/en/master/module.html#oneflow.nn.Module)，多个简单的 Module 可以组合在一起构成更复杂的 Module，用这种方式，用户可以轻松地搭建和管理复杂的神经网络。
+​神经网络的各层，可以使用 [oneflow.nn](https://oneflow.readthedocs.io/en/v0.8.1/nn.html) 名称空间下的 API 搭建，它提供了构建神经网络所需的常见 Module（如 [oneflow.nn.Conv2d](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.nn.Conv2d.html)，[oneflow.nn.ReLU](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.nn.ReLU.html) 等等）。 用于搭建网络的所有 Module 类都继承自 [oneflow.nn.Module](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.nn.Module.html)，多个简单的 Module 可以组合在一起构成更复杂的 Module，用这种方式，用户可以轻松地搭建和管理复杂的神经网络。
 
 ```python
 import oneflow as flow
@@ -75,7 +75,7 @@ Predicted class: tensor([1], dtype=oneflow.int32)
 
 ## `flow.nn.functional`
 
-除了 `oneflow.nn` 外，[oneflow.nn.functional](https://oneflow.readthedocs.io/en/master/functional.html) 名称空间下也提供了不少 API。它与 `oneflow.nn` 在功能上有一定的重叠。比如 [nn.functional.relu](https://oneflow.readthedocs.io/en/master/functional.html?highlight=relu#oneflow.nn.functional.relu) 与 [nn.ReLU](https://oneflow.readthedocs.io/en/master/nn.html?highlight=relu#oneflow.nn.ReLU) 都可用于神经网络做 activation 操作。
+除了 `oneflow.nn` 外，[oneflow.nn.functional](https://oneflow.readthedocs.io/en/v0.8.1/nn.functional.html) 名称空间下也提供了不少 API。它与 `oneflow.nn` 在功能上有一定的重叠。比如 [nn.functional.relu](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.nn.functional.relu.html) 与 [nn.ReLU](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.nn.ReLU.html) 都可用于神经网络做 activation 操作。
 
 两者的区别主要有：
 
@@ -126,7 +126,7 @@ print(f"Predicted class: {y_pred}")
 
 ## Module 容器
 
-比较以上 `NeuralNetwork` 与 `FunctionalNeuralNetwork` 实现的异同，可以发现 [nn.Sequential](https://oneflow.readthedocs.io/en/master/nn.html?highlight=nn.Sequential#oneflow.nn.Sequential) 对于简化代码起到了重要作用。
+比较以上 `NeuralNetwork` 与 `FunctionalNeuralNetwork` 实现的异同，可以发现 [nn.Sequential](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.nn.Sequential.html) 对于简化代码起到了重要作用。
 
 `nn.Sequential` 是一种特殊容器，只要是继承自 `nn.Module` 的类都可以放置放置到其中。
 
