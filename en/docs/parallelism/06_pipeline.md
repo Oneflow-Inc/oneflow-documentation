@@ -150,7 +150,7 @@ In practice, each computing device can load data locally, and then convert the L
 
 ### Stage ID and Settings for Gradient Accumulation
 
-We can call the method [config.set_stage](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.nn.graph.block_config.BlockConfig.set_stage.html) of Module Config to set Stage ID and related Placement. The Stage ID are numberd from 0.
+We can call the method [config.set_stage](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.nn.graph.block_config.BlockConfig.set_stage.html) of Module Config to set Stage ID and related Placement. The Stage ID are numbered from 0.
 
 We can call the method [config.set_gradient_accumulation_steps](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.nn.graph.graph_config.GraphConfig.set_gradient_accumulation_steps.html#oneflow.nn.graph.graph_config.GraphConfig.set_gradient_accumulation_steps) to set the step size of gradient accumulation.
 

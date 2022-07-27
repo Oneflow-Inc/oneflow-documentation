@@ -112,7 +112,7 @@ class CustomGraph(flow.nn.Graph):
 !!! Note
     当使用模型连续进行训练和和预测时：训练执行一次后，ZeRO 会自动把模型的 SBP 参数从 Broadcast 改变为 Split；在执行预测时，将会使用 Split 自动推理，无需配置 ZeRO。
 
-#### 开启阶段2优化
+#### 开启阶段 2 优化
 ```python
 class CustomGraph(flow.nn.Graph):
     def __init__(self):
@@ -122,7 +122,7 @@ class CustomGraph(flow.nn.Graph):
         self.config.enable_zero(True, stage=2)
         ...
 ```
-一般阶段2的优化的显存优化大、速度影响小，所以推荐使用阶段2优化。可以简单的开始阶段2优化：
+一般阶段 2 的优化的显存优化大、速度影响小，所以推荐使用阶段 2 优化。可以简单的开始阶段 2 优化：
 ```python
 class CustomGraph(flow.nn.Graph):
     def __init__(self):
@@ -133,7 +133,7 @@ class CustomGraph(flow.nn.Graph):
         ...
 ```
 
-#### 开启阶段3优化
+#### 开启阶段 3 优化
 ```python
 class CustomGraph(flow.nn.Graph):
     def __init__(self):
