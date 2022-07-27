@@ -113,9 +113,9 @@ x = flow.randn(1, 2, 8)
 global_x = x.to_global(placement=PLACEMENT, sbp=BS0)
 pred = model(global_x)
 ```
-Here, we create a local tensor with shape `(1, 2, 8)`, and obtain the corresponding global tensor through [Tensor.to_global](https://oneflow.readthedocs.io/en/master/tensor.html#oneflow.Tensor.to_global) method. Finally, input it to the model for inference.
+Here, we create a local tensor with shape `(1, 2, 8)`, and obtain the corresponding global tensor through [Tensor.to_global](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.Tensor.to_global.html) method. Finally, input it to the model for inference.
 
-After obtaining the local tensor on current physical device through [Tensor.to_local](https://oneflow.readthedocs.io/en/master/tensor.html#oneflow.Tensor.to_local) method, we can output its shape and value to verify whether the data has been processed correctly:
+After obtaining the local tensor on current physical device through [Tensor.to_local](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.Tensor.to_local.html) method, we can output its shape and value to verify whether the data has been processed correctly:
 ```python
 local_x = global_x.to_local()
 print(f'{local_x.device}, {local_x.shape}, \n{local_x}')

@@ -51,7 +51,7 @@ OrderedDict([('weight',
 
 ## 模型保存
 
-我们可以使用 [oneflow.save](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.save.html)方法保存模型。
+我们可以使用 [oneflow.save](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.save.html) 方法保存模型。
 
 ```python
 flow.save(m.state_dict(), "./model")

@@ -110,7 +110,7 @@ P1 = flow.placement("cuda", [1])
 
 `P0` and `P1` represent the 0th GPU and the 1st GPU on the 0th machine respectively.
 
-By calling [nn.Module.to_global](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.nn.Module.html?highlight=nn.Module) or [Tensor.to_global](https://oneflow.readthedocs.io/en/master/tensor.html?highlight=to_global#oneflow.Tensor.to_global), the model or tensor will be distributed to the devices specified before, breaking a network into stages.
+By calling [nn.Module.to_global](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.nn.Module.html) or [Tensor.to_global](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.Tensor.to_global.html), the model or tensor will be distributed to the devices specified before, breaking a network into stages.
 
 Here we define a `PipelineModule` that specifically sets the pipeline for each stage.
 

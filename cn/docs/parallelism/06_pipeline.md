@@ -108,7 +108,7 @@ P1 = flow.placement("cuda", ranks=[1])
 
 `P0`、`P1` 分别代表集群的第 0 个 GPU 和第 1 个 GPU。
 
-通过调用 [nn.Module.to_global](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.nn.Module.html?highlight=nn.Module) 或 [Tensor.to_global](https://oneflow.readthedocs.io/en/master/tensor.html?highlight=to_global#oneflow.Tensor.to_global) 就可以将模型或张量分配到指定的计算设备上运行，将一个网络拆分为多个流水阶段（stage）。
+通过调用 [nn.Module.to_global](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.nn.Module.html) 或 [Tensor.to_global](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.Tensor.to_global.html) 就可以将模型或张量分配到指定的计算设备上运行，将一个网络拆分为多个流水阶段（stage）。
 
 在此我们定义了一个 `PipelineModule` 专门设置各阶段的流水。
 

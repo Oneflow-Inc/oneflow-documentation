@@ -5,7 +5,7 @@
 
 一种是使用 OneFlow 的原生的 SBP 概念，通过设置 global 张量，进行数据并行训练，这也是用 OneFlow 做数据并行训练的 **推荐方式** 。
 
-此外，为了方便从 PyTorch 迁移到 OneFlow 的用户，OneFlow 提供了与 `torch.nn.parallel.DistributedDataParallel` 对齐一致的接口 [oneflow.nn.parallel.DistributedDataParallel](https://oneflow.readthedocs.io/en/master/distributed.html#distributeddataparallel)，它也能让用户方便地从单机训练脚本，扩展为数据并行训练。
+此外，为了方便从 PyTorch 迁移到 OneFlow 的用户，OneFlow 提供了与 `torch.nn.parallel.DistributedDataParallel` 对齐一致的接口 [oneflow.nn.parallel.DistributedDataParallel](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.nn.parallel.DistributedDataParallel.html)，它也能让用户方便地从单机训练脚本，扩展为数据并行训练。
 
 ## 通过设置 SBP 做数据并行训练
 
@@ -171,7 +171,7 @@ w:tensor([[2.0000],
 可以发现，它与单机单卡脚本的不同只有2个：
 
 - 使用 `DistributedDataParallel` 处理一下 module 对象（`m = ddp(m)`)
-- 使用 [get_rank](https://oneflow.readthedocs.io/en/master/oneflow.html#oneflow.env.get_rank) 获取当前设备编号，并针对设备分发数据
+- 使用 [get_rank](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.env.get_rank.html) 获取当前设备编号，并针对设备分发数据
 
 然后使用 `launcher` 启动脚本，把剩下的一切都交给 OneFlow，让分布式训练，像单机单卡训练一样简单：
 
