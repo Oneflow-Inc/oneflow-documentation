@@ -11,11 +11,11 @@
 1. **模型状态(model states)**。对于大型模型来说，大部分显存消耗都是被模型状态占用的，主要包括三部分：优化器的状态(Optimizer States)、梯度(Gradients)、参数(Parameters)。三者简称为 **OPG**。
 2. **残余状态(residual states)**。包括激活函数、临时缓冲区和不可用的内存碎片。
 
-ZeRO-DP 可以分为三个阶段，通过对 OPG 状态进行分区而不是直接复制来消除内存冗余，每个 GPU 仅保存部分 OGP。具体来说，ZeRO-DP 有三个主要的优化阶段，分别对应 O、P 和 G。三个阶段逐级递加：
+ZeRO-DP 可以分为三个阶段，通过对 OPG 状态进行分区而不是直接复制来消除内存冗余，每个 GPU 仅保存部分 OPG。具体来说，ZeRO-DP 有三个主要的优化阶段，分别对应 O、P 和 G。三个阶段逐级递加：
 
-1. 优化器状态分区（P<sub>os</sub>）：显存消耗减少 4 倍，通信量与数据并行相同，此阶段也被称为 ZeRO-OS。
-2. 添加梯度分区优化（P<sub>os+g</sub>）：显存消耗减少 8 倍，通信量与数据并行相同。
-3. 添加参数分区优化（P<sub>os+g+p</sub>）：模型占用的显存被平均分配到每个 GPU 中，显存消耗量与数据并行的并行度成线性反比关系，但通信量会有些许增加。
+- 阶段1，优化器状态分区（P<sub>os</sub>）：显存消耗减少 4 倍，通信量与数据并行相同。
+- 阶段2，添加梯度分区优化（P<sub>os+g</sub>）：显存消耗减少 8 倍，通信量与数据并行相同。
+- 阶段3，添加参数分区优化（P<sub>os+g+p</sub>）：模型占用的显存被平均分配到每个 GPU 中，显存消耗量与数据并行的并行度成线性反比关系，但通信量会有些许增加。
 
 三个阶段的显存消耗的分布情况可以参见下图（来自 ZeRO 原论文 Figure 1）：
 
@@ -34,6 +34,9 @@ from oneflow import nn
 ### 定义数据并行训练流程
 
 我们定义一个数据并行策略下的训练流程，与 [通过设置 SBP 做数据并行训练](../parallelism/05_ddp.md#通过设置-sbp-做数据并行训练) 中所介绍的是类似的。
+
+!!! Note
+    只要存在数据并行组，都可以使用ZeRO来做内存优化。比如2D/3D并行中，只要存在数据并行组，都可以打开ZeRO。
 
 定义之后要使用到 placement、SBP 等：
 ```python
@@ -56,7 +59,7 @@ loss_fn = nn.CrossEntropyLoss().to(DEVICE)
 optimizer = flow.optim.SGD(model.parameters(), lr=1e-3)
 ```
 
-ZeRO 是在 [nn.Graph](../basics/08_nn_graph.md) 中设置的，因此需要将动态图模型转换为 nn.Graph：
+ZeRO 是在 [nn.Graph](../basics/08_nn_graph.md) 的图编译器中实现的，因此需要将动态图模型转换为 nn.Graph：
 
 ```python
 class CustomGraph(flow.nn.Graph):
@@ -93,32 +96,52 @@ for _ in range(100):
 
 ### 在 nn.Graph 中开启 ZeRO
 
-**阶段 1**：通过 [config.set_zero_redundancy_optimizer_mode](https://oneflow.readthedocs.io/en/master/graph.html#oneflow.nn.graph.graph_config.GraphConfig.set_zero_redundancy_optimizer_mode) 接口可以开启阶段 1。即在上面的 nn.Graph 模型中添加：
+通过 [config.enable_zero](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.nn.graph.graph_config.GraphConfig.enable_zero.html#oneflow.nn.graph.graph_config.GraphConfig.enable_zero) 接口可以开启ZeRO优化。
 
+#### 开启阶段1优化
 ```python
-self.config.set_zero_redundancy_optimizer_mode("distributed_split")
+class CustomGraph(flow.nn.Graph):
+    def __init__(self):
+        super().__init__()
+        ...
+        # 设置 ZeRO 开启 stage 1
+        self.config.enable_zero(True, stage=1)
+        ...
 ```
 
 !!! Note
     当使用模型连续进行训练和和预测时：训练执行一次后，ZeRO 会自动把模型的 SBP 参数从 Broadcast 改变为 Split；在执行预测时，将会使用 Split 自动推理，无需配置 ZeRO。
 
-!!! Warning
-    此 API 未来可能会发生变动。
-
-**阶段 2**：在阶段 1 的基础上，增加 `flow.boxing.nccl.enable_use_compute_stream(True)` 可以开启阶段 2。即在上面的 nn.Graph 模型中添加：
-
+#### 开启阶段 2 优化
 ```python
-self.config.set_zero_redundancy_optimizer_mode("distributed_split")
-flow.boxing.nccl.enable_use_compute_stream(True)
+class CustomGraph(flow.nn.Graph):
+    def __init__(self):
+        super().__init__()
+        ...
+        # 设置 ZeRO 开启 stage 2
+        self.config.enable_zero(True, stage=2)
+        ...
+```
+一般阶段 2 的优化的显存优化大、速度影响小，所以推荐使用阶段 2 优化。可以简单的开始阶段 2 优化：
+```python
+class CustomGraph(flow.nn.Graph):
+    def __init__(self):
+        super().__init__()
+        ...
+        # 设置 ZeRO 开启 stage 2
+        self.config.enable_zero()
+        ...
 ```
 
-**阶段 3**：在阶段 2 的基础上，增加 `flow.boxing.nccl.disable_group_boxing_by_dst_parallel(True)` 可以开启阶段 3。即在上面的 nn.Graph 模型中添加：
-
+#### 开启阶段 3 优化
 ```python
-self.config.set_zero_redundancy_optimizer_mode("distributed_split")
-flow.boxing.nccl.enable_use_compute_stream(True)
-flow.boxing.nccl.disable_group_boxing_by_dst_parallel(True)
+class CustomGraph(flow.nn.Graph):
+    def __init__(self):
+        super().__init__()
+        ...
+        # 设置 ZeRO 开启 stage 3
+        self.config.enable_zero(True, stage=3)
+        ...
 ```
 
-!!! Note
-    虽然开启第三阶段可以最大限度地减少显存消耗，但这会增加通信成本，在实践中一般使用第二阶段。
+虽然开启第三阶段可以最大限度地减少显存消耗，但这会增加通信成本，执行速度会降低。
