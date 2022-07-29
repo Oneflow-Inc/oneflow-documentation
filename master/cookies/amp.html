@@ -900,7 +900,7 @@
 <span class="n">loss_fn</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">CrossEntropyLoss</span><span class="p">()</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">DEVICE</span><span class="p">)</span>
 <span class="n">optimizer</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">)</span>
 </code></pre></div>
-<p>如果要开启 AMP 模式，只需在 <a href="../basics/08_nn_graph.html">nn.Graph</a> 模型中添加 <code>self.config.enable_amp(True)</code>，此 API 详见： <a href="https://oneflow.readthedocs.io/en/master/graph.html#oneflow.nn.graph.graph_config.GraphConfig.enable_amp">enable_amp</a>。</p>
+<p>如果要开启 AMP 模式，只需在 <a href="../basics/08_nn_graph.html">nn.Graph</a> 模型中添加 <code>self.config.enable_amp(True)</code>，此 API 详见： <a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.nn.graph.graph_config.GraphConfig.enable_amp.html">enable_amp</a>。</p>
 <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">CustomGraph</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Graph</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
@@ -926,7 +926,7 @@
 </code></pre></div>
 <h2 id="gradient-scaling">Gradient Scaling<a class="headerlink" href="#gradient-scaling" title="Permanent link">&para;</a></h2>
 <p><strong>Gradient Scaling (梯度缩放)</strong> 是一种用于解决 FP16 易导致数值溢出问题的方法，其基本原理是在反向传播的过程中使用一个 scale factor 对损失和梯度进行缩放，以改变其数值的量级，从而尽可能缓解数值溢出问题。</p>
-<p>OneFlow 提供了 <code>GradScaler</code> 来在 AMP 模式下使用 Gradient Scaling，只需要在 nn.Graph 模型的 <code>__init__</code> 方法中实例化一个<code>GradScaler</code> 对象，然后通过 <a href="https://oneflow.readthedocs.io/en/master/graph.html#oneflow.nn.Graph.set_grad_scaler">set_grad_scaler</a> 接口进行指定即可，nn.Graph 将会自动管理 Gradient Scaling 的整个过程。以上文中的 <code>CustomGraph</code> 为例，我们需要在其 <code>__init__</code> 方法中添加：</p>
+<p>OneFlow 提供了 <code>GradScaler</code> 来在 AMP 模式下使用 Gradient Scaling，只需要在 nn.Graph 模型的 <code>__init__</code> 方法中实例化一个<code>GradScaler</code> 对象，然后通过 <a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.nn.Graph.set_grad_scaler.html">set_grad_scaler</a> 接口进行指定即可，nn.Graph 将会自动管理 Gradient Scaling 的整个过程。以上文中的 <code>CustomGraph</code> 为例，我们需要在其 <code>__init__</code> 方法中添加：</p>
 <div class="highlight"><pre><span></span><code><span class="n">grad_scaler</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">amp</span><span class="o">.</span><span class="n">GradScaler</span><span class="p">(</span>
     <span class="n">init_scale</span><span class="o">=</span><span class="mi">3000</span><span class="p">,</span>
     <span class="n">growth_factor</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
