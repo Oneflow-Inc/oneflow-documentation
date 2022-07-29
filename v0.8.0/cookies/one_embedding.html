@@ -1,0 +1,1272 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="OneFlow -- 极致性能的分布式机器学习框架">
+      
+      
+      
+      
+        <link rel="canonical" href="https://docs.oneflow.org/v0.8.0/cookies/one_embedding.html">
+      
+      <link rel="icon" href="../assets/favicon.png">
+      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-7.1.11">
+    
+    
+      
+        <title>大规模 Embedding 方案： OneEmbedding - OneFlow</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.3754935a.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.f1a3b89f.min.css">
+        
+          
+          
+          <meta name="theme-color" content="#4051b5">
+        
+      
+    
+    
+    
+      
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>:root{--md-text-font-family:"Roboto";--md-code-font-family:"Roboto Mono"}</style>
+      
+    
+    
+    
+    
+      
+
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <script>function __prefix(e){return new URL("..",location).pathname+"."+e}function __get(e,t=localStorage){return JSON.parse(t.getItem(__prefix(e)))}</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#embedding-oneembedding" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../index.html" title="OneFlow" class="md-header__button md-logo" aria-label="OneFlow" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 89 89">
+  <path d="M3.136,17.387l0,42.932l42.932,21.467l-42.932,-64.399Z" />
+  <path d="M21.91,8l42.933,64.398l-18.775,9.388l-42.932,-64.399l18.774,-9.387Z" style="fill-opacity: 0.5" />
+  <path d="M67.535,17.387l-27.262,18.156l21.878,32.818l5.384,2.691l0,-53.665Z" />
+  <path d="M67.535,17.387l0,53.666l18.774,-9.388l0,-53.665l-18.774,9.387Z" style="fill-opacity: 0.25" />
+</svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            OneFlow
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              大规模 Embedding 方案： OneEmbedding
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <div class="md-header__option">
+        <div class="md-select">
+          
+          <button class="md-header__button md-icon" aria-label="Select language">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.52 17.52 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04M18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12m-2.62 7 1.62-4.33L19.12 17h-3.24z"/></svg>
+          </button>
+          <div class="md-select__inner">
+            <ul class="md-select__list">
+              
+                <li class="md-select__item">
+                  <a href="https://docs.oneflow.org/en" hreflang="en" class="md-select__link">
+                    English
+                  </a>
+                </li>
+                
+                <li class="md-select__item">
+                  <a href="https://docs.oneflow.org" hreflang="zh" class="md-select__link">
+                    中文
+                  </a>
+                </li>
+                
+            </ul>
+          </div>
+        </div>
+      </div>
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        
+<a href="https://github.com/OneFlow-Inc/oneflow" title="前往 GitHub 仓库" class="md-source"
+  data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    OneFlow
+  </div>
+</a>
+      </div>
+    
+  </nav>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-tabs__inner md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+
+
+  <li class="md-tabs__item">
+    <a href="../index.html" class="md-tabs__link">
+      首页
+    </a>
+  </li>
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../basics/01_quickstart.html" class="md-tabs__link">
+        基础专题
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../parallelism/01_introduction.html" class="md-tabs__link">
+        分布式训练
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+    
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="global_tensor.html" class="md-tabs__link md-tabs__link--active">
+        实践指南
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="https://oneflow.readthedocs.io/en/master/" class="md-tabs__link">
+        API
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../index.html" title="OneFlow" class="md-nav__button md-logo" aria-label="OneFlow" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 89 89">
+  <path d="M3.136,17.387l0,42.932l42.932,21.467l-42.932,-64.399Z" />
+  <path d="M21.91,8l42.933,64.398l-18.775,9.388l-42.932,-64.399l18.774,-9.387Z" style="fill-opacity: 0.5" />
+  <path d="M67.535,17.387l-27.262,18.156l21.878,32.818l5.384,2.691l0,-53.665Z" />
+  <path d="M67.535,17.387l0,53.666l18.774,-9.388l0,-53.665l-18.774,9.387Z" style="fill-opacity: 0.25" />
+</svg>
+
+    </a>
+    OneFlow
+  </label>
+  
+    <div class="md-nav__source">
+      
+<a href="https://github.com/OneFlow-Inc/oneflow" title="前往 GitHub 仓库" class="md-source"
+  data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    OneFlow
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../index.html" class="md-nav__link">
+        首页
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" >
+      
+      <label class="md-nav__link" for="__nav_2">
+        基础专题
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="基础专题" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          基础专题
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics/01_quickstart.html" class="md-nav__link">
+        快速上手
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics/02_tensor.html" class="md-nav__link">
+        Tensor
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics/03_dataset_dataloader.html" class="md-nav__link">
+        Dataset 与 DataLoader
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics/04_build_network.html" class="md-nav__link">
+        搭建神经网络
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics/05_autograd.html" class="md-nav__link">
+        Autograd
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics/06_optimization.html" class="md-nav__link">
+        反向传播与 optimizer
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics/07_model_load_save.html" class="md-nav__link">
+        模型的加载与保存
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics/08_nn_graph.html" class="md-nav__link">
+        静态图模块 nn.Graph
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" >
+      
+      <label class="md-nav__link" for="__nav_3">
+        分布式训练
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="分布式训练" data-md-level="1">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          分布式训练
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parallelism/01_introduction.html" class="md-nav__link">
+        常见的分布式并行策略
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parallelism/02_sbp.html" class="md-nav__link">
+        集群的全局视角
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parallelism/03_consistent_tensor.html" class="md-nav__link">
+        Global Tensor
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parallelism/04_2d-sbp.html" class="md-nav__link">
+        2D SBP
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parallelism/04_launch.html" class="md-nav__link">
+        用 launch 模块启动分布式训练
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parallelism/05_ddp.html" class="md-nav__link">
+        数据并行训练
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parallelism/06_pipeline.html" class="md-nav__link">
+        流水并行训练
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" checked>
+      
+      <label class="md-nav__link" for="__nav_4">
+        实践指南
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="实践指南" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          实践指南
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="global_tensor.html" class="md-nav__link">
+        使用 Global Tensor 进行多机多设备编程 基础操作
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="oneflow2onnnx.html" class="md-nav__link">
+        OneFlow 与 ONNX 交互
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="serving.html" class="md-nav__link">
+        模型部署
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="amp.html" class="md-nav__link">
+        自动混合精度训练
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="activation_checkpointing.html" class="md-nav__link">
+        Activation Checkpointing
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="torch2flow.html" class="md-nav__link">
+        将 PyTorch 预训练模型转为 OneFlow 格式
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="transfer_learning.html" class="md-nav__link">
+        计算机视觉迁移学习
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          大规模 Embedding 方案： OneEmbedding
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="one_embedding.html" class="md-nav__link md-nav__link--active">
+        大规模 Embedding 方案： OneEmbedding
+      </a>
+      
+        
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#oneembedding" class="md-nav__link">
+    快速上手 OneEmbedding
+  </a>
+  
+    <nav class="md-nav" aria-label="快速上手 OneEmbedding">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#make_table_options" class="md-nav__link">
+    使用 make_table_options 配置词表
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    配置词表的存储属性
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#embedding" class="md-nav__link">
+    实例化 Embedding
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#graph" class="md-nav__link">
+    使用 Graph 训练
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#oneembedding_1" class="md-nav__link">
+    OneEmbedding 特点说明
+  </a>
+  
+    <nav class="md-nav" aria-label="OneEmbedding 特点说明">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#id" class="md-nav__link">
+    特征 ID 动态扩容
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#id_1" class="md-nav__link">
+    特征 ID 与多表查询
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    如何选择合适的存储配置
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    分布式训练
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dlrm" class="md-nav__link">
+    扩展阅读：DLRM
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zero.html" class="md-nav__link">
+        Zero Redundancy Optimizer (ZeRO)
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" >
+      
+      <label class="md-nav__link" for="__nav_5">
+        API
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="API" data-md-level="1">
+        <label class="md-nav__title" for="__nav_5">
+          <span class="md-nav__icon md-icon"></span>
+          API
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://oneflow.readthedocs.io/en/master/" class="md-nav__link">
+        API
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#oneembedding" class="md-nav__link">
+    快速上手 OneEmbedding
+  </a>
+  
+    <nav class="md-nav" aria-label="快速上手 OneEmbedding">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#make_table_options" class="md-nav__link">
+    使用 make_table_options 配置词表
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    配置词表的存储属性
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#embedding" class="md-nav__link">
+    实例化 Embedding
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#graph" class="md-nav__link">
+    使用 Graph 训练
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#oneembedding_1" class="md-nav__link">
+    OneEmbedding 特点说明
+  </a>
+  
+    <nav class="md-nav" aria-label="OneEmbedding 特点说明">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#id" class="md-nav__link">
+    特征 ID 动态扩容
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#id_1" class="md-nav__link">
+    特征 ID 与多表查询
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    如何选择合适的存储配置
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    分布式训练
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dlrm" class="md-nav__link">
+    扩展阅读：DLRM
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                  <a href="https://github.com/OneFlow-Inc/oneflow-documentation/blob/master/cn/docs/cookies/one_embedding.md" title="编辑此页" class="md-content__button md-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
+                  </a>
+                
+                
+                <h1 id="embedding-oneembedding">大规模 Embedding 方案： OneEmbedding<a class="headerlink" href="#embedding-oneembedding" title="Permanent link">&para;</a></h1>
+<p>Embedding 是推荐系统的重要组件，也扩散到了推荐系统外的许多领域。各个框架都提供了进行 embedding 的基础算子，比如 OneFlow 中的 <code>flow.nn.Embedding</code>：</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">oneflow</span> <span class="k">as</span> <span class="nn">flow</span>
+<span class="n">indices</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">tensor</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">9</span><span class="p">]],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">flow</span><span class="o">.</span><span class="n">int</span><span class="p">)</span>
+<span class="n">embedding</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Embedding</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">embedding</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span>
+</code></pre></div>
+<p>OneFlow 为了解决大规模深度推荐系统的问题，还提供了大规模 Embedding 的方案：OneEmbedding。</p>
+<p>与普通的算子相比，OneEmbedding 有以下特点：</p>
+<ol>
+<li>
+<p>灵活的分层存储，支持将 Embedding table 放置在 GPU 显存、 CPU 内存或者 SSD 上面，允许使用高速设备作为低速设备的缓存，实现速度与容量的兼顾。</p>
+</li>
+<li>
+<p>支持动态扩容。</p>
+</li>
+</ol>
+<h2 id="oneembedding">快速上手 OneEmbedding<a class="headerlink" href="#oneembedding" title="Permanent link">&para;</a></h2>
+<p>我们将展示一个快速上手 OneEmbedding 的例子，它包括以下几个基本步骤：</p>
+<ul>
+<li>使用 <code>make_table_options</code> 配置词表</li>
+<li>配置词表的存储属性</li>
+<li>实例化 Embedding</li>
+<li>构造 Graph 进行训练</li>
+</ul>
+<h3 id="make_table_options">使用 <code>make_table_options</code> 配置词表<a class="headerlink" href="#make_table_options" title="Permanent link">&para;</a></h3>
+<p>以下代码，导入相关包，并使用 <code>make_table_options</code> 配置词表。OneEmbedding 支持同时创建多个词表，以下代码配置了三个词表。</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">oneflow</span> <span class="k">as</span> <span class="nn">flow</span>
+<span class="kn">import</span> <span class="nn">oneflow.nn</span> <span class="k">as</span> <span class="nn">nn</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="n">tables</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">flow</span><span class="o">.</span><span class="n">one_embedding</span><span class="o">.</span><span class="n">make_table_options</span><span class="p">(</span>
+        <span class="n">flow</span><span class="o">.</span><span class="n">one_embedding</span><span class="o">.</span><span class="n">make_uniform_initializer</span><span class="p">(</span><span class="n">low</span><span class="o">=-</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+    <span class="p">),</span>
+    <span class="n">flow</span><span class="o">.</span><span class="n">one_embedding</span><span class="o">.</span><span class="n">make_table_options</span><span class="p">(</span>
+        <span class="n">flow</span><span class="o">.</span><span class="n">one_embedding</span><span class="o">.</span><span class="n">make_uniform_initializer</span><span class="p">(</span><span class="n">low</span><span class="o">=-</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mf">0.05</span><span class="p">)</span>
+    <span class="p">),</span>
+    <span class="n">flow</span><span class="o">.</span><span class="n">one_embedding</span><span class="o">.</span><span class="n">make_table_options</span><span class="p">(</span>
+        <span class="n">flow</span><span class="o">.</span><span class="n">one_embedding</span><span class="o">.</span><span class="n">make_uniform_initializer</span><span class="p">(</span><span class="n">low</span><span class="o">=-</span><span class="mf">0.15</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mf">0.15</span><span class="p">)</span>
+    <span class="p">),</span>
+<span class="p">]</span>
+</code></pre></div>
+<p>配置词表时需要指定初始化的方式，以上词表均采用 <code>uniform</code> 方式初始化。配置词表的结果保存在 <code>tables</code> 变量中。</p>
+<p>点击 <a href="https://oneflow.readthedocs.io/en/v0.8.1/one_embedding.html#oneflow.one_embedding.make_table_options">make_table_options</a> 及 <a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.one_embedding.make_uniform_initializer.html#oneflow.one_embedding.make_uniform_initializer">make_uniform_initializer</a> 可以查看有关它们的更详细说明。</p>
+<h3 id="_1">配置词表的存储属性<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h3>
+<p>接着运行以下代码，用于配置词表的存储属性：</p>
+<div class="highlight"><pre><span></span><code><span class="n">store_options</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">one_embedding</span><span class="o">.</span><span class="n">make_cached_ssd_store_options</span><span class="p">(</span>
+    <span class="n">cache_budget_mb</span><span class="o">=</span><span class="mi">8142</span><span class="p">,</span>
+    <span class="n">persistent_path</span><span class="o">=</span><span class="s2">&quot;/your_path_to_ssd&quot;</span><span class="p">,</span> 
+    <span class="n">capacity</span><span class="o">=</span><span class="mi">40000000</span><span class="p">,</span>
+    <span class="n">size_factor</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>              
+    <span class="n">physical_block_size</span><span class="o">=</span><span class="mi">512</span>
+<span class="p">)</span>
+</code></pre></div>
+<p>这里通过调用 <code>make_cached_ssd_store_options</code>，选择将词表存储在 SSD 中，并且使用 GPU 作为高速缓存。具体参数的意义可以参阅 <a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.one_embedding.make_cached_ssd_store_options.html">make_cached_ssd_store_options API 文档</a>。</p>
+<p>此外，还可以选择使用纯 GPU 存储；或者使用 CPU 内存存储词表、但用 GPU 做高速缓存。具体可以分别参阅 <a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.one_embedding.make_device_mem_store_options.html">make_device_mem_store_options</a> 及 <a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.one_embedding.make_cached_host_mem_store_options.html">make_cached_host_mem_store_options</a>。</p>
+<h3 id="embedding">实例化 Embedding<a class="headerlink" href="#embedding" title="Permanent link">&para;</a></h3>
+<p>以上配置完成后，使用 <code>MultiTableEmbedding</code> 可以得到实例化的 Embedding 层。</p>
+<div class="highlight"><pre><span></span><code><span class="n">embedding_size</span> <span class="o">=</span> <span class="mi">128</span>
+<span class="n">embedding</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">one_embedding</span><span class="o">.</span><span class="n">MultiTableEmbedding</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;my_embedding&quot;</span><span class="p">,</span>
+    <span class="n">embedding_dim</span><span class="o">=</span><span class="n">embedding_size</span><span class="p">,</span>
+    <span class="n">dtype</span><span class="o">=</span><span class="n">flow</span><span class="o">.</span><span class="n">float</span><span class="p">,</span>
+    <span class="n">key_type</span><span class="o">=</span><span class="n">flow</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span>
+    <span class="n">tables</span><span class="o">=</span><span class="n">tables</span><span class="p">,</span>
+    <span class="n">store_options</span><span class="o">=</span><span class="n">store_options</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">embedding</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;cuda&quot;</span><span class="p">)</span>
+</code></pre></div>
+<p>其中，<code>tables</code> 是之前通过 <code>make_table_options</code> 配置的词表属性，<code>store_options</code> 是之前配置的存储属性，<code>embedding_dim</code> 是特征维度，<code>dtype</code> 是特征向量的数据类型，<code>key_type</code> 是特征 ID 的数据类型。</p>
+<p>如果同时创建了两个 OneEmbedding，在实例化时需要设置不同的 name 和 persistent path 参数。 更详细的信息，可以参阅 <a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.one_embedding.MultiTableEmbedding.forward.html">one_embedding.MultiTableEmbedding</a></p>
+<h3 id="graph">使用 Graph 训练<a class="headerlink" href="#graph" title="Permanent link">&para;</a></h3>
+<p>目前 OneEmbedding 仅支持在 Graph 模式下使用。</p>
+<p>在以下的例子中，我们构建了一个简单的 Graph 类，它包括了 <code>embedding</code> 和 <code>mlp</code> 两层。</p>
+<div class="highlight"><pre><span></span><code><span class="n">num_tables</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="n">mlp</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">FusedMLP</span><span class="p">(</span>
+    <span class="n">in_features</span><span class="o">=</span><span class="n">embedding_size</span> <span class="o">*</span> <span class="n">num_tables</span><span class="p">,</span>
+    <span class="n">hidden_features</span><span class="o">=</span><span class="p">[</span><span class="mi">512</span><span class="p">,</span> <span class="mi">256</span><span class="p">,</span> <span class="mi">128</span><span class="p">],</span>
+    <span class="n">out_features</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">skip_final_activation</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">mlp</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;cuda&quot;</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">TrainGraph</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Graph</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">embedding_lookup</span> <span class="o">=</span> <span class="n">embedding</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mlp</span> <span class="o">=</span> <span class="n">mlp</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_optimizer</span><span class="p">(</span>
+            <span class="n">flow</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">embedding_lookup</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">momentum</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_optimizer</span><span class="p">(</span>
+            <span class="n">flow</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mlp</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">momentum</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+        <span class="p">)</span>
+    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ids</span><span class="p">):</span>
+        <span class="n">embedding</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedding_lookup</span><span class="p">(</span><span class="n">ids</span><span class="p">)</span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mlp</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">embedding</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">num_tables</span> <span class="o">*</span> <span class="n">embedding_size</span><span class="p">)))</span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="n">loss</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">loss</span>
+</code></pre></div>
+<p>然后就可以实例化 Graph，开始训练了。</p>
+<div class="highlight"><pre><span></span><code><span class="n">ids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="n">num_tables</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+<span class="n">ids_tensor</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">ids</span><span class="p">,</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;cuda&quot;</span><span class="p">)</span>
+<span class="n">graph</span> <span class="o">=</span> <span class="n">TrainGraph</span><span class="p">()</span>
+<span class="n">loss</span> <span class="o">=</span> <span class="n">graph</span><span class="p">(</span><span class="n">ids_tensor</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">loss</span><span class="p">)</span>
+</code></pre></div>
+<p>关于 Graph 的使用，可以参阅 <a href="../basics/08_nn_graph.html">静态图模块 nn.Graph</a> 获取更详细信息。</p>
+<h2 id="oneembedding_1">OneEmbedding 特点说明<a class="headerlink" href="#oneembedding_1" title="Permanent link">&para;</a></h2>
+<h3 id="id">特征 ID 动态扩容<a class="headerlink" href="#id" title="Permanent link">&para;</a></h3>
+<p>OneEmbedding 支持动态插入新的特征 ID，只要存储介质的容量足够，特征 ID 的数目是没有上限的。这也是为什么在使用 <code>make_table_options</code> 时，只需要指定初始化方式，不需要指定特征 ID 的总数目（词表行数）。</p>
+<h3 id="id_1">特征 ID 与多表查询<a class="headerlink" href="#id_1" title="Permanent link">&para;</a></h3>
+<p><strong>特征 ID 不能重复</strong></p>
+<p>制作数据集的 OneEmbedding 用户需要格外注意：使用 <code>MultiTableEmbedding</code> 同时创建多个表时，多个 Embedding Table 仅初始化参数不同，其他参数一致，此时，<strong>多个表中的特征 ID 不能重复</strong> 。</p>
+<p><strong>多表查询</strong></p>
+<p>如果使用 <code>MultiTableEmbedding</code> 只配置了一个表，则查询方式与普通的 Embedding 查询方式没有区别，直接调用，并传递特征 ID 即可，如 <code>embedding_lookup(ids)</code>。</p>
+<p>如果使用 <code>MultiTableEmbedding</code> 配置了多个表，则对于某个特征 ID，需要指明在哪个表中查询，有两种方式指明：</p>
+<p>方法一：传递一个形状为 <code>(batch_size, 词表数目)</code> 的 <code>ids</code> 用于查询，则这个 <code>ids</code> 的列，依次对应一个词表。</p>
+<p>比如：
+<div class="highlight"><pre><span></span><code><span class="n">ids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">488</span><span class="p">,</span> <span class="mi">333</span><span class="p">,</span> <span class="mi">220</span><span class="p">],</span> <span class="p">[</span><span class="mi">18</span><span class="p">,</span> <span class="mi">568</span><span class="p">,</span> <span class="mi">508</span><span class="p">]],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+<span class="c1"># 表示在第 0 个表中查询 `[[488], [18]]`，第 1 个表中查询 `[[333], [568]]`，第 2 个表中查询 `[[220], [508]]` 对应的特征向量。</span>
+<span class="n">embedding_lookup</span><span class="p">(</span><span class="n">ids</span><span class="p">)</span>
+</code></pre></div></p>
+<p>方法二：传递 <code>ids</code> 参数的同时，再传递一个 <code>table_ids</code> 参数，它的形状与 <code>ids</code> 完全相同，在 <code>table_ids</code> 中指定表的序号。</p>
+<p>比如：
+<div class="highlight"><pre><span></span><code><span class="n">ids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">488</span><span class="p">,</span> <span class="mi">333</span><span class="p">,</span> <span class="mi">220</span><span class="p">,</span> <span class="mi">18</span><span class="p">,</span> <span class="mi">568</span><span class="p">,</span> <span class="mi">508</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+<span class="c1"># table_ids的shape与ids保持一致</span>
+<span class="n">table_ids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+<span class="c1"># 表示在第 0 个表中查询 `488, 18`，第 1 个表中查询 `333, 568`，第 2 个表中查询 `220, 508` 对应的特征向量。</span>
+<span class="n">embedding_lookup</span><span class="p">(</span><span class="n">ids</span><span class="p">,</span> <span class="n">table_ids</span><span class="p">)</span>
+</code></pre></div></p>
+<p>更详细的说明，可以参阅 <a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.one_embedding.MultiTableEmbedding.forward.html">MultiTableEmbedding.forward</a></p>
+<h3 id="_2">如何选择合适的存储配置<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h3>
+<p>OneEmbedding 提供了三种存储选项配置，分别是纯 GPU 存储， 存储在 CPU 内存中并使用 GPU 显存作为高速缓存和存储在 SSD 中，并使用 GPU 显存作为高速缓存。</p>
+<ul>
+<li>
+<p>纯 GPU 存储</p>
+<p>当词表大小小于 GPU 显存时，将全部词表放在 GPU 显存上是最快的，此时推荐选择纯 GPU 存储配置。</p>
+</li>
+<li>
+<p>存储在 CPU 内存中，并使用 GPU 显存作为高速缓存</p>
+<p>当词表大于 GPU 显存，但是小于 CPU 内存时，推荐词表存储在 CPU 内存中，并使用 GPU 显存作为高速缓存。</p>
+</li>
+<li>
+<p>存储在 SSD 中，并使用 GPU 显存作为高速缓存</p>
+<p>当词表大小既大于 GPU 显存，也大于系统内存时，如果有高速的 SSD，可以选择将词表存储在 SSD 中，并使用 GPU 显存作为高速缓存。在此情况下，训练过程中会对存储的词表进行频繁的数据读写，因此 <code>persistent_path</code> 所设置路径下的文件随机读写速度对整体性能影响很大。强烈推荐使用高性能的 SSD，如果使用普通磁盘，会对性能有很大负面影响。</p>
+</li>
+</ul>
+<h3 id="_3">分布式训练<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>
+<p>OneEmbedding 同 OneFlow 的其它模块类似，都原生支持分布式扩展。用户可以参考 <a href="https://github.com/Oneflow-Inc/models/tree/main/RecommenderSystems/dlrm">#dlrm</a> 中的 README， 启动 DLRM 分布式训练。还可以参考 <a href="../parallelism/03_consistent_tensor.html">Global Tensor</a> 了解必要的前置知识。</p>
+<p>使用 OneEmbedding 模块进行分布式扩展，要注意：</p>
+<ul>
+<li>目前 OneEmbedding 只支持放置在全部设备上，并行度需和 world size 一致。比如，在 4 卡并行训练时，词表的并行度必须为 4，暂不支持网络使用 4 卡训练但词表并行度为 2 的场景。</li>
+<li><code>store_options</code> 配置中参数 <code>persistent_path</code> 指定存储的路径。在并行场景中，它既可以是一个表示路径的字符串，也可以是一个 <code>list</code>。若配置为一个代表路径的字符串，它代表分布式并行中各 rank 下的根目录。OneFlow 会在这个根路径下，依据各个 rank 的编号创建存储路径，名称格式为 <code>rank_id-num_rank</code>。若<code>persistent_path</code> 是一个 <code>list</code>，则会依据列表中的每项，为 rank 单独配置。</li>
+<li>在并行场景中，<code>store_options</code> 配置中的 <code>capacity</code> 代表词表总容量，而不是每个 rank 的容量。<code>cache_budget_mb</code> 代表每个 GPU 设备的显存。</li>
+</ul>
+<h2 id="dlrm">扩展阅读：DLRM<a class="headerlink" href="#dlrm" title="Permanent link">&para;</a></h2>
+<p>本文展示了如何快速上手 OneEmbedding。
+OneFlow 模型仓库中准备了关于 OneEmbedding 在 DLRM 任务的实际例子，可供参考：<a href="https://github.com/Oneflow-Inc/models/tree/main/RecommenderSystems/dlrm">https://github.com/Oneflow-Inc/models/tree/main/RecommenderSystems/dlrm</a></p>
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+        
+          <a href="#" class="md-top md-icon" data-md-component="top" data-md-state="hidden">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"/></svg>
+            Back to top
+          </a>
+        
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <nav class="md-footer__inner md-grid" aria-label="Footer">
+      
+        
+        <a href="transfer_learning.html" class="md-footer__link md-footer__link--prev" aria-label="上一页: 计算机视觉迁移学习" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                上一页
+              </span>
+              计算机视觉迁移学习
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="zero.html" class="md-footer__link md-footer__link--next" aria-label="下一页: Zero Redundancy Optimizer (ZeRO)" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                下一页
+              </span>
+              Zero Redundancy Optimizer (ZeRO)
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+          <div class="md-footer-copyright__highlight">
+            Copyright &copy; 2017 - 2021 OneFlow
+          </div>
+        
+        Made with
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs
+        </a>
+        
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.top"], "translations": {"clipboard.copy": "\u590d\u5236", "clipboard.copied": "\u5df2\u590d\u5236", "search.config.lang": "ja", "search.config.pipeline": "trimmer, stemmer", "search.config.separator": "[\\uff0c\\u3002]+", "search.placeholder": "\u641c\u7d22", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.477d984a.min.js", "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.ddd52ceb.min.js"></script>
+      
+        <script src="../javascripts/config.js"></script>
+      
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

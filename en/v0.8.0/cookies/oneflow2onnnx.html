@@ -1,0 +1,1272 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="OneFlow: a efficient distributed deep learning framework.">
+      
+      
+      
+      
+        <link rel="canonical" href="https://docs.oneflow.org/v0.8.0/cookies/oneflow2onnnx.html">
+      
+      <link rel="icon" href="../assets/favicon.png">
+      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-7.1.11">
+    
+    
+      
+        <title>OneFlow with ONNX - OneFlow</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.3754935a.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.f1a3b89f.min.css">
+        
+          
+          
+          <meta name="theme-color" content="#4051b5">
+        
+      
+    
+    
+    
+      
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>:root{--md-text-font-family:"Roboto";--md-code-font-family:"Roboto Mono"}</style>
+      
+    
+    
+    
+    
+      
+
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <script>function __prefix(e){return new URL("..",location).pathname+"."+e}function __get(e,t=localStorage){return JSON.parse(t.getItem(__prefix(e)))}</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#oneflow-with-onnx" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../index.html" title="OneFlow" class="md-header__button md-logo" aria-label="OneFlow" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 89 89">
+  <path d="M3.136,17.387l0,42.932l42.932,21.467l-42.932,-64.399Z" />
+  <path d="M21.91,8l42.933,64.398l-18.775,9.388l-42.932,-64.399l18.774,-9.387Z" style="fill-opacity: 0.5" />
+  <path d="M67.535,17.387l-27.262,18.156l21.878,32.818l5.384,2.691l0,-53.665Z" />
+  <path d="M67.535,17.387l0,53.666l18.774,-9.388l0,-53.665l-18.774,9.387Z" style="fill-opacity: 0.25" />
+</svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            OneFlow
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              OneFlow with ONNX
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <div class="md-header__option">
+        <div class="md-select">
+          
+          <button class="md-header__button md-icon" aria-label="Select language">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.52 17.52 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04M18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12m-2.62 7 1.62-4.33L19.12 17h-3.24z"/></svg>
+          </button>
+          <div class="md-select__inner">
+            <ul class="md-select__list">
+              
+                <li class="md-select__item">
+                  <a href="https://docs.oneflow.org" hreflang="zh" class="md-select__link">
+                    中文
+                  </a>
+                </li>
+                
+                <li class="md-select__item">
+                  <a href="https://docs.oneflow.org/en" hreflang="en" class="md-select__link">
+                    English
+                  </a>
+                </li>
+                
+            </ul>
+          </div>
+        </div>
+      </div>
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        
+<a href="https://github.com/OneFlow-Inc/oneflow" title="Go to repository" class="md-source"
+  data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    OneFlow
+  </div>
+</a>
+      </div>
+    
+  </nav>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-tabs__inner md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+
+
+  <li class="md-tabs__item">
+    <a href="../index.html" class="md-tabs__link">
+      Home
+    </a>
+  </li>
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../basics/01_quickstart.html" class="md-tabs__link">
+        Basics
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../parallelism/01_introduction.html" class="md-tabs__link">
+        Distributed Training
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+    
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="global_tensor.html" class="md-tabs__link md-tabs__link--active">
+        Cookbook
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="https://oneflow.readthedocs.io/en/master/" class="md-tabs__link">
+        API
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../index.html" title="OneFlow" class="md-nav__button md-logo" aria-label="OneFlow" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 89 89">
+  <path d="M3.136,17.387l0,42.932l42.932,21.467l-42.932,-64.399Z" />
+  <path d="M21.91,8l42.933,64.398l-18.775,9.388l-42.932,-64.399l18.774,-9.387Z" style="fill-opacity: 0.5" />
+  <path d="M67.535,17.387l-27.262,18.156l21.878,32.818l5.384,2.691l0,-53.665Z" />
+  <path d="M67.535,17.387l0,53.666l18.774,-9.388l0,-53.665l-18.774,9.387Z" style="fill-opacity: 0.25" />
+</svg>
+
+    </a>
+    OneFlow
+  </label>
+  
+    <div class="md-nav__source">
+      
+<a href="https://github.com/OneFlow-Inc/oneflow" title="Go to repository" class="md-source"
+  data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    OneFlow
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../index.html" class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" >
+      
+      <label class="md-nav__link" for="__nav_2">
+        Basics
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="Basics" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          Basics
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics/01_quickstart.html" class="md-nav__link">
+        Quickstart
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics/02_tensor.html" class="md-nav__link">
+        Tensor
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics/03_dataset_dataloader.html" class="md-nav__link">
+        Datesets & Dataloaders
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics/04_build_network.html" class="md-nav__link">
+        Build Neural Network
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics/05_autograd.html" class="md-nav__link">
+        Autograd
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics/06_optimization.html" class="md-nav__link">
+        Backpropagation and Optimizer
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics/07_model_load_save.html" class="md-nav__link">
+        Model saving and loading
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics/08_nn_graph.html" class="md-nav__link">
+        Static Graph Interface
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" >
+      
+      <label class="md-nav__link" for="__nav_3">
+        Distributed Training
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="Distributed Training" data-md-level="1">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          Distributed Training
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parallelism/01_introduction.html" class="md-nav__link">
+        Common Parallel Strategies
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parallelism/02_sbp.html" class="md-nav__link">
+        Global View
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parallelism/03_consistent_tensor.html" class="md-nav__link">
+        Global Tensor
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parallelism/04_2d-sbp.html" class="md-nav__link">
+        2D SBP
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parallelism/04_launch.html" class="md-nav__link">
+        Distributed Training Launcher
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parallelism/05_ddp.html" class="md-nav__link">
+        Data Parallelism Training
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parallelism/06_pipeline.html" class="md-nav__link">
+        Pipelining Parallelism
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" checked>
+      
+      <label class="md-nav__link" for="__nav_4">
+        Cookbook
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="Cookbook" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          Cookbook
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="global_tensor.html" class="md-nav__link">
+        Basic Operations for Using Global Tensor to Program on Cluster
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          OneFlow with ONNX
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="oneflow2onnnx.html" class="md-nav__link md-nav__link--active">
+        OneFlow with ONNX
+      </a>
+      
+        
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#introduction-to-onnx" class="md-nav__link">
+    Introduction to ONNX
+  </a>
+  
+    <nav class="md-nav" aria-label="Introduction to ONNX">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#related-packages" class="md-nav__link">
+    Related Packages
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#export-oneflow-models-to-onnx-models" class="md-nav__link">
+    Export OneFlow Models to ONNX Models
+  </a>
+  
+    <nav class="md-nav" aria-label="Export OneFlow Models to ONNX Models">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#install-oneflow-onnx" class="md-nav__link">
+    Install oneflow-onnx
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-to-use-oneflow-onnx" class="md-nav__link">
+    How to Use oneflow-onnx
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#considerations-when-exporting-models" class="md-nav__link">
+    Considerations when Exporting Models
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#examples-of-usage" class="md-nav__link">
+    Examples of Usage
+  </a>
+  
+    <nav class="md-nav" aria-label="Examples of Usage">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#export-as-onnx-model" class="md-nav__link">
+    Export as ONNX Model
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#inference-with-onnx-models" class="md-nav__link">
+    Inference with ONNX models
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="serving.html" class="md-nav__link">
+        Model Deployment
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="amp.html" class="md-nav__link">
+        Automatic Mixed Precision Training
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="activation_checkpointing.html" class="md-nav__link">
+        Activation Checkpointing
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="torch2flow.html" class="md-nav__link">
+        Converting Pre-trained Model from PyTorch to OneFlow
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="transfer_learning.html" class="md-nav__link">
+        Transfer Learning in Computer Vision
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="one_embedding.html" class="md-nav__link">
+        Large-Scale Embedding Solution OneEmbedding
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zero.html" class="md-nav__link">
+        Zero Redundancy Optimizer (ZeRO)
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" >
+      
+      <label class="md-nav__link" for="__nav_5">
+        API
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="API" data-md-level="1">
+        <label class="md-nav__title" for="__nav_5">
+          <span class="md-nav__icon md-icon"></span>
+          API
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://oneflow.readthedocs.io/en/master/" class="md-nav__link">
+        API
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#introduction-to-onnx" class="md-nav__link">
+    Introduction to ONNX
+  </a>
+  
+    <nav class="md-nav" aria-label="Introduction to ONNX">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#related-packages" class="md-nav__link">
+    Related Packages
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#export-oneflow-models-to-onnx-models" class="md-nav__link">
+    Export OneFlow Models to ONNX Models
+  </a>
+  
+    <nav class="md-nav" aria-label="Export OneFlow Models to ONNX Models">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#install-oneflow-onnx" class="md-nav__link">
+    Install oneflow-onnx
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-to-use-oneflow-onnx" class="md-nav__link">
+    How to Use oneflow-onnx
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#considerations-when-exporting-models" class="md-nav__link">
+    Considerations when Exporting Models
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#examples-of-usage" class="md-nav__link">
+    Examples of Usage
+  </a>
+  
+    <nav class="md-nav" aria-label="Examples of Usage">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#export-as-onnx-model" class="md-nav__link">
+    Export as ONNX Model
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#inference-with-onnx-models" class="md-nav__link">
+    Inference with ONNX models
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                  <a href="https://github.com/OneFlow-Inc/oneflow-documentation/blob/master/en/docs/cookies/oneflow2onnnx.md" title="Edit this page" class="md-content__button md-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
+                  </a>
+                
+                
+                <h1 id="oneflow-with-onnx">OneFlow with ONNX<a class="headerlink" href="#oneflow-with-onnx" title="Permanent link">&para;</a></h1>
+<p>This document introduces the usage of OneFlow interacting with ONNX, including how to export OneFlow models to ONNX, and how to use ONNX models for inference.</p>
+<h2 id="introduction-to-onnx">Introduction to ONNX<a class="headerlink" href="#introduction-to-onnx" title="Permanent link">&para;</a></h2>
+<p><a href="https://onnx.ai/index.html">ONNX</a>, known as Open Neural Network Exchange, is an open file format standard designed for machine learning algorithms to store trained algorithmic models. Many major deep learning frameworks (e.g., OneFlow, PyTorch, TensorFlow, MXNet) support exporting models to ONNX models, which allows different deep learning frameworks to store and interact with model data in a uniform format. In addition, ONNX has a corresponding Runtime - <a href="https://onnxruntime.ai/">ONNX Runtime</a> - that facilitates model deployment and reasoning on multiple platforms (Linux, Windows, Mac OS, Android, iOS, etc.) and multiple hardware (CPU, GPU, etc.). </p>
+<h3 id="related-packages">Related Packages<a class="headerlink" href="#related-packages" title="Permanent link">&para;</a></h3>
+<p>There are several ONNX-related libraries, and the features of several common libraries are described below. The onnxruntime-gpu involved in this tutorial can be installed via <code>pip install onnxruntime-gpu</code>.</p>
+<ol>
+<li>
+<p><a href="https://github.com/onnx/onnx">onnx</a>: ONNX model format standard</p>
+</li>
+<li>
+<p><a href="https://github.com/microsoft/onnxruntime">onnxruntime &amp; onnxruntime-gpu</a>: ONNX runtime that is used to load the ONNX model for inference. onnxruntime and onnxruntime-gpu support CPU inference and GPU inference respectively.</p>
+</li>
+<li>
+<p><a href="https://github.com/daquexian/onnx-simplifier">onnx-simplifier</a>: for simplifying ONNX models, e.g. eliminating operators with constant results</p>
+</li>
+<li>
+<p><a href="https://github.com/onnx/optimizer">onnxoptimizer</a>: it is used to optimize ONNX model by graph transformations</p>
+</li>
+</ol>
+<h2 id="export-oneflow-models-to-onnx-models">Export OneFlow Models to ONNX Models<a class="headerlink" href="#export-oneflow-models-to-onnx-models" title="Permanent link">&para;</a></h2>
+<p><a href="https://github.com/Oneflow-Inc/oneflow_convert">oneflow-onnx</a> is a model conversion tool provided by OneFlow team to support exporting OneFlow static graph models to ONNX models. At present oneflow-onnx supports more than 80 kinds of OneFlow OPs exported as ONNX OPs. For detalis, refer to <a href="https://github.com/Oneflow-Inc/oneflow_convert/blob/main/docs/oneflow2onnx/op_list.md">list of OP supported by OneFlow2ONNX</a>。</p>
+<h3 id="install-oneflow-onnx">Install oneflow-onnx<a class="headerlink" href="#install-oneflow-onnx" title="Permanent link">&para;</a></h3>
+<p>oneflow-onnx is independent of OneFlow and needs to be installed separately via pip:</p>
+<div class="highlight"><pre><span></span><code>pip install oneflow-onnx
+</code></pre></div>
+<h3 id="how-to-use-oneflow-onnx">How to Use oneflow-onnx<a class="headerlink" href="#how-to-use-oneflow-onnx" title="Permanent link">&para;</a></h3>
+<p>To export OneFlow static graph model as ONNX model, just call <code>export_ onnx_ Model</code> function.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">oneflow_onnx.oneflow2onnx.util</span> <span class="kn">import</span> <span class="n">export_onnx_model</span>
+
+<span class="n">export_onnx_model</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span>
+                  <span class="n">external_data</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> 
+                  <span class="n">opset</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> 
+                  <span class="n">flow_weight_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> 
+                  <span class="n">onnx_model_path</span><span class="o">=</span><span class="s2">&quot;/tmp&quot;</span><span class="p">,</span> 
+                  <span class="n">dynamic_batch_size</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</code></pre></div>
+<p>The meaning of each parameter is as follows:</p>
+<ol>
+<li>
+<p>graph: the graph need to be converted (<a href="../basics/08_nn_graph.html">Graph</a> object)</p>
+</li>
+<li>
+<p>external_data: whether to save the weights as external data of the ONNX model. When it is <code>True</code>, it is usually to avoid the 2GB file size limit of protobuf.</p>
+</li>
+<li>
+<p>opset: specify the version of the conversion model (int, default is 10)</p>
+</li>
+<li>
+<p>flow_weight_dir: path to save OneFlow model weights</p>
+</li>
+<li>
+<p>onnx_model_path: save path for exported ONNX models</p>
+</li>
+<li>
+<p>dynamic_batch_size: whether the exported ONNX model supports dynamic batch, default is False</p>
+</li>
+</ol>
+<p>In addition, oneflow-onnx provides a function called <code>convert_to_onnx_and_check</code> to convert and meanwhile check the converted ONNX model. The check process will pass the same input to the original OneFlow model and the converted ONNX model respectively, and then compare the difference between each value in the two outputs to see if they are same within a relative range.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">oneflow_onnx.oneflow2onnx.util</span> <span class="kn">import</span> <span class="n">convert_to_onnx_and_check</span>
+
+<span class="n">convert_to_onnx_and_check</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+</code></pre></div>
+<p>The parameters of the <code>convert_to_onnx_and_check</code> are almost the same as those of <code>export_onnx_model</code>, besides you can pass <code>print_outlier</code> parameter additionally. When <code>print_outlier=True</code>, it will output any abnormal values found during the check process that exceed the reasonable error range. </p>
+<h3 id="considerations-when-exporting-models">Considerations when Exporting Models<a class="headerlink" href="#considerations-when-exporting-models" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Before exporting the model, it need be set to eval mode because operations such as Dropout and Batch Normalization have different behaviors under the training and evaluation mode.</li>
+<li>When building a static graph model, you need to specify an input. The value of the input can be random, but make sure the data type and shape is correct.</li>
+<li>The ONNX model accepts a fixed shape of input, and a varied size of the batch dimension, so by setting the <code>dynamic_batch_size</code> parameter to be <code>True</code> can make the exported ONNX model support dynamic batch size.</li>
+<li>Oneflow-onnx must use a static graph model (Graph mode) as an parameter to export function. For dynamic graph models (Eager mode), the dynamic graph model needs to be constructed as a static graph model. Refer to the example below.</li>
+</ul>
+<h2 id="examples-of-usage">Examples of Usage<a class="headerlink" href="#examples-of-usage" title="Permanent link">&para;</a></h2>
+<p>In this section, the process of exporting a OneFlow model to an ONNX model and performing inference is introduced, using the common ResNet-34 model as an example.</p>
+<p>The following code uses <a href="https://github.com/Oneflow-Inc/vision">FlowVision</a>, a library built on OneFlow for computer vision tasks, which contains many models, data enhancement methods, data transformation operations, datasets, and so on. Here we directly use the ResNet-34 model provided by the FlowVision library and use its weight trained on the ImageNet dataset. </p>
+<h3 id="export-as-onnx-model">Export as ONNX Model<a class="headerlink" href="#export-as-onnx-model" title="Permanent link">&para;</a></h3>
+<p>Import related dependencies and the saved resnet34 model will be used later:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">oneflow</span> <span class="k">as</span> <span class="nn">flow</span>
+<span class="kn">from</span> <span class="nn">oneflow</span> <span class="kn">import</span> <span class="n">nn</span>
+<span class="kn">from</span> <span class="nn">flowvision.models</span> <span class="kn">import</span> <span class="n">resnet34</span>
+<span class="kn">from</span> <span class="nn">oneflow_onnx.oneflow2onnx.util</span> <span class="kn">import</span> <span class="n">convert_to_onnx_and_check</span>
+
+<span class="c1"># Model parameter storage directory</span>
+<span class="n">MODEL_PARAMS</span> <span class="o">=</span> <span class="s1">&#39;checkpoints/resnet34&#39;</span>
+
+<span class="c1"># Load &amp; save pretrained model</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">resnet34</span><span class="p">(</span><span class="n">pretrained</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">flow</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span> <span class="n">MODEL_PARAMS</span><span class="p">)</span>
+</code></pre></div>
+<p>To build a static graph model using a dynamic graph model. For details, refer to: <a href="../basics/08_nn_graph.html">Static Graph Interface: nn.Graph</a></p>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">ResNet34Graph</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Graph</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">eager_model</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">eager_model</span>
+
+    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</code></pre></div>
+<p>Export OneFlow static graph models to ONNX models:</p>
+<div class="highlight"><pre><span></span><code><span class="n">params</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">MODEL_PARAMS</span><span class="p">)</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">resnet34</span><span class="p">()</span>
+<span class="n">model</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+
+<span class="c1"># Set the model to eval mode</span>
+<span class="n">model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+
+<span class="n">resnet34_graph</span> <span class="o">=</span> <span class="n">ResNet34Graph</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+<span class="c1"># Build the static graph model</span>
+<span class="n">resnet34_graph</span><span class="o">.</span><span class="n">_compile</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">224</span><span class="p">,</span> <span class="mi">224</span><span class="p">))</span>
+
+<span class="c1"># Export as ONNX model and check</span>
+<span class="n">convert_to_onnx_and_check</span><span class="p">(</span><span class="n">resnet34_graph</span><span class="p">,</span> 
+                          <span class="n">flow_weight_dir</span><span class="o">=</span><span class="n">MODEL_PARAMS</span><span class="p">,</span> 
+                          <span class="n">onnx_model_path</span><span class="o">=</span><span class="s2">&quot;./&quot;</span><span class="p">,</span> 
+                          <span class="n">print_outlier</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                          <span class="n">dynamic_batch_size</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</code></pre></div>
+<p>After running,  a file named <code>model.onnx</code> is  in the current directory, which is the exported ONNX model.</p>
+<h3 id="inference-with-onnx-models">Inference with ONNX models<a class="headerlink" href="#inference-with-onnx-models" title="Permanent link">&para;</a></h3>
+<p>Before performing inference, ensure that the ONNX Runtime is installed, that is onnxruntime or onnxruntime-gpu. In the experimental environment of this tutorial, onnxruntime-gpu is installed to invoke the GPU for computation, but if there is no GPU on the machine, you can specify the CPU for calculation. See below for details.</p>
+<p>We use the following image as input to the model:</p>
+<div align="center">
+    <img alt="Demo Image" src="./imgs/cat.jpg" width="300px">
+</div>
+
+<p>Import related dependencies:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">cv2</span>
+<span class="kn">from</span> <span class="nn">onnxruntime</span> <span class="kn">import</span> <span class="n">InferenceSession</span>
+</code></pre></div>
+<p>Define a function to pre-process the image to a format and size accepted by the ONNX model:</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">preprocess_image</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">input_hw</span> <span class="o">=</span> <span class="p">(</span><span class="mi">224</span><span class="p">,</span> <span class="mi">224</span><span class="p">)):</span>
+    <span class="n">h</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">shape</span>
+
+    <span class="c1"># Use the longer side of the image to determine the scaling factor</span>
+    <span class="n">is_wider</span> <span class="o">=</span> <span class="kc">True</span> <span class="k">if</span> <span class="n">h</span> <span class="o">&lt;=</span> <span class="n">w</span> <span class="k">else</span> <span class="kc">False</span>
+    <span class="n">scale</span> <span class="o">=</span> <span class="n">input_hw</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">w</span> <span class="k">if</span> <span class="n">is_wider</span> <span class="k">else</span> <span class="n">input_hw</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">h</span>
+
+    <span class="c1"># Scale the image equally</span>
+    <span class="n">processed_img</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">fx</span><span class="o">=</span><span class="n">scale</span><span class="p">,</span> <span class="n">fy</span><span class="o">=</span><span class="n">scale</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="n">cv2</span><span class="o">.</span><span class="n">INTER_LINEAR</span><span class="p">)</span>
+    <span class="c1"># Normalization</span>
+    <span class="n">processed_img</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">processed_img</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span> <span class="o">/</span> <span class="mi">255</span>
+
+    <span class="c1"># Fill images to ONNX model and preset sizes</span>
+    <span class="n">temp_img</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">input_hw</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">input_hw</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">3</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+    <span class="n">temp_img</span><span class="p">[:</span><span class="n">processed_img</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">:</span><span class="n">processed_img</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">processed_img</span>
+    <span class="n">processed_img</span> <span class="o">=</span> <span class="n">temp_img</span>
+
+    <span class="c1"># Adjust the order of axes and add batch axes at the front </span>
+    <span class="n">processed_img</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">processed_img</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">processed_img</span>
+</code></pre></div>
+<p>The next step is to use the ONNX model for inference, which consists of creating an InferenceSession object and calling <code>run</code> to perform inference.</p>
+<p>In onnxruntime(-gpu) 1.9 and above, the <code>providers</code> parameter needs to be explicitly specified when creating an InferenceSession object to select the hardware to use. For onnxruntime-gpu, the values that can be specified include <code>TensorrtExecutionProvider</code>, <code>CUDAExecutionProvider</code>, and <code>CPUExecutionProvider</code>. If there is no GPU on the running machine, you can specify the <code>providers</code> parameter as <code>['CPUExecutionProvider']</code> to use the CPU for computation.</p>
+<p>The type of input data of an ONNX model is a dict. Its keys are <code>input names</code> when exporting the ONNX model, and the values are the actual input data of NumPy array type. You can get "input names" through the <code>get_inputs</code> method of the InferenceSession object, which returns a list of objects of <code>onnxruntime.NodeArg</code> type. For NodeArg object, you can use its <code>name</code> property to get a name of str type. In this tutorial, the input is only the image data, so you can get the "input names" corresponding to the input by calling <code>.get_inputs()[0].name</code> on the InferenceSession object. The value is <code>_ResNet34Graph_0-input_0/out</code>, which is used as the key to construct the dict of the ONNX model input. Of course, it can also be obtained dynamically at runtime without specifying it in advance.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Read the category name of the ImageNet dataset from the file</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;ImageNet-Class-Names.txt&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">CLASS_NAMES</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+
+<span class="c1"># Read the image file and preprocess it with the `preprocess_image` function</span>
+<span class="n">img</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s1">&#39;cat.jpg&#39;</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">IMREAD_COLOR</span><span class="p">)</span>
+<span class="n">img</span> <span class="o">=</span> <span class="n">preprocess_image</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
+
+<span class="c1"># Create an InferenceSession object</span>
+<span class="n">ort_sess</span> <span class="o">=</span> <span class="n">InferenceSession</span><span class="p">(</span><span class="s1">&#39;model.onnx&#39;</span><span class="p">,</span> <span class="n">providers</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;TensorrtExecutionProvider&#39;</span><span class="p">,</span>
+                                                     <span class="s1">&#39;CUDAExecutionProvider&#39;</span><span class="p">,</span>
+                                                     <span class="s1">&#39;CPUExecutionProvider&#39;</span><span class="p">])</span>
+<span class="c1"># Call the `run` method of the InferenceSession object to perform inference</span>
+<span class="n">results</span> <span class="o">=</span> <span class="n">ort_sess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;_ResNet34Graph_0-input_0/out&quot;</span><span class="p">:</span> <span class="n">img</span><span class="p">})</span>
+
+<span class="c1"># Output inference results</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">CLASS_NAMES</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">])])</span>
+</code></pre></div>
+<p>The output of the <code>run</code> method of the InferenceSession object is a list of NumPy arrays, and each NumPy array corresponds to a set of outputs. Since there is only one set of inputs, the element with index 0 is the output, and the shape of it is <code>(1, 1000)</code>, which corresponds to the probability of 1000 categories (if n images are input as a batch, the shape of them will be <code>(n, 1000)</code>). After obtaining the index corresponding to the category with the highest probability via <code>np.argmax</code>, the index is mapped to the category name.</p>
+<p>Run the code and get the result:</p>
+<div class="highlight"><pre><span></span><code>(base) root@training-notebook-654c6f-654c6f-jupyter-master-0:/workspace# python infer.py 
+285: &#39;Egyptian cat&#39;,
+</code></pre></div>
+<p>The above inference is done in a Python environment using GPU or CPU. In practice, you can use the exported ONNX model with a different ONNX Runtime depending on the deployment environment.</p>
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+        
+          <a href="#" class="md-top md-icon" data-md-component="top" data-md-state="hidden">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"/></svg>
+            Back to top
+          </a>
+        
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <nav class="md-footer__inner md-grid" aria-label="Footer">
+      
+        
+        <a href="global_tensor.html" class="md-footer__link md-footer__link--prev" aria-label="Previous: Basic Operations for Using Global Tensor to Program on Cluster" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              Basic Operations for Using Global Tensor to Program on Cluster
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="serving.html" class="md-footer__link md-footer__link--next" aria-label="Next: Model Deployment" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              Model Deployment
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+          <div class="md-footer-copyright__highlight">
+            Copyright &copy; 2017 - 2021 OneFlow
+          </div>
+        
+        Made with
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs
+        </a>
+        
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.top"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.477d984a.min.js", "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.ddd52ceb.min.js"></script>
+      
+        <script src="../javascripts/config.js"></script>
+      
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

@@ -1,0 +1,1317 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="OneFlow: a efficient distributed deep learning framework.">
+      
+      
+      
+      
+        <link rel="canonical" href="https://docs.oneflow.org/v0.8.0/cookies/global_tensor.html">
+      
+      <link rel="icon" href="../assets/favicon.png">
+      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-7.1.11">
+    
+    
+      
+        <title>Basic Operations for Using Global Tensor to Program on Cluster - OneFlow</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.3754935a.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.f1a3b89f.min.css">
+        
+          
+          
+          <meta name="theme-color" content="#4051b5">
+        
+      
+    
+    
+    
+      
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>:root{--md-text-font-family:"Roboto";--md-code-font-family:"Roboto Mono"}</style>
+      
+    
+    
+    
+    
+      
+
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <script>function __prefix(e){return new URL("..",location).pathname+"."+e}function __get(e,t=localStorage){return JSON.parse(t.getItem(__prefix(e)))}</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#using-global-tensor-to-program-on-multi-device-multi-gpu-basic-operations" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../index.html" title="OneFlow" class="md-header__button md-logo" aria-label="OneFlow" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 89 89">
+  <path d="M3.136,17.387l0,42.932l42.932,21.467l-42.932,-64.399Z" />
+  <path d="M21.91,8l42.933,64.398l-18.775,9.388l-42.932,-64.399l18.774,-9.387Z" style="fill-opacity: 0.5" />
+  <path d="M67.535,17.387l-27.262,18.156l21.878,32.818l5.384,2.691l0,-53.665Z" />
+  <path d="M67.535,17.387l0,53.666l18.774,-9.388l0,-53.665l-18.774,9.387Z" style="fill-opacity: 0.25" />
+</svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            OneFlow
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Basic Operations for Using Global Tensor to Program on Cluster
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <div class="md-header__option">
+        <div class="md-select">
+          
+          <button class="md-header__button md-icon" aria-label="Select language">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.52 17.52 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04M18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12m-2.62 7 1.62-4.33L19.12 17h-3.24z"/></svg>
+          </button>
+          <div class="md-select__inner">
+            <ul class="md-select__list">
+              
+                <li class="md-select__item">
+                  <a href="https://docs.oneflow.org" hreflang="zh" class="md-select__link">
+                    中文
+                  </a>
+                </li>
+                
+                <li class="md-select__item">
+                  <a href="https://docs.oneflow.org/en" hreflang="en" class="md-select__link">
+                    English
+                  </a>
+                </li>
+                
+            </ul>
+          </div>
+        </div>
+      </div>
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        
+<a href="https://github.com/OneFlow-Inc/oneflow" title="Go to repository" class="md-source"
+  data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    OneFlow
+  </div>
+</a>
+      </div>
+    
+  </nav>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-tabs__inner md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+
+
+  <li class="md-tabs__item">
+    <a href="../index.html" class="md-tabs__link">
+      Home
+    </a>
+  </li>
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../basics/01_quickstart.html" class="md-tabs__link">
+        Basics
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../parallelism/01_introduction.html" class="md-tabs__link">
+        Distributed Training
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+    
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="global_tensor.html" class="md-tabs__link md-tabs__link--active">
+        Cookbook
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="https://oneflow.readthedocs.io/en/master/" class="md-tabs__link">
+        API
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../index.html" title="OneFlow" class="md-nav__button md-logo" aria-label="OneFlow" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 89 89">
+  <path d="M3.136,17.387l0,42.932l42.932,21.467l-42.932,-64.399Z" />
+  <path d="M21.91,8l42.933,64.398l-18.775,9.388l-42.932,-64.399l18.774,-9.387Z" style="fill-opacity: 0.5" />
+  <path d="M67.535,17.387l-27.262,18.156l21.878,32.818l5.384,2.691l0,-53.665Z" />
+  <path d="M67.535,17.387l0,53.666l18.774,-9.388l0,-53.665l-18.774,9.387Z" style="fill-opacity: 0.25" />
+</svg>
+
+    </a>
+    OneFlow
+  </label>
+  
+    <div class="md-nav__source">
+      
+<a href="https://github.com/OneFlow-Inc/oneflow" title="Go to repository" class="md-source"
+  data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    OneFlow
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../index.html" class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" >
+      
+      <label class="md-nav__link" for="__nav_2">
+        Basics
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="Basics" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          Basics
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics/01_quickstart.html" class="md-nav__link">
+        Quickstart
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics/02_tensor.html" class="md-nav__link">
+        Tensor
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics/03_dataset_dataloader.html" class="md-nav__link">
+        Datesets & Dataloaders
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics/04_build_network.html" class="md-nav__link">
+        Build Neural Network
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics/05_autograd.html" class="md-nav__link">
+        Autograd
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics/06_optimization.html" class="md-nav__link">
+        Backpropagation and Optimizer
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics/07_model_load_save.html" class="md-nav__link">
+        Model saving and loading
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics/08_nn_graph.html" class="md-nav__link">
+        Static Graph Interface
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" >
+      
+      <label class="md-nav__link" for="__nav_3">
+        Distributed Training
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="Distributed Training" data-md-level="1">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          Distributed Training
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parallelism/01_introduction.html" class="md-nav__link">
+        Common Parallel Strategies
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parallelism/02_sbp.html" class="md-nav__link">
+        Global View
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parallelism/03_consistent_tensor.html" class="md-nav__link">
+        Global Tensor
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parallelism/04_2d-sbp.html" class="md-nav__link">
+        2D SBP
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parallelism/04_launch.html" class="md-nav__link">
+        Distributed Training Launcher
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parallelism/05_ddp.html" class="md-nav__link">
+        Data Parallelism Training
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parallelism/06_pipeline.html" class="md-nav__link">
+        Pipelining Parallelism
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" checked>
+      
+      <label class="md-nav__link" for="__nav_4">
+        Cookbook
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="Cookbook" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          Cookbook
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Basic Operations for Using Global Tensor to Program on Cluster
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="global_tensor.html" class="md-nav__link md-nav__link--active">
+        Basic Operations for Using Global Tensor to Program on Cluster
+      </a>
+      
+        
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#global-tensor" class="md-nav__link">
+    Global Tensor
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#creating-global-tensor" class="md-nav__link">
+    Creating Global Tensor
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#converting-local-tensor-to-global-tensor" class="md-nav__link">
+    Converting Local Tensor to Global Tensor
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#converting-global-tensor-to-local-tensor" class="md-nav__link">
+    Converting Global Tensor to Local Tensor
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#converting-one-global-tensor-to-another-global-tensor" class="md-nav__link">
+    Converting One Global Tensor to Another Global Tensor
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#global-tensor-participating-in-computation" class="md-nav__link">
+    Global Tensor Participating in Computation
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#conclusion" class="md-nav__link">
+    Conclusion
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#further-reading" class="md-nav__link">
+    Further Reading
+  </a>
+  
+    <nav class="md-nav" aria-label="Further Reading">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#oneflows-multi-machine-multi-gpu-launching-and-its-required-environment-variables" class="md-nav__link">
+    OneFlow's multi-machine multi-GPU launching and its required environment variables
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="oneflow2onnnx.html" class="md-nav__link">
+        OneFlow with ONNX
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="serving.html" class="md-nav__link">
+        Model Deployment
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="amp.html" class="md-nav__link">
+        Automatic Mixed Precision Training
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="activation_checkpointing.html" class="md-nav__link">
+        Activation Checkpointing
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="torch2flow.html" class="md-nav__link">
+        Converting Pre-trained Model from PyTorch to OneFlow
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="transfer_learning.html" class="md-nav__link">
+        Transfer Learning in Computer Vision
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="one_embedding.html" class="md-nav__link">
+        Large-Scale Embedding Solution OneEmbedding
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zero.html" class="md-nav__link">
+        Zero Redundancy Optimizer (ZeRO)
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" >
+      
+      <label class="md-nav__link" for="__nav_5">
+        API
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="API" data-md-level="1">
+        <label class="md-nav__title" for="__nav_5">
+          <span class="md-nav__icon md-icon"></span>
+          API
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://oneflow.readthedocs.io/en/master/" class="md-nav__link">
+        API
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#global-tensor" class="md-nav__link">
+    Global Tensor
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#creating-global-tensor" class="md-nav__link">
+    Creating Global Tensor
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#converting-local-tensor-to-global-tensor" class="md-nav__link">
+    Converting Local Tensor to Global Tensor
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#converting-global-tensor-to-local-tensor" class="md-nav__link">
+    Converting Global Tensor to Local Tensor
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#converting-one-global-tensor-to-another-global-tensor" class="md-nav__link">
+    Converting One Global Tensor to Another Global Tensor
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#global-tensor-participating-in-computation" class="md-nav__link">
+    Global Tensor Participating in Computation
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#conclusion" class="md-nav__link">
+    Conclusion
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#further-reading" class="md-nav__link">
+    Further Reading
+  </a>
+  
+    <nav class="md-nav" aria-label="Further Reading">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#oneflows-multi-machine-multi-gpu-launching-and-its-required-environment-variables" class="md-nav__link">
+    OneFlow's multi-machine multi-GPU launching and its required environment variables
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                  <a href="https://github.com/OneFlow-Inc/oneflow-documentation/blob/master/en/docs/cookies/global_tensor.md" title="Edit this page" class="md-content__button md-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
+                  </a>
+                
+                
+                <h1 id="using-global-tensor-to-program-on-multi-device-multi-gpu-basic-operations">Using Global Tensor to Program on Multi-Device Multi-GPU: Basic Operations<a class="headerlink" href="#using-global-tensor-to-program-on-multi-device-multi-gpu-basic-operations" title="Permanent link">&para;</a></h1>
+<p>By <a href="https://github.com/doombeaker">YaoChi</a>, <a href="https://github.com/strint">Xu Xiaoyu</a>, <a href="https://github.com/Alive1024">Zuo Yihao</a>, <a href="https://github.com/lmyybh">Guoliang Cheng</a>, <a href="https://github.com/Carly-Shen">Shen Jiali</a></p>
+<p>Global tensor can be executed on multi-device multi-GPU, and it’s an interface to implement the Global View programming.</p>
+<p>Today, most parallel programs adopt the SPMD (Single program, multiple data) programming method, which means the devices will execute the same program but process different parts of the data to realize data parallelism. Take PyTorch’s DDP (Distributed Data Parallel) for example, each process executes the same neural network computing logic, but the difference is that they load different slices of one dataset.</p>
+<p>But, the defect of SPMD programming is that multiple data makes communications more complicated. In a deep learning scenario, SPMD programming needs to insert communication operations into original computing codes, such as AllReduce for data parallelism and AllGather/ReduceScatter for model parallelism. If the parallel mode is much more complicated or a new mode needs to be experimented with, it will be troublesome to develop and maintain after inserting the communication operations.</p>
+<p>Global View programming permits users to program from the SPSD view. Different from SPMD programming, SPSD programming is a method that data is also single from the programming interface layer.</p>
+<p>When we extend a single-process program to a parallelly executed one, the single-process data will also be extended to the multi-process data, so it's natural that the data on different processes corresponds to the same logic data on the originally single-process program. And the logic data is called Global Tensor in OneFlow.</p>
+<p>Global Tensor supports users to utilize the SPSD interface to program, which means users can program on a single device and OneFlow framework will automatically convert to physical SPMD/MPMD mode and execute the program in a parallel/distributed way.</p>
+<p>With Global Tensor, a more naturally Global View programming method is available, and users can regard the multi-devices as a single device to implement SPSD programming.</p>
+<h2 id="global-tensor">Global Tensor<a class="headerlink" href="#global-tensor" title="Permanent link">&para;</a></h2>
+<p>In programming languages, "Global" usually refers to in-process global visibility, such as <a href="https://en.wikipedia.org/wiki/Global_variable">Global Variable</a>.</p>
+<p>Instead, the "Global" of the "Global Tensor" means inter-process global visibility. So, it’s more accurate to regard the Global Tensor as a tensor that can be seen on all processes.</p>
+<p>Global Tensor exists on all processes. When the tensor is executed by an operator on all processes, it will be automatically executed on multi-device multi-GPU.</p>
+<p>At present, the commonly-used tensor is only visible on one process and also exists on a single device. OneFlow calls it the Local Tensor, which means it’s a tensor that can be seen on only one process. Local is relative to Global, so Local Tensor can be considered as Local (on one process) Tensor.</p>
+<p>Most of OneFlow’s operators are compatible with the execution of Local Tensors and Global Tensors. It’s convenient to convert the Local Tensor to the Global Tensor, so the code originally executed on single-device single-GPU can be smoothly converted to ones that can be executed on multi-device multi-GPU.</p>
+<p>Global Tensor allows users to easily develop models on multi-device multi-GPU. Compared to utilizing the original communication operators, the efficiency of developing parallelly executed models will be doubled.</p>
+<h2 id="creating-global-tensor">Creating Global Tensor<a class="headerlink" href="#creating-global-tensor" title="Permanent link">&para;</a></h2>
+<p>Let’s try to create a Global Tensor on a machine with two GPUs. Take <code>randn</code> operator for example, a Python file named <code>test_randn_global.py</code> needs to be created and add the following content to it:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">oneflow</span> <span class="k">as</span> <span class="nn">flow</span>
+<span class="c1"># Place a global tensor on cuda device of rank(process) 0 and 1</span>
+<span class="n">placement</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">placement</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;cuda&quot;</span><span class="p">,</span> <span class="n">ranks</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="c1"># Each rank&#39;s local data is a part data as a result of spliting global data on dim 0</span>
+<span class="n">sbp</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">sbp</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="c1"># Create a global tensor by randn</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">placement</span><span class="o">=</span><span class="n">placement</span><span class="p">,</span> <span class="n">sbp</span><span class="o">=</span><span class="n">sbp</span><span class="p">)</span>
+<span class="c1"># Print local data</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Local data of global tensor:</span><span class="se">\n</span><span class="s2"> &quot;</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">to_local</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">())</span>
+<span class="c1"># Print global data</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Global data of global tensor:</span><span class="se">\n</span><span class="s2"> &quot;</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">numpy</span><span class="p">())</span>
+</code></pre></div>
+<p>Here are some explanations for some new concepts in the code above:</p>
+<ul>
+<li><code>placement</code> refers to the physical device where the Global Tensor locates. The parameter <code>type</code> specifies the type of the physical device, and here we use <code>"cuda"</code> to represent the GPU device. The parameter <code>ranks</code> specifies the device ID. For readers who don’t have 2 GPUs, the parameter <code>type</code> can be specified as <code>"cpu"</code> to use the CPU to simulate multiple devices, and the following code still works.</li>
+<li><code>sbp</code> refers to the distributed way of the Global Tensor. Here, <code>sbp = flow.sbp.split(dim=0)</code> means that the Global Tensor is evenly split along dimension 0.</li>
+<li>The <code>to_local()</code> method is to acquire the Local Tensor in the present rank from the Global Tensor because the Global Tensor has one Local Tensor in each rank as its practically existing local component.</li>
+</ul>
+<p>Next, configure the environment variables required by multi-process launching. Here, the machine owns 2 GPUs, which correspond to 2 process launchings. So, we should turn on 2 terminals and respectively configure the following environment variables:</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><strong>Clicking</strong> the label "Terminal 0" or "Terminal 1" separately to check its corresponding console’s command/code.</p>
+</div>
+<div class="tabbed-set" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><label for="__tabbed_1_1">Terminal 0</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">MASTER_ADDR</span><span class="o">=</span><span class="m">127</span>.0.0.1 <span class="nv">MASTER_PORT</span><span class="o">=</span><span class="m">17789</span> <span class="nv">WORLD_SIZE</span><span class="o">=</span><span class="m">2</span> <span class="nv">RANK</span><span class="o">=</span><span class="m">0</span> <span class="nv">LOCAL_RANK</span><span class="o">=</span><span class="m">0</span>
+</code></pre></div>
+</div>
+<input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><label for="__tabbed_1_2">Terminal 1</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">MASTER_ADDR</span><span class="o">=</span><span class="m">127</span>.0.0.1 <span class="nv">MASTER_PORT</span><span class="o">=</span><span class="m">17789</span> <span class="nv">WORLD_SIZE</span><span class="o">=</span><span class="m">2</span> <span class="nv">RANK</span><span class="o">=</span><span class="m">1</span> <span class="nv">LOCAL_RANK</span><span class="o">=</span><span class="m">1</span>
+</code></pre></div>
+</div>
+</div>
+<p>More about detailed explanation of the environment variables above and how to conduct a distributed launching with the help of tools, please refer to <a href="#_2">Further reading</a>.</p>
+<p>Finally, launch <code>test_randn_global.py</code> in two terminals respectively and observe the results of creating the Global Tensor:</p>
+<div class="highlight"><pre><span></span><code>python3 test_randn_global.py
+</code></pre></div>
+<p>In Terminal 0 (rank 0), we can see:</p>
+<div class="highlight"><pre><span></span><code>Local data of global tensor:
+  [[-0.07157125 -0.92717147  1.5102768   1.4611115   1.014263  ]
+ [-0.1511031   1.570759    0.9416077   0.6184639   2.4420679 ]]
+Global data of global tensor:
+  [[-0.07157125 -0.92717147  1.5102768   1.4611115   1.014263  ]
+ [-0.1511031   1.570759    0.9416077   0.6184639   2.4420679 ]
+ [-0.38203463  0.453836    0.9136015   2.35773    -0.3279942 ]
+ [-0.8570119  -0.91476554 -0.06646168  0.50022084 -0.4387695 ]]
+</code></pre></div>
+<p>In Terminal 1 (rank 1), we can see:</p>
+<p><div class="highlight"><pre><span></span><code>Local data of global tensor:
+  [[-0.38203463  0.453836    0.9136015   2.35773    -0.3279942 ]
+ [-0.8570119  -0.91476554 -0.06646168  0.50022084 -0.4387695 ]]
+Global data of global tensor:
+  [[-0.07157125 -0.92717147  1.5102768   1.4611115   1.014263  ]
+ [-0.1511031   1.570759    0.9416077   0.6184639   2.4420679 ]
+ [-0.38203463  0.453836    0.9136015   2.35773    -0.3279942 ]
+ [-0.8570119  -0.91476554 -0.06646168  0.50022084 -0.4387695 ]]
+</code></pre></div>
+It’s clear that if we concatenate the Local Tensors in rank 1 and rank 2 on dimension 0, we can get the complete value of the Global Tensor.</p>
+<h2 id="converting-local-tensor-to-global-tensor">Converting Local Tensor to Global Tensor<a class="headerlink" href="#converting-local-tensor-to-global-tensor" title="Permanent link">&para;</a></h2>
+<p>We can firstly create a Local Tensor and then utilize the <a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.Tensor.to_global.html">Tensor.to_global</a> method to convert the Local Tensor to a Global Tensor.</p>
+<p>Create the following program and launch it in the similar way mentioned above:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">oneflow</span> <span class="k">as</span> <span class="nn">flow</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">is_local</span><span class="p">)</span> <span class="c1"># True</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">is_global</span><span class="p">)</span> <span class="c1"># False</span>
+<span class="n">placement</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">placement</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;cuda&quot;</span><span class="p">,</span> <span class="n">ranks</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="n">sbp</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">sbp</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">x_global</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">to_global</span><span class="p">(</span><span class="n">placement</span><span class="o">=</span><span class="n">placement</span><span class="p">,</span> <span class="n">sbp</span><span class="o">=</span><span class="n">sbp</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">x_global</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="c1"># (4, 5)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">is_local</span><span class="p">)</span> <span class="c1"># True</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">x_global</span><span class="o">.</span><span class="n">is_global</span><span class="p">)</span> <span class="c1"># True</span>
+</code></pre></div>
+<p>This program separately creates a Local Tensor with the shape of (2,5) on 2 GPUs, and the newly-created tensors are called x.</p>
+<p>Then, we specify cuda devices in rank 0 and rank 1 as the placement and <code>split(dim=0)</code> as its SBP. After the <code>to_global</code> method, the original Local Tensor is converted to the Global Tensor named <code>x_global</code>.</p>
+<p>We can see that the shape of <code>x_global</code> has been changed into <code>(4, 5)</code>, which is the same as the (global) shape of the Global Tensor.</p>
+<p>The relationship between the Global Tensor and the Local Tensor is the total and the component, and the Local Tensor is the component of the total in a certain rank. The specific relationship between the Global Tensor and the Local Tensor is decided by the placement and SBP. For example, in the above case, the relationship is between tensors on GPU 0 and GPU 1, and we split <code>x_global</code> along dimension 0 to get <code>x</code>.</p>
+<p>Based on the above relationship, the <code>to_global</code> method can infer <code>x_global.shape</code> according to <code>x.shape</code>: it concatenates the Local Tensor <code>x</code> on 2 GPUs along dimension 0 to obtain <code>x_global</code>.</p>
+<p>Except for shape, the Global Tensor also contains some data. The Global Tensor has a Local Tensor in each rank to symbolize its local component, which is its physical data in every rank. By the way, each rank only stores different parts of the data.</p>
+<h2 id="converting-global-tensor-to-local-tensor">Converting Global Tensor to Local Tensor<a class="headerlink" href="#converting-global-tensor-to-local-tensor" title="Permanent link">&para;</a></h2>
+<p>You can utilize the <a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.Tensor.to_local.html">to_local</a> method to obtain the local component of the Global Tensor, just like the following:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">oneflow</span> <span class="k">as</span> <span class="nn">flow</span>
+<span class="n">placement</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">placement</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;cuda&quot;</span><span class="p">,</span> <span class="n">ranks</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="n">sbp</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">sbp</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">placement</span><span class="o">=</span><span class="n">placement</span><span class="p">,</span> <span class="n">sbp</span><span class="o">=</span><span class="n">sbp</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">to_local</span><span class="p">())</span>
+</code></pre></div>
+<p>When the <code>x.to_local()</code> method is executed, two different ranks will separately obtain a Local Tensor with the shape of <code>(2, 5)</code>.</p>
+<p>In Terminal 0 (rank 0), we can see:</p>
+<div class="highlight"><pre><span></span><code>tensor([[-0.2730,  1.8042,  0.0721, -0.5024, -1.2583],
+        [-0.3379,  0.9371,  0.7981, -0.5447, -0.5629]],
+       dtype=oneflow.float32)
+</code></pre></div>
+<p>In Terminal 1 (rank 1), we can see:</p>
+<div class="highlight"><pre><span></span><code>tensor([[ 0.6829,  0.4849,  2.1611,  1.4059,  0.0934], 
+        [-0.0301, -0.6942, -0.8094, -1.3050, -0.1778]], 
+       dtype=oneflow.float32)
+</code></pre></div>
+<p>The <code>to_local()</code> has no parameters, because the Global Tensor has already confirmed its local component according to the placement and SBP, and it’s fine to directly acquire the Local Tensor that its local component corresponds to.</p>
+<h2 id="converting-one-global-tensor-to-another-global-tensor">Converting One Global Tensor to Another Global Tensor<a class="headerlink" href="#converting-one-global-tensor-to-another-global-tensor" title="Permanent link">&para;</a></h2>
+<p>Usually, distributed computing requires inserting communication operations into normal computational logic, but OneFlow only needs users to convert the data distribution type of the Global Tensor.</p>
+<p>In terms of type, the biggest difference between the Global Tensor and the general Local Tensor is that the Global Tensor has global data distribution type, which specifies how the Global Tensor is distributed in each rank, including its placement and SBP.</p>
+<p>The function of placement in global data distribution type is to specify the device group where data is distributed: </p>
+<ul>
+<li>The parameter <code>type</code> specifies the physical device type. <code>cuda represents the GPU device memory, and</code>cpu` refers to the CPU device memory.</li>
+<li>The parameter <code>ranks</code> specifies the process ID set. Because each rank corresponds to one physical device, <code>ranks</code> can also be seen as the device ID set. Actually, <code>ranks</code> is an nd-array composed of rank ID, which supports high-dimensional device arrangement.</li>
+</ul>
+<p>For more details, please refer to <a href="https://oneflow.readthedocs.io/en/v0.8.1/tensor_attributes.html#oneflow.placement">oneflow.placement</a>.</p>
+<p>The function of SBP in the global data distribution type is to specify the relationship between global data and local data:</p>
+<ul>
+<li>
+<p>S, i.e., split(dim), notes that the relationship between global data and local data is split, indicating the global data is evenly split according to the dimension dim and distributed in each rank.</p>
+</li>
+<li>
+<p>B, i.e., broadcast, notes that the relationship between global data and local data is broadcast, indicating the global data is replicated in each rank.</p>
+</li>
+<li>
+<p>P, i.e., partial_sum, notes that the relationship between global data and local data is partial, indicating the value of the global data is the element-wise sum of the local data distributed in each rank.</p>
+</li>
+</ul>
+<p>For more details, please refer to <a href="https://oneflow.readthedocs.io/en/v0.8.1/tensor_attributes.html#oneflow.sbp.sbp">oneflow.sbp.sbp</a>.</p>
+<p>Data re-distribution is commonly seen in parallel computing, i.e., changing the distributed way of data, such as gathering all data slices. In the MPI programming paradigm (SPMD), data re-distribution requires writing explicit communication operations like AllReduce, AllGather, and ReduceScatter. But in OneFlow’s Global View programming paradigm (SPSD), data re-distribution can be achieved by utilizing Global Tensor’s global data distribution type conversion.</p>
+<p>The conversion of the global data distribution type is similar to (explicit) type conversion in general programming languages. Users only need to specify the targeted type when they convert types, and some implicit operations can be executed automatically. For example, when converting the type from double to int, the system will remove the decimal point automatically.</p>
+<p>Similarly, it’s only required to specify the new global data distribution type that the Global Tensor will be converted into, and OneFlow will complete implicit communication operations automatically. And the interface to convert the global data distribution type is <a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.Tensor.to_global.html">Tensor.to_global</a>. The <code>to_global</code> method contains two parameters- <code>placement</code> and <code>sbp</code>, which decide the newly-converted global data distribution type.</p>
+<p>The main implicit operations in converting the global data distribution type are to infer and execute the communications, and these operations are implemented by OneFlow’s <a href="../parallelism/03_consistent_tensor#boxing-sbp">Boxing</a>, which is a mechanism to re-distribute data automatically.</p>
+<p>The following is a case to convert a split-distributed Global Tensor to a broadcast-distributed one:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">oneflow</span> <span class="k">as</span> <span class="nn">flow</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
+<span class="n">placement</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">placement</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;cuda&quot;</span><span class="p">,</span> <span class="n">ranks</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="n">sbp</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">sbp</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">x_global</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">to_global</span><span class="p">(</span><span class="n">placement</span><span class="o">=</span><span class="n">placement</span><span class="p">,</span> <span class="n">sbp</span><span class="o">=</span><span class="n">sbp</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">x_global</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="c1"># (4, 5)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">x_global</span><span class="o">.</span><span class="n">to_local</span><span class="p">())</span>
+<span class="n">sbp_b</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">sbp</span><span class="o">.</span><span class="n">broadcast</span>
+<span class="n">x_global_b</span> <span class="o">=</span> <span class="n">x_global</span><span class="o">.</span><span class="n">to_global</span><span class="p">(</span><span class="n">placement</span><span class="o">=</span><span class="n">placement</span><span class="p">,</span> <span class="n">sbp</span><span class="o">=</span><span class="n">sbp_b</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">x_global_b</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="c1"># (4, 5)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">x_global_b</span><span class="o">.</span><span class="n">to_local</span><span class="p">())</span>
+</code></pre></div>
+<p>When the global data distribution type is converted from <code>x_global</code> to <code>x_global_b</code>, the parameter <code>sbp</code> has changed from <code>flow.sbp.split(0)</code> to <code>flow.sbp.broadcast</code>. Their global shapes have remained <code>(4, 5)</code>, but the local component has turned from a data slice into complete data, and this change can be seen from the printed result of the <code>to_local()</code>.</p>
+<p>Here, the <code>to_global</code> conversion has merged the Local Tensors. Generally speaking, SPMD programming mode requires users to write an <code>all-gather</code> collective communication to merge the Local Tensors, but in OneFlow Global View programming, the type conversion is enough to complete the merging process.  </p>
+<p>Global Tensor’s type conversion can infer and execute the communication operations automatically. So, algorithm developers can concentrate on <strong>thinking in data distribution</strong> rather than <strong>thinking in data communication operation</strong>, and what they imagine is what they obtain, which helps them to develop distributed programs more efficiently.</p>
+<p>Let’s add by introducing how to apply <code>numpy()</code> to the Global Tensor. For random Global Tensor, such as <code>x_global</code>, <code>x_global.numpy()</code> is equivalent to <code>x_global.to_global(spb=flow.sbp.broadcast).to_local().numpy()</code>, which means <code>x_global.numpy()</code> will firstly convert the original Global Tensor to one, which SBP is flow.sbp.broadcast(), then conduct a <code>to_local</code> operation and finally invoke <code>numpy()</code> for the Local Tensor. Therefore, the <code>x_global.numpy()</code> method can obtain complete data.</p>
+<h2 id="global-tensor-participating-in-computation">Global Tensor Participating in Computation<a class="headerlink" href="#global-tensor-participating-in-computation" title="Permanent link">&para;</a></h2>
+<p>This section introduces how the Global Tensor participates in practical computation. Take the Global Tensor participating in matrix multiplication computation for example, please firstly create the following program:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">oneflow</span> <span class="k">as</span> <span class="nn">flow</span>
+<span class="n">placement</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">placement</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;cuda&quot;</span><span class="p">,</span> <span class="n">ranks</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">placement</span><span class="o">=</span><span class="n">placement</span><span class="p">,</span> <span class="n">sbp</span><span class="o">=</span><span class="n">flow</span><span class="o">.</span><span class="n">sbp</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+<span class="n">w</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="n">placement</span><span class="o">=</span><span class="n">placement</span><span class="p">,</span> <span class="n">sbp</span><span class="o">=</span><span class="n">flow</span><span class="o">.</span><span class="n">sbp</span><span class="o">.</span><span class="n">broadcast</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">y</span><span class="o">.</span><span class="n">is_global</span><span class="p">)</span>  <span class="c1"># True</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>  <span class="c1"># (4, 8)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">y</span><span class="o">.</span><span class="n">sbp</span><span class="p">)</span>  <span class="c1"># (flow.sbp.split(dim=0))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">y</span><span class="o">.</span><span class="n">to_local</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">())</span>
+</code></pre></div>
+<p>In the program above, we have created 2 Global Tensors-<code>x</code> and <code>w</code>, and they participate in <code>oneflow.matmul</code> computation and generate <code>y</code>. </p>
+<p>Most of OneFlow’s operators support computing the Global Tensor. When <code>flow.matmul</code> executes the Global Tensor, there is nothing special about its interface. Arguably, most of OneFlow’s operators are polymorphic, so they can decide how to compute according to the input:</p>
+<ul>
+<li>If the input of the operator is a Local Tensor, the operator will compute the tensor in normal single-device single-GPU execution mode.</li>
+<li>If the input of the operator is a Global Tensor, the operator will compute the tensor in global view (multi-device multi-GPU) mode.</li>
+</ul>
+<p>The operators supporting polymorphic execution are very convenient for users to change the single-GPU code into distributed code: they only need to convert the (Local) Tensor they accept to a Global Tensor.</p>
+<p>Just like single-device execution requires the data to be input into the same device, in the program above, the premise of the operator being executed successfully is that <code>x</code> and <code>w</code> have the same placement.</p>
+<p>The result of matrix multiplication-<code>y</code> is also a Global Tensor. When <code>flow.matmul</code> computes <code>x</code> and <code>w</code>, it will automatically infer the placement and SBP of the output data. The following are the principles: </p>
+<ul>
+<li>Placement: The input data and the output data have the same placement;</li>
+<li>SBP: The inference principle of the output data's SBP is decided by the operator type, and this principle is built into OneFlow. For more details, please refer to <a href="../parallelism/02_sbp.html#sbp-signature">SBP Signature</a>.</li>
+</ul>
+<p>Here, the multiplied result of <code>flow.sbp.split(0)</code> and <code>flow.sbp.broadcast</code> will be inferred as <code>flow.sbp.split(0)</code>. <code>x</code> is a data slice in each rank, <code>w</code> complete data, and <code>y</code> a data slice. Anyone familiar with common parallel execution approaches will find that a forward computation with data parallelism is conducted here. <code>x</code> is a data slice, and <code>w</code> the complete parameters.</p>
+<h2 id="conclusion">Conclusion<a class="headerlink" href="#conclusion" title="Permanent link">&para;</a></h2>
+<p>This article has discussed:</p>
+<ul>
+<li>Global View offers the SPSD programming view;</li>
+<li>Global Tensor is visible on all processes when being executed;</li>
+<li>Global Tensor and Local Tensor are mutually convertible;</li>
+<li>Global Tensor supports converting the global data distribution type to implement distributed communication;</li>
+<li>OneFlow operators are polymorphic enough to enable the execution of the Global Tensor;</li>
+</ul>
+<p>So, this article will come to a close, and it fisrtly introduces how to create a Global Tensor and finally explains the detailed steps for data parallelism computation that is based on a Global Tensor.</p>
+<p>More about parallelism ways and SBP's inference logic will be discussed in our later articles. </p>
+<h2 id="further-reading">Further Reading<a class="headerlink" href="#further-reading" title="Permanent link">&para;</a></h2>
+<h3 id="oneflows-multi-machine-multi-gpu-launching-and-its-required-environment-variables">OneFlow's multi-machine multi-GPU launching and its required environment variables<a class="headerlink" href="#oneflows-multi-machine-multi-gpu-launching-and-its-required-environment-variables" title="Permanent link">&para;</a></h3>
+<p>OneFlow's Global Tensors are executed under ** Multi-Client mode**, which means each device corresponds to one process. For example, <code>n Machine m GPU</code> has <code>n * m</code> processes. Besides, each process has its own rank ID, which corresponds to the ranks of the Global Tensor's <code>placement</code> parameter.</p>
+<p>Take <code>2 Machines 2 GPUs</code> for example, Machine 0 corresponds to GPU 0 and GPU 1, and Machine 1 corresponds to GPU 2 and GPU 3. So, <code>flow.placement(type="cuda", ranks=[2])</code> can only identify the GPU 0 on Machine 1.</p>
+<p>Generally, in the <code>n Machine m GPU</code> environment, <code>flow.placement(type="cuda", ranks=[k])</code> only identifies the GPU <code>k % m</code> on Machine <code>k / n</code>.</p>
+<p>Because the Multi-Client mode is adopted , we need to launch different processes corresponding to each device. In OneFlow, all processes need to launch the same scripts, and different processes distinguish process ID and establish communications according to different environment variables.</p>
+<p>Notes of environment variables:</p>
+<ul>
+<li><code>MASTER_ADDR</code>：the IP of Machine 0 under multi-machine training;</li>
+<li><code>MASTER_PORT</code>：the listening port of Machine 0 under multi-machine training, and this port shouldn’t conflict with the occupied ports;</li>
+<li><code>WORLD_SIZE</code>: the number of computing devices in the whole cluster. Because it’s still not feasible to configure different number of GPUs on each device, the <code>WORLD_SIZE</code> equals the machine numbers multiplies the GPU numbers on each machine. In the previous case, we <a href="#global-tensor_2">create the Global Tensor</a> in single machine 2 GPUs environment, so the <code>WORLD_SIZE=2</code>;</li>
+<li><code>RANK</code>：the process ID of all devices in the whole cluster;</li>
+<li><code>LOCAL_RANK</code>：the process ID of single device;</li>
+</ul>
+<p>Differences between <code>RANK</code> and <code>LOCAL_RANK</code>: </p>
+<ul>
+<li>For single machine training, including single-machine single-GPU and single-machine multi-GPU, <code>RANK</code> equals to <code>LOCAL_RANK</code>;</li>
+<li>For multi-machine training, the upper limit to <code>LOCAL_RANK</code> for each device is the number of computing devices on each machine; the upper limit to <code>RANK</code> is the sum of computing devices on all machines, and all devices are numbered from 0. (Because these computing devices are numbered from 0, the upper limit doesn’t exist.)</li>
+</ul>
+<p>Take <code>2 Machines 2 GPUs</code> for example, the corresponding relationship between <code>LOCAL_RANK</code> and <code>RANK</code> for each GPU is listed as follows:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>RANK</th>
+<th>LOCAL_RANK</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GPU 0 on Machine 0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>GPU 0 on Machine 1</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr>
+<td>GPU 1 on Machine 0</td>
+<td>2</td>
+<td>0</td>
+</tr>
+<tr>
+<td>GPU 1 on Machine 1</td>
+<td>3</td>
+<td>1</td>
+</tr>
+</tbody>
+</table>
+<p>Although it is complicated to utilize environment variables launching, this approach is widely applicable because users can adopt random ways to launch the processes.</p>
+<p>Besides, OneFlow also offers a convenient tool, <a href="../parallelism/04_launch.html">oneflow.distributed.launch</a>, to help users launch multiple processes in a distributed way and construct environment variables automatically.</p>
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+        
+          <a href="#" class="md-top md-icon" data-md-component="top" data-md-state="hidden">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"/></svg>
+            Back to top
+          </a>
+        
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <nav class="md-footer__inner md-grid" aria-label="Footer">
+      
+        
+        <a href="../parallelism/06_pipeline.html" class="md-footer__link md-footer__link--prev" aria-label="Previous: Pipelining Parallelism" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              Pipelining Parallelism
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="oneflow2onnnx.html" class="md-footer__link md-footer__link--next" aria-label="Next: OneFlow with ONNX" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              OneFlow with ONNX
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+          <div class="md-footer-copyright__highlight">
+            Copyright &copy; 2017 - 2021 OneFlow
+          </div>
+        
+        Made with
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs
+        </a>
+        
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.top"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.477d984a.min.js", "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.ddd52ceb.min.js"></script>
+      
+        <script src="../javascripts/config.js"></script>
+      
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

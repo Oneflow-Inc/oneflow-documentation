@@ -1,0 +1,1271 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="OneFlow: a efficient distributed deep learning framework.">
+      
+      
+      
+      
+        <link rel="canonical" href="https://docs.oneflow.org/v0.8.0/cookies/one_embedding.html">
+      
+      <link rel="icon" href="../assets/favicon.png">
+      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-7.1.11">
+    
+    
+      
+        <title>Large-Scale Embedding Solution OneEmbedding - OneFlow</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.3754935a.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.f1a3b89f.min.css">
+        
+          
+          
+          <meta name="theme-color" content="#4051b5">
+        
+      
+    
+    
+    
+      
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>:root{--md-text-font-family:"Roboto";--md-code-font-family:"Roboto Mono"}</style>
+      
+    
+    
+    
+    
+      
+
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <script>function __prefix(e){return new URL("..",location).pathname+"."+e}function __get(e,t=localStorage){return JSON.parse(t.getItem(__prefix(e)))}</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#large-scale-embedding-solution-oneembedding" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../index.html" title="OneFlow" class="md-header__button md-logo" aria-label="OneFlow" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 89 89">
+  <path d="M3.136,17.387l0,42.932l42.932,21.467l-42.932,-64.399Z" />
+  <path d="M21.91,8l42.933,64.398l-18.775,9.388l-42.932,-64.399l18.774,-9.387Z" style="fill-opacity: 0.5" />
+  <path d="M67.535,17.387l-27.262,18.156l21.878,32.818l5.384,2.691l0,-53.665Z" />
+  <path d="M67.535,17.387l0,53.666l18.774,-9.388l0,-53.665l-18.774,9.387Z" style="fill-opacity: 0.25" />
+</svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            OneFlow
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Large-Scale Embedding Solution OneEmbedding
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <div class="md-header__option">
+        <div class="md-select">
+          
+          <button class="md-header__button md-icon" aria-label="Select language">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.52 17.52 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04M18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12m-2.62 7 1.62-4.33L19.12 17h-3.24z"/></svg>
+          </button>
+          <div class="md-select__inner">
+            <ul class="md-select__list">
+              
+                <li class="md-select__item">
+                  <a href="https://docs.oneflow.org" hreflang="zh" class="md-select__link">
+                    中文
+                  </a>
+                </li>
+                
+                <li class="md-select__item">
+                  <a href="https://docs.oneflow.org/en" hreflang="en" class="md-select__link">
+                    English
+                  </a>
+                </li>
+                
+            </ul>
+          </div>
+        </div>
+      </div>
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        
+<a href="https://github.com/OneFlow-Inc/oneflow" title="Go to repository" class="md-source"
+  data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    OneFlow
+  </div>
+</a>
+      </div>
+    
+  </nav>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-tabs__inner md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+
+
+  <li class="md-tabs__item">
+    <a href="../index.html" class="md-tabs__link">
+      Home
+    </a>
+  </li>
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../basics/01_quickstart.html" class="md-tabs__link">
+        Basics
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../parallelism/01_introduction.html" class="md-tabs__link">
+        Distributed Training
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+    
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="global_tensor.html" class="md-tabs__link md-tabs__link--active">
+        Cookbook
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="https://oneflow.readthedocs.io/en/master/" class="md-tabs__link">
+        API
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../index.html" title="OneFlow" class="md-nav__button md-logo" aria-label="OneFlow" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 89 89">
+  <path d="M3.136,17.387l0,42.932l42.932,21.467l-42.932,-64.399Z" />
+  <path d="M21.91,8l42.933,64.398l-18.775,9.388l-42.932,-64.399l18.774,-9.387Z" style="fill-opacity: 0.5" />
+  <path d="M67.535,17.387l-27.262,18.156l21.878,32.818l5.384,2.691l0,-53.665Z" />
+  <path d="M67.535,17.387l0,53.666l18.774,-9.388l0,-53.665l-18.774,9.387Z" style="fill-opacity: 0.25" />
+</svg>
+
+    </a>
+    OneFlow
+  </label>
+  
+    <div class="md-nav__source">
+      
+<a href="https://github.com/OneFlow-Inc/oneflow" title="Go to repository" class="md-source"
+  data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    OneFlow
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../index.html" class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" >
+      
+      <label class="md-nav__link" for="__nav_2">
+        Basics
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="Basics" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          Basics
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics/01_quickstart.html" class="md-nav__link">
+        Quickstart
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics/02_tensor.html" class="md-nav__link">
+        Tensor
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics/03_dataset_dataloader.html" class="md-nav__link">
+        Datesets & Dataloaders
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics/04_build_network.html" class="md-nav__link">
+        Build Neural Network
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics/05_autograd.html" class="md-nav__link">
+        Autograd
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics/06_optimization.html" class="md-nav__link">
+        Backpropagation and Optimizer
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics/07_model_load_save.html" class="md-nav__link">
+        Model saving and loading
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics/08_nn_graph.html" class="md-nav__link">
+        Static Graph Interface
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" >
+      
+      <label class="md-nav__link" for="__nav_3">
+        Distributed Training
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="Distributed Training" data-md-level="1">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          Distributed Training
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parallelism/01_introduction.html" class="md-nav__link">
+        Common Parallel Strategies
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parallelism/02_sbp.html" class="md-nav__link">
+        Global View
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parallelism/03_consistent_tensor.html" class="md-nav__link">
+        Global Tensor
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parallelism/04_2d-sbp.html" class="md-nav__link">
+        2D SBP
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parallelism/04_launch.html" class="md-nav__link">
+        Distributed Training Launcher
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parallelism/05_ddp.html" class="md-nav__link">
+        Data Parallelism Training
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parallelism/06_pipeline.html" class="md-nav__link">
+        Pipelining Parallelism
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" checked>
+      
+      <label class="md-nav__link" for="__nav_4">
+        Cookbook
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="Cookbook" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          Cookbook
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="global_tensor.html" class="md-nav__link">
+        Basic Operations for Using Global Tensor to Program on Cluster
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="oneflow2onnnx.html" class="md-nav__link">
+        OneFlow with ONNX
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="serving.html" class="md-nav__link">
+        Model Deployment
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="amp.html" class="md-nav__link">
+        Automatic Mixed Precision Training
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="activation_checkpointing.html" class="md-nav__link">
+        Activation Checkpointing
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="torch2flow.html" class="md-nav__link">
+        Converting Pre-trained Model from PyTorch to OneFlow
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="transfer_learning.html" class="md-nav__link">
+        Transfer Learning in Computer Vision
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Large-Scale Embedding Solution OneEmbedding
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="one_embedding.html" class="md-nav__link md-nav__link--active">
+        Large-Scale Embedding Solution OneEmbedding
+      </a>
+      
+        
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#get-start-to-oneembedding-quickly" class="md-nav__link">
+    Get Start to OneEmbedding Quickly
+  </a>
+  
+    <nav class="md-nav" aria-label="Get Start to OneEmbedding Quickly">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#configure-embedding-table-with-make_table_options" class="md-nav__link">
+    Configure Embedding Table with make_table_options
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configure-the-storage-attribute-of-the-embedding-table" class="md-nav__link">
+    Configure the Storage Attribute of the Embedding Table
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#instantiate-embedding" class="md-nav__link">
+    Instantiate Embedding
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#construct-graph-for-training" class="md-nav__link">
+    Construct Graph for Training
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-features-of-oneembedding" class="md-nav__link">
+    The Features of OneEmbedding
+  </a>
+  
+    <nav class="md-nav" aria-label="The Features of OneEmbedding">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#feature-id-and-dynamic-insertion" class="md-nav__link">
+    Feature ID and Dynamic Insertion
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#feature-id-and-multi-table-query" class="md-nav__link">
+    Feature ID and Multi-Table Query
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-to-choose-the-proper-storage-configuration" class="md-nav__link">
+    How to Choose the Proper Storage Configuration
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#distributed-training" class="md-nav__link">
+    Distributed Training
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#extended-reading-dlrm" class="md-nav__link">
+    Extended Reading: DLRM
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zero.html" class="md-nav__link">
+        Zero Redundancy Optimizer (ZeRO)
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" >
+      
+      <label class="md-nav__link" for="__nav_5">
+        API
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="API" data-md-level="1">
+        <label class="md-nav__title" for="__nav_5">
+          <span class="md-nav__icon md-icon"></span>
+          API
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://oneflow.readthedocs.io/en/master/" class="md-nav__link">
+        API
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#get-start-to-oneembedding-quickly" class="md-nav__link">
+    Get Start to OneEmbedding Quickly
+  </a>
+  
+    <nav class="md-nav" aria-label="Get Start to OneEmbedding Quickly">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#configure-embedding-table-with-make_table_options" class="md-nav__link">
+    Configure Embedding Table with make_table_options
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configure-the-storage-attribute-of-the-embedding-table" class="md-nav__link">
+    Configure the Storage Attribute of the Embedding Table
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#instantiate-embedding" class="md-nav__link">
+    Instantiate Embedding
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#construct-graph-for-training" class="md-nav__link">
+    Construct Graph for Training
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-features-of-oneembedding" class="md-nav__link">
+    The Features of OneEmbedding
+  </a>
+  
+    <nav class="md-nav" aria-label="The Features of OneEmbedding">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#feature-id-and-dynamic-insertion" class="md-nav__link">
+    Feature ID and Dynamic Insertion
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#feature-id-and-multi-table-query" class="md-nav__link">
+    Feature ID and Multi-Table Query
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-to-choose-the-proper-storage-configuration" class="md-nav__link">
+    How to Choose the Proper Storage Configuration
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#distributed-training" class="md-nav__link">
+    Distributed Training
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#extended-reading-dlrm" class="md-nav__link">
+    Extended Reading: DLRM
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                  <a href="https://github.com/OneFlow-Inc/oneflow-documentation/blob/master/en/docs/cookies/one_embedding.md" title="Edit this page" class="md-content__button md-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
+                  </a>
+                
+                
+                <h1 id="large-scale-embedding-solution-oneembedding">Large-Scale Embedding Solution: OneEmbedding<a class="headerlink" href="#large-scale-embedding-solution-oneembedding" title="Permanent link">&para;</a></h1>
+<p>Embedding is an important component of recommender system, and it has also spread to many fields outside recommender systems. Each framework provides basic operators for Embedding, for example, <code>flow.nn.Embedding</code> in OneFlow:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">oneflow</span> <span class="k">as</span> <span class="nn">flow</span>
+<span class="n">indices</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">tensor</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">9</span><span class="p">]],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">flow</span><span class="o">.</span><span class="n">int</span><span class="p">)</span>
+<span class="n">embedding</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Embedding</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">embedding</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span>
+</code></pre></div>
+<p>OneEmbedding is the large-scale Embedding solution that OneFlow provides to solve the problem of large-scale deep recommender systems. OneEmbedding has the following advantages compared to ordionary opeartors:</p>
+<ol>
+<li>
+<p>With Flexible hierarchical storage, OneEmbedding can place the Embedding table on GPU memory, CPU memory or SSD, and allow high-speed devices to be used as caches for low-speed devices to achieve both speed and capacity.</p>
+</li>
+<li>
+<p>OneEmbedding supports dynamic expansion.</p>
+</li>
+</ol>
+<h2 id="get-start-to-oneembedding-quickly">Get Start to OneEmbedding Quickly<a class="headerlink" href="#get-start-to-oneembedding-quickly" title="Permanent link">&para;</a></h2>
+<p>The following steps is an example of getting started with OneEmbeeding quickly: </p>
+<ul>
+<li>Configure Embedding table with <code>make_table_options</code></li>
+<li>Configure the storage attribute of the Embedding table</li>
+<li>Instantiate Embedding</li>
+<li>Construct Graph for training</li>
+</ul>
+<h3 id="configure-embedding-table-with-make_table_options">Configure Embedding Table with <code>make_table_options</code><a class="headerlink" href="#configure-embedding-table-with-make_table_options" title="Permanent link">&para;</a></h3>
+<p>By importing relevant package and the following codes, you can configure Embedding table with <code>make_table_options</code>.OneEmbedding supports simultaneous creation of multiple Embedding table. The following codes configured three Embedding table.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">oneflow</span> <span class="k">as</span> <span class="nn">flow</span>
+<span class="kn">import</span> <span class="nn">oneflow.nn</span> <span class="k">as</span> <span class="nn">nn</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="n">tables</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">flow</span><span class="o">.</span><span class="n">one_embedding</span><span class="o">.</span><span class="n">make_table_options</span><span class="p">(</span>
+        <span class="n">flow</span><span class="o">.</span><span class="n">one_embedding</span><span class="o">.</span><span class="n">make_uniform_initializer</span><span class="p">(</span><span class="n">low</span><span class="o">=-</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+    <span class="p">),</span>
+    <span class="n">flow</span><span class="o">.</span><span class="n">one_embedding</span><span class="o">.</span><span class="n">make_table_options</span><span class="p">(</span>
+        <span class="n">flow</span><span class="o">.</span><span class="n">one_embedding</span><span class="o">.</span><span class="n">make_uniform_initializer</span><span class="p">(</span><span class="n">low</span><span class="o">=-</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mf">0.05</span><span class="p">)</span>
+    <span class="p">),</span>
+    <span class="n">flow</span><span class="o">.</span><span class="n">one_embedding</span><span class="o">.</span><span class="n">make_table_options</span><span class="p">(</span>
+        <span class="n">flow</span><span class="o">.</span><span class="n">one_embedding</span><span class="o">.</span><span class="n">make_uniform_initializer</span><span class="p">(</span><span class="n">low</span><span class="o">=-</span><span class="mf">0.15</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mf">0.15</span><span class="p">)</span>
+    <span class="p">),</span>
+<span class="p">]</span>
+</code></pre></div>
+<p>When configuring the Embedding table, you need to specify the initialization method. The above Embedding tables are initialized in the <code>uniform</code> method. The result of configuring the Embedding table is stored in the <code>tables</code> variable</p>
+<p>Click <a href="https://oneflow.readthedocs.io/en/v0.8.1/one_embedding.html#oneflow.one_embedding.make_table_options">make_table_options</a> and <a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.one_embedding.make_uniform_initializer.html#oneflow.one_embedding.make_uniform_initializer">make_uniform_initializer</a> to check more detailed information.</p>
+<h3 id="configure-the-storage-attribute-of-the-embedding-table">Configure the Storage Attribute of the Embedding Table<a class="headerlink" href="#configure-the-storage-attribute-of-the-embedding-table" title="Permanent link">&para;</a></h3>
+<p>Then run the following codes to configure the storage attribute of the Embedding table:</p>
+<div class="highlight"><pre><span></span><code><span class="n">store_options</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">one_embedding</span><span class="o">.</span><span class="n">make_cached_ssd_store_options</span><span class="p">(</span>
+    <span class="n">cache_budget_mb</span><span class="o">=</span><span class="mi">8142</span><span class="p">,</span>
+    <span class="n">persistent_path</span><span class="o">=</span><span class="s2">&quot;/your_path_to_ssd&quot;</span><span class="p">,</span> 
+    <span class="n">capacity</span><span class="o">=</span><span class="mi">40000000</span><span class="p">,</span>
+    <span class="n">size_factor</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>              
+    <span class="n">physical_block_size</span><span class="o">=</span><span class="mi">512</span>
+<span class="p">)</span>
+</code></pre></div>
+<p>By calling <code>make_cached_ssd_store_options</code> here, you can store Embedding table on SSD and use GPU as cache. For the meaning of specific parameters, please refer to <a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.one_embedding.make_cached_ssd_store_options.html">make_cached_ssd_store_options API 文档</a>.</p>
+<p>In addition, you can use pure GPU as storage; or use CPU memory to store Embedding table, but use GPU as cache. For more details, please refer to <a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.one_embedding.make_device_mem_store_options.html">make_device_mem_store_options</a> and <a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.one_embedding.make_cached_host_mem_store_options.html">make_cached_host_mem_store_option</a>.</p>
+<h3 id="instantiate-embedding">Instantiate Embedding<a class="headerlink" href="#instantiate-embedding" title="Permanent link">&para;</a></h3>
+<p>After the above configuration is completed, you can use <code>MultiTableEmbedding</code> to get the instantiated Embedding layer.</p>
+<div class="highlight"><pre><span></span><code><span class="n">embedding_size</span> <span class="o">=</span> <span class="mi">128</span>
+<span class="n">embedding</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">one_embedding</span><span class="o">.</span><span class="n">MultiTableEmbedding</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;my_embedding&quot;</span><span class="p">,</span>
+    <span class="n">embedding_dim</span><span class="o">=</span><span class="n">embedding_size</span><span class="p">,</span>
+    <span class="n">dtype</span><span class="o">=</span><span class="n">flow</span><span class="o">.</span><span class="n">float</span><span class="p">,</span>
+    <span class="n">key_type</span><span class="o">=</span><span class="n">flow</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span>
+    <span class="n">tables</span><span class="o">=</span><span class="n">tables</span><span class="p">,</span>
+    <span class="n">store_options</span><span class="o">=</span><span class="n">store_options</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">embedding</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;cuda&quot;</span><span class="p">)</span>
+</code></pre></div>
+<p>Among them, <code>tables</code> is the Embedding table attribute previously configured by <code>make_table_options</code>, <code>store_options</code> is the previously configured storage attribute, <code>embedding_dim</code> is the feature dimension, <code>dtype</code> is the data type of the feature vector, <code>key_type</code> is the data type of feature ID.</p>
+<p>If two OneEmbeddings are created at the same time, different name and persistent path parameters are needed to be set during instantiation. For more detailes, please refer to <a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.one_embedding.MultiTableEmbedding.forward.html">one_embedding.MultiTableEmbedding</a>.</p>
+<h3 id="construct-graph-for-training">Construct Graph for Training<a class="headerlink" href="#construct-graph-for-training" title="Permanent link">&para;</a></h3>
+<p>Currently, OneEmbedding is only supported in Graph mode. </p>
+<p>In the following example, we construct a simple Graph class that includes <code>embedding</code> and <code>mlp</code> layers.</p>
+<div class="highlight"><pre><span></span><code><span class="n">num_tables</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="n">mlp</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">FusedMLP</span><span class="p">(</span>
+    <span class="n">in_features</span><span class="o">=</span><span class="n">embedding_size</span> <span class="o">*</span> <span class="n">num_tables</span><span class="p">,</span>
+    <span class="n">hidden_features</span><span class="o">=</span><span class="p">[</span><span class="mi">512</span><span class="p">,</span> <span class="mi">256</span><span class="p">,</span> <span class="mi">128</span><span class="p">],</span>
+    <span class="n">out_features</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">skip_final_activation</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">mlp</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;cuda&quot;</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">TrainGraph</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Graph</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">embedding_lookup</span> <span class="o">=</span> <span class="n">embedding</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mlp</span> <span class="o">=</span> <span class="n">mlp</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_optimizer</span><span class="p">(</span>
+            <span class="n">flow</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">embedding_lookup</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">momentum</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_optimizer</span><span class="p">(</span>
+            <span class="n">flow</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mlp</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">momentum</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+        <span class="p">)</span>
+    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ids</span><span class="p">):</span>
+        <span class="n">embedding</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedding_lookup</span><span class="p">(</span><span class="n">ids</span><span class="p">)</span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mlp</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">embedding</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">num_tables</span> <span class="o">*</span> <span class="n">embedding_size</span><span class="p">)))</span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="n">loss</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">loss</span>
+</code></pre></div>
+<p>Then you can instantiate the Graph and start training.</p>
+<div class="highlight"><pre><span></span><code><span class="n">ids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="n">num_tables</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+<span class="n">ids_tensor</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">ids</span><span class="p">,</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;cuda&quot;</span><span class="p">)</span>
+<span class="n">graph</span> <span class="o">=</span> <span class="n">TrainGraph</span><span class="p">()</span>
+<span class="n">loss</span> <span class="o">=</span> <span class="n">graph</span><span class="p">(</span><span class="n">ids_tensor</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">loss</span><span class="p">)</span>
+</code></pre></div>
+<p>For the detailed information on using Graph, please refer to <a href="../basics/08_nn_graph.html">静态图模块 nn.Graph</a>. </p>
+<h2 id="the-features-of-oneembedding">The Features of OneEmbedding<a class="headerlink" href="#the-features-of-oneembedding" title="Permanent link">&para;</a></h2>
+<h3 id="feature-id-and-dynamic-insertion">Feature ID and Dynamic Insertion<a class="headerlink" href="#feature-id-and-dynamic-insertion" title="Permanent link">&para;</a></h3>
+<p>OneEmbedding supports dynamic insertion of new feature ID. As long as the storage medium has sufficient capacity, there is no upper limit on the number of feature IDs. This is why when you use <code>make_table_options</code>, you only need to specify the initialization method, not the total number of feature IDs (Embedding table lines).</p>
+<h3 id="feature-id-and-multi-table-query">Feature ID and Multi-Table Query<a class="headerlink" href="#feature-id-and-multi-table-query" title="Permanent link">&para;</a></h3>
+<p><strong>Feature ID cannot be repeated</strong></p>
+<p>OneEmbedding users who make datasets need to pay special attention: When using <code>MultiTableEmbedding</code> to create multiple tables at the same time,multiple Embedding Tables only have different initialization parameters, and other parameters are the same,at this time, <strong>feature IDs in multiple tables cannot be repeated</strong>.</p>
+<p><strong>Multi-table query</strong></p>
+<p>The query method is no different from the normal Embedding query method if you only use <code>MultiTableEmbedding</code> to configure one table. You can call it directly and pass the feature ID, such as <code>embedding_lookup(ids)</code>.</p>
+<p>If you use <code>MultiTableEmbedding</code> to configure more than one tables, then you need to specify in which to query for a feature ID with the following two methods:</p>
+<p>Method 1: Pass an <code>ids</code> of shape <code>(batch_size, number of Embedding table)</code>  for query, then the column of this <code>ids</code> corresponds to a Embedding table in turn.</p>
+<p>For example:
+<div class="highlight"><pre><span></span><code><span class="n">ids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">488</span><span class="p">,</span> <span class="mi">333</span><span class="p">,</span> <span class="mi">220</span><span class="p">],</span> <span class="p">[</span><span class="mi">18</span><span class="p">,</span> <span class="mi">568</span><span class="p">,</span> <span class="mi">508</span><span class="p">]],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+<span class="c1"># This means to query `[[488], [18]]` in the zeroth table, `[[333], [568]]` in the first table, and the corresponding feature vector of `[[220], [508]]` in the second table.</span>
+<span class="n">embedding_lookup</span><span class="p">(</span><span class="n">ids</span><span class="p">)</span>
+</code></pre></div></p>
+<p>Method 2:When passing the <code>ids</code> parameter, pass a <code>table_ids</code> parameter, which has the exact same shape as <code>ids</code>, and specifies the ordinal number of the table in <code>table_ids</code>.</p>
+<p>For example:
+<div class="highlight"><pre><span></span><code><span class="n">ids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">488</span><span class="p">,</span> <span class="mi">333</span><span class="p">,</span> <span class="mi">220</span><span class="p">,</span> <span class="mi">18</span><span class="p">,</span> <span class="mi">568</span><span class="p">,</span> <span class="mi">508</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+<span class="c1"># table_ids has the exact same shape as `ids`</span>
+<span class="n">table_ids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+<span class="c1"># This means to query `488, 18` in the zeroth table, `333, 568` in the first table, and the corresponding feature vector of `220, 508` in the second table.</span>
+<span class="n">embedding_lookup</span><span class="p">(</span><span class="n">ids</span><span class="p">,</span> <span class="n">table_ids</span><span class="p">)</span>
+</code></pre></div>
+For more details, please refer to  <a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.one_embedding.MultiTableEmbedding.forward.html">MultiTableEmbedding.forward</a>.</p>
+<h3 id="how-to-choose-the-proper-storage-configuration">How to Choose the Proper Storage Configuration<a class="headerlink" href="#how-to-choose-the-proper-storage-configuration" title="Permanent link">&para;</a></h3>
+<p>OneEmbedding provides three storage options configurations,they are pure GPU storage, use CPU memory to store and GPU memory as cache and use SSD to store and GPU memory as cache.</p>
+<ul>
+<li>
+<p>Pure GPU storage</p>
+<p>When the size of Embedding table is smaller than the GPU memory, it is the fastest to place all the Embedding table on the GPU memory. In this case, it is recommended to select the pure GPU storage configuration.</p>
+</li>
+<li>
+<p>Use CPU memory to store and GPU memory as cache</p>
+<p>When the size of Embedding table is larger than the GPU memory, but smaller than the CPU memory, it is recommended to store the Embedding table in the CPU memory and use the GPU memory as cache. </p>
+</li>
+<li>
+<p>Use SSD to store and GPU memory as cache</p>
+<p>When the size of Embedding table is larger than both the GPU memory and the system memory, if you have a high-speed SSD, you can choose to store the Embedding table in the SSD and use the GPU memory as a cache. In this case, frequent data reading and writing will be performed on the stored vocabulary during the training process, so the random reading and writing speed of files under the path set by <code>persistent_path</code> has a great impact on the overall performance. It is strongly recommended to use a high-performance SSD. If you use a normal disk, it will have a great negative impact on the overall performance.</p>
+</li>
+</ul>
+<h3 id="distributed-training">Distributed Training<a class="headerlink" href="#distributed-training" title="Permanent link">&para;</a></h3>
+<p>Similar to other modules of OneFlow, OneEmbedding supports distributed expansion natively. Users can refer to the README in <a href="https://github.com/Oneflow-Inc/models/tree/main/RecommenderSystems/dlrm">#dlrm</a> to start DLRM distributed training. You can also refer to <a href="../parallelism/03_consistent_tensor.html">Global Tensor</a> for necessary prerequisites.</p>
+<p>When using the OneEmbedding module for distributed expansion, please be careful:</p>
+<ul>
+<li>Currently, OneEmbedding only supports placement on all devices, and the parallelism must be the same as the world size. For example, when training with 4 cards in parallel, the parallelism of the Embedding table must be 4. It is not supported when the network is trained with 4 cards but the Embedding table parallelism is 2.</li>
+<li>The <code>persistent_path</code> parameter in the <code>store_options</code> configuration specifies the path of the storage. In parallel scenarios, it can be either a string representing a path or a <code>list</code>. If configured as a string representing a path, it represents the root directory under each rank in distributed parallelism. OneFlow will create a storage path based on the number of each rank under this root path, and the name format is <code>rank_id-num_rank</code>. If <code>persistent_path</code> is a <code>list</code>, rank will be configured individually for each item in the list.</li>
+<li>In parallel scenarios, the <code>capacity</code> in the <code>store_options</code> configuration represents the capacity of total Embedding table, but not the capacity of each rank. <code>cache_budget_mb</code> represents the video memory per GPU device.</li>
+</ul>
+<h2 id="extended-reading-dlrm">Extended Reading: DLRM<a class="headerlink" href="#extended-reading-dlrm" title="Permanent link">&para;</a></h2>
+<p>This article shows how to get started with OneEmbedding quickly.</p>
+<p>Practical examples of OneEmbedding in DLRM tasks are prepared in the OneFlow model repository, please refer to <a href="https://github.com/Oneflow-Inc/models/tree/main/RecommenderSystems/dlrm">https://github.com/Oneflow-Inc/models/tree/main/RecommenderSystems/dlrm</a></p>
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+        
+          <a href="#" class="md-top md-icon" data-md-component="top" data-md-state="hidden">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"/></svg>
+            Back to top
+          </a>
+        
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <nav class="md-footer__inner md-grid" aria-label="Footer">
+      
+        
+        <a href="transfer_learning.html" class="md-footer__link md-footer__link--prev" aria-label="Previous: Transfer Learning in Computer Vision" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              Transfer Learning in Computer Vision
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="zero.html" class="md-footer__link md-footer__link--next" aria-label="Next: Zero Redundancy Optimizer (ZeRO)" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              Zero Redundancy Optimizer (ZeRO)
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+          <div class="md-footer-copyright__highlight">
+            Copyright &copy; 2017 - 2021 OneFlow
+          </div>
+        
+        Made with
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs
+        </a>
+        
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.top"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.477d984a.min.js", "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.ddd52ceb.min.js"></script>
+      
+        <script src="../javascripts/config.js"></script>
+      
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

@@ -1,0 +1,1221 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="OneFlow: a efficient distributed deep learning framework.">
+      
+      
+      
+      
+        <link rel="canonical" href="https://docs.oneflow.org/v0.8.0/cookies/serving.html">
+      
+      <link rel="icon" href="../assets/favicon.png">
+      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-7.1.11">
+    
+    
+      
+        <title>Model Deployment - OneFlow</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.3754935a.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.f1a3b89f.min.css">
+        
+          
+          
+          <meta name="theme-color" content="#4051b5">
+        
+      
+    
+    
+    
+      
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>:root{--md-text-font-family:"Roboto";--md-code-font-family:"Roboto Mono"}</style>
+      
+    
+    
+    
+    
+      
+
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <script>function __prefix(e){return new URL("..",location).pathname+"."+e}function __get(e,t=localStorage){return JSON.parse(t.getItem(__prefix(e)))}</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#model-deployment" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../index.html" title="OneFlow" class="md-header__button md-logo" aria-label="OneFlow" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 89 89">
+  <path d="M3.136,17.387l0,42.932l42.932,21.467l-42.932,-64.399Z" />
+  <path d="M21.91,8l42.933,64.398l-18.775,9.388l-42.932,-64.399l18.774,-9.387Z" style="fill-opacity: 0.5" />
+  <path d="M67.535,17.387l-27.262,18.156l21.878,32.818l5.384,2.691l0,-53.665Z" />
+  <path d="M67.535,17.387l0,53.666l18.774,-9.388l0,-53.665l-18.774,9.387Z" style="fill-opacity: 0.25" />
+</svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            OneFlow
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Model Deployment
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <div class="md-header__option">
+        <div class="md-select">
+          
+          <button class="md-header__button md-icon" aria-label="Select language">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.52 17.52 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04M18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12m-2.62 7 1.62-4.33L19.12 17h-3.24z"/></svg>
+          </button>
+          <div class="md-select__inner">
+            <ul class="md-select__list">
+              
+                <li class="md-select__item">
+                  <a href="https://docs.oneflow.org" hreflang="zh" class="md-select__link">
+                    中文
+                  </a>
+                </li>
+                
+                <li class="md-select__item">
+                  <a href="https://docs.oneflow.org/en" hreflang="en" class="md-select__link">
+                    English
+                  </a>
+                </li>
+                
+            </ul>
+          </div>
+        </div>
+      </div>
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        
+<a href="https://github.com/OneFlow-Inc/oneflow" title="Go to repository" class="md-source"
+  data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    OneFlow
+  </div>
+</a>
+      </div>
+    
+  </nav>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-tabs__inner md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+
+
+  <li class="md-tabs__item">
+    <a href="../index.html" class="md-tabs__link">
+      Home
+    </a>
+  </li>
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../basics/01_quickstart.html" class="md-tabs__link">
+        Basics
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../parallelism/01_introduction.html" class="md-tabs__link">
+        Distributed Training
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+    
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="global_tensor.html" class="md-tabs__link md-tabs__link--active">
+        Cookbook
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="https://oneflow.readthedocs.io/en/master/" class="md-tabs__link">
+        API
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../index.html" title="OneFlow" class="md-nav__button md-logo" aria-label="OneFlow" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 89 89">
+  <path d="M3.136,17.387l0,42.932l42.932,21.467l-42.932,-64.399Z" />
+  <path d="M21.91,8l42.933,64.398l-18.775,9.388l-42.932,-64.399l18.774,-9.387Z" style="fill-opacity: 0.5" />
+  <path d="M67.535,17.387l-27.262,18.156l21.878,32.818l5.384,2.691l0,-53.665Z" />
+  <path d="M67.535,17.387l0,53.666l18.774,-9.388l0,-53.665l-18.774,9.387Z" style="fill-opacity: 0.25" />
+</svg>
+
+    </a>
+    OneFlow
+  </label>
+  
+    <div class="md-nav__source">
+      
+<a href="https://github.com/OneFlow-Inc/oneflow" title="Go to repository" class="md-source"
+  data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    OneFlow
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../index.html" class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" >
+      
+      <label class="md-nav__link" for="__nav_2">
+        Basics
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="Basics" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          Basics
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics/01_quickstart.html" class="md-nav__link">
+        Quickstart
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics/02_tensor.html" class="md-nav__link">
+        Tensor
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics/03_dataset_dataloader.html" class="md-nav__link">
+        Datesets & Dataloaders
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics/04_build_network.html" class="md-nav__link">
+        Build Neural Network
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics/05_autograd.html" class="md-nav__link">
+        Autograd
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics/06_optimization.html" class="md-nav__link">
+        Backpropagation and Optimizer
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics/07_model_load_save.html" class="md-nav__link">
+        Model saving and loading
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics/08_nn_graph.html" class="md-nav__link">
+        Static Graph Interface
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" >
+      
+      <label class="md-nav__link" for="__nav_3">
+        Distributed Training
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="Distributed Training" data-md-level="1">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          Distributed Training
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parallelism/01_introduction.html" class="md-nav__link">
+        Common Parallel Strategies
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parallelism/02_sbp.html" class="md-nav__link">
+        Global View
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parallelism/03_consistent_tensor.html" class="md-nav__link">
+        Global Tensor
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parallelism/04_2d-sbp.html" class="md-nav__link">
+        2D SBP
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parallelism/04_launch.html" class="md-nav__link">
+        Distributed Training Launcher
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parallelism/05_ddp.html" class="md-nav__link">
+        Data Parallelism Training
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parallelism/06_pipeline.html" class="md-nav__link">
+        Pipelining Parallelism
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" checked>
+      
+      <label class="md-nav__link" for="__nav_4">
+        Cookbook
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="Cookbook" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          Cookbook
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="global_tensor.html" class="md-nav__link">
+        Basic Operations for Using Global Tensor to Program on Cluster
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="oneflow2onnnx.html" class="md-nav__link">
+        OneFlow with ONNX
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Model Deployment
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="serving.html" class="md-nav__link md-nav__link--active">
+        Model Deployment
+      </a>
+      
+        
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#quick-start" class="md-nav__link">
+    Quick Start
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#process-from-model-training-to-deployment-in-oneflow" class="md-nav__link">
+    Process from Model Training to Deployment in OneFlow
+  </a>
+  
+    <nav class="md-nav" aria-label="Process from Model Training to Deployment in OneFlow">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#model-saving" class="md-nav__link">
+    Model Saving
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#model-deployment_1" class="md-nav__link">
+    Model Deployment
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#start-service" class="md-nav__link">
+    Start Service
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#request-to-triton-server" class="md-nav__link">
+    Request to Triton Server
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="amp.html" class="md-nav__link">
+        Automatic Mixed Precision Training
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="activation_checkpointing.html" class="md-nav__link">
+        Activation Checkpointing
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="torch2flow.html" class="md-nav__link">
+        Converting Pre-trained Model from PyTorch to OneFlow
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="transfer_learning.html" class="md-nav__link">
+        Transfer Learning in Computer Vision
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="one_embedding.html" class="md-nav__link">
+        Large-Scale Embedding Solution OneEmbedding
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zero.html" class="md-nav__link">
+        Zero Redundancy Optimizer (ZeRO)
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" >
+      
+      <label class="md-nav__link" for="__nav_5">
+        API
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="API" data-md-level="1">
+        <label class="md-nav__title" for="__nav_5">
+          <span class="md-nav__icon md-icon"></span>
+          API
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://oneflow.readthedocs.io/en/master/" class="md-nav__link">
+        API
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#quick-start" class="md-nav__link">
+    Quick Start
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#process-from-model-training-to-deployment-in-oneflow" class="md-nav__link">
+    Process from Model Training to Deployment in OneFlow
+  </a>
+  
+    <nav class="md-nav" aria-label="Process from Model Training to Deployment in OneFlow">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#model-saving" class="md-nav__link">
+    Model Saving
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#model-deployment_1" class="md-nav__link">
+    Model Deployment
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#start-service" class="md-nav__link">
+    Start Service
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#request-to-triton-server" class="md-nav__link">
+    Request to Triton Server
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                  <a href="https://github.com/OneFlow-Inc/oneflow-documentation/blob/master/en/docs/cookies/serving.md" title="Edit this page" class="md-content__button md-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
+                  </a>
+                
+                
+                <h1 id="model-deployment">Model Deployment<a class="headerlink" href="#model-deployment" title="Permanent link">&para;</a></h1>
+<p>Trained model needs to go through "Model Deployment" before it can be integrated into the product and launched. Because the software and hardware environment and the connection method between models and business modules may change when the product is launched, the deployed solutions are also varied. For example, some solutions convert the trained model to other formats (such as ONNX), and then rely on a specific runtime deployment; some solutions will directly use C/C++ or other languages that can generate native code to re-implement the model, and introduce code optimization in pursuit of hardware adaptation or deployment performance.</p>
+<p>OneFlow provides services for the model by docking with the <a href="https://github.com/Triton-inference-server/server">Triton Inference Server</a>. </p>
+<p>After training the model, OneFlow's users can deploy the model directly through Triton, use the rich features of Triton, such as Dynamic batching, Model Pipelines, and HTTP/gRPC interface to integrate it into online products quickly and efficiently.</p>
+<p>This document is divided into the following three sections:</p>
+<ul>
+<li>Quick Start</li>
+<li>Introduction to OneFlow Serving Architecture</li>
+<li>Process from Model Training to Deployment in OneFlow</li>
+</ul>
+<h2 id="quick-start">Quick Start<a class="headerlink" href="#quick-start" title="Permanent link">&para;</a></h2>
+<p><a href="https://oneflow.cloud/drill/#/project/public/code?id=7fc904d8dbe0069820da5d6d32a764fe">OneFlow Serving: Neural Style Transfer</a> is available on OneFlow Cloud. By referring to the project description, you can deploy the project and see the running result with just one click.</p>
+<p><img alt="" src="imgs/oneflow-serving-demo.png" /></p>
+<p>Analyzing the code, we can find the following key points:</p>
+<ul>
+<li>
+<p>Triton server and WEB application server are started in <code>run_cloud.sh</code>:
+<div class="highlight"><pre><span></span><code>/opt/tritonserver/bin/tritonserver --model-store <span class="k">$(</span><span class="nb">pwd</span><span class="k">)</span>/model_repo &gt; <span class="m">1</span>.txt <span class="p">&amp;</span>
+  python3 server.py
+</code></pre></div></p>
+</li>
+<li>
+<p>There are simple and normal URL routings in <code>server.py</code> file and <code>stylize</code> in <code>infer.py</code> for inference work. Its result is obtained inside the <code>stylize</code> function through interacting with the HTTP and Triton server.
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">stylize</span><span class="p">(</span><span class="n">content_path</span><span class="p">,</span> <span class="n">output_path</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s1">&#39;udnie&#39;</span><span class="p">):</span>
+    <span class="n">triton_client</span> <span class="o">=</span> <span class="n">httpclient</span><span class="o">.</span><span class="n">InferenceServerClient</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;127.0.0.1:8000&#39;</span><span class="p">)</span>
+    <span class="o">...</span>
+    <span class="n">inputs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">httpclient</span><span class="o">.</span><span class="n">InferInput</span><span class="p">(</span><span class="s1">&#39;INPUT_0&#39;</span><span class="p">,</span> <span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="s1">&#39;FP32&#39;</span><span class="p">))</span>
+    <span class="o">...</span>
+    <span class="n">outputs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">httpclient</span><span class="o">.</span><span class="n">InferRequestedOutput</span><span class="p">(</span><span class="s1">&#39;OUTPUT_0&#39;</span><span class="p">,</span> <span class="n">binary_data</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+    <span class="o">...</span>
+</code></pre></div></p>
+</li>
+<li>
+<p>Pretrained models are placed under <code>model_repo</code>, whose hierarchy is organized according to Triton's conventions.</p>
+</li>
+</ul>
+<p>This simple online example illustrates how OneFlow models can be deployed through Triton and how business modules interact with the Triton server to obtain inference results.</p>
+<p>If you want to run this example locally, download <a href="https://oneflow-public.oss-cn-beijing.aliyuncs.com/oneflow-documentation/serving/demo.zip">demo.zip</a>, then unzip it and run the file <code>run.sh</code>.</p>
+<div class="highlight"><pre><span></span><code>bash run.sh
+</code></pre></div>
+<p>Next we will introduce the detailed process from training to deployment in OneFlow.</p>
+<h2 id="process-from-model-training-to-deployment-in-oneflow">Process from Model Training to Deployment in OneFlow<a class="headerlink" href="#process-from-model-training-to-deployment-in-oneflow" title="Permanent link">&para;</a></h2>
+<p>The following figure gives you a general description of the relationship between OneFlow and Triton.</p>
+<p><img alt="" src="imgs/triton-oneflow-backend.png" /></p>
+<p>It can be seen that Triton is in the position of connecting the client and OneFlow: it provides HTTP, gRPC, and C interfaces, so that users can flexibly make an inference request and get the result. </p>
+<p>In Triton's architecture, OneFlow and Model Repository provide Triton with backend inference capabilities. OneFlow provides a corresponding interface to export the trained model that is under Triton's rule.</p>
+<p>In addition, Triton also provides built-in features such as task scheduling to ensure better performance. For details, refer to <a href="https://github.com/triton-inference-server/server#features">Triton's official documentation</a>.</p>
+<p>After understanding these basic concepts, let's analyze the process from model training to deployment in OneFlow:</p>
+<ul>
+<li>Model saving</li>
+<li>Model deployment</li>
+<li>Start service</li>
+<li>Client request</li>
+</ul>
+<h3 id="model-saving">Model Saving<a class="headerlink" href="#model-saving" title="Permanent link">&para;</a></h3>
+<p>The model trained in Graph mode can be directly exported in the required format for deployment through <code>oneflow.save</code>; if it is trained in Eager mode, after simple conversion, it can be exported in the required format. For details, refer to <a href="../basics/08_nn_graph.html#graph_5">Graph and Deployment</a>.</p>
+<h3 id="model-deployment_1">Model Deployment<a class="headerlink" href="#model-deployment_1" title="Permanent link">&para;</a></h3>
+<p>Triton has certain requirements for the layout of the model, so we need follow <a href="https://github.com/triton-inference-server/server/blob/main/docs/model_repository.md#repository-layout">Triton's convention</a> to organize the model layout and write related configuration files.</p>
+<p><strong>Layout</strong></p>
+<p>In this example program, the model files are placed in the <code>model_repository</code> directory, and its layout conforms to Triton's conventions. Let's see how it is organized:</p>
+<div class="highlight"><pre><span></span><code>$ tree  -L 3 model_repository/
+model_repository/
+└── fast_neural_style
+    ├── 1
+    │   └── model
+    └── config.pbtxt
+</code></pre></div>
+<ul>
+<li><code>model_repository</code> is the root directory of the model repository. When starting Triton, you can specify it through the <code>--model-repository</code> option.</li>
+<li><code>fast_neural_style</code> is a model in the repository. There can be multiple models in a repository, and each first-level sub-directory is a model. Here we only have the <code>fast_neural_style</code> model.</li>
+<li>The <code>1/model</code> directory is the model we saved earlier through <code>flow.save(graph, "1/model")</code>. <code>1</code> is the version number. In Triton, there can be multiple model versions in a model directory, and the folder name of the model version must be <strong>number</strong>. Under the model version folder, you need to place a folder named <code>model</code>, which saves model parameters and computation graphs.</li>
+<li><code>config.pbtxt</code> is a plain text file used to configure the basic information of the model repository, explained as follows.</li>
+</ul>
+<p><strong>Model repository configuration</strong></p>
+<p><code>config.pbtxt</code> is a configuration file in protobuf text format. By writing this file, you can configure model services, such as specified hardware, input, and output. The example is as follows:</p>
+<div class="highlight"><pre><span></span><code>name: &quot;fast_neural_style&quot;
+backend: &quot;oneflow&quot;
+max_batch_size: 1
+input [
+  {
+    name: &quot;INPUT_0&quot;
+    data_type: TYPE_FP32
+    dims: [ 3, 256, 256 ]
+  }
+]
+output [
+  {
+    name: &quot;OUTPUT_0&quot;
+    data_type: TYPE_FP32
+    dims: [ 3, 256, 256 ]
+  }
+]
+
+instance_group [
+  {
+    count: 1
+    kind: KIND_GPU
+    gpus: [ 0 ]
+  }
+]
+</code></pre></div>
+<p>Next we explain the configuration items one by one.</p>
+<div class="highlight"><pre><span></span><code><span class="n">name</span><span class="p">:</span> <span class="s2">&quot;fast_neural_style&quot;</span>
+</code></pre></div>
+<p>The <code>name</code> field is used to specify the model. This line indicates that we use the <code>fast_neural_style</code> model, whose name needs to be the same as the model's folder name mentioned above.</p>
+<div class="highlight"><pre><span></span><code>backend: &quot;oneflow&quot;
+</code></pre></div>
+<p><code>backend</code> specifies the Triton backend. If you deploy with Oneflow, this field must be specified as <code>oneflow</code>.</p>
+<p>Next we need to define the shapes of input and output. For the name field, we need to follow the input and output order of the model and the format is <code>INPUT_&lt;index&gt;</code> and <code>OUTPUT_&lt;index&gt;</code>, where <code>&lt;index&gt;</code> indicates the order of model's input or output. Start at 0 by default. The <code>data_type</code> field defines the data type, and <code>dims</code> defines the shape of the tensor.</p>
+<div class="highlight"><pre><span></span><code>input [
+  {
+    name: &quot;INPUT_0&quot;
+    data_type: TYPE_FP32
+    dims: [ 3, 256, 256 ]
+  }
+]
+output [
+  {
+    name: &quot;OUTPUT_0&quot;
+    data_type: TYPE_FP32
+    dims: [ 3, 256, 256 ]
+  }
+]
+</code></pre></div>
+<p>The above model name, inference backend, and input and output configuration are the most basic configurations. Once configured, OneFlow can start working.</p>
+<p><code>instance_group</code> is used to configure hardware information.</p>
+<div class="highlight"><pre><span></span><code>instance_group [
+  {
+    count: 1
+    kind: KIND_GPU
+    gpus: [ 0 ]
+  }
+]
+</code></pre></div>
+<p>It means we instantiate one model and place it on GPU 0. For more configuration options, refer to <a href="https://github.com/triton-inference-server/server/blob/main/docs/model_configuration.md">Model Configuration Documentation for Triton Inference Server</a>.</p>
+<h3 id="start-service">Start Service<a class="headerlink" href="#start-service" title="Permanent link">&para;</a></h3>
+<p>OneFlow Serving provides Docker images with which you can start model service. After organizing the files according to the above layout, you can map the path to the container and start the service.</p>
+<div class="highlight"><pre><span></span><code>docker run --rm --runtime=nvidia --network=host -v$(pwd)/model_repository:/models \
+  oneflowinc/oneflow-serving /opt/tritonserver/bin/tritonserver --model-store /models
+</code></pre></div>
+<p>Run the command below to check whether the model service is starting. When you see the http 200 status code, the service has started.</p>
+<div class="highlight"><pre><span></span><code>curl -v localhost:8000/v2/health/ready
+</code></pre></div>
+<h3 id="request-to-triton-server">Request to Triton Server<a class="headerlink" href="#request-to-triton-server" title="Permanent link">&para;</a></h3>
+<p>In this example, we use <a href="https://pypi.org/project/tritonclient/">tritonclient</a> to interact with Triton Server. We need to install a python package first.</p>
+<div class="highlight"><pre><span></span><code>pip3 install tritonclient[all]
+</code></pre></div>
+<blockquote>
+<p>Actually, clients can interact with Triton Server via <a href="https://github.com/triton-inference-server/server/blob/main/docs/inference_protocols.md">HTTP, gRPC or C API etc.</a>.</p>
+</blockquote>
+<p>The following code is the core part of image stylization, which can stylize the images passed from the command. You can view the complete code on <a href="https://oneflow.cloud/drill/#/project/public/code?id=7fc904d8dbe0069820da5d6d32a764fe">Cloud Platform</a>, or download <a href="https://oneflow-public.oss-cn-beijing.aliyuncs.com/oneflow-documentation/serving/demo.zip">demo.zip</a>.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">#...</span>
+<span class="kn">import</span> <span class="nn">tritonclient.http</span> <span class="k">as</span> <span class="nn">httpclient</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">()</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--image&#39;</span><span class="p">,</span>
+                        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;the image to transfer style&#39;</span><span class="p">)</span>
+    <span class="n">FLAGS</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+    <span class="n">triton_client</span> <span class="o">=</span> <span class="n">httpclient</span><span class="o">.</span><span class="n">InferenceServerClient</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;127.0.0.1:8000&#39;</span><span class="p">)</span>
+    <span class="n">image</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">h</span> <span class="o">=</span> <span class="n">load_image</span><span class="p">(</span><span class="n">FLAGS</span><span class="o">.</span><span class="n">image</span><span class="p">,</span> <span class="mi">256</span><span class="p">,</span> <span class="mi">256</span><span class="p">)</span>
+    <span class="n">inputs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">inputs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">httpclient</span><span class="o">.</span><span class="n">InferInput</span><span class="p">(</span><span class="s1">&#39;INPUT_0&#39;</span><span class="p">,</span> <span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="s1">&#39;FP32&#39;</span><span class="p">))</span>
+    <span class="n">inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_data_from_numpy</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">binary_data</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">outputs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">outputs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">httpclient</span><span class="o">.</span><span class="n">InferRequestedOutput</span><span class="p">(</span><span class="s1">&#39;OUTPUT_0&#39;</span><span class="p">,</span> <span class="n">binary_data</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="n">triton_client</span><span class="o">.</span><span class="n">infer</span><span class="p">(</span><span class="s1">&#39;fast_neural_style&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="n">outputs</span><span class="p">)</span>
+    <span class="n">output0_data</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">as_numpy</span><span class="p">(</span><span class="s1">&#39;OUTPUT_0&#39;</span><span class="p">)</span>
+    <span class="n">image</span> <span class="o">=</span> <span class="n">recover_image</span><span class="p">(</span><span class="n">output0_data</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+    <span class="n">cv2</span><span class="o">.</span><span class="n">imwrite</span><span class="p">(</span><span class="s1">&#39;result.jpg&#39;</span><span class="p">,</span> <span class="n">image</span><span class="p">)</span>
+</code></pre></div>
+<p>First create a <code>triton_client</code> where <code>127.0.0.1:8000</code> is the default port for the Triton service.</p>
+<div class="highlight"><pre><span></span><code><span class="n">triton_client</span> <span class="o">=</span> <span class="n">httpclient</span><span class="o">.</span><span class="n">InferenceServerClient</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;127.0.0.1:8000&#39;</span><span class="p">)</span>
+</code></pre></div>
+<p>Then through the <code>triton_client.infer</code> interface, you can send an inference request to the Triton Server and get the output.
+A Tirton inference request needs to specify the model, input and output.</p>
+<p>The following code is mainly constructing input and output objects. The configuration is consistent with that in the <code>config.pbtxt</code>. And the inference request is sent through <code>triton_client.infer('fast_neural_style', inputs=inputs, outputs=outputs)</code>. The <code>fast_neural_style</code> is also the same as the one in <code>config.pbtxt</code>.</p>
+<div class="highlight"><pre><span></span><code>    <span class="n">inputs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">inputs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">httpclient</span><span class="o">.</span><span class="n">InferInput</span><span class="p">(</span><span class="s1">&#39;INPUT_0&#39;</span><span class="p">,</span> <span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="s1">&#39;FP32&#39;</span><span class="p">))</span>
+    <span class="n">inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_data_from_numpy</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">binary_data</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">outputs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">outputs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">httpclient</span><span class="o">.</span><span class="n">InferRequestedOutput</span><span class="p">(</span><span class="s1">&#39;OUTPUT_0&#39;</span><span class="p">,</span> <span class="n">binary_data</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="n">triton_client</span><span class="o">.</span><span class="n">infer</span><span class="p">(</span><span class="s1">&#39;fast_neural_style&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="n">outputs</span><span class="p">)</span>
+</code></pre></div>
+<p>Convert the format of the obtained inference result and save the result as the output image:</p>
+<div class="highlight"><pre><span></span><code>    <span class="n">output0_data</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">as_numpy</span><span class="p">(</span><span class="s1">&#39;OUTPUT_0&#39;</span><span class="p">)</span>
+    <span class="n">image</span> <span class="o">=</span> <span class="n">recover_image</span><span class="p">(</span><span class="n">output0_data</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+    <span class="n">cv2</span><span class="o">.</span><span class="n">imwrite</span><span class="p">(</span><span class="s1">&#39;result.jpg&#39;</span><span class="p">,</span> <span class="n">image</span><span class="p">)</span>
+</code></pre></div>
+<p>You can use the following command to infer and stylize images, and the result will be saved in <code>result.jpg</code>.</p>
+<div class="highlight"><pre><span></span><code>$ curl -o cat.jpg https://images.pexels.com/photos/156934/pexels-photo-156934.jpeg
+$ python infer.py --image cat.jpg 
+</code></pre></div>
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+        
+          <a href="#" class="md-top md-icon" data-md-component="top" data-md-state="hidden">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"/></svg>
+            Back to top
+          </a>
+        
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <nav class="md-footer__inner md-grid" aria-label="Footer">
+      
+        
+        <a href="oneflow2onnnx.html" class="md-footer__link md-footer__link--prev" aria-label="Previous: OneFlow with ONNX" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              OneFlow with ONNX
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="amp.html" class="md-footer__link md-footer__link--next" aria-label="Next: Automatic Mixed Precision Training" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              Automatic Mixed Precision Training
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+          <div class="md-footer-copyright__highlight">
+            Copyright &copy; 2017 - 2021 OneFlow
+          </div>
+        
+        Made with
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs
+        </a>
+        
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.top"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.477d984a.min.js", "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.ddd52ceb.min.js"></script>
+      
+        <script src="../javascripts/config.js"></script>
+      
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

@@ -1,0 +1,1272 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="OneFlow -- 极致性能的分布式机器学习框架">
+      
+      
+      
+      
+        <link rel="canonical" href="https://docs.oneflow.org/v0.8.0/cookies/oneflow2onnnx.html">
+      
+      <link rel="icon" href="../assets/favicon.png">
+      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-7.1.11">
+    
+    
+      
+        <title>OneFlow 与 ONNX 交互 - OneFlow</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.3754935a.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.f1a3b89f.min.css">
+        
+          
+          
+          <meta name="theme-color" content="#4051b5">
+        
+      
+    
+    
+    
+      
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>:root{--md-text-font-family:"Roboto";--md-code-font-family:"Roboto Mono"}</style>
+      
+    
+    
+    
+    
+      
+
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <script>function __prefix(e){return new URL("..",location).pathname+"."+e}function __get(e,t=localStorage){return JSON.parse(t.getItem(__prefix(e)))}</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#oneflow-onnx" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../index.html" title="OneFlow" class="md-header__button md-logo" aria-label="OneFlow" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 89 89">
+  <path d="M3.136,17.387l0,42.932l42.932,21.467l-42.932,-64.399Z" />
+  <path d="M21.91,8l42.933,64.398l-18.775,9.388l-42.932,-64.399l18.774,-9.387Z" style="fill-opacity: 0.5" />
+  <path d="M67.535,17.387l-27.262,18.156l21.878,32.818l5.384,2.691l0,-53.665Z" />
+  <path d="M67.535,17.387l0,53.666l18.774,-9.388l0,-53.665l-18.774,9.387Z" style="fill-opacity: 0.25" />
+</svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            OneFlow
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              OneFlow 与 ONNX 交互
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <div class="md-header__option">
+        <div class="md-select">
+          
+          <button class="md-header__button md-icon" aria-label="Select language">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.52 17.52 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04M18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12m-2.62 7 1.62-4.33L19.12 17h-3.24z"/></svg>
+          </button>
+          <div class="md-select__inner">
+            <ul class="md-select__list">
+              
+                <li class="md-select__item">
+                  <a href="https://docs.oneflow.org/en" hreflang="en" class="md-select__link">
+                    English
+                  </a>
+                </li>
+                
+                <li class="md-select__item">
+                  <a href="https://docs.oneflow.org" hreflang="zh" class="md-select__link">
+                    中文
+                  </a>
+                </li>
+                
+            </ul>
+          </div>
+        </div>
+      </div>
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        
+<a href="https://github.com/OneFlow-Inc/oneflow" title="前往 GitHub 仓库" class="md-source"
+  data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    OneFlow
+  </div>
+</a>
+      </div>
+    
+  </nav>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-tabs__inner md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+
+
+  <li class="md-tabs__item">
+    <a href="../index.html" class="md-tabs__link">
+      首页
+    </a>
+  </li>
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../basics/01_quickstart.html" class="md-tabs__link">
+        基础专题
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../parallelism/01_introduction.html" class="md-tabs__link">
+        分布式训练
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+    
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="global_tensor.html" class="md-tabs__link md-tabs__link--active">
+        实践指南
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="https://oneflow.readthedocs.io/en/master/" class="md-tabs__link">
+        API
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../index.html" title="OneFlow" class="md-nav__button md-logo" aria-label="OneFlow" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 89 89">
+  <path d="M3.136,17.387l0,42.932l42.932,21.467l-42.932,-64.399Z" />
+  <path d="M21.91,8l42.933,64.398l-18.775,9.388l-42.932,-64.399l18.774,-9.387Z" style="fill-opacity: 0.5" />
+  <path d="M67.535,17.387l-27.262,18.156l21.878,32.818l5.384,2.691l0,-53.665Z" />
+  <path d="M67.535,17.387l0,53.666l18.774,-9.388l0,-53.665l-18.774,9.387Z" style="fill-opacity: 0.25" />
+</svg>
+
+    </a>
+    OneFlow
+  </label>
+  
+    <div class="md-nav__source">
+      
+<a href="https://github.com/OneFlow-Inc/oneflow" title="前往 GitHub 仓库" class="md-source"
+  data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    OneFlow
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../index.html" class="md-nav__link">
+        首页
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" >
+      
+      <label class="md-nav__link" for="__nav_2">
+        基础专题
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="基础专题" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          基础专题
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics/01_quickstart.html" class="md-nav__link">
+        快速上手
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics/02_tensor.html" class="md-nav__link">
+        Tensor
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics/03_dataset_dataloader.html" class="md-nav__link">
+        Dataset 与 DataLoader
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics/04_build_network.html" class="md-nav__link">
+        搭建神经网络
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics/05_autograd.html" class="md-nav__link">
+        Autograd
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics/06_optimization.html" class="md-nav__link">
+        反向传播与 optimizer
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics/07_model_load_save.html" class="md-nav__link">
+        模型的加载与保存
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics/08_nn_graph.html" class="md-nav__link">
+        静态图模块 nn.Graph
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" >
+      
+      <label class="md-nav__link" for="__nav_3">
+        分布式训练
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="分布式训练" data-md-level="1">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          分布式训练
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parallelism/01_introduction.html" class="md-nav__link">
+        常见的分布式并行策略
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parallelism/02_sbp.html" class="md-nav__link">
+        集群的全局视角
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parallelism/03_consistent_tensor.html" class="md-nav__link">
+        Global Tensor
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parallelism/04_2d-sbp.html" class="md-nav__link">
+        2D SBP
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parallelism/04_launch.html" class="md-nav__link">
+        用 launch 模块启动分布式训练
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parallelism/05_ddp.html" class="md-nav__link">
+        数据并行训练
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parallelism/06_pipeline.html" class="md-nav__link">
+        流水并行训练
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" checked>
+      
+      <label class="md-nav__link" for="__nav_4">
+        实践指南
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="实践指南" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          实践指南
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="global_tensor.html" class="md-nav__link">
+        使用 Global Tensor 进行多机多设备编程 基础操作
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          OneFlow 与 ONNX 交互
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="oneflow2onnnx.html" class="md-nav__link md-nav__link--active">
+        OneFlow 与 ONNX 交互
+      </a>
+      
+        
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#onnx" class="md-nav__link">
+    ONNX 简介
+  </a>
+  
+    <nav class="md-nav" aria-label="ONNX 简介">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#onnx_1" class="md-nav__link">
+    ONNX 相关库
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#oneflow-onnx_1" class="md-nav__link">
+    将 OneFlow 模型导出为 ONNX 模型
+  </a>
+  
+    <nav class="md-nav" aria-label="将 OneFlow 模型导出为 ONNX 模型">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#oneflow-onnx_2" class="md-nav__link">
+    安装 oneflow-onnx
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#oneflow-onnx_3" class="md-nav__link">
+    oneflow-onnx 的使用方法
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    导出模型时的注意点
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    用法示例
+  </a>
+  
+    <nav class="md-nav" aria-label="用法示例">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#onnx_2" class="md-nav__link">
+    导出为 ONNX 模型
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#onnx_3" class="md-nav__link">
+    使用 ONNX 模型进行推理
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="serving.html" class="md-nav__link">
+        模型部署
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="amp.html" class="md-nav__link">
+        自动混合精度训练
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="activation_checkpointing.html" class="md-nav__link">
+        Activation Checkpointing
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="torch2flow.html" class="md-nav__link">
+        将 PyTorch 预训练模型转为 OneFlow 格式
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="transfer_learning.html" class="md-nav__link">
+        计算机视觉迁移学习
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="one_embedding.html" class="md-nav__link">
+        大规模 Embedding 方案： OneEmbedding
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zero.html" class="md-nav__link">
+        Zero Redundancy Optimizer (ZeRO)
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" >
+      
+      <label class="md-nav__link" for="__nav_5">
+        API
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="API" data-md-level="1">
+        <label class="md-nav__title" for="__nav_5">
+          <span class="md-nav__icon md-icon"></span>
+          API
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://oneflow.readthedocs.io/en/master/" class="md-nav__link">
+        API
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#onnx" class="md-nav__link">
+    ONNX 简介
+  </a>
+  
+    <nav class="md-nav" aria-label="ONNX 简介">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#onnx_1" class="md-nav__link">
+    ONNX 相关库
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#oneflow-onnx_1" class="md-nav__link">
+    将 OneFlow 模型导出为 ONNX 模型
+  </a>
+  
+    <nav class="md-nav" aria-label="将 OneFlow 模型导出为 ONNX 模型">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#oneflow-onnx_2" class="md-nav__link">
+    安装 oneflow-onnx
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#oneflow-onnx_3" class="md-nav__link">
+    oneflow-onnx 的使用方法
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    导出模型时的注意点
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    用法示例
+  </a>
+  
+    <nav class="md-nav" aria-label="用法示例">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#onnx_2" class="md-nav__link">
+    导出为 ONNX 模型
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#onnx_3" class="md-nav__link">
+    使用 ONNX 模型进行推理
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                  <a href="https://github.com/OneFlow-Inc/oneflow-documentation/blob/master/cn/docs/cookies/oneflow2onnnx.md" title="编辑此页" class="md-content__button md-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
+                  </a>
+                
+                
+                <h1 id="oneflow-onnx">OneFlow 与 ONNX 交互<a class="headerlink" href="#oneflow-onnx" title="Permanent link">&para;</a></h1>
+<p>本教程主要介绍 OneFlow 与 ONNX 进行交互的用法，包括 ONNX 简介、如何将 OneFlow 模型导出为 ONNX 模型，以及如何使用 ONNX 模型进行推理。</p>
+<h2 id="onnx">ONNX 简介<a class="headerlink" href="#onnx" title="Permanent link">&para;</a></h2>
+<p><a href="https://onnx.ai/index.html">ONNX</a> 的全称为 Open Neural Network Exchange (开放神经网络交换)，是一种针对机器学习算法所设计的开放式文件格式标准，用于存储训练好的算法模型。许多主流的深度学习框架（如 OneFlow、PyTorch、TensorFlow、MXNet）都支持将模型导出为 ONNX 模型。ONNX 使得不同的深度学习框架可以以一种统一的格式存储模型数据以及进行交互。另外，ONNX 有相应的运行时（Runtime）—— <a href="https://onnxruntime.ai/">ONNX Runtime</a>，便于在多种平台（Linux、Windows、Mac OS、Android、iOS等）及多种硬件（CPU、GPU等）上进行模型部署和推理。</p>
+<h3 id="onnx_1">ONNX 相关库<a class="headerlink" href="#onnx_1" title="Permanent link">&para;</a></h3>
+<p>ONNX 对应多个相关库，常见的几个库的功能如下所述。本教程中涉及的是 onnxruntime-gpu，可通过 <code>pip install onnxruntime-gpu</code> 进行安装。</p>
+<ol>
+<li>
+<p><a href="https://github.com/onnx/onnx">onnx</a>: ONNX 模型格式标准</p>
+</li>
+<li>
+<p><a href="https://github.com/microsoft/onnxruntime">onnxruntime &amp; onnxruntime-gpu</a>: ONNX 运行时，用于加载 ONNX 模型进行推理。onnxruntime 和 onnxruntime-gpu 分别支持 CPU 推理和 GPU推理</p>
+</li>
+<li>
+<p><a href="https://github.com/daquexian/onnx-simplifier">onnx-simplifier</a>: 用于简化 ONNX 模型的结构，例如消除结果恒为常量的算子</p>
+</li>
+<li>
+<p><a href="https://github.com/onnx/optimizer">onnxoptimizer</a>: 用于通过图变换等方式优化 ONNX 模型</p>
+</li>
+</ol>
+<h2 id="oneflow-onnx_1">将 OneFlow 模型导出为 ONNX 模型<a class="headerlink" href="#oneflow-onnx_1" title="Permanent link">&para;</a></h2>
+<p><a href="https://github.com/Oneflow-Inc/oneflow_convert">oneflow-onnx</a> 是 OneFlow 团队提供的模型转换工具，支持将 OneFlow 静态图模型导出为 ONNX 模型。目前 oneflow-onnx 支持 80 多种 OneFlow OP 导出为 ONNX OP，具体可参见：<a href="https://github.com/Oneflow-Inc/oneflow_convert/blob/main/docs/oneflow2onnx/op_list.md">OneFlow2ONNX 支持的OP列表</a>。</p>
+<h3 id="oneflow-onnx_2">安装 oneflow-onnx<a class="headerlink" href="#oneflow-onnx_2" title="Permanent link">&para;</a></h3>
+<p>oneflow-onnx 独立于 OneFlow，需要单独通过 pip 安装：
+<div class="highlight"><pre><span></span><code>pip install oneflow-onnx
+</code></pre></div></p>
+<h3 id="oneflow-onnx_3">oneflow-onnx 的使用方法<a class="headerlink" href="#oneflow-onnx_3" title="Permanent link">&para;</a></h3>
+<p>要将 OneFlow 静态图模型导出为 ONNX 模型，只需调用 <code>export_onnx_model</code> 函数。</p>
+<p><div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">oneflow_onnx.oneflow2onnx.util</span> <span class="kn">import</span> <span class="n">export_onnx_model</span>
+
+<span class="n">export_onnx_model</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span>
+                  <span class="n">external_data</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> 
+                  <span class="n">opset</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> 
+                  <span class="n">flow_weight_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> 
+                  <span class="n">onnx_model_path</span><span class="o">=</span><span class="s2">&quot;/tmp&quot;</span><span class="p">,</span> 
+                  <span class="n">dynamic_batch_size</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</code></pre></div>
+各参数的含义如下:</p>
+<ol>
+<li>
+<p>graph: 需要转换的 graph ( <a href="../basics/08_nn_graph.html">Graph</a> 对象)</p>
+</li>
+<li>
+<p>external_data: 是否将权重另存为 ONNX 模型的外部数据，为 <code>True</code> 时通常是为了避免 protobuf 的 2GB 文件大小限制</p>
+</li>
+<li>
+<p>opset: 指定转换模型的版本 ( int，默认为 10 )</p>
+</li>
+<li>
+<p>flow_weight_dir: OneFlow 模型权重的保存路径</p>
+</li>
+<li>
+<p>onnx_model_path: 导出的 ONNX 模型保存路径</p>
+</li>
+<li>
+<p>dynamic_batch_size: 导出的 ONNX 模型是否支持动态 batch，默认为False</p>
+</li>
+</ol>
+<p>另外，oneflow-onnx 还提供了一个名为 <code>convert_to_onnx_and_check</code> 的函数，用于转换并检查转换出的 ONNX 模型。其中的检查指的是将同样的输入分别送入原本的 OneFlow 模型和转换后的 ONNX 模型，然后比较两个输出中对应的每个数值之差是否在合理的误差范围内。</p>
+<p><div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">oneflow_onnx.oneflow2onnx.util</span> <span class="kn">import</span> <span class="n">convert_to_onnx_and_check</span>
+
+<span class="n">convert_to_onnx_and_check</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+</code></pre></div>
+<code>convert_to_onnx_and_check</code> 函数的参数是 <code>export_onnx_model</code> 函数的参数的超集，可以额外传入 <code>print_outlier=True</code> 来输出检查过程中发现的超出合理误差范围内的异常值。</p>
+<h3 id="_1">导出模型时的注意点<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li>在导出模型之前，需要将模型设置成 eval 模式，因为 Dropout、Batch Normalization 等操作在训练和推理模型下的行为不同</li>
+<li>在构建静态图模型时，需要指定一个输入，此输入的值可以是随机的，但要保证它是正确的数据类型和形状</li>
+<li>ONNX 模型接受的输入的形状是固定的，batch 维度的大小可以是变化的，通过将 <code>dynamic_batch_size</code> 参数设为 <code>True</code> 可以使得导出的 ONNX 模型支持动态 batch 大小</li>
+<li>oneflow-onnx 必须使用静态图模型（Graph 模式）作为导出函数的参数。对于动态图模型（Eager 模式），需要将动态图模型构建为静态图模型，可参见下文的示例。</li>
+</ul>
+<h2 id="_2">用法示例<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<p>在本节中，将以常见的 ResNet-34 模型为例，介绍将 OneFlow 模型导出为 ONNX 模型并进行推理的流程。</p>
+<p>下面的代码中使用到了 <a href="https://github.com/Oneflow-Inc/vision">FlowVision</a>，它是基于 OneFlow 搭建的、专用于计算机视觉任务的工具库，包含诸多模型、数据增强方法、数据变换操作、数据集等。我们在此直接使用 FlowVision 库提供的 ResNet-34 模型，并使用 FlowVision 提供的在 ImageNet 数据集上训练得到的 ResNet-34 权重。</p>
+<h3 id="onnx_2">导出为 ONNX 模型<a class="headerlink" href="#onnx_2" title="Permanent link">&para;</a></h3>
+<p>导入相关依赖，为方便演示，直接使用 <code>resnet34</code> 的预训练模型：
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">oneflow</span> <span class="k">as</span> <span class="nn">flow</span>
+<span class="kn">from</span> <span class="nn">oneflow</span> <span class="kn">import</span> <span class="n">nn</span>
+<span class="kn">from</span> <span class="nn">flowvision.models</span> <span class="kn">import</span> <span class="n">resnet34</span>
+<span class="kn">from</span> <span class="nn">oneflow_onnx.oneflow2onnx.util</span> <span class="kn">import</span> <span class="n">convert_to_onnx_and_check</span>
+
+<span class="c1"># 模型参数存储目录</span>
+<span class="n">MODEL_PARAMS</span> <span class="o">=</span> <span class="s1">&#39;checkpoints/resnet34&#39;</span>
+
+<span class="c1"># 下载预训练模型并保存</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">resnet34</span><span class="p">(</span><span class="n">pretrained</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">flow</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span> <span class="n">MODEL_PARAMS</span><span class="p">)</span>
+</code></pre></div></p>
+<p>使用动态图模型构建静态图模型，详情请参见：<a href="../basics/08_nn_graph.html">静态图模块 nn.Graph</a></p>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">ResNet34Graph</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Graph</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">eager_model</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">eager_model</span>
+
+    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</code></pre></div>
+<p>将 OneFlow 静态图模型导出为 ONNX 模型：
+<div class="highlight"><pre><span></span><code><span class="n">params</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">MODEL_PARAMS</span><span class="p">)</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">resnet34</span><span class="p">()</span>
+<span class="n">model</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+
+<span class="c1"># 将模型设置为 eval 模式</span>
+<span class="n">model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+
+<span class="n">resnet34_graph</span> <span class="o">=</span> <span class="n">ResNet34Graph</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+<span class="c1"># 构建出静态图模型</span>
+<span class="n">resnet34_graph</span><span class="o">.</span><span class="n">_compile</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">224</span><span class="p">,</span> <span class="mi">224</span><span class="p">))</span>
+
+<span class="c1"># 导出为 ONNX 模型并进行检查</span>
+<span class="n">convert_to_onnx_and_check</span><span class="p">(</span><span class="n">resnet34_graph</span><span class="p">,</span> 
+                          <span class="n">flow_weight_dir</span><span class="o">=</span><span class="n">MODEL_PARAMS</span><span class="p">,</span> 
+                          <span class="n">onnx_model_path</span><span class="o">=</span><span class="s2">&quot;./&quot;</span><span class="p">,</span> 
+                          <span class="n">print_outlier</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                          <span class="n">dynamic_batch_size</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</code></pre></div>
+运行完毕后，可以在当前目录中找到名为 <code>model.onnx</code> 的文件，即导出的 ONNX 模型。</p>
+<h3 id="onnx_3">使用 ONNX 模型进行推理<a class="headerlink" href="#onnx_3" title="Permanent link">&para;</a></h3>
+<p>进行推理之前，要保证已经安装了 ONNX Runtime, 即 onnxruntime 或 onnxruntime-gpu。在本教程的实验环境中，安装的是 onnxruntime-gpu 以调用 GPU 进行计算，但如果机器上没有 GPU，也可以指定使用 CPU 进行计算，详见下文。</p>
+<p>我们使用下面这张图像作为模型的输入：</p>
+<div align="center">
+    <img alt="Demo Image" src="./imgs/cat.jpg" width="300px">
+</div>
+
+<p>导入依赖：
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">cv2</span>
+<span class="kn">from</span> <span class="nn">onnxruntime</span> <span class="kn">import</span> <span class="n">InferenceSession</span>
+</code></pre></div></p>
+<p>定义一个函数用于将图像预处理为 ONNX 模型所接受的格式和尺寸：
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">preprocess_image</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">input_hw</span> <span class="o">=</span> <span class="p">(</span><span class="mi">224</span><span class="p">,</span> <span class="mi">224</span><span class="p">)):</span>
+    <span class="n">h</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">shape</span>
+
+    <span class="c1"># 使用图像的较长边确定缩放系数</span>
+    <span class="n">is_wider</span> <span class="o">=</span> <span class="kc">True</span> <span class="k">if</span> <span class="n">h</span> <span class="o">&lt;=</span> <span class="n">w</span> <span class="k">else</span> <span class="kc">False</span>
+    <span class="n">scale</span> <span class="o">=</span> <span class="n">input_hw</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">w</span> <span class="k">if</span> <span class="n">is_wider</span> <span class="k">else</span> <span class="n">input_hw</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">h</span>
+
+    <span class="c1"># 对图像进行等比例缩放</span>
+    <span class="n">processed_img</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">fx</span><span class="o">=</span><span class="n">scale</span><span class="p">,</span> <span class="n">fy</span><span class="o">=</span><span class="n">scale</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="n">cv2</span><span class="o">.</span><span class="n">INTER_LINEAR</span><span class="p">)</span>
+    <span class="c1"># 归一化</span>
+    <span class="n">processed_img</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">processed_img</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span> <span class="o">/</span> <span class="mi">255</span>
+
+    <span class="c1"># 将图像填充到 ONNX 模型预设尺寸</span>
+    <span class="n">temp_img</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">input_hw</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">input_hw</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">3</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+    <span class="n">temp_img</span><span class="p">[:</span><span class="n">processed_img</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">:</span><span class="n">processed_img</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">processed_img</span>
+    <span class="n">processed_img</span> <span class="o">=</span> <span class="n">temp_img</span>
+
+    <span class="c1"># 调整轴的顺序并在最前面添加 batch 轴  </span>
+    <span class="n">processed_img</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">processed_img</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">processed_img</span>
+</code></pre></div></p>
+<p>接下来，使用 ONNX 模型进行推理，主要步骤包括：创建一个 InferenceSession 对象，然后调用其 <code>run</code> 方法进行推理。</p>
+<p>在 onnxruntime(-gpu) 1.9 及以上版本中，创建 InferenceSession 对象时需要显式指定 <code>providers</code> 参数来选择使用的硬件。对于 onnxruntime-gpu，可以指定的值包括 <code>TensorrtExecutionProvider</code>、<code>CUDAExecutionProvider</code>、<code>CPUExecutionProvider</code>。如果运行的机器上没有 GPU，可以将 <code>providers</code> 参数指定为 <code>['CPUExecutionProvider']</code> 来使用 CPU 进行计算。</p>
+<p>ONNX 模型的输入数据的类型是一个 dict，其 keys 为导出 ONNX 模型时的输入名称 "input names"，values 为 NumPy 数组类型的实际输入数据。可以通过 InferenceSession 对象的 <code>get_inputs</code> 方法获取"input names"，该方法的返回值是 <code>onnxruntime.NodeArg</code> 类型的对象组成的 list，对于 NodeArg 对象，可使用其 <code>name</code> 属性获取 str 类型的名称。在本教程中，输入只有图像数据本身，因此可以通过在 InferenceSession 对象上调用 <code>.get_inputs()[0].name</code>，获取输入对应的 "input names"，其值为 <code>_ResNet34Graph_0-input_0/out</code>，将此值作为 key 构造输入 ONNX 模型的 dict。当然，也可以不预先指定，而在运行时动态获取。</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># 从文件中读取 ImageNet 数据集的类别名称</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;ImageNet-Class-Names.txt&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">CLASS_NAMES</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+
+<span class="c1"># 读取图像文件并使用 `preprocess_image` 函数进行预处理</span>
+<span class="n">img</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s1">&#39;cat.jpg&#39;</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">IMREAD_COLOR</span><span class="p">)</span>
+<span class="n">img</span> <span class="o">=</span> <span class="n">preprocess_image</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
+
+<span class="c1"># 创建一个 InferenceSession 对象</span>
+<span class="n">ort_sess</span> <span class="o">=</span> <span class="n">InferenceSession</span><span class="p">(</span><span class="s1">&#39;model.onnx&#39;</span><span class="p">,</span> <span class="n">providers</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;TensorrtExecutionProvider&#39;</span><span class="p">,</span>
+                                                     <span class="s1">&#39;CUDAExecutionProvider&#39;</span><span class="p">,</span>
+                                                     <span class="s1">&#39;CPUExecutionProvider&#39;</span><span class="p">])</span>
+<span class="c1"># 调用 InferenceSession 对象的 `run` 方法进行推理</span>
+<span class="n">results</span> <span class="o">=</span> <span class="n">ort_sess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;_ResNet34Graph_0-input_0/out&quot;</span><span class="p">:</span> <span class="n">img</span><span class="p">})</span>
+
+<span class="c1"># 输出推理结果</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">CLASS_NAMES</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">])])</span>
+</code></pre></div>
+<p>InferenceSession 对象的 <code>run</code> 方法的输出是 NumPy 数组构成的 list，每个 NumPy 数组对应一组输出。因为只有一组输入，所以取出索引为 0 的元素作为输出，此元素的形状是 <code>(1, 1000)</code>，对应于 1000 个类别的概率 (如果将 n 张图像作为一个 batch 输入，此元素的形状将是 <code>(n, 1000)</code>)。通过 <code>np.argmax</code> 获取概率最大的类别对应的索引后，将索引映射为类别名称。</p>
+<p>运行以上代码，得到：
+<div class="highlight"><pre><span></span><code>(base) root@training-notebook-654c6f-654c6f-jupyter-master-0:/workspace# python infer.py 
+285: &#39;Egyptian cat&#39;,
+</code></pre></div></p>
+<p>以上是在 Python 环境中使用 GPU 或 CPU 进行推理，实际使用时可以根据部署环境选择不同的 ONNX Runtime 来使用导出的 ONNX 模型。</p>
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+        
+          <a href="#" class="md-top md-icon" data-md-component="top" data-md-state="hidden">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"/></svg>
+            Back to top
+          </a>
+        
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <nav class="md-footer__inner md-grid" aria-label="Footer">
+      
+        
+        <a href="global_tensor.html" class="md-footer__link md-footer__link--prev" aria-label="上一页: 使用 Global Tensor 进行多机多设备编程 基础操作" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                上一页
+              </span>
+              使用 Global Tensor 进行多机多设备编程 基础操作
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="serving.html" class="md-footer__link md-footer__link--next" aria-label="下一页: 模型部署" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                下一页
+              </span>
+              模型部署
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+          <div class="md-footer-copyright__highlight">
+            Copyright &copy; 2017 - 2021 OneFlow
+          </div>
+        
+        Made with
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs
+        </a>
+        
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.top"], "translations": {"clipboard.copy": "\u590d\u5236", "clipboard.copied": "\u5df2\u590d\u5236", "search.config.lang": "ja", "search.config.pipeline": "trimmer, stemmer", "search.config.separator": "[\\uff0c\\u3002]+", "search.placeholder": "\u641c\u7d22", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.477d984a.min.js", "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.ddd52ceb.min.js"></script>
+      
+        <script src="../javascripts/config.js"></script>
+      
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

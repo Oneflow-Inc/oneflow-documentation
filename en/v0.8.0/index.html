@@ -1,0 +1,923 @@
+<!-- Custom HTML site displayed as the Home chapter -->
+
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="OneFlow: a efficient distributed deep learning framework.">
+      
+      
+      
+      
+        <link rel="canonical" href="https://docs.oneflow.org/v0.8.0/index.html">
+      
+      <link rel="icon" href="assets/favicon.png">
+      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-7.1.11">
+    
+    
+      
+        <title>OneFlow -- A Whole New Deep Learning Framework - OneFlow</title>
+      
+    
+    
+      <link rel="stylesheet" href="assets/stylesheets/main.3754935a.min.css">
+      
+        
+        <link rel="stylesheet" href="assets/stylesheets/palette.f1a3b89f.min.css">
+        
+          
+          
+          <meta name="theme-color" content="#4051b5">
+        
+      
+    
+    
+    
+      
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>:root{--md-text-font-family:"Roboto";--md-code-font-family:"Roboto Mono"}</style>
+      
+    
+    
+    
+    
+      
+
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <script>function __prefix(e){return new URL(".",location).pathname+"."+e}function __get(e,t=localStorage){return JSON.parse(t.getItem(__prefix(e)))}</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="index.html" title="OneFlow" class="md-header__button md-logo" aria-label="OneFlow" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 89 89">
+  <path d="M3.136,17.387l0,42.932l42.932,21.467l-42.932,-64.399Z" />
+  <path d="M21.91,8l42.933,64.398l-18.775,9.388l-42.932,-64.399l18.774,-9.387Z" style="fill-opacity: 0.5" />
+  <path d="M67.535,17.387l-27.262,18.156l21.878,32.818l5.384,2.691l0,-53.665Z" />
+  <path d="M67.535,17.387l0,53.666l18.774,-9.388l0,-53.665l-18.774,9.387Z" style="fill-opacity: 0.25" />
+</svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            OneFlow
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              OneFlow -- A Whole New Deep Learning Framework
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <div class="md-header__option">
+        <div class="md-select">
+          
+          <button class="md-header__button md-icon" aria-label="Select language">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.52 17.52 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04M18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12m-2.62 7 1.62-4.33L19.12 17h-3.24z"/></svg>
+          </button>
+          <div class="md-select__inner">
+            <ul class="md-select__list">
+              
+                <li class="md-select__item">
+                  <a href="https://docs.oneflow.org" hreflang="zh" class="md-select__link">
+                    中文
+                  </a>
+                </li>
+                
+                <li class="md-select__item">
+                  <a href="https://docs.oneflow.org/en" hreflang="en" class="md-select__link">
+                    English
+                  </a>
+                </li>
+                
+            </ul>
+          </div>
+        </div>
+      </div>
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        
+<a href="https://github.com/OneFlow-Inc/oneflow" title="Go to repository" class="md-source"
+  data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    OneFlow
+  </div>
+</a>
+      </div>
+    
+  </nav>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+
+        
+          
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-tabs__inner md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+    
+  
+
+
+  <li class="md-tabs__item">
+    <a href="index.html" class="md-tabs__link md-tabs__link--active">
+      Home
+    </a>
+  </li>
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="basics/01_quickstart.html" class="md-tabs__link">
+        Basics
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="parallelism/01_introduction.html" class="md-tabs__link">
+        Distributed Training
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="cookies/global_tensor.html" class="md-tabs__link">
+        Cookbook
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="https://oneflow.readthedocs.io/en/master/" class="md-tabs__link">
+        API
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+        
+      
+
+<link type="text/css" rel="stylesheet"  href="assets/install-selector.css" />
+<link type="text/css" rel="stylesheet"  href="assets/index-mdx.css" />
+
+<!-- Main site Entry button descriptions -->
+<section class="tx-container">
+    <div class="md-grid md-typeset">
+        <div class="mdx-hero">
+
+          <!-- Hero image -->
+          <div class="mdx-hero__image">
+            <img
+              src="assets/product-layer.png"
+              alt=""
+              width="1659"
+              height="1200"
+              draggable="false"
+            >
+          </div>
+
+          <!-- Hero content -->
+          <div class="mdx-hero__content">
+            <h1>OneFlow</h1>
+            <p>An open source deep learning framework with whole new frame design and the world's leading technology for distributed system.</p>
+            <a href="basics/01_quickstart.html" title="Quickstart" class="md-button md-button--primary">
+                Quickstart
+              </a>
+              <a href="https://github.com/OneFlow-Inc/oneflow" title="Go to repository" class="md-button">
+                Go to GitHub
+              </a>
+            <script type="text/javascript" src="assets/install-selector.js"></script>
+            <div id="instruction">
+                <ul class="versions">
+                    <li attach="versions" class="active">Stable</li>
+                    <li attach="versions">Nightly</li>
+                </ul>
+                <ul class="framework">
+                    <li attach="framework" class="active">CUDA</li>
+                    <li attach="framework">CPU</li>
+                </ul>
+                <ul class="smlVers">
+                    <li attach="smlVers" class="active">10.2</li>
+                    <li attach="smlVers">11.2</li>
+                </ul>
+                <div class="command">
+                    <p>INSTALL COMMAND</p>
+                    <pre class="command-copy">
+                        <div class="md-clipboard md-icon" onclick="copyPipCommand()"></div>
+                    </pre>
+                    <div class="panel-code"></div>
+                </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+</section>
+
+<!-- Main site box descriptions -->
+<div class="top-hr">
+    <div class="feature-item">
+        <h2>
+            <svg t="1629821991246" class="icon" viewBox="0 0 1027 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1581" width="32.09375" height="32" xmlns:xlink="http://www.w3.org/1999/xlink"><defs><style type="text/css"></style></defs><path d="M983.856098 313.401854a511.938807 511.938807 0 1 0 40.104881 198.630564 508.574453 508.574453 0 0 0-40.104881-198.630564z m-20.520331 388.582877a489.658317 489.658317 0 1 1 38.344723-189.952313 486.405366 486.405366 0 0 1-38.344723 189.952313z" fill="" p-id="1582"></path><path d="M731.072805 389.010695L436.80324 683.28026l-154.849402-154.849402A11.140245 11.140245 0 0 0 266.268374 544.261146l162.647573 162.647573a11.140245 11.140245 0 0 0 15.752306 0l302.156858-302.145717a11.140245 11.140245 0 1 0-15.752306-15.752307z" fill="" p-id="1583"></path></svg>
+            Easy to Use
+        </h2>
+        <p>OOP interface for both <a href="./basics/01_quickstart.html"><u>Eager Mode</u></a> and <a href="./basics/08_nn_graph.html"><u>Graph Mode</u></a></p>
+    </div>
+    <div class="feature-item">
+        <h2>
+            <svg t="1629822066588" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2491" xmlns:xlink="http://www.w3.org/1999/xlink" width="32" height="32"><defs><style type="text/css"></style></defs><path d="M1006.411523 44.752767c-2.131084-14.917589-12.786505-25.57301-27.704094-27.704094C735.763836-40.490599 484.295906 53.277104 337.2511 255.730098c-4.262168 6.393252-12.786505 12.786505-21.310842 14.917589-85.243366 21.310842-164.09348 66.063609-225.89492 129.996134-29.835178 29.835178-55.408188 61.80144-76.719029 98.02987-17.048673 29.835178 12.786505 66.063609 46.883851 53.277104 53.277104-19.179757 110.816376-29.835178 166.224564-29.835178 0 4.262168-2.131084 10.655421-2.131084 14.917589 40.490599 46.883851 83.112282 93.767703 127.865049 138.52047s89.505534 87.37445 136.389385 127.865049c4.262168 0 10.655421-2.131084 14.917589-2.131084 0 57.539272-8.524337 112.94746-29.835178 166.224564-6.393252 14.917589-2.131084 31.966262 10.655421 42.621683s29.835178 12.786505 42.621683 4.262168c36.228431-21.310842 68.194693-46.883851 98.029871-76.719029 61.80144-61.80144 106.554208-140.651554 129.996133-228.026005 2.131084-8.524337 6.393252-17.048673 14.917589-21.310841 200.32191-147.044806 291.958529-400.643821 236.550341-643.587414z m-253.599014 404.905989c-36.228431 36.228431-89.505534 46.883851-136.389386 27.704094-46.883851-19.179757-76.719029-66.063609-76.719029-117.209628s29.835178-98.029871 76.719029-117.209629c46.883851-19.179757 100.160955-8.524337 136.389386 27.704094 49.014935 49.014935 49.014935 129.996133 0 179.011069z" fill="#666666" p-id="2492"></path><path d="M134.798105 671.291508c-38.359515 38.359515-170.486732 298.351781-123.602881 345.235632s253.599014-140.651554 291.958529-179.011068c38.359515-38.359515 31.966262-106.554208-14.917589-153.438059s-115.078544-51.14602-153.438059-12.786505z" fill="#666666" p-id="2493"></path></svg>
+            High Performance
+        </h2>
+        <p>Born for large models, native supports for super large-scale models. <a href="https://github.com/Oneflow-Inc/DLPerf"><u>World leading performance in training.</u></a></p>
+    </div>
+    <div class="feature-item">
+        <h2>
+            <svg t="1629822158398" class="icon" viewBox="0 0 1046 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="4560" xmlns:xlink="http://www.w3.org/1999/xlink" width="32.6875" height="32"><defs><style type="text/css"></style></defs><path d="M523.4058 553.899a34.258 34.258 0 0 1-17.843-4.996L294.7788 428.285a35.924 35.924 0 0 1-18.081-31.166v-240.76a35.686 35.686 0 0 1 18.08-30.928L504.6118 4.813a35.924 35.924 0 0 1 35.924 0L750.3678 125.43a35.686 35.686 0 0 1 18.08 30.928v240.998a35.924 35.924 0 0 1-18.08 30.928l-209.833 120.38a34.496 34.496 0 0 1-17.13 5.234z m-173.671-177.24l173.67 99.207 173.91-99.92v-198.89l-173.91-99.682-173.67 99.682z m-103.965 646.39a36.4 36.4 0 0 1-17.843-4.759L18.0938 898.624a35.686 35.686 0 0 1-18.08-30.928V626.698a35.924 35.924 0 0 1 18.08-31.88L227.9268 475.866a35.924 35.924 0 0 1 35.924 0l209.833 118.952a35.924 35.924 0 0 1 18.08 31.166v241.712a35.686 35.686 0 0 1-18.08 30.928l-209.833 120.618a37.351 37.351 0 0 1-18.081 3.806zM71.3848 846.998L245.0568 946.68l173.91-99.683V647.396L245.7688 547.237 71.3848 647.396z m729.656 176.05a37.351 37.351 0 0 1-18.08-4.759L573.1268 897.672a35.686 35.686 0 0 1-18.08-30.928V626.698a35.924 35.924 0 0 1 18.08-31.88l209.833-118.952a36.4 36.4 0 0 1 36.161 0l209.595 118.952a35.924 35.924 0 0 1 18.08 31.88v240.998a35.686 35.686 0 0 1-18.08 30.928l-209.595 120.618a38.065 38.065 0 0 1-18.08 3.806z m-173.908-176.05l173.908 99.682 174.385-99.683V647.396L801.0408 547.237l-173.908 99.92z" p-id="4561"></path></svg>
+            Mature
+        </h2>
+        <p>Rich and continuously improved operators, benchmarks, <a href="https://oneflow.readthedocs.io/en/master/"><u>API documentation</u></a>, <a href="https://github.com/Oneflow-Inc/models"><u>model zoo</u></a>。</p>
+    </div>
+    <div class="feature-item">
+        <h2>
+            <svg t="1629822283500" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="6854" xmlns:xlink="http://www.w3.org/1999/xlink" width="32" height="32"><defs><style type="text/css"></style></defs><path d="M983.74341 312.704889a510.399362 510.399362 0 0 0-109.695863-162.687797A509.759363 509.759363 0 0 0 711.295751 40.32123 507.007366 507.007366 0 0 0 512 0.00128C442.880086 0.00128 375.80817 13.441263 312.704249 40.32123c-60.991924 25.791968-115.839855 62.719922-162.751796 109.695862A511.487361 511.487361 0 0 0 40.25659 312.704889 509.247363 509.247363 0 0 0 0.00064 512.00064a509.823363 509.823363 0 0 0 149.951813 361.983548 509.759363 509.759363 0 0 0 162.751796 109.695862C375.80817 1010.432017 442.880086 1024 512 1024c69.119914 0 136.19183-13.439983 199.295751-40.31995a509.759363 509.759363 0 0 0 162.751796-109.695862 511.487361 511.487361 0 0 0 109.695863-162.687797A508.927364 508.927364 0 0 0 1023.99936 512.00064c0-69.119914-13.567983-136.12783-40.25595-199.295751zM958.719442 480.00068H806.399632a744.511069 744.511069 0 0 0-41.599948-216.31973 515.519356 515.519356 0 0 0 77.311903-54.079932A446.399442 446.399442 0 0 1 958.719442 480.00068zM544.12796 65.089199c12.223985 0.895999 24.31997 2.239997 36.223955 4.095995a684.543144 684.543144 0 0 1 102.847871 163.391795 443.839445 443.839445 0 0 1-139.071826 33.023959V65.089199zM479.87204 265.600948a446.591442 446.591442 0 0 1-139.071826-33.023959c26.239967-58.559927 60.735924-113.663858 102.847871-163.391795 11.967985-1.791998 23.99997-3.199996 36.223955-4.095995V265.600948z m0 64.12792V480.00068H281.920288c3.007996-64.31992 15.039981-127.487841 35.519955-187.775765a508.415364 508.415364 0 0 0 162.431797 37.503953z m0 214.271732v150.271812a508.415364 508.415364 0 0 0-162.431797 37.503953A682.879146 682.879146 0 0 1 281.920288 544.0006h197.951752z m0 214.399732v200.38375a431.359461 431.359461 0 0 1-36.223955-4.095995 684.543144 684.543144 0 0 1-102.847871-163.391796 449.279438 449.279438 0 0 1 139.071826-32.895959z m64.25592 0c48.12794 3.519996 95.039881 14.719982 139.071826 33.023959-26.239967 58.559927-60.735924 113.663858-102.847871 163.391795-11.967985 1.791998-23.99997 3.199996-36.223955 4.095995V758.400332z m0-64.12792V544.0006h197.887752a683.583146 683.583146 0 0 1-35.519955 187.775765 507.199366 507.199366 0 0 0-162.367797-37.503953z m0-214.271732V329.728868a508.415364 508.415364 0 0 0 162.431797-37.503953c20.415974 60.287925 32.447959 123.519846 35.455955 187.775765H544.12796z m251.071686-314.815606c-17.279978 14.207982-35.519956 27.007966-54.463932 38.399952a744.703069 744.703069 0 0 0-58.879926-106.111868c41.215948 16.959979 79.359901 39.93595 113.279858 67.711916zM342.208212 97.473158a739.711075 739.711075 0 0 0-58.815926 106.111868 461.503423 461.503423 0 0 1-54.463932-38.399952 445.183444 445.183444 0 0 1 113.279858-67.711916z m-160.255799 111.99986c24.19197 20.479974 50.047937 38.655952 77.247903 54.143932a744.511069 744.511069 0 0 0-41.535948 216.31973h-152.31981a446.911441 446.911441 0 0 1 116.607855-270.463662zM65.280558 544.0006H217.600368c3.135996 74.111907 17.087979 146.687817 41.599948 216.31973a515.519356 515.519356 0 0 0-77.311903 54.079932A446.399442 446.399442 0 0 1 65.280558 544.0006z m163.455796 314.815606c17.279978-14.207982 35.519956-27.007966 54.463932-38.399952 16.767979 36.863954 36.351955 72.38391 58.879926 106.111868a448.639439 448.639439 0 0 1-113.279858-67.711916z m452.991434 67.711916c22.463972-33.727958 42.175947-69.247913 58.815926-106.111868 18.943976 11.391986 37.247953 24.19197 54.463932 38.399952a445.183444 445.183444 0 0 1-113.279858 67.711916z m160.2558-112.12786a515.519356 515.519356 0 0 0-77.247904-54.079932c24.447969-69.631913 38.399952-142.207822 41.535948-216.31973h152.31981a446.399442 446.399442 0 0 1-116.607854 270.399662z" p-id="6855"></path></svg>
+            Universal</h2>
+        <p>It is suitable for one's hobby, research or work practice.</p>
+    </div>
+</div>
+
+<div class="top-hr">
+    <div class="hr">
+    </div>
+</div>
+
+
+<!-- Custom narrow footer -->
+<div class="md-footer-meta__inner md-grid">
+    <div class="md-footer-social">
+    <a class="md-footer-social__link" href="https://www.zhihu.com/org/oneflow-17" rel="noopener" target="_blank" title="知乎">
+        <?xml version="1.0" standalone="no"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg class="icon" width="32px" height="32.00px" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"><path fill="#1296db" d="M 940.35 795.875 c 0 78.652 -63.771 142.422 -142.421 142.422 H 228.226 c -78.655 0 -142.427 -63.772 -142.427 -142.422 v -569.7 c 0 -78.658 63.772 -142.432 142.427 -142.432 H 797.93 c 78.658 0 142.432 63.772 142.432 142.431 l -0.01 569.701 Z M 415.621 543.356 h 125.593 c 0 -29.528 -13.923 -46.824 -13.923 -46.824 H 418.295 c 2.59 -53.493 4.91 -122.15 5.739 -147.65 h 103.677 s -0.561 -43.871 -12.091 -43.871 H 333.378 s 10.971 -57.374 25.594 -82.7 c 0 0 -54.417 -2.938 -72.98 69.622 c -18.562 72.56 -46.404 116.43 -49.356 124.446 c -2.953 8.013 16.031 3.795 24.044 0 c 8.015 -3.797 44.294 -16.876 54.84 -67.496 h 56.35 c 0.76 32.082 2.99 130.397 2.287 147.649 H 258.15 c -16.45 11.81 -21.936 46.824 -21.936 46.824 h 132.592 c -5.53 36.615 -15.239 83.813 -28.817 108.835 c -21.513 39.655 -32.904 75.934 -110.525 138.368 c 0 0 -12.657 9.28 26.576 5.906 c 39.231 -3.372 76.356 -13.498 102.087 -64.963 c 13.378 -26.756 27.213 -60.697 38.006 -95.121 l -0.04 0.12 l 109.26 125.795 s 14.343 -33.747 3.798 -70.87 l -80.994 -90.698 l -27.42 20.279 l -0.031 0.099 c 7.615 -26.7 13.092 -53.095 14.795 -76.061 c 0.042 -0.553 0.084 -1.119 0.121 -1.689 Z M 567.366 295.73 v 435.35 h 45.77 l 18.753 52.405 l 79.328 -52.405 h 99.978 V 295.73 H 567.366 Z M 764.09 684.253 h -51.968 l -64.817 42.817 l -15.319 -42.817 H 615.81 v -339.94 h 148.28 v 339.94 Z m 0 0"  /></svg>
+    </a>
+    <a class="md-footer-social__link" href="https://weibo.com/oneflow" rel="noopener" target="_blank" title="微博">
+        <svg class="icon" width="32px" height="32.00px" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"><path fill="#d81e06" d="M752 500.8c-38.4-8-19.2-28.8-19.2-28.8s38.4-62.4-8-108.8c-56-56-193.6 8-193.6 8-52.8 16-38.4-8-30.4-48 0-48-16-128-155.2-80s-259.2 216-259.2 216C1.6 569.6 12.8 656 12.8 656 33.6 846.4 235.2 897.6 392 910.4c164.8 12.8 387.2-57.6 454.4-200 67.2-144-56-201.6-94.4-209.6zM403.2 856c-163.2 8-296-73.6-296-184s132.8-196.8 296-204.8 296 60.8 296 169.6c0 110.4-131.2 212.8-296 219.2z m-32-316.8c-164.8 19.2-145.6 174.4-145.6 174.4s-1.6 49.6 44.8 73.6c96 52.8 195.2 20.8 246.4-44.8 48-64 19.2-222.4-145.6-203.2z m-41.6 217.6c-30.4 3.2-56-14.4-56-40s22.4-52.8 52.8-56c35.2-3.2 57.6 17.6 57.6 43.2 1.6 25.6-24 49.6-54.4 52.8z m97.6-83.2c-9.6 8-24 6.4-28.8-3.2-6.4-9.6-3.2-24 6.4-32 12.8-9.6 25.6-6.4 30.4 3.2 4.8 9.6 1.6 24-8 32z m404.8-240c12.8 0 24-9.6 25.6-22.4V408c20.8-180.8-148.8-150.4-148.8-150.4-14.4 0-27.2 12.8-27.2 27.2 0 14.4 11.2 27.2 27.2 27.2 121.6-27.2 94.4 94.4 94.4 94.4 1.6 16 14.4 27.2 28.8 27.2z m-19.2-315.2c-57.6-14.4-118.4-1.6-134.4 1.6-1.6 0-3.2 1.6-3.2 1.6h-1.6c-16 4.8-28.8 19.2-28.8 38.4 0 22.4 17.6 40 40 40 0 0 20.8-3.2 35.2-8 14.4-6.4 134.4-4.8 195.2 96 32 73.6 14.4 123.2 12.8 131.2 0 0-8 19.2-8 38.4 0 22.4 17.6 35.2 38.4 35.2 17.6 0 33.6-3.2 38.4-33.6 62.4-216-80-316.8-184-340.8z"  /></svg>
+    </a>
+    <a class="md-footer-social__link" href="https://www.oneflow.org/a/jobs/" rel="noopener" target="_blank" title="联系我们">
+        <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg"><path d="M502.3 190.8c3.9-3.1 9.7-.2 9.7 4.7V400c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V195.6c0-5 5.7-7.8 9.7-4.7 22.4 17.4 52.1 39.5 154.1 113.6 21.1 15.4 56.7 47.8 92.2 47.6 35.7.3 72-32.8 92.3-47.6 102-74.1 131.6-96.3 154-113.7zM256 320c23.2.4 56.6-29.2 73.4-41.4 132.7-96.3 142.8-104.7 173.4-128.7 5.8-4.5 9.2-11.5 9.2-18.9v-19c0-26.5-21.5-48-48-48H48C21.5 64 0 85.5 0 112v19c0 7.4 3.4 14.3 9.2 18.9 30.6 23.9 40.7 32.4 173.4 128.7 16.8 12.2 50.2 41.8 73.4 41.4z"></path></svg>
+    </a>
+    </div>
+</div>
+
+
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="index.html" title="OneFlow" class="md-nav__button md-logo" aria-label="OneFlow" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 89 89">
+  <path d="M3.136,17.387l0,42.932l42.932,21.467l-42.932,-64.399Z" />
+  <path d="M21.91,8l42.933,64.398l-18.775,9.388l-42.932,-64.399l18.774,-9.387Z" style="fill-opacity: 0.5" />
+  <path d="M67.535,17.387l-27.262,18.156l21.878,32.818l5.384,2.691l0,-53.665Z" />
+  <path d="M67.535,17.387l0,53.666l18.774,-9.388l0,-53.665l-18.774,9.387Z" style="fill-opacity: 0.25" />
+</svg>
+
+    </a>
+    OneFlow
+  </label>
+  
+    <div class="md-nav__source">
+      
+<a href="https://github.com/OneFlow-Inc/oneflow" title="Go to repository" class="md-source"
+  data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    OneFlow
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+      
+      <a href="index.html" class="md-nav__link md-nav__link--active">
+        Home
+      </a>
+      
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" >
+      
+      <label class="md-nav__link" for="__nav_2">
+        Basics
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="Basics" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          Basics
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="basics/01_quickstart.html" class="md-nav__link">
+        Quickstart
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="basics/02_tensor.html" class="md-nav__link">
+        Tensor
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="basics/03_dataset_dataloader.html" class="md-nav__link">
+        Datesets & Dataloaders
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="basics/04_build_network.html" class="md-nav__link">
+        Build Neural Network
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="basics/05_autograd.html" class="md-nav__link">
+        Autograd
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="basics/06_optimization.html" class="md-nav__link">
+        Backpropagation and Optimizer
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="basics/07_model_load_save.html" class="md-nav__link">
+        Model saving and loading
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="basics/08_nn_graph.html" class="md-nav__link">
+        Static Graph Interface
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" >
+      
+      <label class="md-nav__link" for="__nav_3">
+        Distributed Training
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="Distributed Training" data-md-level="1">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          Distributed Training
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="parallelism/01_introduction.html" class="md-nav__link">
+        Common Parallel Strategies
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="parallelism/02_sbp.html" class="md-nav__link">
+        Global View
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="parallelism/03_consistent_tensor.html" class="md-nav__link">
+        Global Tensor
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="parallelism/04_2d-sbp.html" class="md-nav__link">
+        2D SBP
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="parallelism/04_launch.html" class="md-nav__link">
+        Distributed Training Launcher
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="parallelism/05_ddp.html" class="md-nav__link">
+        Data Parallelism Training
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="parallelism/06_pipeline.html" class="md-nav__link">
+        Pipelining Parallelism
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" >
+      
+      <label class="md-nav__link" for="__nav_4">
+        Cookbook
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="Cookbook" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          Cookbook
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="cookies/global_tensor.html" class="md-nav__link">
+        Basic Operations for Using Global Tensor to Program on Cluster
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="cookies/oneflow2onnnx.html" class="md-nav__link">
+        OneFlow with ONNX
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="cookies/serving.html" class="md-nav__link">
+        Model Deployment
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="cookies/amp.html" class="md-nav__link">
+        Automatic Mixed Precision Training
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="cookies/activation_checkpointing.html" class="md-nav__link">
+        Activation Checkpointing
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="cookies/torch2flow.html" class="md-nav__link">
+        Converting Pre-trained Model from PyTorch to OneFlow
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="cookies/transfer_learning.html" class="md-nav__link">
+        Transfer Learning in Computer Vision
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="cookies/one_embedding.html" class="md-nav__link">
+        Large-Scale Embedding Solution OneEmbedding
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="cookies/zero.html" class="md-nav__link">
+        Zero Redundancy Optimizer (ZeRO)
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" >
+      
+      <label class="md-nav__link" for="__nav_5">
+        API
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="API" data-md-level="1">
+        <label class="md-nav__title" for="__nav_5">
+          <span class="md-nav__icon md-icon"></span>
+          API
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://oneflow.readthedocs.io/en/master/" class="md-nav__link">
+        API
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+        
+          <a href="#" class="md-top md-icon" data-md-component="top" data-md-state="hidden">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"/></svg>
+            Back to top
+          </a>
+        
+      </main>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": ".", "features": ["navigation.tabs", "navigation.top"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "assets/javascripts/workers/search.477d984a.min.js", "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="assets/javascripts/bundle.ddd52ceb.min.js"></script>
+      
+        <script src="javascripts/config.js"></script>
+      
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

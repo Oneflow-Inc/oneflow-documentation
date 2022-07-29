@@ -1,0 +1,1551 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="OneFlow -- 极致性能的分布式机器学习框架">
+      
+      
+      
+      
+        <link rel="canonical" href="https://docs.oneflow.org/v0.8.0/basics/08_nn_graph.html">
+      
+      <link rel="icon" href="../assets/favicon.png">
+      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-7.1.11">
+    
+    
+      
+        <title>静态图模块 nn.Graph - OneFlow</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.3754935a.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.f1a3b89f.min.css">
+        
+          
+          
+          <meta name="theme-color" content="#4051b5">
+        
+      
+    
+    
+    
+      
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>:root{--md-text-font-family:"Roboto";--md-code-font-family:"Roboto Mono"}</style>
+      
+    
+    
+    
+    
+      
+
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <script>function __prefix(e){return new URL("..",location).pathname+"."+e}function __get(e,t=localStorage){return JSON.parse(t.getItem(__prefix(e)))}</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#nngraph" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../index.html" title="OneFlow" class="md-header__button md-logo" aria-label="OneFlow" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 89 89">
+  <path d="M3.136,17.387l0,42.932l42.932,21.467l-42.932,-64.399Z" />
+  <path d="M21.91,8l42.933,64.398l-18.775,9.388l-42.932,-64.399l18.774,-9.387Z" style="fill-opacity: 0.5" />
+  <path d="M67.535,17.387l-27.262,18.156l21.878,32.818l5.384,2.691l0,-53.665Z" />
+  <path d="M67.535,17.387l0,53.666l18.774,-9.388l0,-53.665l-18.774,9.387Z" style="fill-opacity: 0.25" />
+</svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            OneFlow
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              静态图模块 nn.Graph
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <div class="md-header__option">
+        <div class="md-select">
+          
+          <button class="md-header__button md-icon" aria-label="Select language">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.52 17.52 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04M18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12m-2.62 7 1.62-4.33L19.12 17h-3.24z"/></svg>
+          </button>
+          <div class="md-select__inner">
+            <ul class="md-select__list">
+              
+                <li class="md-select__item">
+                  <a href="https://docs.oneflow.org/en" hreflang="en" class="md-select__link">
+                    English
+                  </a>
+                </li>
+                
+                <li class="md-select__item">
+                  <a href="https://docs.oneflow.org" hreflang="zh" class="md-select__link">
+                    中文
+                  </a>
+                </li>
+                
+            </ul>
+          </div>
+        </div>
+      </div>
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        
+<a href="https://github.com/OneFlow-Inc/oneflow" title="前往 GitHub 仓库" class="md-source"
+  data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    OneFlow
+  </div>
+</a>
+      </div>
+    
+  </nav>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-tabs__inner md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+
+
+  <li class="md-tabs__item">
+    <a href="../index.html" class="md-tabs__link">
+      首页
+    </a>
+  </li>
+
+      
+        
+  
+  
+    
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="01_quickstart.html" class="md-tabs__link md-tabs__link--active">
+        基础专题
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../parallelism/01_introduction.html" class="md-tabs__link">
+        分布式训练
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../cookies/global_tensor.html" class="md-tabs__link">
+        实践指南
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="https://oneflow.readthedocs.io/en/master/" class="md-tabs__link">
+        API
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../index.html" title="OneFlow" class="md-nav__button md-logo" aria-label="OneFlow" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 89 89">
+  <path d="M3.136,17.387l0,42.932l42.932,21.467l-42.932,-64.399Z" />
+  <path d="M21.91,8l42.933,64.398l-18.775,9.388l-42.932,-64.399l18.774,-9.387Z" style="fill-opacity: 0.5" />
+  <path d="M67.535,17.387l-27.262,18.156l21.878,32.818l5.384,2.691l0,-53.665Z" />
+  <path d="M67.535,17.387l0,53.666l18.774,-9.388l0,-53.665l-18.774,9.387Z" style="fill-opacity: 0.25" />
+</svg>
+
+    </a>
+    OneFlow
+  </label>
+  
+    <div class="md-nav__source">
+      
+<a href="https://github.com/OneFlow-Inc/oneflow" title="前往 GitHub 仓库" class="md-source"
+  data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    OneFlow
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../index.html" class="md-nav__link">
+        首页
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" checked>
+      
+      <label class="md-nav__link" for="__nav_2">
+        基础专题
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="基础专题" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          基础专题
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="01_quickstart.html" class="md-nav__link">
+        快速上手
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="02_tensor.html" class="md-nav__link">
+        Tensor
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="03_dataset_dataloader.html" class="md-nav__link">
+        Dataset 与 DataLoader
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="04_build_network.html" class="md-nav__link">
+        搭建神经网络
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="05_autograd.html" class="md-nav__link">
+        Autograd
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="06_optimization.html" class="md-nav__link">
+        反向传播与 optimizer
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="07_model_load_save.html" class="md-nav__link">
+        模型的加载与保存
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          静态图模块 nn.Graph
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="08_nn_graph.html" class="md-nav__link md-nav__link--active">
+        静态图模块 nn.Graph
+      </a>
+      
+        
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#oneflow-eager" class="md-nav__link">
+    OneFlow 的 Eager 模式
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#oneflow-graph" class="md-nav__link">
+    OneFlow 的 Graph 模式
+  </a>
+  
+    <nav class="md-nav" aria-label="OneFlow 的 Graph 模式">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#graph" class="md-nav__link">
+    自定义一个 Graph
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#graph_1" class="md-nav__link">
+    使用 Graph 做预测
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#graph_2" class="md-nav__link">
+    使用 Graph 做训练
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#graph_3" class="md-nav__link">
+    Graph 调试
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#graph_4" class="md-nav__link">
+    Graph 模型的保存与加载
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#graph_5" class="md-nav__link">
+    Graph 与部署
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    扩展阅读：动态图与静态图
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    相关链接
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" >
+      
+      <label class="md-nav__link" for="__nav_3">
+        分布式训练
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="分布式训练" data-md-level="1">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          分布式训练
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parallelism/01_introduction.html" class="md-nav__link">
+        常见的分布式并行策略
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parallelism/02_sbp.html" class="md-nav__link">
+        集群的全局视角
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parallelism/03_consistent_tensor.html" class="md-nav__link">
+        Global Tensor
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parallelism/04_2d-sbp.html" class="md-nav__link">
+        2D SBP
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parallelism/04_launch.html" class="md-nav__link">
+        用 launch 模块启动分布式训练
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parallelism/05_ddp.html" class="md-nav__link">
+        数据并行训练
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parallelism/06_pipeline.html" class="md-nav__link">
+        流水并行训练
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" >
+      
+      <label class="md-nav__link" for="__nav_4">
+        实践指南
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="实践指南" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          实践指南
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cookies/global_tensor.html" class="md-nav__link">
+        使用 Global Tensor 进行多机多设备编程 基础操作
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cookies/oneflow2onnnx.html" class="md-nav__link">
+        OneFlow 与 ONNX 交互
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cookies/serving.html" class="md-nav__link">
+        模型部署
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cookies/amp.html" class="md-nav__link">
+        自动混合精度训练
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cookies/activation_checkpointing.html" class="md-nav__link">
+        Activation Checkpointing
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cookies/torch2flow.html" class="md-nav__link">
+        将 PyTorch 预训练模型转为 OneFlow 格式
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cookies/transfer_learning.html" class="md-nav__link">
+        计算机视觉迁移学习
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cookies/one_embedding.html" class="md-nav__link">
+        大规模 Embedding 方案： OneEmbedding
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cookies/zero.html" class="md-nav__link">
+        Zero Redundancy Optimizer (ZeRO)
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" >
+      
+      <label class="md-nav__link" for="__nav_5">
+        API
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="API" data-md-level="1">
+        <label class="md-nav__title" for="__nav_5">
+          <span class="md-nav__icon md-icon"></span>
+          API
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://oneflow.readthedocs.io/en/master/" class="md-nav__link">
+        API
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#oneflow-eager" class="md-nav__link">
+    OneFlow 的 Eager 模式
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#oneflow-graph" class="md-nav__link">
+    OneFlow 的 Graph 模式
+  </a>
+  
+    <nav class="md-nav" aria-label="OneFlow 的 Graph 模式">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#graph" class="md-nav__link">
+    自定义一个 Graph
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#graph_1" class="md-nav__link">
+    使用 Graph 做预测
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#graph_2" class="md-nav__link">
+    使用 Graph 做训练
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#graph_3" class="md-nav__link">
+    Graph 调试
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#graph_4" class="md-nav__link">
+    Graph 模型的保存与加载
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#graph_5" class="md-nav__link">
+    Graph 与部署
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    扩展阅读：动态图与静态图
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    相关链接
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                  <a href="https://github.com/OneFlow-Inc/oneflow-documentation/blob/master/cn/docs/basics/08_nn_graph.md" title="编辑此页" class="md-content__button md-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
+                  </a>
+                
+                
+                <h1 id="nngraph">静态图模块 nn.Graph<a class="headerlink" href="#nngraph" title="Permanent link">&para;</a></h1>
+<p>目前，深度学习框架中模型的运行方式主要有两种，即 <strong>动态图</strong> 与 <strong>静态图</strong>，在 OneFlow 中，也被习惯称为 <strong>Eager 模式</strong> 和 <strong>Graph 模式</strong> 。</p>
+<p>这两种方式各有优缺点，OneFlow 对两种方式均提供了支持，默认情况下是 Eager 模式。如果你是按顺序阅读本基础专题的教程，那么，到目前为止所接触的所有代码都是 Eager 模式的代码。</p>
+<p>一般而言，动态图更易用，静态图性能更具优势。OneFlow 提供的 <a href="https://oneflow.readthedocs.io/en/v0.8.1/graph.html">nn.Graph</a> 模块，让用户可以用类似 Eager 的编程习惯，构建静态图并训练模型。</p>
+<h2 id="oneflow-eager">OneFlow 的 Eager 模式<a class="headerlink" href="#oneflow-eager" title="Permanent link">&para;</a></h2>
+<p>OneFlow 默认以 Eager 模式运行。</p>
+<p>以下脚本，使用 CIFAR10 数据集训练 <code>mobilenet_v2</code> 模型。</p>
+<details class="code">
+<summary>Code</summary>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">oneflow</span> <span class="k">as</span> <span class="nn">flow</span>
+<span class="kn">import</span> <span class="nn">oneflow.nn</span> <span class="k">as</span> <span class="nn">nn</span>
+<span class="kn">import</span> <span class="nn">flowvision</span>
+<span class="kn">import</span> <span class="nn">flowvision.transforms</span> <span class="k">as</span> <span class="nn">transforms</span>
+
+<span class="n">BATCH_SIZE</span><span class="o">=</span><span class="mi">64</span>
+<span class="n">EPOCH_NUM</span> <span class="o">=</span> <span class="mi">1</span>
+
+<span class="n">DEVICE</span> <span class="o">=</span> <span class="s2">&quot;cuda&quot;</span> <span class="k">if</span> <span class="n">flow</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">()</span> <span class="k">else</span> <span class="s2">&quot;cpu&quot;</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Using </span><span class="si">{}</span><span class="s2"> device&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">DEVICE</span><span class="p">))</span>
+
+<span class="n">training_data</span> <span class="o">=</span> <span class="n">flowvision</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">CIFAR10</span><span class="p">(</span>
+    <span class="n">root</span><span class="o">=</span><span class="s2">&quot;data&quot;</span><span class="p">,</span>
+    <span class="n">train</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">transform</span><span class="o">=</span><span class="n">transforms</span><span class="o">.</span><span class="n">ToTensor</span><span class="p">(),</span>
+    <span class="n">download</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">source_url</span><span class="o">=</span><span class="s2">&quot;https://oneflow-public.oss-cn-beijing.aliyuncs.com/datasets/cifar/cifar-10-python.tar.gz&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">train_dataloader</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">(</span>
+    <span class="n">training_data</span><span class="p">,</span> <span class="n">BATCH_SIZE</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span>
+<span class="p">)</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">flowvision</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">mobilenet_v2</span><span class="p">()</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">DEVICE</span><span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">classifer</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="mf">0.2</span><span class="p">),</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">last_channel</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+<span class="n">model</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
+
+<span class="n">loss_fn</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">CrossEntropyLoss</span><span class="p">()</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">DEVICE</span><span class="p">)</span>
+<span class="n">optimizer</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">)</span>
+
+
+<span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">EPOCH_NUM</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Epoch </span><span class="si">{</span><span class="n">t</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="se">\n</span><span class="s2">-------------------------------&quot;</span><span class="p">)</span>
+    <span class="n">size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">train_dataloader</span><span class="o">.</span><span class="n">dataset</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">batch</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">train_dataloader</span><span class="p">):</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">DEVICE</span><span class="p">)</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">DEVICE</span><span class="p">)</span>
+
+        <span class="c1"># Compute prediction error</span>
+        <span class="n">pred</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="n">loss_fn</span><span class="p">(</span><span class="n">pred</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+
+        <span class="c1"># Backpropagation</span>
+        <span class="n">optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+        <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+        <span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+
+        <span class="n">current</span> <span class="o">=</span> <span class="n">batch</span> <span class="o">*</span> <span class="n">BATCH_SIZE</span>
+        <span class="k">if</span> <span class="n">batch</span> <span class="o">%</span> <span class="mi">5</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;loss: </span><span class="si">{</span><span class="n">loss</span><span class="si">:</span><span class="s2">&gt;7f</span><span class="si">}</span><span class="s2">  [</span><span class="si">{</span><span class="n">current</span><span class="si">:</span><span class="s2">&gt;5d</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">size</span><span class="si">:</span><span class="s2">&gt;5d</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
+</code></pre></div>
+</details>
+<p>输出：</p>
+<div class="highlight"><pre><span></span><code>loss: 6.921304  [    0/50000]
+loss: 6.824391  [  320/50000]
+loss: 6.688272  [  640/50000]
+loss: 6.644351  [  960/50000]
+...
+</code></pre></div>
+<h2 id="oneflow-graph">OneFlow 的 Graph 模式<a class="headerlink" href="#oneflow-graph" title="Permanent link">&para;</a></h2>
+<h3 id="graph">自定义一个 Graph<a class="headerlink" href="#graph" title="Permanent link">&para;</a></h3>
+<p>OneFlow 提供了 <a href="https://oneflow.readthedocs.io/en/v0.8.1/graph.html">nn.Graph</a> 基类。用户可以通过继承它，自定义 Graph 类。</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">oneflow</span> <span class="k">as</span> <span class="nn">flow</span>
+<span class="kn">import</span> <span class="nn">oneflow.nn</span> <span class="k">as</span> <span class="nn">nn</span>
+
+<span class="k">class</span> <span class="nc">ModuleMyLinear</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_features</span><span class="p">,</span> <span class="n">out_features</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">weight</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">in_features</span><span class="p">,</span> <span class="n">out_features</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bias</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">out_features</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">flow</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">weight</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">bias</span>
+
+<span class="n">linear_model</span> <span class="o">=</span> <span class="n">ModuleMyLinear</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">GraphMyLinear</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Graph</span><span class="p">):</span>
+  <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">linear_model</span>
+
+  <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">):</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
+</code></pre></div>
+<p>以上简单的例子，包含了自定义 Graph 所需的重要步骤：</p>
+<ul>
+<li>继承 <code>nn.Graph</code></li>
+<li>在 <code>__init__</code> 最开始调用 <code>super().__init__()</code>，让 OneFlow 完成 Graph 必要的初始化工作</li>
+<li>在 <code>__init__</code> 中复用 Eager 模式下的 <code>nn.Module</code> 对象（<code>self.model = model</code>）</li>
+<li>在 <code>build</code> 中描述计算过程</li>
+</ul>
+<p>然后，就可以实例化并调用 Graph。</p>
+<div class="highlight"><pre><span></span><code><span class="n">graph_mylinear</span> <span class="o">=</span> <span class="n">GraphMyLinear</span><span class="p">()</span>
+<span class="nb">input</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+<span class="n">out</span> <span class="o">=</span> <span class="n">graph_mylinear</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+</code></pre></div>
+<p>输出：</p>
+<div class="highlight"><pre><span></span><code>tensor([[-0.3298, -3.7907,  0.1661]], dtype=oneflow.float32)
+</code></pre></div>
+<p>注意，Graph 与 Module 类似，对象本身是可调用的，并且 <strong>不推荐</strong> 显式调用 <code>build</code> 方法。Graph 可以直接复用已经定义好的 Module。因此，用户可以直接参考 <a href="04_build_network.html">搭建神经网络</a> 中的内容搭建好神经网络，然后在 Graph 的 <code>__init__</code> 中将 Module 设置为 Graph 的成员即可。</p>
+<p>比如，直接使用之前定义好的 <code>linear_model</code>，作为网络结构：</p>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">ModelGraph</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Graph</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">linear_model</span>
+
+    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="n">y_pred</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">loss</span>
+
+<span class="n">model_graph</span> <span class="o">=</span> <span class="n">ModelGraph</span><span class="p">()</span>
+</code></pre></div>
+<p>与 Module 的显著区别在于，Graph 使用 <code>build</code> 而不是 <code>forward</code> 方法描述计算过程，这是因为 <code>build</code> 不仅可以包含前向计算，还可以设置 <code>loss</code>，优化器等，在下文会看到使用 Graph 做训练的实际例子。</p>
+<h3 id="graph_1">使用 Graph 做预测<a class="headerlink" href="#graph_1" title="Permanent link">&para;</a></h3>
+<p>以下 Graph 做预测的例子，直接使用了本文开始 Eager 模式训练好的 module。</p>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">GraphMobileNetV2</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Graph</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
+
+    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+
+<span class="n">graph_mobile_net_v2</span> <span class="o">=</span> <span class="n">GraphMobileNetV2</span><span class="p">()</span>
+
+<span class="n">x</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">train_dataloader</span><span class="p">))</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">DEVICE</span><span class="p">)</span>
+<span class="n">y_pred</span> <span class="o">=</span> <span class="n">graph_mobile_net_v2</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="graph_2">使用 Graph 做训练<a class="headerlink" href="#graph_2" title="Permanent link">&para;</a></h3>
+<p>可以直接使用 Graph 做训练。点击以下 “Code” 查看详细代码。</p>
+<details class="code">
+<summary>Code</summary>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">oneflow</span> <span class="k">as</span> <span class="nn">flow</span>
+<span class="kn">import</span> <span class="nn">oneflow.nn</span> <span class="k">as</span> <span class="nn">nn</span>
+<span class="kn">import</span> <span class="nn">flowvision</span>
+<span class="kn">import</span> <span class="nn">flowvision.transforms</span> <span class="k">as</span> <span class="nn">transforms</span>
+
+<span class="n">BATCH_SIZE</span><span class="o">=</span><span class="mi">64</span>
+<span class="n">EPOCH_NUM</span> <span class="o">=</span> <span class="mi">1</span>
+
+<span class="n">DEVICE</span> <span class="o">=</span> <span class="s2">&quot;cuda&quot;</span> <span class="k">if</span> <span class="n">flow</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">()</span> <span class="k">else</span> <span class="s2">&quot;cpu&quot;</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Using </span><span class="si">{}</span><span class="s2"> device&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">DEVICE</span><span class="p">))</span>
+
+<span class="n">training_data</span> <span class="o">=</span> <span class="n">flowvision</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">CIFAR10</span><span class="p">(</span>
+    <span class="n">root</span><span class="o">=</span><span class="s2">&quot;data&quot;</span><span class="p">,</span>
+    <span class="n">train</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">transform</span><span class="o">=</span><span class="n">transforms</span><span class="o">.</span><span class="n">ToTensor</span><span class="p">(),</span>
+    <span class="n">download</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">train_dataloader</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">(</span>
+    <span class="n">training_data</span><span class="p">,</span> <span class="n">BATCH_SIZE</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">drop_last</span><span class="o">=</span><span class="kc">True</span>
+<span class="p">)</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">flowvision</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">mobilenet_v2</span><span class="p">()</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">DEVICE</span><span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">classifer</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="mf">0.2</span><span class="p">),</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">last_channel</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+<span class="n">model</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
+
+<span class="n">loss_fn</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">CrossEntropyLoss</span><span class="p">()</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">DEVICE</span><span class="p">)</span>
+<span class="n">optimizer</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">GraphMobileNetV2</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Graph</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">loss_fn</span> <span class="o">=</span> <span class="n">loss_fn</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_optimizer</span><span class="p">(</span><span class="n">optimizer</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="n">y_pred</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">loss_fn</span><span class="p">(</span><span class="n">y_pred</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+        <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">loss</span>
+
+
+<span class="n">graph_mobile_net_v2</span> <span class="o">=</span> <span class="n">GraphMobileNetV2</span><span class="p">()</span>
+<span class="c1"># graph_mobile_net_v2.debug()</span>
+
+<span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">EPOCH_NUM</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Epoch </span><span class="si">{</span><span class="n">t</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="se">\n</span><span class="s2">-------------------------------&quot;</span><span class="p">)</span>
+    <span class="n">size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">train_dataloader</span><span class="o">.</span><span class="n">dataset</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">batch</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">train_dataloader</span><span class="p">):</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">DEVICE</span><span class="p">)</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">DEVICE</span><span class="p">)</span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="n">graph_mobile_net_v2</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+        <span class="n">current</span> <span class="o">=</span> <span class="n">batch</span> <span class="o">*</span> <span class="n">BATCH_SIZE</span>
+        <span class="k">if</span> <span class="n">batch</span> <span class="o">%</span> <span class="mi">5</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;loss: </span><span class="si">{</span><span class="n">loss</span><span class="si">:</span><span class="s2">&gt;7f</span><span class="si">}</span><span class="s2">  [</span><span class="si">{</span><span class="n">current</span><span class="si">:</span><span class="s2">&gt;5d</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">size</span><span class="si">:</span><span class="s2">&gt;5d</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
+</code></pre></div>
+</details>
+<p>与 Graph 做预测的代码做比较，可以发现，只有以下几点是 Graph 做训练时特有的：</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Optimizer</span>
+<span class="n">optimizer</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">)</span> <span class="c1"># (1)</span>
+
+<span class="c1"># The MobileNetV2 Graph</span>
+<span class="k">class</span> <span class="nc">GraphMobileNetV2</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Graph</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># ...</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_optimizer</span><span class="p">(</span><span class="n">optimizer</span><span class="p">)</span> <span class="c1"># (2)</span>
+
+    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="c1"># ...</span>
+        <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span> <span class="c1"># (3)</span>
+        <span class="c1"># ...</span>
+</code></pre></div>
+<ol>
+<li>构造 optimizer 对象，这点和 <a href="06_optimization.html#optimizer_1">反向传播与 optimizer</a> 介绍的 Eager 模式的使用方法是完全一致的。</li>
+<li>在 Graph 类的 <code>__init__</code> 中，调用 <code>self.add_optimizer</code> 方法，将上一步构造的 optimizer 对象添加进 Graph 中。</li>
+<li>在 Graph 类的 <code>build</code> 中调用 <code>backward</code>，触发反向传播</li>
+</ol>
+<h3 id="graph_3">Graph 调试<a class="headerlink" href="#graph_3" title="Permanent link">&para;</a></h3>
+<p>当前输出 Graph 的调试信息共有两种方式。<strong>第一种</strong> 可以调用 <code>print</code> 打印 Graph 对象，输出 Graph 对象的信息。</p>
+<div class="highlight"><pre><span></span><code><span class="nb">print</span><span class="p">(</span><span class="n">graph_mobile_net_v2</span><span class="p">)</span>
+</code></pre></div>
+<p>根据 Graph 对象是否 <strong>已经被调用过</strong>，输出的效果略有不同：</p>
+<p>如果 Graph 对象调用前 <code>print</code>，输出的是网络结构的信息。</p>
+<p>以上 <code>graph_mobile_net_v2</code> 调用前 <code>print</code> 效果：</p>
+<div class="highlight"><pre><span></span><code>(GRAPH:GraphMobileNetV2_0:GraphMobileNetV2): (
+  (CONFIG:config:GraphConfig(training=True, ))
+  (MODULE:model:MobileNetV2()): (
+    (MODULE:model.features:Sequential()): (
+      (MODULE:model.features.0:ConvBNActivation()): (
+        (MODULE:model.features.0.0:Conv2d(3, 32, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False)): (
+          (PARAMETER:model.features.0.0.weight:tensor(..., device=&#39;cuda:0&#39;, size=(32, 3, 3, 3), dtype=oneflow.float32,
+                 requires_grad=True)): ()
+        )
+    ...
+    (MODULE:model.classifer:Sequential()): (
+      (MODULE:model.classifer.0:Dropout(p=0.2, inplace=False)): ()
+      (MODULE:model.classifer.1:Linear(in_features=1280, out_features=10, bias=True)): (
+        (PARAMETER:model.classifer.1.weight:tensor(..., size=(10, 1280), dtype=oneflow.float32, requires_grad=True)): ()
+        (PARAMETER:model.classifer.1.bias:tensor(..., size=(10,), dtype=oneflow.float32, requires_grad=True)): ()
+      )
+    )
+  )
+  (MODULE:loss_fn:CrossEntropyLoss()): ()
+)
+</code></pre></div>
+<p>在上面的调试信息中，表示基于 Sequential 模型，网络中自定义了 <code>ConvBNActivation</code> (对应 <code>MBConv</code> 模块)、卷积层(包括详细的 <code>channel</code>、<code>kernel_size</code> 和 <code>stride</code> 等参数信息)、<code>Dropout</code>  和全连接层等结构。</p>
+<p>如果是 Graph 对象调用后 <code>print</code>，除了网络的结构信息外，还会打印输入输出张量的信息，有如下类似效果：</p>
+<div class="highlight"><pre><span></span><code>(GRAPH:GraphMobileNetV2_0:GraphMobileNetV2): (
+  (CONFIG:config:GraphConfig(training=True, ))
+  (INPUT:_GraphMobileNetV2_0-input_0:tensor(..., device=&#39;cuda:0&#39;, size=(64, 3, 32, 32), dtype=oneflow.float32))
+  (INPUT:_GraphMobileNetV2_0-input_1:tensor(..., device=&#39;cuda:0&#39;, size=(64,), dtype=oneflow.int64))
+  (MODULE:model:MobileNetV2()): (
+    (INPUT:_model-input_0:tensor(..., device=&#39;cuda:0&#39;, is_lazy=&#39;True&#39;, size=(64, 3, 32, 32),
+           dtype=oneflow.float32))
+    (MODULE:model.features:Sequential()): (
+      (INPUT:_model.features-input_0:tensor(..., device=&#39;cuda:0&#39;, is_lazy=&#39;True&#39;, size=(64, 3, 32, 32),
+             dtype=oneflow.float32))
+      (MODULE:model.features.0:ConvBNActivation()): (
+        (INPUT:_model.features.0-input_0:tensor(..., device=&#39;cuda:0&#39;, is_lazy=&#39;True&#39;, size=(64, 3, 32, 32),
+               dtype=oneflow.float32))
+        (MODULE:model.features.0.0:Conv2d(3, 32, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False)): (
+          (INPUT:_model.features.0.0-input_0:tensor(..., device=&#39;cuda:0&#39;, is_lazy=&#39;True&#39;, size=(64, 3, 32, 32),
+                 dtype=oneflow.float32))
+          (PARAMETER:model.features.0.0.weight:tensor(..., device=&#39;cuda:0&#39;, size=(32, 3, 3, 3), dtype=oneflow.float32,
+                 requires_grad=True)): ()
+          (OUTPUT:_model.features.0.0-output_0:tensor(..., device=&#39;cuda:0&#39;, is_lazy=&#39;True&#39;, size=(64, 32, 16, 16),
+                 dtype=oneflow.float32))
+        )
+    ...
+</code></pre></div>
+<p><strong>第二种</strong> 方式是调用 Graph 对象的 <a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.nn.Graph.debug.html">debug</a> 方法，就开启了 Graph 的调试模式。</p>
+<div class="highlight"><pre><span></span><code><span class="n">graph_mobile_net_v2</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">v_level</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="c1"># v_level 参数默认值为 0</span>
+</code></pre></div>
+<p>可以简写为：</p>
+<div class="highlight"><pre><span></span><code><span class="n">graph_mobile_net_v2</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</code></pre></div>
+<p>OneFlow 在编译生成计算图的过程中会打印调试信息，比如，将上面例子代码中 <code>graph_mobile_net_v2.debug()</code> 的注释去掉，将在控制台上输出如下输出：</p>
+<div class="highlight"><pre><span></span><code>(GRAPH:GraphMobileNetV2_0:GraphMobileNetV2) end building graph.
+(GRAPH:GraphMobileNetV2_0:GraphMobileNetV2) start compiling plan and init graph runtime.
+(GRAPH:GraphMobileNetV2_0:GraphMobileNetV2) end compiling plan and init graph rumtime.
+</code></pre></div>
+<p>使用 <code>debug</code> 的好处在于，调试信息是 <strong>边构图、边输出</strong> 的，这样如果构图过程中发生错误，容易发现构图时的问题。</p>
+<p>当前可以使用 <code>v_level</code> 选择详细调试信息级别，默认级别为 0，最大级别为 3。</p>
+<ul>
+<li><code>v_level=0</code> 时，只输出最基础的警告和构图阶段信息，如构图时间。</li>
+<li><code>v_level=1</code> 时，将额外打印每个 <code>nn.Module</code> 的构图信息，具体内容在下面的表格中介绍。</li>
+<li><code>v_level=2</code> 时，在构图阶段，将额外打印每个 Op 的创建信息，包括名称、输入内容、设备和 SBP 信息等。</li>
+<li><code>v_level=3</code> 时，将额外打印每个 Op 更详细的信息，如与代码位置有关的信息，方便定位代码问题。</li>
+</ul>
+<p>此外，为了开发者对 Graph 对象下的类型有更清晰的认知，下面对 <code>debug</code> 输出的内容进行分析，基本包括 <code>GRAPH</code>、<code>CONFIG</code>、<code>MODULE</code>、<code>PARAMETER</code>、<code>BUFFER</code>、<code>INPUT</code> 和 <code>OUTPUT</code> 七个类别的标签。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">Name</th>
+<th style="text-align: center;">Info</th>
+<th style="text-align: center;">Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">GRAPH</td>
+<td style="text-align: center;">用户所定义的 Graph 信息，依次是类型：名字：构造方法。</td>
+<td style="text-align: center;"><code>(GRAPH:GraphMobileNetV2_0:GraphMobileNetV2)</code></td>
+</tr>
+<tr>
+<td style="text-align: center;">CONFIG</td>
+<td style="text-align: center;">Graph 的配置信息。如是否处于训练模式，<code>training=True</code> 表示 Graph 处于训练模式，如果在 Graph 的预测模式，则对应 <code>training=False</code>。</td>
+<td style="text-align: center;"><code>(CONFIG:config:GraphConfig(training=True, )</code></td>
+</tr>
+<tr>
+<td style="text-align: center;">MODULE</td>
+<td style="text-align: center;">对应 <code>nn.Module</code> ，MODULE 可以在 Graph 标签下层，同时，多个 MODULE 之间也存在层级关系。</td>
+<td style="text-align: center;"><code>(MODULE:model:MobileNetV2())</code>，其中，<code>MobileNetV2</code> 为用户复用 Eager 模式下的 Module 类名。</td>
+</tr>
+<tr>
+<td style="text-align: center;">PARAMETER</td>
+<td style="text-align: center;">给出了更清晰的 weight 和 bias 信息。此外，在构图时，tensor 的数据内容不太重要，所以只展示了 tensor 的元信息，这些信息对构建网络更为重要。</td>
+<td style="text-align: center;"><code>(PARAMETER:model.features.0.1.weight:tensor(..., device='cuda:0', size=(32,), dtype=oneflow.float32, requires_grad=True))</code></td>
+</tr>
+<tr>
+<td style="text-align: center;">BUFFER</td>
+<td style="text-align: center;">在训练时产生的统计特性等内容，如 running_mean 和   running_var。</td>
+<td style="text-align: center;"><code>(BUFFER:model.features.0.1.running_mean:tensor(..., device='cuda:0', size=(32,), dtype=oneflow.float32))</code></td>
+</tr>
+<tr>
+<td style="text-align: center;">INPUT &amp; OUPTUT</td>
+<td style="text-align: center;">表示输入输出的张量信息。</td>
+<td style="text-align: center;"><code>(INPUT:_model_input.0.0_2:tensor(..., device='cuda:0', is_lazy='True', size=(16, 3, 32, 32), dtype=oneflow.float32))</code></td>
+</tr>
+</tbody>
+</table>
+<p>除了以上介绍的方法外，训练过程中获取参数的梯度、获取 learning rate 等功能，也正在开发中，即将上线。</p>
+<h3 id="graph_4">Graph 模型的保存与加载<a class="headerlink" href="#graph_4" title="Permanent link">&para;</a></h3>
+<p>在训练 Graph 模型时，常常需要将已经训练了一段时间的模型的参数以及其他诸如优化器参数等状态进行保存，方便中断后恢复训练。</p>
+<p>Graph 模型对象具有和 Module 类似的 <code>state_dict</code> 和 <code>load_state_dict</code> 接口，配合 <a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.save.html">save</a> 和 <a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.load.html">load</a> 就可以实现保存与加载 Graph 模型。这与之前在 <a href="07_model_load_save.html">模型的保存与加载</a> 中介绍的 Eager 模式下是类似的。和 Eager 略有不同的是，在训练过程中调用 Graph 的 <code>state_dict</code> 时，除了会得到内部 Module 各层的参数，也会得到训练迭代数、优化器参数等其他状态，以便之后恢复训练。</p>
+<p>例如，希望在以上训练 <code>graph_mobile_net_v2</code> 的过程中，每经过 1 个 epoch 将模型最新的状态保存一次，那么可以添加以下代码：</p>
+<p>假设我们想要保存在当前目录下的 "GraphMobileNetV2" 中：
+<div class="highlight"><pre><span></span><code><span class="n">CHECKPOINT_SAVE_DIR</span> <span class="o">=</span> <span class="s2">&quot;./GraphMobileNetV2&quot;</span>
+</code></pre></div>
+在每个 epoch 训练完成处插入以下代码：
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">shutil</span>
+<span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">CHECKPOINT_SAVE_DIR</span><span class="p">,</span> <span class="n">ignore_errors</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># 清理上一次的状态</span>
+<span class="n">flow</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">graph_mobile_net_v2</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span> <span class="n">CHECKPOINT_SAVE_DIR</span><span class="p">)</span>
+</code></pre></div></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><strong>不能</strong> 用以下方式保存。因为 Graph 在初始化时，会对成员做处理，所以 <code>graph_mobile_net_v2.model</code> 其实已经不再是 Module 类型：</p>
+<div class="highlight"><pre><span></span><code>flow.save(graph_mobile_net_v2.model.state_dict(), CHECKPOINT_SAVE_DIR)  # 会报错
+</code></pre></div>
+</div>
+<p>当需要恢复之前保存的状态时：
+<div class="highlight"><pre><span></span><code><span class="n">state_dict</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">CHECKPOINT_SAVE_DIR</span><span class="p">)</span>
+<span class="n">graph_mobile_net_v2</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">state_dict</span><span class="p">)</span>
+</code></pre></div></p>
+<h3 id="graph_5">Graph 与部署<a class="headerlink" href="#graph_5" title="Permanent link">&para;</a></h3>
+<p>nn.Graph 支持同时保存模型参数和计算图，可以很方便的支持模型部署。</p>
+<p>如果有模型部署的需求，那么应该通过 <code>oneflow.save</code> 接口，将 <code>Graph</code> 对象导出为部署需要的格式：</p>
+<div class="highlight"><pre><span></span><code><span class="n">MODEL_SAVE_DIR</span><span class="o">=</span><span class="s2">&quot;./mobile_net_v2_model&quot;</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">MODEL_SAVE_DIR</span><span class="p">):</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">MODEL_SAVE_DIR</span><span class="p">)</span>
+
+<span class="n">flow</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">graph_mobile_net_v2</span><span class="p">,</span> <span class="n">MODEL_SAVE_DIR</span><span class="p">)</span>
+</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>注意和上一节的区别。 <code>save</code> 接口既支持保存 state_dict，也支持保存 Graph 对象。当保存 Graph 对象时，模型参数和计算图将被同时保存，以与模型结构定义代码解耦。</p>
+</div>
+<p>这样，<code>./mobile_net_v2_model</code> 目录下会同时保存部署所需的模型参数和计算图。详细的部署流程可以参阅 <a href="../cookies/serving.html">模型部署</a> 一文。</p>
+<p>因为部署所需的格式，必需通过 Graph 对象导出。所以，如果是 Eager 模式下训练得到的模型（即 <code>nn.Module</code> 对象），需要用 <code>Graph</code> 将 Module 封装后再导出。</p>
+<p>下面我们以 flowvision 仓库中的 <code>neural_style_transfer</code> 为例子，展示如何封装并导出 <code>nn.Module</code> 模型。</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">oneflow</span> <span class="k">as</span> <span class="nn">flow</span>
+<span class="kn">import</span> <span class="nn">oneflow.nn</span> <span class="k">as</span> <span class="nn">nn</span>
+<span class="kn">from</span> <span class="nn">flowvision.models.neural_style_transfer.stylenet</span> <span class="kn">import</span> <span class="n">neural_style_transfer</span>
+
+
+<span class="k">class</span> <span class="nc">MyGraph</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Graph</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
+
+    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="nb">input</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="o">*</span><span class="nb">input</span><span class="p">)</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">fake_image</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">256</span><span class="p">,</span> <span class="mi">256</span><span class="p">))</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">neural_style_transfer</span><span class="p">(</span><span class="n">pretrained</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">progress</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+    <span class="n">graph</span> <span class="o">=</span> <span class="n">MyGraph</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="n">graph</span><span class="p">(</span><span class="n">fake_image</span><span class="p">)</span>
+
+    <span class="n">MODEL_SAVE_DIR</span><span class="o">=</span><span class="s2">&quot;./neural_style_transfer_model&quot;</span>
+    <span class="kn">import</span> <span class="nn">os</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">MODEL_SAVE_DIR</span><span class="p">):</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">MODEL_SAVE_DIR</span><span class="p">)</span>
+    <span class="n">flow</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">MODEL_SAVE_DIR</span><span class="p">)</span>
+</code></pre></div>
+<p>以上代码几处的关键代码：</p>
+<ul>
+<li>定义了一个 <code>MyGraph</code> 类，将 <code>nn.Module</code> 对象简单地封装一层（<code>return self.model(*input)</code>），作用仅仅是将 <code>nn.Module</code> 转为 <code>Graph</code> 对象。</li>
+<li>实例化得到 <code>Graph</code> 对象（<code>graph = MyGraph(model)</code>）</li>
+<li>调用一次 <code>Graph</code> 实例化对象（<code>out = graph(fake_image)</code>）。它内部的机理是利用 “假数据” 在模型中流动一遍（即 tracing 机制）来建立计算图。</li>
+<li>导出部署所需的模型：<code>flow.save(graph, "1/model")</code></li>
+</ul>
+<h2 id="_1">扩展阅读：动态图与静态图<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<p>用户定义的神经网络，都会被深度学习框架转为计算图，如 <a href="05_autograd.html">自动求梯度</a> 中的例子：</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">loss</span><span class="p">(</span><span class="n">y_pred</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">flow</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="n">y_pred</span><span class="o">-</span><span class="n">y</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="n">x</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>  <span class="c1"># 输入</span>
+<span class="n">w</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">b</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">z</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span> <span class="o">+</span> <span class="n">b</span>
+
+<span class="n">y</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>  <span class="c1"># label</span>
+<span class="n">l</span> <span class="o">=</span> <span class="n">loss</span><span class="p">(</span><span class="n">z</span><span class="p">,</span><span class="n">y</span><span class="p">)</span>
+</code></pre></div>
+<p>对应的计算图为：</p>
+<p><img alt="计算图" src="imgs/compute_graph.png" /></p>
+<p><strong>动态图（Dynamic Graph）</strong></p>
+<p>动态图的特点在于，它是一边执行代码，一边完成计算图的构建的。
+以上代码和构图关系可看下图（注意：下图对简单的语句做了合并）</p>
+<p><img alt="" src="imgs/dynamic_graph.gif" /></p>
+<p>因为动态图是一边执行一边构图，所以很灵活，可以随时修改图的结构，运行一行代码就能得到一行的结果，易于调试。但是因为深度学习框架无法获取完整的图信息（随时可以改变、永远不能认为构图已经完成），因此无法进行充分的全局优化，在性能上会相对欠缺。</p>
+<p><strong>静态图（Static Graph）</strong></p>
+<p>与动态图不同，静态图先定义完整的计算图。即需要用户先声明所有计算节点后，框架才开始进行计算。这可以理解为在用户代码与最终运行的计算图之间，框架起到了编译器的作用。</p>
+<p><img alt="static graph" src="imgs/static_graph.png" /></p>
+<p>以 OneFlow 框架为例，用户的代码会被先转换为完整的计算图，然后再由 OneFlow Runtime 模块运行。</p>
+<p>静态图这种先获取完整网络，再编译运行的方式，使得它可以做很多动态图做不到的优化，因此性能上更有优势。并且编译完成后的计算图，也更容易跨平台部署。</p>
+<p>不过，在静态图中真正的计算发生时，已经与用户的代码没有直接关系了，因此静态图的调试较不方便。</p>
+<p>两种方式对比总结如下：</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>动态图</th>
+<th>静态图</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>计算方式</td>
+<td>Eager 模式</td>
+<td>Graph 模式</td>
+</tr>
+<tr>
+<td>优点</td>
+<td>代码编写灵活，易于调试</td>
+<td>性能好，易于优化和部署</td>
+</tr>
+<tr>
+<td>缺点</td>
+<td>性能及可移植性差</td>
+<td>不易调试</td>
+</tr>
+</tbody>
+</table>
+<p>OneFlow 提供的 Eager 模式，与 PyTorch 对齐，让熟悉 PyTorch 的用户可以零成本直接上手。
+OneFlow 提供的 Graph 模式，也基于面向对象的编程风格，让熟悉 Eager 开发的用户，只需要改很少量的代码，就可以使用高效率的静态图。</p>
+<h2 id="_2">相关链接<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<p>OneFlow Eager模式下的神经网络搭建：<a href="04_build_network.html">搭建神经网络</a></p>
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+        
+          <a href="#" class="md-top md-icon" data-md-component="top" data-md-state="hidden">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"/></svg>
+            Back to top
+          </a>
+        
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <nav class="md-footer__inner md-grid" aria-label="Footer">
+      
+        
+        <a href="07_model_load_save.html" class="md-footer__link md-footer__link--prev" aria-label="上一页: 模型的加载与保存" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                上一页
+              </span>
+              模型的加载与保存
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="../parallelism/01_introduction.html" class="md-footer__link md-footer__link--next" aria-label="下一页: 常见的分布式并行策略" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                下一页
+              </span>
+              常见的分布式并行策略
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+          <div class="md-footer-copyright__highlight">
+            Copyright &copy; 2017 - 2021 OneFlow
+          </div>
+        
+        Made with
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs
+        </a>
+        
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.top"], "translations": {"clipboard.copy": "\u590d\u5236", "clipboard.copied": "\u5df2\u590d\u5236", "search.config.lang": "ja", "search.config.pipeline": "trimmer, stemmer", "search.config.separator": "[\\uff0c\\u3002]+", "search.placeholder": "\u641c\u7d22", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.477d984a.min.js", "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.ddd52ceb.min.js"></script>
+      
+        <script src="../javascripts/config.js"></script>
+      
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>
