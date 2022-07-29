@@ -27,7 +27,7 @@ loss_fn = nn.CrossEntropyLoss().to(DEVICE)
 optimizer = flow.optim.SGD(model.parameters(), lr=1e-3)
 ```
 
-If you want to enable AMP mode, just add `self.config.enable_amp(True)` to the model [nn.Graph](../basics/08_nn_graph.md). The details of this API is at: [enable_amp](https://oneflow.readthedocs.io/en/master/graph.html#oneflow.nn.graph.graph_config.GraphConfig.enable_amp).
+If you want to enable AMP mode, just add `self.config.enable_amp(True)` to the model [nn.Graph](../basics/08_nn_graph.md). The details of this API is at: [enable_amp](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.nn.graph.graph_config.GraphConfig.enable_amp.html).
 
 ```python
 class CustomGraph(flow.nn.Graph):
@@ -61,7 +61,7 @@ for _ in range(100):
 
 **Gradient Scaling** is a method for solving the problem that FP16 is prone to numerical overflow. The basic principle is to use a scale factor to scale the loss and gradient in the process of backpropagation to change the magnitude of its value, thereby mitigate numerical overflow problems as much as possible.
 
-OneFlow provides `GradScaler` to use Gradient Scaling in AMP mode. You only need to instantiate a `GradScaler` object in the `__init__` method of the nn.Graph model, and then specify it through the interface [set_grad_scaler](https://oneflow.readthedocs.io/en/master/graph.html#oneflow.nn.Graph.set_grad_scaler). nn.Graph will automatically manage the whole process of Gradient Scaling. Taking the `CustomGraph` above as an example, you need to add the following code to its `__init__` method:
+OneFlow provides `GradScaler` to use Gradient Scaling in AMP mode. You only need to instantiate a `GradScaler` object in the `__init__` method of the nn.Graph model, and then specify it through the interface [set_grad_scaler](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.nn.Graph.set_grad_scaler.html). nn.Graph will automatically manage the whole process of Gradient Scaling. Taking the `CustomGraph` above as an example, you need to add the following code to its `__init__` method:
 
 ```python
 grad_scaler = flow.amp.GradScaler(

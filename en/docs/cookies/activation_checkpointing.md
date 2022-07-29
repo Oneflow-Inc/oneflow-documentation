@@ -40,7 +40,7 @@ optimizer = flow.optim.SGD([{'params': model_part1.parameters()},
                            lr=1e-3)
 ```
 
-To turn on activation checkpointing, you only need to specify `.config.activation_checkpointing = True` on the Eager model member (i.e. the nn.Module object) in the [nn.Graph](../basics/08_nn_graph.md) model. For more details of this API, please refer to: [activation_checkpointing](https://oneflow.readthedocs.io/en/master/graph.html#oneflow.nn.graph.block_config.BlockConfig.activation_checkpointing). For each nn.Module with "activation checkpointing" turned on, its input activations will be preserved, while other intermediate activations will be recomputed when used during backpropagation.
+To turn on activation checkpointing, you only need to specify `.config.activation_checkpointing = True` on the Eager model member (i.e. the nn.Module object) in the [nn.Graph](../basics/08_nn_graph.md) model. For more details of this API, please refer to: [activation_checkpointing](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.nn.graph.block_config.BlockConfig.activation_checkpointing.html). For each nn.Module with "activation checkpointing" turned on, its input activations will be preserved, while other intermediate activations will be recomputed when used during backpropagation.
 
 ```python
 class CustomGraph(flow.nn.Graph):
