@@ -1,19 +1,14 @@
 # 使用 Global Tensor 进行多机多设备编程：分布式并行策略
 
-> 首先简单介绍分布式训练的重要性
-
 深度学习是通过神经网络学习样本数据的内在规律和表现层次的一种复杂机器学习算法。计算过程主要涉及数据和模型两部分。
 
 随着深度学习的广泛应用，模型规模不断扩大，对硬件（算力、内存）的需求也在不断提高。然而，受限于物理定律，持续提高芯片的集成越来越困难，单一设备的算力及容量难以跟上模型扩大的需求。
 
 为解决算力增速不足的问题，多节点集群的分布式训练方式逐渐受到重视，高效易用的分布式并行策略的提出势在必行。
 
-
 ## 并行策略
 
 值得注意的是，简单的设备堆叠并不一定会带来算力的增长。因为神经网络的训练并不是单纯的“把原来一个设备做的事情，现在分给多个设备各自做”，它不仅需要多个设备进行计算，还涉及到设备之间的数据传输，只有协调好集群中的计算与通信，才可以实现高效的分布式训练。
-
-> 对三种并行方式进行简要概括
 
 常见的并行策略包括**数据并行**、**模型并行**和**流水并行**，特点如下：
 
@@ -22,12 +17,6 @@
 - 流水并行：将**模型**分为多个阶段，分发到不同设备，各个设备之间以“流水线”的方式完成训练
 
 除上述三种策略外，**混合并行**也是一种常见的并行策略，通过上述两种或三种方式的混合使用完成训练目的。
-
-> 这里考虑加一段 Global Tensor 实现并行的优势介绍（简单、高效、……）
-
-待定
-
-> matmul 基础代码和示例，后续所有示例都以这个为基础修改
 
 本文以矩阵乘法为例，解释并行策略间的区别，以及如何利用 Global Tensor 实现不同的并行方式。
 
@@ -52,18 +41,11 @@ print(out.shape) # (4, 8)
 
 ### 数据并行
 
-> 接下来以以例子和图片结合的方式，分别介绍各种并行策略
-
 数据并行是将数据进行切分输入不同设备，而每个设备上的模型保持完整和一致。
 
 OneFlow 特有的 Global Tensor 采用 `placement` 与 `sbp` 结合的方式完成分布。其中 `placement` 表示 Global Tensor 分布的物理设备，`sbp` 表示 Global Tensor 分布的方式（详情可见：[创建 Global Tensor](./global_tensor.md/#global-tensor_2)）。
 
-以两卡数据并行为例，Global Tensor 的设计方式使得上述矩阵乘法案例的修改非常简单：
-
-1. 数据 $x$ 按第 0 维度切分(`sbp=flow.sbp.split(dim=0)`)，分布在两卡设备上(`placement=flow.placement(type="cuda", ranks=[0, 1])`)
-2. 模型 $w$ 保持完整(`sbp=flow.sbp.broadcast`)，分布在两卡设备上(`placement=flow.placement(type="cuda", ranks=[0, 1])`)
-
-修改后，完整代码如下：
+以两卡并行为例，矩阵乘法案例的数据并行程序如下：
 
 ```python
 import oneflow as flow
@@ -79,11 +61,10 @@ print(out.shape) # (4, 8)
 
 ![Data Paralelism](../parallelism/imgs/matmul_data_paralelism.png)
 
+可以看出，Global Tensor 的设计方式使得上述矩阵乘法案例的修改非常简单，只需要将：
 
-> 这里在考虑要不要放数据并行的其他介绍，例如：
->> 数据并行策略下，在反向传播过程中，需要对各个设备上的梯度进行 AllReduce，以确保各个设备上的模型始终保持一致
-
->> 当数据集较大，模型较小时，由于反向过程中为同步梯度产生的通信代价较小，此时选择数据并行一般比较有优势，常见的视觉分类模型，如 ResNet50，比较适合采用数据并行。
+1. 数据 $x$ 按第 0 维度切分(`sbp=flow.sbp.split(dim=0)`)，分布在两卡设备上(`placement=flow.placement(type="cuda", ranks=[0, 1])`)
+2. 模型 $w$ 保持完整(`sbp=flow.sbp.broadcast`)，分布在两卡设备上(`placement=flow.placement(type="cuda", ranks=[0, 1])`)
 
 ### 模型并行
 
@@ -91,12 +72,7 @@ print(out.shape) # (4, 8)
 
 与数据并行相反，模型并行是将模型进行切分输入不同设备，而每个设备上的数据保持完整和一致。
 
-同样以两卡为例，模型并行修改方式为：
-
-1. 数据 $x$ 保持完整(`sbp=flow.sbp.broadcast`)，分布在两卡设备上(`placement=flow.placement(type="cuda", ranks=[0, 1])`)
-2. 模型 $w$ 按第 1 维度切分(`sbp=flow.sbp.split(dim=1)`)，分布在两卡设备上(`placement=flow.placement(type="cuda", ranks=[0, 1])`)
-
-修改后，完整代码如下：
+同样以两卡为例，矩阵乘法的模型并行程序如下：
 
 ```python
 import oneflow as flow
@@ -110,7 +86,12 @@ print(out.shape) # (4, 8)
 
 模型并行示意图：
 
-![Data Paralelism](../parallelism/imgs/matmul_model_paralelism.png)
+![Data Parallelism](../parallelism/imgs/matmul_model_paralelism.png)
+
+同样只需要修改以下两部分：
+
+1. 数据 $x$ 保持完整(`sbp=flow.sbp.broadcast`)，分布在两卡设备上(`placement=flow.placement(type="cuda", ranks=[0, 1])`)
+2. 模型 $w$ 按第 1 维度切分(`sbp=flow.sbp.split(dim=1)`)，分布在两卡设备上(`placement=flow.placement(type="cuda", ranks=[0, 1])`)
 
 ### 流水并行
 
@@ -146,19 +127,45 @@ print(out_stage1.shape) # (4, 3)
 
 以上程序采用矩阵乘法，模拟了一个两阶段神经网络。与数据并行和模型并行不同，流水并行中的数据和模型均未被切分，而是分别将两个阶段分布在不同的设备上进行计算。
 
-Global Tensor 的设计，使得计算过程中，只需通过 `to_global` 方法调整上一阶段的输出数据的分布策略，作为下一阶段的输入数据即可。
-
-> 这里要不要写“ Stage ID 及梯度累积设置”
+Global Tensor 的设计，使得计算过程中，只需通过 `to_global(...)` 方法调整上一阶段的输出数据的分布策略，作为下一阶段的输入数据即可。
 
 ### 混合并行
 
-> 这里想的是直接放 GPT-3 示例
+混合并行是结合使用以上两种或三种策略的并行策略。
 
-在网络的训练中，也可以将多种并行策略混用，以 GPT-3 为例，以下是它训练时的设备并行方案：
+以下程序为 `2 机 2 卡` 混合并行示例：
 
-首先将模型分为 64 个阶段，进行流水并行。每个阶段都运行在 6 台 DGX-A100 主机上。在 6 台主机之间，进行的是数据并行训练；每台主机有 8 张 GPU 显卡，同一台机器上的 8 张 GPU 显卡之间是进行模型并行训练。
+```python
+import oneflow as flow
 
-![gpt-3](../parallelism/imgs/gpt3-overview.png)
+P01 = flow.placement(type="cuda", ranks=[0, 1])
+P23 = flow.placement(type="cuda", ranks=[2, 3])
+
+# 模型第一阶段在第 0 和第 1 卡上进行数据并行计算
+w0 = flow.randn(5, 8, placement=P01, sbp=flow.sbp.broadcast)
+# 模型第二阶段在第 2 和第 3 卡上进行模型并行计算
+w1 = flow.randn(8, 3, placement=P23, sbp=flow.sbp.split(dim=1))
+
+# 随机生成数据模拟输入
+x = flow.randn(4, 5)
+
+# 第一阶段需要将输入数据切分，用于数据并行
+in_stage0 = x.to_global(placement=P01, sbp=flow.sbp.split(dim=0))
+out_stage0 = flow.matmul(in_stage0, w0)
+print(out_stage0.shape) # (4, 8)
+
+# 第二阶段需要将输入数据还原完整，并转移至第 2 和第 3 卡，用于模型并行
+in_stage1 = out_stage0.to_global(placement=P23, sbp=flow.sbp.broadcast)
+out_stage1 = flow.matmul(in_stage1, w1)
+print(out_stage1.shape) # (4, 3)
+```
+
+以上程序构建了一个两阶段网络，其并行方式如下图所示：
+
+<img src="./imgs/hybrid-parallel.png" width="500">
+
+模型的两个阶段分别运行在两台机器进行流水并行，且第一阶段在第一台机器上进行两卡数据并行，第二阶段在第二台机器上进行两卡模型并行。
+
 
 ## 结语
 
