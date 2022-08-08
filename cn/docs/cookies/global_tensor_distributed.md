@@ -47,6 +47,8 @@ OneFlow 特有的 Global Tensor 采用 `placement` 与 `sbp` 结合的方式完�
 
 以两卡并行为例，矩阵乘法案例的数据并行程序如下：
 
+**注意：没有多个 GPU 的读者，可以通过将本文并行示例中的 `placement` 指定为 `type="cpu"`， 实现用 CPU 模拟多设备并行**
+
 ```python
 import oneflow as flow
 
@@ -58,7 +60,7 @@ print(out.shape) # (4, 8)
 ```
 
 假设以上程序所在脚本文件为 `test.py`，不同于上一篇文章，本文章借助 oneflow 分布式工具，在 Terminal 运行以下命令启动程序：
-```
+```shell
 python3 -m oneflow.distributed.launch --nproc_per_node 2 test.py
 ```
 
@@ -90,7 +92,7 @@ print(out.shape) # (4, 8)
 ```
 
 假设以上程序所在脚本文件为 `test.py`，在 Terminal 运行以下命令启动程序：
-```
+```shell
 python3 -m oneflow.distributed.launch --nproc_per_node 2 test.py
 ```
 
@@ -133,7 +135,7 @@ print(out_stage1.shape) # (4, 3)
 ```
 
 假设以上程序所在脚本文件为 `test.py`，在 Terminal 运行以下命令启动程序：
-```
+```shell
 python3 -m oneflow.distributed.launch --nproc_per_node 2 test.py
 ```
 
@@ -145,7 +147,7 @@ Global Tensor 的设计，使得计算过程中，只需通过 `to_global(...)` 
 
 混合并行是结合使用以上两种或三种策略的并行策略。
 
-以下程序为 `2 机 2 卡` 混合并行示例：
+以下程序为 `4 卡` 混合并行示例：
 
 ```python
 import oneflow as flow
@@ -170,33 +172,43 @@ out_stage1 = flow.matmul(in_stage1, w1)
 print(out_stage1.shape) # (4, 3)
 ```
 
-oneflow 分布式工具支持多机多设备并行，此处以 `2 机 2 卡` 程序为例，假设脚本文件名为 `test.py`，启动方式如下：
+**运行方式：**
 
-在 第 0 号机器上运行：
-```
-python3 -m oneflow.distributed.launch \
-    --nnodes=2 \
-    --node_rank=0 \
-    --nproc_per_node=2 \
-    --master_addr="192.168.1.1" \ # 第 0 号机器的 IP
-    --master_port=7788 \
-    test.py
-```
+假设脚本文件名为 `test.py`
 
-在 第 1 号机器上运行：
-```
-python3 -m oneflow.distributed.launch \
-    --nnodes=2 \
-    --node_rank=1 \
-    --nproc_per_node=2 \
-    --master_addr="192.168.1.1" \ # 第 0 号机器的 IP
-    --master_port=7788 \
-    test.py
-```
+1. 单机四卡启动方式为：
 
-注意要将 `master_addr` 设置为第 0 号机器的 IP
+    ```shell
+    python3 -m oneflow.distributed.launch --nproc_per_node 4 test.py
+    ```
 
-以上程序构建了一个两阶段网络，其并行方式如下图所示：
+2. oneflow 分布式工具支持多机多设备并行，以 `2 机 2 卡` 环境为例，启动方式如下：
+
+    在 第 0 号机器上运行：
+    ```shell
+    python3 -m oneflow.distributed.launch \
+        --nnodes=2 \
+        --node_rank=0 \
+        --nproc_per_node=2 \
+        --master_addr="192.168.1.1" \ # 第 0 号机器的 IP
+        --master_port=7788 \
+        test.py
+    ```
+
+    在 第 1 号机器上运行：
+    ```shell
+    python3 -m oneflow.distributed.launch \
+        --nnodes=2 \
+        --node_rank=1 \
+        --nproc_per_node=2 \
+        --master_addr="192.168.1.1" \ # 第 0 号机器的 IP
+        --master_port=7788 \
+        test.py
+    ```
+
+    注意要将 `master_addr` 设置为第 0 号机器的 IP
+
+以上程序构建了一个两阶段网络，其 `2 机 2 卡` 并行方式如下图所示：
 
 <img src="./imgs/hybrid-parallel.png" width="500">
 
