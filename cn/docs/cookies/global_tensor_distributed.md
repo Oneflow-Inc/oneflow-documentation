@@ -178,7 +178,7 @@ python3 -m oneflow.distributed.launch \
     --nnodes=2 \
     --node_rank=0 \
     --nproc_per_node=2 \
-    --master_addr="192.168.1.1" \
+    --master_addr="192.168.1.1" \ # 第 0 号机器的 IP
     --master_port=7788 \
     test.py
 ```
@@ -189,10 +189,12 @@ python3 -m oneflow.distributed.launch \
     --nnodes=2 \
     --node_rank=1 \
     --nproc_per_node=2 \
-    --master_addr="192.168.1.1" \
+    --master_addr="192.168.1.1" \ # 第 0 号机器的 IP
     --master_port=7788 \
     test.py
 ```
+
+注意要将 `master_addr` 设置为第 0 号机器的 IP
 
 以上程序构建了一个两阶段网络，其并行方式如下图所示：
 
