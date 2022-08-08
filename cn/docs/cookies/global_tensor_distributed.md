@@ -57,11 +57,16 @@ out = flow.matmul(x, w)
 print(out.shape) # (4, 8)
 ```
 
+假设以上程序所在脚本文件为 `test.py`，不同于上一篇文章，本文章借助 oneflow 分布式工具，在 Terminal 运行以下命令启动程序：
+```
+python3 -m oneflow.distributed.launch --nproc_per_node 2 test.py
+```
+
 数据并行示意图：
 
 ![Data Paralelism](../parallelism/imgs/matmul_data_paralelism.png)
 
-可以看出，Global Tensor 的设计方式使得上述矩阵乘法案例的修改非常简单，只需要将：
+以上程序可以看出，Global Tensor 的设计方式使得上述矩阵乘法案例的修改非常简单，只需要将：
 
 1. 数据 $x$ 按第 0 维度切分(`sbp=flow.sbp.split(dim=0)`)，分布在两卡设备上(`placement=flow.placement(type="cuda", ranks=[0, 1])`)
 2. 模型 $w$ 保持完整(`sbp=flow.sbp.broadcast`)，分布在两卡设备上(`placement=flow.placement(type="cuda", ranks=[0, 1])`)
@@ -82,6 +87,11 @@ x = flow.randn(4, 5, placement=placement, sbp=flow.sbp.broadcast)
 w = flow.randn(5, 8, placement=placement, sbp=flow.sbp.split(dim=1))
 out = flow.matmul(x, w)
 print(out.shape) # (4, 8)
+```
+
+假设以上程序所在脚本文件为 `test.py`，在 Terminal 运行以下命令启动程序：
+```
+python3 -m oneflow.distributed.launch --nproc_per_node 2 test.py
 ```
 
 模型并行示意图：
@@ -111,18 +121,20 @@ w0 = flow.randn(5, 8, placement=P0, sbp=BROADCAST)
 # 模型第二阶段分布在第 1 卡
 w1 = flow.randn(8, 3, placement=P1, sbp=BROADCAST)
 
-# 随机生成数据模拟输入
-x = flow.randn(4, 5)
-
-# 利用 to_global 将第一阶段的数据分布在第 0 卡
-in_stage0 = x.to_global(placement=P0, sbp=BROADCAST)
+# 随机生成数据模拟输入，注意第一阶段的数据分布在第 0 卡
+in_stage0 = flow.randn(4, 5, placement=P0, sbp=BROADCAST)
 out_stage0 = flow.matmul(in_stage0, w0)
 print(out_stage0.shape) # (4, 8)
 
 # 利用 to_global 将第二阶段的数据分布在第 1 卡
 in_stage1 = out_stage0.to_global(placement=P1, sbp=BROADCAST)
-out_stage1 = flow,matmul(in_stage1, w1)
+out_stage1 = flow.matmul(in_stage1, w1)
 print(out_stage1.shape) # (4, 3)
+```
+
+假设以上程序所在脚本文件为 `test.py`，在 Terminal 运行以下命令启动程序：
+```
+python3 -m oneflow.distributed.launch --nproc_per_node 2 test.py
 ```
 
 以上程序采用矩阵乘法，模拟了一个两阶段神经网络。与数据并行和模型并行不同，流水并行中的数据和模型均未被切分，而是分别将两个阶段分布在不同的设备上进行计算。
@@ -146,11 +158,9 @@ w0 = flow.randn(5, 8, placement=P01, sbp=flow.sbp.broadcast)
 # 模型第二阶段在第 2 和第 3 卡上进行模型并行计算
 w1 = flow.randn(8, 3, placement=P23, sbp=flow.sbp.split(dim=1))
 
-# 随机生成数据模拟输入
-x = flow.randn(4, 5)
-
+# 随机生成数据模拟输入，
 # 第一阶段需要将输入数据切分，用于数据并行
-in_stage0 = x.to_global(placement=P01, sbp=flow.sbp.split(dim=0))
+in_stage0 = flow.randn(4, 5, placement=P01, sbp=flow.sbp.split(dim=0))
 out_stage0 = flow.matmul(in_stage0, w0)
 print(out_stage0.shape) # (4, 8)
 
@@ -158,6 +168,30 @@ print(out_stage0.shape) # (4, 8)
 in_stage1 = out_stage0.to_global(placement=P23, sbp=flow.sbp.broadcast)
 out_stage1 = flow.matmul(in_stage1, w1)
 print(out_stage1.shape) # (4, 3)
+```
+
+oneflow 分布式工具支持多机多设备并行，此处以 `2 机 2 卡` 程序为例，假设脚本文件名为 `test.py`，启动方式如下：
+
+在 第 0 号机器上运行：
+```
+python3 -m oneflow.distributed.launch \
+    --nnodes=2 \
+    --node_rank=0 \
+    --nproc_per_node=2 \
+    --master_addr="192.168.1.1" \
+    --master_port=7788 \
+    test.py
+```
+
+在 第 1 号机器上运行：
+```
+python3 -m oneflow.distributed.launch \
+    --nnodes=2 \
+    --node_rank=1 \
+    --nproc_per_node=2 \
+    --master_addr="192.168.1.1" \
+    --master_port=7788 \
+    test.py
 ```
 
 以上程序构建了一个两阶段网络，其并行方式如下图所示：
