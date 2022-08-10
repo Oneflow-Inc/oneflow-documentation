@@ -65,7 +65,7 @@ OneFlow provides `GradScaler` to use Gradient Scaling in AMP mode. You only need
 
 ```python
 grad_scaler = flow.amp.GradScaler(
-    init_scale=3000,
+    init_scale=2**12,
     growth_factor=2.0,
     backoff_factor=0.5,
     growth_interval=1000,
