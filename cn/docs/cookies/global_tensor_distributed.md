@@ -147,34 +147,120 @@ Global Tensor 的设计，使得计算过程中，只需通过 `to_global(...)` 
 
 混合并行是结合使用以上两种或三种策略的并行策略。
 
-以下程序为 `4 卡` 混合并行示例：
+OneFlow 同时支持 `Eager 模式`和 `Graph 模式`两种模型运行方式，二者均可用于并行计算策略。此处以 `4 卡`混合并行程序为例进行介绍。
+
+**Eager 模式（动态图）**
+
+`Eager 模式`是 OneFlow 的默认模式，网络模型继承自 nn.Module 模块。
 
 ```python
 import oneflow as flow
+import oneflow.nn as nn
 
 P01 = flow.placement(type="cuda", ranks=[0, 1])
 P23 = flow.placement(type="cuda", ranks=[2, 3])
 
-# 模型第一阶段在第 0 和第 1 卡上进行数据并行计算
-w0 = flow.randn(5, 8, placement=P01, sbp=flow.sbp.broadcast)
-# 模型第二阶段在第 2 和第 3 卡上进行模型并行计算
-w1 = flow.randn(8, 3, placement=P23, sbp=flow.sbp.split(dim=1))
 
-# 随机生成数据模拟输入，
-# 第一阶段需要将输入数据切分，用于数据并行
-in_stage0 = flow.randn(4, 5, placement=P01, sbp=flow.sbp.split(dim=0))
-out_stage0 = flow.matmul(in_stage0, w0)
-print(out_stage0.shape) # (4, 8)
+class ModuleModel(nn.Module):
+    def __init__(self):
+        super().__init__()
 
-# 第二阶段需要将输入数据还原完整，并转移至第 2 和第 3 卡，用于模型并行
-in_stage1 = out_stage0.to_global(placement=P23, sbp=flow.sbp.broadcast)
-out_stage1 = flow.matmul(in_stage1, w1)
-print(out_stage1.shape) # (4, 3)
+        # 模型第一阶段在第 0 和第 1 卡上进行数据并行计算
+        self.w0 = flow.randn(5, 8, placement=P01, sbp=flow.sbp.broadcast)
+        # 模型第二阶段在第 2 和第 3 卡上进行模型并行计算
+        self.w1 = flow.randn(8, 3, placement=P23, sbp=flow.sbp.split(dim=1))
+
+    def forward(self, in_stage0):
+        # 第一阶段，数据切分在第 0 和第 1 卡，用于数据并行
+        out_stage0 = flow.matmul(in_stage0, self.w0)
+
+        # 第二阶段需要将输入数据还原完整，并转移至第 2 和第 3 卡，用于模型并行
+        in_stage1 = out_stage0.to_global(placement=P23, sbp=flow.sbp.broadcast)
+        out_stage1 = flow.matmul(in_stage1, self.w1)
+
+        return out_stage0, out_stage1
+
+
+if __name__ == "__main__":
+    model = ModuleModel()
+    # 需要将输入数据切分，用于数据并行
+    in_stage0 = flow.randn(4, 5, placement=P01, sbp=flow.sbp.split(dim=0))
+    out_stage0, out_stage1 = model(in_stage0)
+    print(out_stage0.shape, out_stage1.shape) # [4, 8] [4, 3]
 ```
+
+**Graph 模式（静态图）**
+
+将上述 `Eager 模式`的示例代码改写为 `Graph 模式`，只需要自定义继承自 `nn.Graph` 的类（GraphModel），并对 `Eager 模式` 的网络模型（ModuleModel）进行复用即可。GraphModel 的实现如下。（更多关于 `Graph 模式`的细节请参考：[静态图模块 nn.Graph](../basics/08_nn_graph.md)）
+
+```python
+class GraphModel(nn.Graph):
+    def __init__(self):
+        super().__init__()
+        self.model = ModuleModel()
+
+    def build(self, x):
+        return self.model(x)
+```
+
+`Graph 模式` 完整混合并行示例代码如下：
+
+```python
+import oneflow as flow
+import oneflow.nn as nn
+
+P01 = flow.placement(type="cuda", ranks=[0, 1])
+P23 = flow.placement(type="cuda", ranks=[2, 3])
+
+
+class ModuleModel(nn.Module):
+    def __init__(self):
+        super().__init__()
+
+        # 模型第一阶段在第 0 和第 1 卡上进行数据并行计算
+        self.w0 = flow.randn(5, 8, placement=P01, sbp=flow.sbp.broadcast)
+        # 模型第二阶段在第 2 和第 3 卡上进行模型并行计算
+        self.w1 = flow.randn(8, 3, placement=P23, sbp=flow.sbp.split(dim=1))
+
+    def forward(self, in_stage0):
+        # 第一阶段，数据切分在第 0 和第 1 卡，用于数据并行
+        out_stage0 = flow.matmul(in_stage0, self.w0)
+
+        # 第二阶段需要将输入数据还原完整，并转移至第 2 和第 3 卡，用于模型并行
+        in_stage1 = out_stage0.to_global(placement=P23, sbp=flow.sbp.broadcast)
+        out_stage1 = flow.matmul(in_stage1, self.w1)
+
+        return out_stage0, out_stage1
+
+
+# Graph
+class GraphModel(nn.Graph):
+    def __init__(self):
+        super().__init__()
+        self.model = ModuleModel()
+
+    def build(self, x):
+        return self.model(x)
+
+
+if __name__ == "__main__":
+    graph = GraphModel()
+    # 需要将输入数据切分，用于数据并行
+    in_stage0 = flow.randn(4, 5, placement=P01, sbp=flow.sbp.split(dim=0))
+    out_stage0, out_stage1 = graph(in_stage0)
+    print(out_stage0.shape, out_stage1.shape)  # [4, 8] [4, 3]
+
+```
+
+以上程序构建了一个两阶段网络，其 `2 机 2 卡` 并行方式如下图所示：
+
+<img src="./imgs/hybrid-parallel.png" width="500">
+
+模型的两个阶段分别运行在两台机器进行流水并行，且第一阶段在第一台机器上进行两卡数据并行，第二阶段在第二台机器上进行两卡模型并行。
 
 **运行方式：**
 
-假设脚本文件名为 `test.py`
+`Eager 模式`和 `Graph 模式`的运行方式一致，假设脚本文件名为 `test.py`
 
 1. 单机四卡启动方式为：
 
@@ -207,12 +293,6 @@ print(out_stage1.shape) # (4, 3)
     ```
 
     注意要将 `master_addr` 设置为第 0 号机器的 IP
-
-以上程序构建了一个两阶段网络，其 `2 机 2 卡` 并行方式如下图所示：
-
-<img src="./imgs/hybrid-parallel.png" width="500">
-
-模型的两个阶段分别运行在两台机器进行流水并行，且第一阶段在第一台机器上进行两卡数据并行，第二阶段在第二台机器上进行两卡模型并行。
 
 
 ## 结语
