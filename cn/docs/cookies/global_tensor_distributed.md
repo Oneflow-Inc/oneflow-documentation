@@ -191,19 +191,10 @@ if __name__ == "__main__":
 
 **Graph 模式（静态图）**
 
-将上述 `Eager 模式`的示例代码改写为 `Graph 模式`，只需要自定义继承自 `nn.Graph` 的类（GraphModel），并对 `Eager 模式` 的网络模型（ModuleModel）进行复用即可。GraphModel 的实现如下。（更多关于 `Graph 模式`的细节请参考：[静态图模块 nn.Graph](../basics/08_nn_graph.md)）
+将上述 `Eager 模式`的示例代码改写为 `Graph 模式`，需要自定义继承自 `nn.Graph` 的类（GraphModel），并对 `Eager 模式` 的网络模型（ModuleModel）进行复用。（更多关于 `Graph 模式`的细节请参考：[静态图模块 nn.Graph](../basics/08_nn_graph.md)）
 
-```python
-class GraphModel(nn.Graph):
-    def __init__(self):
-        super().__init__()
-        self.model = ModuleModel()
 
-    def build(self, x):
-        return self.model(x)
-```
-
-`Graph 模式` 完整混合并行示例代码如下：
+示例代码如下：
 
 ```python
 import oneflow as flow
@@ -213,24 +204,35 @@ P01 = flow.placement(type="cuda", ranks=[0, 1])
 P23 = flow.placement(type="cuda", ranks=[2, 3])
 
 
+class StageModule(nn.Module):
+    def __init__(self, in_dims, out_dims, placement=None, sbp=None):
+        super().__init__()
+        self.w = nn.Parameter(
+            flow.randn(in_dims, out_dims, placement=placement, sbp=sbp)
+        )
+
+    def forward(self, x):
+        out = flow.matmul(x, self.w)
+        return out
+
+
 class ModuleModel(nn.Module):
     def __init__(self):
         super().__init__()
 
         # 模型第一阶段在第 0 和第 1 卡上进行数据并行计算
-        w0 = flow.randn(5, 8, placement=P01, sbp=flow.sbp.broadcast)
-        self.w0 = nn.Parameter(w0)
-        # 模型第二阶段在第 2 和第 3 卡上进行模型并行计算
-        w1 = flow.randn(8, 3, placement=P23, sbp=flow.sbp.split(dim=1))
-        self.w1 = nn.Parameter(w1)
+        self.m_stage0 = StageModule(5, 8, placement=P01, sbp=flow.sbp.broadcast)
 
-    def forward(self, in_stage0):
+        # 模型第二阶段在第 2 和第 3 卡上进行模型并行计算
+        self.m_stage1 = StageModule(8, 3, placement=P23, sbp=flow.sbp.split(dim=1))
+
+    def forward(self, x):
         # 第一阶段，数据切分在第 0 和第 1 卡，用于数据并行
-        out_stage0 = flow.matmul(in_stage0, self.w0)
+        out_stage0 = self.m_stage0(x)
 
         # 第二阶段需要将输入数据还原完整，并转移至第 2 和第 3 卡，用于模型并行
         in_stage1 = out_stage0.to_global(placement=P23, sbp=flow.sbp.broadcast)
-        out_stage1 = flow.matmul(in_stage1, self.w1)
+        out_stage1 = self.m_stage1(in_stage1)
 
         return out_stage0, out_stage1
 
@@ -240,8 +242,8 @@ class GraphModel(nn.Graph):
     def __init__(self):
         super().__init__()
         self.model = ModuleModel()
-        self.model.w0.config.set_stage(stage_id=0, placement=P01)
-        self.model.w1.config.set_stage(stage_id=1, placement=P23)
+        self.model.m_stage0.config.set_stage(stage_id=0, placement=P01)
+        self.model.m_stage1.config.set_stage(stage_id=1, placement=P23)
 
     def build(self, x):
         return self.model(x)
