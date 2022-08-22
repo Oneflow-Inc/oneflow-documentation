@@ -218,9 +218,11 @@ class ModuleModel(nn.Module):
         super().__init__()
 
         # 模型第一阶段在第 0 和第 1 卡上进行数据并行计算
-        self.w0 = flow.randn(5, 8, placement=P01, sbp=flow.sbp.broadcast)
+        w0 = flow.randn(5, 8, placement=P01, sbp=flow.sbp.broadcast)
+        self.w0 = nn.Parameter(w0)
         # 模型第二阶段在第 2 和第 3 卡上进行模型并行计算
-        self.w1 = flow.randn(8, 3, placement=P23, sbp=flow.sbp.split(dim=1))
+        w1 = flow.randn(8, 3, placement=P23, sbp=flow.sbp.split(dim=1))
+        self.w1 = nn.Parameter(w1)
 
     def forward(self, in_stage0):
         # 第一阶段，数据切分在第 0 和第 1 卡，用于数据并行
@@ -238,6 +240,8 @@ class GraphModel(nn.Graph):
     def __init__(self):
         super().__init__()
         self.model = ModuleModel()
+        self.model.w0.config.set_stage(stage_id=0, placement=P01)
+        self.model.w1.config.set_stage(stage_id=1, placement=P23)
 
     def build(self, x):
         return self.model(x)
@@ -249,7 +253,6 @@ if __name__ == "__main__":
     in_stage0 = flow.randn(4, 5, placement=P01, sbp=flow.sbp.split(dim=0))
     out_stage0, out_stage1 = graph(in_stage0)
     print(out_stage0.shape, out_stage1.shape)  # [4, 8] [4, 3]
-
 ```
 
 以上程序构建了一个两阶段网络，其 `2 机 2 卡` 并行方式如下图所示：
