@@ -1,30 +1,54 @@
 # 使用 Global Tensor 进行多机多设备编程：分布式并行策略
+# Using Global Tensor for Multi-Device Multi-GPU Programming: Distributed Parallelism Strategies 
 
 By [Guoliang Cheng](https://github.com/lmyybh), [Xu Xiaoyu](https://github.com/strint)
 
 深度学习是通过神经网络学习样本数据的内在规律和表现层次的一种复杂机器学习算法。计算过程主要涉及数据和模型两部分。
 
+Deep learning is a complicated machine learning algorithm where the neural network learns the patterns and representations of the training data. The computation mainly involves two parts: data and model.
+
 随着深度学习的广泛应用，模型规模不断扩大，对硬件（算力、内存）的需求也在不断提高。然而，受限于物理定律，持续提高芯片的集成越来越困难，单一设备的算力及容量难以跟上模型扩大的需求。
+
+The increasingly wide application of deep learning and the growing model size impose higher demands for hardware (computing power and memory). However, by some physical laws, it’s getting harder and harder to put more transistors on a chip. Thus, it is difficult for one single device to meet the computing and memory requirements for the ever-enlarging deep learning models. 
 
 为解决算力增速不足的问题，多节点集群的分布式训练方式逐渐受到重视，高效易用的分布式并行策略的提出势在必行。
 
+Distributed training with multi-node clusters emerges as a solution. We are in urgent need of some efficient and easy-to-use distributed parallelism strategies. 
+
 ## 并行策略
+## Parallelism Strategies
 
 值得注意的是，简单的设备堆叠并不一定会带来算力的增长。因为神经网络的训练并不是单纯的“把原来一个设备做的事情，现在分给多个设备各自做”，它不仅需要多个设备进行计算，还涉及到设备之间的数据传输，只有协调好集群中的计算与通信，才可以实现高效的分布式训练。
 
+It should be noted that simply multiplying the number of devices doesn’t necessarily bring increase in computing power, because neural network training is more complicated than just splitting the work of one device among multiple devices. In addition to computation on each device, it entails inter-device communication. That means we need to schedule the computation and communication well in order to achieve high efficiency in distributed training. 
+
 常见的并行策略包括 **数据并行** 、**模型并行** 和 **流水并行**，特点如下：
+
+Common parallelism strategies include **data parallelism**, **model parallelism**, and **pipeline parallelism**, which are detailed as follows:
 
 - 数据并行：对 **数据** 进行切分，不同设备数据不同，但模型相同
 - 模型并行：对 **模型** 进行切分，不同设备数据相同，但模型不同
 - 流水并行：将 **模型** 分为多个阶段，分发到不同设备，各个设备之间以“流水线”的方式完成训练
 
+- Data Parallelism: partition the **data**, each device running the same model but processing different data shards.
+- Model Parallelism: partition the **model**, each device running different parts of the model but processing the same data.
+- Pipeline Parallelism: partition the **model** into stages and distribute them to various devices, the devices executing the stages in a pipeline fashion.  
+
 除上述三种策略外， **混合并行** 也是一种常见的并行策略，通过上述两种或三种方式的混合使用完成训练目的。
+
+Another frequently used strategy is **mixed parallelism**, which means mixing two or three of the above strategies in neural network training.
 
 本文以矩阵乘法为例，解释并行策略间的区别，以及如何利用 `Global Tensor` 实现不同的并行方式。
 
+In the remainder of this article, we will explain the difference between these parallelism strategies with matrix multiplication as an example and introduce how to implement these strategies using ` Global Tensor`.
+
 假设神经网络中的某一层是进行矩阵乘法计算，其中，输入 $x$ 的形状为 $4\times5$，模型参数 $w$ 的形状为 $5\times8$，那么，矩阵乘法输出形状为 $4\times8$。
 
+Assuming that a certain layer in a neural network is dedicated to matrix multiplication. If the shape of the input $x$ is $4\times5$ and that of the model parameter $w$ is $5\times8$, then the shape of the output will be $4\times8$.
+
 基础代码：
+
+Basic code: 
 
 ```python
 import oneflow as flow
@@ -36,20 +60,32 @@ print(out.shape) # (4, 8)
 
 示意图如下：
 
+Here is the illustration:
+
 ![matmul](../parallelism/imgs/matmul_logical.png)
 
 单设备的训练中，以上矩阵乘法计算得到 $out$ 后会传递到下一层，并最终计算得到 $loss$。然后，在反向传播过程中，得到 $\frac{\partial loss}{\partial w}$，用于更新 $w$。
 
+In single-device training, the above computation will produce an output $out$, which will be passed to the next layer. Eventually, we will get a $loss$. Then, in backward propagation, we will get $\frac{\partial loss}{\partial w}$, which will be used to update $w$.
+
 ### 数据并行
+### Data Parallelism
 
 数据并行是将数据进行切分输入不同设备，而每个设备上的模型保持完整和一致。
 
+In data parallelism, we input different data shards into different devices, and each device runs the same whole model to process its given data shard.
+
 OneFlow 特有的 Global Tensor 采用 `placement` 与 `sbp` 结合的方式完成分布。其中 `placement` 表示 Global Tensor 分布的物理设备，`sbp` 表示 Global Tensor 分布的方式（详情可见：[创建 Global Tensor](./global_tensor.md/#global-tensor_2)）。
+
+In OneFlow’s Global Tensor, the data is distributed via `placement` and `sbp`. `placement` refers to the physical devices that the global tensor is distributed among and `sbp` refers to the way that the global tensor is distributed. (For more information, please refer to [Create a Global Tensor](https://docs.oneflow.org/en/master/cookies/global_tensor.html))
 
 以两卡并行为例，矩阵乘法案例的数据并行程序如下：
 
+Take two-GPU parallelism as an example, the data parallelism program for the aforementioned matrix multiplication is as follows:
+
 **注意：没有多个 GPU 的读者，可以通过将本文并行示例中的 `placement` 指定为 `type="cpu"`， 实现用 CPU 模拟多设备并行**
 
+**Note: If you don’t have multiple GPUs, you can designate the `placement` as `type="cpu"` in the third line of the following snippet, so you can mimic multi-device parallelism with CPUs.**
 
 ```python
 import oneflow as flow
@@ -62,26 +98,44 @@ print(out.shape) # (4, 8)
 
 假设以上程序所在脚本文件为 `test.py`，不同于上一篇文章，本文章借助 oneflow 分布式工具，在 Terminal 运行以下命令启动程序：
 
+Supposing that the above program is in the `test.py` script. Unlike what we’ve mentioned in the previous article, here we utilize a OneFlow distribution tool and execute the following instruction to start the program in terminal: 
+
 ```shell
 python3 -m oneflow.distributed.launch --nproc_per_node 2 test.py
 ```
 
 数据并行示意图：
 
+Illustration of data parallelism:
+
 ![Data Paralelism](../parallelism/imgs/matmul_data_paralelism.png)
 
 以上程序可以看出，Global Tensor 的设计方式使得上述矩阵乘法案例的修改非常简单，只需要将：
 
+As can be seen, the design of Global Tensor makes it easy to modify the code for the above matrix multiplication. All you need to do is to: 
+
 1. 数据 $x$ 按第 0 维度切分(`sbp=flow.sbp.split(dim=0)`)，分布在两卡设备上(`placement=flow.placement(type="cuda", ranks=[0, 1])`)
 2. 模型 $w$ 保持完整(`sbp=flow.sbp.broadcast`)，分布在两卡设备上(`placement=flow.placement(type="cuda", ranks=[0, 1])`)
 
+<br/>
+
+1. Partition the data $x$ on the 0 dimension (`sbp=flow.sbp.split(dim=0)`), and distribute the data across two GPUs (`placement=flow.placement(type="cuda", ranks=[0, 1])`).
+2. Keep the model parameter $w$ intact (`sbp=flow.sbp.broadcast`), and broadcast it to two GPUs (`placement=flow.placement(type="cuda", ranks=[0, 1])`).
+
 ### 模型并行
+### Model Parallelism
 
 当神经网络非常巨大时，数据并行同步梯度的代价很大，此时可以考虑采用模型并行策略。
 
+When the neural network is extremely large, data parallelism can result in huge cost of gradient synchronization. This is when model parallelism comes in handy.
+
 与数据并行相反，模型并行是将模型进行切分输入不同设备，而每个设备上的数据保持完整和一致。
 
+In contrast with data parallelism, with model parallelism, you partition the model and feed different parts of the model to various devices. Each device processes the same whole data.
+
 同样以两卡为例，矩阵乘法的模型并行程序如下：
+
+Still, we take two-GPU parallelism as an example. The model parallelism program for the aforementioned matrix multiplication is as follows:
 
 ```python
 import oneflow as flow
