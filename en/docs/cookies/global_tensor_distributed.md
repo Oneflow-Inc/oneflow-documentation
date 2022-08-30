@@ -5,11 +5,11 @@ By [Guoliang Cheng](https://github.com/lmyybh), [Xu Xiaoyu](https://github.com/s
 
 深度学习是通过神经网络学习样本数据的内在规律和表现层次的一种复杂机器学习算法。计算过程主要涉及数据和模型两部分。
 
-Deep learning is a complicated machine learning algorithm where the neural network learns the patterns and representations of the training data. The computation mainly involves two parts: data and model.
+Deep learning is a complicated machine learning algorithm that uses a neural network to learn the patterns and representations of the training data. The computation mainly involves two parts: data and model.
 
 随着深度学习的广泛应用，模型规模不断扩大，对硬件（算力、内存）的需求也在不断提高。然而，受限于物理定律，持续提高芯片的集成越来越困难，单一设备的算力及容量难以跟上模型扩大的需求。
 
-The increasingly wide application of deep learning and the growing model size impose higher demands for hardware (computing power and memory). However, by some physical laws, it’s getting harder and harder to put more transistors on a chip. Thus, it is difficult for one single device to meet the computing and memory requirements for the ever-enlarging deep learning models. 
+The increasingly wide application of deep learning and the growing model size impose higher demands for hardware (computing power and memory). However, by some physical laws, it’s getting harder and harder to put more transistors on one chip. Thus, it is difficult for one single device to meet the computing and memory requirements for the ever-enlarging deep learning models. 
 
 为解决算力增速不足的问题，多节点集群的分布式训练方式逐渐受到重视，高效易用的分布式并行策略的提出势在必行。
 
@@ -20,7 +20,7 @@ Distributed training with multi-node clusters emerges as a solution. We are in u
 
 值得注意的是，简单的设备堆叠并不一定会带来算力的增长。因为神经网络的训练并不是单纯的“把原来一个设备做的事情，现在分给多个设备各自做”，它不仅需要多个设备进行计算，还涉及到设备之间的数据传输，只有协调好集群中的计算与通信，才可以实现高效的分布式训练。
 
-It should be noted that simply multiplying the number of devices doesn’t necessarily bring increase in computing power, because neural network training is more complicated than just splitting the work of one device among multiple devices. In addition to computation on each device, it entails inter-device communication. That means we need to schedule the computation and communication well in order to achieve high efficiency in distributed training. 
+It should be noted that simply multiplying the number of computing devices doesn’t necessarily bring increase in computing power, because neural network training is more complicated than just splitting the work of one device among multiple devices. In addition to computation on each device, distributed training entails inter-device communication. That means we need to schedule the computation and communication well in order to achieve high efficiency in distributed training. 
 
 常见的并行策略包括 **数据并行** 、**模型并行** 和 **流水并行**，特点如下：
 
@@ -30,21 +30,21 @@ Common parallelism strategies include **data parallelism**, **model parallelism*
 - 模型并行：对 **模型** 进行切分，不同设备数据相同，但模型不同
 - 流水并行：将 **模型** 分为多个阶段，分发到不同设备，各个设备之间以“流水线”的方式完成训练
 
-- Data Parallelism: partition the **data**, each device running the same model but processing different data shards.
-- Model Parallelism: partition the **model**, each device running different parts of the model but processing the same data.
-- Pipeline Parallelism: partition the **model** into stages and distribute them to various devices, the devices executing the stages in a pipeline fashion.  
+- Data Parallelism: The **data** is partitioned. Each device runs the same model but processes different data shards.
+- Model Parallelism: The **model** is partitioned. Each device runs different parts of the model but processes the same data.
+- Pipeline Parallelism: The **model** is partitioned into stages, which are distributed to various devices. The devices execute the stages in a pipeline fashion.  
 
 除上述三种策略外， **混合并行** 也是一种常见的并行策略，通过上述两种或三种方式的混合使用完成训练目的。
 
-Another frequently used strategy is **mixed parallelism**, which means mixing two or three of the above strategies in neural network training.
+Another frequently used strategy is **mixed parallelism**, which refers to the combined use of two or three of the above strategies for neural network training.
 
 本文以矩阵乘法为例，解释并行策略间的区别，以及如何利用 `Global Tensor` 实现不同的并行方式。
 
-In the remainder of this article, we will explain the difference between these parallelism strategies with matrix multiplication as an example and introduce how to implement these strategies using ` Global Tensor`.
+In the remainder of this article, we will explain the differences between these parallelism strategies with matrix multiplication as an example and introduce how to implement these strategies using ` Global Tensor`.
 
 假设神经网络中的某一层是进行矩阵乘法计算，其中，输入 $x$ 的形状为 $4\times5$，模型参数 $w$ 的形状为 $5\times8$，那么，矩阵乘法输出形状为 $4\times8$。
 
-Assuming that a certain layer in a neural network is dedicated to matrix multiplication. If the shape of the input $x$ is $4\times5$ and that of the model parameter $w$ is $5\times8$, then the shape of the output will be $4\times8$.
+Assuming that a certain layer in a neural network is dedicated to matrix multiplication, if the shape of the input $x$ is $4\times5$ and that of the model parameter $w$ is $5\times8$, then the shape of the output will be $4\times8$.
 
 基础代码：
 
@@ -77,7 +77,7 @@ In data parallelism, we input different data shards into different devices, and 
 
 OneFlow 特有的 Global Tensor 采用 `placement` 与 `sbp` 结合的方式完成分布。其中 `placement` 表示 Global Tensor 分布的物理设备，`sbp` 表示 Global Tensor 分布的方式（详情可见：[创建 Global Tensor](./global_tensor.md/#global-tensor_2)）。
 
-In OneFlow’s Global Tensor, the data is distributed via `placement` and `sbp`. `placement` refers to the physical devices that the global tensor is distributed among and `sbp` refers to the way that the global tensor is distributed. (For more information, please refer to [Create a Global Tensor](https://docs.oneflow.org/en/master/cookies/global_tensor.html))
+In OneFlow’s unique Global Tensor, the distribution is implemented via `placement` and `sbp`. `placement` refers to the physical devices that the global tensor is distributed among, and `sbp` refers to the way that the global tensor is distributed. (For more information, please refer to [Create a Global Tensor](https://docs.oneflow.org/en/master/cookies/global_tensor.html))
 
 以两卡并行为例，矩阵乘法案例的数据并行程序如下：
 
@@ -85,7 +85,7 @@ Take two-GPU parallelism as an example, the data parallelism program for the afo
 
 **注意：没有多个 GPU 的读者，可以通过将本文并行示例中的 `placement` 指定为 `type="cpu"`， 实现用 CPU 模拟多设备并行**
 
-**Note: If you don’t have multiple GPUs, you can designate the `placement` as `type="cpu"` in the third line of the following snippet, so you can mimic multi-device parallelism with CPUs.**
+**Note: If you don’t have multiple GPUs, you can designate the `placement` as `type="cpu"` in the third line of the following code, so you can simulate multi-device parallelism with CPUs.**
 
 ```python
 import oneflow as flow
@@ -98,7 +98,7 @@ print(out.shape) # (4, 8)
 
 假设以上程序所在脚本文件为 `test.py`，不同于上一篇文章，本文章借助 oneflow 分布式工具，在 Terminal 运行以下命令启动程序：
 
-Supposing that the above program is in the `test.py` script. Unlike what we’ve mentioned in the previous article, here we utilize a OneFlow distribution tool and execute the following instruction to start the program in terminal: 
+Supposing that the above program is in a `test.py` script, unlike what we’ve mentioned in the previous article, here we utilize a OneFlow distribution tool and execute the following command to start the program in terminal: 
 
 ```shell
 python3 -m oneflow.distributed.launch --nproc_per_node 2 test.py
@@ -112,14 +112,14 @@ Illustration of data parallelism:
 
 以上程序可以看出，Global Tensor 的设计方式使得上述矩阵乘法案例的修改非常简单，只需要将：
 
-As can be seen, the design of Global Tensor makes it easy to modify the code for the above matrix multiplication. All you need to do is to: 
+As can be seen, the design of global tensor makes it easy to modify the code for the above matrix multiplication. All you need to do is to: 
 
 1. 数据 $x$ 按第 0 维度切分(`sbp=flow.sbp.split(dim=0)`)，分布在两卡设备上(`placement=flow.placement(type="cuda", ranks=[0, 1])`)
 2. 模型 $w$ 保持完整(`sbp=flow.sbp.broadcast`)，分布在两卡设备上(`placement=flow.placement(type="cuda", ranks=[0, 1])`)
 
 <br/>
 
-1. Partition the data $x$ on the 0 dimension (`sbp=flow.sbp.split(dim=0)`), and distribute the data across two GPUs (`placement=flow.placement(type="cuda", ranks=[0, 1])`).
+1. Partition the data $x$ on dimension 0 (`sbp=flow.sbp.split(dim=0)`), and distribute the data shards across two GPUs (`placement=flow.placement(type="cuda", ranks=[0, 1])`).
 2. Keep the model parameter $w$ intact (`sbp=flow.sbp.broadcast`), and broadcast it to two GPUs (`placement=flow.placement(type="cuda", ranks=[0, 1])`).
 
 ### 模型并行
@@ -147,69 +147,114 @@ print(out.shape) # (4, 8)
 ```
 
 假设以上程序所在脚本文件为 `test.py`，在 Terminal 运行以下命令启动程序：
+
+Supposing that the above program is in a `test.py` script, we execute the following command to start the program in terminal:
+
 ```shell
 python3 -m oneflow.distributed.launch --nproc_per_node 2 test.py
 ```
 
 模型并行示意图：
 
+Illustration of model parallelism:
+
 ![Data Parallelism](../parallelism/imgs/matmul_model_paralelism.png)
 
 同样只需要修改以下两部分：
 
+Similarly, the modification is simple:
+
 1. 数据 $x$ 保持完整(`sbp=flow.sbp.broadcast`)，分布在两卡设备上(`placement=flow.placement(type="cuda", ranks=[0, 1])`)
 2. 模型 $w$ 按第 1 维度切分(`sbp=flow.sbp.split(dim=1)`)，分布在两卡设备上(`placement=flow.placement(type="cuda", ranks=[0, 1])`)
 
+<br/>
+1. Keep the data $x$ intact (`sbp=flow.sbp.broadcast`), and broadcast it to two GPUs (`placement=flow.placement(type="cuda", ranks=[0, 1])`).
+<br/>
+2. Partition the model parameter $w$ on dimension 1 (`sbp=flow.sbp.split(dim=1)`), and distribute the shards across two GPUs (`placement=flow.placement(type="cuda", ranks=[0, 1])`).
+
 ### 流水并行
+### Pipeline Parallelism
 
 当神经网络过于巨大，无法在一个设备上存放时，可以选择流水并行策略。 流水并行将网络切分为多个阶段，并分发到不同的计算设备上，各个计算设备之间以“流水线”的方式完成训练。
 
+If the neural network is too large to be placed on one device, pipeline parallelism can help. Pipeline parallelism means to partition the neural network into stages and distribute the stages to various devices. The devices will execute their given stage in a pipeline fashion.
+
 以两卡流水并行为例，构造两阶段示例程序：
+
+For example, we build a two-stage program for two-GPU pipeline parallelism:
 
 ```python
 import oneflow as flow
 P0 = flow.placement(type="cuda", ranks=[0])
 P1 = flow.placement(type="cuda", ranks=[1])
 BROADCAST = flow.sbp.broadcast
-# 模型第一阶段分布在第 0 卡
+# 模型第一阶段分布在第 0 卡      
+# Place the first stage of the model on GPU 0.           
 w0 = flow.randn(5, 8, placement=P0, sbp=BROADCAST)
-# 模型第二阶段分布在第 1 卡
+# 模型第二阶段分布在第 1 卡      
+# Place the second stage of the model on GPU 1.
 w1 = flow.randn(8, 3, placement=P1, sbp=BROADCAST)
-# 随机生成数据模拟输入，注意第一阶段的数据分布在第 0 卡
+# 随机生成数据模拟输入，注意第一阶段的数据分布在第 0 卡  
+# Randomly generate data to be used as input. Note that the data for the first stage should be placed on GPU 0.
 in_stage0 = flow.randn(4, 5, placement=P0, sbp=BROADCAST)
 out_stage0 = flow.matmul(in_stage0, w0)
 print(out_stage0.shape) # (4, 8)
-# 利用 to_global 将第二阶段的数据分布在第 1 卡
+# 利用 to_global 将第二阶段的数据分布在第 1 卡  
+# Place the data for the second stage on GPU 1 via to_global.
 in_stage1 = out_stage0.to_global(placement=P1, sbp=BROADCAST)
 out_stage1 = flow.matmul(in_stage1, w1)
 print(out_stage1.shape) # (4, 3)
 ```
 
 假设以上程序所在脚本文件为 `test.py`，在 Terminal 运行以下命令启动程序：
+
+Supposing that the above program is in a `test.py` script, we execute the following command to start the program in terminal:
+
 ```shell
 python3 -m oneflow.distributed.launch --nproc_per_node 2 test.py
 ```
 
 以上程序采用矩阵乘法，模拟了一个两阶段神经网络。与数据并行和模型并行不同，流水并行中的数据和模型均未被切分，而是分别将两个阶段分布在不同的设备上进行计算。
 
+In the above program, we simulate a two-stage neural network with matrix multiplication. Different from data parallelism and model parallelism, pipeline parallelism does not shard the data or the model, but place the two stages of the model on two devices for computation.
+
 Global Tensor 的设计，使得计算过程中，只需通过 `to_global(...)` 方法调整上一阶段的输出数据的分布策略，作为下一阶段的输入数据即可。
 
+Thanks to the neat design of global tensor, during the computation, all you need to do is adjusting the distribution strategy of the output data from the previous stage via `to_global(...)` so the data can be used as the input for the next stage.
+
 ### 混合并行
+### Mixed Parallelism
 
 混合并行是结合使用以上两种或三种策略的并行策略。
 
+Mixed parallelism refers to the combined use of two or three of the above parallelism strategies.
+
 OneFlow 同时支持 `Eager 模式` 和 `Graph 模式` 两种模型运行方式，二者均可用于并行计算策略。
+
+OneFlow supports two model execution modes: `Eager Mode` and `Graph Mode`. Both modes support parallel computing strategies. 
 
 - `Eager 模式` 是 OneFlow 的默认模式，网络模型继承自 `nn.Module` 模块。
 - `Graph 模式` 需要自定义继承自 `nn.Graph` 的类，并对 `Eager 模式` 的网络模型进行复用。
 
+- `Eager Mode` is the default mode in OneFlow. The neural network model is inherited from `nn.Module`.
+- In `Graph Mode`, you need to customize the classes inherited from `nn.Graph`, and reuse the neural network model in `Eager Mode`.
+
+
 更多关于 `Graph 模式`的细节请参考：[静态图模块 nn.Graph](../basics/08_nn_graph.md)
 
+For more information of `Graph Mode`, please check: [Static Graph Interface: nn.Graph](../basics/08_nn_graph.md)
+
 此处以 `4 卡`混合并行程序为例进行介绍。
+
+The following example is a mixed parallelism program for 4 GPUs.
 
 !!! Note
     分别 **点击** 以下 `Eager` 或 `Graph` 标签，查看 两种模式的示例代码
 
+!!! Note 
+    **Click** `Eager` and `Graph` for the corresponding sample code 
+
+    
 === "Eager"
 
     ```python
@@ -230,19 +275,24 @@ OneFlow 同时支持 `Eager 模式` 和 `Graph 模式` 两种模型运行方式�
         def __init__(self):
             super().__init__()
             # 模型第一阶段在第 0 和第 1 卡上进行数据并行计算
+            # The first stage of the model: execute data parallelism on GPU 0 and 1.
             self.m_stage0 = StageModule(5, 8, placement=P01, sbp=flow.sbp.broadcast)
             # 模型第二阶段在第 2 和第 3 卡上进行模型并行计算
+            # The second stage of the model: execute model parallelism on GPU 2 and 3.
             self.m_stage1 = StageModule(8, 3, placement=P23, sbp=flow.sbp.split(dim=1))
         def forward(self, x):
             # 第一阶段，数据切分在第 0 和第 1 卡，用于数据并行
+            # First stage: the data is partitioned across GPU 0 and 1 for data parallelism.
             out_stage0 = self.m_stage0(x)
             # 第二阶段需要将输入数据还原完整，并转移至第 2 和第 3 卡，用于模型并行
+            # Second stage: stitch the data together and pass them to GPU 2 and 3 for model parallelism.
             in_stage1 = out_stage0.to_global(placement=P23, sbp=flow.sbp.broadcast)
             out_stage1 = self.m_stage1(in_stage1)
             return out_stage0, out_stage1
     if __name__ == "__main__":
         model = ModuleModel()
         # 需要将输入数据切分，用于数据并行
+        # Partition the input data for data parallelism.
         in_stage0 = flow.randn(4, 5, placement=P01, sbp=flow.sbp.split(dim=0))
         out_stage0, out_stage1 = model(in_stage0)
         print(out_stage0.shape, out_stage1.shape)  # (4, 8) (4, 3)
@@ -268,13 +318,17 @@ OneFlow 同时支持 `Eager 模式` 和 `Graph 模式` 两种模型运行方式�
         def __init__(self):
             super().__init__()
             # 模型第一阶段在第 0 和第 1 卡上进行数据并行计算
+            # The first stage of the model: execute data parallelism on GPU 0 and 1.
             self.m_stage0 = StageModule(5, 8, placement=P01, sbp=flow.sbp.broadcast)
             # 模型第二阶段在第 2 和第 3 卡上进行模型并行计算
+            # The second stage of the model: execute model parallelism on GPU 2 and 3.
             self.m_stage1 = StageModule(8, 3, placement=P23, sbp=flow.sbp.split(dim=1))
         def forward(self, x):
             # 第一阶段，数据切分在第 0 和第 1 卡，用于数据并行
+            # First stage: the data is partitioned across GPU 0 and 1 for data parallelism.
             out_stage0 = self.m_stage0(x)
             # 第二阶段需要将输入数据还原完整，并转移至第 2 和第 3 卡，用于模型并行
+            # Second stage: stitch the data together and pass them to GPU 2 and 3 for model parallelism.
             in_stage1 = out_stage0.to_global(placement=P23, sbp=flow.sbp.broadcast)
             out_stage1 = self.m_stage1(in_stage1)
             return out_stage0, out_stage1
@@ -290,6 +344,7 @@ OneFlow 同时支持 `Eager 模式` 和 `Graph 模式` 两种模型运行方式�
     if __name__ == "__main__":
         graph = GraphModel()
         # 需要将输入数据切分，用于数据并行
+        # Partition the input data for data parallelism.
         in_stage0 = flow.randn(4, 5, placement=P01, sbp=flow.sbp.split(dim=0))
         out_stage0, out_stage1 = graph(in_stage0)
         print(out_stage0.shape, out_stage1.shape)  # (4, 8) (4, 3)
@@ -297,15 +352,25 @@ OneFlow 同时支持 `Eager 模式` 和 `Graph 模式` 两种模型运行方式�
 
 以上程序构建了一个两阶段网络，其 `2 机 2 卡` 并行方式如下图所示：
 
+The above programs construct a two-stage network, whose `two-device two-GPU` parallelism is illustrated as follows:
+
 <img src="./imgs/hybrid-parallel.png" width="500">
 
 模型的两个阶段分别运行在两台机器进行流水并行，且第一阶段在第一台机器上进行两卡数据并行，第二阶段在第二台机器上进行两卡模型并行。
 
+The two stages of the model are separately executed on two machines, which constitutes pipeline parallelism. For the first stage, Machine 0 executes two-GPU data parallelism; for the second stage, Machine 1 executes two-GPU model parallelism.
+
 **运行方式：**
+
+**Execution**
 
 `Eager 模式` 和 `Graph 模式` 的运行方式一致，假设脚本文件名为 `test.py`
 
+`Eager Mode` and `Graph Mode` shares the same way of execution. Assuming that the script is a `test.py` file,
+
 1. 单机四卡启动方式为：
+
+1. For a single-device 4-GPU environment, here is how it is started:
 
     ```shell
     python3 -m oneflow.distributed.launch --nproc_per_node 4 test.py
@@ -313,34 +378,49 @@ OneFlow 同时支持 `Eager 模式` 和 `Graph 模式` 两种模型运行方式�
 
 2. oneflow 分布式工具支持多机多设备并行，以 `2 机 2 卡` 环境为例，启动方式如下：
 
+2. The OneFlow distribution tool supports multi-device multi-GPU parallelism. For example, for a `two-device two-GPU` environment, here is how it is started:
+
     在 第 0 号机器上运行：
+    
+    Execution on Machine 0:
+    
     ```shell
     python3 -m oneflow.distributed.launch \
         --nnodes=2 \
         --node_rank=0 \
         --nproc_per_node=2 \
-        --master_addr="192.168.1.1" \ # 第 0 号机器的 IP
+        --master_addr="192.168.1.1" \ # 第 0 号机器的 IP  # IP of Machine 0
         --master_port=7788 \
         test.py
     ```
 
     在 第 1 号机器上运行：
+    
+    Execution on Machine 1:
+    
     ```shell
     python3 -m oneflow.distributed.launch \
         --nnodes=2 \
         --node_rank=1 \
         --nproc_per_node=2 \
-        --master_addr="192.168.1.1" \ # 第 0 号机器的 IP
+        --master_addr="192.168.1.1" \ # 第 0 号机器的 IP  # IP of Machine 0
         --master_port=7788 \
         test.py
     ```
 
     注意要将 `master_addr` 设置为第 0 号机器的 IP
+    
+    Note that `master_addr` should be set to the IP of Machine 0.
 
 
 ## 结语
+## Conclusion
 
 并行策略的选择影响着训练效率，框架对并行训练的接口支持程度，决定了算法工程师的开发效率。
 
+Your training efficiency is dependent on your choice of parallelism strategy, while the development efficiency of algorithm engineers is largely affected by how well their framework supports parallel training.
+
 本文介绍了数据并行、模型并行、流水并行以及混合并行这些分布式并行策略，通过示例展示了 OneFlow 针对分布式训练所做的系统级设计和创新，以便于用户轻松上手分布式训练。
+
+To sum up, in this article, we explain four distributed parallelism strategies: data parallelism, model parallelism, pipeline parallelism, and mixed parallelism. Also, we introduce the system-level innovations of OneFlow that allow users to apply distributed training more easily.
 
