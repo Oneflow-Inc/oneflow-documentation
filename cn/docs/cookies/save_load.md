@@ -66,6 +66,40 @@ graph_model.load_state_dict(global_state_dict)
 
 首先，用 [load()](https://oneflow.readthedocs.io/en/master/generated/oneflow.load.html?highlight=load) 方法在每个保存切片的设备上加载 state dict。对应的，需要把 local rank 上的 state dict 转换到模型文件的 placement 和 sbp 上，得到了 global_state_dict。这一步和保存模型应该是对应的，SBP 和 Placement 也是一致的。最后，global_state_dict 可以成功加载到 graph_model（nn.Graph） 中。当然，nn.Module 和 nn.Graph 处理方法是一致的。
 
+### 将 state dict 加载到 nn.Module 中
+
+除了以上两个特征外，在将 state dict 加载到 nn.Module 时，OneFlow 提供了 SBP 和 Placement 的自动转换。在下面的例子中，首先构造一个 m（nn.Module）对象，然后将 global_state_dict 的 SBP 设置为 split(0)，而 nn.Module 的 SBP 为 broadcast，同时 placement 也放生了变化，OneFlow 会自动做这个转换过程。
+
+```python
+import oneflow as flow
+
+m = flow.nn.Linear(2,6)
+model_file_placement = flow.placement("cpu", ranks=[0, 1])
+
+state_dict = {"weight":flow.ones(3,2), "bias":flow.zeros(3)}
+global_state_dict = flow.utils.global_view.to_global(
+    state_dict, placement=model_file_placement, sbp=flow.sbp.split(0),
+)
+
+m.to_global(placement=flow.placement("cpu", ranks=[0]), sbp=flow.sbp.broadcast)
+m.load_state_dict(global_state_dict)
+print(m.state_dict())
+```
+
+使用 2 卡运行上面的代码，可以看到，我们自己构造的字典中的全局张量，已经被加载到 m Module 中：
+
+```
+OrderedDict([('weight', tensor([[1., 1.],
+        [1., 1.],
+        [1., 1.],
+        [1., 1.],
+        [1., 1.],
+        [1., 1.]], placement=oneflow.placement(type="cpu", ranks=[0]), sbp=(oneflow.sbp.broadcast,), dtype=oneflow.float32,
+       requires_grad=True)), ('bias', tensor([0., 0., 0., 0., 0., 0.], placement=oneflow.placement(type="cpu", ranks=[0]), sbp=(oneflow.sbp.broadcast,),
+       dtype=oneflow.float32, requires_grad=True))])
+```
+
+
 ## 一个完整示例
 
 上面，我们演示了如何分片保存和加载模型。在这一部分，提供一份完整的代码参考，下面的例子为 4 个 ranks 上的流水并行，模拟了模型分片保存和加载的过程。
