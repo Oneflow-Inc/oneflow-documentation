@@ -192,9 +192,9 @@ class PipelineModule(flow.nn.Module):
         return out_stage3
 
 class PipelineGraph(flow.nn.Graph):
-    def __init__(self, module_pipleine):
+    def __init__(self, module_pipeline):
         super().__init__()
-        self.module_pipeline = module_pipleine
+        self.module_pipeline = module_pipeline
         self.module_pipeline.m_stage0.config.set_stage(0, P0)
         self.module_pipeline.m_stage1.config.set_stage(1, P1)
         self.module_pipeline.m_stage2.config.set_stage(2, P2)
@@ -256,8 +256,8 @@ def train_with_graph(call_cnt=0, state_dict_dir=None, last_state_dict=None):
         sbp=BROADCAST,
     )
 
-    module_pipleine = PipelineModule()
-    graph_model = PipelineGraph(module_pipleine)
+    module_pipeline = PipelineModule()
+    graph_model = PipelineGraph(module_pipeline)
     cur_rank = flow.env.get_rank()
 
     if call_cnt == 1:
