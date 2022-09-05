@@ -85,7 +85,7 @@ Take two-GPU parallelism as an example, the data parallelism program for the afo
 
 **注意：没有多个 GPU 的读者，可以通过将本文并行示例中的 `placement` 指定为 `type="cpu"`， 实现用 CPU 模拟多设备并行**
 
-**Note: If you don’t have multiple GPUs, you can designate the `placement` as `type="cpu"` in the third line of the following code, so you can simulate multi-device parallelism with CPUs.**
+**Note: If you don’t have multiple GPUs, you can simulate multi-device parallelism with CPUs via designating the `placement` as `type="cpu"`.**
 
 ```python
 import oneflow as flow
