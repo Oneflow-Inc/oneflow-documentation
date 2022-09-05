@@ -1,4 +1,4 @@
-# 使用 Global Tensor 进行多机多设备编程：分布式并行策略
+# 使用 Global Tensor 进行分布式编程：分布式并行策略
 
 By [Guoliang Cheng](https://github.com/lmyybh), [Xu Xiaoyu](https://github.com/strint)
 

@@ -1,4 +1,4 @@
-# 使用 Global Tensor 进行多机多设备编程：基础操作
+# 使用 Global Tensor 进行分布式编程：基础操作
 
 By [YaoChi](https://github.com/doombeaker), [Xu Xiaoyu](https://github.com/strint), [Zuo Yihao](https://github.com/Alive1024), [Guoliang Cheng](https://github.com/lmyybh)
 
