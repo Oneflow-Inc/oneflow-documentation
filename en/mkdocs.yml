@@ -133,8 +133,8 @@ nav:
       - Pipelining Parallelism: parallelism/06_pipeline.md
 
     - Cookbook:
-      - Basic Operations for Using Global Tensor to Program on Cluster: cookies/global_tensor.md
-      - Distributed Parallelism Strategies for Using Global Tensor to Program on Cluster: cookies/global_tensor_distributed.md
+      - Using Global Tensor to Program on Multi-Device Multi-GPU: Basic Operations: cookies/global_tensor.md
+      - Using Global Tensor for Distributed Programming: Distributed Parallelism Strategies: cookies/global_tensor_distributed.md
       - OneFlow with ONNX: cookies/oneflow2onnnx.md
       - Model Deployment: cookies/serving.md
       - Automatic Mixed Precision Training: cookies/amp.md
