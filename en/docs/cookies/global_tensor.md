@@ -1,4 +1,4 @@
-# Using Global Tensor to Program on Multi-Device Multi-GPU: Basic Operations
+# Using Global Tensor for Distributed Programming: Basic Operations
 
 By [YaoChi](https://github.com/doombeaker), [Xu Xiaoyu](https://github.com/strint), [Zuo Yihao](https://github.com/Alive1024), [Guoliang Cheng](https://github.com/lmyybh), [Shen Jiali](https://github.com/Carly-Shen)
 
@@ -200,7 +200,7 @@ In terms of type, the biggest difference between the Global Tensor and the gener
 
 The function of placement in global data distribution type is to specify the device group where data is distributed: 
 
-- The parameter `type` specifies the physical device type. `cuda represents the GPU device memory, and `cpu` refers to the CPU device memory.
+- The parameter `type` specifies the physical device type. `cuda` represents the GPU device memory, and `cpu` refers to the CPU device memory.
 - The parameter `ranks` specifies the process ID set. Because each rank corresponds to one physical device, `ranks` can also be seen as the device ID set. Actually, `ranks` is an nd-array composed of rank ID, which supports high-dimensional device arrangement.
 
 For more details, please refer to [oneflow.placement](https://oneflow.readthedocs.io/en/v0.8.1/tensor_attributes.html#oneflow.placement).
@@ -251,7 +251,7 @@ Here, the `to_global` conversion has merged the Local Tensors. Generally speakin
 
 Global Tensor’s type conversion can infer and execute the communication operations automatically. So, algorithm developers can concentrate on **thinking in data distribution** rather than **thinking in data communication operation**, and what they imagine is what they obtain, which helps them to develop distributed programs more efficiently.
 
-Let’s add by introducing how to apply `numpy()` to the Global Tensor. For random Global Tensor, such as `x_global`, `x_global.numpy()` is equivalent to `x_global.to_global(spb=flow.sbp.broadcast).to_local().numpy()`, which means `x_global.numpy()` will firstly convert the original Global Tensor to one, which SBP is flow.sbp.broadcast(), then conduct a `to_local ` operation and finally invoke `numpy()` for the Local Tensor. Therefore, the `x_global.numpy()` method can obtain complete data.
+Let’s add by introducing how to apply `numpy()` to the Global Tensor. For random Global Tensor, such as `x_global`, `x_global.numpy()` is equivalent to `x_global.to_global(spb=flow.sbp.broadcast).to_local().numpy()`, which means `x_global.numpy()` will firstly convert the original Global Tensor to one, which SBP is `flow.sbp.broadcast()`, then conduct a `to_local ` operation and finally invoke `numpy()` for the Local Tensor. Therefore, the `x_global.numpy()` method can obtain complete data.
 
 ## Global Tensor Participating in Computation
 
@@ -301,7 +301,7 @@ This article has discussed:
 - Global Tensor supports converting the global data distribution type to implement distributed communication;
 - OneFlow operators are polymorphic enough to enable the execution of the Global Tensor;
 
-So, this article will come to a close, and it fisrtly introduces how to create a Global Tensor and finally explains the detailed steps for data parallelism computation that is based on a Global Tensor.
+So, this article will come to a close, and it firstly introduces how to create a Global Tensor and finally explains the detailed steps for data parallelism computation that is based on a Global Tensor.
 
 More about parallelism ways and SBP's inference logic will be discussed in our later articles. 
 
