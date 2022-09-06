@@ -1,4 +1,4 @@
-# Using Global Tensor for Distributed Programming: Distributed Parallelism Strategies 
+# Distributed Programming with Global Tensor: Distributed Parallelism Strategies 
 
 By [Guoliang Cheng](https://github.com/lmyybh), [Xu Xiaoyu](https://github.com/strint)
 

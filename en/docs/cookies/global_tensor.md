@@ -1,4 +1,4 @@
-# Using Global Tensor for Distributed Programming: Basic Operations
+# Distributed Programming with Global Tensor: Basic Operations
 
 By [YaoChi](https://github.com/doombeaker), [Xu Xiaoyu](https://github.com/strint), [Zuo Yihao](https://github.com/Alive1024), [Guoliang Cheng](https://github.com/lmyybh), [Shen Jiali](https://github.com/Carly-Shen)
 
