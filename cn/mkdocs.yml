@@ -134,7 +134,8 @@ nav:
       - 流水并行训练: parallelism/06_pipeline.md
 
     - 实践指南:
-      - 使用 Global Tensor 进行多机多设备编程 基础操作: cookies/global_tensor.md
+      - 使用 Global Tensor 进行分布式编程：基础操作: cookies/global_tensor.md
+      - 使用 Global Tensor 进行分布式编程：分布式并行策略: cookies/global_tensor_distributed.md
       - OneFlow 与 ONNX 交互: cookies/oneflow2onnnx.md
       - 模型部署: cookies/serving.md
       - 自动混合精度训练: cookies/amp.md
