@@ -18,7 +18,7 @@
     
     
       
-        <title>使用 Global Tensor 进行多机多设备编程 基础操作 - OneFlow</title>
+        <title>使用 Global Tensor 进行分布式编程：基础操作 - OneFlow</title>
       
     
     
@@ -104,7 +104,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              使用 Global Tensor 进行多机多设备编程 基础操作
+              使用 Global Tensor 进行分布式编程：基础操作
             
           </span>
         </div>
@@ -620,12 +620,12 @@
       
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
-          使用 Global Tensor 进行多机多设备编程 基础操作
+          使用 Global Tensor 进行分布式编程：基础操作
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <a href="global_tensor.html" class="md-nav__link md-nav__link--active">
-        使用 Global Tensor 进行多机多设备编程 基础操作
+        使用 Global Tensor 进行分布式编程：基础操作
       </a>
       
         
@@ -715,6 +715,18 @@
   
 </nav>
       
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="global_tensor_distributed.html" class="md-nav__link">
+        使用 Global Tensor 进行分布式编程：分布式并行策略
+      </a>
     </li>
   
 
@@ -974,7 +986,7 @@
                   </a>
                 
                 
-                <h1 id="global-tensor">使用 Global Tensor 进行多机多设备编程：基础操作<a class="headerlink" href="#global-tensor" title="Permanent link">&para;</a></h1>
+                <h1 id="global-tensor">使用 Global Tensor 进行分布式编程：基础操作<a class="headerlink" href="#global-tensor" title="Permanent link">&para;</a></h1>
 <p>By <a href="https://github.com/doombeaker">YaoChi</a>, <a href="https://github.com/strint">Xu Xiaoyu</a>, <a href="https://github.com/Alive1024">Zuo Yihao</a>, <a href="https://github.com/lmyybh">Guoliang Cheng</a></p>
 <p>Global Tensor 是多机多设备执行的 Tensor，是实现全局视角（Global View）编程的接口。</p>
 <p>当前的并行程序，大都采用单程序多数据（SPMD）的方式来编程。并行执行同样的程序，但是处理不同数据，以此实现数据的并行处理。以 PyTorch DistributedDataParallel（DDP） 为例，每个进程执行同样的神经网络计算逻辑，但是每个进程加载数据集的不同分片。</p>
@@ -1267,13 +1279,13 @@ Global data of global tensor:
       
       
         
-        <a href="oneflow2onnnx.html" class="md-footer__link md-footer__link--next" aria-label="下一页: OneFlow 与 ONNX 交互" rel="next">
+        <a href="global_tensor_distributed.html" class="md-footer__link md-footer__link--next" aria-label="下一页: 使用 Global Tensor 进行分布式编程：分布式并行策略" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 下一页
               </span>
-              OneFlow 与 ONNX 交互
+              使用 Global Tensor 进行分布式编程：分布式并行策略
             </div>
           </div>
           <div class="md-footer__button md-icon">

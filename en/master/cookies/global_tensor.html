@@ -18,7 +18,7 @@
     
     
       
-        <title>Basic Operations for Using Global Tensor to Program on Cluster - OneFlow</title>
+        <title>Basic Operations of Distributed Programming with Global Tensor - OneFlow</title>
       
     
     
@@ -69,7 +69,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#using-global-tensor-to-program-on-multi-device-multi-gpu-basic-operations" class="md-skip">
+        <a href="#distributed-programming-with-global-tensor-basic-operations" class="md-skip">
           Skip to content
         </a>
       
@@ -104,7 +104,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Basic Operations for Using Global Tensor to Program on Cluster
+              Basic Operations of Distributed Programming with Global Tensor
             
           </span>
         </div>
@@ -620,12 +620,12 @@
       
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
-          Basic Operations for Using Global Tensor to Program on Cluster
+          Basic Operations of Distributed Programming with Global Tensor
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <a href="global_tensor.html" class="md-nav__link md-nav__link--active">
-        Basic Operations for Using Global Tensor to Program on Cluster
+        Basic Operations of Distributed Programming with Global Tensor
       </a>
       
         
@@ -715,6 +715,18 @@
   
 </nav>
       
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="global_tensor_distributed.html" class="md-nav__link">
+        Distributed Parallelism Strategies of Distributed Programming with Global Tensor
+      </a>
     </li>
   
 
@@ -974,7 +986,7 @@
                   </a>
                 
                 
-                <h1 id="using-global-tensor-to-program-on-multi-device-multi-gpu-basic-operations">Using Global Tensor to Program on Multi-Device Multi-GPU: Basic Operations<a class="headerlink" href="#using-global-tensor-to-program-on-multi-device-multi-gpu-basic-operations" title="Permanent link">&para;</a></h1>
+                <h1 id="distributed-programming-with-global-tensor-basic-operations">Distributed Programming with Global Tensor: Basic Operations<a class="headerlink" href="#distributed-programming-with-global-tensor-basic-operations" title="Permanent link">&para;</a></h1>
 <p>By <a href="https://github.com/doombeaker">YaoChi</a>, <a href="https://github.com/strint">Xu Xiaoyu</a>, <a href="https://github.com/Alive1024">Zuo Yihao</a>, <a href="https://github.com/lmyybh">Guoliang Cheng</a>, <a href="https://github.com/Carly-Shen">Shen Jiali</a></p>
 <p>Global tensor can be executed on multi-device multi-GPU, and it’s an interface to implement the Global View programming.</p>
 <p>Today, most parallel programs adopt the SPMD (Single program, multiple data) programming method, which means the devices will execute the same program but process different parts of the data to realize data parallelism. Take PyTorch’s DDP (Distributed Data Parallel) for example, each process executes the same neural network computing logic, but the difference is that they load different slices of one dataset.</p>
@@ -1094,7 +1106,7 @@ It’s clear that if we concatenate the Local Tensors in rank 1 and rank 2 on di
 <p>In terms of type, the biggest difference between the Global Tensor and the general Local Tensor is that the Global Tensor has global data distribution type, which specifies how the Global Tensor is distributed in each rank, including its placement and SBP.</p>
 <p>The function of placement in global data distribution type is to specify the device group where data is distributed: </p>
 <ul>
-<li>The parameter <code>type</code> specifies the physical device type. <code>cuda represents the GPU device memory, and</code>cpu` refers to the CPU device memory.</li>
+<li>The parameter <code>type</code> specifies the physical device type. <code>cuda</code> represents the GPU device memory, and <code>cpu</code> refers to the CPU device memory.</li>
 <li>The parameter <code>ranks</code> specifies the process ID set. Because each rank corresponds to one physical device, <code>ranks</code> can also be seen as the device ID set. Actually, <code>ranks</code> is an nd-array composed of rank ID, which supports high-dimensional device arrangement.</li>
 </ul>
 <p>For more details, please refer to <a href="https://oneflow.readthedocs.io/en/v0.8.1/tensor_attributes.html#oneflow.placement">oneflow.placement</a>.</p>
@@ -1131,7 +1143,7 @@ It’s clear that if we concatenate the Local Tensors in rank 1 and rank 2 on di
 <p>When the global data distribution type is converted from <code>x_global</code> to <code>x_global_b</code>, the parameter <code>sbp</code> has changed from <code>flow.sbp.split(0)</code> to <code>flow.sbp.broadcast</code>. Their global shapes have remained <code>(4, 5)</code>, but the local component has turned from a data slice into complete data, and this change can be seen from the printed result of the <code>to_local()</code>.</p>
 <p>Here, the <code>to_global</code> conversion has merged the Local Tensors. Generally speaking, SPMD programming mode requires users to write an <code>all-gather</code> collective communication to merge the Local Tensors, but in OneFlow Global View programming, the type conversion is enough to complete the merging process.  </p>
 <p>Global Tensor’s type conversion can infer and execute the communication operations automatically. So, algorithm developers can concentrate on <strong>thinking in data distribution</strong> rather than <strong>thinking in data communication operation</strong>, and what they imagine is what they obtain, which helps them to develop distributed programs more efficiently.</p>
-<p>Let’s add by introducing how to apply <code>numpy()</code> to the Global Tensor. For random Global Tensor, such as <code>x_global</code>, <code>x_global.numpy()</code> is equivalent to <code>x_global.to_global(spb=flow.sbp.broadcast).to_local().numpy()</code>, which means <code>x_global.numpy()</code> will firstly convert the original Global Tensor to one, which SBP is flow.sbp.broadcast(), then conduct a <code>to_local</code> operation and finally invoke <code>numpy()</code> for the Local Tensor. Therefore, the <code>x_global.numpy()</code> method can obtain complete data.</p>
+<p>Let’s add by introducing how to apply <code>numpy()</code> to the Global Tensor. For random Global Tensor, such as <code>x_global</code>, <code>x_global.numpy()</code> is equivalent to <code>x_global.to_global(spb=flow.sbp.broadcast).to_local().numpy()</code>, which means <code>x_global.numpy()</code> will firstly convert the original Global Tensor to one, which SBP is <code>flow.sbp.broadcast()</code>, then conduct a <code>to_local</code> operation and finally invoke <code>numpy()</code> for the Local Tensor. Therefore, the <code>x_global.numpy()</code> method can obtain complete data.</p>
 <h2 id="global-tensor-participating-in-computation">Global Tensor Participating in Computation<a class="headerlink" href="#global-tensor-participating-in-computation" title="Permanent link">&para;</a></h2>
 <p>This section introduces how the Global Tensor participates in practical computation. Take the Global Tensor participating in matrix multiplication computation for example, please firstly create the following program:</p>
 <div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">oneflow</span> <span class="k">as</span> <span class="nn">flow</span>
@@ -1167,7 +1179,7 @@ It’s clear that if we concatenate the Local Tensors in rank 1 and rank 2 on di
 <li>Global Tensor supports converting the global data distribution type to implement distributed communication;</li>
 <li>OneFlow operators are polymorphic enough to enable the execution of the Global Tensor;</li>
 </ul>
-<p>So, this article will come to a close, and it fisrtly introduces how to create a Global Tensor and finally explains the detailed steps for data parallelism computation that is based on a Global Tensor.</p>
+<p>So, this article will come to a close, and it firstly introduces how to create a Global Tensor and finally explains the detailed steps for data parallelism computation that is based on a Global Tensor.</p>
 <p>More about parallelism ways and SBP's inference logic will be discussed in our later articles. </p>
 <h2 id="further-reading">Further Reading<a class="headerlink" href="#further-reading" title="Permanent link">&para;</a></h2>
 <h3 id="oneflows-multi-machine-multi-gpu-launching-and-its-required-environment-variables">OneFlow's multi-machine multi-GPU launching and its required environment variables<a class="headerlink" href="#oneflows-multi-machine-multi-gpu-launching-and-its-required-environment-variables" title="Permanent link">&para;</a></h3>
@@ -1262,13 +1274,13 @@ It’s clear that if we concatenate the Local Tensors in rank 1 and rank 2 on di
       
       
         
-        <a href="oneflow2onnnx.html" class="md-footer__link md-footer__link--next" aria-label="Next: OneFlow with ONNX" rel="next">
+        <a href="global_tensor_distributed.html" class="md-footer__link md-footer__link--next" aria-label="Next: Distributed Parallelism Strategies of Distributed Programming with Global Tensor" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 Next
               </span>
-              OneFlow with ONNX
+              Distributed Parallelism Strategies of Distributed Programming with Global Tensor
             </div>
           </div>
           <div class="md-footer__button md-icon">
