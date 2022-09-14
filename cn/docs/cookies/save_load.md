@@ -27,21 +27,26 @@ OneFlow 的大模型分片保存和加载的实现基于全局视角（[Global V
 # 自定义 get_sbp 函数。
 def get_sbp(state_dict, tensor):
     if tensor is state_dict["System-Train-TrainStep"]:
-        return BROADCAST
+        return flow.sbp.broadcast
     if tensor is state_dict["module_pipeline"]["m_stage3.linear.weight"]:
         return flow.sbp.split(1)
     if tensor is state_dict["module_pipeline"]["m_stage3.linear.bias"]:
-        return BROADCAST
+        return flow.sbp.broadcast
     return flow.sbp.split(0)
 
 model_file_state_dict = flow.utils.global_view.to_global(
     state_dict, placement=model_file_placement, sbp=get_sbp, 
     ) # 使用 sbp=get_sbp 处理特殊的键，也支持指定普通的 SBP。
+
+rank_id = flow.env.get_rank()
+# 保存模型分片的路径，一个 rank 对应一个路径。
+state_dict_dir = "./graph_save_load_global_" + str(rank_id)
+
 if flow.env.get_rank() in model_file_placement.ranks:
     flow.save(
         flow.utils.global_view.to_local(model_file_state_dict),
         state_dict_dir,
-    ) # state_dict_dir = "./graph_save_load_global_" + str(rank_id)
+    )
 ```
 
 首先，将原模型（state_dict）转化到模型文件的 Placement 和 SBP 上，model_file_placement 为要分片保存模型的设备阵列，也就是将 state dict 按 split(0) 分片到 model_file_placement 上。这里之所以自定义 get_sbp 函数，是因为用户可以传进来一个 `(x, tensor) -> sbp` 的函数来解决特殊 Tensor 对应不同 SBP 的需求。举个例子(当前例子基于 Graph 模式)，对于  `state_dict["System-Train-TrainStep"]`  这种 shape 为 [1] 的 Tensor，我们就不能按 split(0) 分片了，SBP 可以选用 broadcast。而 `state_dict["module_pipeline"]["m_stage3.linear.weight"]`  只能在第 1 维度切分，对于 `state_dict["module_pipeline"]["m_stage3.linear.bias"]` 这种不可切分的小 Tensor(s)，SBP 可以选用 broadcast。这样支持用户 DIY SBP 的处理，更加灵活。
@@ -68,7 +73,7 @@ graph_model.load_state_dict(global_state_dict)
 
 ### 将 state dict 加载到 nn.Module 中
 
-除了以上两个特征外，在将 state dict 加载到 nn.Module 时，OneFlow 提供了 SBP 和 Placement 的自动转换。在下面的例子中，首先构造一个 m（nn.Module）对象，然后将 global_state_dict 的 SBP 设置为 split(0)，而 nn.Module 的 SBP 为 broadcast，同时 placement 也放生了变化，OneFlow 会自动做这个转换过程。
+除了以上两个特征外，在将 state dict 加载到 nn.Module 时，OneFlow 提供了 SBP 和 Placement 的自动转换。在下面的例子中，首先构造一个 m（nn.Module）对象，再将 global_state_dict 的 SBP 设置为 split(0)，而 m 的 SBP 为 broadcast。同时 placement 也放生了变化，从 `placement("cpu", ranks=[0, 1])` 到 `flow.placement("cpu", ranks=[0])`。这时用户不需要其他操作，OneFlow 会自动做 SBP 和 placement 的转换过程。
 
 ```python
 import oneflow as flow
@@ -86,7 +91,7 @@ m.load_state_dict(global_state_dict)
 print(m.state_dict())
 ```
 
-使用 2 卡运行上面的代码，可以看到，我们自己构造的字典中的全局张量，已经被加载到 m Module 中：
+使用 2 卡运行上面的代码，可以看到，我们自己构造的字典中的全局张量，已经被加载到 m Module 中。此外，输出 OrderedDict 的 tensor 的 SBP 已经从 split(0) 自动转换为 broadcast，'weight' 对应 tensor 的形状也是我们期待的 `[6, 2]`，'bias' 形状为 `[6]`。
 
 ```
 OrderedDict([('weight', tensor([[1., 1.],
