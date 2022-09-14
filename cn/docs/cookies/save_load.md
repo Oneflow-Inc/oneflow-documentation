@@ -111,7 +111,7 @@ import numpy as np
 import oneflow as flow
 
 model_tensor_placement = flow.placement("cuda", ranks=[0, 1, 2, 3])
-# model_file_placement 为存储模型分片的设备 placement，在 Rank 2 和 Rank 3 上可为 None。
+# model_file_placement 为存储模型分片的设备的 placement，表示在 Rank 2 和 Rank 3 上可为 None。
 model_file_placement = flow.placement("cpu", ranks=[0, 1])
 P0 = flow.placement(model_tensor_placement.type, ranks=[0])
 P1 = flow.placement(model_tensor_placement.type, ranks=[1])
