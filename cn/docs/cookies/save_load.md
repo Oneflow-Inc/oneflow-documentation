@@ -17,7 +17,7 @@ OneFlow 的大模型分片保存和加载的实现基于全局视角（[Global V
 
 并且，与 to_global() 对应的还有 `flow.utils.global_view.to_local()` 接口。可以参考 API 文档中关于 to_global() 和 to_local() 更[详细的介绍](https://oneflow.readthedocs.io/en/master/utils.global_view.html)。在 `flow.utils.global_view.to_global()` 的[实现](https://github.com/Oneflow-Inc/oneflow/blob/master/python/oneflow/utils/global_view/to_global.py)中，支持了多种输入类型适用于现有的 `Tensor.to_global()` 接口。实现的整体思路大致为检查输入、广播（空）结构，遍历节点、调用回调函数和返回 to_global() 后的结果。
 
-再回到我们关注的地方，这个接口如何做到模型分片保存和加载？比如对于模型并行/流水并行，模型的参数分散在多个 Rank 上，在保存模型前通过  `flow.utils.global_view.to_global()`  将 state dict 里的每个 Tensor 在指定 Placement 上转为 Global Tensor，SBP 的类型为  `flow.sbp.split`，可以设置在特定维度上的切分。同样的，模型也可以按 Split 被加载。当然，SBP 也可以为 Broadcast，支持不同的 SBP 和 Placement 组合。这样，超大规模模型分片存储的问题就被非常好的解决了。
+再回到我们关注的地方，这个接口如何做到模型分片保存和加载？比如对于模型并行/流水并行，模型的参数分散在多个 Rank 上，在保存模型前通过  `flow.utils.global_view.to_global()`  将 state dict 里的每个 Tensor 在指定 Placement 上转为 Global Tensor，SBP 的类型为  `flow.sbp.split`，可以设置在特定维度上的切分。同样的，模型也可以按 Split 被加载。当然，SBP 也可以为 broadcast，支持不同的 SBP 和 Placement 组合。这样，超大规模模型分片存储的问题就被非常好的解决了。
 
 ### 保存模型
 
@@ -122,15 +122,14 @@ P0 = flow.placement(model_tensor_placement.type, ranks=[0])
 P1 = flow.placement(model_tensor_placement.type, ranks=[1])
 P2 = flow.placement(model_tensor_placement.type, ranks=[2])
 P3 = flow.placement(model_tensor_placement.type, ranks=[3])
-BROADCAST = flow.sbp.broadcast
 
 def get_sbp(state_dict, tensor):
     if tensor is state_dict["System-Train-TrainStep"]:
-        return BROADCAST
+        return flow.sbp.broadcast
     if tensor is state_dict["module_pipeline"]["m_stage3.linear.weight"]:
         return flow.sbp.split(1)
     if tensor is state_dict["module_pipeline"]["m_stage3.linear.bias"]:
-        return BROADCAST
+        return flow.sbp.broadcast
     return flow.sbp.split(0)
 
 class Stage0Module(flow.nn.Module):
@@ -177,21 +176,21 @@ class PipelineModule(flow.nn.Module):
         self.m_stage2 = Stage2Module()
         self.m_stage3 = Stage3Module()
 
-        self.m_stage0.to_global(placement=P0, sbp=BROADCAST)
-        self.m_stage1.to_global(placement=P1, sbp=BROADCAST)
-        self.m_stage2.to_global(placement=P2, sbp=BROADCAST)
-        self.m_stage3.to_global(placement=P3, sbp=BROADCAST)
+        self.m_stage0.to_global(placement=P0, sbp=flow.sbp.broadcast)
+        self.m_stage1.to_global(placement=P1, sbp=flow.sbp.broadcast)
+        self.m_stage2.to_global(placement=P2, sbp=flow.sbp.broadcast)
+        self.m_stage3.to_global(placement=P3, sbp=flow.sbp.broadcast)
 
     def forward(self, x):
         out_stage0 = self.m_stage0(x)
 
-        in_stage1 = out_stage0.to_global(placement=P1, sbp=BROADCAST)
+        in_stage1 = out_stage0.to_global(placement=P1, sbp=flow.sbp.broadcast)
         out_stage1 = self.m_stage1(in_stage1)
 
-        in_stage2 = out_stage1.to_global(placement=P2, sbp=BROADCAST)
+        in_stage2 = out_stage1.to_global(placement=P2, sbp=flow.sbp.broadcast)
         out_stage2 = self.m_stage2(in_stage2)
 
-        in_stage3 = out_stage2.to_global(placement=P3, sbp=BROADCAST)
+        in_stage3 = out_stage2.to_global(placement=P3, sbp=flow.sbp.broadcast)
         out_stage3 = self.m_stage3(in_stage3)
 
         return out_stage3
@@ -258,7 +257,7 @@ def train_with_graph(call_cnt=0, state_dict_dir=None, last_state_dict=None):
         ],
         dtype=flow.float32,
         placement=P0,
-        sbp=BROADCAST,
+        sbp=flow.sbp.broadcast,
     )
 
     module_pipeline = PipelineModule()
