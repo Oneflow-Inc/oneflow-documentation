@@ -1,5 +1,6 @@
 # OneFlow 的大模型分片保存和加载
 
+By [Li Xiang](https://github.com/lixiang007666), [Xu Xiaoyu](https://github.com/strint), [Zuo Yihao](https://github.com/Alive1024), [Zhang Jianhao](https://github.com/daquexian)
 
 ## 大规模模型分片存储简介
 
