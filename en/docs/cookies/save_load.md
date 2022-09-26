@@ -1,5 +1,8 @@
 # OneFlow's Distributed Saving and Loading of Large Models
 
+By [Li Xiang](https://github.com/lixiang007666), [Xu Xiaoyu](https://github.com/strint), [Zuo Yihao](https://github.com/Alive1024), [Zhang Jianhao](https://github.com/daquexian)
+
+
 ## About the distributed saving of large-scale models
 
 When a model is relatively small, such as less than 100G, it is possible to save it in a node. But when the parameters of a model are relatively large, the number of samples required at this time is also larger, and the model produced by dump after training will also be very large, which can't be saved by a single node. For example, Megatron Turing Natural Language Generation Model (MT-NLG) driven by DeepSpeed and Megatron has 530 billion parameters, which is the largest and most powerful monolithic Transformer language model trained so far. So, distributed save and load will be needed to support such a large-scale language model rather than single-node memory. In addition, in other CV, search, recommendation and advertising scenarios, the increase of sample size and model complexity will bring more difficulties in model storage.
