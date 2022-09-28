@@ -4,17 +4,17 @@ By [Li Xiang](https://github.com/lixiang007666), [Xu Xiaoyu](https://github.com/
 
 ## 大规模模型分片存储简介
 
-在模型比较小的时候，比如 100G 以下，还有可能采用单机存储。当模型参数量比较大的时候，这个时候要求的样本数也更大，训练后做 dump 出来的模型也会很大，单机肯定是放不下的。比如，由 DeepSpeed 和 Megatron 驱动的 Megatron 图灵自然语言生成模型（MT-NLG）具有 5300 亿个参数，是迄今为止训练过的最大和最强大的单片 Transformer 语言模型，支持这样的大规模语言模型需要分片保存和加载，不会使用单机内存。此外，在其他 CV、搜索、推荐和广告类等场景下，读取样本量增多和模型复杂度增加都会带来模型存储上的难题。
+在模型比较小的时候，比如 100G 以下，还有可能采用单机存储。当模型参数量比较大的时候，要求的样本数也更大，训练后 dump 出来的模型也会很大，单机很难放下。比如，由 DeepSpeed 和 Megatron 驱动的 Megatron 图灵自然语言生成模型（MT-NLG）具有 5300 亿个参数，是迄今为止训练过的最大和最强大的单片 Transformer 语言模型，支持这样的大规模语言模型需要分片保存和加载，不会使用单机内存。此外，在其他 CV、搜索、推荐和广告类等场景下，读取样本量增多和模型复杂度增加都会带来模型存储上的难题。
 
 本文将介绍 OneFlow 的大模型分片保存、加载策略以及使用方法。
 
 ## OneFlow 模型分片保存和加载
 
-OneFlow 的大模型分片保存和加载的实现基于全局视角（[Global View](https://docs.oneflow.org/master/cookies/global_tensor.html)）的概念，既利用 Placement 与 SBP 完成模型文件（下文都用 state dict 表示）在各个物理设备上的切分，适用于当模型大到无法在单个设备的内存或显存上容纳下的场景。
+OneFlow 的大模型分片保存和加载的实现基于全局视角（[Global View](https://docs.oneflow.org/master/cookies/global_tensor.html)）的概念，即利用 Placement 与 SBP 完成模型文件（下文都用 state dict 表示）在各个物理设备上的切分，适用于因为单个设备的内存或者显存的限制，无法容纳大模型的场景。
 
 ### flow.utils.global_view.to_global() 接口介绍
 
-为了更好理解下文保存模型和加载模型两个部分的内容，首先对  `flow.utils.global_view.to_global()`  接口和其实现思路进行分析。区别于现有的 [Tensor.to_global()](https://oneflow.readthedocs.io/en/master/generated/oneflow.Tensor.to_global.html?highlight=to_global%28%29) 模式（可以处理普通的 Tensor），提供了多种类型的输入支持，包括 None、Tensor、List、Tuple、nn.Module 的 state dict 、nn.Graph 的 state dict 和几种类型的任意组合，既将 List/Tuple/Dict 中的输入 Tensor 转换为 Global Tensor。值得注意的是，其传入参数中的 SBP 支持用户自定义一个 `(x, tensor) -> sbp` 的函数来解决不同 Tensor 对应不同 SBP 的需求。
+为了更好理解下文保存模型和加载模型两个部分的内容，首先对  `flow.utils.global_view.to_global()`  接口和其实现思路进行分析。区别于 [Tensor.to_global()](https://oneflow.readthedocs.io/en/master/generated/oneflow.Tensor.to_global.html?highlight=to_global%28%29) 模式（可以处理普通的 Tensor），`flow.utils.global_view.to_global()` 提供了多种类型的输入支持，包括 None、Tensor、List、Tuple、nn.Module 的 state dict 、nn.Graph 的 state dict 和几种类型的任意组合，即将 List/Tuple/Dict 中的输入 Tensor 转换为 Global Tensor。值得注意的是，其传入参数中的 SBP 支持用户自定义一个 `(x, tensor) -> sbp` 的函数来解决不同 Tensor 对应不同 SBP 的需求。
 
 并且，与 to_global() 对应的还有 `flow.utils.global_view.to_local()` 接口。可以参考 API 文档中关于 to_global() 和 to_local() 更[详细的介绍](https://oneflow.readthedocs.io/en/master/utils.global_view.html)。在 `flow.utils.global_view.to_global()` 的[实现](https://github.com/Oneflow-Inc/oneflow/blob/master/python/oneflow/utils/global_view/to_global.py)中，支持了多种输入类型适用于现有的 `Tensor.to_global()` 接口。实现的整体思路大致为检查输入、广播（空）结构，遍历节点、调用回调函数和返回 to_global() 后的结果。
 
@@ -52,7 +52,7 @@ if flow.env.get_rank() in model_file_placement.ranks:
 
 首先，将原模型（state_dict）转化到模型文件的 Placement 和 SBP 上，model_file_placement 为要分片保存模型的设备阵列，也就是将 state dict 按 split(0) 分片到 model_file_placement 上。这里之所以自定义 get_sbp 函数，是因为用户可以传进来一个 `(x, tensor) -> sbp` 的函数来解决特殊 Tensor 对应不同 SBP 的需求。举个例子(当前例子基于 Graph 模式)，对于  `state_dict["System-Train-TrainStep"]`  这种 shape 为 [1] 的 Tensor，我们就不能按 split(0) 分片了，SBP 可以选用 broadcast。而 `state_dict["module_pipeline"]["m_stage3.linear.weight"]`  只能在第 1 维度切分，对于 `state_dict["module_pipeline"]["m_stage3.linear.bias"]` 这种不可切分的小 Tensor(s)，SBP 可以选用 broadcast。这样支持用户 DIY SBP 的处理，更加灵活。
 
-在后面的处理中，使用 `flow.utils.global_view.to_local()` 接口得到 model_file_state_dict  的本地分量，并调用 [save()](https://oneflow.readthedocs.io/en/master/generated/oneflow.save.html?highlight=save) 保存模型。其中，state_dict_dir 是带有设备 id 的目录，需要区分不同设备，推荐一个 rank 对应一个路径，路径名用 rank id 的方式。
+在后面的处理中，使用 `flow.utils.global_view.to_local()` 接口得到 model_file_state_dict  的本地分量，并调用 [oneflow.save](https://oneflow.readthedocs.io/en/master/generated/oneflow.save.html?highlight=save) 保存模型。其中，state_dict_dir 是带有设备 id 的目录，需要区分不同设备，推荐一个 rank 对应一个路径，路径名用 rank id 的方式。
 
 ### 加载模型
 
