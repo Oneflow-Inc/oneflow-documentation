@@ -1,0 +1,1340 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="OneFlow -- 极致性能的分布式机器学习框架">
+      
+      
+      
+      
+        <link rel="canonical" href="https://docs.oneflow.org/master/cookies/save_load.html">
+      
+      <link rel="icon" href="../assets/favicon.png">
+      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-7.1.11">
+    
+    
+      
+        <title>大模型分片保存和加载 - OneFlow</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.3754935a.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.f1a3b89f.min.css">
+        
+          
+          
+          <meta name="theme-color" content="#4051b5">
+        
+      
+    
+    
+    
+      
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>:root{--md-text-font-family:"Roboto";--md-code-font-family:"Roboto Mono"}</style>
+      
+    
+    
+    
+    
+      
+
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <script>function __prefix(e){return new URL("..",location).pathname+"."+e}function __get(e,t=localStorage){return JSON.parse(t.getItem(__prefix(e)))}</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#oneflow" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../index.html" title="OneFlow" class="md-header__button md-logo" aria-label="OneFlow" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 89 89">
+  <path d="M3.136,17.387l0,42.932l42.932,21.467l-42.932,-64.399Z" />
+  <path d="M21.91,8l42.933,64.398l-18.775,9.388l-42.932,-64.399l18.774,-9.387Z" style="fill-opacity: 0.5" />
+  <path d="M67.535,17.387l-27.262,18.156l21.878,32.818l5.384,2.691l0,-53.665Z" />
+  <path d="M67.535,17.387l0,53.666l18.774,-9.388l0,-53.665l-18.774,9.387Z" style="fill-opacity: 0.25" />
+</svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            OneFlow
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              大模型分片保存和加载
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <div class="md-header__option">
+        <div class="md-select">
+          
+          <button class="md-header__button md-icon" aria-label="Select language">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.52 17.52 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04M18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12m-2.62 7 1.62-4.33L19.12 17h-3.24z"/></svg>
+          </button>
+          <div class="md-select__inner">
+            <ul class="md-select__list">
+              
+                <li class="md-select__item">
+                  <a href="https://docs.oneflow.org/en" hreflang="en" class="md-select__link">
+                    English
+                  </a>
+                </li>
+                
+                <li class="md-select__item">
+                  <a href="https://docs.oneflow.org" hreflang="zh" class="md-select__link">
+                    中文
+                  </a>
+                </li>
+                
+            </ul>
+          </div>
+        </div>
+      </div>
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        
+<a href="https://github.com/OneFlow-Inc/oneflow" title="前往 GitHub 仓库" class="md-source"
+  data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    OneFlow
+  </div>
+</a>
+      </div>
+    
+  </nav>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-tabs__inner md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+
+
+  <li class="md-tabs__item">
+    <a href="../index.html" class="md-tabs__link">
+      首页
+    </a>
+  </li>
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../basics/01_quickstart.html" class="md-tabs__link">
+        基础专题
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../parallelism/01_introduction.html" class="md-tabs__link">
+        分布式训练
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+    
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="global_tensor.html" class="md-tabs__link md-tabs__link--active">
+        实践指南
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="https://oneflow.readthedocs.io/en/master/" class="md-tabs__link">
+        API
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../index.html" title="OneFlow" class="md-nav__button md-logo" aria-label="OneFlow" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 89 89">
+  <path d="M3.136,17.387l0,42.932l42.932,21.467l-42.932,-64.399Z" />
+  <path d="M21.91,8l42.933,64.398l-18.775,9.388l-42.932,-64.399l18.774,-9.387Z" style="fill-opacity: 0.5" />
+  <path d="M67.535,17.387l-27.262,18.156l21.878,32.818l5.384,2.691l0,-53.665Z" />
+  <path d="M67.535,17.387l0,53.666l18.774,-9.388l0,-53.665l-18.774,9.387Z" style="fill-opacity: 0.25" />
+</svg>
+
+    </a>
+    OneFlow
+  </label>
+  
+    <div class="md-nav__source">
+      
+<a href="https://github.com/OneFlow-Inc/oneflow" title="前往 GitHub 仓库" class="md-source"
+  data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    OneFlow
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../index.html" class="md-nav__link">
+        首页
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" >
+      
+      <label class="md-nav__link" for="__nav_2">
+        基础专题
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="基础专题" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          基础专题
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics/01_quickstart.html" class="md-nav__link">
+        快速上手
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics/02_tensor.html" class="md-nav__link">
+        Tensor
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics/03_dataset_dataloader.html" class="md-nav__link">
+        Dataset 与 DataLoader
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics/04_build_network.html" class="md-nav__link">
+        搭建神经网络
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics/05_autograd.html" class="md-nav__link">
+        Autograd
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics/06_optimization.html" class="md-nav__link">
+        反向传播与 optimizer
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics/07_model_load_save.html" class="md-nav__link">
+        模型的加载与保存
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics/08_nn_graph.html" class="md-nav__link">
+        静态图模块 nn.Graph
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" >
+      
+      <label class="md-nav__link" for="__nav_3">
+        分布式训练
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="分布式训练" data-md-level="1">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          分布式训练
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parallelism/01_introduction.html" class="md-nav__link">
+        常见的分布式并行策略
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parallelism/02_sbp.html" class="md-nav__link">
+        集群的全局视角
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parallelism/03_consistent_tensor.html" class="md-nav__link">
+        Global Tensor
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parallelism/04_2d-sbp.html" class="md-nav__link">
+        2D SBP
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parallelism/04_launch.html" class="md-nav__link">
+        用 launch 模块启动分布式训练
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parallelism/05_ddp.html" class="md-nav__link">
+        数据并行训练
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parallelism/06_pipeline.html" class="md-nav__link">
+        流水并行训练
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" checked>
+      
+      <label class="md-nav__link" for="__nav_4">
+        实践指南
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="实践指南" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          实践指南
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="global_tensor.html" class="md-nav__link">
+        使用 Global Tensor 进行分布式编程：基础操作
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="global_tensor_distributed.html" class="md-nav__link">
+        使用 Global Tensor 进行分布式编程：分布式并行策略
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="oneflow2onnnx.html" class="md-nav__link">
+        OneFlow 与 ONNX 交互
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="serving.html" class="md-nav__link">
+        模型部署
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="amp.html" class="md-nav__link">
+        自动混合精度训练
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="activation_checkpointing.html" class="md-nav__link">
+        Activation Checkpointing
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="torch2flow.html" class="md-nav__link">
+        将 PyTorch 预训练模型转为 OneFlow 格式
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="transfer_learning.html" class="md-nav__link">
+        计算机视觉迁移学习
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="one_embedding.html" class="md-nav__link">
+        大规模 Embedding 方案： OneEmbedding
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zero.html" class="md-nav__link">
+        Zero Redundancy Optimizer (ZeRO)
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          大模型分片保存和加载
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="save_load.html" class="md-nav__link md-nav__link--active">
+        大模型分片保存和加载
+      </a>
+      
+        
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    大规模模型分片存储简介
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#oneflow_1" class="md-nav__link">
+    OneFlow 模型分片保存和加载
+  </a>
+  
+    <nav class="md-nav" aria-label="OneFlow 模型分片保存和加载">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#flowutilsglobal_viewto_global" class="md-nav__link">
+    flow.utils.global_view.to_global() 接口介绍
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    保存模型
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    加载模型
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#state-dict-nnmodule" class="md-nav__link">
+    将 state dict 加载到 nn.Module 中
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    一个完整示例
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    结语
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" >
+      
+      <label class="md-nav__link" for="__nav_5">
+        API
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="API" data-md-level="1">
+        <label class="md-nav__title" for="__nav_5">
+          <span class="md-nav__icon md-icon"></span>
+          API
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://oneflow.readthedocs.io/en/master/" class="md-nav__link">
+        API
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    大规模模型分片存储简介
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#oneflow_1" class="md-nav__link">
+    OneFlow 模型分片保存和加载
+  </a>
+  
+    <nav class="md-nav" aria-label="OneFlow 模型分片保存和加载">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#flowutilsglobal_viewto_global" class="md-nav__link">
+    flow.utils.global_view.to_global() 接口介绍
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    保存模型
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    加载模型
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#state-dict-nnmodule" class="md-nav__link">
+    将 state dict 加载到 nn.Module 中
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    一个完整示例
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    结语
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                  <a href="https://github.com/OneFlow-Inc/oneflow-documentation/blob/master/cn/docs/cookies/save_load.md" title="编辑此页" class="md-content__button md-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
+                  </a>
+                
+                
+                <h1 id="oneflow">OneFlow 的大模型分片保存和加载<a class="headerlink" href="#oneflow" title="Permanent link">&para;</a></h1>
+<p>By <a href="https://github.com/lixiang007666">Li Xiang</a>, <a href="https://github.com/strint">Xu Xiaoyu</a>, <a href="https://github.com/Alive1024">Zuo Yihao</a>, <a href="https://github.com/daquexian">Zhang Jianhao</a></p>
+<h2 id="_1">大规模模型分片存储简介<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<p>在模型比较小的时候，比如 100G 以下，还有可能采用单机存储。当模型参数量比较大的时候，要求的样本数也更大，训练后 dump 出来的模型也会很大，单机很难放下。比如，由 DeepSpeed 和 Megatron 驱动的 Megatron 图灵自然语言生成模型（MT-NLG）具有 5300 亿个参数，是迄今为止训练过的最大和最强大的单片 Transformer 语言模型，支持这样的大规模语言模型需要分片保存和加载，不会使用单机内存。此外，在其他 CV、搜索、推荐和广告类等场景下，读取样本量增多和模型复杂度增加都会带来模型存储上的难题。</p>
+<p>本文将介绍 OneFlow 的大模型分片保存、加载策略以及使用方法。</p>
+<h2 id="oneflow_1">OneFlow 模型分片保存和加载<a class="headerlink" href="#oneflow_1" title="Permanent link">&para;</a></h2>
+<p>OneFlow 的大模型分片保存和加载的实现基于全局视角（<a href="https://docs.oneflow.org/master/cookies/global_tensor.html">Global View</a>）的概念，即利用 Placement 与 SBP 完成模型文件（下文都用 state dict 表示）在各个物理设备上的切分，适用于因为单个设备的内存或者显存的限制，无法容纳大模型的场景。</p>
+<h3 id="flowutilsglobal_viewto_global">flow.utils.global_view.to_global() 接口介绍<a class="headerlink" href="#flowutilsglobal_viewto_global" title="Permanent link">&para;</a></h3>
+<p>为了更好理解下文保存模型和加载模型两个部分的内容，首先对  <code>flow.utils.global_view.to_global()</code>  接口和其实现思路进行分析。区别于 <a href="https://oneflow.readthedocs.io/en/master/generated/oneflow.Tensor.to_global.html?highlight=to_global%28%29">Tensor.to_global()</a> 模式（可以处理普通的 Tensor），<code>flow.utils.global_view.to_global()</code> 提供了多种类型的输入支持，包括 None、Tensor、List、Tuple、nn.Module 的 state dict 、nn.Graph 的 state dict 和几种类型的任意组合，即将 List/Tuple/Dict 中的输入 Tensor 转换为 Global Tensor。值得注意的是，其传入参数中的 SBP 支持用户自定义一个 <code>(x, tensor) -&gt; sbp</code> 的函数来解决不同 Tensor 对应不同 SBP 的需求。</p>
+<p>并且，与 to_global() 对应的还有 <code>flow.utils.global_view.to_local()</code> 接口。可以参考 API 文档中关于 to_global() 和 to_local() 更<a href="https://oneflow.readthedocs.io/en/master/utils.global_view.html">详细的介绍</a>。在 <code>flow.utils.global_view.to_global()</code> 的<a href="https://github.com/Oneflow-Inc/oneflow/blob/master/python/oneflow/utils/global_view/to_global.py">实现</a>中，支持了多种输入类型适用于现有的 <code>Tensor.to_global()</code> 接口。实现的整体思路大致为检查输入、广播（空）结构，遍历节点、调用回调函数和返回 to_global() 后的结果。</p>
+<p>再回到我们关注的地方，这个接口如何做到模型分片保存和加载？比如对于模型并行/流水并行，模型的参数分散在多个 Rank 上，在保存模型前通过  <code>flow.utils.global_view.to_global()</code>  将 state dict 里的每个 Tensor 在指定 Placement 上转为 Global Tensor，SBP 的类型为  <code>flow.sbp.split</code>，可以设置在特定维度上的切分。同样的，模型也可以按 Split 被加载。当然，SBP 也可以为 broadcast，支持不同的 SBP 和 Placement 组合。这样，超大规模模型分片存储的问题就被非常好的解决了。</p>
+<h3 id="_2">保存模型<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h3>
+<p>大致了解  <code>flow.utils.global_view.to_global()</code>  接口后，在这一部分演示了如何分片保存模型，代码如下：</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># 自定义 get_sbp 函数。</span>
+<span class="k">def</span> <span class="nf">get_sbp</span><span class="p">(</span><span class="n">state_dict</span><span class="p">,</span> <span class="n">tensor</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">tensor</span> <span class="ow">is</span> <span class="n">state_dict</span><span class="p">[</span><span class="s2">&quot;System-Train-TrainStep&quot;</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="n">flow</span><span class="o">.</span><span class="n">sbp</span><span class="o">.</span><span class="n">broadcast</span>
+    <span class="k">if</span> <span class="n">tensor</span> <span class="ow">is</span> <span class="n">state_dict</span><span class="p">[</span><span class="s2">&quot;module_pipeline&quot;</span><span class="p">][</span><span class="s2">&quot;m_stage3.linear.weight&quot;</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="n">flow</span><span class="o">.</span><span class="n">sbp</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">tensor</span> <span class="ow">is</span> <span class="n">state_dict</span><span class="p">[</span><span class="s2">&quot;module_pipeline&quot;</span><span class="p">][</span><span class="s2">&quot;m_stage3.linear.bias&quot;</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="n">flow</span><span class="o">.</span><span class="n">sbp</span><span class="o">.</span><span class="n">broadcast</span>
+    <span class="k">return</span> <span class="n">flow</span><span class="o">.</span><span class="n">sbp</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="n">model_file_state_dict</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">global_view</span><span class="o">.</span><span class="n">to_global</span><span class="p">(</span>
+    <span class="n">state_dict</span><span class="p">,</span> <span class="n">placement</span><span class="o">=</span><span class="n">model_file_placement</span><span class="p">,</span> <span class="n">sbp</span><span class="o">=</span><span class="n">get_sbp</span><span class="p">,</span> 
+    <span class="p">)</span> <span class="c1"># 使用 sbp=get_sbp 处理特殊的键，也支持指定普通的 SBP。</span>
+
+<span class="n">rank_id</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">get_rank</span><span class="p">()</span>
+<span class="c1"># 保存模型分片的路径，一个 rank 对应一个路径。</span>
+<span class="n">state_dict_dir</span> <span class="o">=</span> <span class="s2">&quot;./graph_save_load_global_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">rank_id</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">flow</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">get_rank</span><span class="p">()</span> <span class="ow">in</span> <span class="n">model_file_placement</span><span class="o">.</span><span class="n">ranks</span><span class="p">:</span>
+    <span class="n">flow</span><span class="o">.</span><span class="n">save</span><span class="p">(</span>
+        <span class="n">flow</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">global_view</span><span class="o">.</span><span class="n">to_local</span><span class="p">(</span><span class="n">model_file_state_dict</span><span class="p">),</span>
+        <span class="n">state_dict_dir</span><span class="p">,</span>
+    <span class="p">)</span>
+</code></pre></div>
+<p>首先，将原模型（state_dict）转化到模型文件的 Placement 和 SBP 上，model_file_placement 为要分片保存模型的设备阵列，也就是将 state dict 按 split(0) 分片到 model_file_placement 上。这里之所以自定义 get_sbp 函数，是因为用户可以传进来一个 <code>(x, tensor) -&gt; sbp</code> 的函数来解决特殊 Tensor 对应不同 SBP 的需求。举个例子(当前例子基于 Graph 模式)，对于  <code>state_dict["System-Train-TrainStep"]</code>  这种 shape 为 [1] 的 Tensor，我们就不能按 split(0) 分片了，SBP 可以选用 broadcast。而 <code>state_dict["module_pipeline"]["m_stage3.linear.weight"]</code>  只能在第 1 维度切分，对于 <code>state_dict["module_pipeline"]["m_stage3.linear.bias"]</code> 这种不可切分的小 Tensor(s)，SBP 可以选用 broadcast。这样支持用户 DIY SBP 的处理，更加灵活。</p>
+<p>在后面的处理中，使用 <code>flow.utils.global_view.to_local()</code> 接口得到 model_file_state_dict  的本地分量，并调用 <a href="https://oneflow.readthedocs.io/en/master/generated/oneflow.save.html?highlight=save">oneflow.save</a> 保存模型。其中，state_dict_dir 是带有设备 id 的目录，需要区分不同设备，推荐一个 rank 对应一个路径，路径名用 rank id 的方式。</p>
+<h3 id="_3">加载模型<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>
+<p>在指定设备上分片保存模型后，加载模型的代码如下：</p>
+<div class="highlight"><pre><span></span><code><span class="k">if</span> <span class="n">cur_rank</span> <span class="ow">in</span> <span class="n">model_file_placement</span><span class="o">.</span><span class="n">ranks</span><span class="p">:</span>
+    <span class="n">local_state_dict</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">state_dict_dir</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">local_state_dict</span> <span class="o">=</span> <span class="kc">None</span>
+
+<span class="n">global_state_dict</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">global_view</span><span class="o">.</span><span class="n">to_global</span><span class="p">(</span>
+     <span class="n">local_state_dict</span><span class="p">,</span> <span class="n">placement</span><span class="o">=</span><span class="n">model_file_placement</span><span class="p">,</span> <span class="n">sbp</span><span class="o">=</span><span class="n">get_sbp</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">graph_model</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">global_state_dict</span><span class="p">)</span>
+</code></pre></div>
+<p>首先，用 <a href="https://oneflow.readthedocs.io/en/master/generated/oneflow.load.html?highlight=load">load()</a> 方法在每个保存切片的设备上加载 state dict。对应的，需要把 local rank 上的 state dict 转换到模型文件的 placement 和 sbp 上，得到了 global_state_dict。这一步和保存模型应该是对应的，SBP 和 Placement 也是一致的。最后，global_state_dict 可以成功加载到 graph_model（nn.Graph） 中。当然，nn.Module 和 nn.Graph 处理方法是一致的。</p>
+<h3 id="state-dict-nnmodule">将 state dict 加载到 nn.Module 中<a class="headerlink" href="#state-dict-nnmodule" title="Permanent link">&para;</a></h3>
+<p>除了以上两个特征外，在将 state dict 加载到 nn.Module 时，OneFlow 提供了 SBP 和 Placement 的自动转换。在下面的例子中，首先构造一个 m（nn.Module）对象，再将 global_state_dict 的 SBP 设置为 split(0)，而 m 的 SBP 为 broadcast。同时 placement 也放生了变化，从 <code>placement("cpu", ranks=[0, 1])</code> 到 <code>flow.placement("cpu", ranks=[0])</code>。这时用户不需要其他操作，OneFlow 会自动做 SBP 和 placement 的转换过程。</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">oneflow</span> <span class="k">as</span> <span class="nn">flow</span>
+
+<span class="n">m</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">6</span><span class="p">)</span>
+<span class="n">model_file_placement</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">placement</span><span class="p">(</span><span class="s2">&quot;cpu&quot;</span><span class="p">,</span> <span class="n">ranks</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+
+<span class="n">state_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;weight&quot;</span><span class="p">:</span><span class="n">flow</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span> <span class="s2">&quot;bias&quot;</span><span class="p">:</span><span class="n">flow</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">3</span><span class="p">)}</span>
+<span class="n">global_state_dict</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">global_view</span><span class="o">.</span><span class="n">to_global</span><span class="p">(</span>
+    <span class="n">state_dict</span><span class="p">,</span> <span class="n">placement</span><span class="o">=</span><span class="n">model_file_placement</span><span class="p">,</span> <span class="n">sbp</span><span class="o">=</span><span class="n">flow</span><span class="o">.</span><span class="n">sbp</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span>
+<span class="p">)</span>
+
+<span class="n">m</span><span class="o">.</span><span class="n">to_global</span><span class="p">(</span><span class="n">placement</span><span class="o">=</span><span class="n">flow</span><span class="o">.</span><span class="n">placement</span><span class="p">(</span><span class="s2">&quot;cpu&quot;</span><span class="p">,</span> <span class="n">ranks</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">sbp</span><span class="o">=</span><span class="n">flow</span><span class="o">.</span><span class="n">sbp</span><span class="o">.</span><span class="n">broadcast</span><span class="p">)</span>
+<span class="n">m</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">global_state_dict</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">state_dict</span><span class="p">())</span>
+</code></pre></div>
+<p>使用 2 卡运行上面的代码，可以看到，我们自己构造的字典中的全局张量，已经被加载到 m Module 中。此外，输出 OrderedDict 的 tensor 的 SBP 已经从 split(0) 自动转换为 broadcast，'weight' 对应 tensor 的形状也是我们期待的 <code>[6, 2]</code>，'bias' 形状为 <code>[6]</code>。</p>
+<div class="highlight"><pre><span></span><code>OrderedDict([(&#39;weight&#39;, tensor([[1., 1.],
+        [1., 1.],
+        [1., 1.],
+        [1., 1.],
+        [1., 1.],
+        [1., 1.]], placement=oneflow.placement(type=&quot;cpu&quot;, ranks=[0]), sbp=(oneflow.sbp.broadcast,), dtype=oneflow.float32,
+       requires_grad=True)), (&#39;bias&#39;, tensor([0., 0., 0., 0., 0., 0.], placement=oneflow.placement(type=&quot;cpu&quot;, ranks=[0]), sbp=(oneflow.sbp.broadcast,),
+       dtype=oneflow.float32, requires_grad=True))])
+</code></pre></div>
+<h2 id="_4">一个完整示例<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
+<p>上面，我们演示了如何分片保存和加载模型。在这一部分，提供一份完整的代码参考，下面的例子为 4 个 ranks 上的流水并行，模拟了模型分片保存和加载的过程。</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">import</span> <span class="nn">oneflow</span> <span class="k">as</span> <span class="nn">flow</span>
+
+<span class="n">model_tensor_placement</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">placement</span><span class="p">(</span><span class="s2">&quot;cuda&quot;</span><span class="p">,</span> <span class="n">ranks</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="c1"># model_file_placement 为存储模型分片的设备的 placement，表示在 Rank 2 和 Rank 3 上可为 None。</span>
+<span class="n">model_file_placement</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">placement</span><span class="p">(</span><span class="s2">&quot;cpu&quot;</span><span class="p">,</span> <span class="n">ranks</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="n">P0</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">placement</span><span class="p">(</span><span class="n">model_tensor_placement</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">ranks</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">P1</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">placement</span><span class="p">(</span><span class="n">model_tensor_placement</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">ranks</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">P2</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">placement</span><span class="p">(</span><span class="n">model_tensor_placement</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">ranks</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+<span class="n">P3</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">placement</span><span class="p">(</span><span class="n">model_tensor_placement</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">ranks</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+
+<span class="k">def</span> <span class="nf">get_sbp</span><span class="p">(</span><span class="n">state_dict</span><span class="p">,</span> <span class="n">tensor</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">tensor</span> <span class="ow">is</span> <span class="n">state_dict</span><span class="p">[</span><span class="s2">&quot;System-Train-TrainStep&quot;</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="n">flow</span><span class="o">.</span><span class="n">sbp</span><span class="o">.</span><span class="n">broadcast</span>
+    <span class="k">if</span> <span class="n">tensor</span> <span class="ow">is</span> <span class="n">state_dict</span><span class="p">[</span><span class="s2">&quot;module_pipeline&quot;</span><span class="p">][</span><span class="s2">&quot;m_stage3.linear.weight&quot;</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="n">flow</span><span class="o">.</span><span class="n">sbp</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">tensor</span> <span class="ow">is</span> <span class="n">state_dict</span><span class="p">[</span><span class="s2">&quot;module_pipeline&quot;</span><span class="p">][</span><span class="s2">&quot;m_stage3.linear.bias&quot;</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="n">flow</span><span class="o">.</span><span class="n">sbp</span><span class="o">.</span><span class="n">broadcast</span>
+    <span class="k">return</span> <span class="n">flow</span><span class="o">.</span><span class="n">sbp</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">Stage0Module</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">linear</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">relu</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">linear</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+
+<span class="k">class</span> <span class="nc">Stage1Module</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">linear</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">relu</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">linear</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+
+<span class="k">class</span> <span class="nc">Stage2Module</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">linear</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">relu</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">linear</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+
+<span class="k">class</span> <span class="nc">Stage3Module</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">linear</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">linear</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+<span class="c1"># 模拟 4 个 ranks 上的流水并行</span>
+<span class="k">class</span> <span class="nc">PipelineModule</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">m_stage0</span> <span class="o">=</span> <span class="n">Stage0Module</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">m_stage1</span> <span class="o">=</span> <span class="n">Stage1Module</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">m_stage2</span> <span class="o">=</span> <span class="n">Stage2Module</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">m_stage3</span> <span class="o">=</span> <span class="n">Stage3Module</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">m_stage0</span><span class="o">.</span><span class="n">to_global</span><span class="p">(</span><span class="n">placement</span><span class="o">=</span><span class="n">P0</span><span class="p">,</span> <span class="n">sbp</span><span class="o">=</span><span class="n">flow</span><span class="o">.</span><span class="n">sbp</span><span class="o">.</span><span class="n">broadcast</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">m_stage1</span><span class="o">.</span><span class="n">to_global</span><span class="p">(</span><span class="n">placement</span><span class="o">=</span><span class="n">P1</span><span class="p">,</span> <span class="n">sbp</span><span class="o">=</span><span class="n">flow</span><span class="o">.</span><span class="n">sbp</span><span class="o">.</span><span class="n">broadcast</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">m_stage2</span><span class="o">.</span><span class="n">to_global</span><span class="p">(</span><span class="n">placement</span><span class="o">=</span><span class="n">P2</span><span class="p">,</span> <span class="n">sbp</span><span class="o">=</span><span class="n">flow</span><span class="o">.</span><span class="n">sbp</span><span class="o">.</span><span class="n">broadcast</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">m_stage3</span><span class="o">.</span><span class="n">to_global</span><span class="p">(</span><span class="n">placement</span><span class="o">=</span><span class="n">P3</span><span class="p">,</span> <span class="n">sbp</span><span class="o">=</span><span class="n">flow</span><span class="o">.</span><span class="n">sbp</span><span class="o">.</span><span class="n">broadcast</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="n">out_stage0</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">m_stage0</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+        <span class="n">in_stage1</span> <span class="o">=</span> <span class="n">out_stage0</span><span class="o">.</span><span class="n">to_global</span><span class="p">(</span><span class="n">placement</span><span class="o">=</span><span class="n">P1</span><span class="p">,</span> <span class="n">sbp</span><span class="o">=</span><span class="n">flow</span><span class="o">.</span><span class="n">sbp</span><span class="o">.</span><span class="n">broadcast</span><span class="p">)</span>
+        <span class="n">out_stage1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">m_stage1</span><span class="p">(</span><span class="n">in_stage1</span><span class="p">)</span>
+
+        <span class="n">in_stage2</span> <span class="o">=</span> <span class="n">out_stage1</span><span class="o">.</span><span class="n">to_global</span><span class="p">(</span><span class="n">placement</span><span class="o">=</span><span class="n">P2</span><span class="p">,</span> <span class="n">sbp</span><span class="o">=</span><span class="n">flow</span><span class="o">.</span><span class="n">sbp</span><span class="o">.</span><span class="n">broadcast</span><span class="p">)</span>
+        <span class="n">out_stage2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">m_stage2</span><span class="p">(</span><span class="n">in_stage2</span><span class="p">)</span>
+
+        <span class="n">in_stage3</span> <span class="o">=</span> <span class="n">out_stage2</span><span class="o">.</span><span class="n">to_global</span><span class="p">(</span><span class="n">placement</span><span class="o">=</span><span class="n">P3</span><span class="p">,</span> <span class="n">sbp</span><span class="o">=</span><span class="n">flow</span><span class="o">.</span><span class="n">sbp</span><span class="o">.</span><span class="n">broadcast</span><span class="p">)</span>
+        <span class="n">out_stage3</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">m_stage3</span><span class="p">(</span><span class="n">in_stage3</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">out_stage3</span>
+
+<span class="k">class</span> <span class="nc">PipelineGraph</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Graph</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">module_pipeline</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">module_pipeline</span> <span class="o">=</span> <span class="n">module_pipeline</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">module_pipeline</span><span class="o">.</span><span class="n">m_stage0</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">set_stage</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">P0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">module_pipeline</span><span class="o">.</span><span class="n">m_stage1</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">set_stage</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">P1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">module_pipeline</span><span class="o">.</span><span class="n">m_stage2</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">set_stage</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">P2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">module_pipeline</span><span class="o">.</span><span class="n">m_stage3</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">set_stage</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">P3</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">set_gradient_accumulation_steps</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_optimizer</span><span class="p">(</span>
+            <span class="n">flow</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">module_pipeline</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.001</span><span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">module_pipeline</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">out</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="n">out</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">out</span>
+
+<span class="k">def</span> <span class="nf">train_with_graph</span><span class="p">(</span><span class="n">call_cnt</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">state_dict_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">last_state_dict</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="c1"># 形状为 [2, 16] 的固定输入张量</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span>
+        <span class="p">[</span>
+            <span class="p">[</span>
+                <span class="mf">0.4286</span><span class="p">,</span>
+                <span class="mf">0.7402</span><span class="p">,</span>
+                <span class="mf">0.4161</span><span class="p">,</span>
+                <span class="mf">0.6103</span><span class="p">,</span>
+                <span class="mf">0.7394</span><span class="p">,</span>
+                <span class="mf">1.1330</span><span class="p">,</span>
+                <span class="o">-</span><span class="mf">0.2311</span><span class="p">,</span>
+                <span class="o">-</span><span class="mf">0.1013</span><span class="p">,</span>
+                <span class="mf">0.8537</span><span class="p">,</span>
+                <span class="mf">0.9757</span><span class="p">,</span>
+                <span class="o">-</span><span class="mf">0.9842</span><span class="p">,</span>
+                <span class="mf">0.3839</span><span class="p">,</span>
+                <span class="o">-</span><span class="mf">0.5551</span><span class="p">,</span>
+                <span class="o">-</span><span class="mf">0.8832</span><span class="p">,</span>
+                <span class="mf">0.7820</span><span class="p">,</span>
+                <span class="mf">0.7421</span><span class="p">,</span>
+            <span class="p">],</span>
+            <span class="p">[</span>
+                <span class="o">-</span><span class="mf">0.1581</span><span class="p">,</span>
+                <span class="o">-</span><span class="mf">1.0319</span><span class="p">,</span>
+                <span class="mf">1.8430</span><span class="p">,</span>
+                <span class="mf">0.3576</span><span class="p">,</span>
+                <span class="mf">0.7288</span><span class="p">,</span>
+                <span class="o">-</span><span class="mf">0.6912</span><span class="p">,</span>
+                <span class="mf">0.9966</span><span class="p">,</span>
+                <span class="mf">1.0840</span><span class="p">,</span>
+                <span class="o">-</span><span class="mf">1.1760</span><span class="p">,</span>
+                <span class="mf">1.5683</span><span class="p">,</span>
+                <span class="o">-</span><span class="mf">0.2098</span><span class="p">,</span>
+                <span class="o">-</span><span class="mf">1.6439</span><span class="p">,</span>
+                <span class="o">-</span><span class="mf">2.7049</span><span class="p">,</span>
+                <span class="mf">0.1949</span><span class="p">,</span>
+                <span class="mf">1.6377</span><span class="p">,</span>
+                <span class="mf">0.0745</span><span class="p">,</span>
+            <span class="p">],</span>
+        <span class="p">],</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="n">flow</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
+        <span class="n">placement</span><span class="o">=</span><span class="n">P0</span><span class="p">,</span>
+        <span class="n">sbp</span><span class="o">=</span><span class="n">flow</span><span class="o">.</span><span class="n">sbp</span><span class="o">.</span><span class="n">broadcast</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">module_pipeline</span> <span class="o">=</span> <span class="n">PipelineModule</span><span class="p">()</span>
+    <span class="n">graph_model</span> <span class="o">=</span> <span class="n">PipelineGraph</span><span class="p">(</span><span class="n">module_pipeline</span><span class="p">)</span>
+    <span class="n">cur_rank</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">get_rank</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">call_cnt</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">cur_rank</span> <span class="ow">in</span> <span class="n">model_file_placement</span><span class="o">.</span><span class="n">ranks</span><span class="p">:</span>
+            <span class="n">local_state_dict</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">state_dict_dir</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">local_state_dict</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># 使用 sbp=get_sbp 处理特殊的键</span>
+        <span class="n">global_state_dict</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">global_view</span><span class="o">.</span><span class="n">to_global</span><span class="p">(</span>
+            <span class="n">local_state_dict</span><span class="p">,</span> <span class="n">placement</span><span class="o">=</span><span class="n">model_file_placement</span><span class="p">,</span> <span class="n">sbp</span><span class="o">=</span><span class="n">get_sbp</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">graph_model</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">global_state_dict</span><span class="p">)</span>
+
+    <span class="n">graph_model</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">state_dict</span> <span class="o">=</span> <span class="n">graph_model</span><span class="o">.</span><span class="n">state_dict</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">call_cnt</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">model_file_state_dict</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">global_view</span><span class="o">.</span><span class="n">to_global</span><span class="p">(</span>
+            <span class="n">state_dict</span><span class="p">,</span> <span class="n">placement</span><span class="o">=</span><span class="n">model_file_placement</span><span class="p">,</span> <span class="n">sbp</span><span class="o">=</span><span class="n">get_sbp</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">flow</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">get_rank</span><span class="p">()</span> <span class="ow">in</span> <span class="n">model_file_placement</span><span class="o">.</span><span class="n">ranks</span><span class="p">:</span>
+            <span class="n">flow</span><span class="o">.</span><span class="n">save</span><span class="p">(</span>
+                <span class="n">flow</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">global_view</span><span class="o">.</span><span class="n">to_local</span><span class="p">(</span><span class="n">model_file_state_dict</span><span class="p">),</span>
+                <span class="n">state_dict_dir</span><span class="p">,</span>
+            <span class="p">)</span>
+
+<span class="k">if</span> <span class="vm">__name__</span><span class="o">==</span><span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">rank_id</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">get_rank</span><span class="p">()</span>
+    <span class="c1"># 保存路径，一个 rank 对应一个路径。</span>
+    <span class="n">state_dict_dir</span> <span class="o">=</span> <span class="s2">&quot;./graph_save_load_global_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">rank_id</span><span class="p">)</span>
+    <span class="c1"># 保存模型</span>
+    <span class="n">train_with_graph</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">state_dict_dir</span><span class="p">)</span>
+    <span class="c1"># 加载模型</span>
+    <span class="n">train_with_graph</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">state_dict_dir</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="_5">结语<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h2>
+<p>上文介绍了：</p>
+<ul>
+<li>大规模模型分片存储的必要性；</li>
+<li>OneFlow 提供的模型分片保存和加载接口介绍；</li>
+<li>一个完整的代码例子演示如何完成大模型分片存储；</li>
+</ul>
+<p>本文从简单介绍大规模模型分片存储开始，最终演示了 OneFlow 的如何做模型分片保存和加载的过程，后续 OneFlow 的大模型分片存储的接口还会不断完善。</p>
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+        
+          <a href="#" class="md-top md-icon" data-md-component="top" data-md-state="hidden">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"/></svg>
+            Back to top
+          </a>
+        
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <nav class="md-footer__inner md-grid" aria-label="Footer">
+      
+        
+        <a href="zero.html" class="md-footer__link md-footer__link--prev" aria-label="上一页: Zero Redundancy Optimizer (ZeRO)" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                上一页
+              </span>
+              Zero Redundancy Optimizer (ZeRO)
+            </div>
+          </div>
+        </a>
+      
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+          <div class="md-footer-copyright__highlight">
+            Copyright &copy; 2017 - 2021 OneFlow
+          </div>
+        
+        Made with
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs
+        </a>
+        
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.top"], "translations": {"clipboard.copy": "\u590d\u5236", "clipboard.copied": "\u5df2\u590d\u5236", "search.config.lang": "ja", "search.config.pipeline": "trimmer, stemmer", "search.config.separator": "[\\uff0c\\u3002]+", "search.placeholder": "\u641c\u7d22", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.477d984a.min.js", "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.ddd52ceb.min.js"></script>
+      
+        <script src="../javascripts/config.js"></script>
+      
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>
