@@ -17,7 +17,7 @@ eval $(python3 -m oneflow.mock_torch)
 ```
 eval $(oneflow-mock-torch)
 ```
-其中，参数`mock`的默认选项为`enable`
+
 
 关闭模拟 PyTorch
 ```
