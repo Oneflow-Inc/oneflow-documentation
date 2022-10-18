@@ -11,21 +11,29 @@ OneFlow 提供了一个命令行工具，在OneFlow的Python Package内模拟了
 
 开启模拟 PyTorch
 ```
-eval $(python3 -m oneflow.mock_torch)
+eval $(oneflow-mock-torch)
 ```
 或
 ```
-eval $(oneflow-mock-torch)
+eval $(python3 -m oneflow.mock_torch)
 ```
 
 
 关闭模拟 PyTorch
 ```
-eval $(python3 -m oneflow.mock_torch disable)
+eval $(oneflow-mock-torch disable)
 ```
 或
 ```
-eval $(oneflow-mock-torch disable)
+eval $(python3 -m oneflow.mock_torch disable)
 ```
 ## 3. 使用 OneFlow 的内置函数
-TODO
+你也可以在 Python 代码中实现上述效果，只需要在 import torch 前调用 OneFlow 提供的一个函数即可。
+```
+from oneflow.mock_torch import mock
+mock()
+```
+如果 torch 模块已被引入，该函数不会生效。
+
+## 总结
+由于 OneFlow 的 API 与 PyTorch 对齐，用户能够将 PyTorch 代码很方便地迁移到 OneFlow。以上介绍了三种使用 OneFlow 来训练 PyTorch 模型的方法，希望用户能够体验到 OneFlow 极致的性能。
