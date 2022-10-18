@@ -5,9 +5,9 @@ OneFlow 的 API 与 PyTorch 对齐，用户可以很方便地将 PyTorch 模型�
 ```py
 import oneflow as torch
 ```
-就可以使用OneFlow训练原有模型
+就可以使用 OneFlow 训练原有模型；然而，这种方法需要手动修改所有 import torch 的文件，如果第三方库使用了 torch ，还需要更改第三方库的源码。
 ## 2. 使用命令行工具
-OneFlow 提供了一个命令行工具，在OneFlow的Python Package内模拟了 PyTorch 环境，并将对该模块的引用都转发到实际的 OneFlow 模块中。具体的用法如下
+OneFlow 提供了一个命令行工具，在 OneFlow 的 Python Package 内模拟了 PyTorch 环境，并将对该模块的引用都转发到实际的 OneFlow 模块中。具体的用法如下
 
 开启模拟 PyTorch
 ```
@@ -18,6 +18,14 @@ eval $(oneflow-mock-torch)
 eval $(python3 -m oneflow.mock_torch)
 ```
 
+运行上述命令后，通过以下示例观察效果
+```py
+import torch
+print(torch.__file__)
+import oneflow as flow
+x = torch.zeros(2, 3)
+print(isinstance(x, flow.Tensor))
+```
 
 关闭模拟 PyTorch
 ```
