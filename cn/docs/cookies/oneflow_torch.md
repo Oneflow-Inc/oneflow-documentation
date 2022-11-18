@@ -36,12 +36,41 @@ eval $(oneflow-mock-torch disable)
 eval $(python3 -m oneflow.mock_torch disable)
 ```
 ## 3. 使用 OneFlow 的内置函数
-你也可以在 Python 代码中实现上述效果，只需要在 import torch 前调用 OneFlow 提供的一个函数即可。
+我们提供了更细粒度的 mock 功能，用户可以自行控制某段代码是否启用 mock 功能。
+如下的 with 语句中，导入的 torch 模块实际上是 OneFlow
+```py
+import oneflow.mock_torch as mock
+with mock.enable():
+    import torch
+    print(torch.__file__)
+    import oneflow as flow
+    x = torch.zeros(2, 3)
+    print(isinstance(x, flow.Tensor))
 ```
-from oneflow.mock_torch import mock
-mock()
+
+当你需要使用真正的 torch 模块时，可以这样关闭 mock 功能
+```py
+with mock.disable():
+    import torch
+    print(torch.__file__)
 ```
-如果 torch 模块已被引入，该函数不会生效。
+
+`mock.enable`和`mock.disable`也可以作为函数使用，例如，对于一段用户想要用 OneFlow 进行训练的模型，而该模型需要 torch 来加载，可以这样使用
+```py
+mock.enable()
+...
+with mock.disable()
+    module = torch.load_module(...)
+# train the module with oneflow
+```
+
+enable 模式和 disable 模式各自保存了一份值为模块的字典，在开关enable/disable时会替换`sys.modules`和当前所属模块的全局变量，故用户需要在 enable 模式和 disable 模式时自行 import 需要的模块，如下代码会在 disable 的 with 语句里报`name 'torch' is not defined`的错
+```py
+with mock.enable():
+    import torch
+with mock.disable():
+    torch.ones(2, 3)
+```
 
 ## 总结
 由于 OneFlow 的 API 与 PyTorch 对齐，用户能够将 PyTorch 代码很方便地迁移到 OneFlow。以上介绍了三种使用 OneFlow 来训练 PyTorch 模型的方法，希望用户能够体验到 OneFlow 极致的性能。
