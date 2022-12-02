@@ -11,14 +11,14 @@
       
       
       
-        <link rel="canonical" href="https://docs.oneflow.org/master/basics/02_tensor.html">
+        <link rel="canonical" href="https://docs.oneflow.org/master/cookies/oneflow_torch.html">
       
       <link rel="icon" href="../assets/favicon.png">
       <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-7.1.11">
     
     
       
-        <title>Tensor - OneFlow</title>
+        <title>OneFlow 模拟 PyTorch - OneFlow</title>
       
     
     
@@ -69,7 +69,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#tensor" class="md-skip">
+        <a href="#oneflow-pytorch" class="md-skip">
           跳转至
         </a>
       
@@ -104,7 +104,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Tensor
+              OneFlow 模拟 PyTorch
             
           </span>
         </div>
@@ -211,15 +211,13 @@
         
   
   
-    
-  
 
 
   
   
   
     <li class="md-tabs__item">
-      <a href="01_quickstart.html" class="md-tabs__link md-tabs__link--active">
+      <a href="../basics/01_quickstart.html" class="md-tabs__link">
         基础专题
       </a>
     </li>
@@ -245,13 +243,15 @@
         
   
   
+    
+  
 
 
   
   
   
     <li class="md-tabs__item">
-      <a href="../cookies/global_tensor.html" class="md-tabs__link">
+      <a href="global_tensor.html" class="md-tabs__link md-tabs__link--active">
         实践指南
       </a>
     </li>
@@ -345,14 +345,12 @@
 
   
   
-    
-  
   
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" checked>
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" >
       
       <label class="md-nav__link" for="__nav_2">
         基础专题
@@ -370,7 +368,7 @@
   
   
     <li class="md-nav__item">
-      <a href="01_quickstart.html" class="md-nav__link">
+      <a href="../basics/01_quickstart.html" class="md-nav__link">
         快速上手
       </a>
     </li>
@@ -380,99 +378,11 @@
             
   
   
-    
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          Tensor
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="02_tensor.html" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../basics/02_tensor.html" class="md-nav__link">
         Tensor
       </a>
-      
-        
-<nav class="md-nav md-nav--secondary" aria-label="目录">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      目录
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#tensor_1" class="md-nav__link">
-    创建 Tensor
-  </a>
-  
-    <nav class="md-nav" aria-label="创建 Tensor">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#_1" class="md-nav__link">
-    直接从数据创建
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#numpy" class="md-nav__link">
-    通过 Numpy 数组创建
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#_2" class="md-nav__link">
-    通过算子创建
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#tensor-tensor" class="md-nav__link">
-    Tensor 与 tensor 的区别
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#tensor_2" class="md-nav__link">
-    Tensor 的属性
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#tensor_3" class="md-nav__link">
-    操作 Tensor 的常见算子
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -482,7 +392,7 @@
   
   
     <li class="md-nav__item">
-      <a href="03_dataset_dataloader.html" class="md-nav__link">
+      <a href="../basics/03_dataset_dataloader.html" class="md-nav__link">
         Dataset 与 DataLoader
       </a>
     </li>
@@ -494,7 +404,7 @@
   
   
     <li class="md-nav__item">
-      <a href="04_build_network.html" class="md-nav__link">
+      <a href="../basics/04_build_network.html" class="md-nav__link">
         搭建神经网络
       </a>
     </li>
@@ -506,7 +416,7 @@
   
   
     <li class="md-nav__item">
-      <a href="05_autograd.html" class="md-nav__link">
+      <a href="../basics/05_autograd.html" class="md-nav__link">
         Autograd
       </a>
     </li>
@@ -518,7 +428,7 @@
   
   
     <li class="md-nav__item">
-      <a href="06_optimization.html" class="md-nav__link">
+      <a href="../basics/06_optimization.html" class="md-nav__link">
         反向传播与 optimizer
       </a>
     </li>
@@ -530,7 +440,7 @@
   
   
     <li class="md-nav__item">
-      <a href="07_model_load_save.html" class="md-nav__link">
+      <a href="../basics/07_model_load_save.html" class="md-nav__link">
         模型的加载与保存
       </a>
     </li>
@@ -542,7 +452,7 @@
   
   
     <li class="md-nav__item">
-      <a href="08_nn_graph.html" class="md-nav__link">
+      <a href="../basics/08_nn_graph.html" class="md-nav__link">
         静态图模块 nn.Graph
       </a>
     </li>
@@ -675,12 +585,14 @@
 
   
   
+    
+  
   
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" checked>
       
       <label class="md-nav__link" for="__nav_4">
         实践指南
@@ -698,7 +610,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../cookies/global_tensor.html" class="md-nav__link">
+      <a href="global_tensor.html" class="md-nav__link">
         使用 Global Tensor 进行分布式编程：基础操作
       </a>
     </li>
@@ -710,7 +622,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../cookies/global_tensor_distributed.html" class="md-nav__link">
+      <a href="global_tensor_distributed.html" class="md-nav__link">
         使用 Global Tensor 进行分布式编程：分布式并行策略
       </a>
     </li>
@@ -722,7 +634,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../cookies/oneflow2onnnx.html" class="md-nav__link">
+      <a href="oneflow2onnnx.html" class="md-nav__link">
         OneFlow 与 ONNX 交互
       </a>
     </li>
@@ -734,7 +646,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../cookies/serving.html" class="md-nav__link">
+      <a href="serving.html" class="md-nav__link">
         模型部署
       </a>
     </li>
@@ -746,7 +658,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../cookies/amp.html" class="md-nav__link">
+      <a href="amp.html" class="md-nav__link">
         自动混合精度训练
       </a>
     </li>
@@ -758,7 +670,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../cookies/activation_checkpointing.html" class="md-nav__link">
+      <a href="activation_checkpointing.html" class="md-nav__link">
         Activation Checkpointing
       </a>
     </li>
@@ -770,7 +682,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../cookies/torch2flow.html" class="md-nav__link">
+      <a href="torch2flow.html" class="md-nav__link">
         将 PyTorch 预训练模型转为 OneFlow 格式
       </a>
     </li>
@@ -782,7 +694,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../cookies/transfer_learning.html" class="md-nav__link">
+      <a href="transfer_learning.html" class="md-nav__link">
         计算机视觉迁移学习
       </a>
     </li>
@@ -794,7 +706,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../cookies/one_embedding.html" class="md-nav__link">
+      <a href="one_embedding.html" class="md-nav__link">
         大规模 Embedding 方案： OneEmbedding
       </a>
     </li>
@@ -806,7 +718,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../cookies/zero.html" class="md-nav__link">
+      <a href="zero.html" class="md-nav__link">
         Zero Redundancy Optimizer (ZeRO)
       </a>
     </li>
@@ -818,7 +730,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../cookies/save_load.html" class="md-nav__link">
+      <a href="save_load.html" class="md-nav__link">
         大模型分片保存和加载
       </a>
     </li>
@@ -828,11 +740,72 @@
             
   
   
+    
   
-    <li class="md-nav__item">
-      <a href="../cookies/oneflow_torch.html" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          OneFlow 模拟 PyTorch
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="oneflow_torch.html" class="md-nav__link md-nav__link--active">
         OneFlow 模拟 PyTorch
       </a>
+      
+        
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-import-oneflow-as-torch" class="md-nav__link">
+    1. import oneflow as torch
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    2. 使用命令行工具
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-oneflow" class="md-nav__link">
+    3. 使用 OneFlow 的内置函数
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    总结
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -911,56 +884,29 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#tensor_1" class="md-nav__link">
-    创建 Tensor
+  <a href="#1-import-oneflow-as-torch" class="md-nav__link">
+    1. import oneflow as torch
   </a>
   
-    <nav class="md-nav" aria-label="创建 Tensor">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    2. 使用命令行工具
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-oneflow" class="md-nav__link">
+    3. 使用 OneFlow 的内置函数
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#_1" class="md-nav__link">
-    直接从数据创建
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#numpy" class="md-nav__link">
-    通过 Numpy 数组创建
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#_2" class="md-nav__link">
-    通过算子创建
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#tensor-tensor" class="md-nav__link">
-    Tensor 与 tensor 的区别
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#tensor_2" class="md-nav__link">
-    Tensor 的属性
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#tensor_3" class="md-nav__link">
-    操作 Tensor 的常见算子
+    总结
   </a>
   
 </li>
@@ -977,128 +923,70 @@
             <article class="md-content__inner md-typeset">
               
                 
-                  <a href="https://github.com/OneFlow-Inc/oneflow-documentation/blob/master/cn/docs/basics/02_tensor.md" title="编辑此页" class="md-content__button md-icon">
+                  <a href="https://github.com/OneFlow-Inc/oneflow-documentation/blob/master/cn/docs/cookies/oneflow_torch.md" title="编辑此页" class="md-content__button md-icon">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
                   </a>
                 
                 
-                <h1 id="tensor">Tensor 张量<a class="headerlink" href="#tensor" title="Permanent link">&para;</a></h1>
-<p>神经网络中的数据，都存放在 Tensor 中，Tensor 类似多维数组或者数学上的矩阵。OneFlow 提供了很多用于操作 Tensor 的算子，Tensor 与算子一起构成神经网络。</p>
-<p>Tensor 有别于普通的多维数组的地方是：除了可以运行在 CPU 上外，它还可以运行在 其它 AI 芯片（如 NVIDIA GPU）上，因此可以提高运算速度。此外，OneFlow 还为张量提供了 <a href="05_autograd.html">自动求导</a> 的功能。</p>
-<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">oneflow</span> <span class="k">as</span> <span class="nn">flow</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+                <h1 id="oneflow-pytorch">OneFlow 与 PyTorch 兼容<a class="headerlink" href="#oneflow-pytorch" title="Permanent link">&para;</a></h1>
+<p>OneFlow 的 API 与 PyTorch 对齐，用户可以很方便地将 PyTorch 模型迁移到 OneFlow。本文介绍三种方法，将使用 PyTorch 运行的代码迁移到 OneFlow。</p>
+<h2 id="1-import-oneflow-as-torch">1. import oneflow as torch<a class="headerlink" href="#1-import-oneflow-as-torch" title="Permanent link">&para;</a></h2>
+<p>将原有的<code>import torch</code>的代码改为</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">oneflow</span> <span class="k">as</span> <span class="nn">torch</span>
 </code></pre></div>
-<h2 id="tensor_1">创建 Tensor<a class="headerlink" href="#tensor_1" title="Permanent link">&para;</a></h2>
-<p>有多种方法创建 Tensor，包括：</p>
-<ul>
-<li>直接从数据创建</li>
-<li>通过 Numpy 数组创建</li>
-<li>使用算子创建</li>
-</ul>
-<h3 id="_1">直接从数据创建<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h3>
-<p>可以直接从数据创建 Tensor：</p>
-<div class="highlight"><pre><span></span><code><span class="n">x1</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">tensor</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]])</span>
-<span class="n">x2</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">tensor</span><span class="p">([[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">]])</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">x2</span><span class="p">)</span>
+<p>就可以使用 OneFlow 训练原有模型；然而，这种方法需要手动修改所有 <code>import torch</code> 的文件，如果第三方库使用了 <code>torch</code>，还需要更改第三方库的源码。</p>
+<h2 id="2">2. 使用命令行工具<a class="headerlink" href="#2" title="Permanent link">&para;</a></h2>
+<p>OneFlow 提供了一个命令行工具，在 OneFlow 的 Python Package 内模拟了 PyTorch 环境，并将对该模块的引用都转发到实际的 OneFlow 模块中。具体的用法如下</p>
+<p>开启模拟 PyTorch</p>
+<div class="highlight"><pre><span></span><code><span class="nb">eval</span> <span class="k">$(</span>oneflow-mock-torch<span class="k">)</span>
 </code></pre></div>
-<p>可以看到创建的 <code>x1</code>、<code>x2</code> Tensor，它们的类型分别是 <code>int64</code> 和 <code>float32</code>。</p>
-<div class="highlight"><pre><span></span><code>tensor([[1, 2],
-        [3, 4]], dtype=oneflow.int64)
-tensor([[1., 2.],
-        [3., 4.]], dtype=oneflow.float32)
+<p>或</p>
+<div class="highlight"><pre><span></span><code><span class="nb">eval</span> <span class="k">$(</span>python3 -m oneflow.mock_torch<span class="k">)</span>
 </code></pre></div>
-<h3 id="numpy">通过 Numpy 数组创建<a class="headerlink" href="#numpy" title="Permanent link">&para;</a></h3>
-<p>Tensor 可以通过 Numpy 数组创建，只需要在创建 Tensor 对象时，将 Numpy 数组作为参数传递即可。</p>
-<div class="highlight"><pre><span></span><code><span class="n">x3</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">)))</span>
-<span class="n">x4</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">x3</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">x4</span><span class="p">)</span>
+<p>运行上述命令后，通过以下示例观察效果</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">torch</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="vm">__file__</span><span class="p">)</span>
+<span class="kn">import</span> <span class="nn">oneflow</span> <span class="k">as</span> <span class="nn">flow</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">flow</span><span class="o">.</span><span class="n">Tensor</span><span class="p">))</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>tensor([[1., 1., 1.],
-        [1., 1., 1.]], dtype=oneflow.float64)
-tensor([[0.6213, 0.6142, 0.1592],
-        [0.5539, 0.8453, 0.8576]], dtype=oneflow.float64)
+<p>关闭模拟 PyTorch</p>
+<div class="highlight"><pre><span></span><code><span class="nb">eval</span> <span class="k">$(</span>oneflow-mock-torch disable<span class="k">)</span>
 </code></pre></div>
-<h3 id="_2">通过算子创建<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h3>
-<p>OneFlow 中还提供了一些算子，可以通过它们创建 Tensor。比如 <a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.ones.html">ones</a>、 <a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.zeros.html">zeros</a>、<a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.eye.html">eye</a>，它们分别创建全为1的张量、全为0的张量和单位张量。</p>
-<div class="highlight"><pre><span></span><code><span class="n">x5</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
-<span class="n">x6</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
-<span class="n">x7</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">x5</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">x6</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">x7</span><span class="p">)</span>
+<p>或</p>
+<div class="highlight"><pre><span></span><code><span class="nb">eval</span> <span class="k">$(</span>python3 -m oneflow.mock_torch disable<span class="k">)</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>tensor([[1., 1., 1.],
-        [1., 1., 1.]], dtype=oneflow.float32)
-tensor([[0., 0., 0.],
-        [0., 0., 0.]], dtype=oneflow.float32)
-tensor([[1., 0., 0.],
-        [0., 1., 0.],
-        [0., 0., 1.]], dtype=oneflow.float32)
+<h2 id="3-oneflow">3. 使用 OneFlow 的内置函数<a class="headerlink" href="#3-oneflow" title="Permanent link">&para;</a></h2>
+<p>我们提供了更细粒度的 mock 功能，用户可以自行控制某段代码是否启用 mock 功能。
+如下的 <code>with</code> 语句中，导入的 PyTorch 模块实际上是 OneFlow</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">oneflow.mock_torch</span> <span class="k">as</span> <span class="nn">mock</span>
+<span class="k">with</span> <span class="n">mock</span><span class="o">.</span><span class="n">enable</span><span class="p">():</span>
+    <span class="kn">import</span> <span class="nn">torch</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="vm">__file__</span><span class="p">)</span>
+    <span class="kn">import</span> <span class="nn">oneflow</span> <span class="k">as</span> <span class="nn">flow</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">flow</span><span class="o">.</span><span class="n">Tensor</span><span class="p">))</span>
 </code></pre></div>
-<p><a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.randn.html">randn</a> 方法可以创建随机化的张量：</p>
-<div class="highlight"><pre><span></span><code><span class="n">x8</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
+<p>当你需要使用真正的 torch 模块时，可以这样关闭 mock 功能</p>
+<div class="highlight"><pre><span></span><code><span class="k">with</span> <span class="n">mock</span><span class="o">.</span><span class="n">disable</span><span class="p">():</span>
+    <span class="kn">import</span> <span class="nn">torch</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="vm">__file__</span><span class="p">)</span>
 </code></pre></div>
-<h2 id="tensor-tensor"><code>Tensor</code> 与 <code>tensor</code> 的区别<a class="headerlink" href="#tensor-tensor" title="Permanent link">&para;</a></h2>
-<p>细心的用户会发现，OneFlow 中有 <a href="https://oneflow.readthedocs.io/en/v0.8.1/tensor.html">oneflow.Tensor</a> 和 <a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.tensor.html">oneflow.tensor</a> 两个接口，它们都能用来创建张量。那么它们有什么区别呢？</p>
-<p>简单而言，大写的 <code>Tensor</code> 数据类型默认限定为 <code>float32</code>，而小写的 <code>tensor</code> 的数据类型可以随着创建时的数据改变。以下代码展示了两者这方面的区别：</p>
-<div class="highlight"><pre><span></span><code><span class="nb">print</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">Tensor</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]))</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]))</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">]))</span>
+<p><code>mock.enable</code> 和 <code>mock.disable</code> 也可以作为函数使用，例如，对于一段用户想要用 OneFlow 进行训练的模型，而该模型需要 PyTorch 来加载，可以这样使用</p>
+<div class="highlight"><pre><span></span><code><span class="n">mock</span><span class="o">.</span><span class="n">enable</span><span class="p">()</span>
+<span class="o">...</span>
+<span class="k">with</span> <span class="n">mock</span><span class="o">.</span><span class="n">disable</span><span class="p">()</span>
+    <span class="n">module</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">load_module</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="c1"># train the module with oneflow</span>
 </code></pre></div>
-<p>数据结果为：</p>
-<div class="highlight"><pre><span></span><code>tensor([1., 2., 3.], dtype=oneflow.float32)
-tensor([1, 2, 3], dtype=oneflow.int64)
-tensor([1., 2., 3.], dtype=oneflow.float32)
-</code></pre></div>
-<p>此外，大写的 <code>Tensor</code> 可以在创建时不指定具体数据：</p>
-<div class="highlight"><pre><span></span><code><span class="n">x9</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">Tensor</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">x9</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
-</code></pre></div>
-<div class="highlight"><pre><span></span><code>flow.Size([2, 3])
-</code></pre></div>
-<p>因此，如果在创建张量的同时不想指定数据，那么常常用 <code>oneflow.Tensor</code>，否则，应该使用 <code>oneflow.tensor</code>。</p>
-<h2 id="tensor_2">Tensor 的属性<a class="headerlink" href="#tensor_2" title="Permanent link">&para;</a></h2>
-<p>Tensor 的 <code>shape</code>、<code>dtype</code>、<code>device</code> 属性分别描述了 Tensor 的形状、数据类型和所在的设备类型。</p>
-<div class="highlight"><pre><span></span><code><span class="n">x9</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">x9</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">x9</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">x9</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
-</code></pre></div>
-<p>输出结果分别展示了张量的形状、数据类型和所处的设备（第0号 CPU 上，之所以有编号，是因为 OneFlow 很方便自然地支持分布式，可参考 <a href="../parallelism/03_consistent_tensor.html">Global Tensor</a>）</p>
-<div class="highlight"><pre><span></span><code>flow.Size([1, 4])
-oneflow.float32
-cpu:0
-</code></pre></div>
-<p>可以通过 <a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.reshape.html">reshape</a> 方法改变 Tensor 的形状，用 <a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.Tensor.to.html">Tensor.to</a> 方法改变 Tensor 的数据类型和所处设备：</p>
-<div class="highlight"><pre><span></span><code>x10 = x9.reshape(2, 2)
-x11 = x10.to(dtype=flow.int32, device=flow.device(&quot;cuda&quot;))
-print(x10.shape)
-print(x11.dtype, x11.device)
-</code></pre></div>
-<div class="highlight"><pre><span></span><code>flow.Size([2, 2])
-oneflow.int32 cuda:0
-</code></pre></div>
-<h2 id="tensor_3">操作 Tensor 的常见算子<a class="headerlink" href="#tensor_3" title="Permanent link">&para;</a></h2>
-<p>OneFlow 中提供了大量的算子，对 Tensor 进行操作，它们大多在 <a href="https://oneflow.readthedocs.io/en/v0.8.1/oneflow.html">oneflow</a>、<a href="https://oneflow.readthedocs.io/en/v0.8.1/tensor.html">oneflow.Tensor</a>、<a href="https://oneflow.readthedocs.io/en/v0.8.1/nn.html">oneflow.nn</a>、<a href="https://oneflow.readthedocs.io/en/v0.8.1/nn.functional.html">oneflow.nn.functional</a>这几个名称空间下。</p>
-<p>OneFlow 中的 Tensor，与 Numpy 数组一样易用。比如，支持与 Numpy 类似的切片操作：</p>
-<div class="highlight"><pre><span></span><code><span class="n">tensor</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;First row: &#39;</span><span class="p">,</span><span class="n">tensor</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;First column: &#39;</span><span class="p">,</span> <span class="n">tensor</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Last column:&#39;</span><span class="p">,</span> <span class="n">tensor</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">])</span>
-<span class="n">tensor</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">tensor</span><span class="p">)</span>
-</code></pre></div>
-<div class="highlight"><pre><span></span><code>First row:  tensor([1., 1., 1., 1.], dtype=oneflow.float32)
-First column:  tensor([1., 1., 1., 1.], dtype=oneflow.float32)
-Last column: tensor([1., 1., 1., 1.], dtype=oneflow.float32)
-tensor([[1., 0., 1., 1.],
-        [1., 0., 1., 1.],
-        [1., 0., 1., 1.],
-        [1., 0., 1., 1.]], dtype=oneflow.float32)
-</code></pre></div>
-<p>此外，OneFlow 中还有很多其它操作，如算数相关操作的 <a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.add.html">add</a>、<a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.sub.html">sub</a>、<a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.mul.html">mul</a>、<a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.div.html">div</a>等；位置相关操作的 <a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.scatter.html">scatter</a>、<a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.gather.html">gather</a> 等；以及激活函数、卷积等（<a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.nn.functional.relu.html">relu</a>、<a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.nn.functional.conv2d.html">conv2d</a>），点击它们的链接可以查看更详细的 API 说明，并找到更多的其它算子。</p>
+<p>enable 模式和 disable 模式各自保存了一份值为模块的字典，在开关enable/disable时会替换 <code>sys.modules</code> 和当前所属模块的全局变量，故用户需要在 enable 模式和 disable 模式时自行 <code>import</code> 需要的模块，如下代码会在 disable 的 <code>with</code> 语句里报 <code>name 'torch' is not defined</code> 的错
+<div class="highlight"><pre><span></span><code><span class="k">with</span> <span class="n">mock</span><span class="o">.</span><span class="n">enable</span><span class="p">():</span>
+    <span class="kn">import</span> <span class="nn">torch</span>
+<span class="k">with</span> <span class="n">mock</span><span class="o">.</span><span class="n">disable</span><span class="p">():</span>
+    <span class="n">torch</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+</code></pre></div></p>
+<h2 id="_1">总结<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<p>由于 OneFlow 的 API 与 PyTorch 对齐，用户能够将 PyTorch 代码很方便地迁移到 OneFlow。以上介绍了三种使用 OneFlow 来训练 PyTorch 模型的方法，希望用户能够体验到 OneFlow 极致的性能。</p>
                 
               
               
@@ -1123,7 +1011,7 @@ tensor([[1., 0., 1., 1.],
     <nav class="md-footer__inner md-grid" aria-label="Footer">
       
         
-        <a href="01_quickstart.html" class="md-footer__link md-footer__link--prev" aria-label="上一页: 快速上手" rel="prev">
+        <a href="save_load.html" class="md-footer__link md-footer__link--prev" aria-label="上一页: 大模型分片保存和加载" rel="prev">
           <div class="md-footer__button md-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
           </div>
@@ -1132,26 +1020,11 @@ tensor([[1., 0., 1., 1.],
               <span class="md-footer__direction">
                 上一页
               </span>
-              快速上手
+              大模型分片保存和加载
             </div>
           </div>
         </a>
       
-      
-        
-        <a href="03_dataset_dataloader.html" class="md-footer__link md-footer__link--next" aria-label="下一页: Dataset 与 DataLoader" rel="next">
-          <div class="md-footer__title">
-            <div class="md-ellipsis">
-              <span class="md-footer__direction">
-                下一页
-              </span>
-              Dataset 与 DataLoader
-            </div>
-          </div>
-          <div class="md-footer__button md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
-          </div>
-        </a>
       
     </nav>
   

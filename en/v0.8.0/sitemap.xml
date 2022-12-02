@@ -2,127 +2,127 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://docs.oneflow.org/v0.8.0/index.html</loc>
-         <lastmod>2022-09-28</lastmod>
+         <lastmod>2022-12-02</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.oneflow.org/v0.8.0/basics/01_quickstart.html</loc>
-         <lastmod>2022-09-28</lastmod>
+         <lastmod>2022-12-02</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.oneflow.org/v0.8.0/basics/02_tensor.html</loc>
-         <lastmod>2022-09-28</lastmod>
+         <lastmod>2022-12-02</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.oneflow.org/v0.8.0/basics/03_dataset_dataloader.html</loc>
-         <lastmod>2022-09-28</lastmod>
+         <lastmod>2022-12-02</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.oneflow.org/v0.8.0/basics/04_build_network.html</loc>
-         <lastmod>2022-09-28</lastmod>
+         <lastmod>2022-12-02</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.oneflow.org/v0.8.0/basics/05_autograd.html</loc>
-         <lastmod>2022-09-28</lastmod>
+         <lastmod>2022-12-02</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.oneflow.org/v0.8.0/basics/06_optimization.html</loc>
-         <lastmod>2022-09-28</lastmod>
+         <lastmod>2022-12-02</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.oneflow.org/v0.8.0/basics/07_model_load_save.html</loc>
-         <lastmod>2022-09-28</lastmod>
+         <lastmod>2022-12-02</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.oneflow.org/v0.8.0/basics/08_nn_graph.html</loc>
-         <lastmod>2022-09-28</lastmod>
+         <lastmod>2022-12-02</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.oneflow.org/v0.8.0/cookies/activation_checkpointing.html</loc>
-         <lastmod>2022-09-28</lastmod>
+         <lastmod>2022-12-02</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.oneflow.org/v0.8.0/cookies/amp.html</loc>
-         <lastmod>2022-09-28</lastmod>
+         <lastmod>2022-12-02</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.oneflow.org/v0.8.0/cookies/global_tensor.html</loc>
-         <lastmod>2022-09-28</lastmod>
+         <lastmod>2022-12-02</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.oneflow.org/v0.8.0/cookies/one_embedding.html</loc>
-         <lastmod>2022-09-28</lastmod>
+         <lastmod>2022-12-02</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.oneflow.org/v0.8.0/cookies/oneflow2onnnx.html</loc>
-         <lastmod>2022-09-28</lastmod>
+         <lastmod>2022-12-02</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.oneflow.org/v0.8.0/cookies/serving.html</loc>
-         <lastmod>2022-09-28</lastmod>
+         <lastmod>2022-12-02</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.oneflow.org/v0.8.0/cookies/torch2flow.html</loc>
-         <lastmod>2022-09-28</lastmod>
+         <lastmod>2022-12-02</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.oneflow.org/v0.8.0/cookies/transfer_learning.html</loc>
-         <lastmod>2022-09-28</lastmod>
+         <lastmod>2022-12-02</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.oneflow.org/v0.8.0/cookies/zero.html</loc>
-         <lastmod>2022-09-28</lastmod>
+         <lastmod>2022-12-02</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.oneflow.org/v0.8.0/parallelism/01_introduction.html</loc>
-         <lastmod>2022-09-28</lastmod>
+         <lastmod>2022-12-02</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.oneflow.org/v0.8.0/parallelism/02_sbp.html</loc>
-         <lastmod>2022-09-28</lastmod>
+         <lastmod>2022-12-02</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.oneflow.org/v0.8.0/parallelism/03_consistent_tensor.html</loc>
-         <lastmod>2022-09-28</lastmod>
+         <lastmod>2022-12-02</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.oneflow.org/v0.8.0/parallelism/04_2d-sbp.html</loc>
-         <lastmod>2022-09-28</lastmod>
+         <lastmod>2022-12-02</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.oneflow.org/v0.8.0/parallelism/04_launch.html</loc>
-         <lastmod>2022-09-28</lastmod>
+         <lastmod>2022-12-02</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.oneflow.org/v0.8.0/parallelism/05_ddp.html</loc>
-         <lastmod>2022-09-28</lastmod>
+         <lastmod>2022-12-02</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.oneflow.org/v0.8.0/parallelism/06_pipeline.html</loc>
-         <lastmod>2022-09-28</lastmod>
+         <lastmod>2022-12-02</lastmod>
          <changefreq>daily</changefreq>
     </url>
 </urlset>
