@@ -65,8 +65,8 @@
         def __init__(self):
             super().__init__()
             self.module_pipeline = module_pipeline
-            self.module_pipeline.m_stage0.config.set_stage(stage_id=0, placement=P0)
-            self.module_pipeline.m_stage1.config.set_stage(stage_id=1, placement=P1)
+            self.module_pipeline.m_stage0.to(nn.graph.GraphModule).set_stage(stage_id=0, placement=P0)
+            self.module_pipeline.m_stage1.to(nn.graph.GraphModule).set_stage(stage_id=1, placement=P1)
             self.loss_fn = flow.nn.CrossEntropyLoss()
             self.config.set_gradient_accumulation_steps(2)
             self.add_optimizer(sgd)
@@ -144,12 +144,13 @@ P1 = flow.placement("cuda", ranks=[1])
 
 ### Stage ID 及梯度累积设置
 
-通过 Module Config 上的 [config.set_stage](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.nn.graph.block_config.BlockConfig.set_stage.html) 方法，设置流水线 Stage ID 和 Stage 对应的 Placement，Stage ID 从 0 开始编号，依次加 1。
+当[nn.Module](https://oneflow.readthedocs.io/en/master/nn.html?highlight=nn.Module#nn-module)的一个实例化网络层作为属性加入继承于[nn.Graph](https://oneflow.readthedocs.io/en/master/graph.html)的新类时，内部会将该网络层用`ProxyModule`进行包装，利用方法`.to(nn.graph.GraphModule)`得到一个`nn.graph.GraphModule`的实例化对象，然后使用方法`stage_id`设置流水线 Stage ID 和 Stage 对应的 Placement，Stage ID 从 0 开始编号，依次加 1。
+
 调用 [config.set_gradient_accumulation_steps](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.nn.graph.graph_config.GraphConfig.set_gradient_accumulation_steps.html#oneflow.nn.graph.graph_config.GraphConfig.set_gradient_accumulation_steps) 方法，设置梯度累积的步长。
 OneFlow 通过这两项配置，获取实现流水并行中的 micro batch 技术所需的信息。
 
 ```python
-    self.module_pipeline.m_stage0.config.set_stage(stage_id=0, placement=P0)
-    self.module_pipeline.m_stage1.config.set_stage(stage_id=1, placement=P1)
+    self.module_pipeline.m_stage0.to(nn.graph.GraphModule).set_stage(stage_id=0, placement=P0)
+    self.module_pipeline.m_stage1.to(nn.graph.GraphModule).set_stage(stage_id=1, placement=P1)
     self.config.set_gradient_accumulation_steps(2)
 ```
