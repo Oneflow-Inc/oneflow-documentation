@@ -262,8 +262,8 @@ The following example is a mixed parallelism program for `4 GPUs`.
         def __init__(self):
             super().__init__()
             self.model = ModuleModel()
-            self.model.m_stage0.config.set_stage(stage_id=0, placement=P01)
-            self.model.m_stage1.config.set_stage(stage_id=1, placement=P23)
+            self.model.m_stage0.to(nn.graph.GraphModule).set_stage(stage_id=0, placement=P01)
+            self.model.m_stage1.to(nn.graph.GraphModule).set_stage(stage_id=1, placement=P23)
             
         def build(self, x):
             return self.model(x)

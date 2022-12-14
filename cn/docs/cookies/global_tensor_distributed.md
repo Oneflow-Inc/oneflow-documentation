@@ -261,8 +261,8 @@ OneFlow 同时支持 `Eager 模式` 和 `Graph 模式` 两种模型运行方式�
         def __init__(self):
             super().__init__()
             self.model = ModuleModel()
-            self.model.m_stage0.config.set_stage(stage_id=0, placement=P01)
-            self.model.m_stage1.config.set_stage(stage_id=1, placement=P23)
+            self.model.m_stage0.to(nn.graph.GraphModule).set_stage(stage_id=0, placement=P01)
+            self.model.m_stage1.to(nn.graph.GraphModule).set_stage(stage_id=1, placement=P23)
 
         def build(self, x):
             return self.model(x)

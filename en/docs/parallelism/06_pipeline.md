@@ -65,8 +65,8 @@ The following code is a simple example that will run the network in [QUICKSTART]
         def __init__(self):
             super().__init__()
             self.module_pipeline = module_pipeline
-            self.module_pipeline.m_stage0.config.set_stage(stage_id=0, placement=P0)
-            self.module_pipeline.m_stage1.config.set_stage(stage_id=1, placement=P1)
+            self.module_pipeline.m_stage0.to(nn.graph.GraphModule).set_stage(stage_id=0, placement=P0)
+            self.module_pipeline.m_stage1.to(nn.graph.GraphModule).set_stage(stage_id=1, placement=P1)
             self.loss_fn = flow.nn.CrossEntropyLoss()
             self.config.set_gradient_accumulation_steps(2)
             self.add_optimizer(sgd)
@@ -150,7 +150,7 @@ In practice, each computing device can load data locally, and then convert the L
 
 ### Stage ID and Settings for Gradient Accumulation
 
-We can call the method [config.set_stage](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.nn.graph.block_config.BlockConfig.set_stage.html) of Module Config to set Stage ID and related Placement. The Stage ID are numbered from 0.
+When [nn. Module](https://oneflow.readthedocs.io/en/master/nn.html?highlight=nn.Module#nn-Module) as an attribute inherited from [nn. Graph](https://oneflow.readthedocs.io/en/master/graph.html). The network layer will be wrapped internally with `ProxyModule`, and a `nn.graph.GraphModule` object will be obtained by using the `to` method, and then use the method `stage_ Id` to set the stage ID of the pipeline and the placement corresponding to the stage. The stage ID starts from 0 and increases by 1.
 
 We can call the method [config.set_gradient_accumulation_steps](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.nn.graph.graph_config.GraphConfig.set_gradient_accumulation_steps.html#oneflow.nn.graph.graph_config.GraphConfig.set_gradient_accumulation_steps) to set the step size of gradient accumulation.
 
@@ -158,7 +158,7 @@ The information needed to implement micro-batch in pipelining parallelism can be
 
 
 ```python
-    self.module_pipeline.m_stage0.config.set_stage(stage_id=0, placement=P0)
-    self.module_pipeline.m_stage1.config.set_stage(stage_id=1, placement=P1)
+    self.module_pipeline.m_stage0.to(nn.graph.GraphModule).set_stage(stage_id=0, placement=P0)
+    self.module_pipeline.m_stage1.to(nn.graph.GraphModule).set_stage(stage_id=1, placement=P1)
     self.config.set_gradient_accumulation_steps(2)
 ```

@@ -203,10 +203,10 @@ class PipelineGraph(flow.nn.Graph):
     def __init__(self, module_pipeline):
         super().__init__()
         self.module_pipeline = module_pipeline
-        self.module_pipeline.m_stage0.config.set_stage(0, P0)
-        self.module_pipeline.m_stage1.config.set_stage(1, P1)
-        self.module_pipeline.m_stage2.config.set_stage(2, P2)
-        self.module_pipeline.m_stage3.config.set_stage(3, P3)
+        self.module_pipeline.m_stage0.to(nn.graph.GraphModule).set_stage(0, P0)
+        self.module_pipeline.m_stage1.to(nn.graph.GraphModule).set_stage(1, P1)
+        self.module_pipeline.m_stage2.to(nn.graph.GraphModule).set_stage(2, P2)
+        self.module_pipeline.m_stage3.to(nn.graph.GraphModule).set_stage(3, P3)
         self.config.set_gradient_accumulation_steps(2)
         self.add_optimizer(
             flow.optim.SGD(self.module_pipeline.parameters(), lr=0.001)

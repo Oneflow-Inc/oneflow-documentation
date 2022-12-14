@@ -40,7 +40,7 @@ optimizer = flow.optim.SGD([{'params': model_part1.parameters()},
                            lr=1e-3)
 ```
 
-如果要开启 activation checkpointing，只需在 [nn.Graph](../basics/08_nn_graph.md) 模型中的 Eager 模型成员 (即 nn.Module 对象) 上指定 `.config.activation_checkpointing = True`。此 API 详见：[activation_checkpointing](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.nn.graph.block_config.BlockConfig.activation_checkpointing.html)。对于每个打开 "activation checkpointing" 的 nn.Module，其输入 activation 将会被保留，而其它中间 activation 在反向传播过程中被使用时会被重新计算。
+如果要开启 activation checkpointing，只需在 [nn.Graph](../basics/08_nn_graph.md) 模型中的 Eager 模型成员 (即 nn.Module 对象) 利用 `.to(nn.graph.GraphModule)` 方法转换为 `nn.graph.GraphModule` 对象，并在其上指定 `.activation_checkpointing = True`。此 API 详见：[activation_checkpointing](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.nn.graph.block_config.BlockConfig.activation_checkpointing.html)。对于每个打开 "activation checkpointing" 的 nn.Module，其输入 activation 将会被保留，而其它中间 activation 在反向传播过程中被使用时会被重新计算。
 
 ```python
 class CustomGraph(flow.nn.Graph):
@@ -49,8 +49,8 @@ class CustomGraph(flow.nn.Graph):
         self.model_part1 = model_part1
         self.model_part2 = model_part2
         # 在连续的两个 nn.Module 上开启 activation checkpointing
-        self.model_part1.config.activation_checkpointing = True
-        self.model_part2.config.activation_checkpointing = True
+        self.model_part1.to(nn.graph.GraphModule).activation_checkpointing = True
+        self.model_part2.to(nn.graph.GraphModule).activation_checkpointing = True
         self.loss_fn = loss_fn
         self.add_optimizer(optimizer)
 
