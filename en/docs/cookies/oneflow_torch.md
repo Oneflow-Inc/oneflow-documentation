@@ -2,7 +2,7 @@
 
 With the alignment of OneFlow API and PyTorch, users can easily migrate the model from PyTorch to OneFlow. In this article, we will introduce three methods to port PyTorch code to OneFlow.
 
-## 1. import oneflow as torch
+## 1. import oneflow as torch1
 
 Change the original code ` import torch ` to:
 
