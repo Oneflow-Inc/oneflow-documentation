@@ -39,7 +39,7 @@ x = torch.zeros(2, 3)
 print(isinstance(x, flow.Tensor))
 ```
 
-Disabling the docking of PyTorch
+Disabling the mocking of PyTorch
 
 ```shell
 eval $(oneflow-mock-torch disable)
