@@ -1,4 +1,4 @@
-# Oneflow is compatible with PyTorch
+# Mocking PyTorch with OneFlow  
 
 With the alignment of OneFlow API and PyTorch, users can easily migrate the model from PyTorch to OneFlow. In this article, we will introduce three methods to port PyTorch code to OneFlow.
 
@@ -12,7 +12,7 @@ import oneflow as torch
 
 You can train the original model with OneFlow; however, you have to manually modify all the files that contain `import torch` by this approach. In addition, it is necessary to modify the source code if a third-party library uses `torch`.
 
-## 2. Using the command-line tool
+## 2. using the command-line tool
 
 Oneflow provides a command-line tool, which helps to mock the environment of PyTorch within OneFlow’s Python Package and forward references of Pytorch to the real OneFlow module. The specific steps are as follows:
 
@@ -51,7 +51,7 @@ or
 eval $(python3 -m oneflow.mock_torch disable)
 ```
 
-## 3. Using built-in functions of OneFlow
+## 3. using built-in functions of OneFlow
 
 We provide the mock function with fine granularity, and the users can determine whether to enable this function for a piece of code.
 
