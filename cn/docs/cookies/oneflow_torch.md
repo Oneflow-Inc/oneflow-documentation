@@ -1,4 +1,4 @@
-# OneFlow 与 PyTorch 兼容
+# OneFlow 模拟 PyTorch
 
 OneFlow 的 API 与 PyTorch 对齐，用户可以很方便地将 PyTorch 模型迁移到 OneFlow。本文介绍三种方法，将使用 PyTorch 运行的代码迁移到 OneFlow。
 
