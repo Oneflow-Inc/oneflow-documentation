@@ -11,14 +11,14 @@
       
       
       
-        <link rel="canonical" href="https://docs.oneflow.org/master/parallelism/04_launch.html">
+        <link rel="canonical" href="https://docs.oneflow.org/master/cookies/oneflow_torch.html">
       
       <link rel="icon" href="../assets/favicon.png">
       <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-7.1.11">
     
     
       
-        <title>Distributed Training Launcher - OneFlow</title>
+        <title>Oneflow is compatible with PyTorch - OneFlow</title>
       
     
     
@@ -69,7 +69,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#distributed-training-launcher" class="md-skip">
+        <a href="#mocking-pytorch-with-oneflow" class="md-skip">
           Skip to content
         </a>
       
@@ -104,7 +104,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Distributed Training Launcher
+              Oneflow is compatible with PyTorch
             
           </span>
         </div>
@@ -227,15 +227,13 @@
         
   
   
-    
-  
 
 
   
   
   
     <li class="md-tabs__item">
-      <a href="01_introduction.html" class="md-tabs__link md-tabs__link--active">
+      <a href="../parallelism/01_introduction.html" class="md-tabs__link">
         Distributed Training
       </a>
     </li>
@@ -245,13 +243,15 @@
         
   
   
+    
+  
 
 
   
   
   
     <li class="md-tabs__item">
-      <a href="../cookies/global_tensor.html" class="md-tabs__link">
+      <a href="global_tensor.html" class="md-tabs__link md-tabs__link--active">
         Cookbook
       </a>
     </li>
@@ -471,14 +471,12 @@
 
   
   
-    
-  
   
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" checked>
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" >
       
       <label class="md-nav__link" for="__nav_3">
         Distributed Training
@@ -496,7 +494,7 @@
   
   
     <li class="md-nav__item">
-      <a href="01_introduction.html" class="md-nav__link">
+      <a href="../parallelism/01_introduction.html" class="md-nav__link">
         Common Parallel Strategies
       </a>
     </li>
@@ -508,7 +506,7 @@
   
   
     <li class="md-nav__item">
-      <a href="02_sbp.html" class="md-nav__link">
+      <a href="../parallelism/02_sbp.html" class="md-nav__link">
         Global View
       </a>
     </li>
@@ -520,7 +518,7 @@
   
   
     <li class="md-nav__item">
-      <a href="03_consistent_tensor.html" class="md-nav__link">
+      <a href="../parallelism/03_consistent_tensor.html" class="md-nav__link">
         Global Tensor
       </a>
     </li>
@@ -532,8 +530,208 @@
   
   
     <li class="md-nav__item">
-      <a href="04_2d-sbp.html" class="md-nav__link">
+      <a href="../parallelism/04_2d-sbp.html" class="md-nav__link">
         2D SBP
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parallelism/04_launch.html" class="md-nav__link">
+        Distributed Training Launcher
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parallelism/05_ddp.html" class="md-nav__link">
+        Data Parallelism Training
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parallelism/06_pipeline.html" class="md-nav__link">
+        Pipelining Parallelism
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" checked>
+      
+      <label class="md-nav__link" for="__nav_4">
+        Cookbook
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="Cookbook" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          Cookbook
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="global_tensor.html" class="md-nav__link">
+        Basic Operations of Distributed Programming with Global Tensor
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="global_tensor_distributed.html" class="md-nav__link">
+        Distributed Parallelism Strategies of Distributed Programming with Global Tensor
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="oneflow2onnnx.html" class="md-nav__link">
+        OneFlow with ONNX
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="serving.html" class="md-nav__link">
+        Model Deployment
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="amp.html" class="md-nav__link">
+        Automatic Mixed Precision Training
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="activation_checkpointing.html" class="md-nav__link">
+        Activation Checkpointing
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="torch2flow.html" class="md-nav__link">
+        Converting Pre-trained Model from PyTorch to OneFlow
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="transfer_learning.html" class="md-nav__link">
+        Transfer Learning in Computer Vision
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="one_embedding.html" class="md-nav__link">
+        Large-Scale Embedding Solution OneEmbedding
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zero.html" class="md-nav__link">
+        Zero Redundancy Optimizer (ZeRO)
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="save_load.html" class="md-nav__link">
+        OneFlow's Distributed Saving and Loading of Large Models
       </a>
     </li>
   
@@ -554,12 +752,12 @@
       
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
-          Distributed Training Launcher
+          Oneflow is compatible with PyTorch
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <a href="04_launch.html" class="md-nav__link md-nav__link--active">
-        Distributed Training Launcher
+      <a href="oneflow_torch.html" class="md-nav__link md-nav__link--active">
+        Oneflow is compatible with PyTorch
       </a>
       
         
@@ -577,15 +775,29 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#description-of-common-options" class="md-nav__link">
-    Description of Common Options
+  <a href="#1-import-oneflow-as-torch" class="md-nav__link">
+    1. import oneflow as torch
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#the-relationship-between-launch-module-and-parallel-strategy" class="md-nav__link">
-    The Relationship between Launch Module and Parallel Strategy
+  <a href="#2-using-the-command-line-tool" class="md-nav__link">
+    2. using the command-line tool
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-using-built-in-functions-of-oneflow" class="md-nav__link">
+    3. using built-in functions of OneFlow
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#conclusion" class="md-nav__link">
+    Conclusion
   </a>
   
 </li>
@@ -594,204 +806,6 @@
   
 </nav>
       
-    </li>
-  
-
-          
-            
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="05_ddp.html" class="md-nav__link">
-        Data Parallelism Training
-      </a>
-    </li>
-  
-
-          
-            
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="06_pipeline.html" class="md-nav__link">
-        Pipelining Parallelism
-      </a>
-    </li>
-  
-
-          
-        </ul>
-      </nav>
-    </li>
-  
-
-    
-      
-      
-      
-
-  
-  
-  
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-      
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" >
-      
-      <label class="md-nav__link" for="__nav_4">
-        Cookbook
-        <span class="md-nav__icon md-icon"></span>
-      </label>
-      <nav class="md-nav" aria-label="Cookbook" data-md-level="1">
-        <label class="md-nav__title" for="__nav_4">
-          <span class="md-nav__icon md-icon"></span>
-          Cookbook
-        </label>
-        <ul class="md-nav__list" data-md-scrollfix>
-          
-            
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../cookies/global_tensor.html" class="md-nav__link">
-        Basic Operations of Distributed Programming with Global Tensor
-      </a>
-    </li>
-  
-
-          
-            
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../cookies/global_tensor_distributed.html" class="md-nav__link">
-        Distributed Parallelism Strategies of Distributed Programming with Global Tensor
-      </a>
-    </li>
-  
-
-          
-            
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../cookies/oneflow2onnnx.html" class="md-nav__link">
-        OneFlow with ONNX
-      </a>
-    </li>
-  
-
-          
-            
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../cookies/serving.html" class="md-nav__link">
-        Model Deployment
-      </a>
-    </li>
-  
-
-          
-            
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../cookies/amp.html" class="md-nav__link">
-        Automatic Mixed Precision Training
-      </a>
-    </li>
-  
-
-          
-            
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../cookies/activation_checkpointing.html" class="md-nav__link">
-        Activation Checkpointing
-      </a>
-    </li>
-  
-
-          
-            
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../cookies/torch2flow.html" class="md-nav__link">
-        Converting Pre-trained Model from PyTorch to OneFlow
-      </a>
-    </li>
-  
-
-          
-            
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../cookies/transfer_learning.html" class="md-nav__link">
-        Transfer Learning in Computer Vision
-      </a>
-    </li>
-  
-
-          
-            
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../cookies/one_embedding.html" class="md-nav__link">
-        Large-Scale Embedding Solution OneEmbedding
-      </a>
-    </li>
-  
-
-          
-            
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../cookies/zero.html" class="md-nav__link">
-        Zero Redundancy Optimizer (ZeRO)
-      </a>
-    </li>
-  
-
-          
-            
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../cookies/save_load.html" class="md-nav__link">
-        OneFlow's Distributed Saving and Loading of Large Models
-      </a>
-    </li>
-  
-
-          
-            
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../cookies/oneflow_torch.html" class="md-nav__link">
-        Oneflow is compatible with PyTorch
-      </a>
     </li>
   
 
@@ -870,15 +884,29 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#description-of-common-options" class="md-nav__link">
-    Description of Common Options
+  <a href="#1-import-oneflow-as-torch" class="md-nav__link">
+    1. import oneflow as torch
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#the-relationship-between-launch-module-and-parallel-strategy" class="md-nav__link">
-    The Relationship between Launch Module and Parallel Strategy
+  <a href="#2-using-the-command-line-tool" class="md-nav__link">
+    2. using the command-line tool
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-using-built-in-functions-of-oneflow" class="md-nav__link">
+    3. using built-in functions of OneFlow
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#conclusion" class="md-nav__link">
+    Conclusion
   </a>
   
 </li>
@@ -895,50 +923,70 @@
             <article class="md-content__inner md-typeset">
               
                 
-                  <a href="https://github.com/OneFlow-Inc/oneflow-documentation/blob/master/en/docs/parallelism/04_launch.md" title="Edit this page" class="md-content__button md-icon">
+                  <a href="https://github.com/OneFlow-Inc/oneflow-documentation/blob/master/en/docs/cookies/oneflow_torch.md" title="Edit this page" class="md-content__button md-icon">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
                   </a>
                 
                 
-                <h1 id="distributed-training-launcher">DISTRIBUTED TRAINING LAUNCHER<a class="headerlink" href="#distributed-training-launcher" title="Permanent link">&para;</a></h1>
-<p>OneFlow provides the <code>oneflow.distributed.launch</code> module to help users start distributed training more conveniently.</p>
-<p>Users can start distributed training by the following commands:</p>
-<div class="highlight"><pre><span></span><code>python3 -m oneflow.distributed.launch <span class="o">[</span>Boot Option<span class="o">]</span> training_script.py
+                <h1 id="mocking-pytorch-with-oneflow">Mocking PyTorch with OneFlow<a class="headerlink" href="#mocking-pytorch-with-oneflow" title="Permanent link">&para;</a></h1>
+<p>With the alignment of OneFlow API and PyTorch, users can easily migrate the model from PyTorch to OneFlow. In this article, we will introduce three methods to port PyTorch code to OneFlow.</p>
+<h2 id="1-import-oneflow-as-torch">1. import oneflow as torch<a class="headerlink" href="#1-import-oneflow-as-torch" title="Permanent link">&para;</a></h2>
+<p>Change the original code <code>import torch</code> to:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">oneflow</span> <span class="k">as</span> <span class="nn">torch</span>
 </code></pre></div>
-<p>For example, to start the training on single-node double-GPUs:</p>
-<div class="highlight"><pre><span></span><code>python3 -m oneflow.distributed.launch --nproc_per_node <span class="m">2</span> ./script.py
+<p>You can train the original model with OneFlow; however, you have to manually modify all the files that contain <code>import torch</code> by this approach. In addition, it is necessary to modify the source code if a third-party library uses <code>torch</code>.</p>
+<h2 id="2-using-the-command-line-tool">2. using the command-line tool<a class="headerlink" href="#2-using-the-command-line-tool" title="Permanent link">&para;</a></h2>
+<p>Oneflow provides a command-line tool, which helps to mock the environment of PyTorch within OneFlow’s Python Package and forward references of Pytorch to the real OneFlow module. The specific steps are as follows:</p>
+<p>Enabling the mocking of PyTorch</p>
+<div class="highlight"><pre><span></span><code><span class="nb">eval</span> <span class="k">$(</span>oneflow-mock-torch<span class="k">)</span>
 </code></pre></div>
-<p>For another example, start two machines, and each machine has two graphics for training.</p>
-<p>Run on machine 0:</p>
-<div class="highlight"><pre><span></span><code>python3 -m oneflow.distributed.launch --nproc_per_node<span class="o">=</span><span class="m">2</span> <span class="se">\</span>
-    --nnodes<span class="o">=</span><span class="m">2</span> <span class="se">\</span>
-    --node_rank<span class="o">=</span><span class="m">0</span> <span class="se">\</span>
-    --nproc_per_node<span class="o">=</span><span class="m">2</span> <span class="se">\</span>
-    --master_addr<span class="o">=</span><span class="s2">&quot;192.168.1.1&quot;</span> <span class="se">\</span>
-    --master_port<span class="o">=</span><span class="m">7788</span> <span class="se">\</span>
-    script.py
+<p>or</p>
+<div class="highlight"><pre><span></span><code><span class="nb">eval</span> <span class="k">$(</span>python3 -m oneflow.mock_torch<span class="k">)</span>
 </code></pre></div>
-<p>Run on machine 1:</p>
-<div class="highlight"><pre><span></span><code>python3 -m oneflow.distributed.launch --nproc_per_node<span class="o">=</span><span class="m">2</span> <span class="se">\</span>
-    --nnodes<span class="o">=</span><span class="m">2</span> <span class="se">\</span>
-    --node_rank<span class="o">=</span><span class="m">1</span> <span class="se">\</span>
-    --nproc_per_node<span class="o">=</span><span class="m">2</span> <span class="se">\</span>
-    --master_addr<span class="o">=</span><span class="s2">&quot;192.168.1.1&quot;</span> <span class="se">\</span>
-    --master_port<span class="o">=</span><span class="m">7788</span> <span class="se">\</span>
-    script.py
+<p>After running the above command, you can observe the effect in the following example.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">torch</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="vm">__file__</span><span class="p">)</span>
+<span class="kn">import</span> <span class="nn">oneflow</span> <span class="k">as</span> <span class="nn">flow</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">flow</span><span class="o">.</span><span class="n">Tensor</span><span class="p">))</span>
 </code></pre></div>
-<h2 id="description-of-common-options">Description of Common Options<a class="headerlink" href="#description-of-common-options" title="Permanent link">&para;</a></h2>
-<p>We can view the description of the options of the <code>launch</code> module after running <code>python3 -m oneflow.distributed.launch -h</code>. The following are some common options:</p>
-<ul>
-<li><code>--nnodes</code>: number of nodes</li>
-<li><code>--node_rank</code>: the serial number of the machines, starting from 0</li>
-<li><code>--nproc_per_node</code>: The number of processes per node to be started on each machine, which is recommended to be global with the number of GPUs</li>
-<li><code>--logdir</code>: The relative storage path of the child process log</li>
-</ul>
-<h2 id="the-relationship-between-launch-module-and-parallel-strategy">The Relationship between Launch Module and Parallel Strategy<a class="headerlink" href="#the-relationship-between-launch-module-and-parallel-strategy" title="Permanent link">&para;</a></h2>
-<p>The main function of <code>oneflow.distributed.launch</code> is to allow users to start distributed training more conveniently after them complete the distributed program. It saves the trouble of configuring <a href="03_consistent_tensor.html#_5">environment variables</a> in the cluster.</p>
-<p>But <code>oneflow.distributed.launch</code> <strong>does not determine</strong> <a href="01_introduction.html">Parallel Strategy</a>. The Parallel Strategy is determined by the setup of the distribution method of data and the model, and the placement of those on the physical devices.</p>
-<p>OneFlow provides <a href="02_sbp.html">Global View</a> and <a href="03_consistent_tensor.html">Global Tensor</a> to flexibly configure parallel strategies. And for data parallelism, OneFlow provides the <a href="05_ddp.html">DistributedDataParallel</a> module, which can change the single-node single-GPU script to the script of data parallel with  minimal code modification.</p>
+<p>Disabling the mocking of PyTorch</p>
+<div class="highlight"><pre><span></span><code><span class="nb">eval</span> <span class="k">$(</span>oneflow-mock-torch disable<span class="k">)</span>
+</code></pre></div>
+<p>or</p>
+<div class="highlight"><pre><span></span><code><span class="nb">eval</span> <span class="k">$(</span>python3 -m oneflow.mock_torch disable<span class="k">)</span>
+</code></pre></div>
+<h2 id="3-using-built-in-functions-of-oneflow">3. using built-in functions of OneFlow<a class="headerlink" href="#3-using-built-in-functions-of-oneflow" title="Permanent link">&para;</a></h2>
+<p>We provide the mock function with fine granularity, and the users can determine whether to enable this function for a piece of code.</p>
+<p>In the following <code>with</code> statement, the PyTorch module imported is OneFlow.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">oneflow.mock_torch</span> <span class="k">as</span> <span class="nn">mock</span>
+<span class="k">with</span> <span class="n">mock</span><span class="o">.</span><span class="n">enable</span><span class="p">():</span>
+    <span class="kn">import</span> <span class="nn">torch</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="vm">__file__</span><span class="p">)</span>
+    <span class="kn">import</span> <span class="nn">oneflow</span> <span class="k">as</span> <span class="nn">flow</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">flow</span><span class="o">.</span><span class="n">Tensor</span><span class="p">))</span>
+</code></pre></div>
+<p>You can turn off the mock function like this when it’s needed to use the real torch module. </p>
+<div class="highlight"><pre><span></span><code><span class="k">with</span> <span class="n">mock</span><span class="o">.</span><span class="n">disable</span><span class="p">():</span>
+    <span class="kn">import</span> <span class="nn">torch</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="vm">__file__</span><span class="p">)</span>
+</code></pre></div>
+<p><code>mock.enable</code> and <code>mock.disable</code> can act as functions. For example, if you want to train a model with OneFlow, but it needs to be loaded by PyTorch. Then, you can use it with the following code:</p>
+<div class="highlight"><pre><span></span><code><span class="n">mock</span><span class="o">.</span><span class="n">enable</span><span class="p">()</span>
+<span class="o">...</span>
+<span class="k">with</span> <span class="n">mock</span><span class="o">.</span><span class="n">disable</span><span class="p">()</span>
+    <span class="n">module</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">load_module</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="c1"># train the module with oneflow</span>
+</code></pre></div>
+<p>A dictionary with the value of module is saved separately in enable and disable mode. When you turn enable or disable on and off, the dictionary will replace <code>sys.modules</code> and the global variables that the current module belongs to. Therefore, users are required to <code>import</code> the module they need in each mode, and the code below will raise an error <code>name 'torch' is not defined</code>  in <code>with</code> statment of disable.</p>
+<div class="highlight"><pre><span></span><code><span class="k">with</span> <span class="n">mock</span><span class="o">.</span><span class="n">enable</span><span class="p">():</span>
+    <span class="kn">import</span> <span class="nn">torch</span>
+<span class="k">with</span> <span class="n">mock</span><span class="o">.</span><span class="n">disable</span><span class="p">():</span>
+    <span class="n">torch</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="conclusion">Conclusion<a class="headerlink" href="#conclusion" title="Permanent link">&para;</a></h2>
+<p>With the alignment of OneFlow API and PyTorch, users can easily migrate the PyTorch code to OneFlow. As mentioned above, three methods are available to train the PyTorch model with OneFlow. This is how users can experience the ultimate performance of OneFlow. </p>
                 
               
               
@@ -963,7 +1011,7 @@
     <nav class="md-footer__inner md-grid" aria-label="Footer">
       
         
-        <a href="04_2d-sbp.html" class="md-footer__link md-footer__link--prev" aria-label="Previous: 2D SBP" rel="prev">
+        <a href="save_load.html" class="md-footer__link md-footer__link--prev" aria-label="Previous: OneFlow&#39;s Distributed Saving and Loading of Large Models" rel="prev">
           <div class="md-footer__button md-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
           </div>
@@ -972,26 +1020,11 @@
               <span class="md-footer__direction">
                 Previous
               </span>
-              2D SBP
+              OneFlow's Distributed Saving and Loading of Large Models
             </div>
           </div>
         </a>
       
-      
-        
-        <a href="05_ddp.html" class="md-footer__link md-footer__link--next" aria-label="Next: Data Parallelism Training" rel="next">
-          <div class="md-footer__title">
-            <div class="md-ellipsis">
-              <span class="md-footer__direction">
-                Next
-              </span>
-              Data Parallelism Training
-            </div>
-          </div>
-          <div class="md-footer__button md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
-          </div>
-        </a>
       
     </nav>
   
