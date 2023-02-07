@@ -1227,12 +1227,12 @@ flow.Size([4, 8])
 </div>
 <p><code>flow.matmul</code> supports many SBP signatures of inputs. When the SBP of <code>x</code> and <code>w</code> are <code>broadcast</code> and <code>split(0)</code> respectively, the SBP of output <code>y</code> is <code>split(1)</code> with logical shape of <code>(4, 8)</code>. Output:</p>
 <div class="tabbed-set" data-tabs="9:2"><input checked="checked" id="__tabbed_9_1" name="__tabbed_9" type="radio" /><label for="__tabbed_9_1">Terminal 0</label><div class="tabbed-content">
-<div class="highlight"><pre><span></span><code>(oneflow.sbp.split(axis=1),)
+<div class="highlight"><pre><span></span><code>(oneflow.sbp.split(dim=1),)
 flow.Size([4, 8])
 </code></pre></div>
 </div>
 <input id="__tabbed_9_2" name="__tabbed_9" type="radio" /><label for="__tabbed_9_2">Terminal 1</label><div class="tabbed-content">
-<div class="highlight"><pre><span></span><code>(oneflow.sbp.split(axis=1),)
+<div class="highlight"><pre><span></span><code>(oneflow.sbp.split(dim=1),)
 flow.Size([4, 8])
 </code></pre></div>
 </div>
