@@ -194,13 +194,13 @@ The following code is an example of model parallelism of [common distributed str
 
 === "Terminal 0"
     ```text
-    (oneflow.sbp.split(axis=1),)
+    (oneflow.sbp.split(dim=1),)
     flow.Size([4, 8])
     ```
 
 === "Terminal 1"
     ```text
-    (oneflow.sbp.split(axis=1),)
+    (oneflow.sbp.split(dim=1),)
     flow.Size([4, 8])
     ```
 
