@@ -368,68 +368,44 @@ OneFlow 在编译生成计算图的过程中会打印调试信息，比如，将
     当打印执行过的 Graph 时，`OPERATOR` 包括的子字段还有 `location`、`File` 和 `source`，分别对应系统算子位置、用户代码位置和源代码信息。
 
 
-如果想体验上述输出的调试信息，点击以下 “Code” 查看详细代码。
+如果想体验上述调试信息的输出，点击以下 “Code” 查看详细代码。
 ??? code
     ```python
     import oneflow as flow
     import oneflow.nn as nn
-    import flowvision
-    import flowvision.transforms as transforms
 
-    BATCH_SIZE = 64
-    EPOCH_NUM = 1
+    import numpy as np
 
-    DEVICE = "cuda" if flow.cuda.is_available() else "cpu"
-    print("Using {} device".format(DEVICE))
-
-    training_data = flowvision.datasets.CIFAR10(
-        root="data",
-        train=True,
-        transform=transforms.ToTensor(),
-        download=True,
-    )
-
-    train_dataloader = flow.utils.data.DataLoader(
-        training_data, BATCH_SIZE, shuffle=True, drop_last=True
-    )
-
-    model = flowvision.models.mobilenet_v2().to(DEVICE)
-    model.classifer = nn.Sequential(nn.Dropout(0.2), nn.Linear(model.last_channel, 10))
-    model.train()
-
-    loss_fn = nn.CrossEntropyLoss().to(DEVICE)
-    optimizer = flow.optim.SGD(model.parameters(), lr=1e-3)
-
-    class GraphMobileNetV2(flow.nn.Graph):
+    class Model(nn.Module):
         def __init__(self):
             super().__init__()
-            self.model = model
-            self.loss_fn = loss_fn
-            self.add_optimizer(optimizer)
 
-        def build(self, x, y):
-            y_pred = self.model(x)
-            loss = self.loss_fn(y_pred, y)
-            loss.backward()
-            return loss
+        def forward(self, input1, input2):
+            return flow.matmul(input1, input2)
 
+    class GraphModel(nn.Graph):
+        def __init__(self):
+            super().__init__()
+            self.model = Model()
 
-    graph_mobile_net_v2 = GraphMobileNetV2()
-    graph_mobile_net_v2.debug(1, op_repr_with_py_stack=True)
+        def build(self, input1, input2):
+            return self.model(input1, input2)
 
-    for t in range(EPOCH_NUM):
-        print(f"Epoch {t+1}\n-------------------------------")
-        size = len(train_dataloader.dataset)
-        for batch, (x, y) in enumerate(train_dataloader):
-            x = x.to(DEVICE)
-            y = y.to(DEVICE)
-            loss = graph_mobile_net_v2(x, y)
-            current = batch * BATCH_SIZE
-            if batch % 5 == 0:
-                print(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")
+    graph = GraphModel()
+    graph.debug(1, op_repr_with_py_stack=True)
 
-    print("repr(mobilenet_graph) after run: \n", repr(graph_mobile_net_v2))
+    input1 = flow.tensor(np.random.randn(2, 6), dtype=flow.float32)
+    input2 = flow.tensor(np.random.randn(6, 5), dtype=flow.float32)
+    of_out = graph(input1, input2)
+
+    print("repr(graph) after run: \n", repr(graph))
     ```
+
+“Code” 的部分 OPERATOR 字段输出：
+
+```python
+(OPERATOR: model-matmul-0(_GraphModel_0_input.0.0_2/out:(sbp=(B), size=(2, 6), dtype=(oneflow.float32)), _GraphModel_0_input.0.1_3/out:(sbp=(B), size=(6, 5), dtype=(oneflow.float32))) -> (model-matmul-0/out_0:(sbp=(B), size=(2, 5), dtype=(oneflow.float32))), placement=(oneflow.placement(type="cpu", ranks=[0])), location=(File "test2.py", line 11, in forward, source < return flow.matmul(input1, input2) >; File "test2.py", line 19, in build, source < return self.model(input1, input2) >; ... 1 more))
+```
 
 
 在训练过程中，可以像 eager 模式一样，通过设置 verbose 参数获取实时更新的学习率。
