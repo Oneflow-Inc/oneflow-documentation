@@ -349,7 +349,9 @@ OneFlow 在编译生成计算图的过程中会打印调试信息，比如，将
 - `v_level=2` 时，在构图阶段，将额外打印每个 Op 的创建信息，包括名称、输入内容、设备和 SBP 信息等。
 - `v_level=3` 时，将额外打印每个 Op 更详细的信息，如与代码位置有关的信息，方便定位代码问题。
 
-此外，为了开发者对 Graph 对象下的类型有更清晰的认知，下面对 `debug` 输出的内容进行分析，基本包括 `GRAPH`、`CONFIG`、`MODULE`、`PARAMETER`、`BUFFER`、`INPUT` 和 `OUTPUT` 七个类别的标签。
+除了设置 `v_level`，Graph 的 `debug` 还提供了设置输出调试信息的设备（多卡条件下）、指定调试信息的最大 Python 堆栈深度、打印系统算子位置、打印用户代码位置和源代码的功能。使用时具体见参数见：[nn.Graph.debug](https://oneflow.readthedocs.io/en/master/generated/oneflow.nn.Graph.debug.html#oneflow.nn.Graph.debug)。
+
+此外，为了开发者对 Graph 对象下的类型有更清晰的认知，下面对 `debug` 输出的内容进行分析，基本包括 `GRAPH`、`CONFIG`、`MODULE`、`PARAMETER`、`BUFFER`、`OPERATOR`、`INPUT` 和 `OUTPUT` 八个类别的标签。
 
 |      Name      |                             Info                             |                           Example                            |
 | :------------: | :----------------------------------------------------------: | :----------------------------------------------------------: |
@@ -358,9 +360,87 @@ OneFlow 在编译生成计算图的过程中会打印调试信息，比如，将
 |     MODULE     | 对应 `nn.Module` ，MODULE 可以在 Graph 标签下层，同时，多个 MODULE 之间也存在层级关系。 | `(MODULE:model:MobileNetV2())`，其中，`MobileNetV2` 为用户复用 Eager 模式下的 Module 类名。 |
 |   PARAMETER    | 给出了更清晰的 weight 和 bias 信息。此外，在构图时，tensor 的数据内容不太重要，所以只展示了 tensor 的元信息，这些信息对构建网络更为重要。 | `(PARAMETER:model.features.0.1.weight:tensor(..., device='cuda:0', size=(32,), dtype=oneflow.float32, requires_grad=True))` |
 |     BUFFER     |                在训练时产生的统计特性等内容，如 running_mean 和   running_var。                | `(BUFFER:model.features.0.1.running_mean:tensor(..., device='cuda:0', size=(32,), dtype=oneflow.float32))` |
+| OPERATOR | 构建 Graph 涉及到的算子信息。 |  -   |
 | INPUT & OUPTUT |                   表示输入输出的张量信息。                   | `(INPUT:_model_input.0.0_2:tensor(..., device='cuda:0', is_lazy='True', size=(16, 3, 32, 32), dtype=oneflow.float32))` |
 
-除了以上介绍的方法外，训练过程中获取参数的梯度、获取 learning rate 等功能，也正在开发中，即将上线。
+
+!!! Note
+    当打印执行过的 Graph 时，`OPERATOR` 包括的子字段还有 `location`、`File` 和 `source`，分别对应系统算子位置、用户代码位置和源代码信息。
+
+
+如果想体验上述输出的调试信息，点击以下 “Code” 查看详细代码。
+??? code
+    ```python
+    import oneflow as flow
+    import oneflow.nn as nn
+    import flowvision
+    import flowvision.transforms as transforms
+
+    BATCH_SIZE = 64
+    EPOCH_NUM = 1
+
+    DEVICE = "cuda" if flow.cuda.is_available() else "cpu"
+    print("Using {} device".format(DEVICE))
+
+    training_data = flowvision.datasets.CIFAR10(
+        root="data",
+        train=True,
+        transform=transforms.ToTensor(),
+        download=True,
+    )
+
+    train_dataloader = flow.utils.data.DataLoader(
+        training_data, BATCH_SIZE, shuffle=True, drop_last=True
+    )
+
+    model = flowvision.models.mobilenet_v2().to(DEVICE)
+    model.classifer = nn.Sequential(nn.Dropout(0.2), nn.Linear(model.last_channel, 10))
+    model.train()
+
+    loss_fn = nn.CrossEntropyLoss().to(DEVICE)
+    optimizer = flow.optim.SGD(model.parameters(), lr=1e-3)
+
+    class GraphMobileNetV2(flow.nn.Graph):
+        def __init__(self):
+            super().__init__()
+            self.model = model
+            self.loss_fn = loss_fn
+            self.add_optimizer(optimizer)
+
+        def build(self, x, y):
+            y_pred = self.model(x)
+            loss = self.loss_fn(y_pred, y)
+            loss.backward()
+            return loss
+
+
+    graph_mobile_net_v2 = GraphMobileNetV2()
+    graph_mobile_net_v2.debug(1, op_repr_with_py_stack=True)
+
+    for t in range(EPOCH_NUM):
+        print(f"Epoch {t+1}\n-------------------------------")
+        size = len(train_dataloader.dataset)
+        for batch, (x, y) in enumerate(train_dataloader):
+            x = x.to(DEVICE)
+            y = y.to(DEVICE)
+            loss = graph_mobile_net_v2(x, y)
+            current = batch * BATCH_SIZE
+            if batch % 5 == 0:
+                print(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")
+
+    print("repr(mobilenet_graph) after run: \n", repr(graph_mobile_net_v2))
+    ```
+
+
+在训练过程中，可以像 eager 模式一样，通过设置 verbose 参数获取实时更新的学习率。
+
+```python
+optimizer = flow.optim.SGD(model.parameters(), lr=1e-3)
+# 设置 verbose=True
+scheduler = flow.optim.lr_scheduler.CosineDecayLR(optimizer, decay_steps=100, alpha=0.98, verbose=True)
+```
+
+除了以上介绍的方法外，训练过程中获取参数的梯度等功能，也正在开发中，即将上线。
 
 ### Graph 模型的保存与加载
 
