@@ -195,13 +195,13 @@
 
 === "Terminal 0"
     ```text
-    (oneflow.sbp.split(axis=1),)
+    (oneflow.sbp.split(dim=1),)
     oneflow.Size([4, 8])
     ```
 
 === "Terminal 1"
     ```text
-    (oneflow.sbp.split(axis=1),)
+    (oneflow.sbp.split(dim=1),)
     oneflow.Size([4, 8])
     ```
 
