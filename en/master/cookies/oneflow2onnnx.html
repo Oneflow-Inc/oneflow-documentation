@@ -1120,7 +1120,7 @@
 
 <span class="c1"># Load &amp; save pretrained model</span>
 <span class="n">model</span> <span class="o">=</span> <span class="n">resnet34</span><span class="p">(</span><span class="n">pretrained</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">flow</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span> <span class="n">MODEL_PARAMS</span><span class="p">)</span>
+<span class="n">flow</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span> <span class="n">MODEL_PARAMS</span><span class="p">,</span> <span class="n">save_as_external_data</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </code></pre></div>
 <p>To build a static graph model using a dynamic graph model. For details, refer to: <a href="../basics/08_nn_graph.html">Static Graph Interface: nn.Graph</a></p>
 <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">ResNet34Graph</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Graph</span><span class="p">):</span>

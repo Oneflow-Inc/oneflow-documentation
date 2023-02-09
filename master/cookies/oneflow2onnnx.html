@@ -1120,7 +1120,7 @@
 
 <span class="c1"># 下载预训练模型并保存</span>
 <span class="n">model</span> <span class="o">=</span> <span class="n">resnet34</span><span class="p">(</span><span class="n">pretrained</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">flow</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span> <span class="n">MODEL_PARAMS</span><span class="p">)</span>
+<span class="n">flow</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span> <span class="n">MODEL_PARAMS</span><span class="p">,</span> <span class="n">save_as_external_data</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </code></pre></div></p>
 <p>使用动态图模型构建静态图模型，详情请参见：<a href="../basics/08_nn_graph.html">静态图模块 nn.Graph</a></p>
 <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">ResNet34Graph</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Graph</span><span class="p">):</span>

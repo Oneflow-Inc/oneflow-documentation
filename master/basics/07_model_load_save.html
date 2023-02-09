@@ -979,7 +979,7 @@
 <p>我们可以使用 <a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.save.html">oneflow.save</a> 方法保存模型。</p>
 <div class="highlight"><pre><span></span><code><span class="n">flow</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span> <span class="s2">&quot;./model&quot;</span><span class="p">)</span>
 </code></pre></div>
-<p>它的第一个参数的 Module 的参数，第二个是保存路径。以上代码，将 <code>m</code> Module 对象的参数，保存到了 <code>./model</code> 目录下。</p>
+<p>它的第一个参数的 Module 的参数，第二个是保存路径。以上代码，将 <code>m</code> Module 对象的参数，保存到了 <code>model</code> 文件下。</p>
 <h2 id="_4">模型加载<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
 <p>使用 <a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.load.html">oneflow.load</a> 可以将参数从指定的磁盘路径加载参数到内存，得到存有参数的字典。</p>
 <div class="highlight"><pre><span></span><code><span class="n">params</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;./model&quot;</span><span class="p">)</span>

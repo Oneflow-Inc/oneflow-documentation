@@ -1318,7 +1318,8 @@ loss: 6.644351  [  960/50000]
 <li><code>v_level=2</code> 时，在构图阶段，将额外打印每个 Op 的创建信息，包括名称、输入内容、设备和 SBP 信息等。</li>
 <li><code>v_level=3</code> 时，将额外打印每个 Op 更详细的信息，如与代码位置有关的信息，方便定位代码问题。</li>
 </ul>
-<p>此外，为了开发者对 Graph 对象下的类型有更清晰的认知，下面对 <code>debug</code> 输出的内容进行分析，基本包括 <code>GRAPH</code>、<code>CONFIG</code>、<code>MODULE</code>、<code>PARAMETER</code>、<code>BUFFER</code>、<code>INPUT</code> 和 <code>OUTPUT</code> 七个类别的标签。</p>
+<p>除了设置 <code>v_level</code>，Graph 的 <code>debug</code> 还提供了设置输出调试信息的设备（多卡条件下）、指定调试信息的最大 Python 堆栈深度、打印系统算子位置、打印用户代码位置和源代码的功能。使用时具体见参数见：<a href="https://oneflow.readthedocs.io/en/master/generated/oneflow.nn.Graph.debug.html#oneflow.nn.Graph.debug">nn.Graph.debug</a>。</p>
+<p>此外，为了开发者对 Graph 对象下的类型有更清晰的认知，下面对 <code>debug</code> 输出的内容进行分析，基本包括 <code>GRAPH</code>、<code>CONFIG</code>、<code>MODULE</code>、<code>PARAMETER</code>、<code>BUFFER</code>、<code>OPERATOR</code>、<code>INPUT</code> 和 <code>OUTPUT</code> 八个类别的标签。</p>
 <table>
 <thead>
 <tr>
@@ -1354,13 +1355,80 @@ loss: 6.644351  [  960/50000]
 <td style="text-align: center;"><code>(BUFFER:model.features.0.1.running_mean:tensor(..., device='cuda:0', size=(32,), dtype=oneflow.float32))</code></td>
 </tr>
 <tr>
+<td style="text-align: center;">OPERATOR</td>
+<td style="text-align: center;">构建 Graph 涉及到的算子信息。</td>
+<td style="text-align: center;">-</td>
+</tr>
+<tr>
 <td style="text-align: center;">INPUT &amp; OUPTUT</td>
 <td style="text-align: center;">表示输入输出的张量信息。</td>
 <td style="text-align: center;"><code>(INPUT:_model_input.0.0_2:tensor(..., device='cuda:0', is_lazy='True', size=(16, 3, 32, 32), dtype=oneflow.float32))</code></td>
 </tr>
 </tbody>
 </table>
-<p>除了以上介绍的方法外，训练过程中获取参数的梯度、获取 learning rate 等功能，也正在开发中，即将上线。</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>当打印执行过的 Graph 时，<code>OPERATOR</code> 字段还包括了子字段 <code>location</code>。</p>
+<p>一个原始的 <code>location</code>：
+<div class="highlight"><pre><span></span><code>location=(File &quot;test_debug.py&quot;, line 11, in forward, source &lt; return flow.matmul(input1, input2) &gt;; File &quot;test_debug.py&quot;, line 19, in build, source &lt; return self.model(input1, input2) &gt;; ... 1 more)
+</code></pre></div></p>
+<p>换行后的形式如下：
+<div class="highlight"><pre><span></span><code>location=(
+    File &quot;test_debug.py&quot;, line 11, in forward, source &lt; return flow.matmul(input1, input2) &gt;; 
+    File &quot;test_debug.py&quot;, line 19, in build, source &lt; return self.model(input1, input2) &gt;; 
+    ... 1 more
+)
+</code></pre></div></p>
+<p>这里的 <code>location</code> 代表代码调用栈信息，一个代码调用栈由多层代码位置信息组成，每一层包括：</p>
+<ul>
+<li>Flie：文件路径。</li>
+<li>line：表示代码所在行数。</li>
+<li>in：表示调用该代码的函数。</li>
+<li>source： <code>&lt; &gt;</code> 里面是对应的源代码文本。</li>
+</ul>
+</div>
+<p>如果想体验上述调试信息的输出，点击以下 “Code” 查看详细代码。</p>
+<details class="code">
+<summary>Code</summary>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">oneflow</span> <span class="k">as</span> <span class="nn">flow</span>
+<span class="kn">import</span> <span class="nn">oneflow.nn</span> <span class="k">as</span> <span class="nn">nn</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="k">class</span> <span class="nc">Model</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input1</span><span class="p">,</span> <span class="n">input2</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">flow</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">input1</span><span class="p">,</span> <span class="n">input2</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">GraphModel</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Graph</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">Model</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input1</span><span class="p">,</span> <span class="n">input2</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">input1</span><span class="p">,</span> <span class="n">input2</span><span class="p">)</span>
+
+<span class="n">graph</span> <span class="o">=</span> <span class="n">GraphModel</span><span class="p">()</span>
+<span class="n">graph</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">op_repr_with_py_stack</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="n">input1</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">flow</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+<span class="n">input2</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">flow</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+<span class="n">of_out</span> <span class="o">=</span> <span class="n">graph</span><span class="p">(</span><span class="n">input1</span><span class="p">,</span> <span class="n">input2</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;repr(graph) after run: </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">repr</span><span class="p">(</span><span class="n">graph</span><span class="p">))</span>
+</code></pre></div>
+</details>
+<p>“Code” 的部分 OPERATOR 字段输出：</p>
+<div class="highlight"><pre><span></span><code>(OPERATOR: model-matmul-0(_GraphModel_0_input.0.0_2/out:(sbp=(B), size=(2, 6), dtype=(oneflow.float32)), _GraphModel_0_input.0.1_3/out:(sbp=(B), size=(6, 5), dtype=(oneflow.float32))) -&gt; (model-matmul-0/out_0:(sbp=(B), size=(2, 5), dtype=(oneflow.float32))), placement=(oneflow.placement(type=&quot;cpu&quot;, ranks=[0])), location=(File &quot;test_debug.py&quot;, line 11, in forward, source &lt; return flow.matmul(input1, input2) &gt;; File &quot;test_debug.py&quot;, line 19, in build, source &lt; return self.model(input1, input2) &gt;; ... 1 more))
+</code></pre></div>
+<p>在训练过程中，可以像 eager 模式一样，通过设置 verbose 参数获取实时更新的学习率。</p>
+<div class="highlight"><pre><span></span><code>optimizer = flow.optim.SGD(model.parameters(), lr=1e-3)
+# 设置 verbose=True
+scheduler = flow.optim.lr_scheduler.CosineDecayLR(optimizer, decay_steps=100, alpha=0.98, verbose=True)
+</code></pre></div>
+<p>除了以上介绍的方法外，训练过程中获取参数的梯度等功能，也正在开发中，即将上线。</p>
 <h3 id="graph_4">Graph 模型的保存与加载<a class="headerlink" href="#graph_4" title="Permanent link">&para;</a></h3>
 <p>在训练 Graph 模型时，常常需要将已经训练了一段时间的模型的参数以及其他诸如优化器参数等状态进行保存，方便中断后恢复训练。</p>
 <p>Graph 模型对象具有和 Module 类似的 <code>state_dict</code> 和 <code>load_state_dict</code> 接口，配合 <a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.save.html">save</a> 和 <a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.load.html">load</a> 就可以实现保存与加载 Graph 模型。这与之前在 <a href="07_model_load_save.html">模型的保存与加载</a> 中介绍的 Eager 模式下是类似的。和 Eager 略有不同的是，在训练过程中调用 Graph 的 <code>state_dict</code> 时，除了会得到内部 Module 各层的参数，也会得到训练迭代数、优化器参数等其他状态，以便之后恢复训练。</p>
