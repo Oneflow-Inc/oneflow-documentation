@@ -97,7 +97,7 @@ MODEL_PARAMS = 'checkpoints/resnet34'
 
 # 下载预训练模型并保存
 model = resnet34(pretrained=True)
-flow.save(model.state_dict(), MODEL_PARAMS)
+flow.save(model.state_dict(), MODEL_PARAMS, save_as_external_data=True)
 ```
 
 使用动态图模型构建静态图模型，详情请参见：[静态图模块 nn.Graph](../basics/08_nn_graph.md)
