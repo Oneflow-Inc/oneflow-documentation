@@ -466,7 +466,7 @@ flow.save(graph_mobile_net_v2.state_dict(), CHECKPOINT_SAVE_DIR)
     ```
 
 当需要恢复之前保存的状态时：
-```python
+```
 state_dict = flow.load(CHECKPOINT_SAVE_DIR)
 graph_mobile_net_v2.load_state_dict(state_dict)
 ```
