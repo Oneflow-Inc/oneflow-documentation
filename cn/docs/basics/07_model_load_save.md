@@ -57,7 +57,7 @@ OrderedDict([('weight',
 flow.save(m.state_dict(), "./model")
 ```
 
-它的第一个参数的 Module 的参数，第二个是保存路径。以上代码，将 `m` Module 对象的参数，保存到了 `./model` 目录下。
+它的第一个参数的 Module 的参数，第二个是保存路径。以上代码，将 `m` Module 对象的参数，保存到了 `model` 文件下。
 
 ## 模型加载
 

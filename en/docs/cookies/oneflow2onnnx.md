@@ -101,7 +101,7 @@ MODEL_PARAMS = 'checkpoints/resnet34'
 
 # Load & save pretrained model
 model = resnet34(pretrained=True)
-flow.save(model.state_dict(), MODEL_PARAMS)
+flow.save(model.state_dict(), MODEL_PARAMS, save_as_external_data=True)
 ```
 
 To build a static graph model using a dynamic graph model. For details, refer to: [Static Graph Interface: nn.Graph](../basics/08_nn_graph.md)
