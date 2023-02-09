@@ -1,6 +1,6 @@
 - file_path: cn/docs/basics/08_nn_graph.md
   run:
-    - [0, 1, 2, 3, 4, 5, 7, 8, 9, 10, 11, 13, 14, 15]
+    - [0, 1, 2, 3, 4, 5, 7, 8, 9, 10, 11, 13, 14, 15, 16]
   hook: | # hook(index, code)
     if index == 0:
       code = code.replace('print(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")',
@@ -12,7 +12,7 @@
 
 - file_path: en/docs/basics/08_nn_graph.md
   run:
-    - [0, 1, 2, 3, 4, 5, 7, 8, 9, 10, 11, 13, 14, 15]
+    - [0, 1, 2, 3, 4, 5, 7, 8, 9, 10, 11, 13, 14, 15, 16]
   hook: | # hook(index, code)
     if index == 0:
       code = code.replace('print(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")',

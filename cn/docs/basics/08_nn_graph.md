@@ -365,7 +365,28 @@ OneFlow 在编译生成计算图的过程中会打印调试信息，比如，将
 
 
 !!! Note
-    当打印执行过的 Graph 时，`OPERATOR` 包括的子字段还有 `location`、`File` 和 `source`，分别对应系统算子位置、用户代码位置和源代码信息。
+    当打印执行过的 Graph 时，`OPERATOR` 字段还包括了子字段 `location`。
+
+    一个原始的 `location`：
+    ```
+    location=(File "test_debug.py", line 11, in forward, source < return flow.matmul(input1, input2) >; File "test_debug.py", line 19, in build, source < return self.model(input1, input2) >; ... 1 more)
+    ```
+
+    换行后的形式如下：
+    ```
+    location=(
+    File "test_debug.py", line 11, in forward, source < return flow.matmul(input1, input2) >; 
+    File "test_debug.py", line 19, in build, source < return self.model(input1, input2) >; 
+    ... 1 more
+    )
+    ```
+
+    这里的 `location` 代表代码调用栈信息，一个代码调用栈由多层代码位置信息组成，每一层包括：
+
+    - Flie：文件路径。
+    - line：表示代码所在行数。
+    - in：表示调用该代码的函数。
+    - source： `< >` 里面是对应的源代码文本。
 
 
 如果想体验上述调试信息的输出，点击以下 “Code” 查看详细代码。
@@ -403,14 +424,14 @@ OneFlow 在编译生成计算图的过程中会打印调试信息，比如，将
 
 “Code” 的部分 OPERATOR 字段输出：
 
-```python
-(OPERATOR: model-matmul-0(_GraphModel_0_input.0.0_2/out:(sbp=(B), size=(2, 6), dtype=(oneflow.float32)), _GraphModel_0_input.0.1_3/out:(sbp=(B), size=(6, 5), dtype=(oneflow.float32))) -> (model-matmul-0/out_0:(sbp=(B), size=(2, 5), dtype=(oneflow.float32))), placement=(oneflow.placement(type="cpu", ranks=[0])), location=(File "test2.py", line 11, in forward, source < return flow.matmul(input1, input2) >; File "test2.py", line 19, in build, source < return self.model(input1, input2) >; ... 1 more))
+```
+(OPERATOR: model-matmul-0(_GraphModel_0_input.0.0_2/out:(sbp=(B), size=(2, 6), dtype=(oneflow.float32)), _GraphModel_0_input.0.1_3/out:(sbp=(B), size=(6, 5), dtype=(oneflow.float32))) -> (model-matmul-0/out_0:(sbp=(B), size=(2, 5), dtype=(oneflow.float32))), placement=(oneflow.placement(type="cpu", ranks=[0])), location=(File "test_debug.py", line 11, in forward, source < return flow.matmul(input1, input2) >; File "test_debug.py", line 19, in build, source < return self.model(input1, input2) >; ... 1 more))
 ```
 
 
 在训练过程中，可以像 eager 模式一样，通过设置 verbose 参数获取实时更新的学习率。
 
-```python
+```
 optimizer = flow.optim.SGD(model.parameters(), lr=1e-3)
 # 设置 verbose=True
 scheduler = flow.optim.lr_scheduler.CosineDecayLR(optimizer, decay_steps=100, alpha=0.98, verbose=True)
