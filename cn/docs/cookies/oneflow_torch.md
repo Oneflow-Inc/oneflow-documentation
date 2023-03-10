@@ -30,9 +30,9 @@ eval $(python3 -m oneflow.mock_torch)
 
 为了便于调试，OneFlow 为该方法提供了两个参数：
 
-1.  lazy 参数，lazy=True 时，对不存在的接口会返回一个假对象而不立即报错。
+1.  lazy 参数，`lazy=True` 时，对不存在的接口会返回一个假对象而不立即报错。
 
-2.  verbose 参数，如果同时设置 verbose=True，会打印出有哪些假对象被访问或使用，便于调试。
+2.  verbose 参数，如果同时设置 `verbose=True`，会打印出有哪些假对象被访问或使用，便于调试。
 用法如下
 
 开启模拟 PyTorch，并配置 lazy 和 verbose 参数
@@ -85,7 +85,10 @@ with mock.enable():
     print(isinstance(x, flow.Tensor))
 ```
 
-同样 OneFlow 为 `mock.enable()` 提供了便于调试的参数 lazy 和 verbose，可以这样设置 `with mock.enable(lazy=True, verbose=True)`
+同样 OneFlow 为 `mock.enable()` 提供了便于调试的参数 lazy 和 verbose，可以这样设置 
+
+`with mock.enable(lazy=True, verbose=True)`
+
 
 当你需要使用真正的 torch 模块时，可以这样关闭 mock 功能
 
