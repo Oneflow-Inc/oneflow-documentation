@@ -943,6 +943,22 @@
 <p>或</p>
 <div class="highlight"><pre><span></span><code><span class="nb">eval</span> <span class="k">$(</span>python3 -m oneflow.mock_torch<span class="k">)</span>
 </code></pre></div>
+<p>为了便于调试，OneFlow 为该方法提供了两个参数：</p>
+<ol>
+<li>
+<p>lazy 参数，<code>lazy=True</code> 时，对不存在的接口会返回一个假对象而不立即报错。</p>
+</li>
+<li>
+<p>verbose 参数，如果同时设置 <code>verbose=True</code>，会打印出有哪些假对象被访问或使用，便于调试。
+用法如下</p>
+</li>
+</ol>
+<p>开启模拟 PyTorch，并配置 lazy 和 verbose 参数</p>
+<div class="highlight"><pre><span></span><code><span class="nb">eval</span> <span class="k">$(</span>oneflow-mock-torch --lazy --verbose<span class="k">)</span>
+</code></pre></div>
+<p>或</p>
+<div class="highlight"><pre><span></span><code><span class="nb">eval</span> <span class="k">$(</span>python3 -m oneflow.mock_torch --lazy --verbose<span class="k">)</span>
+</code></pre></div>
 <p>运行上述命令后，通过以下示例观察效果</p>
 <div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">torch</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="vm">__file__</span><span class="p">)</span>
@@ -967,6 +983,8 @@
     <span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">flow</span><span class="o">.</span><span class="n">Tensor</span><span class="p">))</span>
 </code></pre></div>
+<p>同样 OneFlow 为 <code>mock.enable()</code> 提供了便于调试的参数 lazy 和 verbose，可以这样设置 </p>
+<p><code>with mock.enable(lazy=True, verbose=True)</code></p>
 <p>当你需要使用真正的 torch 模块时，可以这样关闭 mock 功能</p>
 <div class="highlight"><pre><span></span><code><span class="k">with</span> <span class="n">mock</span><span class="o">.</span><span class="n">disable</span><span class="p">():</span>
     <span class="kn">import</span> <span class="nn">torch</span>
