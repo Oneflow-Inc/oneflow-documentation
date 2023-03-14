@@ -29,6 +29,26 @@ or
 eval $(python3 -m oneflow.mock_torch)
 ```
 
+To facilitate debugging, OneFlow provides two parameters to this method:
+
+1. lazy parameter. When `lazy=True`, a mock object will be returned without an immediate error for non-existent interfaces.
+
+2. verbose parameter. If `verbose=True` is set simultaneously, it will print out which mock objects are accessed or used for debugging.
+
+The usage is as follows:
+
+Enabling the mocking of PyTorch, and configuring lazy and verbose parameters.
+
+```shell
+eval $(oneflow-mock-torch --lazy --verbose)
+```
+
+or
+
+```shell
+eval $(python3 -m oneflow.mock_torch --lazy --verbose)
+```
+
 After running the above command, you can observe the effect in the following example.
 
 ```py
@@ -66,6 +86,10 @@ with mock.enable():
     x = torch.zeros(2, 3)
     print(isinstance(x, flow.Tensor))
 ```
+
+Similarly, OneFlow provides parameters lazy and verbose for `mock.enable()` to facilitate debugging, which can be set like this:
+
+`with mock.enable(lazy=True, verbose=True)`
 
 You can turn off the mock function like this when it’s needed to use the real torch module. 
 
