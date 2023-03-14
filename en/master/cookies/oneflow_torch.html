@@ -943,6 +943,22 @@
 <p>or</p>
 <div class="highlight"><pre><span></span><code><span class="nb">eval</span> <span class="k">$(</span>python3 -m oneflow.mock_torch<span class="k">)</span>
 </code></pre></div>
+<p>To facilitate debugging, OneFlow provides two parameters to this method:</p>
+<ol>
+<li>
+<p>lazy parameter. When <code>lazy=True</code>, a mock object will be returned without an immediate error for non-existent interfaces.</p>
+</li>
+<li>
+<p>verbose parameter. If <code>verbose=True</code> is set simultaneously, it will print out which mock objects are accessed or used for debugging.</p>
+</li>
+</ol>
+<p>The usage is as follows:</p>
+<p>Enabling the mocking of PyTorch, and configuring lazy and verbose parameters.</p>
+<div class="highlight"><pre><span></span><code><span class="nb">eval</span> <span class="k">$(</span>oneflow-mock-torch --lazy --verbose<span class="k">)</span>
+</code></pre></div>
+<p>or</p>
+<div class="highlight"><pre><span></span><code><span class="nb">eval</span> <span class="k">$(</span>python3 -m oneflow.mock_torch --lazy --verbose<span class="k">)</span>
+</code></pre></div>
 <p>After running the above command, you can observe the effect in the following example.</p>
 <div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">torch</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="vm">__file__</span><span class="p">)</span>
@@ -967,6 +983,8 @@
     <span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">flow</span><span class="o">.</span><span class="n">Tensor</span><span class="p">))</span>
 </code></pre></div>
+<p>Similarly, OneFlow provides parameters lazy and verbose for <code>mock.enable()</code> to facilitate debugging, which can be set like this:</p>
+<p><code>with mock.enable(lazy=True, verbose=True)</code></p>
 <p>You can turn off the mock function like this when it’s needed to use the real torch module. </p>
 <div class="highlight"><pre><span></span><code><span class="k">with</span> <span class="n">mock</span><span class="o">.</span><span class="n">disable</span><span class="p">():</span>
     <span class="kn">import</span> <span class="nn">torch</span>
