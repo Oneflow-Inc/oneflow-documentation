@@ -146,7 +146,7 @@ nav:
       - Zero Redundancy Optimizer (ZeRO): cookies/zero.md
       - 大模型分片保存和加载: cookies/save_load.md
       - OneFlow 模拟 PyTorch: cookies/oneflow_torch.md
-      - 分层lr_scale设置: cookies/lr_scale.md
+      - 如何分层设置学习率: cookies/lr_scale.md
 
     - API:
       - API: https://oneflow.readthedocs.io/en/master/

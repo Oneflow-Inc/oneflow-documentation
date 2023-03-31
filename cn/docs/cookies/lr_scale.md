@@ -1,88 +1,259 @@
-# 分层lr_scale设置
+# 如何分层设置学习率
 
-通常情况下，在训练神经网络时，只需要设置一个`lr`，例如配置`Adam`优化器
+在训练神经网络模型时，通常需要不同的网络层指定不同的学习率，
+
+当我们在使用预训练的模型时，常常在预训练的主干网络模型上加入一些分支网络，这个时候我们希望在进行训练过程中，主干网络只进行微调，不需要过多改变参数，因此需要设置较小的学习率。而分支网络则需要快速地收敛，所以需要设置较大的学习率。这时设置统一的学习率很难满足要求，故需要对不同的网络层设置不同的学习率提升训练表现。
+
+这篇文章以 MobileNet_v2 为例，展示如何在 Eager 和 Graph 模式下在不同层设置不同的学习率。
+
+## Eager模式
+
+### 基础实现
+
+首先导入必要的库
+
+```python
+import oneflow as flow
+import oneflow.nn as nn
+import flowvision
+import flowvision.transforms as transforms
+```
+
+接下来设置训练参数以及运行设备
+
+```python
+BATCH_SIZE = 64
+EPOCH_NUM = 1
+DEVICE = "cuda" if flow.cuda.is_available() else "cpu"
+print("Using {} device".format(DEVICE))
+```
+
+使用 flowvision 加载数据集，这里我们从国内站点加载 CIFAR-10 数据集
+
+```python
+training_data = flowvision.datasets.CIFAR10(
+    root="data",
+    train=True,
+    transform=transforms.ToTensor(),
+    download=True,
+    source_url="https://oneflow-public.oss-cn-beijing.aliyuncs.com/datasets/cifar/cifar-10-python.tar.gz",
+)
+
+train_dataloader = flow.utils.data.DataLoader(
+    training_data, BATCH_SIZE, shuffle=True
+)
+```
+
+搭建网络，使用 flowvision 中的 mobilenet_v2 模型，并将分类器修改为输出层为 10 个神经元。并设置损失函数为交叉熵损失。
+
+```python
+model = flowvision.models.mobilenet_v2().to(DEVICE)
+model.classifer = nn.Sequential(nn.Dropout(0.2), nn.Linear(model.last_channel, 10))
+model.train()
+loss_fn = nn.CrossEntropyLoss().to(DEVICE)
+```
+
+为了使网络的不同层使用不同的学习率，我们需要指定不同网络参数的 `lr` 。
+
+```python
+param_groups = [
+    {'params':model.features.parameters(), 'lr':1e-3},
+    {'params':model.adaptive_avg_pool2d.parameters(), 'lr':1e-4},
+    {'params':model.classifier.parameters(), 'lr':1e-5},
+]
+optimizer = flow.optim.SGD(param_groups)
+```
+
+参数列表 `param_groups` 将不同的参数分组保存在不同的字典中，字典属性 `params` 指定了参数，`lr` 属性指定了学习率大小。优化器接收 `params_groups` 后在更新参数时，会对不同的参数使用指定的学习率进行更新。
+
+接下来对模型进行训练
+
+```python
+for t in range(EPOCH_NUM):
+    print(f"Epoch {t+1}\n-------------------------------")
+    size = len(train_dataloader.dataset)
+    for batch, (x, y) in enumerate(train_dataloader):
+        x = x.to(DEVICE)
+        y = y.to(DEVICE)
+
+        # Compute prediction error
+        pred = model(x)
+        loss = loss_fn(pred, y)
+
+        # Backpropagation
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+
+        current = batch * BATCH_SIZE
+        if batch % 5 == 0:
+            print(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")
+```
+
+### 拓展阅读
+
+在 Eager 模式下，不同层设置不同的学习率实现很简单，我们只需要直接指定不同参数 `lr` 。然而，我们经常需要配合学习率衰减策略一起使用，这时，上面的方法不能满足要求。
+
+要实现分层的学习率衰减策略，我们可以通过手动衰减学习率来完成。
+
+首先同样导入完成准备工作并搭建模型。
 
 ``` python
-optimizer = flow.optim.Adam(model.parameters(), lr=1e-3)
+import oneflow as flow
+import oneflow.nn as nn
+import flowvision
+import flowvision.transforms as transforms
+
+BATCH_SIZE = 64
+EPOCH_NUM = 1
+DEVICE = "cuda" if flow.cuda.is_available() else "cpu"
+print("Using {} device".format(DEVICE))
+
+training_data = flowvision.datasets.CIFAR10(
+    root="data",
+    train=True,
+    transform=transforms.ToTensor(),
+    download=True,
+    source_url="https://oneflow-public.oss-cn-beijing.aliyuncs.com/datasets/cifar/cifar-10-python.tar.gz",
+)
+
+train_dataloader = flow.utils.data.DataLoader(
+    training_data, BATCH_SIZE, shuffle=True
+)
+model = flowvision.models.mobilenet_v2().to(DEVICE)
+model.classifer = nn.Sequential(nn.Dropout(0.2), nn.Linear(model.last_channel, 10))
+model.train()
+loss_fn = nn.CrossEntropyLoss().to(DEVICE)
 ```
 
-然而在一些特殊的网络结构中，例如Vision Transformer(ViT)，常常需要在不同的layer设置不同的学习率。
+在上面的基础上，我们仍需要分组指定学习率，不同的是，指定学习率的同时，我们还可以指定不同的衰减因子。
 
-这篇文章以ViT为例讲解oneflow在静态图模式(Graph)和动态图模式(Eager)下如何配置优化器完成不同layer的lr设置。
+``` python
+param_groups = [
+    {'params':model.features.parameters(), 'lr':1e-3, 'lr_decay_scale':0.9},
+    {'params':model.adaptive_avg_pool2d.parameters(), 'lr':1e-4, 'lr_decay_scale':0.8},
+    {'params':model.classifier.parameters(), 'lr':1e-5, 'lr_decay_scale':0.7},
+]
+optimizer = flow.optim.SGD(param_groups)
+```
 
-### Graph模式下的lr_scale设置
-
-先从较为简单的Graph模式开始，首先需要指定每一层的`lr_scale`，存放在`layer_scales`列表中
+定义学习率调整函数。
 
 ```python
-layer_decay = 0.9
-num_layers = len(model.blocks) + 1
-layer_scales = list(layer_decay ** (num_layers - i) for i in range(num_layers + 1))
+def adjust_learning_rate(optimizer):
+    for param_group in optimizer.param_groups:
+        param_group["lr"] *= param_group["lr_decay_scale"]
 ```
 
-接下来我们将model的参数进行分组存放，设置每组的`lr_scale`属性
+最后，只需要每段时间调整一次学习率即可。
 
 ```python
-param_groups = {} 
-param_group_names = {}
-for name, param in model.named_parameters():
-    if not param.requires_grad:
-    	continue
+for t in range(EPOCH_NUM):
+    print(f"Epoch {t+1}\n-------------------------------")
+    size = len(train_dataloader.dataset)
+    for batch, (x, y) in enumerate(train_dataloader):
+        x = x.to(DEVICE)
+        y = y.to(DEVICE)
 
-    layer_idx = get_layer_idx_for_vit(name, num_layers) # 根据参数名找到所在层数
-    group_name = "layer_%d" % layer_idx
+        # Compute prediction error
+        pred = model(x)
+        loss = loss_fn(pred, y)
 
-    if group_name not in param_group_names:
-    	this_scale = layer_scales[layer_idx]
-
-        param_group_names[group_name] = {
-            "lr_scale": this_scale,
-            "params": [],
-        }
-        param_groups[group_name] = {
-            "lr_scale": this_scale, # 设置lr_scale属性(属性名必须是lr_scale)
-            "params": [],
-        }
-    param_groups[group_name]["params"].append(param) # 将参数保存在字典的params属性中
-    param_group_names[group_name]["params"].append(name)
+        # Backpropagation
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+        current = batch * BATCH_SIZE
+        if batch % 5 == 0:
+            print(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")
+        
+        # Adjust the learning rate per 10 batches
+        if batch % 10 == 0:
+        	adjust_learning_rate(optimizer)
 ```
 
-将参数分组并设置`lr_scale`属性后，我们只需要将`param_group`作为参数传递给优化器，优化器会在更新对应参数时使用`lr * lr_scale`作为真实的学习率。
+## Graph模式
 
-```
-optimizer = flow.optim.Adam(list(param_groups.values()), lr=1e-3)
-```
-
-至此，我们完成了Graph模式下分层lr_scale的设置
-
-### Eager模式下的lr_scale设置
-
-在Eager模式下，除了以上的设置，我们还需要修改`LRscheduler`，继承`oneflow.optim.lr_scheduler._LRScheduler`模块，重写`update_lrs`函数，实现`group["lr"]`乘以`"lr_scale"`
+在 Graph 模式下，同样的，我们导入必要的库，设置参数和设备并准备数据集。
 
 ```python
-class LayerScaleLR(oneflow.optim.lr_scheduler._LRScheduler):
-    def __init__(
-        self,
-        optimizer: flow.optim.Optimizer,
-    ):
-        super().__init__(optimizer)
+import oneflow as flow
+import oneflow.nn as nn
+import flowvision
+import flowvision.transforms as transforms
 
-    def update_lrs(self, lrs):
-        self._last_lr = []
-        for i, (group, lr) in enumerate(zip(self.optimizer.param_groups, lrs)):
-            if "lr_scale" in group:
-                group["lr"] = lr * group["lr_scale"]
-            else:
-                group["lr"] = lr
-            self._last_lr.append(lr)
+BATCH_SIZE = 64
+EPOCH_NUM = 1
+DEVICE = "cuda" if flow.cuda.is_available() else "cpu"
+print("Using {} device".format(DEVICE))
+
+training_data = flowvision.datasets.CIFAR10(
+    root="data",
+    train=True,
+    transform=transforms.ToTensor(),
+    download=True,
+    source_url="https://oneflow-public.oss-cn-beijing.aliyuncs.com/datasets/cifar/cifar-10-python.tar.gz",
+)
+
+train_dataloader = flow.utils.data.DataLoader(
+    training_data, BATCH_SIZE, shuffle=True
+)
 ```
 
-随后我们只需要创建一个`LayerScaleLR`实例。
+搭建模型并设置损失函数。
 
 ```python
-optimizer = flow.optim.SGD(list(param_groups.values()), lr=1e-3)
-lr_scheduler = LayerScaleLR(optimizer=optimizer)
+model = flowvision.models.mobilenet_v2().to(DEVICE)
+model.classifer = nn.Sequential(nn.Dropout(0.2), nn.Linear(model.last_channel, 10))
+model.train()
+loss_fn = nn.CrossEntropyLoss().to(DEVICE)
 ```
 
-在初始化时，会自动调用一次`update_lrs`函数，完成对不同`layer`学习率的设置。
+在设置优化器时，在 Eager 模式下，我们可以直接指定 `params_groups` 中的 `lr` 属性来设置学习率，而在 Graph 模型下，我们需要对不同的参数设置 `lr_scale` 属性来达到修改 `lr` 的目的。
 
+```
+param_groups = [
+    {'params':model.features.parameters(), 'lr_scale':0.9},
+    {'params':model.adaptive_avg_pool2d.parameters(), 'lr_scale':0.8},
+    {'params':model.classifier.parameters(), 'lr_scale':0.7},
+]
+optimizer = flow.optim.SGD(param_groups, lr=1e-3)
+```
+
+通过配置 `lr_scale` 属性，oneflow 会在静态图编译阶段配置参数的学习率为 `lr*lr_scale` 来达到修改学习率的目的。
+
+接下来需要继承 `nn.Graph` 模块，在初始化时调用 `add_optimizer` 方法配置优化器，并重写 `build` 方法完成静态图的配置。
+
+``` python
+class GraphMobileNetV2(flow.nn.Graph):
+    def __init__(self):
+        super().__init__()
+        self.model = model
+        self.loss_fn = loss_fn
+        self.add_optimizer(optimizer)
+
+    def build(self, x, y):
+        y_pred = self.model(x)
+        loss = self.loss_fn(y_pred, y)
+        loss.backward()
+        return loss
+```
+
+训练静态图模型。
+
+``` python
+graph_mobile_net_v2 = GraphMobileNetV2()
+
+for t in range(EPOCH_NUM):
+    print(f"Epoch {t+1}\n-------------------------------")
+    size = len(train_dataloader.dataset)
+    for batch, (x, y) in enumerate(train_dataloader):
+        x = x.to(DEVICE)
+        y = y.to(DEVICE)
+        loss = graph_mobile_net_v2(x, y)
+        current = batch * BATCH_SIZE
+        if batch % 5 == 0:
+            print(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")
+```
+
+至此，我们了解了在 Eager 模式和 Graph 模式下如何设置分层学习率。
