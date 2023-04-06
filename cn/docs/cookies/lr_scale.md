@@ -26,7 +26,7 @@ DEVICE = "cuda" if flow.cuda.is_available() else "cpu"
 print("Using {} device".format(DEVICE))
 ```
 
-使用 flowvision 加载数据集，这里我们从国内站点加载 CIFAR-10 数据集
+使用 Flowvision 加载数据集，这里我们从国内站点加载 CIFAR-10 数据集
 
 ```python
 training_data = flowvision.datasets.CIFAR10(
@@ -42,7 +42,7 @@ train_dataloader = flow.utils.data.DataLoader(
 )
 ```
 
-搭建网络，使用 flowvision 中的 mobilenet_v2 模型，并将分类器修改为输出层为 10 个神经元。并设置损失函数为交叉熵损失。
+搭建网络，使用 FlowVision 中的 MobileNet_v2 模型，并将分类器修改为输出层为 10 个神经元。并设置损失函数为交叉熵损失。
 
 ```python
 model = flowvision.models.mobilenet_v2().to(DEVICE)
