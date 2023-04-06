@@ -26,7 +26,7 @@ DEVICE = "cuda" if flow.cuda.is_available() else "cpu"
 print("Using {} device".format(DEVICE))
 ```
 
-使用 Flowvision 加载数据集，这里我们从国内站点加载 CIFAR-10 数据集
+使用 FlowVision 加载数据集，这里我们从国内站点加载 CIFAR-10 数据集
 
 ```python
 training_data = flowvision.datasets.CIFAR10(
