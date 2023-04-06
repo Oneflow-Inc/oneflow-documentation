@@ -144,7 +144,7 @@ for t in range(EPOCH_NUM):
 
 ## Graph模式
 
-在 Graph 模式下，同样的，我们导入必要的库，设置参数和设备并准备数据集。
+在 Graph 模式下，同样的，我们导入必要的库，设置参数和设备，准备数据集。
 
 ```python
 import oneflow as flow
