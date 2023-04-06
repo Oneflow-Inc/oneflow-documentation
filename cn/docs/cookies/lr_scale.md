@@ -1,8 +1,6 @@
 # 如何分层设置学习率
 
-在训练神经网络模型时，通常需要不同的网络层指定不同的学习率，
-
-当我们在使用预训练的模型时，常常在预训练的主干网络模型上加入一些分支网络，这个时候我们希望在进行训练过程中，主干网络只进行微调，不需要过多改变参数，因此需要设置较小的学习率。而分支网络则需要快速地收敛，所以需要设置较大的学习率。这时设置统一的学习率很难满足要求，故需要对不同的网络层设置不同的学习率提升训练表现。
+在训练神经网络模型时，有时候需要为不同的网络层指定不同的学习率。例如，当我们在使用预训练的模型时，常常在预训练的主干网络模型上加入一些分支网络，这个时候我们希望在进行训练过程中，主干网络只进行微调，不需要过多改变参数，因此需要设置较小的学习率。而分支网络则需要快速地收敛，所以需要设置较大的学习率。这时设置统一的学习率很难满足要求，故需要对不同的网络层设置不同的学习率提升训练表现。
 
 这篇文章以 MobileNet_v2 为例，展示如何在 Eager 和 Graph 模式下在不同层设置不同的学习率。
 
@@ -53,7 +51,7 @@ model.train()
 loss_fn = nn.CrossEntropyLoss().to(DEVICE)
 ```
 
-为了使网络的不同层使用不同的学习率，我们需要指定不同网络参数的 `lr` 。
+然后，为了使网络的不同层使用不同的学习率，需要准备一个字典，网络参数对应 `params`，学习率对应 `lr` 。
 
 ```python
 param_groups = [
@@ -65,6 +63,8 @@ optimizer = flow.optim.SGD(param_groups)
 ```
 
 参数列表 `param_groups` 将不同的参数分组保存在不同的字典中，字典属性 `params` 指定了参数，`lr` 属性指定了学习率大小。优化器接收 `params_groups` 后在更新参数时，会对不同的参数使用指定的学习率进行更新。
+
+`param_groups` 是一个 `list`，每一项是一个字典，将不同的参数分组保存在不同的字典中，字典属性 `params` 指定了参数，`lr` 属性指定了学习率大小。优化器接收 `params_groups` 这个 `list` 后，会遍历这个 `list` 中的每一项。对其中的 `params` 使用指定的学习率 `lr` 进行更新。
 
 接下来对模型进行训练
 
@@ -90,59 +90,29 @@ for t in range(EPOCH_NUM):
             print(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")
 ```
 
-### 拓展阅读
+### 自定义分层的学习率衰减策略
 
 在 Eager 模式下，不同层设置不同的学习率实现很简单，我们只需要直接指定不同参数 `lr` 。然而，我们经常需要配合学习率衰减策略一起使用，这时，上面的方法不能满足要求。
 
-要实现分层的学习率衰减策略，我们可以通过手动衰减学习率来完成。
+不过，我们依然可以通过动态调整 `param_groups` 中各个字典的 `lr` 属性达到目的。
 
-首先同样导入完成准备工作并搭建模型。
+在之前代码的基础上，我们为每个字典新增一个属性 `lr_decay_scale` 作为衰减因子。
 
-``` python
-import oneflow as flow
-import oneflow.nn as nn
-import flowvision
-import flowvision.transforms as transforms
-
-BATCH_SIZE = 64
-EPOCH_NUM = 1
-DEVICE = "cuda" if flow.cuda.is_available() else "cpu"
-print("Using {} device".format(DEVICE))
-
-training_data = flowvision.datasets.CIFAR10(
-    root="data",
-    train=True,
-    transform=transforms.ToTensor(),
-    download=True,
-    source_url="https://oneflow-public.oss-cn-beijing.aliyuncs.com/datasets/cifar/cifar-10-python.tar.gz",
-)
-
-train_dataloader = flow.utils.data.DataLoader(
-    training_data, BATCH_SIZE, shuffle=True
-)
-model = flowvision.models.mobilenet_v2().to(DEVICE)
-model.classifer = nn.Sequential(nn.Dropout(0.2), nn.Linear(model.last_channel, 10))
-model.train()
-loss_fn = nn.CrossEntropyLoss().to(DEVICE)
-```
-
-在上面的基础上，我们仍需要分组指定学习率，不同的是，指定学习率的同时，我们还可以指定不同的衰减因子。
-
-``` python
+```python
 param_groups = [
-    {'params':model.features.parameters(), 'lr':1e-3, 'lr_decay_scale':0.9},
-    {'params':model.adaptive_avg_pool2d.parameters(), 'lr':1e-4, 'lr_decay_scale':0.8},
-    {'params':model.classifier.parameters(), 'lr':1e-5, 'lr_decay_scale':0.7},
+    {'params':model.features.parameters(), 'lr':1e-3, 'lr_scale':0.9},
+    {'params':model.adaptive_avg_pool2d.parameters(), 'lr':1e-4, 'lr_scale':0.8},
+    {'params':model.classifier.parameters(), 'lr':1e-5, 'lr_scale':0.7},
 ]
 optimizer = flow.optim.SGD(param_groups)
 ```
 
-定义学习率调整函数。
+然后自定义一个学习率调整函数。它读取字典中 `lr_decay_scale` 属性，更新 `lr` 属性。
 
 ```python
 def adjust_learning_rate(optimizer):
     for param_group in optimizer.param_groups:
-        param_group["lr"] *= param_group["lr_decay_scale"]
+        param_group["lr"] *= param_group["lr_scale"]
 ```
 
 最后，只需要每段时间调整一次学习率即可。
@@ -196,7 +166,7 @@ training_data = flowvision.datasets.CIFAR10(
 )
 
 train_dataloader = flow.utils.data.DataLoader(
-    training_data, BATCH_SIZE, shuffle=True
+    training_data, BATCH_SIZE, shuffle=True, drop_last=True
 )
 ```
 
@@ -209,9 +179,9 @@ model.train()
 loss_fn = nn.CrossEntropyLoss().to(DEVICE)
 ```
 
-在设置优化器时，在 Eager 模式下，我们可以直接指定 `params_groups` 中的 `lr` 属性来设置学习率，而在 Graph 模型下，我们需要对不同的参数设置 `lr_scale` 属性来达到修改 `lr` 的目的。
+在设置优化器时，在 Eager 模式下，我们可以直接指定 `params_groups` 中的 `lr` 属性来设置学习率，而在 Graph 模型下，我们需要对不同的参数设置 `lr_scale` 属性来达到修改 `lr` 的目的。其中的 `lr_scale` 是 Graph 模式下内置的标准参数。
 
-```
+```python
 param_groups = [
     {'params':model.features.parameters(), 'lr_scale':0.9},
     {'params':model.adaptive_avg_pool2d.parameters(), 'lr_scale':0.8},
@@ -220,11 +190,11 @@ param_groups = [
 optimizer = flow.optim.SGD(param_groups, lr=1e-3)
 ```
 
-通过配置 `lr_scale` 属性，oneflow 会在静态图编译阶段配置参数的学习率为 `lr*lr_scale` 来达到修改学习率的目的。
+一旦配置了 `lr_scale` 属性，OneFlow 会在静态图编译阶段检测到，并且在运行时使用`lr=lr*lr_scale` 来更新学习率。
 
-接下来需要继承 `nn.Graph` 模块，在初始化时调用 `add_optimizer` 方法配置优化器，并重写 `build` 方法完成静态图的配置。
+接下来的使用同 [使用 Graph 做训练](basics/08_nn_graph.md#graph_2) 中一样，即：
 
-``` python
+```python
 class GraphMobileNetV2(flow.nn.Graph):
     def __init__(self):
         super().__init__()
@@ -241,7 +211,7 @@ class GraphMobileNetV2(flow.nn.Graph):
 
 训练静态图模型。
 
-``` python
+```python
 graph_mobile_net_v2 = GraphMobileNetV2()
 
 for t in range(EPOCH_NUM):
