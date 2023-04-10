@@ -8,27 +8,18 @@
 
 ### 基础实现
 
-首先导入必要的库
+此处使用的例子，基于 [OneFlow 的 Eager 模式](../basics/08_nn_graph.md#oneflow-eager) 修改得来。
+导入库、加载数据集、搭建网络等都不变：
 
 ```python
 import oneflow as flow
 import oneflow.nn as nn
 import flowvision
 import flowvision.transforms as transforms
-```
-
-接下来设置训练参数以及运行设备
-
-```python
 BATCH_SIZE = 64
 EPOCH_NUM = 1
 DEVICE = "cuda" if flow.cuda.is_available() else "cpu"
 print("Using {} device".format(DEVICE))
-```
-
-使用 FlowVision 加载数据集，这里我们从国内站点加载 CIFAR-10 数据集
-
-```python
 training_data = flowvision.datasets.CIFAR10(
     root="data",
     train=True,
@@ -40,11 +31,6 @@ training_data = flowvision.datasets.CIFAR10(
 train_dataloader = flow.utils.data.DataLoader(
     training_data, BATCH_SIZE, shuffle=True
 )
-```
-
-搭建网络，使用 FlowVision 中的 MobileNet_v2 模型，并将分类器修改为输出层为 10 个神经元。并设置损失函数为交叉熵损失。
-
-```python
 model = flowvision.models.mobilenet_v2().to(DEVICE)
 model.classifer = nn.Sequential(nn.Dropout(0.2), nn.Linear(model.last_channel, 10))
 model.train()
