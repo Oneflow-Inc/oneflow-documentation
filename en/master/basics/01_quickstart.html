@@ -1002,7 +1002,7 @@ Extracting data/FashionMNIST/raw/train-images-idx3-ubyte.gz to data/FashionMNIST
 y.shape: flow.Size([64])
 </code></pre></div>
 <blockquote>
-<p><a class="md-button md-button--primary" href="03_dataset_dataloader.html"><img alt="🔗" class="twemoji" src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/svg/1f517.svg" title=":link:" /> Dataset and Dataloader</a></p>
+<p><a class="md-button md-button--primary" href="03_dataset_dataloader.html"><img alt="🔗" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@14.1.2/assets/svg/1f517.svg" title=":link:" /> Dataset and Dataloader</a></p>
 </blockquote>
 <h2 id="building-networks">Building Networks<a class="headerlink" href="#building-networks" title="Permanent link">&para;</a></h2>
 <p>To define a neural network in OneFlow, we create a class that inherits from <code>nn.Module</code>. We define the layers of the network in the <code>__init__</code> function and specify how data will pass through the network in the <code>forward</code> function.</p>
@@ -1039,7 +1039,7 @@ y.shape: flow.Size([64])
 )
 </code></pre></div>
 <blockquote>
-<p><a class="md-button md-button--primary" href="04_build_network.html"><img alt="🔗" class="twemoji" src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/svg/1f517.svg" title=":link:" /> Build Network</a></p>
+<p><a class="md-button md-button--primary" href="04_build_network.html"><img alt="🔗" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@14.1.2/assets/svg/1f517.svg" title=":link:" /> Build Network</a></p>
 </blockquote>
 <h2 id="training-models">Training Models<a class="headerlink" href="#training-models" title="Permanent link">&para;</a></h2>
 <p>To train a model, we need a loss function (<code>loss_fn</code>) and an optimizer (<code>optimizer</code>). The loss function is used to evaluate the difference between the prediction of the neural network and the real label. The optimizer adjusts the parameters of the neural network to make the prediction closer to the real label (expected answer). Here, we use <a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.optim.SGD.html">oneflow.optim.SGD</a> to be our optimizer. This process is called back propagation.</p>
@@ -1118,15 +1118,15 @@ loss: 1.835239  [12800/60000]
 ...
 </code></pre></div>
 <blockquote>
-<p><a class="md-button md-button--primary" href="05_autograd.html"><img alt="🔗" class="twemoji" src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/svg/1f517.svg" title=":link:" /> Autograd</a>
-<a class="md-button md-button--primary" href="06_optimization.html"><img alt="🔗" class="twemoji" src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/svg/1f517.svg" title=":link:" /> Backpropagation and Optimizer</a></p>
+<p><a class="md-button md-button--primary" href="05_autograd.html"><img alt="🔗" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@14.1.2/assets/svg/1f517.svg" title=":link:" /> Autograd</a>
+<a class="md-button md-button--primary" href="06_optimization.html"><img alt="🔗" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@14.1.2/assets/svg/1f517.svg" title=":link:" /> Backpropagation and Optimizer</a></p>
 </blockquote>
 <h2 id="saving-and-loading-models">Saving and Loading Models<a class="headerlink" href="#saving-and-loading-models" title="Permanent link">&para;</a></h2>
 <p>Use <a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.save.html">oneflow.save</a> to save the model. The saved model can be then loaded by <a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.load.html">oneflow.load</a> to make predictions.</p>
 <div class="highlight"><pre><span></span><code><span class="n">flow</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span> <span class="s2">&quot;./model&quot;</span><span class="p">)</span>
 </code></pre></div>
 <blockquote>
-<p><a class="md-button md-button--primary" href="07_model_load_save.html"><img alt="🔗" class="twemoji" src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/svg/1f517.svg" title=":link:" /> Model Load and Save</a></p>
+<p><a class="md-button md-button--primary" href="07_model_load_save.html"><img alt="🔗" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@14.1.2/assets/svg/1f517.svg" title=":link:" /> Model Load and Save</a></p>
 </blockquote>
 <h2 id="qq-group">QQ Group<a class="headerlink" href="#qq-group" title="Permanent link">&para;</a></h2>
 <p>Any problems encountered during the installation or usage, welcome to join the QQ Group to discuss with OneFlow developers and enthusiasts:</p>

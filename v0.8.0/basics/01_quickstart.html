@@ -966,7 +966,7 @@ Extracting data/FashionMNIST/raw/train-images-idx3-ubyte.gz to data/FashionMNIST
 y.shape: flow.Size([64])
 </code></pre></div>
 <blockquote>
-<p><a class="md-button md-button--primary" href="03_dataset_dataloader.html"><img alt="🔗" class="twemoji" src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/svg/1f517.svg" title=":link:" /> Dataset 与 Dataloader</a></p>
+<p><a class="md-button md-button--primary" href="03_dataset_dataloader.html"><img alt="🔗" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@14.1.2/assets/svg/1f517.svg" title=":link:" /> Dataset 与 Dataloader</a></p>
 </blockquote>
 <h2 id="_3">搭建网络<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
 <p>想要搭建网络，只需要实现一个继承自 <code>nn.Module</code> 的类就可以了。在它的 <code>__init__</code> 方法中定义神经网络的结构，在它的 <code>forward</code> 方法中指定前向传播的计算逻辑。</p>
@@ -1003,7 +1003,7 @@ y.shape: flow.Size([64])
 )
 </code></pre></div>
 <blockquote>
-<p><a class="md-button md-button--primary" href="04_build_network.html"><img alt="🔗" class="twemoji" src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/svg/1f517.svg" title=":link:" /> 搭建神经网络</a></p>
+<p><a class="md-button md-button--primary" href="04_build_network.html"><img alt="🔗" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@14.1.2/assets/svg/1f517.svg" title=":link:" /> 搭建神经网络</a></p>
 </blockquote>
 <h2 id="_4">训练模型<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
 <p>为了训练模型，我们需要损失函数 <code>loss_fn</code> 和优化器 <code>optimizer</code>，损失函数用于评价神经网络预测的结果与 label 的差距；<code>optimizer</code> 调整网络的参数，使得网络预测的结果越来越接近 label（标准答案），这里选用 <a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.optim.SGD.html">oneflow.optim.SGD</a>。这一过程被称为反向传播。</p>
@@ -1082,15 +1082,15 @@ loss: 1.835239  [12800/60000]
 ...
 </code></pre></div>
 <blockquote>
-<p><a class="md-button md-button--primary" href="05_autograd.html"><img alt="🔗" class="twemoji" src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/svg/1f517.svg" title=":link:" /> 自动求梯度</a>
-<a class="md-button md-button--primary" href="06_optimization.html"><img alt="🔗" class="twemoji" src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/svg/1f517.svg" title=":link:" /> 反向传播与 optimizer</a></p>
+<p><a class="md-button md-button--primary" href="05_autograd.html"><img alt="🔗" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@14.1.2/assets/svg/1f517.svg" title=":link:" /> 自动求梯度</a>
+<a class="md-button md-button--primary" href="06_optimization.html"><img alt="🔗" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@14.1.2/assets/svg/1f517.svg" title=":link:" /> 反向传播与 optimizer</a></p>
 </blockquote>
 <h2 id="_5">保存与加载模型<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h2>
 <p>调用 <a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.save.html">oneflow.save</a> 可以保存模型。保存的模型可以通过 <a href="https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.load.html">oneflow.load</a> 加载，用于预测等工作。</p>
 <div class="highlight"><pre><span></span><code><span class="n">flow</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span> <span class="s2">&quot;./model&quot;</span><span class="p">)</span>
 </code></pre></div>
 <blockquote>
-<p><a class="md-button md-button--primary" href="07_model_load_save.html"><img alt="🔗" class="twemoji" src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/svg/1f517.svg" title=":link:" /> 模型的加载与保存</a></p>
+<p><a class="md-button md-button--primary" href="07_model_load_save.html"><img alt="🔗" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@14.1.2/assets/svg/1f517.svg" title=":link:" /> 模型的加载与保存</a></p>
 </blockquote>
 <h2 id="qq">交流 QQ 群<a class="headerlink" href="#qq" title="Permanent link">&para;</a></h2>
 <p>安装或使用过程遇到问题，欢迎入群与众多 OneFlow 爱好者共同讨论交流：</p>
