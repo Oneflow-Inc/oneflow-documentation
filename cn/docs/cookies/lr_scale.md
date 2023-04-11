@@ -48,8 +48,6 @@ param_groups = [
 optimizer = flow.optim.SGD(param_groups)
 ```
 
-参数列表 `param_groups` 将不同的参数分组保存在不同的字典中，字典属性 `params` 指定了参数，`lr` 属性指定了学习率大小。优化器接收 `params_groups` 后在更新参数时，会对不同的参数使用指定的学习率进行更新。
-
 `param_groups` 是一个 `list`，每一项是一个字典，将不同的参数分组保存在不同的字典中，字典属性 `params` 指定了参数，`lr` 属性指定了学习率大小。优化器接收 `params_groups` 这个 `list` 后，会遍历这个 `list` 中的每一项。对其中的 `params` 使用指定的学习率 `lr` 进行更新。
 
 接下来对模型进行训练
@@ -101,7 +99,7 @@ def adjust_learning_rate(optimizer):
         param_group["lr"] *= param_group["lr_scale"]
 ```
 
-最后，只需要每段时间调整一次学习率即可。
+这样，在训练过程中，调用 `adjust_learning_rate`，就可以分层地、动态调整学习率。
 
 ```python
 for t in range(EPOCH_NUM):
