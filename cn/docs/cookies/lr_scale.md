@@ -176,7 +176,7 @@ optimizer = flow.optim.SGD(param_groups, lr=1e-3)
 
 一旦配置了 `lr_scale` 属性，OneFlow 会在静态图编译阶段检测到，并且在运行时使用`lr=lr*lr_scale` 来更新学习率。
 
-接下来的使用同 [使用 Graph 做训练](basics/08_nn_graph.md#graph_2) 中一样，即：
+接下来的使用同 [使用 Graph 做训练](../basics/08_nn_graph.md#graph_2) 中一样，即：
 
 ```python
 class GraphMobileNetV2(flow.nn.Graph):
