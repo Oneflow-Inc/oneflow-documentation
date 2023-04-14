@@ -35,8 +35,10 @@
         download=True,
     )
 
+    sampler = flow.utils.data.distributed.DistributedSampler(training_data)
+
     train_dataloader = flow.utils.data.DataLoader(
-        training_data, BATCH_SIZE, shuffle=True
+        training_data, BATCH_SIZE, shuffle=(sampler is None), sampler=sampler
     )
 
     model = flowvision.models.mobilenet_v2().to(DEVICE)
@@ -48,6 +50,7 @@
 
     for t in range(EPOCH_NUM):
         print(f"Epoch {t+1}\n-------------------------------")
+        train_dataloader.sampler.set_epoch(t)
         size = len(train_dataloader.dataset)
         for batch, (x, y) in enumerate(train_dataloader):
             x = x.to_global(placement=PLACEMENT, sbp=S0)
@@ -87,6 +90,8 @@
     x = x.to_global(placement=PLACEMENT, sbp=S0)
     y = y.to_global(placement=PLACEMENT, sbp=S0)
 ```
+
+- 需要注意的是，在进行分布式并行训练时，代码中规定的`BATCH_SIZE`为每一台机器的本地值而非`GLOBAL_BATCH_SIZE`,故上述代码单机双卡`BATCH_SIZE=64`的训练效果与单机单卡`BATCH_SIZE=128`一致。
 
 这样，按照 [常见的分布式并行策略](./01_introduction.md) 中的介绍，我们就通过对数据进行 `split(0)` 切分，对模型进行广播，进行了分布式数据并行训练。
 
