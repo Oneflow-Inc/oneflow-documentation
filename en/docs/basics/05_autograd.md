@@ -139,7 +139,7 @@ tensor(20., dtype=oneflow.float32)
 
 ### Disabled Gradient Calculation
 
-By default, OneFlow will trace and calculate gradients of Tensors with `requires_grad = Ture`.
+By default, OneFlow will trace and calculate gradients of Tensors with `requires_grad = True`.
 However, in some cases, we don't need OneFlow to keep tracing gradients such as just wanting the forward pass for inference. Then we can use [oneflow.no_grad](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.no_grad.html) or [oneflow.Tensor.detach](https://oneflow.readthedocs.io/en/master/generated/oneflow.Tensor.detach.html#oneflow.Tensor.detach) to set.
 
 ```python

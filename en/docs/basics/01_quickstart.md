@@ -12,7 +12,7 @@ from flowvision import datasets
 ```
 [FlowVision](https://github.com/Oneflow-Inc/vision) is a tool library matching with OneFlow, specific to computer vision tasks. It contains a number of models, data augmentation methods, data transformation operations and datasets. Here we import and use the data transformation module `transforms` and datasets module `datasets` provided by FlowVision.
 
-Settting batch size and device：
+Setting batch size and device：
 
 ```python
 BATCH_SIZE=64

@@ -109,7 +109,7 @@ class GraphMyLinear(nn.Graph):
 The simple example above contains the important steps needed to customize a Graph:
 
 - Inherits `nn.Graph`.
-- Call `super().__init__()` at the begining of `__init__` method to get OneFlow to do the necessary initialization for the Graph.
+- Call `super().__init__()` at the beginning of `__init__` method to get OneFlow to do the necessary initialization for the Graph.
 - In `__init__`, reuse the `nn.Module` object in Eager mode (`self.model = model`)
 - Describes the computational process in `build` method.
 
@@ -323,7 +323,7 @@ If you use `print` **after** the Graph object is called, in addition to the stru
 **The second** way is that by calling the [debug](https://oneflow.readthedocs.io/en/v0.8.1/generated/oneflow.nn.Graph.debug.html) method of Graph objects, Graph’s debug mode is turned on.
 
 ```python
-graph_mobile_net_v2.debug(v_level=1) # The defalut of v_level is 0.
+graph_mobile_net_v2.debug(v_level=1) # The default of v_level is 0.
 ```
 
 which can also be written in a simplified way:
@@ -337,7 +337,7 @@ OneFlow prints debug information when it compiles the computation graph. If the 
 ```text
 (GRAPH:GraphMobileNetV2_0:GraphMobileNetV2) end building graph.
 (GRAPH:GraphMobileNetV2_0:GraphMobileNetV2) start compiling plan and init graph runtime.
-(GRAPH:GraphMobileNetV2_0:GraphMobileNetV2) end compiling plan and init graph rumtime.
+(GRAPH:GraphMobileNetV2_0:GraphMobileNetV2) end compiling plan and init graph runtime.
 ```
 
 The advantage of using `debug`  is that the debug information is composed and printed at the same time, which makes it easy to find the problem if there is any error in the graph building process.
@@ -358,7 +358,7 @@ In addition, in order for developers to have a clearer understanding of the type
 |     MODULE     | Corresponding to `nn.Module` , MODULE can be under the Graph tag, and there is also a hierarchical relationship between multiple modules. | `(MODULE:model:MobileNetV2())`, and  `MobileNetV2` reuses the Module class name in Eager mode for users. |
 |   PARAMETER    | Shows the clearer information of weight and bias. In addition, when building the graph, the data content of the tensor is less important, so it is more important for building network to only display the meta information of the tensor. | `(PARAMETER:model.features.0.1.weight:tensor(..., device='cuda:0', size=(32,), dtype=oneflow.float32, requires_grad=True))` |
 |     BUFFER     |                Statistical characteristics and other content generated during training, such as running_mean and running_var.                | `(BUFFER:model.features.0.1.running_mean:tensor(..., device='cuda:0', size=(32,), dtype=oneflow.float32))` |
-| INPUT & OUPTUT |                   Tensor information representing input and output.                   | `(INPUT:_model_input.0.0_2:tensor(..., device='cuda:0', is_lazy='True', size=(16, 3, 32, 32), dtype=oneflow.float32))` |
+| INPUT & OUTPUT |                   Tensor information representing input and output.                   | `(INPUT:_model_input.0.0_2:tensor(..., device='cuda:0', is_lazy='True', size=(16, 3, 32, 32), dtype=oneflow.float32))` |
 
 In addition to the methods described above, getting the parameters of the gradient during the training process, accessing to the learning rate and other functions are also under development and will come up soon.
 
