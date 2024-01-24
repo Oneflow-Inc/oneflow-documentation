@@ -946,7 +946,7 @@
 <p>To facilitate debugging, OneFlow provides two parameters to this method:</p>
 <ol>
 <li>
-<p>lazy parameter. When <code>lazy=True</code>, a mock object will be returned without an immediate error for non-existent interfaces.</p>
+<p>lazy parameter. When <code>lazy=True</code>, a mock object will be returned without an immediate error for non-existent interfaces. It is <strong>recommended</strong> to enable this parameter, so that even if the third-party library you import contains an interface that OneFlow does not currently exist, mock torch can still work normally as long as the interface is not actually used.</p>
 </li>
 <li>
 <p>verbose parameter. If <code>verbose=True</code> is set simultaneously, it will print out which mock objects are accessed or used for debugging.</p>

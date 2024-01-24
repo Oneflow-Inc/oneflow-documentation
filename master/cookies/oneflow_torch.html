@@ -958,7 +958,7 @@
 <p>为了便于调试，OneFlow 为该方法提供了两个参数：</p>
 <ol>
 <li>
-<p>lazy 参数，<code>lazy=True</code> 时，对不存在的接口会返回一个假对象而不立即报错。</p>
+<p>lazy 参数，<code>lazy=True</code> 时，对不存在的接口会返回一个假对象而不立即报错。<strong>建议将该参数设置为 True</strong>，这样即便您 import 的第三方库中含有 OneFlow 暂时不存在的接口，只要没有实际使用到该接口，mock torch 也能正常工作。</p>
 </li>
 <li>
 <p>verbose 参数，如果同时设置 <code>verbose=True</code>，会打印出有哪些假对象被访问或使用，便于调试。
