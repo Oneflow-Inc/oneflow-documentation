@@ -31,7 +31,7 @@ eval $(python3 -m oneflow.mock_torch)
 
 To facilitate debugging, OneFlow provides two parameters to this method:
 
-1. lazy parameter. When `lazy=True`, a mock object will be returned without an immediate error for non-existent interfaces.
+1. lazy parameter. When `lazy=True`, a mock object will be returned without an immediate error for non-existent interfaces. It is **recommended** to enable this parameter, so that even if the third-party library you import contains an interface that OneFlow does not currently exist, mock torch can still work normally as long as the interface is not actually used.
 
 2. verbose parameter. If `verbose=True` is set simultaneously, it will print out which mock objects are accessed or used for debugging.
 
