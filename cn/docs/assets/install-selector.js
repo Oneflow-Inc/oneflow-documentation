@@ -2,21 +2,28 @@
     window.addEventListener('load', () => {
 
         function get_commands(latest_version) {
-            let stable_command_116 = 'python3 -m pip install -f https://release.oneflow.info oneflow==VERSION+cu116'
-            let stable_command_117 = 'python3 -m pip install -f https://release.oneflow.info oneflow==VERSION+cu117'
-            let stable_command_cpu = 'python3 -m pip install -f https://release.oneflow.info oneflow==VERSION+cpu'
+            let stable_command_118 = 'python3 -m pip install -f https://oneflow-staging.oss-cn-beijing.aliyuncs.com/branch/release/v1.0.0/cu118 oneflow'
+            let stable_command_121 = 'python3 -m pip install -f https://oneflow-staging.oss-cn-beijing.aliyuncs.com/branch/release/v1.0.0/cu121 oneflow'
+            let stable_command_122 = 'python3 -m pip install -f https://oneflow-staging.oss-cn-beijing.aliyuncs.com/branch/release/v1.0.0/cu122 oneflow'
+            let stable_command_cpu = 'python3 -m pip install -f https://oneflow-staging.oss-cn-beijing.aliyuncs.com/branch/release/v1.0.0/cpu oneflow'
             let commands = [
                 {
                     versions: 'Stable',
                     framework: 'CUDA',
-                    smlVers: '11.6',
-                    command: stable_command_116.replace("VERSION", latest_version)
+                    smlVers: '11.8',
+                    command: stable_command_118.replace("VERSION", latest_version)
                 },
                 {
                     versions: 'Stable',
                     framework: 'CUDA',
-                    smlVers: '11.7',
-                    command: stable_command_117.replace("VERSION", latest_version)
+                    smlVers: '12.1',
+                    command: stable_command_121.replace("VERSION", latest_version)
+                },
+                {
+                    versions: 'Stable',
+                    framework: 'CUDA',
+                    smlVers: '12.2',
+                    command: stable_command_122.replace("VERSION", latest_version)
                 },
                 {
                     versions: 'Stable',
@@ -27,14 +34,20 @@
                 {
                     versions: 'Nightly',
                     framework: 'CUDA',
-                    smlVers: '11.6',
-                    command: 'python3 -m pip install -f https://staging.oneflow.info/branch/master/cu116 --pre oneflow'
+                    smlVers: '11.8',
+                    command: 'python3 -m pip install -f https://staging.oneflow.info/branch/master/cu118 --pre oneflow'
                 },
                 {
                     versions: 'Nightly',
                     framework: 'CUDA',
-                    smlVers: '11.7',
-                    command: 'python3 -m pip install -f https://staging.oneflow.info/branch/master/cu117 --pre oneflow'
+                    smlVers: '12.1',
+                    command: 'python3 -m pip install -f https://staging.oneflow.info/branch/master/cu121 --pre oneflow'
+                },
+                {
+                    versions: 'Nightly',
+                    framework: 'CUDA',
+                    smlVers: '12.2',
+                    command: 'python3 -m pip install -f https://staging.oneflow.info/branch/master/cu122 --pre oneflow'
                 },
                 {
                     versions: 'Nightly',
@@ -50,7 +63,7 @@
             let condition = {
                 versions: 'Stable',
                 framework: 'CUDA',
-                smlVers: '11.6',
+                smlVers: '11.8',
             }
             selectCommands(condition)
             let items = document.querySelectorAll('#instruction li')
