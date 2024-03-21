@@ -281,7 +281,7 @@ OneFlow 的 Global Tensor 执行采用的是 **多客户端模式 (Multi-Client)
 
 以 `2 机 2 卡` 为例， 0 号机器中两张卡分别对应编号 0 和 1，第 1 号机器中两张卡分别对应编号 2 和 3。此时 `flow.placement(type="cuda", ranks=[2])` 可以唯一标识第 1 号机器中的第 0 卡。
 
-一般地，对于 `n 机 m 卡` 的环境，`flow.placement(type="cuda", ranks=[k])` 唯一标识第 `k / n` 号机器的第 `k % m` 张卡。
+一般地，对于 `n 机 m 卡` 的环境，`flow.placement(type="cuda", ranks=[k])` 唯一标识第 `k / m` 号机器的第 `k % m` 张卡。
 
 因为采用多客户端模式，所以需要对应每个设备都启动一个进程。在 OneFlow 中，所有进程都只需要启动相同的脚本程序。不同进程之间通过不同的环境变量来区分进程编号和建立通信连接。
 
