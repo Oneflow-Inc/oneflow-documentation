@@ -6,7 +6,7 @@ on:
 
 jobs:
   check_labels:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     name: Labels
     steps:
       - name: Check type labels 'cn, en, fix, enhancement'
