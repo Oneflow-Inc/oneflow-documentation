@@ -131,7 +131,7 @@ Comparing the similarities and differences between the `NeuralNetwork` and `Func
 
 `nn.Sequential` is a special container. Any class inherited from `nn.Module` can be placed in it.
 
-Its specialty is that when Sequential propagates forward, Sequential automatically "concatenates" the layers contained in the container. Specifically, the output of the previous layer will be automatically transferred as the input of the next layer according to the sequence of Sequential added to each layer until the output of the last layer of the whole Moudle is obtained.
+Its specialty is that when Sequential propagates forward, Sequential automatically "concatenates" the layers contained in the container. Specifically, the output of the previous layer will be automatically transferred as the input of the next layer according to the sequence of Sequential added to each layer until the output of the last layer of the whole Module is obtained.
 
 The following is an example of building a network without Sequential (not recommended):
 
